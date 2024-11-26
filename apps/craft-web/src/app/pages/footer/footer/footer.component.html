@@ -1,0 +1,85 @@
+<div class="footer-container">
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon>star</mat-icon>
+        <p>Jeffrey Sanford</p>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="footer-content">
+      <div class="contact-block">
+        <button mat-raised-button (click)="sendEmail()">
+          <mat-icon>email</mat-icon>
+          <p>jeffreysanford&#64;gmail.com</p>
+        </button>
+        <button mat-raised-button (click)="openGitHub()">
+          <mat-icon>code</mat-icon>
+          <p>GitHub</p>
+        </button>
+        <button mat-raised-button (click)="navigateToResume()">
+          <mat-icon>description</mat-icon>
+          <p>Resume</p>
+        </button>
+      </div>
+      <div class="logo-performance-block">
+        <div class="logo-row">
+          <img
+            src="../../../../assets/images/nodejs-new-pantone-white.png"
+            alt="Node.js"
+          />
+          <img
+            src="../../../../assets/images/MongoDB_Logo_RGB_Logo_Forest-Green.svg"
+            alt="MongoDB"
+          />
+          <img src="../../../../assets/images/angular.png" alt="Angular" />
+          <img
+            src="../../../../assets/images/google-material-design-logo-material-design-logo.png"
+            alt="Material Design"
+          />
+        </div>
+        <div class="logo-row">
+          <img
+            src="../../../../assets/images/us-army-logo.png"
+            alt="United States Army (DOD)"
+            class="army"
+          />
+          <img
+            src="../../../../assets/images/US-GOVT-DLA.png"
+            alt="Defense Logistics Agency"
+            class="DLA"
+          />
+          <img
+            src="../../../../assets/images/US-GOVT-DVA-Seal.png"
+            alt="Department of Veterans Affairs"
+            class="DVA"
+          />
+          <img
+            src="../../../../assets/images/US-GOVT-DTIC.png"
+            alt="Defense Technical Information Center"
+            class="DTIC"
+          />
+        </div>
+        <mat-card class="performance-card">
+          <div class="performance-metrics">
+            <div class="metric" [ngClass]="getMemoryUsageClass()">
+              <label>Memory Usage:</label>
+              <span>{{ performanceMetrics.memoryUsage }}</span>
+            </div>
+            <div class="metric" [ngClass]="getCpuLoadClass()">
+              <label>CPU Load:</label>
+              <span>{{ performanceMetrics.cpuLoad }}</span>
+            </div>
+            <div class="metric">
+              <label>App Uptime:</label>
+              <span>{{ performanceMetrics.appUptime }}</span>
+            </div>
+            <div class="metric" [ngClass]="getNetworkLatencyClass()">
+              <label>Network Latency:</label>
+              <span>{{ performanceMetrics.networkLatency }}</span>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+  </mat-expansion-panel>
+</div>

@@ -1,0 +1,32 @@
+<div class="sidebar-container" [ngClass]="{ collapsed: isSmallScreen, expanded: !isSmallScreen }">
+  <div class="sidebar-card">
+    <div class="sidebar-list">
+      <div *ngFor="let item of menuItems">
+        <ng-container *ngIf="isSmallScreen; else largeScreen">
+          <button
+            mat-fab
+            class="nav-item mat-elevation-z10"
+            [routerLink]="item.routerLink"
+            [ngClass]="{ active: item.active }"
+            (click)="setActive(item)"
+            aria-label="{{ item.label }}"
+          >
+            <mat-icon class="item-icon">{{ item.icon }}</mat-icon>
+          </button>
+        </ng-container>
+        <ng-template #largeScreen>
+          <button
+            mat-raised-button
+            class="nav-item glass-button"
+            [routerLink]="item.routerLink"
+            [ngClass]="{ active: item.active }"
+            (click)="setActive(item)"
+          >
+            <mat-icon class="item-icon">{{ item.icon }}</mat-icon>
+            <span class="item-label">{{ item.label }}</span>
+          </button>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

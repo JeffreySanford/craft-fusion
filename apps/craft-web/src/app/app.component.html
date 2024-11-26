@@ -1,2 +1,16 @@
-<app-nx-welcome></app-nx-welcome>
-<router-outlet></router-outlet>
+<div class="page-container">
+  <app-header></app-header>
+  <div class="layout-container">
+    <aside class="sidebar" [ngClass]="{ expanded: !isCollapsed }">
+      <app-sidebar [isSmallScreen]="isSmallScreen" [isCollapsed]="isCollapsed"></app-sidebar>
+    </aside>
+    <main class="main-stage">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+  <app-footer></app-footer>
+  <video id="background-video" autoplay loop muted>
+    <source src="assets/us-flag-disa-navy.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+</div>

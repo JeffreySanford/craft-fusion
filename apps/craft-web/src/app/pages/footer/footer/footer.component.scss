@@ -1,0 +1,171 @@
+/* Styles for the footer component */
+.footer-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  margin-top: auto; /* Push the footer to the bottom */
+  border-radius: 0;
+
+  .top-containers {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .contact-block {
+    display: flex;
+    flex-direction: column;
+    border: 0.125em solid lime;
+    padding: 0.625em;
+
+    p {
+      font-size: 0.8em;
+      color: gold;
+      margin: 0;
+      padding-left: 1em;
+    }
+
+    button {
+      font-size: 1em;
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 0.125em 0;
+      color: gold;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      mat-icon {
+        margin-right: 0.5em;
+      }
+    }
+  }
+
+  .logo-performance-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    z-index: 10; /* Ensure this is higher than the main stage container */
+    margin-top: -4em;
+
+    .logo-row {
+      display: flex !important;
+      justify-content: center; /* Center align the logos within each row */
+      align-items: center;
+      margin: 0.5em 0 0 0; /* Add some vertical spacing between rows */
+      overflow: visible;
+
+      img {
+        width: auto;
+        height: 3.5em;
+        padding: 0.25em;
+        margin: 0 0.5em; /* Add horizontal spacing between images */
+        border: 0.0625em solid gold;
+        background: linear-gradient(to bottom, green, black); /* Gradient background */
+        transition: transform 0.3s, z-index 0.3s; /* Smooth transition for transform and z-index */
+
+        &:hover {
+          transform: scale(3); /* 3x zoom on hover */
+          margin-top: -9em;
+          z-index: 20; /* Ensure the zoomed logo appears above other elements */
+        }
+      }
+    }
+  }
+
+  .performance-card {
+    margin-top: 1em;
+    background-color: rgba(0, 0, 0, 0.4);
+    height: 2em;
+    width: 65vw;
+    justify-content: center;
+    position: absolute;
+    right: 1em;
+    bottom: 0.25em;
+  }
+
+  .performance-metrics {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8em;
+    margin-right: 0.25em;
+
+    .metric {
+      display: flex;
+      align-items: center;
+      margin: 0.5em;
+      padding: 0.5em;
+      color: white; /* Default color */
+
+      label {
+        margin-right: 0.5em; /* Slight indent before the metric */
+      }
+    }
+
+    .green-text {
+      color: lime;
+    }
+
+    .yellow-text {
+      color: yellow;
+    }
+
+    .red-text {
+      color: #FF0000;
+    }
+  }
+}
+
+.mat-panel-title {
+  display: flex;
+  align-items: center;
+
+  mat-icon {
+    margin-right: 1em;
+    background-color: teal;
+  }
+}
+
+mat-expansion-panel[expanded] {
+  height: auto;
+}
+
+.mat-expansion-panel-header-title, .mat-expansion-panel-header-description {
+  color: gold;
+  p {
+    font-size: 1.25em;
+    margin: 0 0 0 0.15em;
+  }
+}
+mat-expansion-panel {
+  width: 100%;
+  color: gold;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.7) 0%,      // Black with 0.5 opacity
+    rgba(0, 50, 0, 0.7) 25%,    // Darkest Green with 0.5 opacity
+    rgba(0, 100, 0, 0.7) 50%,   // Darker Green with 0.5 opacity
+    rgba(0, 128, 0, 0.7) 75%,   // Green with 0.5 opacity
+    rgba(0, 128, 128, 0.7) 100% // Teal with 0.5 opacity
+  );
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  width: auto;
+
+  > div {
+    display: inline-block;
+    vertical-align: top;
+  }
+}
