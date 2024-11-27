@@ -6,6 +6,7 @@ import { BarComponent } from './bar/bar.component';
 import { LineComponent } from './line/line.component';
 import { FintechComponent } from './fintech/fintech.component';
 import { MapComponent } from './map/map.component';
+import { IonicModule } from '@ionic/angular';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { MapComponent } from './map/map.component';
   imports: [
     CommonModule,
     MaterialModule,
+    IonicModule
   ],
   exports: [DataVisualizationsComponent],
 })

@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Line } from 'd3';
+import { LineChartData } from '../data-visualizations.interfaces';
 
 @Component({
   selector: 'app-line-chart',
@@ -6,5 +8,5 @@ import { Component } from '@angular/core';
   styleUrl: './line.component.scss'
 })
 export class LineComponent {
-
+  @Input() data: LineChartData[] | undefined;
 }

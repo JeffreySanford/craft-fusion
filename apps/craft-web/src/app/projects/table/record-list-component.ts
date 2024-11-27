@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, AfterContentChecked } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
@@ -65,7 +65,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
     }
   }
 
-  onDisplayRowChange(event: MatPaginator): void {
+  onDisplayRowChange(event: PageEvent): void {
     console.log('Event: Display row change with event:', event);
     if (this.paginator) {
       this.paginator.pageIndex = event.pageIndex;

@@ -19,6 +19,7 @@ import { PeasantKitchenModule } from './projects/peasant-kitchen/peasant-kitchen
 import { ResumeComponent } from './pages/resume/resume.component';
 import { BusyService } from './common/services/busy.service';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
+import { IonicModule } from '@ionic/angular';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { ToastrModule, ToastrService } from 'ngx-toastr';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    IonicModule.forRoot(),
     FormsModule,
     MaterialModule,
     RouterModule.forRoot(appRoutes),
@@ -45,16 +47,12 @@ import { ToastrModule, ToastrService } from 'ngx-toastr';
       positionClass: 'toast-bottom-center',
       preventDuplicates: true,
     })
-    
   ],
   exports: [
-    SidebarModule,
-    HeaderModule,
     MaterialModule,
-    FooterModule
+    IonicModule
   ],
   providers: [
-  
     provideAnimationsAsync(),
     BusyService,
     ToastrService

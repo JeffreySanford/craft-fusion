@@ -1,0 +1,43 @@
+// Base Colors
+$primary-red: #ff0000;
+$primary-blue: #0000ff;
+$primary-white: #ffffff;
+
+// Lighter Shades
+$light-red: #ff6666;
+$light-blue: #6666ff;
+$light-white: #f2f2f2;
+
+// Darker Shades
+$dark-red: #cc0000;
+$dark-blue: #0000cc;
+$dark-white: #e6e6e6;
+
+// Accent Colors
+$accent-red: #ff9999;
+$accent-blue: #9999ff;
+
+// Additional Colors
+$charcoal-grey: #333333;
+
+// Patriotic Theme Palette
+$patriotic-theme: (
+  primary: (
+    red: $primary-red,
+    blue: $primary-blue,
+    white: $primary-white
+  ),
+  secondary: (
+    red-light: $light-red,
+    red-dark: $dark-red,
+    blue-light: $light-blue,
+    blue-dark: $dark-blue,
+    white-light: $light-white,
+    white-dark: $dark-white
+  ),
+  accent: (
+    red: $accent-red,
+    blue: $accent-blue,
+    white: $dark-white
+  )
+);

@@ -1,0 +1,48 @@
+@import '@angular/material';
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+@font-face {
+  font-family: 'Calibri';
+  src: url('/assets/fonts/calibri.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Candara';
+  src: url('/assets/fonts/candara.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Segoe UI';
+  src: url('/assets/fonts/segoe-ui.ttf') format('truetype');
+}
+
+// Override Angular Material's default font
+.mat-typography, body {
+  font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif !important;
+  background-color: black;
+  overflow: hidden;
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif !important;
+  color: #3f51b5; /* Indigo color from the prebuilt theme */
+}
+
+/* Background video styling */
+#background-video {
+  position: fixed;
+  top: -2em;
+  left: -2em;
+  bottom: 0;
+  min-height: 100%;
+  scale: (1.1);
+  width: auto;
+  height: auto;
+  z-index: -1;
+  opacity: 0.4;
+  filter: grayscale(50%) blur(0.2em);
+  object-fit: cover;
+  overflow: hidden;
+}

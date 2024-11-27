@@ -14,14 +14,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private videoCheckSubscription!: Subscription;
   isExpanded = false;
   isSmallScreen = false;
-  isCollapsed = false;;
+  isCollapsed = false;
+  menuItems = [
+    { label: 'Home', icon: 'home', routerLink: '/home', active: false },
+    { label: 'Profile', icon: 'person', routerLink: '/profile', active: false },
+    { label: 'Settings', icon: 'settings', routerLink: '/settings', active: false },
+    // Add more menu items as needed
+  ];
 
   constructor(private router: Router, private route: ActivatedRoute, private breakpointObserver: BreakpointObserver) { }
   
   ngOnInit(): void {
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       this.isSmallScreen = result.matches;
-      this.isCollapsed = this.isSmallScreen;
+      this.isCollapsed = this.isSmallScreen; // Collapse sidebar on small screens
     });
   }
 
@@ -38,8 +44,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stopVideoCheckPolling();
   }
 
-  toggleSidebar(event: boolean) {
-    this.isCollapsed = !this.isCollapsed;
+  setActive(item: any) {
+    this.menuItems.forEach(menuItem => menuItem.active = false);
+    item.active = true;
   }
 
   private ensureVideoIsPlaying() {

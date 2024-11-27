@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { FintechChartData } from '../data-visualizations.interfaces';
 
 @Component({
   selector: 'app-fintech-chart',
@@ -6,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './fintech.component.scss'
 })
 export class FintechComponent {
-
+  @Input() data: FintechChartData[] | undefined;
 }

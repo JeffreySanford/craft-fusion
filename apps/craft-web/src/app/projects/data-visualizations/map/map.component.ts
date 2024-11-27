@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, ElementRef, OnInit, OnDestroy, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, OnDestroy, Renderer2, ViewChild, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as d3 from 'd3';
 import JSZip from 'jszip';
 import * as shapefile from 'shapefile';
 import { Observable, of, Subject, from } from 'rxjs';
 import { catchError, mergeMap, takeUntil, switchMap } from 'rxjs/operators';
+import { MapChartData } from '../data-visualizations.interfaces';
 
 @Component({
   selector: 'app-map-chart',
@@ -12,6 +13,7 @@ import { catchError, mergeMap, takeUntil, switchMap } from 'rxjs/operators';
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Input() data: MapChartData[] | undefined;
   @ViewChild('chart') private chartContainer: ElementRef | undefined;
 
   private shapefileUrl = '/census/geo/tiger/GENZ2021/shp/cb_2021_us_state_20m.zip';

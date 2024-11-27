@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from './sidebar.component';
 import { MaterialModule } from '../../material.module';
-import { LandingRoutingModule } from '../landing/landing-routing.module';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -11,8 +11,8 @@ import { LandingRoutingModule } from '../landing/landing-routing.module';
   imports: [
     CommonModule,
     MaterialModule,
-    LandingRoutingModule
-  ],
+    RouterModule
+],
   exports: [
     SidebarComponent
   ]

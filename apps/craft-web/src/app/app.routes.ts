@@ -29,5 +29,6 @@ export const appRoutes: Routes = [
   { path: 'material-buttons', component: MaterialButtonsComponent },
   { path: 'resume', component: ResumeComponent },
   { path: '404', component: LandingComponent },
-  { path: '', redirectTo: '/home', pathMatch: 'full' }
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '**', redirectTo: '/404' }
 ];

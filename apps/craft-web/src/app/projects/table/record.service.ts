@@ -1,30 +1,27 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Record } from './models/record';
+import { ApiService } from '../../common/services/api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecordService {
-
-  private api = 'https://localhost:3000/records';
   selectedUserID = "0000000";
 
-  constructor(private http: HttpClient) {
-  }
+  constructor(private apiService: ApiService) {}
 
   // Method to get a record by UID
   getRecordByUID(UID: string): Observable<Record> {
-    const url = `${this.api}/${UID}`;
+    const url = `records/${UID}`;
     console.log(`Fetching record by UID: ${UID}`);
-    return this.http.get<Record>(url);
+    return this.apiService.get<Record>(url);
   }
 
   // Method to get all records
   getAllRecords(): Observable<Record[]> {
     console.log('Fetching all records');
-    return this.http.get<Record[]>(this.api);
+    return this.apiService.get<Record[]>('records');
   }
 
   // sets the currently selected user to prepare to user detail presentation
@@ -39,14 +36,14 @@ export class RecordService {
   }
 
   generateNewRecordSet(count: number): Observable<Record[]> {
-    const url = `${this.api}/generate?count=${count}`;
+    const url = `records/generate?count=${count}`;
     console.log(`Generating new record set with count: ${count}`);
-    return this.http.get<Record[]>(url);
+    return this.apiService.get<Record[]>(url);
   }
 
   getCreationTime(): Observable<number> {
-    const url = `${this.api}/time`;
+    const url = `records/time`;
     console.log('Fetching creation time');
-    return this.http.get<number>(url);
+    return this.apiService.get<number>(url);
   }
 }
