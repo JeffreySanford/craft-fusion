@@ -45,7 +45,7 @@
     "@angular/compiler-cli": "~18.2.0",
     "@angular/language-service": "~18.2.0",
     "@angular/material": "^18.2.0",
-    "@angular/pwa": "^19.0.2",
+    "@angular/pwa": "^18.2.12",
     "@eslint/js": "^9.8.0",
     "@nestjs/schematics": "^10.0.1",
     "@nestjs/testing": "^10.0.2",
