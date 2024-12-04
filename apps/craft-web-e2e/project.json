@@ -4,6 +4,5 @@
   "projectType": "application",
   "sourceRoot": "apps/craft-web-e2e/src",
   "implicitDependencies": ["craft-web"],
-  "// targets": "to see all targets run: nx show project craft-web-e2e --web",
   "targets": {}
 }

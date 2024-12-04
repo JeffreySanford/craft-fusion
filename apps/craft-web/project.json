@@ -12,49 +12,14 @@
         "outputPath": "dist/apps/craft-web",
         "index": "apps/craft-web/src/index.html",
         "main": "apps/craft-web/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": "apps/craft-web/src/polyfills.ts",
         "tsConfig": "apps/craft-web/tsconfig.app.json",
-        "inlineStyleLanguage": "scss",
-        "assets": [
-          {
-            "glob": "favicon.ico",
-            "input": "apps/craft-web/public",
-            "output": "/"
-          },
-          {
-            "glob": "**/*",
-            "input": "apps/craft-web/src/assets",
-            "output": "/assets"
-          },
-          {
-            "glob": "**/*",
-            "input": "apps/craft-web/public",
-            "output": "/"
-          }
-        ],
-        "styles": [
-          "apps/craft-web/src/styles/styles.scss",
-          "node_modules/@ionic/angular/css/core.css",
-          "node_modules/@ionic/angular/css/normalize.css",
-          "node_modules/@ionic/angular/css/structure.css"
-        ],
+        "assets": ["apps/craft-web/src/favicon.ico", "apps/craft-web/src/assets"],
+        "styles": ["apps/craft-web/src/styles.scss"],
         "scripts": []
       },
       "configurations": {
         "production": {
-          "budgets": [
-            {
-              "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "3mb"
-            },
-            {
-              "type": "anyComponentStyle",
-              "maximumWarning": "3kb",
-              "maximumError": "6kb"
-            }
-          ],
-          "outputHashing": "all",
           "fileReplacements": [
             {
               "replace": "apps/craft-web/src/environments/environment.ts",
@@ -62,39 +27,27 @@
             }
           ],
           "optimization": true,
-          "extractLicenses": true,
+          "outputHashing": "all",
           "sourceMap": false,
+          "extractCss": true,
           "namedChunks": false,
           "aot": true,
+          "extractLicenses": true,
           "vendorChunk": false,
           "buildOptimizer": true
-        },
-        "development": {
-          "optimization": false,
-          "extractLicenses": false,
-          "sourceMap": true,
-          "namedChunks": true,
-          "aot": false,
-          "vendorChunk": true,
-          "buildOptimizer": false
         }
-      },
-      "defaultConfiguration": "production"
+      }
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
-        "buildTarget": "craft-web:build"
+        "browserTarget": "craft-web:build"
       },
       "configurations": {
         "production": {
-          "buildTarget": "craft-web:build:production"
-        },
-        "development": {
-          "buildTarget": "craft-web:build:development"
+          "browserTarget": "craft-web:build:production"
         }
-      },
-      "defaultConfiguration": "development"
+      }
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
@@ -105,15 +58,19 @@
     "lint": {
       "executor": "@nx/linter:eslint",
       "options": {
-        "lintFilePatterns": ["apps/craft-web/src/**/*.ts"]
+        "lintFilePatterns": ["apps/craft-web/src/**/*.ts", "apps/craft-web/src/**/*.html"]
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "executor": "@angular-devkit/build-angular:karma",
       "options": {
-        "jestConfig": "apps/craft-web/jest.config.ts",
-        "passWithNoTests": true
+        "main": "apps/craft-web/src/test.ts",
+        "polyfills": "apps/craft-web/src/polyfills.ts",
+        "tsConfig": "apps/craft-web/tsconfig.spec.json",
+        "karmaConfig": "apps/craft-web/karma.conf.js",
+        "assets": ["apps/craft-web/src/favicon.ico", "apps/craft-web/src/assets"],
+        "styles": ["apps/craft-web/src/styles.scss"],
+        "scripts": []
       }
     },
     "serve-static": {

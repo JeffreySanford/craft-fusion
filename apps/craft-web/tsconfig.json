@@ -1,6 +1,7 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "es2022",
+    "target": "es6",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -8,13 +9,19 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
-      "@craft-web/environments/*": ["apps/craft-nest/src/environments/*"]
-    }
+      "@craft-web/*": ["src/app/*"]
+    },
+    "outDir": "../dist/out-tsc-e2e",
+    "module": "commonjs",
+    "types": ["jest", "node"],
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
   },
   "files": [],
-  "include": [],
+  "include": ["**/*.ts"],
   "references": [
     {
       "path": "./tsconfig.editor.json"
@@ -26,7 +33,6 @@
       "path": "./tsconfig.spec.json"
     }
   ],
-  "extends": "../../tsconfig.base.json",
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
