@@ -39,10 +39,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
   newData = false;
 
   constructor(private router: Router, private recordService: RecordService, private changeDetectorRef: ChangeDetectorRef) {
-    console.log('Constructor: RecordListComponent initialized');
-    this.resolved$.subscribe(resolved => {
-      console.log('Subscription: Resolved state changed:', resolved);
-    });
+    console.log('Constructor: RecordListComponent created');
   }
 
   @HostListener('window:resize', ['$event'])
@@ -87,7 +84,6 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
           this.totalRecords = dataset.length;
           this.resolved = true;
           this.newData = true;
-          debugger
           this.changeDetectorRef.detectChanges(); // Notify Angular of changes
 
           console.log('Data: New record set generated with length:', dataset.length);

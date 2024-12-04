@@ -31,8 +31,6 @@ export class SidebarComponent implements OnInit {
 
   menuItems: Item[] = [
     { icon: 'home', label: 'Home', routerLink: '/home', active: false },
-    { icon: 'person', label: 'Profile', routerLink: '/profile', active: false },
-    { icon: 'settings', label: 'Settings', routerLink: '/settings', active: false },
     { icon: 'table_chart', label: 'Table', routerLink: '/table', active: false },
     { icon: 'bar_chart', label: 'Data Visualizations', routerLink: '/data-visualizations', active: false },
     { icon: 'restaurant', label: 'Peasant Kitchen', routerLink: '/peasant-kitchen', active: false },

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../../../environments/environment'; // Adjust the path as needed
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class ApiService {
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {
     console.log(`API Service: Setting environment variable for API URL ${this.apiUrl}`);
@@ -19,10 +19,6 @@ export class ApiService {
       'Authorization': 'Bearer YOUR_TOKEN_HERE' // Replace with your token logic
     });
   }
-
-  // Import the environment variable for the API URL delcared in the environment.ts file as @craft-web environments
-
-  private apiUrl = environment.apiUrl;  
 
   get<T>(endpoint: string): Observable<T> {
     return this.http.get<T>(`${this.apiUrl}/${endpoint}`, { headers: this.getHeaders() });

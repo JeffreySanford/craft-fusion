@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, Subject,} from 'rxjs';
 import { Router } from '@angular/router';
 import { NotificationService } from './notification.service';
 import { SessionService, User } from './session.service';
+import { environment } from '../../../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -14,12 +15,13 @@ export class AuthenticationService {
     firstName: 'Sam',
     lastName: 'Sam Sample'
   });
+
   isAdminSubject = new BehaviorSubject<boolean>(false);
   user?: User;
   token: any;
   isLoggedIn = new BehaviorSubject(false);
   isAuthenticated = new BehaviorSubject(false);
-  api = 'http://localhost:3000/';
+  api = environment.apiUrl;
 
   constructor(
     private http: HttpClient,

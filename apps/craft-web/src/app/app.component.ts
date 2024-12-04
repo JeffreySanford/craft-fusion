@@ -17,8 +17,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   isCollapsed = false;
   menuItems = [
     { label: 'Home', icon: 'home', routerLink: '/home', active: false },
-    { label: 'Profile', icon: 'person', routerLink: '/profile', active: false },
-    { label: 'Settings', icon: 'settings', routerLink: '/settings', active: false },
     // Add more menu items as needed
   ];
 

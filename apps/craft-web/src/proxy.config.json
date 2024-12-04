@@ -9,9 +9,15 @@
     }
   },
   "/api": {
-    "target": "https://jeffreysanford.us:3000",
-    "secure": true,
-    "changeOrigin": false,
+    "target": "https://localhost:3000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/api-prod": {
+    "target": "https://jeffreysanford.us",
+    "secure": false,
+    "changeOrigin": true,
     "logLevel": "debug"
   }
 }

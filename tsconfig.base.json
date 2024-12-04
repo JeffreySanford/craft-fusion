@@ -12,10 +12,11 @@
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
       "@craft-nest/environments": ["./apps/craft-nest/src/environments"],
-      "@craft-web/environments": ["./apps/craft-web/src/environments"]
+      "@craft-web/environments": ["./apps/craft-web/src/environments"],
+      "@portfolio/environments/*": ["../../environments/*"]
     },
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -26,11 +27,8 @@
     "noFallthroughCasesInSwitch": true
   },
   "files": [],
-  "include": ["src/**/*.ts"],
+  "include": [],
   "references": [
-    {
-      "path": "./tsconfig.editor.json"
-    },
     {
       "path": "./tsconfig.app.json"
     },
