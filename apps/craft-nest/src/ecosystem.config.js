@@ -2,7 +2,7 @@
 module.exports = {
   apps: [{
     name: 'craft-nest-api',
-    script: 'dist/apps/craft-nest/main.js',
+    script: 'dist/apps/craft-nest/src/main.js',
     instances: 'max',
     exec_mode: 'cluster',
     cwd: '/home/jeffrey/repos/craft-fushion',
