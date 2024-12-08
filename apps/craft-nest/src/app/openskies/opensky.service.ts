@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-interface Flight {
+export interface Flight {
   icao24?: string;
   callsign?: string;
   origin_country: string;
@@ -23,7 +23,7 @@ interface Flight {
   position_source: number;
 }
 
-interface OpenSkyResponse {
+export interface OpenSkyResponse {
   time: number;
   states: Flight[];
 }
