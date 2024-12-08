@@ -2,10 +2,12 @@
 module.exports = {
   apps: [{
     name: 'craft-nest-api',
-    script: '/home/jeffrey/repos/craft-fushion/dist/apps/craft-nest/main.js',
+    script: 'dist/apps/craft-nest/main.js',
     instances: 'max',
     exec_mode: 'cluster',
+    cwd: '/home/jeffrey/repos/craft-fushion',
     env: {
+      PM2_HOME: '/home/jeffrey/.pm2',
       NODE_ENV: 'production',
       PORT: 443,
       HOST: 'jeffreysanford.us',
