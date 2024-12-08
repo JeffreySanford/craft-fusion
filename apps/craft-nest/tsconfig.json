@@ -10,7 +10,7 @@
     },
     "outDir": "dist/out-tsc",
     "types": ["jest", "node"],
-    "rootDir": ".",
+    "rootDir": "../../apps/craft-nest",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true

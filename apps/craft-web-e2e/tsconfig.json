@@ -13,10 +13,13 @@
     "outDir": "../dist/out-tsc-e2e",
     "target": "es6",
     "types": ["jest", "node"],
-    "rootDir": "./"
+    "baseUrl": "./",
+    "paths": {
+      "@craft-web/*": ["src/*"]
+    }
   },
   "include": [
-    "**/*.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules",
