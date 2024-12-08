@@ -22,13 +22,19 @@
       }
     },
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nx/node:build",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/craft-nest",
         "main": "apps/craft-nest/src/main.ts",
-        "tsConfig": "apps/craft-nest/tsconfig.json",
-        "assets": ["apps/craft-nest/src/assets"]
+        "tsConfig": "apps/craft-nest/tsconfig.app.json",
+        "assets": ["apps/craft-nest/src/assets"],
+        "fileReplacements": [
+          {
+            "replace": "apps/craft-nest/src/environments/environment.ts",
+            "with": "apps/craft-nest/src/environments/environment.prod.ts"
+          }
+        ]
       },
       "configurations": {
         "development": {
@@ -39,7 +45,8 @@
         "production": {
           "optimization": true,
           "sourceMap": false,
-          "extractLicenses": true
+          "extractLicenses": true,
+          "inspect": false
         }
       }
     },
