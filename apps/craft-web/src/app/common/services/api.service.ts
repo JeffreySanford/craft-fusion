@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private isProduction = false;
+  private isProduction = environment.production;
   private apiUrl = this.isProduction ? "https://jeffreysanford.us:3000/api" : 'https://localhost:3000';
 
   constructor(private http: HttpClient) {
-    
+    console.log('API Service: Production mode is', this.isProduction ? 'ON' : 'OFF');
     console.log(`API Service: Setting environment variable for API URL ${this.apiUrl}`);
   }
 
