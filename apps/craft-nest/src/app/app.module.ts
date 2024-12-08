@@ -3,11 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { HttpModule } from '@nestjs/axios';
 import { RecordsModule } from './records/records.module';
 import { RecipesModule } from './recipes/recipes.module';
-import { OpenSkyController } from './openskies/opensky.controller';
-import { OpenSkyService } from './openskies/opensky.service';
+import { OpenSkyModule } from './openskies/opensky.module';
 
 @Module({
   imports: [
@@ -15,11 +13,11 @@ import { OpenSkyService } from './openskies/opensky.service';
       isGlobal: true,
     }),
     UsersModule,
-    HttpModule,
     RecordsModule,
     RecipesModule,
+    OpenSkyModule
   ],
-  controllers: [AppController, OpenSkyController, OpenSkyController],
-  providers: [AppService, OpenSkyService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
