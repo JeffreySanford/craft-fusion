@@ -17,18 +17,14 @@
         "assets": ["apps/craft-web/src/favicon.ico", "apps/craft-web/src/assets"],
         "styles": ["apps/craft-web/src/styles/styles.scss"],
         "scripts": [],
-        "allowedCommonJsDependencies": [
-          "jszip"
-        ]
+        "allowedCommonJsDependencies": ["jszip"]
       },
       "configurations": {
         "production": {
-          "fileReplacements": [
-            {
-              "replace": "apps/craft-web/src/environments/environment.ts",
-              "with": "apps/craft-web/src/environments/environment.prod.ts"
-            }
-          ],
+          "fileReplacements": [{
+            "replace": "apps/craft-web/src/environments/environment.ts",
+            "with": "apps/craft-web/src/environments/environment.prod.ts"
+          }],
           "optimization": true,
           "outputHashing": "all",
           "sourceMap": false,
@@ -60,7 +56,10 @@
     "lint": {
       "executor": "@nx/linter:eslint",
       "options": {
-        "lintFilePatterns": ["apps/craft-web/src/**/*.ts", "apps/craft-web/src/**/*.html"]
+        "lintFilePatterns": [
+          "apps/craft-web/src/**/*.ts",
+          "apps/craft-web/src/**/*.html"
+        ]
       }
     },
     "test": {
@@ -76,22 +75,6 @@
         "port": 4200,
         "staticFilePath": "dist/apps/craft-web/browser",
         "spa": true
-      }
-    }
-  },
-  "projects": {
-    "craft-web": {
-      "architect": {
-        "build": {
-          "options": {
-            "tsConfig": "apps/craft-web/tsconfig.json"
-          }
-        },
-        "test": {
-          "options": {
-            "tsConfig": "apps/craft-web/tsconfig.json"
-          }
-        }
       }
     }
   }

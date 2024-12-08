@@ -10,8 +10,7 @@
       "defaultConfiguration": "development",
       "dependsOn": ["build"],
       "options": {
-        "buildTarget": "craft-nest:build",
-        "runBuildTargetDependencies": false
+        "buildTarget": "craft-nest:build"
       },
       "configurations": {
         "development": {

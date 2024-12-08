@@ -21,6 +21,6 @@
     "src/**/*.test.ts",
     "src/**/*.d.ts",
     "jest.config.ts"
-  ],
+, "src/ecosystem.config.js"  ],
   "exclude": ["node_modules"]
 }
