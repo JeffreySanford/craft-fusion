@@ -6,7 +6,7 @@ module.exports = {
     instances: 'max',
     exec_mode: 'cluster',
     cwd: '/home/jeffrey/repos/craft-fushion',
-    env: {
+    env_production: {  // Changed from env to env_production
       PM2_HOME: '/home/jeffrey/.pm2',
       NODE_ENV: 'production',
       PORT: 443,
