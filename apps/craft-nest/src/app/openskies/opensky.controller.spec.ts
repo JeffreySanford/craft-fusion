@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OpenSkyController } from './opensky.controller';
 import { OpenSkyService } from './opensky.service';
-import { HttpService } from '@nestjs/axios';
+class MockHttpService {}
 
 describe('OpenskyController', () => {
   let controller: OpenSkyController;
@@ -12,8 +12,8 @@ describe('OpenskyController', () => {
       providers: [
         OpenSkyService,
         {
-          provide: HttpService,
-          useValue: {}, // Mock HttpService
+          provide: MockHttpService,
+          useClass: MockHttpService,
         },
       ],
     }).compile();

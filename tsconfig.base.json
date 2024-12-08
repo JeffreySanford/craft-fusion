@@ -13,6 +13,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": "./",
     "paths": {
+      "@craft-fushion/axios": ["libs/shared/axios/src/index.ts"],
       "@portfolio/environments/*": ["../../environments/*"]
     },
     "esModuleInterop": true,
