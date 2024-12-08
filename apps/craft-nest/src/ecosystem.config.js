@@ -14,8 +14,8 @@ module.exports = {
       KEY_PATH: '/etc/letsencrypt/live/jeffreysanford.us/privkey.pem',
       CERT_PATH: '/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem'
     },
-    error_file: '/home/jeffrey/logs/craft-nest/error.log',
-    out_file: '/home/jeffrey/logs/craft-nest/out.log',
+    error_file: './craft-nest/error.log',
+    out_file: './craft-nest/out.log',
     merge_logs: true,
     time: true,
     max_memory_restart: '1G',
