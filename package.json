@@ -40,18 +40,9 @@
     "zone.js": "~0.14.3"
   },
   "devDependencies": {
-<<<<<<< HEAD
     "@angular/cli": "~18.2.0",
     "@angular/compiler-cli": "~18.2.0",
     "@angular/language-service": "~18.2.0",
-=======
-    "@angular-devkit/build-angular": "^18.2.0",
-    "@angular-devkit/core": "^18.2.0",
-    "@angular-devkit/schematics": "^18.2.0",
-    "@angular/cli": "^18.2.0",
-    "@angular/compiler-cli": "^18.2.0",
-    "@angular/language-service": "^18.2.0",
->>>>>>> 25d6ea0629649499b3f6dc4a65cf5cc4d1f11c3b
     "@angular/pwa": "^18.2.12",
     "@eslint/js": "^8.56.0",
     "@nestjs/schematics": "^10.0.1",
