@@ -14,13 +14,13 @@
         "index": "apps/craft-web/src/index.html",
         "main": "apps/craft-web/src/main.ts",
         "polyfills": "apps/craft-web/src/polyfills.ts",
-        "tsConfig": "apps/craft-web/tsconfig.app.json",
+        "tsConfig": "apps/craft-web/tsconfig.json",
         "assets": [
           "apps/craft-web/src/favicon.ico",
           "apps/craft-web/src/assets"
         ],
         "styles": [
-          "apps/craft-web/src/styles.scss"
+          "apps/craft-web/src/styles/styles.scss"
         ],
         "scripts": []
       },
@@ -47,11 +47,11 @@
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
-        "browserTarget": "craft-web:build"
+        "buildTarget": "craft-web:build"
       },
       "configurations": {
         "production": {
-          "browserTarget": "craft-web:build:production"
+          "buildTarget": "craft-web:build:production"
         }
       }
     },
@@ -60,14 +60,14 @@
       "options": {
         "main": "apps/craft-web/src/test.ts",
         "polyfills": "apps/craft-web/src/polyfills.ts",
-        "tsConfig": "apps/craft-web/tsconfig.spec.json",
+        "tsConfig": "apps/craft-web/tsconfig.json",
         "karmaConfig": "apps/craft-web/karma.conf.js",
         "assets": [
           "apps/craft-web/src/favicon.ico",
           "apps/craft-web/src/assets"
         ],
         "styles": [
-          "apps/craft-web/src/styles.scss"
+          "apps/craft-web/src/styles/styles.scss"
         ],
         "scripts": []
       }

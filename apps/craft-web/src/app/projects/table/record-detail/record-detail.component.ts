@@ -43,9 +43,6 @@ export class RecordDetailComponent implements OnInit, OnDestroy {
       this.user.address.city = user.address.city;
       this.user.address.state = user.address.state;
       this.user.address.zipcode = user.address.zipcode;
-
-      this.user.phone.areaCode = user.phone.areaCode;
-      this.user.phone.phone = user.phone.number.substring(4, 7) + '-' + user.phone.number.substring(8, 12);
     });
   }
 

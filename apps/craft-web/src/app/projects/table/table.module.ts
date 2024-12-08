@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RecordListComponent } from './record-list-component';
+import { RecordListComponent } from './record-list.component';
 import { RecordDetailComponent } from './record-detail/record-detail.component';
 import { RecordService } from './record.service';
 import { MaterialModule } from '../../material.module';

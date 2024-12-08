@@ -3,8 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import { Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { environment } from '../../../environments/environment';
+import { environment } from './environments/environment';
 
 async function bootstrap() {
   const isProduction = environment.production;

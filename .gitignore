@@ -42,3 +42,21 @@ Thumbs.db
 .nx/workspace-data
 
 .angular
+
+# Environment files
+**/environments/environment.*.ts
+!**/environments/environment.ts
+!**/environments/environment.prod.ts
+
+# Keys and certificates
+*.pem
+*.key
+*.crt
+*.csr
+*.cert
+**/secrets/*
+
+# Local env files
+.env
+.env.local
+.env.*.local

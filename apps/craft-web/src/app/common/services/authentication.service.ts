@@ -1,112 +1,148 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, Subject,} from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { NotificationService } from './notification.service';
 import { SessionService, User } from './session.service';
-import { environment } from '../../../../../../environments/environment';
+import { switchMap, catchError, EMPTY, of } from 'rxjs';
 
+/**
+ * Interface representing the authentication response from the server
+ * @todo Add refresh token support
+ */
+interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+/**
+ * Service responsible for handling authentication state and operations.
+ * Manages user sessions, token storage, and authentication status.
+ * 
+ * @todo
+ * - Implement refresh token mechanism
+ * - Add biometric authentication support
+ * - Implement OAuth2 flow
+ * - Add rate limiting for failed attempts
+ * - Implement token rotation
+ * - Add 2FA support
+ * 
+ * @security
+ * - Token is stored in localStorage (consider more secure alternatives)
+ * - Password is never stored in memory
+ * - Auto-logout on token expiration
+ */
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
-  currentUserSubject = new BehaviorSubject<User>({
+  private readonly TOKEN_KEY = 'auth_token';
+  
+  /**
+   * BehaviorSubject holding the current user state
+   * Initializes with a default anonymous user
+   * @security Ensure password is never exposed in user object
+   */
+  private currentUserSubject = new BehaviorSubject<User>({
     id: 0,
     username: '',
-    password: 'not provided',
+    password: 'not provided', // @todo Remove password from User interface
     firstName: 'Sam',
-    lastName: 'Sam Sample'
+    lastName: 'Sam Sample',
+    role: 'user'
   });
 
-  isAdminSubject = new BehaviorSubject<boolean>(false);
-  user?: User;
-  token: any;
-  isLoggedIn = new BehaviorSubject(false);
-  isAuthenticated = new BehaviorSubject(false);
-  api = environment.apiUrl;
+  /**
+   * @todo Future improvements:
+   * 1. Move token storage to HttpOnly cookie
+   * 2. Implement token refresh mechanism
+   * 3. Add session timeout handling
+   * 4. Add device fingerprinting
+   * 5. Implement concurrent session management
+   * 6. Add audit logging
+   * 7. Implement passwordless authentication
+   * 8. Add social login providers
+   * 9. Implement remember me functionality
+   * 10. Add JWT claims validation
+   */
+  private isAdminSubject = new BehaviorSubject<boolean>(false);
+  private isLoggedIn = new BehaviorSubject<boolean>(false);
+  private isAuthenticated = new BehaviorSubject<boolean>(false);
+  private readonly isProduction = false;
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private notifyService: NotificationService,
-    private sessionService: SessionService,
-  ) { }
-
-  setUser(user: User) {
-    const local = sessionStorage.getItem('username');
-
-    if (local && user.id) {
-      this.currentUserSubject = new BehaviorSubject<User>({
-        id: user.id,
-        username: user.username,
-        password: user.password,
-        firstName: user.firstName,
-        lastName: user.firstName
-      });
-      this.isAuthenticated.next(true);
-      this.notifyService.showSuccess('User Authenticated', 'Authentication')
-    }
-  }
-  isUserAuthenticated(user: User): BehaviorSubject<boolean> {
-    if (user) {
-      this.isAuthenticated.next(true);
-    }
-
-    return this.isAuthenticated;
+    private notificationService: NotificationService,
+    private sessionService: SessionService
+  ) {
+    this.initializeAuthentication();
   }
 
-  isAdmin(user: User): Subject<boolean> {
-    let isAdmin = false;
-    if (user.username === 'admin') {
-      isAdmin = true;
-      this.isAdminSubject.next(true);
-
-    } else {
-      isAdmin = false;
-      this.isAdminSubject.next(false);
-    }
-
-    return this.isAdminSubject;
-  }
-  authenticate(): BehaviorSubject<boolean> {
-    return this.isAuthenticated;
-
+  get currentUser$(): Observable<User> {
+    return this.currentUserSubject.asObservable();
   }
 
-  login(username: string, password: string): void  {
-    this.http.get(this.api + 'users/:' + username).subscribe((next) => {
-      const user = Object.values(next)[0];
-      if (user) {
-        this.getUser(user).subscribe((next) => {
-          if (next.username === '') {
-            throw { message: 'User not found', value: 'User.username not found' }
+  get isAdmin$(): Observable<boolean> {
+    return this.isAdminSubject.asObservable();
+  }
 
-          } else {
-            const username = next.username;
-            const password = next.password;
+  get isLoggedIn$(): Observable<boolean> {
+    return this.isLoggedIn.asObservable();
+  }
 
-            this.http.post<Response>(this.api + 'users/authenticate', { username, password }).subscribe((auth)=>{
-              console.log(user.username + ' authenticated: ' + user.username + ' is ' + auth);
-              this.isLoggedIn.next(true);
-              this.isAuthenticated.next(true);
-              this.user = user;
-            });
-            
-          }
-        }, (error) => { console.log(error) });
-      }
+  login(username: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>('/api/auth/login', { username, password });
+  }
+
+  logout(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
+    this.currentUserSubject.next({
+      id: 0,
+      username: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+      role: ''
     });
+    this.isLoggedIn.next(false);
+    this.isAuthenticated.next(false);
+    this.isAdminSubject.next(false);
+    this.router.navigate(['/login']);
   }
 
-  getUser(user: User): Observable<User> {
-    if (user) {
-      this.currentUserSubject.next(user);
+  private initializeAuthentication(): void {
+    const token = localStorage.getItem(this.TOKEN_KEY);
+    if (token) {
+      this.sessionService.validateToken(token).pipe(
+        switchMap(isValid => {
+          if (isValid) {
+            return this.http.get<User>('/api/auth/user');
+          } else {
+            return EMPTY;
+          }
+        }),
+        catchError(error => {
+          console.error('Error validating token:', error);
+          return of(null);
+        })
+      ).subscribe(user => {
+        if (user) {
+          this.currentUserSubject.next(user);
+          this.isLoggedIn.next(true);
+          this.isAuthenticated.next(true);
+          this.isAdminSubject.next(user.role === 'admin');
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.logout();
+        }
+      });
     }
-
-    return this.currentUserSubject;
   }
 
-  logout() {
-    // remove user from local storage to log user out
-    localStorage.removeItem('currentUser');
-    this.currentUserSubject?.unsubscribe();
+  setAuthToken(token: string): void {
+    localStorage.setItem(this.TOKEN_KEY, token);
+  }
+
+  getAuthToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 }

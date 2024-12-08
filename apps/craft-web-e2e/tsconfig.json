@@ -12,7 +12,8 @@
     "noFallthroughCasesInSwitch": true,
     "outDir": "../dist/out-tsc-e2e",
     "target": "es6",
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    "rootDir": "./"
   },
   "include": [
     "**/*.ts"

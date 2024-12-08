@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { appRoutes } from '../../../app.routes';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RecordListComponent } from '../record-list-component';
+import { RecordListComponent } from '../record-list.component';
 import { RecordService } from '../record.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NotificationService } from '../../../common/services/notification.service';

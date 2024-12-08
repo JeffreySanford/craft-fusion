@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-interface Recipe {
+export interface Recipe {
   name: string;
   countryOfOrigin: string;
   description: string;
@@ -134,7 +134,11 @@ export class RecipesService {
     return this.recipes;
   }
 
-  getRecipeByUrl(url: string) {
-    return this.recipes.find(recipe => recipe.url === url);
+  getRecipeByUrl(url: string): Recipe {
+    const recipe = this.recipes.find(recipe => recipe.url === url);
+    if (!recipe) {
+      throw new Error(`Recipe with url ${url} not found`);
+    }
+    return recipe;
   }
 }

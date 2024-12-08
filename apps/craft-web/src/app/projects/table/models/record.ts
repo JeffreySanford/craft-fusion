@@ -18,13 +18,7 @@ export interface Record {
     city: string;
     state: string;
     zip: string;
-    areaCode: string;
-    phone: {
-      areaCode: string;
-      phone: string;
-      number: string;
-    };
-    phoneinformation: Phone;
+    phone: Phone;
     salary: Company[];
     totalHouseholdIncome: number;
   }

@@ -7,6 +7,16 @@ import { Observable, of, Subject, from } from 'rxjs';
 import { catchError, mergeMap, takeUntil, switchMap } from 'rxjs/operators';
 import { MapChartData } from '../data-visualizations.interfaces';
 
+interface ShapefileResult {
+  done: boolean;
+  value?: GeoJSON.Feature;
+}
+
+interface GeoJSONCollection {
+  type: 'FeatureCollection';
+  features: GeoJSON.Feature[];
+}
+
 @Component({
   selector: 'app-map-chart',
   templateUrl: './map.component.html',
@@ -122,24 +132,27 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  processShapefile(shpBuffer: ArrayBuffer, dbfBuffer: ArrayBuffer): Observable<any> {
+  processShapefile(shpBuffer: ArrayBuffer, dbfBuffer: ArrayBuffer): Observable<GeoJSONCollection> {
     return from(shapefile.open(shpBuffer, dbfBuffer)).pipe(
       mergeMap(source => {
-        const features: any[] = [];
+        const features: GeoJSON.Feature[] = [];
 
-        return new Observable(subscriber => {
+        return new Observable<GeoJSONCollection>(subscriber => {
           function readFeature() {
             from(source.read()).subscribe({
-              next: (result) => {
+              next: (result: ShapefileResult) => {
                 if (result.done) {
-                  subscriber.next({ type: 'FeatureCollection', features });
+                  subscriber.next({ 
+                    type: 'FeatureCollection', 
+                    features 
+                  });
                   subscriber.complete();
-                } else {
+                } else if (result.value) {
                   features.push(result.value);
                   readFeature(); // Recursively process next feature
                 }
               },
-              error: (err) => subscriber.error(err),
+              error: (err: Error) => subscriber.error(err),
             });
           }
 
@@ -148,12 +161,15 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       }),
       catchError(error => {
         console.error('Error processing shapefile:', error);
-        return of({ type: 'FeatureCollection', features: [] });
+        return of({ 
+          type: 'FeatureCollection' as const, 
+          features: [] 
+        });
       })
     );
   }
 
-  createUSMap(geojsonData: any): void {
+  createUSMap(geojsonData: GeoJSONCollection): void {
     console.log('Step 8: Creating D3 map visualization');
     const element = this.chartContainer?.nativeElement;
     const width = 960;

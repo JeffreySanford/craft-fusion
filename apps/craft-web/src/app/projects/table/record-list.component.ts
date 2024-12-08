@@ -3,16 +3,16 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { Record } from './models/record';
-import { RecordService } from './record.service';
 import { Subject, BehaviorSubject, of } from 'rxjs';
 import { catchError, switchMap, tap, takeUntil } from 'rxjs/operators';
 import { detailExpand, flyIn } from './animations';
+import {Record} from './models/record';
+import { RecordService } from './record.service';
 
 @Component({
   selector: 'app-record-list',
-  templateUrl: './record-list-component.html',
-  styleUrls: ['./record-list-component.scss'],
+  templateUrl: './record-list.component.html',
+  styleUrls: ['./record-list.component.scss'],
   animations: [detailExpand, flyIn]
 })
 export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, AfterContentChecked {
@@ -37,6 +37,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
   resolved$ = this.resolvedSubject.asObservable();
   totalRecords = 100;
   newData = false;
+  records: any;
 
   constructor(private router: Router, private recordService: RecordService, private changeDetectorRef: ChangeDetectorRef) {
     console.log('Constructor: RecordListComponent created');
@@ -243,6 +244,4 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
       })
     ).subscribe();
   }
-
-   
 }

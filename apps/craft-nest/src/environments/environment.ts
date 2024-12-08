@@ -3,6 +3,6 @@ export const environment = {
   apiUrl: 'https://localhost:3000',
   host: 'localhost',
   port: 3000,
-  keyPath: 'cert/server.key',
-  certPath: 'cert/server.crt'
+  keyPath: './apps/craft-nest/src/cert/server.key',
+  certPath: './apps/craft-nest/src/cert/server.crt'
 };

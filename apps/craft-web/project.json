@@ -9,14 +9,17 @@
       "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/craft-web",
+        "outputPath": "dist/apps/craft-web/browser",
         "index": "apps/craft-web/src/index.html",
         "main": "apps/craft-web/src/main.ts",
         "polyfills": "apps/craft-web/src/polyfills.ts",
-        "tsConfig": "apps/craft-web/tsconfig.app.json",
+        "tsConfig": "apps/craft-web/tsconfig.json",
         "assets": ["apps/craft-web/src/favicon.ico", "apps/craft-web/src/assets"],
-        "styles": ["apps/craft-web/src/styles.scss"],
-        "scripts": []
+        "styles": ["apps/craft-web/src/styles/styles.scss"],
+        "scripts": [],
+        "allowedCommonJsDependencies": [
+          "jszip"
+        ]
       },
       "configurations": {
         "production": {
@@ -41,11 +44,11 @@
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
-        "browserTarget": "craft-web:build"
+        "buildTarget": "craft-web:build"
       },
       "configurations": {
         "production": {
-          "browserTarget": "craft-web:build:production"
+          "buildTarget": "craft-web:build:production"
         }
       }
     },
@@ -62,15 +65,9 @@
       }
     },
     "test": {
-      "executor": "@angular-devkit/build-angular:karma",
+      "executor": "@nx/jest:jest",
       "options": {
-        "main": "apps/craft-web/src/test.ts",
-        "polyfills": "apps/craft-web/src/polyfills.ts",
-        "tsConfig": "apps/craft-web/tsconfig.spec.json",
-        "karmaConfig": "apps/craft-web/karma.conf.js",
-        "assets": ["apps/craft-web/src/favicon.ico", "apps/craft-web/src/assets"],
-        "styles": ["apps/craft-web/src/styles.scss"],
-        "scripts": []
+        "tsConfig": "apps/craft-web/tsconfig.json"
       }
     },
     "serve-static": {
@@ -80,6 +77,22 @@
         "port": 4200,
         "staticFilePath": "dist/apps/craft-web/browser",
         "spa": true
+      }
+    }
+  },
+  "projects": {
+    "craft-web": {
+      "architect": {
+        "build": {
+          "options": {
+            "tsConfig": "apps/craft-web/tsconfig.json"
+          }
+        },
+        "test": {
+          "options": {
+            "tsConfig": "apps/craft-web/tsconfig.json"
+          }
+        }
       }
     }
   }
