@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpService } from '@nestjs/axios';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -25,14 +25,14 @@ export interface Flight {
 
 @Injectable()
 export class OpenSkyService {
-  private readonly API_URL = 'https://opensky-network.org/api/states/all';
+  // private readonly API_URL = 'https://opensky-network.org/api/states/all';
 
-  constructor(private readonly httpClient: HttpClient) {}
+  // constructor(private readonly httpService: HttpService) {}
 
-  // Fetch flight data from OpenSky API and return as an Observable
-  fetchFlightData(): Observable<Flight[]> {
-    return this.httpClient.get<{ states: Flight[] }>(this.API_URL).pipe(
-      map(response => response.states) // Ensure correct mapping to states
-    );
-  }
+  // // Fetch flight data from OpenSky API and return as an Observable
+  // fetchFlightData(): Observable<Flight[]> {
+  //   return this.httpService.get<{ states: Flight[] }>(this.API_URL).pipe(
+  //     map(response => response.data.states) // Ensure correct mapping to states
+  //   );
+  // }
 }
