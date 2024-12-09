@@ -3,47 +3,67 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import { Logger } from '@nestjs/common';
-import { environment } from './environments/environment';
 
 async function bootstrap() {
-  const isProduction = environment.production;
-  const host = environment.host;
-  const port = environment.port;
-  const keyPath = environment.keyPath;
-  const certPath = environment.certPath;
+  const isProduction = process.env['NODE_ENV'] === 'production';
+  const host = process.env['HOST'] || 'localhost';
+  const port = parseInt(process.env['PORT'] || '3000', 10);
+  
+  // Default paths for development
+  let keyPath = './apps/craft-nest/src/cert/server.key';
+  let certPath = './apps/craft-nest/src/cert/server.crt';
 
-  const httpsOptions = {
-    key: fs.readFileSync(keyPath, 'utf8'),
-    cert: fs.readFileSync(certPath, 'utf8'),
-  };
+  // Override with production paths if in production
+  if (isProduction) {
+    keyPath = '/etc/letsencrypt/live/jeffreysanford.us/privkey.pem';
+    certPath = '/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem';
+  }
 
-  const app = await NestFactory.create(AppModule, { httpsOptions });
+  Logger.log(`Starting server in ${isProduction ? 'production' : 'development'} mode`);
+  Logger.log(`Host: ${host}, Port: ${port}`);
+  Logger.log(`Using SSL cert from: ${certPath}`);
 
-  app.enableCors({
-    origin: [
-      'http://localhost:4200',
-      'https://jeffreysanford.us',
-      'https://www.jeffreysanford.us'
-    ],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: isProduction,
-  });
+  try {
+    // Verify SSL files exist
+    if (!fs.existsSync(keyPath) || !fs.existsSync(certPath)) {
+      throw new Error(`SSL certificates not found at ${keyPath} or ${certPath}`);
+    }
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('API Documentation')
-    .setDescription('API description')
-    .setVersion('1.0')
-    .addBearerAuth() // Optionally add authorization if needed
-    .build();
+    const httpsOptions = {
+      key: fs.readFileSync(keyPath, 'utf8'),
+      cert: fs.readFileSync(certPath, 'utf8'),
+    };
 
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api-docs', app, document);
+    const app = await NestFactory.create(AppModule, { httpsOptions });
 
-  await app.listen(port, host);
-  const protocol = isProduction ? 'https' : 'https';
-  Logger.log(`Swagger is running on ${protocol}://${host}:${port}/api-docs`);
+    app.enableCors({
+      origin: [
+        'http://localhost:4200',
+        'https://jeffreysanford.us',
+        'https://www.jeffreysanford.us'
+      ],
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      credentials: isProduction
+    });
+
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('API Documentation')
+      .setDescription('API description')
+      .setVersion('1.0')
+      .build();
+
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api-docs', app, document);
+
+    await app.listen(port, host);
+    Logger.log(`Server running on ${isProduction ? 'https' : 'http'}://${host}:${port}`);
+  } catch (error) {
+    Logger.error('Failed to start server:', error);
+    process.exit(1);
+  }
 }
 
 bootstrap().catch(err => {
   Logger.error('Error starting the application', err);
+  process.exit(1);
 });
