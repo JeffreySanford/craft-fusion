@@ -3,6 +3,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import { Logger } from '@nestjs/common';
 import helmet from 'helmet';
+import * as fs from 'fs';
 
 async function bootstrap() {
   const NODE_ENV = process.env['NODE_ENV'] || 'development';
@@ -13,7 +14,12 @@ async function bootstrap() {
   Logger.log(`Starting server in ${NODE_ENV} mode`);
   Logger.log(`Host: ${HOST}, Port: ${PORT}`);
 
-  const app = await NestFactory.create(AppModule);
+  const httpsOptions = isProduction ? {
+    key: fs.readFileSync('/etc/letsencrypt/live/jeffreysanford.us/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem'),
+  } : undefined;
+
+  const app = await NestFactory.create(AppModule, { httpsOptions });
 
   app.enableCors({
     origin: isProduction
