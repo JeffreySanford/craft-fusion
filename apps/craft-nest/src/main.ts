@@ -10,7 +10,7 @@ async function bootstrap() {
   const NODE_ENV = process.env['NODE_ENV'] || 'development';
   const isProduction = NODE_ENV === 'production';
   const HOST = process.env['HOST'] || 'localhost';
-  const PORT = parseInt(process.env['PORT'] || '3000', 10);
+  const PORT = 3000; // Change to 3000 since nginx will handle 443
 
   const keyPath = isProduction
     ? '/etc/letsencrypt/live/jeffreysanford.us/privkey.pem'
