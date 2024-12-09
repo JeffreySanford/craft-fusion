@@ -41,7 +41,6 @@ async function bootstrap() {
 
   await app.listen(port, host);
   const protocol = isProduction ? 'https' : 'https';
-  Logger.log(`Server is running on ${protocol}://${host}:${port}`);
   Logger.log(`Swagger is running on ${protocol}://${host}:${port}/api-docs`);
 }
 
