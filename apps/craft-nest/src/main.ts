@@ -12,54 +12,33 @@ async function bootstrap() {
   const HOST = process.env['HOST'] || 'localhost';
   const PORT = 3000; // Change to 3000 since nginx will handle 443
 
-  const keyPath = isProduction
-    ? '/etc/letsencrypt/live/jeffreysanford.us/privkey.pem'
-    : path.resolve(__dirname, '../cert/server.key');
-  const certPath = isProduction
-    ? '/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem'
-    : path.resolve(__dirname, '../cert/server.crt');
-
   Logger.log(`Starting server in ${NODE_ENV} mode`);
   Logger.log(`Host: ${HOST}, Port: ${PORT}`);
-  Logger.log(`SSL Key Path: ${keyPath}, SSL Cert Path: ${certPath}`);
 
-  try {
-    if (!fs.existsSync(keyPath) || !fs.existsSync(certPath)) {
-      throw new Error(`SSL certificates not found at ${keyPath} or ${certPath}`);
-    }
+  // Create HTTP-only app, nginx will handle SSL
+  const app = await NestFactory.create(AppModule);
 
-    const httpsOptions = {
-      key: fs.readFileSync(keyPath, 'utf8'),
-      cert: fs.readFileSync(certPath, 'utf8'),
-    };
+  app.enableCors({
+    origin: isProduction
+      ? ['https://jeffreysanford.us', 'https://www.jeffreysanford.us']
+      : ['http://localhost:4200'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: isProduction,
+  });
 
-    const app = await NestFactory.create(AppModule, { httpsOptions });
+  app.use(helmet());
 
-    app.enableCors({
-      origin: isProduction
-        ? ['https://jeffreysanford.us', 'https://www.jeffreysanford.us']
-        : ['http://localhost:4200'],
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-      credentials: isProduction,
-    });
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('API Documentation')
+    .setDescription('API description')
+    .setVersion('1.0')
+    .build();
 
-    app.use(helmet());
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api-docs', app, document);
 
-    const swaggerConfig = new DocumentBuilder()
-      .setTitle('API Documentation')
-      .setDescription('API description')
-      .setVersion('1.0')
-      .build();
-
-    const document = SwaggerModule.createDocument(app, swaggerConfig);
-    SwaggerModule.setup('api-docs', app, document);
-
-    await app.listen(PORT, HOST);
-    Logger.log(`Server running on ${isProduction ? 'https' : 'http'}://${HOST}:${PORT}`);
-  } catch (error) {
-    Logger.error('Failed to start server:', error);
-    process.exit(1);
-  }
+  await app.listen(PORT, HOST);
+  Logger.log(`Server running on http://${HOST}:${PORT}`);
 }
 
 bootstrap();
