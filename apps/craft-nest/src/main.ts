@@ -10,12 +10,11 @@ async function bootstrap() {
   const NODE_ENV = process.env['NODE_ENV'] || 'development';
   const isProduction = NODE_ENV === 'production';
   const HOST = process.env['HOST'] || 'localhost';
-  const PORT = 3000; // Change to 3000 since nginx will handle 443
+  const PORT = 3000; // Always use 3000, let nginx handle 443
 
   Logger.log(`Starting server in ${NODE_ENV} mode`);
   Logger.log(`Host: ${HOST}, Port: ${PORT}`);
 
-  // Create HTTP-only app, nginx will handle SSL
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
