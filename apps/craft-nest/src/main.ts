@@ -20,7 +20,9 @@ async function bootstrap() {
     cert: fs.readFileSync('/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem'),
   } : undefined;
 
-  const app = await NestFactory.create(AppModule, { httpsOptions });
+  const app = await NestFactory.create(AppModule, { 
+    httpsOptions
+  });
 
   app.enableCors({
     origin: isProduction
@@ -28,9 +30,13 @@ async function bootstrap() {
       : ['http://localhost:4200'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: isProduction,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   });
 
-  app.use(helmet());
+  app.use(helmet({
+    contentSecurityPolicy: isProduction ? undefined : false
+  }));
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('API Documentation')
