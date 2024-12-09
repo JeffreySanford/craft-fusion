@@ -24,19 +24,19 @@ async function bootstrap() {
     httpsOptions
   });
 
+  // Set global prefix for all routes
+  app.setGlobalPrefix('api');
+
   app.enableCors({
-    origin: isProduction
-      ? ['https://jeffreysanford.us', 'https://www.jeffreysanford.us']
-      : ['http://localhost:4200'],
+    origin: ['https://jeffreysanford.us', 'https://www.jeffreysanford.us', 'http://localhost:4200'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: isProduction,
-    preflightContinue: false,
-    optionsSuccessStatus: 204
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    maxAge: 3600
   });
 
-  app.use(helmet({
-    contentSecurityPolicy: isProduction ? undefined : false
-  }));
+  app.use(helmet());
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('API Documentation')
