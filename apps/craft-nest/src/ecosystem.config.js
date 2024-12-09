@@ -2,17 +2,14 @@
 module.exports = {
   apps: [{
     name: 'craft-nest-api',
-    script: 'dist/apps/craft-nest/src/main.js',
+    script: 'dist/apps/craft-nest/main.js',
     instances: 'max',
     exec_mode: 'cluster',
     cwd: '/home/jeffrey/repos/craft-fushion',
-    env_production: {
+    env: {  // Changed from env_production
       NODE_ENV: 'production',
-      PM2_HOME: '/home/jeffrey/.pm2',
-      PORT: 443,
-      HOST: 'jeffreysanford.us',
-      KEY_PATH: '/etc/letsencrypt/live/jeffreysanford.us/privkey.pem',
-      CERT_PATH: '/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem'
+      PORT: 3000,  // Force port 3000
+      HOST: 'localhost',  // Use localhost since nginx handles external
     },
     error_file: '/home/jeffrey/logs/craft-nest/error.log',
     out_file: '/home/jeffrey/logs/craft-nest/out.log',
