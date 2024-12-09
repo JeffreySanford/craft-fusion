@@ -1,5 +1,3 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
@@ -10,7 +8,7 @@ async function bootstrap() {
   const NODE_ENV = process.env['NODE_ENV'] || 'development';
   const isProduction = NODE_ENV === 'production';
   const HOST = process.env['HOST'] || 'localhost';
-  const PORT = 3000; // Always use 3000, let nginx handle 443
+  const PORT = 3000;
 
   Logger.log(`Starting server in ${NODE_ENV} mode`);
   Logger.log(`Host: ${HOST}, Port: ${PORT}`);
