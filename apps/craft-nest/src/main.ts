@@ -7,7 +7,7 @@ import helmet from 'helmet';
 async function bootstrap() {
   const NODE_ENV = process.env['NODE_ENV'] || 'development';
   const isProduction = NODE_ENV === 'production';
-  const HOST = process.env['HOST'] || 'localhost';
+  const HOST = isProduction ? 'jeffreysanford.us' : 'localhost';
   const PORT = 3000;
 
   Logger.log(`Starting server in ${NODE_ENV} mode`);
