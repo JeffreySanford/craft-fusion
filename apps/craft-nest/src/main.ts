@@ -10,6 +10,7 @@ async function bootstrap() {
   const isProduction = NODE_ENV === 'production';
   const HOST = isProduction ? 'jeffreysanford.us' : 'localhost';
   const PORT = 3000;
+  const protocol = isProduction ? 'https' : 'http';
 
   Logger.log(`Starting server in ${NODE_ENV} mode`);
   Logger.log(`Host: ${HOST}, Port: ${PORT}`);
@@ -41,7 +42,7 @@ async function bootstrap() {
   SwaggerModule.setup('api-docs', app, document);
 
   await app.listen(PORT, HOST);
-  Logger.log(`Server running on http://${HOST}:${PORT}`);
+  Logger.log(`Server running on ${protocol}://${HOST}:${PORT}`);
 }
 
 bootstrap();
