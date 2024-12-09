@@ -1,30 +1,29 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import { Logger } from '@nestjs/common';
+import helmet from 'helmet';
 
 async function bootstrap() {
-  const isProduction = process.env['NODE_ENV'] === 'production';
-  const host = process.env['HOST'] || 'localhost';
-  const port = parseInt(process.env['PORT'] || '3000', 10);
-  
-  // Default paths for development
-  let keyPath = './apps/craft-nest/src/cert/server.key';
-  let certPath = './apps/craft-nest/src/cert/server.crt';
+  const NODE_ENV = process.env['NODE_ENV'] || 'development';
+  const isProduction = NODE_ENV === 'production';
+  const HOST = process.env['HOST'] || 'localhost';
+  const PORT = parseInt(process.env['PORT'] || '3000', 10);
 
-  // Override with production paths if in production
-  if (isProduction) {
-    keyPath = '/etc/letsencrypt/live/jeffreysanford.us/privkey.pem';
-    certPath = '/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem';
-  }
+  const keyPath = isProduction
+    ? '/etc/letsencrypt/live/jeffreysanford.us/privkey.pem'
+    : path.resolve(__dirname, '../cert/server.key');
+  const certPath = isProduction
+    ? '/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem'
+    : path.resolve(__dirname, '../cert/server.crt');
 
-  Logger.log(`Starting server in ${isProduction ? 'production' : 'development'} mode`);
-  Logger.log(`Host: ${host}, Port: ${port}`);
-  Logger.log(`Using SSL cert from: ${certPath}`);
+  Logger.log(`Starting server in ${NODE_ENV} mode`);
+  Logger.log(`Host: ${HOST}, Port: ${PORT}`);
+  Logger.log(`SSL Key Path: ${keyPath}, SSL Cert Path: ${certPath}`);
 
   try {
-    // Verify SSL files exist
     if (!fs.existsSync(keyPath) || !fs.existsSync(certPath)) {
       throw new Error(`SSL certificates not found at ${keyPath} or ${certPath}`);
     }
@@ -37,14 +36,14 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule, { httpsOptions });
 
     app.enableCors({
-      origin: [
-        'http://localhost:4200',
-        'https://jeffreysanford.us',
-        'https://www.jeffreysanford.us'
-      ],
+      origin: isProduction
+        ? ['https://jeffreysanford.us', 'https://www.jeffreysanford.us']
+        : ['http://localhost:4200'],
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-      credentials: isProduction
+      credentials: isProduction,
     });
+
+    app.use(helmet());
 
     const swaggerConfig = new DocumentBuilder()
       .setTitle('API Documentation')
@@ -55,15 +54,12 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup('api-docs', app, document);
 
-    await app.listen(port, host);
-    Logger.log(`Server running on ${isProduction ? 'https' : 'http'}://${host}:${port}`);
+    await app.listen(PORT, HOST);
+    Logger.log(`Server running on ${isProduction ? 'https' : 'http'}://${HOST}:${PORT}`);
   } catch (error) {
     Logger.error('Failed to start server:', error);
     process.exit(1);
   }
 }
 
-bootstrap().catch(err => {
-  Logger.error('Error starting the application', err);
-  process.exit(1);
-});
+bootstrap();
