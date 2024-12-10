@@ -1,0 +1,17 @@
+{
+  "/api": {
+    "target": "https://jeffreysanford.us",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/census": {
+    "target": "https://www2.census.gov",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/census": ""
+    }
+  }
+}

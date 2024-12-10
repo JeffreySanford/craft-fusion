@@ -71,3 +71,162 @@
     flex: 1;
   }
 }
+
+// sidebar.component.scss
+.sidenav-container {
+  height: 100vh;
+  
+  .sidenav {
+    width: 60px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-x: hidden;
+    background: linear-gradient(
+      to bottom right,
+      rgba(255, 0, 0, 0.1),
+      rgba(255, 255, 255, 0.1),
+      rgba(0, 0, 255, 0.1)
+    );
+    backdrop-filter: blur(10px);
+    
+    &.expanded {
+      width: 250px;
+    }
+  }
+
+  .mat-expansion-panel {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .active {
+    background: rgba(0,0,0,.04);
+    color: primary;
+  }
+
+  mat-nav-list {
+    padding: 0;
+  }
+
+  .menu-item {
+    .mat-list-item {
+      display: flex;
+      align-items: center;
+      padding: 0.625em 1em;
+      margin: 0.625em;
+      background: linear-gradient(
+        to bottom right,
+        rgba(255, 0, 0, 0.1),
+        rgba(255, 255, 255, 0.2),
+        rgba(0, 0, 255, 0.1)
+      );
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      &:hover {
+        transform: translateX(4px) scale(1.02);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        background: linear-gradient(
+          to bottom right,
+          rgba(255, 0, 0, 0.2),
+          rgba(255, 255, 255, 0.3),
+          rgba(0, 0, 255, 0.2)
+        );
+      }
+
+      mat-icon {
+        margin-right: 16px;
+        min-width: 24px;
+        transition: transform 0.3s ease;
+        color: rgba(0, 0, 0, 0.7);
+        
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+      
+      .menu-text {
+        opacity: 0;
+        transform: translateX(-20px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        color: rgba(0, 0, 0, 0.87);
+      }
+    }
+
+    &.active {
+      .mat-list-item {
+        background: rgba(0, 0, 0, 0.08);
+        color: #1976d2;
+        font-weight: 500;
+        
+        mat-icon {
+          color: #1976d2;
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+
+  .expanded {
+    .menu-text {
+      opacity: 1 !important;
+      transform: translateX(0) !important;
+    }
+  }
+
+  .mat-list-item {
+    margin: 0.625em;
+    border-radius: 15px;
+    background: linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0.1),
+      rgba(200, 200, 200, 0.05)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    &.active {
+      background: linear-gradient(
+        to bottom right,
+        rgba(25, 118, 210, 0.1),
+        rgba(25, 118, 210, 0.05)
+      );
+      color: #1976d2;
+      
+      mat-icon {
+        color: #1976d2;
+      }
+    }
+
+    mat-icon {
+      margin-right: 16px;
+      transition: transform 0.3s ease;
+    }
+
+    .menu-text {
+      opacity: 0;
+      transform: translateX(-20px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+    }
+  }
+
+  .expanded .menu-text {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// Ripple effect
+::ng-deep .mat-ripple-element {
+  background-color: rgba(0, 0, 0, 0.1);
+}

@@ -1,29 +1,34 @@
-<div class="sidebar-container" [ngClass]="{ collapsed: isSmallScreen, expanded: !isSmallScreen }">
-  <div class="sidebar-card">
-    <div class="sidebar-list">
-      <div *ngFor="let item of menuItems">
-        <ng-container *ngIf="isSmallScreen; else largeScreen">
-          <button
-            mat-fab
-            class="nav-item mat-elevation-z10"
-            [routerLink]="item.routerLink"
-            [ngClass]="{ active: item.active }"
-            (click)="setActive(item)"          >
-            <mat-icon class="item-icon">{{ item.icon }}</mat-icon>
-          </button>
-        </ng-container>
-        <ng-template #largeScreen>
-          <button
-            mat-raised-button
-            class="nav-item glass-button"
-            [routerLink]="item.routerLink"
-            [ngClass]="{ active: item.active }"
-            (click)="setActive(item)"
-          >
-            <mat-icon class="item-icon">{{ item.icon }}</mat-icon>
-            <span class="item-label">{{ item.label }}</span>
-          </button>
-        </ng-template>
+<!-- sidebar.component.html -->
+<mat-drawer-container class="sidenav-container">
+  <mat-drawer #drawer 
+             [mode]="isSmallScreen ? 'over' : 'side'"
+             [opened]="!isSmallScreen" 
+             class="sidenav"
+             [class.expanded]="isExpanded">
+    
+    <mat-nav-list>
+      <!-- Main menu items -->
+      <div *ngFor="let item of menuItems" 
+           class="menu-item">
+        <a mat-list-item
+           [routerLink]="item.routerLink"
+           [ngClass]="{ active: item.active }"
+           (click)="setActive(item)">
+          <!-- Always show icon -->
+          <mat-icon>{{item.icon}}</mat-icon>
+          <!-- Show label only when expanded -->
+          <span class="menu-text" *ngIf="isExpanded">{{item.label}}</span>
+        </a>
       </div>
-    </div>
-  </div>
+    </mat-nav-list>
+  </mat-drawer>
+
+  <mat-drawer-content>
+    <mat-toolbar>
+      <button mat-icon-button (click)="toggleMenu()">
+        <mat-icon>{{ isExpanded ? 'menu_open' : 'menu' }}</mat-icon>
+      </button>
+    </mat-toolbar>
+    <ng-content></ng-content>
+  </mat-drawer-content>
+</mat-drawer-container>

@@ -1,14 +1,8 @@
-import { Component, HostListener, EventEmitter, Output, Input, OnInit } from '@angular/core';
+import { Component, HostListener, EventEmitter, Output, Input, OnInit, ViewChild } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-
-interface Item {
-  icon: string;
-  label: string;
-  routerLink?: string;
-  action?: string;
-  active: boolean;
-}
+import { MatDrawer } from '@angular/material/sidenav';
+import { MenuItem, MenuGroup } from './sidebar.types'
 
 @Component({
   selector: 'app-sidebar',
@@ -27,15 +21,25 @@ export class SidebarComponent implements OnInit {
   @Output() sidebarToggle = new EventEmitter<boolean>();
   @Input() isCollapsed = false;
   @Input() isSmallScreen = false;
+  @ViewChild('drawer') drawer!: MatDrawer;
   isMobile = false;
+  isExpanded = true;
+  
 
-  menuItems: Item[] = [
-    { icon: 'home', label: 'Home', routerLink: '/home', active: false },
-    { icon: 'table_chart', label: 'Table', routerLink: '/table', active: false },
-    { icon: 'bar_chart', label: 'Data Visualizations', routerLink: '/data-visualizations', active: false },
-    { icon: 'restaurant', label: 'Peasant Kitchen', routerLink: '/peasant-kitchen', active: false },
-    { icon: 'movie', label: 'HTML Video', routerLink: '/space-video', active: false }
+  menuGroups: MenuGroup[] = [
+    {
+      title: 'Main',
+      icon: 'home',
+      items: [
+        { icon: 'home', label: 'Home', routerLink: '/home', active: true },
+        { icon: 'table_chart', label: 'Table', routerLink: '/table', active: false },
+        { icon: 'bar_chart', label: 'Data Visualizations', routerLink: '/data-visualizations', active: false },
+        { icon: 'restaurant', label: 'Peasant Kitchen', routerLink: '/peasant-kitchen', active: false },
+        { icon: 'movie', label: 'HTML Video', routerLink: '/space-video', active: false }
+      ],
+    }
   ];
+  menuItems: MenuItem[] = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
 
   constructor(private breakpointObserver: BreakpointObserver) {}
 
@@ -58,7 +62,7 @@ export class SidebarComponent implements OnInit {
     this.sidebarToggle.emit(!this.isCollapsed);
   }
 
-  setActive(item: Item) {
+  setActive(item: MenuItem) {
     this.menuItems.forEach(menuItem => menuItem.active = false);
     item.active = true;
   }
@@ -74,5 +78,12 @@ export class SidebarComponent implements OnInit {
 
   onDrawerClose() {
     console.log('Drawer closed');
+  }
+
+  toggleMenu() {
+    this.isExpanded = !this.isExpanded;
+    if (this.isSmallScreen) {
+      this.drawer.toggle();
+    }
   }
 }
