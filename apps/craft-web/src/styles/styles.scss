@@ -1,5 +1,6 @@
 @import '@angular/material';
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import './colors';
 
 @font-face {
   font-family: 'Calibri';
@@ -16,7 +17,6 @@
   src: url('/assets/fonts/segoe-ui.ttf') format('truetype');
 }
 
-// Override Angular Material's default font
 .mat-typography, body {
   font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif !important;
   background-color: black;

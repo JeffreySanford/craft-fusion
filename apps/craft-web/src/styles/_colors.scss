@@ -16,6 +16,7 @@ $dark-white: #e6e6e6;
 // Accent Colors
 $accent-red: #ff9999;
 $accent-blue: #9999ff;
+$accent-white: #e6e6e6; // Updated to match the theme
 
 // Additional Colors
 $charcoal-grey: #333333;
@@ -38,6 +39,6 @@ $patriotic-theme: (
   accent: (
     red: $accent-red,
     blue: $accent-blue,
-    white: $dark-white
+    white: $accent-white
   )
 );

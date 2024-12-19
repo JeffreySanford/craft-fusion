@@ -17,18 +17,10 @@
 
 /* Sidebar styling */
 .sidebar {
-  width: auto; /* 250px */
+  width: auto;
   transition: width 0.3s ease-in-out;
   flex-shrink: 0;
   margin-right: 1em;
-
-  &.expanded {
-    width: 18em;
-  }
-
-  &.collapsed {
-    width: 7em;
-  }
 }
 
 /* Main stage styling */
@@ -45,15 +37,4 @@
   margin: 0.15em 0.15em 0.5em 0.15em;
   width: 77vw;
   height: 98.5%;
-}
-
-/* Media query for smaller screens */
-@media (max-width: 900px) {
-  .sidebar {
-    width: 6em; /* 80px */
-  }
-
-  .main-stage {
-    padding: 1em; /* Adjust padding for smaller screens */
-  }
 }

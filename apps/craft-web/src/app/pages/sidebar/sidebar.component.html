@@ -1,34 +1,24 @@
-<!-- sidebar.component.html -->
-<mat-drawer-container class="sidenav-container">
-  <mat-drawer #drawer 
-             [mode]="isSmallScreen ? 'over' : 'side'"
-             [opened]="!isSmallScreen" 
-             class="sidenav"
-             [class.expanded]="isExpanded">
-    
-    <mat-nav-list>
-      <!-- Main menu items -->
-      <div *ngFor="let item of menuItems" 
-           class="menu-item">
-        <a mat-list-item
-           [routerLink]="item.routerLink"
-           [ngClass]="{ active: item.active }"
-           (click)="setActive(item)">
-          <!-- Always show icon -->
-          <mat-icon>{{item.icon}}</mat-icon>
-          <!-- Show label only when expanded -->
-          <span class="menu-text" *ngIf="isExpanded">{{item.label}}</span>
-        </a>
-      </div>
-    </mat-nav-list>
-  </mat-drawer>
-
-  <mat-drawer-content>
-    <mat-toolbar>
-      <button mat-icon-button (click)="toggleMenu()">
-        <mat-icon>{{ isExpanded ? 'menu_open' : 'menu' }}</mat-icon>
+<div class="sidebar-container" [class.expanded]="!isCollapsed">
+  <mat-nav-list>
+    <div *ngFor="let item of menuItems" class="sidenav">
+      <button
+        mat-raised-button
+        [routerLink]="item.routerLink"
+        [ngClass]="{ active: item.active }"
+        (click)="setActive(item)"
+        class="mat-elevation-z5 menu-item"
+        [class.mat-elevation-z8]="item.active"
+      >
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span class="menu-text" *ngIf="!isCollapsed">{{ item.label }}</span>
       </button>
-    </mat-toolbar>
-    <ng-content></ng-content>
-  </mat-drawer-content>
-</mat-drawer-container>
+    </div>
+  </mat-nav-list>
+  <mat-toolbar>
+    <button mat-icon-button (click)="toggleMenu()">
+      <mat-icon class="toggle">{{
+        isCollapsed ? 'menu_closed' : 'menu_open'
+      }}</mat-icon>
+    </button>
+  </mat-toolbar>
+</div>

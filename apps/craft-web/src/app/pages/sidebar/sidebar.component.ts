@@ -16,6 +16,9 @@ import { MenuItem, MenuGroup } from './sidebar.types'
       transition('out => in', [animate('1s ease-out')]),
     ]),
   ],
+  host: {
+    '[class.collapsed]': 'isCollapsed'
+  }
 })
 export class SidebarComponent implements OnInit {
   @Output() sidebarToggle = new EventEmitter<boolean>();
@@ -23,7 +26,6 @@ export class SidebarComponent implements OnInit {
   @Input() isSmallScreen = false;
   @ViewChild('drawer') drawer!: MatDrawer;
   isMobile = false;
-  isExpanded = true;
   
 
   menuGroups: MenuGroup[] = [
@@ -54,6 +56,7 @@ export class SidebarComponent implements OnInit {
   onResize(event: Event) {
     const width = (event.target as Window).innerWidth;
     this.isCollapsed = width < 900;
+  
     this.sidebarToggle.emit(!this.isCollapsed);
   }
 
@@ -72,16 +75,9 @@ export class SidebarComponent implements OnInit {
     return activeItem ? activeItem.label : '';
   }
 
-  onDrawerOpen() {
-    console.log('Drawer opened');
-  }
-
-  onDrawerClose() {
-    console.log('Drawer closed');
-  }
 
   toggleMenu() {
-    this.isExpanded = !this.isExpanded;
+    this.isCollapsed = !this.isCollapsed;
     if (this.isSmallScreen) {
       this.drawer.toggle();
     }

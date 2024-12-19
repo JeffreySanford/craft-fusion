@@ -1,232 +1,74 @@
+@import 'src/styles/colors';
+
 .sidebar-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  background-color: rgba(0, 0, 255, 0.2);
+  width: 16em;
+  height: 60%;
 }
 
-.sidebar-list {
-  padding: 1em 1.25em 1em 1em;
+.menu-item {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  background-color: rgba(0, 0, 255, 0.3);
+  align-items: center;
+  justify-content: space-between;
+  margin: 1em 1em;
+  width: 14em;
+  text-align: right;
+  border-radius: 1em;
+  outline: 0.25em solid rgba(33, 150, 243, 0.5);
 
-  /* Sidebar card styling */
-  .sidebar-card {
-    width: 100%;
-    flex: 1;
+  &:hover {
+    transform: scale(1.1);
+    outline-color: rgba(33, 150, 243, 0.8);
+    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15),
+      0 0 0.9375em rgba(33, 150, 243, 0.3);
   }
 
-  /* Navigation item styling */
-  .nav-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 0.625em 1em;
-    color: white;
-    font-size: 1.1em;
-    text-decoration: none;
-    background: linear-gradient(
-      to bottom right,
-      rgba(255, 0, 0, 0.3),
-      rgba(255, 255, 255, 0.3),
-      rgba(0, 0, 255, 0.3)
-    );
-    backdrop-filter: blur(10px); /* Glassy blur effect */
-    border-radius: 15px; /* Smoother, more rounded corners */
-    border: 1px solid rgba(255, 255, 255, 0.3); /* Thin, soft border */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25); /* Soft shadow for depth */
-    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
-    margin: 0.625em 0;
-
-    &:hover {
-      background: linear-gradient(
-        to bottom right,
-        rgba(255, 0, 0, 0.8),
-        rgba(255, 255, 255, 0.8),
-        rgba(0, 0, 255, 0.8)
-      );
-  
-      transform: scale(1.05); /* Slightly increase size on hover */
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); /* More shadow for hover effect */
-    }
-
-    &:active {
-      background: linear-gradient(
-        to bottom right,
-        rgba(255, 255, 255, 0.7),
-        rgba(200, 200, 200, 0.3)
-      );
-      transform: scale(0.98); /* Slightly shrink on click */
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Reduced shadow on active click */
-    }
+  .mat-icon {
+    color: $primary-blue;
+    border-radius: 50%;
+    font-size: 2.5em;
+    height: 1em;
+    width: 1.25em;
+    text-align: left;
+    transition: transform 0.3s ease;
+    margin-right: 1em; // Align to the left
   }
 
-  .item-icon {
-    margin-right: 8px;
-  }
-
-  .item-label {
-    flex: 1;
-  }
-}
-
-// sidebar.component.scss
-.sidenav-container {
-  height: 100vh;
-  
-  .sidenav {
-    width: 60px;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow-x: hidden;
-    background: linear-gradient(
-      to bottom right,
-      rgba(255, 0, 0, 0.1),
-      rgba(255, 255, 255, 0.1),
-      rgba(0, 0, 255, 0.1)
-    );
-    backdrop-filter: blur(10px);
-    
-    &.expanded {
-      width: 250px;
-    }
-  }
-
-  .mat-expansion-panel {
-    background: transparent;
-    box-shadow: none;
-  }
-
-  .active {
-    background: rgba(0,0,0,.04);
-    color: primary;
-  }
-
-  mat-nav-list {
-    padding: 0;
-  }
-
-  .menu-item {
-    .mat-list-item {
-      display: flex;
-      align-items: center;
-      padding: 0.625em 1em;
-      margin: 0.625em;
-      background: linear-gradient(
-        to bottom right,
-        rgba(255, 0, 0, 0.1),
-        rgba(255, 255, 255, 0.2),
-        rgba(0, 0, 255, 0.1)
-      );
-      backdrop-filter: blur(10px);
-      border-radius: 15px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      
-      &:hover {
-        transform: translateX(4px) scale(1.02);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        background: linear-gradient(
-          to bottom right,
-          rgba(255, 0, 0, 0.2),
-          rgba(255, 255, 255, 0.3),
-          rgba(0, 0, 255, 0.2)
-        );
-      }
-
-      mat-icon {
-        margin-right: 16px;
-        min-width: 24px;
-        transition: transform 0.3s ease;
-        color: rgba(0, 0, 0, 0.7);
-        
-        &:hover {
-          transform: scale(1.1);
-        }
-      }
-      
-      .menu-text {
-        opacity: 0;
-        transform: translateX(-20px);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        white-space: nowrap;
-        color: rgba(0, 0, 0, 0.87);
-      }
-    }
-
-    &.active {
-      .mat-list-item {
-        background: rgba(0, 0, 0, 0.08);
-        color: #1976d2;
-        font-weight: 500;
-        
-        mat-icon {
-          color: #1976d2;
-          transform: scale(1.1);
-        }
-      }
-    }
-  }
-
-  .expanded {
-    .menu-text {
-      opacity: 1 !important;
-      transform: translateX(0) !important;
-    }
-  }
-
-  .mat-list-item {
-    margin: 0.625em;
-    border-radius: 15px;
-    background: linear-gradient(
-      to bottom right,
-      rgba(255, 255, 255, 0.1),
-      rgba(200, 200, 200, 0.05)
-    );
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-
-    &:hover {
-      transform: scale(1.02);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    &.active {
-      background: linear-gradient(
-        to bottom right,
-        rgba(25, 118, 210, 0.1),
-        rgba(25, 118, 210, 0.05)
-      );
-      color: #1976d2;
-      
-      mat-icon {
-        color: #1976d2;
-      }
-    }
-
-    mat-icon {
-      margin-right: 16px;
-      transition: transform 0.3s ease;
-    }
-
-    .menu-text {
-      opacity: 0;
-      transform: translateX(-20px);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      white-space: nowrap;
-    }
-  }
-
-  .expanded .menu-text {
+  .menu-text {
+    color: $primary-blue;
+    flex-grow: 1;
+    text-align: right;
     opacity: 1;
+    transform: translateX(-1.25em);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .menu-text:hover {
+    color: $primary-red;
     transform: translateX(0);
   }
 }
 
-// Ripple effect
-::ng-deep .mat-ripple-element {
-  background-color: rgba(0, 0, 0, 0.1);
+.mat-toolbar {
+  position: absolute;
+  bottom: 4em;
+  width: 9em;
+  display: flex;
+  justify-content: left;
+  margin-left: -0.5em;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(0.625em);
+  color: white;
+
+  .toggle {
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: color 3s ease;
+
+    &:hover {
+      color: red;
+    }
+  }
 }
