@@ -1,8 +1,8 @@
 <div class="page-container">
   <app-header></app-header>
   <div class="layout-container">
-      <aside class="sidebar" [ngClass]="{ expanded: !isCollapsed }">
-        <app-sidebar [isSmallScreen]="isSmallScreen" [isCollapsed]="isCollapsed"></app-sidebar>
+      <aside class="sidebar">
+        <app-sidebar [isSmallScreen]="isSmallScreen" [isCollapsed]="isCollapsed" [ngClass]="{ 'collapased': !isCollapsed }"></app-sidebar>
       </aside>
       <main class="main-stage">
         <router-outlet></router-outlet>

@@ -2,19 +2,33 @@
 
 .sidebar-container {
   background-color: rgba(0, 0, 255, 0.2);
-  width: 16em;
   height: 60%;
+  padding: 0 1em;
+  margin: 0.25em 0;
+
+  &.collapsed {
+    width: 5em;
+  }
 }
 
 .menu-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 1em 1em;
-  width: 14em;
+  margin: 0.25em 0.25em;
+  width: 13em;
+  height:3em;
   text-align: right;
   border-radius: 1em;
   outline: 0.25em solid rgba(33, 150, 243, 0.5);
+  background-color: rgba(black, 0.6) !important;
+  color: $accent-white;
+
+  &.collapsed {
+    width: 2em;
+    text-align: center;
+    justify-content: center;
+  }
 
   &:hover {
     transform: scale(1.1);
@@ -24,18 +38,17 @@
   }
 
   .mat-icon {
-    color: $primary-blue;
-    border-radius: 50%;
+    color: $primary-white;
     font-size: 2.5em;
     height: 1em;
-    width: 1.25em;
+    width: 2em;
+    margin: 0.25em 0.25em 0.25em -0.25em;
     text-align: left;
     transition: transform 0.3s ease;
-    margin-right: 1em; // Align to the left
   }
 
   .menu-text {
-    color: $primary-blue;
+    color: $primary-white;
     flex-grow: 1;
     text-align: right;
     opacity: 1;
@@ -52,7 +65,9 @@
 .mat-toolbar {
   position: absolute;
   bottom: 4em;
-  width: 9em;
+  left: 1em;
+  border-radius: 0.25em;
+  width: 11em;
   display: flex;
   justify-content: left;
   margin-left: -0.5em;
@@ -60,6 +75,11 @@
   background-color: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(0.625em);
   color: white;
+
+  &.collapsed {
+    background-color: rgba(0, 0, 255, 0.2);
+    width: 4em;
+  }
 
   .toggle {
     color: white;

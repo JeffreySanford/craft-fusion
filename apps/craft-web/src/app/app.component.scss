@@ -5,36 +5,45 @@
   height: 96vh;
   width: 99vw;
   overflow: visible;
+
+  .layout-container {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .sidebar {
+    width: auto;
+    transition: width 0.3s ease-in-out;
+    flex-shrink: 0;
+    margin-right: 1em;
+
+    .collapsed {
+      max-width: 0;
+      width: 5em;
+      border: 1px solid white;
+    }
+  }
+
+  .main-stage {
+    background-color: rgba(
+      255,
+      0,
+      0,
+      0.5
+    ); /* Semi-transparent red background */
+    display: flex; /* Use flexbox layout */
+    flex-direction: column; /* Arrange children in a column */
+    justify-content: stretch; /* Align children to the top */
+    align-items: stretch; /* Ensure children take full width */
+    flex-grow: 1; /* Allow the main stage to grow and fill available space */
+    padding: 1em; /* Add padding for spacing */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    overflow: visible; /* Allow scrolling if content overflows */
+    margin: 0.15em 0.15em 0.5em 0.15em;
+    width: 77vw;
+    height: 98.5%;
+  }
 }
 
-/* Layout container styling */
-.layout-container {
-  display: flex;
-  flex: 1;
-  width: 100%;
-  overflow: hidden;
-}
-
-/* Sidebar styling */
-.sidebar {
-  width: auto;
-  transition: width 0.3s ease-in-out;
-  flex-shrink: 0;
-  margin-right: 1em;
-}
-
-/* Main stage styling */
-.main-stage {
-  background-color: rgba(255, 0, 0, 0.5); /* Semi-transparent red background */
-  display: flex; /* Use flexbox layout */
-  flex-direction: column; /* Arrange children in a column */
-  justify-content: stretch; /* Align children to the top */
-  align-items: stretch; /* Ensure children take full width */
-  flex-grow: 1; /* Allow the main stage to grow and fill available space */
-  padding: 1em; /* Add padding for spacing */
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
-  overflow: visible; /* Allow scrolling if content overflows */
-  margin: 0.15em 0.15em 0.5em 0.15em;
-  width: 77vw;
-  height: 98.5%;
-}
