@@ -62,20 +62,20 @@
         <mat-card class="performance-card">
           <div class="performance-metrics">
             <div class="metric" [ngClass]="getMemoryUsageClass()">
-              <label>Memory Usage:</label>
-              <span>{{ performanceMetrics.memoryUsage }}</span>
+              <label for="memoryUsage">Memory Usage:</label>
+              <span id="memoryUsage">{{ performanceMetrics.memoryUsage }}</span>
             </div>
             <div class="metric" [ngClass]="getCpuLoadClass()">
-              <label>CPU Load:</label>
-              <span>{{ performanceMetrics.cpuLoad }}</span>
+              <label for="cpuLoad">CPU Load:</label>
+              <span id="cpuLoad">{{ performanceMetrics.cpuLoad }}</span>
             </div>
             <div class="metric">
-              <label>App Uptime:</label>
-              <span>{{ performanceMetrics.appUptime }}</span>
+              <label for="appUptime">App Uptime:</label>
+              <span id="appUptime">{{ performanceMetrics.appUptime }}</span>
             </div>
             <div class="metric" [ngClass]="getNetworkLatencyClass()">
-              <label>Network Latency:</label>
-              <span>{{ performanceMetrics.networkLatency }}</span>
+              <label for="networkLatency">Network Latency:</label>
+              <span id="networkLatency">{{ performanceMetrics.networkLatency }}</span>
             </div>
           </div>
         </mat-card>

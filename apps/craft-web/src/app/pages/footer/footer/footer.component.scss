@@ -1,13 +1,14 @@
 /* Styles for the footer component */
 .footer-container {
+  position: fixed;
+  bottom: 1em;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  position: relative;
-  width: 100%;
-  margin-top: auto; /* Push the footer to the bottom */
+  width: 99%;
   border-radius: 0;
+  overflow: visible;
 
   .top-containers {
     display: flex;
@@ -53,29 +54,31 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    z-index: 10; /* Ensure this is higher than the main stage container */
+    position: relative;
+    z-index: 10;
     margin-top: -4em;
+    overflow: visible;
 
     .logo-row {
       display: flex !important;
-      justify-content: center; /* Center align the logos within each row */
+      justify-content: center;
       align-items: center;
-      margin: 0.5em 0 0 0; /* Add some vertical spacing between rows */
+      margin: 0.5em 0 0 0;
       overflow: visible;
 
       img {
         width: auto;
         height: 3.5em;
         padding: 0.25em;
-        margin: 0 0.5em; /* Add horizontal spacing between images */
+        margin: 0 0.5em;
         border: 0.0625em solid gold;
-        background: linear-gradient(to bottom, green, black); /* Gradient background */
-        transition: transform 0.3s, z-index 0.3s; /* Smooth transition for transform and z-index */
+        background: linear-gradient(to bottom, green, black);
+        transition: transform 0.3s, z-index 0.3s;
+        position: relative;
 
         &:hover {
-          transform: scale(3); /* 3x zoom on hover */
-          margin-top: -9em;
-          z-index: 20; /* Ensure the zoomed logo appears above other elements */
+          transform: scale(3);
+          z-index: 20;
         }
       }
     }
@@ -139,13 +142,16 @@ mat-expansion-panel[expanded] {
   height: auto;
 }
 
-.mat-expansion-panel-header-title, .mat-expansion-panel-header-description {
+.mat-expansion-panel-header-title,
+.mat-expansion-panel-header-description {
   color: gold;
+
   p {
     font-size: 1.25em;
     margin: 0 0 0 0.15em;
   }
 }
+
 mat-expansion-panel {
   width: 100%;
   color: gold;

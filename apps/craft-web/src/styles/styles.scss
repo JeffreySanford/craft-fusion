@@ -20,8 +20,8 @@
 .mat-typography, body {
   font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif !important;
   background-color: black;
-  overflow: hidden;
 }
+
 
 h1,
 h2,
@@ -37,7 +37,7 @@ h3 {
   left: -2em;
   bottom: 0;
   min-height: 100%;
-  scale: (1.1);
+  transform: scale(1.1);
   width: auto;
   height: auto;
   z-index: -1;
@@ -46,3 +46,4 @@ h3 {
   object-fit: cover;
   overflow: hidden;
 }
+

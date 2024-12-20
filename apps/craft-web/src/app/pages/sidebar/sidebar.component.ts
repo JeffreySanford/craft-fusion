@@ -3,6 +3,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer } from '@angular/material/sidenav';
 import { MenuItem, MenuGroup } from './sidebar.types'
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -20,6 +21,7 @@ import { MenuItem, MenuGroup } from './sidebar.types'
     '[class.collapsed]': 'isCollapsed'
   }
 })
+
 export class SidebarComponent implements OnInit {
   @Output() sidebarToggle = new EventEmitter<boolean>();
   @Input() isCollapsed = false;
@@ -42,20 +44,21 @@ export class SidebarComponent implements OnInit {
     }
   ];
   menuItems: MenuItem[] = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
-
-  constructor(private breakpointObserver: BreakpointObserver) {}
+  
+  constructor(private breakpointObserver: BreakpointObserver, private router: Router) {}
 
   ngOnInit() {
     this.breakpointObserver.observe([Breakpoints.Handset])
       .subscribe(result => {
         this.isMobile = result.matches;
       });
-  }
+    }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
     const width = (event.target as Window).innerWidth;
     this.isCollapsed = width < 900;
+    this.isSmallScreen = true;
   
     this.sidebarToggle.emit(!this.isCollapsed);
   }

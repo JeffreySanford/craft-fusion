@@ -20,7 +20,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   rowExpanded = false;
   filterValue = '';
-  dataSetSizes = [1000, 15000, 100000, 750000];
+  dataSetSizes = [1000, 15000, 100000, 1000000];
   resolved = false;
   time?: Date;
   expandedElement?: Record | null;
@@ -96,7 +96,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
       catchError((error) => {
         console.error('Error: generateNewRecordSet failed:', error);
         this.resolvedSubject.next(true);
-        this.changeDetectorRef.detectChanges(); // Notify Angular of changes
+        this.changeDetectorRef.detectChanges();
         return of([]);
       })
     ).subscribe();
@@ -108,7 +108,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
       this.paginator.pageIndex = 0;
       this.paginator.pageSize = 5;
       this.paginator.length = this.totalRecords;
-      this.paginator.pageSizeOptions = [5, 25, 100, 6000, 48000];
+      this.paginator.pageSizeOptions = [5, 25, 100, 1000];
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
       this.dataSource.filterPredicate = (data: Record, filter: string) => {
@@ -117,7 +117,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
 
       this.sort = { active: 'userID', direction: 'asc' } as MatSort;
       this.updateDisplayedColumns();
-      this.changeDetectorRef.detectChanges(); // Notify Angular of changes
+      this.changeDetectorRef.detectChanges();
       this.newData = false;
     }
   }

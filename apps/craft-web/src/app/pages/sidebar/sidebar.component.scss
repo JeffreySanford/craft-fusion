@@ -3,11 +3,23 @@
 .sidebar-container {
   background-color: rgba(0, 0, 255, 0.2);
   height: 60%;
-  padding: 0 1em;
-  margin: 0.25em 0;
+  margin: 0 0.5em;
 
   &.collapsed {
-    width: 5em;
+    width: 7em;
+  }
+
+  .toggle {
+    position: absolute;
+    bottom: 9em;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: color 3s ease;
+
+    &:hover {
+      color: red;
+    }
   }
 }
 
@@ -17,17 +29,17 @@
   justify-content: space-between;
   margin: 0.25em 0.25em;
   width: 13em;
-  height:3em;
+  height: 3em;
   text-align: right;
   border-radius: 1em;
-  outline: 0.25em solid rgba(33, 150, 243, 0.5);
+  outline: 0.1em solid rgba(33, 150, 243, 0.5);
   background-color: rgba(black, 0.6) !important;
   color: $accent-white;
 
   &.collapsed {
-    width: 2em;
-    text-align: center;
-    justify-content: center;
+    width: 5em;
+    margin: 0 0 0 0.25em;
+    outline: none;
   }
 
   &:hover {
@@ -37,12 +49,18 @@
       0 0 0.9375em rgba(33, 150, 243, 0.3);
   }
 
+  &.active {
+    outline-color: rgba(33, 236, 243, 0.8);
+    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15),
+      0 0 0.9375em rgba(33, 194, 243, 0.3);
+  }
+
   .mat-icon {
     color: $primary-white;
-    font-size: 2.5em;
+    font-size: 2.25em;
     height: 1em;
     width: 2em;
-    margin: 0.25em 0.25em 0.25em -0.25em;
+    margin: 0.25em 0.25em 0.25em 0em;
     text-align: left;
     transition: transform 0.3s ease;
   }
@@ -54,41 +72,5 @@
     opacity: 1;
     transform: translateX(-1.25em);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .menu-text:hover {
-    color: $primary-red;
-    transform: translateX(0);
-  }
-}
-
-.mat-toolbar {
-  position: absolute;
-  bottom: 4em;
-  left: 1em;
-  border-radius: 0.25em;
-  width: 11em;
-  display: flex;
-  justify-content: left;
-  margin-left: -0.5em;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(0.625em);
-  color: white;
-
-  &.collapsed {
-    background-color: rgba(0, 0, 255, 0.2);
-    width: 4em;
-  }
-
-  .toggle {
-    color: white;
-    font-size: 1em;
-    cursor: pointer;
-    transition: color 3s ease;
-
-    &:hover {
-      color: red;
-    }
   }
 }
