@@ -1,82 +1,181 @@
-# Craftfusion
+## 🚀 **Craft-Fusion Monorepo Installation Guide**
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+Welcome to the **Craft-Fusion** monorepo! This project contains three applications designed to work together seamlessly:
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+1. **craft-web** – Angular frontend (Material Design Table for displaying data).  
+2. **craft-nest** – NestJS backend (mocking and delivering up to 1 million users, running on port `3000`).  
+3. **craft-go** – Go backend (ready to deliver mock data for performance testing, running on port `4000`).  
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-standalone-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+This guide will walk you through setting up your development environment, installing dependencies, and troubleshooting common issues.
 
-## Finish your CI setup
+---
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/mFy6Zxmk66)
+## 📚 **Table of Contents**
+1. [Prerequisites](#prerequisites)
+2. [Cloning the Repository](#cloning-the-repository)
+3. [Installing Dependencies](#installing-dependencies)
+4. [Starting Applications](#starting-applications)
+5. [Switching Between NestJS and Go APIs](#switching-between-nestjs-and-go-apis)
+6. [Testing and Troubleshooting](#testing-and-troubleshooting)
+7. [Performance Testing](#performance-testing)
+8. [Additional Resources](#additional-resources)
 
+---
 
-## Run tasks
+## 🛠️ **1. Prerequisites**
 
-To run the dev server for your app, use:
+Ensure the following software is installed on your system:
 
-```sh
-npx nx serve craft-fusion
+| **Software**     | **Version**     | **Installation Link** |
+|-------------------|-----------------|------------------------|
+| **Node.js**      | `v20.16.0`      | [Node.js Download](https://nodejs.org/en/) |
+| **npm**          | `v10.8.1`       | Included with Node.js |
+| **Go**           | `v1.23.4`       | [Go Download](https://golang.org/dl/) |
+| **NX CLI**       | Latest          | `npm install -g nx` |
+| **Angular CLI**  | Latest          | `npm install -g @angular/cli` |
+| **NestJS CLI**   | Latest          | `npm install -g @nestjs/cli` |
+
+---
+
+## 📥 **2. Cloning the Repository**
+
+Open your terminal and run:
+
+```bash
+git clone https://github.com/JeffreySanford/craft-fusion.git
+cd craft-fusion
 ```
 
-To create a production bundle:
+Verify the repository is cloned successfully:
 
-```sh
-npx nx build craft-fusion
+```bash
+ls -la
 ```
 
-To see all available targets to run for a project, run:
+---
 
-```sh
-npx nx show project craft-fusion
+## 📦 **3. Installing Dependencies**
+
+Ensure you are in the root directory of the `craft-fusion` monorepo, then run:
+
+```bash
+# Remove any existing dependencies (if necessary)
+rm -rf node_modules package-lock.json
+npm cache clear --force
+
+# Install fresh dependencies
+npm install
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### **Install Go Dependencies**
+Navigate to the Go application directory and ensure dependencies are installed:
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/angular:app demo
+```bash
+cd apps/craft-go
+go mod tidy
 ```
 
-To generate a new library, use:
+---
 
-```sh
-npx nx g @nx/angular:lib mylib
+## 🚀 **4. Starting Applications**
+
+Return to the root of the monorepo:
+
+```bash
+cd ../../
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+### Start the Angular Frontend (craft-web)
+```bash
+nx serve craft-web
+```
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+**Access:** `http://localhost:4200`
 
+### Start the NestJS Backend (craft-nest)
+```bash
+nx serve craft-nest
+```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+**Access:** `http://localhost:3000/api`
 
-## Install Nx Console
+### Start the Go Backend (craft-go)
+```bash
+nx serve craft-go
+```
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+**Access:** `http://localhost:4000/records`
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-## Useful links
+## 🔄 **5. Switching Between NestJS and Go APIs**
 
-Learn more:
+The Angular frontend (`craft-web`) fetches data from the backend APIs. You can toggle between NestJS and Go backends for testing.
 
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-standalone-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## 🛡️ **6. Testing and Troubleshooting**
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### **Common Commands**
+- **Clear NX Cache:**
+  ```bash
+  npx nx reset
+  ```
+- **Check Node/NPM/Go Versions:**
+  ```bash
+  node -v
+  npm -v
+  go version
+  ```
+- **Run Backend Manually (Without NX):**
+  ```bash
+  cd apps/craft-nest
+  npm run start
+  cd ../craft-go
+  go run main.go
+  ```
+
+---
+
+## 📊 **7. Performance Testing**
+
+### **Manual Testing Endpoints:**
+- **NestJS Users Endpoint:** `http://localhost:3000/api/users?limit=1000000`
+- **Go Records Endpoint:** `http://localhost:4000/records?limit=1000000`
+
+### **Test via Angular Table Toggle:**
+In your Angular frontend, toggle between:
+- **NestJS Data Source:** `/api/users`
+- **Go Data Source:** `/api/go/records`
+
+### **Load Testing Tools:**
+- **Apache Benchmark:**  
+  ```bash
+  ab -n 10000 -c 100 http://localhost:4000/records
+  ```
+- **wrk:**  
+  ```bash
+  wrk -t4 -c200 -d30s http://localhost:4000/records
+  ```
+
+---
+
+## 📚 **8. Additional Resources**
+
+- **Node.js Documentation:** [Node.js Docs](https://nodejs.org/en/docs/)
+- **Go Documentation:** [Go Docs](https://golang.org/doc/)
+- **Angular Documentation:** [Angular Docs](https://angular.io/)
+- **NestJS Documentation:** [NestJS Docs](https://docs.nestjs.com/)
+- **NX Documentation:** [NX Docs](https://nx.dev/)
+
+---
+
+## 🎯 **9. Final Checklist**
+
+- ✅ Node.js and Go installed.
+- ✅ Dependencies installed (`npm install`, `go mod tidy`).
+- ✅ All three apps running (`nx serve craft-web`, `craft-nest`, `craft-go`).
+- ✅ Proxy configured correctly (`proxy.conf.json`).
+- ✅ Angular toggles successfully between `/api` and `/api/go`.
+
+**You're all set to run and test the Craft-Fusion monorepo!** 🚀  
+If you encounter any issues, feel free to reach out! 😊
+
