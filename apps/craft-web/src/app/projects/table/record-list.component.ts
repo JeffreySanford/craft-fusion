@@ -20,7 +20,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   rowExpanded = false;
   filterValue = '';
-  dataSetSizes = [1000, 15000, 100000, 1000000];
+  dataSetSizes = [100, 1000, 15000, 100000, 1000000];
   resolved = false;
   time?: Date;
   expandedElement?: Record | null;
@@ -39,8 +39,8 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
   newData = false;
   records: any;
   servers = [
-    { name: 'Craft Nest', langauge: 'NestJS', api: '/api', port: 3000, swagger: '/api/swagger' },
-    { name: 'Craft Go', langauge: 'Go', api: '/api/go', port: 4000, swagger: '/api/go/swagger' }
+    { name: 'Craft Nest', language: 'NestJS', api: '/api', port: 3000, swagger: '/api/swagger' },
+    { name: 'Craft Go', language: 'Go', api: '/api/go', port: 4000, swagger: '/api/go/swagger' }
   ];
   selectedServer = this.servers[0];
 
@@ -88,6 +88,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
     console.log('Lifecycle: ngOnInit called');
     this.resolved = false;
     this.startTime = new Date().getTime();
+    this.sort = { active: 'userID', direction: 'asc' } as MatSort;
     this.recordService.generateNewRecordSet(100).pipe(
       takeUntil(this.destroy$),
       switchMap((dataset: Record[]) => {
@@ -120,13 +121,14 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
       this.paginator.pageSize = 5;
       this.paginator.length = this.totalRecords;
       this.paginator.pageSizeOptions = [5, 25, 100, 1000];
+      this.sort = { active: 'userID', direction: 'asc' } as MatSort;
+
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
       this.dataSource.filterPredicate = (data: Record, filter: string) => {
         return data.UID.toLowerCase().includes(filter);
       };
 
-      this.sort = { active: 'userID', direction: 'asc' } as MatSort;
       this.updateDisplayedColumns();
       this.changeDetectorRef.detectChanges();
       this.newData = false;
@@ -230,7 +232,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
   showDetailView(record: Record): void {
     console.log('Event: Show detail view requested for record:', record);
     this.recordService.setSelectedUID(record.UID);
-    this.router.navigate(['record-detail', record.UID]);
+    this.router.navigate(['table/:', record.UID]);
     console.log('Navigation: Navigated to record detail view');
   }
 

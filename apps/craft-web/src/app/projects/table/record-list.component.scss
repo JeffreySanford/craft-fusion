@@ -6,105 +6,81 @@
   flex-direction: column;
   flex-grow: 1;
   overflow: hidden;
+}
 
-  .record-list {
-    display: flex;
-    flex-direction: column;
-    height: 8em;
-    margin-bottom: 0.5em;
-    overflow: hidden;
+.selectors {
+  display: flex;
+  flex-direction: row;
+  align-items: space-between;
+  justify-content: space-between;
+  margin-bottom: 1em;
+  width: 100%; /* Ensure it takes full width */
+}
 
-    p {
-      color: red;
-      font-size: 0.8em;
-    }
+.record-collection {
+  height: 14em;
+  margin-bottom: 1em;
+}
 
-    .content-row {
-      display: flex;
-      align-items: center;
-      height: auto;
-      transition: transform 1s ease-in-out;
+.report {
+  display: inline-block;
+  width: 100%;
+  font-size: 1.6em;
+  color: black;
+  margin-bottom: 1em;
+}
 
-      .fixed-width {
-        flex: 0 0 5em;
-      }
+//  Material Table with Pagination, Sort, and Filter
+.table-wrapper {
+  display: block;
+  max-height: 23em; /* Set a max height to enable scrolling */
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-grow: 1;
 
-      .left {
-        justify-content: flex-start;
-      }
+  /* Scrollbar styling */
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: linear-gradient(to bottom, red, white, blue) transparent; /* For Firefox */
 
-      .middle {
-        flex-grow: 1;
-        justify-content: flex-start;
-      }
-
-      .right {
-        justify-content: flex-end;
-      }
-    }
+  &::-webkit-scrollbar {
+    width: 8px; /* Thin scrollbar width */
   }
 
-  .table-wrapper {
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, red, white, blue);
+    border-radius: 10px;
+    border: 2px solid transparent; /* Transparent border to create padding effect */
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent; /* Transparent background */
+  }
+
+  &::-webkit-scrollbar-button {
+    background-color: blue; /* Blue controls */
     display: block;
-    max-height: 23em; /* Set a max height to enable scrolling */
-    overflow-y: auto;
-    overflow-x: auto;
-    white-space: nowrap;
-    flex-grow: 1;
-
-    /* Scrollbar styling */
-    scrollbar-width: thin; /* For Firefox */
-    scrollbar-color: linear-gradient(to bottom, red, white, blue) transparent; /* For Firefox */
-
-    &::-webkit-scrollbar {
-      width: 8px; /* Thin scrollbar width */
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: linear-gradient(to bottom, red, white, blue);
-      border-radius: 10px;
-      border: 2px solid transparent; /* Transparent border to create padding effect */
-    }
-
-    &::-webkit-scrollbar-track {
-      background: transparent; /* Transparent background */
-    }
-
-    &::-webkit-scrollbar-button {
-      background-color: blue; /* Blue controls */
-      display: block;
-      height: 16px;
-      width: 16px;
-    }
+    height: 16px;
+    width: 16px;
   }
+}
 
-  :host ::ng-deep .stripped {
-    tr:nth-child(odd) {
-      background-color: red;
-    }
+.table-wrapper th {
+  position: sticky;
+  top: 0;
+  background-color: #3f51b5; /* Blue background */
+  color: #fff; /* White text */
+  font-size: 1em; /* Font size */
+  text-align: left;
+  z-index: 1; /* Ensure it stays on top */
+}
 
-    tr:nth-child(even) {
-      background-color: green;
-    }
-  }
-
-  .table-wrapper th {
-    position: sticky;
-    top: 0;
-    background-color: #3f51b5; /* Blue background */
-    color: #fff; /* White text */
-    font-size: 1em; /* Font size */
-    text-align: left;
-    z-index: 1; /* Ensure it stays on top */
-  }
-
-  .mat-paginator {
-    background-color: #3f51b5; /* Blue background */
-    color: #fff; /* White text */
-    font-size: 1em; /* Font size */
-    text-align: left;
-    z-index: 1; /* Ensure it stays on top */
-  }
+.mat-paginator {
+  background-color: #3f51b5; /* Blue background */
+  color: #fff; /* White text */
+  font-size: 1em; /* Font size */
+  text-align: left;
+  z-index: 1; /* Ensure it stays on top */
 }
 
 @keyframes flyIn {
