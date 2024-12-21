@@ -66,10 +66,10 @@ export class RecordService {
     console.log(`Setting selected user ID: ${uid}`);
     this.selectedUserID = uid;
   }
-
-  // Used by the detailed component to get the current selected user ID
+  
+  // gets the currently selected user ID
   getSelectedUID(): string {
-    console.log('Getting selected user ID');
+    console.log(`Getting selected user ID: ${this.selectedUserID}`);
     return this.selectedUserID;
   }
 
@@ -85,5 +85,10 @@ export class RecordService {
     const url = `records/time`;
     console.log('Fetching creation time');
     return this.apiService.get<number>(url);
+  }
+
+  setServerResource(resource: string): void {
+    console.log(`Setting server resource: ${resource}`);
+    this.apiService.setApiUrl(resource);
   }
 }

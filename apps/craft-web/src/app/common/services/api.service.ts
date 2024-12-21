@@ -37,4 +37,10 @@ export class ApiService {
   delete<T>(endpoint: string): Observable<T> {
     return this.http.delete<T>(`${this.apiUrl}/${endpoint}`, { headers: this.getHeaders() });
   }
+
+  // allow for setting different server endpoint api/go for Go server and api for NestJS server (4000 and 3000)
+  setApiUrl(api: string): void {
+    this.apiUrl = this.isProduction ? `https://jeffreysanford.us:${api}` : `https://localhost:${api}`;
+    console.log(`API Service: Setting API URL to ${this.apiUrl}`);
+  }
 }

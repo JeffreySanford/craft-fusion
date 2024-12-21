@@ -38,6 +38,11 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
   totalRecords = 100;
   newData = false;
   records: any;
+  servers = [
+    { name: 'Craft Nest', langauge: 'NestJS', api: '/api', port: 3000, swagger: '/api/swagger' },
+    { name: 'Craft Go', langauge: 'Go', api: '/api/go', port: 4000, swagger: '/api/go/swagger' }
+  ];
+  selectedServer = this.servers[0];
 
   constructor(private router: Router, private recordService: RecordService, private changeDetectorRef: ChangeDetectorRef) {
     console.log('Constructor: RecordListComponent created');
@@ -47,6 +52,12 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
   onResize(event: Event): void {
     console.log('Event: Window resized');
     this.updateDisplayedColumns();
+  }
+
+  onSelectedServerChange(event: Event): void {
+    console.log('Event: Selected server changed with event:', event);
+    this.recordService.setServerResource(this.selectedServer.api);
+    console.log('Server: Selected server updated');
   }
 
   sortData(event: Sort): void {
