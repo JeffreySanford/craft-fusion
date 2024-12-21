@@ -1,8 +1,8 @@
 export default {
-  displayName: 'craft-fushion',
+  displayName: 'craft-fusion',
   preset: './jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: './coverage/craft-fushion',
+  coverageDirectory: './coverage/craft-fusion',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',

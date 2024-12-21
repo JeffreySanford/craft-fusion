@@ -5,7 +5,7 @@ module.exports = {
     script: 'dist/apps/craft-nest/src/main.js',
     instances: 'max',
     exec_mode: 'cluster',
-    cwd: '/home/jeffrey/repos/craft-fushion',
+    cwd: '/home/jeffrey/repos/craft-fusion',
     env: {  // Changed from env_production
       NODE_ENV: 'production',
       PORT: 3000,  // Force port 3000
