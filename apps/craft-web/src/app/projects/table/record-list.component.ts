@@ -89,11 +89,21 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
     this.resolved = false;
     this.startTime = new Date().getTime();
     this.sort = { active: 'userID', direction: 'asc' } as MatSort;
+    this.paginator.pageIndex = 0;
+    this.paginator.pageSize = 5;
+    this.paginator.length = this.totalRecords;
+    this.paginator.pageSizeOptions = [5, 25, 100, 1000];
+
     this.recordService.generateNewRecordSet(100).pipe(
       takeUntil(this.destroy$),
       switchMap((dataset: Record[]) => {
         if (dataset) {
           this.dataSource.data = dataset;
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+          this.dataSource.filterPredicate = (data: Record, filter: string) => {
+            return data.UID.toLowerCase().includes(filter);
+          };
           this.totalRecords = dataset.length;
           this.resolved = true;
           this.newData = true;
@@ -117,20 +127,8 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterViewInit, Af
   ngAfterContentChecked(): void {
     if (this.resolved && this.dataSource.data.length > 0 && this.newData) {
       console.log('Lifecycle: ngAfterContentChecked called');
-      this.paginator.pageIndex = 0;
-      this.paginator.pageSize = 5;
-      this.paginator.length = this.totalRecords;
-      this.paginator.pageSizeOptions = [5, 25, 100, 1000];
-      this.sort = { active: 'userID', direction: 'asc' } as MatSort;
-
-      this.dataSource.sort = this.sort;
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.filterPredicate = (data: Record, filter: string) => {
-        return data.UID.toLowerCase().includes(filter);
-      };
-
-      this.updateDisplayedColumns();
       this.changeDetectorRef.detectChanges();
+      this.updateDisplayedColumns();
       this.newData = false;
     }
   }

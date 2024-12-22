@@ -7,10 +7,9 @@
     ></mat-progress-spinner>
   </div>
 </ng-template>
-
 <div class="table-container">
-  <mat-card class="record-collection" [@flyIn] [hidden]="totalRecords === 0">
-    <mat-card-content>
+  <mat-card class="record-collection" [@flyIn]>
+    <mat-card-content *ngIf="roundtripLabel">
       <div class="report">
         <p>
           Mock record set of {{ totalRecords }} records was generated in
