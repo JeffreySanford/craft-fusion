@@ -14,7 +14,7 @@
         "main": "apps/craft-web/src/main.ts",
         "polyfills": "apps/craft-web/src/polyfills.ts",
         "tsConfig": "apps/craft-web/tsconfig.json",
-        "assets": ["apps/craft-web/src/favicon.ico", "apps/craft-web/src/assets"],
+        "assets": ["apps/craft-web/src/assets"],
         "styles": ["apps/craft-web/src/styles/styles.scss"],
         "scripts": [],
         "allowedCommonJsDependencies": ["jszip"]
