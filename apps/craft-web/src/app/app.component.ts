@@ -60,7 +60,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             this.polling = false;
           })
           .catch(error => {
-            console.error('Error attempting to play the video:', error);
+            // console.error('Error attempting to play the video:', error);
           });
       } else {
         if (this.polling) {

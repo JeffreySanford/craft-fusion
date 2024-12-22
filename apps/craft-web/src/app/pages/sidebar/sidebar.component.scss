@@ -2,8 +2,9 @@
 
 .sidebar-container {
   background-color: rgba(0, 0, 255, 0.2);
+  padding: 1em;
   height: 60%;
-  margin: 0 0.5em;
+  margin: 0 1em;
 
   &.collapsed {
     width: 7em;
