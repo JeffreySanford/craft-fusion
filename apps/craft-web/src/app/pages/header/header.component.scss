@@ -2,13 +2,14 @@
 
 // Styles for the header card
 .header-card {
-  width: calc(100%);
+  width: 99.75%;
+  height: 4em;
   margin-bottom: 0.5em;
   background: linear-gradient(
     to right,
     rgba(255, 0, 0, 0.7) 0%,    // Red with 0.7 opacity
-    rgba(255, 255, 255, 0.7) 10%, // White with 0.7 opacity
-    rgba(0, 0, 255, 0.7) 20%,   // Blue with 0.7 opacity
+    rgba(255, 255, 255, 0.7) 20%, // White with 0.7 opacity
+    rgba(0, 0, 255, 0.7) 30%,   // Blue with 0.7 opacity
     rgba(0, 128, 128, 0.7) 100% // Teal with 0.7 opacity
   );
   display: flex;
@@ -21,7 +22,7 @@
 
 // Styles for the content inside the header card
 .header-content {
-  height: 3em;
+  height: 3.5em;
   display: flex;
   align-items: center;
   width: 100%;
@@ -33,7 +34,8 @@
 
 button {
   position: absolute;
-  right: -1em;
+  right: -1.25em;
+  top: 0;
 }
 
 .profile-icon {

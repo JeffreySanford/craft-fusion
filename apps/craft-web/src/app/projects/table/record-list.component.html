@@ -126,8 +126,8 @@
     <mat-paginator
       class="mat-elevation-z8"
       [length]="totalRecords"
-      [pageSize]="paginator.pageSize"
-      [pageSizeOptions]="paginator.pageSizeOptions"
+      [pageSize]="5"
+      [pageSizeOptions]="[5, 25, 100]"
       showFirstLastButtons
       (page)="onDisplayRowChange($event)"
     >

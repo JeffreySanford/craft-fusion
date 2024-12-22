@@ -11,13 +11,6 @@
   overflow: visible;
   animation: backgroundAnimation 10s infinite alternate;
 
-  .landing-header {
-    font-size: 2.5em;
-    font-weight: bold;
-    margin-bottom: 1em;
-    animation: fadeIn 2s ease-out forwards;
-  }
-
   .landing-content {
     display: flex;
     flex-direction: column;
@@ -28,41 +21,17 @@
     text-align: center;
     background-color: rgba(red, 0.3);
     animation: fadeIn 2s ease-out forwards;
-
-    .landing-description {
-      font-size: 1.25em;
-      margin-bottom: 2em;
-    }
-
-    .landing-buttons {
-      display: flex;
-      gap: 1em;
-
-      button {
-        padding: 0.5em 1em;
-        font-size: 1em;
-        border: none;
-        border-radius: 0.25em;
-        background-color: #3f51b5;
-        color: white;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.3s ease;
-
-        &:hover {
-          background-color: #303f9f;
-          transform: scale(1.05);
-        }
-      }
-    }
   }
 
   .highlight-section {
+    font-size: 2.5vw;
     position: relative;
     margin-bottom: 3em;
     animation: fadeIn 2s ease-out forwards;
   }
 
   .animated-section {
+    font-size: 2.25vw;
     display: flex;
     justify-content: center;
     gap: 1.5em;
@@ -71,10 +40,10 @@
     .animated-item {
       font-size: 1.5em;
       font-weight: bold;
-      color: yellow;
+      color: gold;
       opacity: 0;
-      transform: translateY(1.25em);
-      animation: fadeInUp 1s ease-out forwards;
+      transform: translateY(2em);
+      animation: fadeInUp 2s ease-out forwards;
 
       &:nth-child(1) {
         animation-delay: 0s;
@@ -89,7 +58,7 @@
   }
 
   .title {
-    font-size: 600%;
+    font-size: 400%;
     color: red;
     text-align: center;
     position: relative;
@@ -153,14 +122,17 @@
 
     .word:nth-child(1) .sparkle-1 {
       animation-delay: 3s;
+      color: red;
     }
 
     .word:nth-child(2) .sparkle-2 {
+      color: blue;
       margin-top: -1.5em;
       animation-delay: 5s;
     }
 
     .word:nth-child(3) .sparkle-3 {
+      color: violet;
       margin-top: -2em;
       animation-delay: 7s;
     }
@@ -183,16 +155,19 @@
     opacity: 1;
     transform: translateY(-1.4em);
     font-size: 0.1em;
+    color: black;
   }
   25% {
     opacity: 0.75;
     transform: translateY(-1.3em);
     font-size: 0.15em;
+    color: blue;
   }
   50% {
     opacity: 0.25;
     transform: translateY(-1.2em);
     font-size: 0.2em;
+    color: green;
   }
   75% {
     opacity: 0.1;
@@ -209,6 +184,10 @@
 @keyframes colorChange {
   0% {
     color: red;
+  }
+  50% {
+    color: orange;
+    transform: scale(1.25);
   }
   100% {
     color: gold;

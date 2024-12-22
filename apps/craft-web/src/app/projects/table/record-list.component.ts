@@ -25,7 +25,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   resolved = false;
   time?: Date;
   expandedElement?: Record | null;
-  dataSource!: MatTableDataSource<Record>;
+  dataSource = new MatTableDataSource<Record>();
   startTime = 0;
   generationTimeLabel = '';
   roundtripLabel = '';
@@ -155,7 +155,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
         takeUntil(this.destroy$),
         switchMap((dataset: Record[]) => {
           if (dataset) {
-            this.dataSource = new MatTableDataSource<Record>(dataset);
+            this.dataSource.data = dataset;
             this.totalRecords = dataset.length;
             this.resolved = true;
             this.newData = true;
