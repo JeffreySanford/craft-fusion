@@ -57,6 +57,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           .play()
           .then(() => {
             this.stopVideoCheckPolling();
+            this.polling = false;
           })
           .catch(error => {
             console.error('Error attempting to play the video:', error);
@@ -85,8 +86,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private handleUserInteraction = () => {
-    console.log('User interaction detected');
-    this.ensureVideoIsPlaying();
+    if (this.polling) {
+      console.log('User interaction detected');
+      this.ensureVideoIsPlaying();
+    }
   };
 
   private startVideoCheckPolling() {
@@ -98,7 +101,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private stopVideoCheckPolling() {
     if (this.videoCheckSubscription) {
-      this.polling = false;
       this.videoCheckSubscription.unsubscribe();
     }
   }

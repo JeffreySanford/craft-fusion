@@ -25,7 +25,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   resolved = false;
   time?: Date;
   expandedElement?: Record | null;
-  dataSource = new MatTableDataSource<Record>([]);
+  dataSource!: MatTableDataSource<Record>;
   startTime = 0;
   generationTimeLabel = '';
   roundtripLabel = '';
@@ -38,7 +38,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   resolved$ = this.resolvedSubject.asObservable();
   totalRecords = 100;
   newData = false;
-  records: any;
+  records: Record[] = [];
   servers = [
     {
       name: 'Craft Nest',
@@ -74,16 +74,19 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   }
 
   sortData(event: Sort): void {
+    console.log('Sort: Sorting data with event:', event);
+  
     const { active, direction } = event;
-    if (!direction) return; // Prevent unnecessary sorting when direction is cleared
+    if (!direction) return; // No sorting direction means no sorting
   
     const isAsc = direction === 'asc';
   
-    this.dataSource.filteredData = [...this.dataSource.data].sort((a, b) => {
+    const sortedData = [...this.dataSource.data].sort((a, b) => {
       switch (active) {
         case 'UID':
           return this.compare(a.UID, b.UID, isAsc);
         case 'name':
+          console.log('Sort: Sorting by name');
           return this.compare(a.name, b.name, isAsc);
         case 'address':
           return this.compare(a.address.street, b.address.street, isAsc);
@@ -100,9 +103,17 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
       }
     });
   
-    this.dataSource.paginator = this.paginator;
-    this.changeDetectorRef.detectChanges();
-    console.log('Sort: Data sorted with event:', event);
+    // Update the dataSource with new sorted data
+    this.dataSource.data = sortedData;
+  
+    // Refresh the paginator
+    if (this.paginator) {
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    }
+  
+    console.log('Sort: Data sorted successfully');
   }
   
   // Strongly typed comparison function
@@ -144,11 +155,10 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
         takeUntil(this.destroy$),
         switchMap((dataset: Record[]) => {
           if (dataset) {
-            this.dataSource.data = dataset;
+            this.dataSource = new MatTableDataSource<Record>(dataset);
             this.totalRecords = dataset.length;
             this.resolved = true;
             this.newData = true;
-            this.changeDetectorRef.detectChanges(); // Notify Angular of changes
 
             console.log('Data: New record set generated with length:', dataset.length);
 
