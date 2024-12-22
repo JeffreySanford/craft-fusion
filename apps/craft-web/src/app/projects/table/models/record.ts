@@ -4,7 +4,7 @@ import { Phone } from './phone';
 
 export interface Record {
     UID: string;
-    name?: string;
+    name: string;
     avatar: any;
     flicker: any;
     firstName: string;

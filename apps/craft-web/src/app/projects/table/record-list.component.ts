@@ -1,12 +1,4 @@
-import {
-  Component,
-  HostListener,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-  ChangeDetectorRef,
-  AfterContentChecked,
-} from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, AfterContentChecked } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -16,6 +8,7 @@ import { catchError, switchMap, tap, takeUntil } from 'rxjs/operators';
 import { detailExpand, flyIn } from './animations';
 import { Record } from './models/record';
 import { RecordService } from './record.service';
+import { MenuItem } from '@craft-web/pages/sidebar/sidebar.types';
 
 @Component({
   selector: 'app-record-list',
@@ -64,11 +57,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   ];
   selectedServer = this.servers[0];
 
-  constructor(
-    private router: Router,
-    private recordService: RecordService,
-    private changeDetectorRef: ChangeDetectorRef,
-  ) {
+  constructor(private router: Router, private recordService: RecordService, private changeDetectorRef: ChangeDetectorRef) {
     console.log('Constructor: RecordListComponent created');
   }
 
@@ -85,8 +74,41 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   }
 
   sortData(event: Sort): void {
-    console.log('Event: Data sorted with event:', event);
-    this.dataSource.sort = this.sort;
+    const { active, direction } = event;
+    if (!direction) return; // Prevent unnecessary sorting when direction is cleared
+  
+    const isAsc = direction === 'asc';
+  
+    this.dataSource.filteredData = [...this.dataSource.data].sort((a, b) => {
+      switch (active) {
+        case 'UID':
+          return this.compare(a.UID, b.UID, isAsc);
+        case 'name':
+          return this.compare(a.name, b.name, isAsc);
+        case 'address':
+          return this.compare(a.address.street, b.address.street, isAsc);
+        case 'city':
+          return this.compare(a.city, b.city, isAsc);
+        case 'state':
+          return this.compare(a.state, b.state, isAsc);
+        case 'zip':
+          return this.compare(a.zip, b.zip, isAsc);
+        case 'phone':
+          return this.compare(a.phone.number, b.phone.number, isAsc);
+        default:
+          return 0;
+      }
+    });
+  
+    this.dataSource.paginator = this.paginator;
+    this.changeDetectorRef.detectChanges();
+    console.log('Sort: Data sorted with event:', event);
+  }
+  
+  // Strongly typed comparison function
+  compare<T>(a: T, b: T, isAsc: boolean): number {
+    if (a == null || b == null) return 0;
+    return (a < b ? -1 : a > b ? 1 : 0) * (isAsc ? 1 : -1);
   }
 
   applyFilter(event: Event) {
@@ -107,14 +129,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
 
       if (this.dataSource.paginator && event.pageSize !== this.dataSource.paginator.pageSize) {
         this.dataSource.paginator = this.paginator;
-        console.log(
-          'Paginator: Updated with pageIndex:',
-          event.pageIndex,
-          'pageSize:',
-          event.pageSize,
-          'length:',
-          event.length,
-        );
+        console.log('Paginator: Updated with pageIndex:', event.pageIndex, 'pageSize:', event.pageSize, 'length:', event.length);
       }
     }
   }
@@ -268,18 +283,9 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
         tap((generationTime: number) => {
           const endTime = new Date().getTime();
           const roundtrip = endTime - this.startTime;
-          this.roundtripLabel =
-            roundtrip > 1000 ? `${(roundtrip / 1000).toFixed(2)} seconds` : `${roundtrip.toFixed(2)} milliseconds`;
-          this.generationTimeLabel =
-            generationTime > 1000
-              ? `${(generationTime / 1000).toFixed(2)} seconds`
-              : `${generationTime.toFixed(2)} milliseconds`;
-          console.log(
-            'Timing: Data generation time:',
-            this.generationTimeLabel,
-            'Roundtrip time:',
-            this.roundtripLabel,
-          );
+          this.roundtripLabel = roundtrip > 1000 ? `${(roundtrip / 1000).toFixed(2)} seconds` : `${roundtrip.toFixed(2)} milliseconds`;
+          this.generationTimeLabel = generationTime > 1000 ? `${(generationTime / 1000).toFixed(2)} seconds` : `${generationTime.toFixed(2)} milliseconds`;
+          console.log('Timing: Data generation time:', this.generationTimeLabel, 'Roundtrip time:', this.roundtripLabel);
           this.resolvedSubject.next(true);
           console.log('Resolved: Subject updated');
           this.changeDetectorRef.detectChanges();

@@ -29,7 +29,7 @@ h3 {
   color: #3f51b5; /* Indigo color from the prebuilt theme */
 }
 html {
-  --mat-sort-arrow-color: purple;
+  --mat-sort-arrow-color: $accent-white;
 }
 /* Background video styling */
 #background-video {

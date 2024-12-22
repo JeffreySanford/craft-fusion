@@ -6,7 +6,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   title = 'frontend';
@@ -19,9 +19,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'Home', icon: 'home', routerLink: '/home', active: false },
     // Add more menu items as needed
   ];
+  polling =true;
 
-  constructor(private router: Router, private route: ActivatedRoute, private breakpointObserver: BreakpointObserver) { }
-  
+  constructor(private router: Router, private route: ActivatedRoute, private breakpointObserver: BreakpointObserver) {}
+
   ngOnInit(): void {
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       this.isSmallScreen = result.matches;
@@ -43,7 +44,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setActive(item: any) {
-    this.menuItems.forEach(menuItem => menuItem.active = false);
+    this.menuItems.forEach(menuItem => (menuItem.active = false));
     item.active = true;
   }
 
@@ -52,14 +53,19 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (video) {
       video.playbackRate = 0.5; // Slow down the video
       if (video.paused || video.ended) {
-        video.play().then(() => {
-          this.stopVideoCheckPolling();
-        }).catch(error => {
-          // console.error('Error attempting to play the video:', error);
-        });
+        video
+          .play()
+          .then(() => {
+            this.stopVideoCheckPolling();
+          })
+          .catch(error => {
+            console.error('Error attempting to play the video:', error);
+          });
       } else {
-        console.log('Video is already playing, stopping polling');
-        this.stopVideoCheckPolling();
+        if (this.polling) {
+          console.log('Video is already playing, stoping polling');
+          this.stopVideoCheckPolling();
+        }
       }
     } else {
       console.error('Video element not found');
@@ -81,7 +87,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private handleUserInteraction = () => {
     console.log('User interaction detected');
     this.ensureVideoIsPlaying();
-  }
+  };
 
   private startVideoCheckPolling() {
     const videoCheckInterval = interval(5000); // Emit every 5 seconds
@@ -92,6 +98,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private stopVideoCheckPolling() {
     if (this.videoCheckSubscription) {
+      this.polling = false;
       this.videoCheckSubscription.unsubscribe();
     }
   }
