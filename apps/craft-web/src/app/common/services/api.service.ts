@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
   private isProduction = environment.production;
-  private apiUrl = this.isProduction ? "https://jeffreysanford.us:3000/api" : 'https://localhost:3000';
+  private apiUrl = `${environment.apiUrl}/api`;
+  private recordSize = 100; // Default record size
+  private serverType = 'NestJS'; // Default server type
 
   constructor(private http: HttpClient) {
     console.log('API Service: Production mode is', this.isProduction ? 'ON' : 'OFF');
@@ -40,7 +42,26 @@ export class ApiService {
 
   // allow for setting different server endpoint api/go for Go server and api for NestJS server (4000 and 3000)
   setApiUrl(api: string): void {
-    this.apiUrl = this.isProduction ? `https://jeffreysanford.us:${api}` : `https://localhost:${api}`;
+    this.apiUrl = this.isProduction ? `https://jeffreysanford.us:${api}` : `http://localhost:${api}`;
     console.log(`API Service: Setting API URL to ${this.apiUrl}`);
+  }
+
+  setRecordSize(size: number): void {
+    this.recordSize = size;
+    console.log(`API Service: Setting record size to ${this.recordSize}`);
+  }
+
+  setServerType(type: string): void {
+    this.serverType = type;
+    console.log(`API Service: Setting server type to ${this.serverType}`);
+  }
+
+  getPerformanceDetails(): void {
+    console.log(`API Service: Performance details for ${this.recordSize} records on ${this.serverType} server`);
+    // Add logic to fetch and display performance details
+  }
+
+  generatePerformanceReport(selectedServer: { language: string }, totalRecords: number, generationTimeLabel: string, roundtripLabel: string): string {
+    return `Using the backend server language, ${selectedServer.language}, Mock record set of ${totalRecords} records was generated in ${generationTimeLabel} and delivered in ${roundtripLabel}.`;
   }
 }
