@@ -12,11 +12,14 @@ func main() {
 	router := gin.Default()
 
 	// Set trusted proxies
-	router.SetTrustedProxies([]string{"127.0.0.1"})
+	// router.SetTrustedProxies([]string{"127.0.0.1"})
 
-	//enable CORS from localhost:4200 and jeffreysanford.us
+	// Enable CORS from localhost:4200 and jeffreysanford.us
 	router.Use(func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200, https://jeffreysanford.us")
+		origin := c.Request.Header.Get("Origin")
+		if origin == "http://localhost:4200" || origin == "https://jeffreysanford.us" {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+		}
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -39,6 +42,7 @@ func main() {
 
 	// User Records API
 	router.GET("/records", handlers.GetRecordsHandler)
+	router.GET("/records/generate", handlers.GenerateRecordsHandler)
 
 	log.Println("Starting Go Backend on :4000")
 	router.Run(":4000")

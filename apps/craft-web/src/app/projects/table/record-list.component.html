@@ -7,7 +7,7 @@
   <mat-card class="record-collection" [@flyIn]>
     <mat-card-content *ngIf="roundtripLabel">
       <div class="report">
-        <p>Mock record set of {{ totalRecords }} records was generated in {{ generationTimeLabel }} and delivered in {{ roundtripLabel }}.</p>
+        <p>Using the backend server language, {{ selectedServer.language }}, a mock record set of {{ totalRecords }} records was generated in {{ generationTimeLabel }} and delivered in {{ roundtripLabel }} to the Angular frontend.</p>
       </div>
       <div class="selectors" [@flyIn]>
         <mat-form-field class="performance" appearance="outline">

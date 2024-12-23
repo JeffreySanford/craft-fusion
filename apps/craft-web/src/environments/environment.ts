@@ -1,6 +1,8 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://localhost:3000',
+  apiUrl: 'http://localhost',
+  secure: false,
   host: 'localhost',
-  port: 3000
+  nestPort: 3000,
+  goPort: 4000
 };

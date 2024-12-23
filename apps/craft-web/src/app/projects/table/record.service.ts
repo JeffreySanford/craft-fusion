@@ -29,7 +29,7 @@ export class RecordService {
    */
   getRecordByUID(UID: string): Observable<Record> {
     const url = `records/${UID}`;
-    console.log(`Fetching record by UID: ${UID}`);
+    console.log(`Fetching record by UID: ${UID} from URL: ${this.apiService.getApiUrl()}/${url}`);
     return this.apiService.get<Record>(url);
   }
 
@@ -42,8 +42,9 @@ export class RecordService {
    * });
    */
   getAllRecords(): Observable<Record[]> {
-    console.log('Fetching all records');
-    return this.apiService.get<Record[]>('records');
+    const url = 'records';
+    console.log(`Fetching all records from URL: ${this.apiService.getApiUrl()}/${url}`);
+    return this.apiService.get<Record[]>(url);
   }
 
   /**
@@ -57,8 +58,9 @@ export class RecordService {
    * });
    */
   addRecord(record: Record): Observable<Record> {
-    console.log('Adding record');
-    return this.apiService.post<Record>('records', record);
+    const url = 'records';
+    console.log(`Adding record to URL: ${this.apiService.getApiUrl()}/${url}`);
+    return this.apiService.post<Record>(url, record);
   }
 
   // sets the currently selected user to prepare to user detail presentation
@@ -76,14 +78,14 @@ export class RecordService {
   //  This is the main service to generated mocked user records
   generateNewRecordSet(count: number): Observable<Record[]> {
     const url = `records/generate?count=${count}`;
-    console.log(`Generating new record set with count: ${count}`);
+    console.log(`Generating new record set with count: ${count} from URL: ${this.apiService.getApiUrl()}/${url}`);
     return this.apiService.get<Record[]>(url);
   }
 
   // This is performance testing service to get the creation time of the records
   getCreationTime(): Observable<number> {
     const url = `records/time`;
-    console.log('Fetching creation time');
+    console.log(`Fetching creation time from URL: ${this.apiService.getApiUrl()}/${url}`);
     return this.apiService.get<number>(url);
   }
 

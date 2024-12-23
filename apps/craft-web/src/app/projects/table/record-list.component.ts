@@ -10,6 +10,14 @@ import { Record } from './models/record';
 import { RecordService } from './record.service';
 import { MenuItem } from '@craft-web/pages/sidebar/sidebar.types';
 
+export interface Server {
+  name: string;
+  language: string;
+  api: string;
+  port: number;
+  swagger: string;
+}
+
 @Component({
   selector: 'app-record-list',
   templateUrl: './record-list.component.html',
@@ -39,16 +47,16 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   totalRecords = 100;
   newData = false;
   records: Record[] = [];
-  servers = [
+  protected servers: Server[] = [
     {
-      name: 'Craft Nest',
-      language: 'NestJS',
+      name: 'Nest',
+      language: 'NestJS (node.js)',
       api: '/api',
       port: 3000,
       swagger: '/api/swagger',
     },
     {
-      name: 'Craft Go',
+      name: 'Go',
       language: 'Go',
       api: '/api/go',
       port: 4000,
@@ -59,90 +67,13 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
 
   constructor(private router: Router, private recordService: RecordService, private changeDetectorRef: ChangeDetectorRef) {
     console.log('Constructor: RecordListComponent created');
+    console.log('Initial servers:', this.servers);
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
     console.log('Event: Window resized');
     this.updateDisplayedColumns();
-  }
-
-  onSelectedServerChange(event: Event): void {
-    console.log('Event: Selected server changed with event:', event);
-    this.recordService.setServerResource(this.selectedServer.api);
-    console.log('Server: Selected server updated');
-  }
-
-  sortData(event: Sort): void {
-    console.log('Sort: Sorting data with event:', event);
-  
-    const { active, direction } = event;
-    if (!direction) return; // No sorting direction means no sorting
-  
-    const isAsc = direction === 'asc';
-  
-    const sortedData = [...this.dataSource.data].sort((a, b) => {
-      switch (active) {
-        case 'UID':
-          return this.compare(a.UID, b.UID, isAsc);
-        case 'name':
-          console.log('Sort: Sorting by name');
-          return this.compare(a.name, b.name, isAsc);
-        case 'address':
-          return this.compare(a.address.street, b.address.street, isAsc);
-        case 'city':
-          return this.compare(a.city, b.city, isAsc);
-        case 'state':
-          return this.compare(a.state, b.state, isAsc);
-        case 'zip':
-          return this.compare(a.zip, b.zip, isAsc);
-        case 'phone':
-          return this.compare(a.phone.number, b.phone.number, isAsc);
-        default:
-          return 0;
-      }
-    });
-  
-    // Update the dataSource with new sorted data
-    this.dataSource.data = sortedData;
-  
-    // Refresh the paginator
-    if (this.paginator) {
-      if (this.dataSource.paginator) {
-        this.dataSource.paginator.firstPage();
-      }
-    }
-  
-    console.log('Sort: Data sorted successfully');
-  }
-  
-  // Strongly typed comparison function
-  compare<T>(a: T, b: T, isAsc: boolean): number {
-    if (a == null || b == null) return 0;
-    return (a < b ? -1 : a > b ? 1 : 0) * (isAsc ? 1 : -1);
-  }
-
-  applyFilter(event: Event) {
-    console.log('Event: Filter applied with event:', event);
-    const filterValue = (event.target as HTMLInputElement).value;
-    if (filterValue.length >= 2 || filterValue === '') {
-      this.dataSource.filter = filterValue.trim().toLowerCase();
-      console.log('Filter: Applied with value:', filterValue);
-    }
-  }
-
-  onDisplayRowChange(event: PageEvent): void {
-    console.log('Event: Display row change with event:', event);
-    if (this.paginator) {
-      this.paginator.pageIndex = event.pageIndex;
-      this.paginator.pageSize = event.pageSize;
-      this.paginator.length = event.length;
-
-      if (this.dataSource.paginator && event.pageSize !== this.dataSource.paginator.pageSize) {
-        this.dataSource.paginator = this.paginator;
-        console.log('Paginator: Updated with pageIndex:', event.pageIndex, 'pageSize:', event.pageSize, 'length:', event.length);
-      }
-    }
   }
 
   ngOnInit(): void {
@@ -195,6 +126,39 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     this.destroy$.complete();
   }
 
+  onDisplayRowChange(event: PageEvent): void {
+    console.log('Event: Display row change with event:', event);
+    if (this.paginator) {
+      this.paginator.pageIndex = event.pageIndex;
+      this.paginator.pageSize = event.pageSize;
+      this.paginator.length = event.length;
+
+      if (this.dataSource.paginator && event.pageSize !== this.dataSource.paginator.pageSize) {
+        this.dataSource.paginator = this.paginator;
+        console.log('Paginator: Updated with pageIndex:', event.pageIndex, 'pageSize:', event.pageSize, 'length:', event.length);
+      }
+    }
+  }
+
+  onSelectedServerChange(event: string): void {
+    console.log('Event: Selected server changed with event:', event);
+    console.log('Available servers:', this.servers);
+
+    const server = this.servers.find(element => event === element.language);
+
+    if (server) {
+      console.log('Found server:', server);
+      this.recordService.setServerResource(server.api);
+      this.dataSource.data = [];
+      this.onDatasetChange(this.totalRecords);
+      this.selectedServer = server;
+      console.log('Server: Selected server updated to:', this.selectedServer.name);
+      console.log('API Endpoint:', this.selectedServer.api);
+    } else {
+      console.error('Error: No matching server found for event:', event);
+    }
+  }
+
   private updateDisplayedColumns(): void {
     console.log('Method: updateDisplayedColumns called');
     const width = window.innerWidth;
@@ -221,6 +185,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   }
 
   onDatasetChange(count: number): void {
+    debugger;
     this.resolved = false;
     this.totalRecords = 0;
 
@@ -285,6 +250,64 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     console.log('Navigation: Navigated to record detail view');
   }
 
+  sortData(event: Sort): void {
+    console.log('Sort: Sorting data with event:', event);
+
+    const { active, direction } = event;
+    if (!direction) return; // No sorting direction means no sorting
+
+    const isAsc = direction === 'asc';
+
+    const sortedData = [...this.dataSource.data].sort((a, b) => {
+      switch (active) {
+        case 'UID':
+          return this.compare(a.UID, b.UID, isAsc);
+        case 'name':
+          console.log('Sort: Sorting by name');
+          return this.compare(a.name, b.name, isAsc);
+        case 'address':
+          return this.compare(a.address.street, b.address.street, isAsc);
+        case 'city':
+          return this.compare(a.city, b.city, isAsc);
+        case 'state':
+          return this.compare(a.state, b.state, isAsc);
+        case 'zip':
+          return this.compare(a.zip, b.zip, isAsc);
+        case 'phone':
+          return this.compare(a.phone.number, b.phone.number, isAsc);
+        default:
+          return 0;
+      }
+    });
+
+    // Update the dataSource with new sorted data
+    this.dataSource.data = sortedData;
+
+    // Refresh the paginator
+    if (this.paginator) {
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
+    }
+
+    console.log('Sort: Data sorted successfully');
+  }
+
+  // Strongly typed comparison function
+  compare<T>(a: T, b: T, isAsc: boolean): number {
+    if (a == null || b == null) return 0;
+    return (a < b ? -1 : a > b ? 1 : 0) * (isAsc ? 1 : -1);
+  }
+
+  applyFilter(event: Event) {
+    console.log('Event: Filter applied with event:', event);
+    const filterValue = (event.target as HTMLInputElement).value;
+    if (filterValue.length >= 2 || filterValue === '') {
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+      console.log('Filter: Applied with value:', filterValue);
+    }
+  }
+  
   private updateCreationTime(): void {
     this.recordService
       .getCreationTime()

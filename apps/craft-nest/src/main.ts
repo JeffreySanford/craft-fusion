@@ -4,12 +4,16 @@ import { AppModule } from './app/app.module';
 import { Logger } from '@nestjs/common';
 import helmet from 'helmet';
 import * as fs from 'fs';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
-  const NODE_ENV = process.env['NODE_ENV'] || 'development';
+  const appInstance = await NestFactory.create(AppModule);
+  const configService = appInstance.get(ConfigService);
+
+  const NODE_ENV = configService.get<string>('NODE_ENV') || 'development';
   const isProduction = NODE_ENV === 'production';
   const HOST = isProduction ? 'jeffreysanford.us' : 'localhost';
-  const PORT = 3000;
+  const PORT = configService.get<number>('NEST_PORT') || 3000;
   const protocol = isProduction ? 'https' : 'http';
 
   Logger.log(`Starting server in ${NODE_ENV} mode`);
@@ -20,7 +24,7 @@ async function bootstrap() {
     cert: fs.readFileSync('/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem'),
   } : undefined;
 
-  const app = await NestFactory.create(AppModule, { 
+  const app = await NestFactory.create(AppModule, {
     httpsOptions
   });
 
@@ -28,7 +32,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: ['https://jeffreysanford.us', 'https://www.jeffreysanford.us', 'http://localhost:4200'],
+    origin: ['https://www.jeffreysanford.us', 'http://localhost:4200'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],

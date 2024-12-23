@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 })
 export class ApiService {
   private isProduction = environment.production;
-  private apiUrl = `${environment.apiUrl}/api`;
+  private apiUrl = `${environment.apiUrl}:${environment.nestPort}/api`;
   private recordSize = 100; // Default record size
   private serverType = 'NestJS'; // Default server type
 
@@ -42,8 +42,15 @@ export class ApiService {
 
   // allow for setting different server endpoint api/go for Go server and api for NestJS server (4000 and 3000)
   setApiUrl(api: string): void {
-    this.apiUrl = this.isProduction ? `https://jeffreysanford.us:${api}` : `http://localhost:${api}`;
+    const port = api === '/api/go' ? environment.goPort : environment.nestPort;
+    this.apiUrl = this.isProduction 
+      ? `https://jeffreysanford.us:${port}` 
+      : `http://${environment.host}:${port}`;
     console.log(`API Service: Setting API URL to ${this.apiUrl}`);
+  }
+
+  getApiUrl(): string {
+    return this.apiUrl;
   }
 
   setRecordSize(size: number): void {
