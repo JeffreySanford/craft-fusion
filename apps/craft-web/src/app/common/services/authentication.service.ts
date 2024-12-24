@@ -18,7 +18,7 @@ interface AuthResponse {
 /**
  * Service responsible for handling authentication state and operations.
  * Manages user sessions, token storage, and authentication status.
- * 
+ *
  * @todo
  * - Implement refresh token mechanism
  * - Add biometric authentication support
@@ -26,7 +26,7 @@ interface AuthResponse {
  * - Add rate limiting for failed attempts
  * - Implement token rotation
  * - Add 2FA support
- * 
+ *
  * @security
  * - Token is stored in localStorage (consider more secure alternatives)
  * - Password is never stored in memory
@@ -35,7 +35,7 @@ interface AuthResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
   private readonly TOKEN_KEY = 'auth_token';
-  
+
   /**
    * BehaviorSubject holding the current user state
    * Initializes with a default anonymous user
@@ -47,7 +47,7 @@ export class AuthenticationService {
     password: 'not provided', // @todo Remove password from User interface
     firstName: 'Sam',
     lastName: 'Sam Sample',
-    role: 'user'
+    role: 'user',
   });
 
   /**
@@ -68,12 +68,7 @@ export class AuthenticationService {
   private isAuthenticated = new BehaviorSubject<boolean>(false);
   private readonly isProduction = false;
 
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-    private notificationService: NotificationService,
-    private sessionService: SessionService
-  ) {
+  constructor(private http: HttpClient, private router: Router, private notificationService: NotificationService, private sessionService: SessionService) {
     this.initializeAuthentication();
   }
 
@@ -94,15 +89,17 @@ export class AuthenticationService {
   }
 
   logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    this.currentUserSubject.next({
+    const user: User = {
       id: 0,
       username: '',
       password: '',
       firstName: '',
       lastName: '',
-      role: ''
-    });
+      role: '',
+    };
+    
+    localStorage.removeItem(this.TOKEN_KEY);
+    this.currentUserSubject.next(user);
     this.isLoggedIn.next(false);
     this.isAuthenticated.next(false);
     this.isAdminSubject.next(false);
@@ -112,29 +109,32 @@ export class AuthenticationService {
   private initializeAuthentication(): void {
     const token = localStorage.getItem(this.TOKEN_KEY);
     if (token) {
-      this.sessionService.validateToken(token).pipe(
-        switchMap(isValid => {
-          if (isValid) {
-            return this.http.get<User>('/api/auth/user');
+      this.sessionService
+        .validateToken(token)
+        .pipe(
+          switchMap(isValid => {
+            if (isValid) {
+              return this.http.get<User>('/api/auth/user');
+            } else {
+              return EMPTY;
+            }
+          }),
+          catchError(error => {
+            console.error('Error validating token:', error);
+            return of(null);
+          }),
+        )
+        .subscribe(user => {
+          if (user) {
+            this.currentUserSubject.next(user);
+            this.isLoggedIn.next(true);
+            this.isAuthenticated.next(true);
+            this.isAdminSubject.next(user.role === 'admin');
+            this.router.navigate(['/dashboard']);
           } else {
-            return EMPTY;
+            this.logout();
           }
-        }),
-        catchError(error => {
-          console.error('Error validating token:', error);
-          return of(null);
-        })
-      ).subscribe(user => {
-        if (user) {
-          this.currentUserSubject.next(user);
-          this.isLoggedIn.next(true);
-          this.isAuthenticated.next(true);
-          this.isAdminSubject.next(user.role === 'admin');
-          this.router.navigate(['/dashboard']);
-        } else {
-          this.logout();
-        }
-      });
+        });
     }
   }
 

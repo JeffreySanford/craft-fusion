@@ -89,8 +89,9 @@ export class RecordService {
     return this.apiService.get<number>(url);
   }
 
-  setServerResource(resource: string): void {
+  setServerResource(resource: string): string {
     console.log(`Setting server resource: ${resource}`);
-    this.apiService.setApiUrl(resource);
+    debugger
+    return this.apiService.setApiUrl(resource);
   }
 }

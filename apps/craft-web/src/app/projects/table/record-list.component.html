@@ -7,7 +7,10 @@
   <mat-card class="record-collection" [@flyIn]>
     <mat-card-content *ngIf="roundtripLabel">
       <div class="report">
-        <p>Using the backend server language, {{ server.language }}, a mock record set of {{ totalRecords }} records was generated in {{ generationTimeLabel }} and delivered in {{ roundtripLabel }} to the Angular frontend.</p>
+        <p>
+          Using the backend server language, {{ server.language }}, a mock record set of {{ totalRecords }} records was generated in {{ generationTimeLabel }} and delivered in
+          {{ roundtripLabel }} to the Angular frontend. The endpoint is currently: {{ apiURL }}.
+        </p>
       </div>
       <div class="selectors" [@flyIn]>
         <mat-form-field class="performance" appearance="outline">
@@ -123,14 +126,7 @@
       </table>
     </div>
 
-    <mat-paginator
-      class="mat-elevation-z8"
-      [length]="totalRecords"
-      [pageSize]="5"
-      [pageSizeOptions]="[5, 25, 100]"
-      showFirstLastButtons
-      (page)="onDisplayRowChange($event)"
-    >
+    <mat-paginator class="mat-elevation-z8" [length]="totalRecords" [pageSize]="5" [pageSizeOptions]="[5, 25, 100]" showFirstLastButtons (page)="onDisplayRowChange($event)">
     </mat-paginator>
   </div>
 </div>

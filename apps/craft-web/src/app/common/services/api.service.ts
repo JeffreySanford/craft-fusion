@@ -2,6 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { environment as production } from 'src/environments/environment.prod';
+export interface Server {
+  name: string;
+  language: string;
+  api: string;
+  port: number;
+  swagger: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +18,26 @@ export class ApiService {
   private isProduction = environment.production;
   private apiUrl = `${environment.apiUrl}:${environment.nestPort}/api`;
   private recordSize = 100; // Default record size
-  private serverType = 'NestJS'; // Default server type
+  
+  private servers: Server[] = [
+      {
+        name: 'Nest',
+        language: 'NestJS (node.js)',
+        api: '/api',
+        port: 3000,
+        swagger: '/api/swagger',
+      },
+      {
+        name: 'Go',
+        language: 'Go',
+        api: '',
+        port: 4000,
+        swagger: '/swagger',
+      },
+    ];
+
+    private server = this.servers[0];
+
 
   constructor(private http: HttpClient) {
     console.log('API Service: Production mode is', this.isProduction ? 'ON' : 'OFF');
@@ -50,12 +77,21 @@ export class ApiService {
    */
 
   setApiUrl(api: string): string {
+    const server = this.servers.find(server => server.name === api);
     debugger
-    const port = api === '/api/go' ? environment.goPort : environment.nestPort;
-    this.apiUrl = this.isProduction ? `https://jeffreysanford.us:${port}` : `http://${environment.host}:${port}`;
-    console.log(`API Service: Setting API URL to ${this.apiUrl}`);
+    
+    if (server) {
+      this.apiUrl = this.isProduction ? `http://${production.host}:${server.port}/${server.api}` : `http://${environment.host}:${server.port}${server.api}`;
 
-    return this.apiUrl;
+      const apiEndpoint = this.apiUrl + server.api;
+      console.log(`API Service: Setting API URL to ${apiEndpoint}`);
+      
+      return apiEndpoint;
+    } else {
+      console.error('API Service: Server API not found');
+
+      return 'Server API not found';
+    }
   }
 
   getApiUrl(): string {
@@ -67,13 +103,18 @@ export class ApiService {
     console.log(`API Service: Setting record size to ${this.recordSize}`);
   }
 
-  setServerType(type: string): void {
-    this.serverType = type;
-    console.log(`API Service: Setting server type to ${this.serverType}`);
+  setServerType(serverName: string): void {
+    const server = this.servers.find(s => s.name === serverName);
+    if (server) {
+      this.server = server;
+      console.log(`API Service: Setting server type to ${server.name}`);
+    } else {
+      console.error('API Service: Server not found');
+    }
   }
 
   getPerformanceDetails(): void {
-    console.log(`API Service: Performance details for ${this.recordSize} records on ${this.serverType} server`);
+    console.log(`API Service: Performance details for ${this.recordSize} records on ${this.server} server`);
     // Add logic to fetch and display performance details
   }
 

@@ -13,9 +13,6 @@ import { MenuItem } from '@craft-web/pages/sidebar/sidebar.types';
 export interface Server {
   name: string;
   language: string;
-  api: string;
-  port: number;
-  swagger: string;
 }
 
 @Component({
@@ -51,19 +48,14 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     {
       name: 'Nest',
       language: 'NestJS (node.js)',
-      api: '/api',
-      port: 3000,
-      swagger: '/api/swagger',
     },
     {
       name: 'Go',
       language: 'Go',
-      api: '/api/go',
-      port: 4000,
-      swagger: '/api/go/swagger',
     },
   ];
   server: Server = this.servers[0];
+  apiURL = ''
 
   constructor(private router: Router, private recordService: RecordService, private changeDetectorRef: ChangeDetectorRef) {
     console.log('Constructor: RecordListComponent created');
@@ -80,6 +72,10 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     console.log('Lifecycle: ngOnInit called');
     this.resolved = false;
     this.startTime = new Date().getTime();
+    const server = this.servers[0];
+    this.server = server;
+    
+    this.apiURL = this.recordService.setServerResource(server.name);
     this.recordService
       .generateNewRecordSet(100)
       .pipe(
@@ -142,19 +138,18 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
 
   onSelectedServerChange(event: string): void {
     debugger
-    console.log('Event: Selected server changed with event:', event);
+    console.log('Event (Server Name): Selected server changed with event:', event);
     console.log('Available servers:', this.servers);
 
-    const server = this.servers.find(element => event === element.language);
+    const server = this.servers.find(element => event === element.name);
     
     if (server) {
       console.log('Found server:', server);
-      this.recordService.setServerResource(server.api);
+      this.apiURL = this.recordService.setServerResource(server.name);
       this.dataSource.data = [];
       this.onDatasetChange(this.totalRecords);
       this.server = server;
       console.log('Server: Selected server updated to:', this.server.name);
-      console.log('API Endpoint:', this.server.api);
     } else {
       console.error('Error: No matching server found for event:', event);
     }
