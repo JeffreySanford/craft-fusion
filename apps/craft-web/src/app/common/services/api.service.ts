@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
   private isProduction = environment.production;
@@ -20,7 +20,7 @@ export class ApiService {
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer YOUR_TOKEN_HERE' // Replace with your token logic
+      Authorization: 'Bearer YOUR_TOKEN_HERE', // Replace with your token logic
     });
   }
 
@@ -41,12 +41,21 @@ export class ApiService {
   }
 
   // allow for setting different server endpoint api/go for Go server and api for NestJS server (4000 and 3000)
-  setApiUrl(api: string): void {
+  /** The sets dynamic server name, port, and most importantly the apiUrl.  Details this and rewrite this function
+   * @param api - The server endpoint to set
+   * @example
+   * setApiUrl('/api/go');
+   * setApiUrl('/api');
+   * 
+   */
+
+  setApiUrl(api: string): string {
+    debugger
     const port = api === '/api/go' ? environment.goPort : environment.nestPort;
-    this.apiUrl = this.isProduction 
-      ? `https://jeffreysanford.us:${port}` 
-      : `http://${environment.host}:${port}`;
+    this.apiUrl = this.isProduction ? `https://jeffreysanford.us:${port}` : `http://${environment.host}:${port}`;
     console.log(`API Service: Setting API URL to ${this.apiUrl}`);
+
+    return this.apiUrl;
   }
 
   getApiUrl(): string {

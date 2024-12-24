@@ -47,7 +47,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   totalRecords = 100;
   newData = false;
   records: Record[] = [];
-  protected servers: Server[] = [
+  servers: Server[] = [
     {
       name: 'Nest',
       language: 'NestJS (node.js)',
@@ -63,7 +63,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
       swagger: '/api/go/swagger',
     },
   ];
-  selectedServer = this.servers[0];
+  server: Server = this.servers[0];
 
   constructor(private router: Router, private recordService: RecordService, private changeDetectorRef: ChangeDetectorRef) {
     console.log('Constructor: RecordListComponent created');
@@ -141,19 +141,20 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   }
 
   onSelectedServerChange(event: string): void {
+    debugger
     console.log('Event: Selected server changed with event:', event);
     console.log('Available servers:', this.servers);
 
     const server = this.servers.find(element => event === element.language);
-
+    
     if (server) {
       console.log('Found server:', server);
       this.recordService.setServerResource(server.api);
       this.dataSource.data = [];
       this.onDatasetChange(this.totalRecords);
-      this.selectedServer = server;
-      console.log('Server: Selected server updated to:', this.selectedServer.name);
-      console.log('API Endpoint:', this.selectedServer.api);
+      this.server = server;
+      console.log('Server: Selected server updated to:', this.server.name);
+      console.log('API Endpoint:', this.server.api);
     } else {
       console.error('Error: No matching server found for event:', event);
     }
@@ -185,7 +186,6 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   }
 
   onDatasetChange(count: number): void {
-    debugger;
     this.resolved = false;
     this.totalRecords = 0;
 
