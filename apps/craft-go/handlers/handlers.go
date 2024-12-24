@@ -1,31 +1,58 @@
 package handlers
 
 import (
-	"craft-fusion/craft-go/models"
+	"log"
 	"net/http"
 	"strconv"
+	"sync/atomic"
+	"time"
+
+	"craft-fusion/craft-go/models"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gin-gonic/gin"
 )
 
-// GenerateNewRecordsHandler handles the generation of new records
-func GenerateNewRecordsHandler(c *gin.Context) {
-	countStr := c.Query("count")
-	count, err := strconv.Atoi(countStr)
-	if err != nil || count <= 0 {
+var recordGenerationTime int64
+
+// GenerateRecordsHandler handles the request to generate multiple records
+func GenerateRecordsHandler(c *gin.Context) {
+	// Parse the count parameter
+	count := c.DefaultQuery("count", "10")
+	recordCount, err := strconv.Atoi(count)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid count parameter"})
 		return
 	}
 
-	// Logic to generate records
-	records := createRecords(count)
+	// Start the timer
+	startTime := time.Now()
 
+	// Generate the records
+	records := generateRecords(recordCount)
+
+	// End the timer
+	endTime := time.Now()
+
+	// Calculate the elapsed time
+	elapsedTime := endTime.Sub(startTime).Milliseconds()
+	atomic.StoreInt64(&recordGenerationTime, elapsedTime)
+
+	// Log the number of records generated and the elapsed time
+	log.Printf("%d records generated in: %d ms", recordCount, elapsedTime)
+
+	// Return the generated records
 	c.JSON(http.StatusOK, records)
 }
 
+// GetCreationTimeHandler handles the request to get the record generation time
+func GetCreationTimeHandler(c *gin.Context) {
+	elapsedTime := atomic.LoadInt64(&recordGenerationTime)
+	c.JSON(http.StatusOK, gin.H{"generationTime": elapsedTime})
+}
+
 // Mock function to generate records
-func createRecords(count int) []models.UserRecord {
+func generateRecords(count int) []models.UserRecord {
 	gofakeit.Seed(0)
 	records := make([]models.UserRecord, count)
 	for i := 0; i < count; i++ {
