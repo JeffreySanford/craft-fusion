@@ -50,8 +50,9 @@ function track_time() {
     local end_time=$(date +%s%3N)
     local duration=$((end_time - start_time))
     local cmd_name="$1"
+    local current_time=$(date '+%Y-%m-%d %H:%M:%S %Z')
     echo -e "[INFO] ✅ $cmd_name took: \033[1;32m${duration} ms\033[0m"
-    echo "$(date +%Y-%m-%d %H:%M:%S) [INFO] $cmd_name completed in ${duration} ms" >> "$DEPLOY_LOG"
+    echo "$current_time [INFO] $cmd_name completed in ${duration} ms" >> "$DEPLOY_LOG"
 }
 
 function init_log() {
