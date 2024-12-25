@@ -1,78 +1,150 @@
 #!/bin/bash
 
-# Deployment Script for Digital Ocean with Cache Cleanup, Logging, and Error Handling
+# 🚀 Digital Ocean Deployment Script
+# Author: Jeffrey Sanford
+# Description: Complete deployment for craft-web, craft-nest, and craft-go with cache cleanup, error handling, and detailed logs.
 
-set -e
+set -e  # Exit immediately on error
+set -o pipefail  # Fail pipeline if any command fails
 
-# Helper function for error logging
-handle_error() {
-  echo "[ERROR] ❌ $1"
+# === 🛡️ Environment Variables ===
+REPO_PATH="/home/jeffrey/repos/craft-fusion"
+FRONTEND_BUILD_PATH="$REPO_PATH/dist/apps/craft-web/browser"
+NGINX_PATH="/usr/share/nginx/html"
+PM2_APP_NAME_NEST="craft-nest"
+PM2_APP_NAME_GO="craft-go"
+NODE_ENV="production"
+
+# Ensure required tools are installed
+for cmd in git npm node pm2 go; do
+  if ! command -v $cmd &> /dev/null; then
+    echo "[ERROR] ❌ Required command '$cmd' is not installed. Exiting."
+    exit 1
+  fi
+done
+
+echo "[INFO] ✅ All required tools are installed."
+
+# === 📥 Pull Latest Changes ===
+echo "[INFO] 📥 Pulling latest changes from Git..."
+cd "$REPO_PATH"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519 || {
+  echo "[ERROR] ❌ Failed to add SSH key."
+  exit 1
+}
+git fetch --all
+git reset --hard origin/master || {
+  echo "[ERROR] ❌ Failed to pull latest code. Check Git logs."
   exit 1
 }
 
-# Step 1: Environment Setup
-echo "[INFO] 🚀 Starting Deployment Process..."
+# === 🧹 Clean Cache and Install Dependencies ===
+echo "[INFO] 🧹 Cleaning cache and installing dependencies..."
+sudo rm -rf node_modules package-lock.json dist
+npm cache clean --force || {
+  echo "[ERROR] ❌ Failed to clean npm cache."
+  exit 1
+}
+npm install || {
+  echo "[ERROR] ❌ npm install failed."
+  exit 1
+}
+
+# === 🛠️ Build Frontend ===
+echo "[INFO] 🛠️ Building Frontend (craft-web)..."
+npx nx run craft-web:build:production || {
+  echo "[ERROR] ❌ Frontend (craft-web) build failed."
+  exit 1
+}
+
+# === 🛠️ Build Backend (NestJS) ===
+echo "[INFO] 🛠️ Building Backend (craft-nest)..."
+npx nx run craft-nest:build:production || {
+  echo "[ERROR] ❌ Backend (craft-nest) build failed."
+  exit 1
+}
+
+# === 🛠️ Build Backend (Go) ===
+echo "[INFO] 🛠️ Building Backend (craft-go)..."
+
+# Ensure Go is in PATH
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 
-# Verify Go Command
+# Verify Go Command is Available
 if ! command -v go &> /dev/null; then
-  handle_error "Go command not found. Ensure Go is installed and in PATH."
+    echo "[ERROR] ❌ Go command not found. Ensure Go is installed and in PATH."
+    exit 1
 else
-  echo "[INFO] ✅ Go found: $(go version)"
+    echo "[INFO] ✅ Go found: $(go version)"
 fi
 
-# Step 2: Pull Latest Changes
-echo "[INFO] 📥 Pulling latest changes from Git..."
-if ! git pull; then
-  handle_error "Failed to pull latest changes from Git."
-fi
+# Run Go Build
+npx nx run craft-go:build || {
+    echo "[ERROR] ❌ Backend (craft-go) build failed."
+    exit 1
+}
 
-# Step 3: Cleanup Node Modules and Cache
-echo "[INFO] 🧹 Cleaning up node_modules and npm cache..."
-rm -rf node_modules package-lock.json || handle_error "Failed to remove node_modules or package-lock.json"
-npm cache clean --force || handle_error "Failed to clear npm cache"
-npm install || handle_error "Failed to install npm dependencies"
+# === 🔄 Restart Backend Services ===
+echo "[INFO] 🔄 Restarting Backend Services with PM2..."
 
-# Step 4: Build Frontend (craft-web)
-echo "[INFO] 🛠️ Building Frontend (craft-web)..."
-if ! npx nx run craft-web:build:production; then
-  handle_error "Frontend (craft-web) build failed."
+# Restart NestJS
+pm2 stop $PM2_APP_NAME_NEST || true
+pm2 delete $PM2_APP_NAME_NEST || true
+pm2 start dist/apps/craft-nest/main.js --name $PM2_APP_NAME_NEST || {
+    echo "[ERROR] ❌ Failed to restart NestJS service with PM2."
+    exit 1
+}
+
+# Restart Go
+pm2 stop $PM2_APP_NAME_GO || true
+pm2 delete $PM2_APP_NAME_GO || true
+pm2 start dist/apps/craft-go/main --name $PM2_APP_NAME_GO || {
+    echo "[ERROR] ❌ Failed to restart Go service with PM2."
+    exit 1
+}
+
+# === 📂 Deploy Frontend to NGINX ===
+echo "[INFO] 📂 Deploying Frontend to NGINX..."
+sudo rm -rf $NGINX_PATH/*
+sudo mv $FRONTEND_BUILD_PATH/* $NGINX_PATH/
+sudo chown -R nginx:nginx $NGINX_PATH
+sudo chmod -R 755 $NGINX_PATH
+sudo restorecon -Rv $NGINX_PATH || {
+    echo "[ERROR] ❌ Failed to restore SELinux context for NGINX directory."
+    exit 1
+}
+
+# === 🔄 Restart NGINX ===
+echo "[INFO] 🔄 Restarting NGINX..."
+sudo systemctl restart nginx || {
+    echo "[ERROR] ❌ Failed to restart NGINX."
+    exit 1
+}
+
+# === 🧪 Health Check ===
+echo "[INFO] 🧪 Performing Health Checks..."
+if curl -s --head --request GET https://jeffreysanford.us | grep "200 OK" > /dev/null; then
+  echo "[SUCCESS] ✅ Frontend is live!"
 else
-  echo "[INFO] ✅ Frontend (craft-web) build completed successfully."
+  echo "[ERROR] ❌ Frontend health check failed!"
+  exit 1
 fi
 
-# Step 5: Build Backend (craft-nest)
-echo "[INFO] 🛠️ Building Backend (craft-nest)..."
-if ! npx nx run craft-nest:build:production; then
-  handle_error "Backend (craft-nest) build failed."
+if curl -s --head --request GET http://localhost:3000/api/health | grep "200 OK" > /dev/null; then
+  echo "[SUCCESS] ✅ NestJS Backend is live!"
 else
-  echo "[INFO] ✅ Backend (craft-nest) build completed successfully."
+  echo "[ERROR] ❌ NestJS Backend health check failed!"
+  exit 1
 fi
 
-# Step 6: Build Backend (craft-go)
-echo "[INFO] 🛠️ Building Backend (craft-go)..."
-if ! npx nx run craft-go:build; then
-  handle_error "Backend (craft-go) build failed."
+if curl -s --head --request GET http://localhost:4000/api/health | grep "200 OK" > /dev/null; then
+  echo "[SUCCESS] ✅ Go Backend is live!"
 else
-  echo "[INFO] ✅ Backend (craft-go) build completed successfully."
+  echo "[ERROR] ❌ Go Backend health check failed!"
+  exit 1
 fi
 
-# Step 7: Restart PM2 Services
-echo "[INFO] 🔄 Restarting PM2 services..."
-if ! pm2 restart all; then
-  handle_error "Failed to restart PM2 services."
-else
-  echo "[INFO] ✅ PM2 services restarted successfully."
-fi
-
-# Step 8: Final Deployment Step
-echo "[INFO] 🚚 Moving Frontend Build to Nginx Root..."
-rm -rf /usr/share/nginx/html/* || handle_error "Failed to clear existing Nginx HTML directory"
-mv dist/apps/craft-web/browser/* /usr/share/nginx/html/ || handle_error "Failed to move frontend files"
-chown -R nginx:nginx /usr/share/nginx/html || handle_error "Failed to set ownership for Nginx HTML directory"
-chmod -R 755 /usr/share/nginx/html || handle_error "Failed to set permissions for Nginx HTML directory"
-restorecon -Rv /usr/share/nginx/html || handle_error "Failed to restore SELinux context for Nginx HTML directory"
-
-# Step 9: Verify Services
-echo "[INFO] ✅ Deployment Completed Successfully!"
-echo "[INFO] 🌐 Access the application at: https://jeffreysanford.us"
+# === ✅ Final Status ===
+echo "[SUCCESS] 🎉 Deployment completed successfully!"
+pm2 status
