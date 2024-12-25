@@ -36,14 +36,24 @@ export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 
 # === 2. 🔑 Step 2: SSH Agent Setup ===
 step_progress
+# === 2. 🔑 Step 2: SSH Agent Setup ===
+step_progress
 echo "[STEP 2] 🔑 Starting SSH Agent..."
+
+# Start SSH Agent
 eval "$(ssh-agent -s)"
-if [ -f ~/.ssh/id_ed25519 ]; then
-    ssh-add ~/.ssh/id_ed25519 || { echo "[ERROR] ❌ Failed to add SSH key."; exit 1; }
+
+# Use the correct SSH key path
+SSH_KEY="/home/jeffrey/.ssh/id_ed25519"
+
+if [ -f "$SSH_KEY" ]; then
+    ssh-add "$SSH_KEY" || { echo "[ERROR] ❌ Failed to add SSH key: $SSH_KEY."; exit 1; }
+    echo "[INFO] ✅ SSH key added: $SSH_KEY"
 else
-    echo "[ERROR] ❌ SSH key not found at ~/.ssh/id_ed25519."
+    echo "[ERROR] ❌ SSH key not found at $SSH_KEY."
     exit 1
 fi
+
 
 # === 3. 📥 Step 3: Pull Latest Changes ===
 step_progress
