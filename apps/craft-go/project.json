@@ -1,21 +1,129 @@
-{
-  "name": "craft-go",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/craft-go/src",
-  "projectType": "application",
-  "targets": {
-    "build": {
-      "executor": "@nx/go:build",
-      "options": {
-        "outputPath": "dist/apps/craft-go",
-        "main": "apps/craft-go/main.go"
-      }
-    },
-    "serve": {
-      "executor": "@nx/go:serve",
-      "options": {
-        "buildTarget": "craft-go:build"
-      }
-    }
-  }
+#!/bin/bash
+# ============================================================
+# 🚀 Craft-Fusion Deployment Script for Digital Ocean
+# ============================================================
+# This script automates deployment of Craft-Fusion.
+# It handles frontend, backend, PM2 services, and NGINX.
+# ------------------------------------------------------------
+# ⚠️  REMINDER: Use '--full-clean' for a fresh deployment.
+# ------------------------------------------------------------
+
+# === 🚀 Setup Variables ===
+TOTAL_STEPS=14
+CURRENT_STEP=0
+PROGRESS_BAR_LENGTH=50
+FULL_CLEAN=false
+
+# Flags
+if [[ "$1" == "--full-clean" ]]; then
+    FULL_CLEAN=true
+fi
+
+function step_progress() {
+    ((CURRENT_STEP++))
+    local percentage=$((CURRENT_STEP * 100 / TOTAL_STEPS))
+    local progress=$((CURRENT_STEP * PROGRESS_BAR_LENGTH / TOTAL_STEPS))
+    local remaining=$((PROGRESS_BAR_LENGTH - progress))
+    echo -ne "\033[0;32m[STEP $CURRENT_STEP/$TOTAL_STEPS] [$percentage%] \033[0;37m"
+    printf "%-${PROGRESS_BAR_LENGTH}s" "$(printf '#%.0s' $(seq 1 $progress))"
+    printf "%-${remaining}s" ""
+    echo -e " \033[0;32m✔\033[0m"
 }
+
+# === 📊 Step 1: Connection Metrics ===
+step_progress
+echo "[STEP 1] 📊 Gathering Deployment Metrics..."
+
+if [ "$FULL_CLEAN" = true ]; then
+    echo "[INFO] 📦 Measuring NPM Connection Metrics..."
+    START_TIME=$(date +%s)
+    NPM_SPEED=$(npm ping --json | jq '.ping')
+    END_TIME=$(date +%s)
+    DURATION=$((END_TIME - START_TIME))
+    echo "[INFO] 📊 NPM Speed: ${NPM_SPEED}ms"
+    echo "[INFO] ✅ NPM Connection Time: ${DURATION}s"
+else
+    echo "[INFO] ⚙️ Skipping NPM Metrics. Gathering Existing Deployment Stats..."
+    echo "[INFO] 🔄 Checking PM2 Services..."
+    pm2 list
+    echo "[INFO] 🔄 Checking NGINX Status..."
+    sudo systemctl status nginx --no-pager
+fi
+
+# === 🧹 Step 2: Managing Dependencies ===
+step_progress
+echo "[STEP 2] 🧹 Managing Dependencies..."
+if [ "$FULL_CLEAN" = true ]; then
+    echo "[INFO] 🔄 Full Clean Mode Enabled. Clearing node_modules and Cache..."
+    rm -rf node_modules package-lock.json || { echo "[ERROR] ❌ Failed to clean dependencies."; exit 1; }
+    npm cache clean --force || { echo "[ERROR] ❌ Failed to clear NPM cache."; exit 1; }
+fi
+npm install || { echo "[ERROR] ❌ Failed to install dependencies."; exit 1; }
+
+# === 🛠️ Step 3: Build Backend (craft-go) ===
+step_progress
+echo "[STEP 3] 🛠️ Building Backend (craft-go)..."
+if npx nx run craft-go:build; then
+    echo "[INFO] ✅ craft-go build succeeded."
+else
+    echo "[ERROR] ❌ craft-go build failed."
+    echo "[DEBUG] 📄 Listing Go build directory:"
+    ls -l dist/apps/craft-go
+    exit 1
+fi
+
+# === 🛠️ Step 4: Build Backend (craft-nest) ===
+step_progress
+echo "[STEP 4] 🛠️ Building Backend (craft-nest)..."
+if npx nx run craft-nest:build:production; then
+    echo "[INFO] ✅ craft-nest build succeeded."
+else
+    echo "[ERROR] ❌ craft-nest build failed."
+    echo "[DEBUG] 📄 Listing Nest build directory:"
+    ls -l dist/apps/craft-nest
+    exit 1
+fi
+
+# === 🔄 Step 5: Restart Services ===
+step_progress
+echo "[STEP 5] 🔄 Restarting Backend Services with PM2..."
+pm2 restart craft-go || pm2 start dist/apps/craft-go/main --name craft-go
+pm2 restart craft-nest || pm2 start dist/apps/craft-nest/main.js --name craft-nest
+
+# === 📂 Step 6: Deploy Frontend ===
+step_progress
+echo "[STEP 6] 📂 Deploying Frontend to NGINX..."
+sudo rm -rf /usr/share/nginx/html/*
+sudo mv dist/apps/craft-web/browser/* /usr/share/nginx/html/
+sudo chown -R nginx:nginx /usr/share/nginx/html
+sudo chmod -R 755 /usr/share/nginx/html
+sudo restorecon -Rv /usr/share/nginx/html
+sudo systemctl restart nginx
+
+# === 🛡️ Step 7: Check Snort ===
+step_progress
+echo "[STEP 7] 🛡️ Checking Snort Logs..."
+if sudo systemctl is-active --quiet snort; then
+    echo "[INFO] ✅ Snort service is active."
+    sudo tail -n 10 /var/log/snort/alert || echo "[WARNING] ⚠️ No alert logs available."
+else
+    echo "[ERROR] ❌ Snort service is not active."
+fi
+
+# === 🎯 Step 8: Final Status ===
+step_progress
+echo "[STEP 8] 🎯 Finalizing Deployment..."
+pm2 status
+sudo systemctl status nginx --no-pager
+
+END_TIME=$(date +%s)
+DURATION=$((END_TIME - START_TIME))
+echo -e "\n[SUCCESS] 🎉 Deployment completed successfully!"
+echo "[INFO] 🚀 Total Time: ${DURATION}s"
+echo "[INFO] ✅ Services Running:"
+pm2 list
+echo "[INFO] 📊 Deployment Metrics:"
+echo "   🕒 Total Deployment Time: ${DURATION}s"
+echo "   ⚡ NPM Speed: ${NPM_SPEED:-N/A}"
+echo "   🛡️ Snort Status: $(sudo systemctl is-active snort)"
+echo -e "\033[0;32mDeployment Completed: 100% ✔\033[0m"
