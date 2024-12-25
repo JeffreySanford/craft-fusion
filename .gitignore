@@ -60,3 +60,13 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+
+# NestJS Build
+/dist
+/packages/*/dist
+/packages/*/node_modules
+/packages/*/coverage
+/packages/*/test
+/packages/*/tsconfig.tsbuildinfo
+
+

@@ -4,6 +4,8 @@ import (
 	"craft-fusion/craft-go/handlers"
 	"fmt"
 	"log"
+	"net/http"
+	"time"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
@@ -75,5 +77,16 @@ func main() {
 	}
 
 	log.Println("Starting Go Backend on :4000")
-	router.Run(":4000")
+
+	srv := &http.Server{
+		Addr:         ":4000",
+		Handler:      router,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  30 * time.Second,
+	}
+
+	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatalf("listen: %s\n", err)
+	}
 }
