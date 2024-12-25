@@ -1,155 +1,148 @@
 #!/bin/bash
 
-# =========================================
-# 🚀 DigitalOcean Deployment Script
-# Author: Jeffrey Sanford
-# Description: Builds and deploys craft-web, craft-nest, and craft-go
-# =========================================
+# === 🚀 Deployment Script with Step Numbers and Progress Tracking ===
 
-set -e
+# Constants
+TOTAL_STEPS=11
+CURRENT_STEP=0
+PROGRESS_BAR_LENGTH=50
 
-# === 🛡️ Variables ===
-REPO_PATH="/home/jeffrey/repos/craft-fusion"
-FRONTEND_BUILD_PATH="$REPO_PATH/dist/apps/craft-web/browser"
+# Paths
+FRONTEND_BUILD_PATH="dist/apps/craft-web/browser"
+BACKEND_NEST_PATH="dist/apps/craft-nest/main.js"
+BACKEND_GO_PATH="dist/apps/craft-go/main"
 NGINX_PATH="/usr/share/nginx/html"
+
+# PM2 App Names
 PM2_APP_NAME_NEST="craft-nest"
 PM2_APP_NAME_GO="craft-go"
 
-# === 🛡️ PATH Management ===
-if [ "$EUID" -eq 0 ]; then
-    echo "[INFO] 🛡️ Running as root, setting PATH explicitly..."
-    export PATH="/usr/local/go/bin:/home/jeffrey/go/bin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin"
+# Function to increment steps and display progress
+function step_progress() {
+    ((CURRENT_STEP++))
+    local percentage=$((CURRENT_STEP * 100 / TOTAL_STEPS))
+    local progress=$((CURRENT_STEP * PROGRESS_BAR_LENGTH / TOTAL_STEPS))
+    local remaining=$((PROGRESS_BAR_LENGTH - progress))
+    echo -ne "\033[0;32m[STEP $CURRENT_STEP/$TOTAL_STEPS] [$percentage%] \033[0;37m"
+    printf "%-${PROGRESS_BAR_LENGTH}s" "$(printf '#%.0s' $(seq 1 $progress))"
+    printf "%-${remaining}s" ""
+    echo -e " \033[0;32m✔\033[0m"
+}
+
+# === 1. 🚀 Step 1: Environment Setup ===
+step_progress
+echo "[STEP 1] 🚀 Setting up Environment Variables..."
+export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+
+# === 2. 🔑 Step 2: SSH Agent Setup ===
+step_progress
+echo "[STEP 2] 🔑 Starting SSH Agent..."
+eval "$(ssh-agent -s)"
+if [ -f ~/.ssh/id_ed25519 ]; then
+    ssh-add ~/.ssh/id_ed25519 || { echo "[ERROR] ❌ Failed to add SSH key."; exit 1; }
 else
-    echo "[INFO] 🛡️ Running as non-root, using current PATH."
-    export PATH="$PATH:/usr/local/go/bin:$HOME/go/bin"
-fi
-
-echo "[DEBUG] 🔍 Current PATH: $PATH"
-
-# === 🔑 Start SSH Agent ===
-echo "[INFO] 🔑 Starting SSH agent..."
-
-# Ensure SSH key path points to the correct user home directory
-SSH_KEY_PATH="/home/jeffrey/.ssh/id_ed25519"
-
-if [ ! -f "$SSH_KEY_PATH" ]; then
-    echo "[ERROR] ❌ SSH key not found at $SSH_KEY_PATH. Ensure the key exists."
+    echo "[ERROR] ❌ SSH key not found at ~/.ssh/id_ed25519."
     exit 1
 fi
 
-# Start SSH Agent and add the key
-eval "$(ssh-agent -s)" || {
-    echo "[ERROR] ❌ Failed to start SSH agent."
-    exit 1
-}
+# === 3. 📥 Step 3: Pull Latest Changes ===
+step_progress
+echo "[STEP 3] 📥 Pulling Latest Changes from Git..."
+git pull || { echo "[ERROR] ❌ Failed to pull latest changes."; exit 1; }
 
-ssh-add "$SSH_KEY_PATH" || {
-    echo "[ERROR] ❌ Failed to add SSH key: $SSH_KEY_PATH"
-    exit 1
-}
-
-echo "[INFO] ✅ SSH key successfully added."
-
-# === 📥 Pull Latest Changes ===
-echo "[INFO] 📥 Pulling latest changes from Git..."
-cd "$REPO_PATH" || {
-    echo "[ERROR] ❌ Failed to change directory to $REPO_PATH"
-    exit 1
-}
-git fetch --all
-git reset --hard origin/master
-git pull || {
-    echo "[ERROR] ❌ Failed to pull the latest changes from Git."
-    exit 1
-}
-
-# === 🛠️ Clean Up and Install Dependencies ===
-echo "[INFO] 🧹 Cleaning up node_modules and cache..."
-rm -rf node_modules package-lock.json
+# === 4. 🛠️ Step 4: Install Dependencies ===
+step_progress
+echo "[STEP 4] 🛠️ Installing Dependencies..."
+sudo rm -rf node_modules package-lock.json
 npm cache clear --force
+npm install || { echo "[ERROR] ❌ Failed to install dependencies."; exit 1; }
 
-echo "[INFO] 📦 Installing dependencies..."
-npm install || {
-    echo "[ERROR] ❌ Failed to install dependencies."
+# === 5. 🌐 Step 5: Build Frontend (craft-web) ===
+step_progress
+echo "[STEP 5] 🌐 Building Frontend (craft-web)..."
+npx nx run craft-web:build:production || { echo "[ERROR] ❌ Frontend build failed."; exit 1; }
+
+# === 6. 🛠️ Step 6: Build Backend (craft-nest) ===
+step_progress
+echo "[STEP 6] 🛠️ Building Backend (craft-nest)..."
+npx nx run craft-nest:build:production || { echo "[ERROR] ❌ Backend (craft-nest) build failed."; exit 1; }
+
+# Verify NestJS Build
+if [ ! -f "$BACKEND_NEST_PATH" ]; then
+    echo "[ERROR] ❌ Backend NestJS main.js not found at $BACKEND_NEST_PATH. Build failed or incorrect path."
     exit 1
-}
+fi
 
-# === 🛠️ Build Frontend (craft-web) ===
-echo "[INFO] 🛠️ Building Frontend (craft-web)..."
-npx nx run craft-web:build:production || {
-    echo "[ERROR] ❌ Frontend (craft-web) build failed."
-    exit 1
-}
-
-# === 🛠️ Build Backend (craft-nest) ===
-echo "[INFO] 🛠️ Building Backend (craft-nest)..."
-npx nx run craft-nest:build:production || {
-    echo "[ERROR] ❌ Backend (craft-nest) build failed."
-    exit 1
-}
-
-# === 🛠️ Build Backend (craft-go) ===
-echo "[INFO] 🛠️ Building Backend (craft-go)..."
-
-# Verify Go Installation
+# === 7. 🛠️ Step 7: Build Backend (craft-go) ===
+step_progress
+echo "[STEP 7] 🛠️ Building Backend (craft-go)..."
 if ! command -v go &> /dev/null; then
-    echo "[ERROR] ❌ Go command not found. Ensure Go is installed and in PATH."
-    echo "[DEBUG] 🔍 Current PATH: $PATH"
+    echo "[ERROR] ❌ Go is not installed. Exiting."
     exit 1
 else
     echo "[INFO] ✅ Go found: $(go version)"
 fi
+npx nx run craft-go:build || { echo "[ERROR] ❌ Backend (craft-go) build failed."; exit 1; }
 
-npx nx run craft-go:build || {
-    echo "[ERROR] ❌ Backend (craft-go) build failed."
+# Verify Go Build
+if [ ! -f "$BACKEND_GO_PATH" ]; then
+    echo "[ERROR] ❌ Backend Go binary not found at $BACKEND_GO_PATH. Build failed or incorrect path."
+    exit 1
+fi
+
+# === 8. 🔄 Step 8: Restart Backend Services ===
+step_progress
+echo "[STEP 8] 🔄 Restarting Backend Services with PM2..."
+
+# Restart NestJS Backend
+if pm2 list | grep -q "$PM2_APP_NAME_NEST"; then
+    pm2 stop "$PM2_APP_NAME_NEST"
+    pm2 delete "$PM2_APP_NAME_NEST"
+fi
+
+pm2 start "$BACKEND_NEST_PATH" --name "$PM2_APP_NAME_NEST" || {
+    echo "[ERROR] ❌ Failed to start NestJS backend service with PM2."
     exit 1
 }
 
-# === 🔄 Restart Backend Services ===
-echo "[INFO] 🔄 Restarting Backend Services with PM2..."
+# Restart Go Backend
+if pm2 list | grep -q "$PM2_APP_NAME_GO"; then
+    pm2 stop "$PM2_APP_NAME_GO"
+    pm2 delete "$PM2_APP_NAME_GO"
+fi
 
-# Restart NestJS
-pm2 stop $PM2_APP_NAME_NEST || true
-pm2 delete $PM2_APP_NAME_NEST || true
-pm2 start dist/apps/craft-nest/main.js --name $PM2_APP_NAME_NEST || {
-    echo "[ERROR] ❌ Failed to restart NestJS service with PM2."
+pm2 start "$BACKEND_GO_PATH" --name "$PM2_APP_NAME_GO" || {
+    echo "[ERROR] ❌ Failed to start Go backend service with PM2."
     exit 1
 }
 
-# Restart Go Service
-pm2 stop $PM2_APP_NAME_GO || true
-pm2 delete $PM2_APP_NAME_GO || true
-pm2 start dist/apps/craft-go/main --name $PM2_APP_NAME_GO || {
-    echo "[ERROR] ❌ Failed to restart Go service with PM2."
+# === 9. 📂 Step 9: Deploy Frontend to NGINX ===
+step_progress
+echo "[STEP 9] 📂 Deploying Frontend to NGINX..."
+sudo rm -rf "$NGINX_PATH"/*
+sudo mv "$FRONTEND_BUILD_PATH"/* "$NGINX_PATH"/
+sudo chown -R nginx:nginx "$NGINX_PATH"
+sudo chmod -R 755 "$NGINX_PATH"
+sudo restorecon -Rv "$NGINX_PATH" || { echo "[ERROR] ❌ Failed to restore SELinux context."; exit 1; }
+
+sudo systemctl restart nginx || { echo "[ERROR] ❌ Failed to restart NGINX."; exit 1; }
+
+# === 10. 🛡️ Step 10: Check Snort Service ===
+step_progress
+echo "[STEP 10] 🛡️ Checking Snort Service..."
+if sudo systemctl is-active --quiet snort; then
+    echo "[INFO] ✅ Snort service is running."
+    echo "[INFO] 📄 Latest Snort Logs:"
+    sudo ls -lt /var/log/snort | head -5
+    sudo tail -n 20 /var/log/snort/alert || echo "[WARNING] ⚠️ Snort alert log not found."
+else
+    echo "[ERROR] ❌ Snort service is not running. Please investigate."
     exit 1
-}
+fi
 
-# === 📂 Deploy Frontend to NGINX ===
-echo "[INFO] 📂 Deploying Frontend to NGINX..."
-
-sudo rm -rf $NGINX_PATH/*
-sudo mv $FRONTEND_BUILD_PATH/* $NGINX_PATH/
-sudo chown -R nginx:nginx $NGINX_PATH
-sudo chmod -R 755 $NGINX_PATH
-sudo restorecon -Rv $NGINX_PATH || {
-    echo "[ERROR] ❌ Failed to restore SELinux context for NGINX directory."
-    exit 1
-}
-
-# === 🔄 Restart NGINX ===
-echo "[INFO] 🔄 Restarting NGINX..."
-sudo systemctl restart nginx || {
-    echo "[ERROR] ❌ Failed to restart NGINX."
-    exit 1
-}
-
-# === ✅ Final Status ===
-echo "[SUCCESS] 🎉 Deployment completed successfully!"
+# === 11. 🎯 Step 11: Final Status ===
+step_progress
+echo "[STEP 11] 🎯 Finalizing Deployment..."
 pm2 status
-
-# Display Useful Information
-echo "[INFO] 🌐 Frontend available at: https://jeffreysanford.us"
-echo "[INFO] 🛠️ NestJS API running on: https://jeffreysanford.us/api"
-echo "[INFO] 🛠️ Go Service running on: https://jeffreysanford.us/go-api"
-
-exit 0
+echo -e "\n[SUCCESS] 🎉 Deployment completed successfully!"
+echo -e "\033[0;32mDeployment Completed: 100% ✔\033[0m"
