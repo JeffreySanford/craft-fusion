@@ -4,9 +4,9 @@
 # 🚀 Craft-Fusion Deployment Script for Fedora on DigitalOcean
 # ============================================================
 # This script automates the deployment of the Craft-Fusion project.
-# It supports frontend (craft-web) and backend (craft-nest, craft-go),
+# It supports frontend (craft-web), backend (craft-nest, craft-go),
 # manages services with PM2, deploys assets to NGINX, ensures dependencies,
-# and includes user/system diagnostics and OSINT analysis.
+# collects system metrics, fetches OSINT insights, and detects the user's IP.
 # ------------------------------------------------------------
 # ⚠️  REMINDER: Use '--full-clean' for a fresh deployment with cleaned dependencies.
 # ============================================================
@@ -101,43 +101,41 @@ function system_metrics() {
 
 function osint_search() {
     echo "[INFO] 🔍 Performing OSINT Search..." | tee -a "$DEPLOY_LOG"
-    local external_ip=$(curl -s ifconfig.me)
-    echo "[INFO] 🌐 External IP: $external_ip" | tee -a "$DEPLOY_LOG"
+    USER_IP=$(who am i | awk '{print $NF}' | tr -d '()')
 
-    echo "[INFO] 🛡️ Geolocation Data:" | tee -a "$DEPLOY_LOG"
-    curl -s "https://ipapi.co/$external_ip/json/" | jq '.' | tee -a "$DEPLOY_LOG"
+    if [[ -z "$USER_IP" ]]; then
+        echo "[ERROR] ⚠️ Could not determine the user's IP address from the SSH session." | tee -a "$DEPLOY_LOG"
+        return 1
+    fi
+
+    echo "[INFO] 🌐 Detected User's IP: $USER_IP" | tee -a "$DEPLOY_LOG"
+    echo "[INFO] 🛡️ Geolocation Data for User's IP:" | tee -a "$DEPLOY_LOG"
+    curl -s "https://ipapi.co/$USER_IP/json/" | jq '.' | tee -a "$DEPLOY_LOG"
 }
 
-# Step-by-Step Deployment
-step_progress; echo "[STEP 1] 📦 Installing Dependencies..."; track_time install_dependencies
-step_progress; echo "[STEP 2] 📊 Fetching System Metrics..."; track_time system_metrics
-step_progress; echo "[STEP 3] 🔍 Performing OSINT Search..."; track_time osint_search
+# Deployment Steps
+step_progress; track_time install_dependencies
+step_progress; track_time system_metrics
+step_progress; track_time osint_search
 
-step_progress; echo "[STEP 4] 🛠️ Setting Environment Variables..."; export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-step_progress; echo "[STEP 5] 🔑 Starting SSH Agent..."; eval "$(ssh-agent -s)"; track_time ssh-add ~/.ssh/id_rsa
+step_progress; export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+step_progress; eval "$(ssh-agent -s)"; track_time ssh-add ~/.ssh/id_rsa
 
-step_progress; echo "[STEP 6] 🧹 Dependency Management..."; 
+step_progress; 
 if [[ "$FULL_CLEAN" == true ]]; then
     track_time rm -rf node_modules package-lock.json
     track_time npm cache clean --force
 fi
 track_time npm install --legacy-peer-deps
 
-step_progress; echo "[STEP 7] 🌐 Building Frontend..."; track_time npx nx run craft-web:build:production
-step_progress; echo "[STEP 8] 🛠️ Building Backend (craft-nest)..."; track_time npx nx run craft-nest:build:production
-step_progress; echo "[STEP 9] 🛠️ Building Backend (craft-go)..."; track_time go build -o dist/apps/craft-go ./...
+step_progress; track_time npx nx run craft-web:build:production
+step_progress; track_time npx nx run craft-nest:build:production
+step_progress; track_time go build -o dist/apps/craft-go ./...
 
-step_progress; echo "[STEP 10] 🔄 Restarting PM2 Services..."; 
-track_time pm2 restart "$PM2_APP_NAME_NEST"
-track_time pm2 restart "$PM2_APP_NAME_GO"
+step_progress; track_time pm2 restart "$PM2_APP_NAME_NEST"
+step_progress; track_time pm2 restart "$PM2_APP_NAME_GO"
+step_progress; track_time cp -r "$FRONTEND_BUILD_PATH"/* "$NGINX_PATH"
+step_progress; track_time systemctl restart nginx
+step_progress; track_time pm2 status
 
-step_progress; echo "[STEP 11] 🌐 Deploying to NGINX..."; 
-track_time cp -r "$FRONTEND_BUILD_PATH"/* "$NGINX_PATH"
-track_time systemctl restart nginx
-
-# Final Status
-step_progress; echo "[STEP 18] 🎯 Finalizing Deployment..."; track_time pm2 status
-
-TOTAL_DURATION=$((SECONDS - START_TIME))
-echo -e "\n[SUCCESS] 🎉 Deployment completed in \033[1;32m${TOTAL_DURATION} seconds\033[0m! (Cumulative: \033[1;33m${CUMULATIVE_DURATION} ms\033[0m)"
-echo "$(date +%Y-%m-%d %H:%M:%S) 🎯 Deployment Completed in ${TOTAL_DURATION} seconds (Cumulative: ${CUMULATIVE_DURATION} ms)" >> "$DEPLOY_LOG"
+echo -e "\n[SUCCESS] 🎉 Deployment completed successfully!"
