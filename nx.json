@@ -63,6 +63,36 @@
           }
         }
       }
+    },
+    "craft-web": {
+      "projectType": "application",
+      "root": "apps/craft-web",
+      "sourceRoot": "apps/craft-web/src",
+      "targets": {
+        "build": {
+          "executor": "@nx/angular:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/craft-web/browser",
+            "configuration": "production"
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/craft-web/src/environments/environment.ts",
+                  "with": "apps/craft-web/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false
+            }
+          }
+        }
+      }
     }
   }
 }
