@@ -10,30 +10,47 @@
 # ⚠️  REMINDER: Use '--full-clean' for a fresh deployment with cleaned dependencies.
 # ============================================================
 
-# === Global Configuration ===
+# === Globals ===
 TOTAL_STEPS=15
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
-START_TIME=$(date +%s)
+LOG_FILE="deploy-digital-ocean.log"
 FULL_CLEAN=false
-DEPLOY_LOG="deploy-digital-ocean.log"
 
-# Paths
+# === Environment ===
 FRONTEND_BUILD_PATH="dist/apps/craft-web/browser"
 BACKEND_NEST_PATH="dist/apps/craft-nest/main.js"
 BACKEND_GO_PATH="dist/apps/craft-go/main"
 NGINX_PATH="/usr/share/nginx/html"
-
-# PM2 App Names
 PM2_APP_NAME_NEST="craft-nest"
 PM2_APP_NAME_GO="craft-go"
 
-# OSINT URLs
-NPM_STATS_URL="https://api.npmjs.org/downloads/point/last-month/craft-fusion"
-GITHUB_STATS_URL="https://api.github.com/repos/JeffreySanford/craft-fusion"
+# === Argument Parsing ===
+if [[ "$1" == "--full-clean" ]]; then
+    FULL_CLEAN=true
+    echo -e "\033[1;31m⚠️  FULL CLEAN ENABLED: Performing a complete cleanup of dependencies, cache, and build artifacts.\033[0m"
+fi
 
-# === Utility Functions ===
+# === Logging Helpers ===
+function log_info() {
+    echo "[INFO] $1" | tee -a "$LOG_FILE"
+}
+function log_error() {
+    echo "[ERROR] ❌ $1" | tee -a "$LOG_FILE"
+}
+function log_warning() {
+    echo "[WARNING] ⚠️ $1" | tee -a "$LOG_FILE"
+}
+function report_time() {
+    local START_TIME=$1
+    local LABEL=$2
+    local END_TIME=$(date +%s)
+    local DURATION=$((END_TIME - START_TIME))
+    echo "[INFO] ✅ $LABEL took: \033[1;32m$DURATION seconds\033[0m"
+    log_info "$LABEL took: $DURATION seconds"
+}
 
+# === Progress Bar ===
 function step_progress() {
     ((CURRENT_STEP++))
     local percentage=$((CURRENT_STEP * 100 / TOTAL_STEPS))
@@ -45,109 +62,102 @@ function step_progress() {
     echo -e " \033[0;32m✔\033[0m"
 }
 
-function report_time() {
-    local START=$1
-    local END=$(date +%s)
-    local DURATION=$((END - START))
-    echo -e "[INFO] ✅ $2 took: \033[1;32m${DURATION} seconds\033[0m"
-    echo "[LOG] ✅ $2 took: ${DURATION} seconds" >> "$DEPLOY_LOG"
-}
+# === Fetch System and OSINT Metrics ===
+function fetch_system_metrics() {
+    START_TIME_METRICS=$(date +%s)
+    echo "[INFO] 📊 Gathering System and OSINT Metrics..."
 
-function log_metric() {
-    local METRIC=$1
-    local VALUE=$2
-    echo -e "[METRIC] 📊 $METRIC: \033[1;34m$VALUE\033[0m"
-    echo "[LOG] 📊 $METRIC: $VALUE" >> "$DEPLOY_LOG"
-}
-
-function log_info() {
-    local MESSAGE=$1
-    echo "[LOG] $MESSAGE" >> "$DEPLOY_LOG"
-}
-
-function log_error() {
-    local MESSAGE=$1
-    echo -e "\033[1;31m[ERROR] ❌ $MESSAGE\033[0m"
-    echo "[ERROR] ❌ $MESSAGE" >> "$DEPLOY_LOG"
-}
-
-# === LOG FILE MANAGEMENT ===
-
-function manage_log_file() {
-    if [[ "$FULL_CLEAN" == true ]]; then
-        echo -e "\033[1;31m⚠️  FULL CLEAN ENABLED: Deleting existing deployment log.\033[0m"
-        [[ -f "$DEPLOY_LOG" ]] && rm "$DEPLOY_LOG"
-        touch "$DEPLOY_LOG"
-        echo "============================================================" > "$DEPLOY_LOG"
-        echo "🚀 Deployment Log - $(date -u +'%Y-%m-%d %H:%M:%S GMT')" >> "$DEPLOY_LOG"
-        echo "============================================================" >> "$DEPLOY_LOG"
-        echo "[INFO] 🚀 Full clean deployment started." >> "$DEPLOY_LOG"
-    else
-        if [[ ! -f "$DEPLOY_LOG" ]]; then
-            touch "$DEPLOY_LOG"
-            echo "============================================================" > "$DEPLOY_LOG"
-            echo "🚀 Deployment Log - $(date -u +'%Y-%m-%d %H:%M:%S GMT')" >> "$DEPLOY_LOG"
-            echo "============================================================" >> "$DEPLOY_LOG"
-            echo "[INFO] 🚀 First deployment log created." >> "$DEPLOY_LOG"
-        fi
-
-        # Count Incremental Deployments
-        local DEPLOY_COUNT=$(grep -c "Incremental Deployment" "$DEPLOY_LOG")
-        ((DEPLOY_COUNT++))
-        echo "[INFO] 🚀 Incremental Deployment Run #$DEPLOY_COUNT." >> "$DEPLOY_LOG"
-        echo -e "\033[1;33m⚠️  Incremental Deployment Run #$DEPLOY_COUNT.\033[0m"
-    fi
-}
-
-# === SSH KEY MANAGEMENT ===
-
-function manage_ssh_keys() {
-    step_progress
-    echo "[STEP $CURRENT_STEP] 🔑 Starting SSH Agent..."
-    eval "$(ssh-agent -s)"
+    # Fetch System Metrics
+    OS_NAME=$(uname -o)
+    OS_VERSION=$(grep -w PRETTY_NAME /etc/os-release | cut -d= -f2 | tr -d '"')
+    CPU_CORES=$(nproc)
+    TOTAL_RAM=$(free -h | grep Mem | awk '{print $2}')
+    UPTIME=$(uptime -p)
+    CURRENT_USER=$(whoami)
+    HOSTNAME=$(hostname)
+    IP_ADDRESS=$(hostname -I | awk '{print $1}')
+    DISK_USAGE=$(df -h --output=avail / | tail -n 1 | xargs)
     
-    # Identify correct .ssh folder
-    SSH_FOLDER="${SUDO_USER:+/home/$SUDO_USER/.ssh}"
-    SSH_FOLDER="${SSH_FOLDER:-$HOME/.ssh}"
+    log_info "System Information:"
+    log_info "  OS: $OS_NAME"
+    log_info "  OS Version: $OS_VERSION"
+    log_info "  CPU Cores: $CPU_CORES"
+    log_info "  Total RAM: $TOTAL_RAM"
+    log_info "  Uptime: $UPTIME"
+    log_info "  Current User: $CURRENT_USER"
+    log_info "  Hostname: $HOSTNAME"
+    log_info "  IP Address: $IP_ADDRESS"
+    log_info "  Disk Usage (Available): $DISK_USAGE"
 
-    if [[ -d "$SSH_FOLDER" ]]; then
-        for key in "$SSH_FOLDER"/id_*; do
-            if [[ -f "$key" && "$key" != *.pub ]]; then
-                ssh-add "$key" && echo "[INFO] ✅ Added SSH key: $key" || log_error "Failed to add SSH key: $key"
-                log_info "SSH Key added: $key"
-            fi
-        done
+    # Fetch NPM Metrics
+    NPM_DOWNLOADS=$(curl -s https://api.npmjs.org/downloads/point/last-month/craft-fusion | jq '.downloads // "N/A"')
+    if [[ "$NPM_DOWNLOADS" == "N/A" ]]; then
+        log_warning "Failed to fetch NPM metrics."
     else
-        log_error "SSH directory not found at $SSH_FOLDER"
-        exit 1
+        log_info "NPM Monthly Downloads: $NPM_DOWNLOADS"
     fi
+
+    # Fetch GitHub Metrics
+    GITHUB_STARS=$(curl -s https://api.github.com/repos/JeffreySanford/craft-fusion | jq '.stargazers_count // "N/A"')
+    if [[ "$GITHUB_STARS" == "N/A" ]]; then
+        log_warning "Failed to fetch GitHub metrics."
+    else
+        log_info "GitHub Stars: $GITHUB_STARS"
+    fi
+
+    # Total Metrics Duration
+    report_time $START_TIME_METRICS "System and OSINT Metrics Collection"
 }
 
-# === MAIN EXECUTION ===
-
-# Parse Arguments
-if [[ "$1" == "--full-clean" ]]; then
-    FULL_CLEAN=true
-    echo -e "\033[1;31m⚠️  FULL CLEAN ENABLED: Performing a complete cleanup of dependencies, cache, and build artifacts.\033[0m"
-    log_info "FULL CLEAN ENABLED"
-fi
-
-# Step 1: Log Management
-manage_log_file
-
-# Step 2: System Metrics
+# === Step 1: Fetch System and OSINT Metrics ===
 step_progress
-echo "[STEP $CURRENT_STEP] 📊 Fetching System and OSINT Metrics..."
 fetch_system_metrics
 
-# Step 3: SSH Key Management
-manage_ssh_keys
+# === Step 2: Environment Setup ===
+step_progress
+echo "[STEP $CURRENT_STEP] 🚀 Setting up Environment Variables..."
+export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 
-# Finalize
-END_TIME=$(date +%s)
-TOTAL_DURATION=$((END_TIME - START_TIME))
-echo "============================================================"
-echo "🎯 Deployment Complete in $TOTAL_DURATION seconds!"
-log_info "Deployment completed successfully in $TOTAL_DURATION seconds."
-echo "📊 Deployment log saved to deploy-digital-ocean.log"
-echo "============================================================"
+# === Step 3: SSH Agent ===
+step_progress
+echo "[STEP $CURRENT_STEP] 🔑 Starting SSH Agent..."
+eval "$(ssh-agent -s)"
+for key in ~/.ssh/id_*; do
+    [[ -f "$key" ]] && ssh-add "$key"
+done
+
+# === Step 4: Cleanup (Full or Partial) ===
+step_progress
+if [ "$FULL_CLEAN" = true ]; then
+    START_TIME_CLEAN=$(date +%s)
+    echo "[INFO] 🔄 Performing FULL CLEANUP..."
+    rm -rf node_modules package-lock.json
+    npm cache clean --force
+    report_time $START_TIME_CLEAN "Full Cleanup"
+else
+    echo "[INFO] 🧹 Skipping FULL CLEANUP"
+fi
+
+npm install || log_error "Dependency installation failed."
+
+# === Step 5: Build Frontend ===
+step_progress
+npx nx run craft-web:build:production || log_error "Frontend build failed."
+
+# === Step 6: Build Backend (craft-nest) ===
+step_progress
+npx nx run craft-nest:build:production || log_error "Backend (craft-nest) build failed."
+
+# === Step 7: Restart Backend with PM2 ===
+step_progress
+pm2 restart craft-nest || pm2 start dist/apps/craft-nest/main.js --name craft-nest
+
+# === Step 8: Restart NGINX ===
+step_progress
+sudo systemctl restart nginx || log_error "Failed to restart NGINX."
+
+# === Step 9: Finalization ===
+step_progress
+echo "[INFO] 🎯 Deployment Complete!"
+echo "Deployment log saved to $LOG_FILE"
+echo -e "\033[0;32m[SUCCESS] 🎉 Deployment completed successfully!\033[0m"
