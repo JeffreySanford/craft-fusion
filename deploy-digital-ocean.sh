@@ -12,7 +12,7 @@
 # ============================================================
 
 # Constants
-TOTAL_STEPS=18
+TOTAL_STEPS=19
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
 DEPLOY_LOG="deploy-digital-ocean.log"
@@ -99,7 +99,6 @@ function install_dependencies() {
 
 function system_metrics() {
     log_info "📊 Collecting System Metrics..."
-    local timestamp=$(date +'%Y-%m-%d %H:%M:%S %Z')
     local cpu_usage=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage "%"}')
     local memory_usage=$(free -h | grep Mem | awk '{print $3 "/" $2}')
     local disk_usage=$(df -h / | tail -1 | awk '{print $3 "/" $2 " (" $5 " used)"}')
@@ -119,7 +118,6 @@ function osint_search() {
     fi
 
     log_info "🌐 Detected User's IP: $USER_IP"
-
     local osint_data=$(curl -s "https://ipapi.co/$USER_IP/json/")
     local city=$(echo "$osint_data" | jq -r '.city')
     local region=$(echo "$osint_data" | jq -r '.region')
@@ -131,21 +129,29 @@ function osint_search() {
     echo "$osint_data" >> "$DEPLOY_LOG"
 }
 
+function setup_ssh_identity() {
+    log_info "🔑 Starting SSH Agent and Adding 'jeffrey' Identity..."
+    eval "$(ssh-agent -s)"
+
+    if ssh-add -l | grep -q 'jeffrey'; then
+        log_info "✅ 'jeffrey' identity is already added."
+    else
+        track_time ssh-add ~/.ssh/id_jeffrey
+        if ssh-add -l | grep -q 'jeffrey'; then
+            log_info "✅ 'jeffrey' identity added successfully."
+        else
+            log_info "❌ Failed to add 'jeffrey' identity."
+        fi
+    fi
+}
+
 # Deployment Steps
 step_progress; track_time install_dependencies
 step_progress; track_time system_metrics
 step_progress; track_time osint_search
+step_progress; track_time setup_ssh_identity
 
-step_progress; export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-step_progress; eval "$(ssh-agent -s)"; track_time ssh-add ~/.ssh/id_rsa
-
-step_progress; 
-if [[ "$FULL_CLEAN" == true ]]; then
-    track_time rm -rf node_modules package-lock.json
-    track_time npm cache clean --force
-fi
-track_time npm install --legacy-peer-deps
-
+step_progress; track_time npm install --legacy-peer-deps
 step_progress; track_time npx nx run craft-web:build:production
 step_progress; track_time npx nx run craft-nest:build:production
 step_progress; track_time go build -o dist/apps/craft-go ./...
