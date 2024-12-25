@@ -1,24 +1,39 @@
 #!/bin/bash
-# ============================================================
-# 🚀 Craft-Fusion Deployment Script for Digital Ocean
-# ============================================================
-# This script automates deployment of Craft-Fusion.
-# It handles frontend, backend, PM2 services, and NGINX.
-# ------------------------------------------------------------
-# ⚠️  REMINDER: Use '--full-clean' for a fresh deployment.
-# ------------------------------------------------------------
 
-# === 🚀 Setup Variables ===
-TOTAL_STEPS=14
+# === 🚀 Deployment Script for Craft-Fusion with Enhanced Metrics and Time Reporting ===
+
+# === Constants ===
+TOTAL_STEPS=13
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
-FULL_CLEAN=false
+START_TIME=$(date +%s)
+
+# Paths
+FRONTEND_BUILD_PATH="dist/apps/craft-web/browser"
+BACKEND_NEST_PATH="dist/apps/craft-nest/main.js"
+BACKEND_GO_PATH="dist/apps/craft-go/main"
+NGINX_PATH="/usr/share/nginx/html"
+
+# PM2 App Names
+PM2_APP_NAME_NEST="craft-nest"
+PM2_APP_NAME_GO="craft-go"
 
 # Flags
-if [[ "$1" == "--full-clean" ]]; then
+FULL_CLEAN=false
+
+# === Argument Parsing ===
+if [[ "$1" == "--help" ]]; then
+    echo "Usage: ./deploy-digital-ocean.sh [--full-clean]"
+    echo "--full-clean : Perform a complete cleanup (node_modules, cache, package-lock.json)."
+    exit 0
+elif [[ "$1" == "--full-clean" ]]; then
     FULL_CLEAN=true
+    echo -e "\033[1;31m⚠️  FULL CLEAN ENABLED: Complete system cleanup in progress.\033[0m"
 fi
 
+# === Utility Functions ===
+
+# Display Step Progress
 function step_progress() {
     ((CURRENT_STEP++))
     local percentage=$((CURRENT_STEP * 100 / TOTAL_STEPS))
@@ -30,100 +45,120 @@ function step_progress() {
     echo -e " \033[0;32m✔\033[0m"
 }
 
-# === 📊 Step 1: Connection Metrics ===
-step_progress
-echo "[STEP 1] 📊 Gathering Deployment Metrics..."
+# Report Duration
+function report_duration() {
+    local START=$1
+    local MESSAGE=$2
+    local END=$(date +%s)
+    local DURATION=$((END - START))
+    echo -e "[INFO] ✅ $MESSAGE completed in \033[1;32m${DURATION}s\033[0m."
+}
 
+# Display System Metrics
+function system_metrics() {
+    echo "[INFO] 📊 System Metrics:"
+    echo "   🖥️ CPU Usage: $(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage "%"}')"
+    echo "   🧠 Memory Usage: $(free -m | awk '/Mem:/ {printf "%.2f%%", $3/$2*100}')"
+    echo "   💾 Disk Usage: $(df -h | awk '$NF=="/"{printf "%s", $5}')"
+    echo "   📡 Current NPM Download Speed: $(npm ping | grep 'npm' | awk '{print $3}')"
+}
+
+# Validate File or Directory
+function validate_path() {
+    local PATH_TO_CHECK=$1
+    local ERROR_MSG=$2
+
+    if [ ! -e "$PATH_TO_CHECK" ]; then
+        echo "[ERROR] ❌ $ERROR_MSG"
+        exit 1
+    fi
+}
+
+# === Step 1: Display Metrics if FULL CLEAN ===
+step_progress
+echo "[STEP 1] 📊 Gathering System and NPM Metrics..."
 if [ "$FULL_CLEAN" = true ]; then
-    echo "[INFO] 📦 Measuring NPM Connection Metrics..."
-    START_TIME=$(date +%s)
-    NPM_SPEED=$(npm ping --json | jq '.ping')
-    END_TIME=$(date +%s)
-    DURATION=$((END_TIME - START_TIME))
-    echo "[INFO] 📊 NPM Speed: ${NPM_SPEED}ms"
-    echo "[INFO] ✅ NPM Connection Time: ${DURATION}s"
-else
-    echo "[INFO] ⚙️ Skipping NPM Metrics. Gathering Existing Deployment Stats..."
-    echo "[INFO] 🔄 Checking PM2 Services..."
-    pm2 list
-    echo "[INFO] 🔄 Checking NGINX Status..."
-    sudo systemctl status nginx --no-pager
+    system_metrics
 fi
 
-# === 🧹 Step 2: Managing Dependencies ===
+# === Step 2: Environment Setup ===
 step_progress
-echo "[STEP 2] 🧹 Managing Dependencies..."
+echo "[STEP 2] 🚀 Setting up Environment Variables..."
+export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+
+# === Step 3: SSH Agent Setup ===
+step_progress
+echo "[STEP 3] 🔑 Starting SSH Agent..."
+START=$(date +%s)
+eval "$(ssh-agent -s)"
+SSH_KEY="/home/jeffrey/.ssh/id_ed25519"
+if [ -f "$SSH_KEY" ]; then
+    ssh-add "$SSH_KEY" || { echo "[ERROR] ❌ Failed to add SSH key."; exit 1; }
+    echo "[INFO] ✅ SSH key added: $SSH_KEY"
+else
+    echo "[ERROR] ❌ SSH key not found at $SSH_KEY."
+    exit 1
+fi
+report_duration $START "SSH Setup"
+
+# === Step 4: Dependency Management ===
+step_progress
+echo "[STEP 4] 🧹 Managing Dependencies..."
+START=$(date +%s)
 if [ "$FULL_CLEAN" = true ]; then
-    echo "[INFO] 🔄 Full Clean Mode Enabled. Clearing node_modules and Cache..."
-    rm -rf node_modules package-lock.json || { echo "[ERROR] ❌ Failed to clean dependencies."; exit 1; }
-    npm cache clean --force || { echo "[ERROR] ❌ Failed to clear NPM cache."; exit 1; }
+    echo "[INFO] 🔄 Performing FULL CLEANUP..."
+    rm -rf node_modules package-lock.json
+    npm cache clean --force || { echo "[ERROR] ❌ Failed to clear npm cache."; exit 1; }
 fi
 npm install || { echo "[ERROR] ❌ Failed to install dependencies."; exit 1; }
+report_duration $START "Dependency Management"
 
-# === 🛠️ Step 3: Build Backend (craft-go) ===
+# === Step 5: Build Frontend ===
 step_progress
-echo "[STEP 3] 🛠️ Building Backend (craft-go)..."
-if npx nx run craft-go:build; then
-    echo "[INFO] ✅ craft-go build succeeded."
-else
-    echo "[ERROR] ❌ craft-go build failed."
-    echo "[DEBUG] 📄 Listing Go build directory:"
-    ls -l dist/apps/craft-go
-    exit 1
-fi
+echo "[STEP 5] 🌐 Building Frontend (craft-web)..."
+START=$(date +%s)
+npx nx run craft-web:build:production || { echo "[ERROR] ❌ Frontend build failed."; exit 1; }
+report_duration $START "Frontend Build"
 
-# === 🛠️ Step 4: Build Backend (craft-nest) ===
+# === Step 6: Build Backend (craft-nest) ===
 step_progress
-echo "[STEP 4] 🛠️ Building Backend (craft-nest)..."
-if npx nx run craft-nest:build:production; then
-    echo "[INFO] ✅ craft-nest build succeeded."
-else
-    echo "[ERROR] ❌ craft-nest build failed."
-    echo "[DEBUG] 📄 Listing Nest build directory:"
-    ls -l dist/apps/craft-nest
-    exit 1
-fi
+echo "[STEP 6] 🛠️ Building Backend (craft-nest)..."
+START=$(date +%s)
+npx nx run craft-nest:build:production || { echo "[ERROR] ❌ Backend (craft-nest) build failed."; exit 1; }
+validate_path "$BACKEND_NEST_PATH" "Backend NestJS build failed or path incorrect."
+report_duration $START "Backend (craft-nest) Build"
 
-# === 🔄 Step 5: Restart Services ===
+# === Step 7: Build Backend (craft-go) ===
 step_progress
-echo "[STEP 5] 🔄 Restarting Backend Services with PM2..."
-pm2 restart craft-go || pm2 start dist/apps/craft-go/main --name craft-go
-pm2 restart craft-nest || pm2 start dist/apps/craft-nest/main.js --name craft-nest
+echo "[STEP 7] 🛠️ Building Backend (craft-go)..."
+START=$(date +%s)
+npx nx run craft-go:build || { echo "[ERROR] ❌ Backend (craft-go) build failed."; exit 1; }
+validate_path "$BACKEND_GO_PATH" "Backend Go build failed or path incorrect."
+report_duration $START "Backend (craft-go) Build"
 
-# === 📂 Step 6: Deploy Frontend ===
+# === Step 8: Restart Services ===
 step_progress
-echo "[STEP 6] 📂 Deploying Frontend to NGINX..."
-sudo rm -rf /usr/share/nginx/html/*
-sudo mv dist/apps/craft-web/browser/* /usr/share/nginx/html/
-sudo chown -R nginx:nginx /usr/share/nginx/html
-sudo chmod -R 755 /usr/share/nginx/html
-sudo restorecon -Rv /usr/share/nginx/html
+echo "[STEP 8] 🔄 Restarting Services with PM2..."
+pm2 restart $PM2_APP_NAME_NEST
+pm2 restart $PM2_APP_NAME_GO
+
+# === Step 9: Deploy Frontend ===
+step_progress
+echo "[STEP 9] 📂 Deploying Frontend to NGINX..."
+sudo rm -rf "$NGINX_PATH"/*
+sudo mv "$FRONTEND_BUILD_PATH"/* "$NGINX_PATH"/
 sudo systemctl restart nginx
 
-# === 🛡️ Step 7: Check Snort ===
+# === Step 10: Snort Check ===
 step_progress
-echo "[STEP 7] 🛡️ Checking Snort Logs..."
-if sudo systemctl is-active --quiet snort; then
-    echo "[INFO] ✅ Snort service is active."
-    sudo tail -n 10 /var/log/snort/alert || echo "[WARNING] ⚠️ No alert logs available."
-else
-    echo "[ERROR] ❌ Snort service is not active."
-fi
+echo "[STEP 10] 🛡️ Checking Snort Service..."
+sudo systemctl is-active --quiet snort || echo "[WARNING] ⚠️ Snort service is not running."
 
-# === 🎯 Step 8: Final Status ===
+# === Step 11: Final Summary ===
 step_progress
-echo "[STEP 8] 🎯 Finalizing Deployment..."
+echo "[STEP 11] 🎯 Finalizing Deployment..."
 pm2 status
-sudo systemctl status nginx --no-pager
+TOTAL_TIME=$(( $(date +%s) - START_TIME ))
+echo -e "[SUCCESS] 🎉 Deployment completed in \033[1;32m${TOTAL_TIME}s\033[0m."
+echo -e "[INFO] 🚀 System and Service are now operational!"
 
-END_TIME=$(date +%s)
-DURATION=$((END_TIME - START_TIME))
-echo -e "\n[SUCCESS] 🎉 Deployment completed successfully!"
-echo "[INFO] 🚀 Total Time: ${DURATION}s"
-echo "[INFO] ✅ Services Running:"
-pm2 list
-echo "[INFO] 📊 Deployment Metrics:"
-echo "   🕒 Total Deployment Time: ${DURATION}s"
-echo "   ⚡ NPM Speed: ${NPM_SPEED:-N/A}"
-echo "   🛡️ Snort Status: $(sudo systemctl is-active snort)"
-echo -e "\033[0;32mDeployment Completed: 100% ✔\033[0m"
