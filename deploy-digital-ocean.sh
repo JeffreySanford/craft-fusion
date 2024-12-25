@@ -59,58 +59,76 @@ function track_time() {
     echo "$current_time [INFO] $cmd_name completed in ${duration} ms (Cumulative: ${CUMULATIVE_DURATION} ms)" >> "$DEPLOY_LOG"
 }
 
+function log_info() {
+    echo -e "[INFO] $1"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] $1" >> "$DEPLOY_LOG"
+}
+
 function init_log() {
     if [[ "$FULL_CLEAN" == true ]]; then
         rm -f "$DEPLOY_LOG"
-        echo "[INFO] 📝 Deployment log reset due to --full-clean." > "$DEPLOY_LOG"
+        log_info "📝 Deployment log reset due to --full-clean."
     elif [[ ! -f "$DEPLOY_LOG" ]]; then
         touch "$DEPLOY_LOG"
-        echo "[INFO] 📝 Deployment log initialized." > "$DEPLOY_LOG"
+        log_info "📝 Deployment log initialized."
     fi
 }
 
 function install_dependencies() {
-    echo "[INFO] 📦 Installing Fedora Dependencies..." | tee -a "$DEPLOY_LOG"
+    log_info "📦 Installing Fedora Dependencies..."
     track_time sudo dnf update -y
     track_time sudo dnf install -y \
         nodejs \
         npm \
         golang \
         nginx \
-        snort \
         jq \
         curl \
         git \
         python3-pip \
         openssh-clients
+
+    # Check for Snort Installation
+    if ! command -v snort &> /dev/null; then
+        log_info "🔍 Snort not detected. Installing Snort..."
+        track_time sudo dnf install -y snort
+    else
+        log_info "✅ Snort detected and ready."
+    fi
 }
 
 function system_metrics() {
-    echo "[INFO] 📊 Collecting System Metrics..." | tee -a "$DEPLOY_LOG"
+    log_info "📊 Collecting System Metrics..."
     local timestamp=$(date +'%Y-%m-%d %H:%M:%S %Z')
     local cpu_usage=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage "%"}')
     local memory_usage=$(free -h | grep Mem | awk '{print $3 "/" $2}')
     local disk_usage=$(df -h / | tail -1 | awk '{print $3 "/" $2 " (" $5 " used)"}')
-    local npm_latency=$(ping -c 1 registry.npmjs.org | grep 'time=' | awk '{print $7}' | cut -d'=' -f2)
 
-    echo "[INFO] 🖥️ CPU Usage: $cpu_usage" | tee -a "$DEPLOY_LOG"
-    echo "[INFO] 💾 Memory Usage: $memory_usage" | tee -a "$DEPLOY_LOG"
-    echo "[INFO] 📁 Disk Usage: $disk_usage" | tee -a "$DEPLOY_LOG"
-    echo "[INFO] 🚀 NPM Latency: $npm_latency ms" | tee -a "$DEPLOY_LOG"
+    log_info "🖥️ CPU Usage: $cpu_usage"
+    log_info "💾 Memory Usage: $memory_usage"
+    log_info "📁 Disk Usage: $disk_usage"
 }
 
 function osint_search() {
-    echo "[INFO] 🔍 Performing OSINT Search..." | tee -a "$DEPLOY_LOG"
+    log_info "🔍 Performing OSINT Search..."
     USER_IP=$(who am i | awk '{print $NF}' | tr -d '()')
 
     if [[ -z "$USER_IP" ]]; then
-        echo "[ERROR] ⚠️ Could not determine the user's IP address from the SSH session." | tee -a "$DEPLOY_LOG"
+        log_info "⚠️ Could not determine the user's IP address from the SSH session."
         return 1
     fi
 
-    echo "[INFO] 🌐 Detected User's IP: $USER_IP" | tee -a "$DEPLOY_LOG"
-    echo "[INFO] 🛡️ Geolocation Data for User's IP:" | tee -a "$DEPLOY_LOG"
-    curl -s "https://ipapi.co/$USER_IP/json/" | jq '.' | tee -a "$DEPLOY_LOG"
+    log_info "🌐 Detected User's IP: $USER_IP"
+
+    local osint_data=$(curl -s "https://ipapi.co/$USER_IP/json/")
+    local city=$(echo "$osint_data" | jq -r '.city')
+    local region=$(echo "$osint_data" | jq -r '.region')
+    local country=$(echo "$osint_data" | jq -r '.country_name')
+    local org=$(echo "$osint_data" | jq -r '.org')
+
+    log_info "📍 Location: $city, $region, $country"
+    log_info "🏢 Organization: $org"
+    echo "$osint_data" >> "$DEPLOY_LOG"
 }
 
 # Deployment Steps
@@ -138,4 +156,4 @@ step_progress; track_time cp -r "$FRONTEND_BUILD_PATH"/* "$NGINX_PATH"
 step_progress; track_time systemctl restart nginx
 step_progress; track_time pm2 status
 
-echo -e "\n[SUCCESS] 🎉 Deployment completed successfully!"
+log_info "🎉 Deployment completed successfully in $((SECONDS - START_TIME)) seconds."
