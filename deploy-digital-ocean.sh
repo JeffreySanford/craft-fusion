@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-
+#!/bin/bash
 # ============================================================
 # 🚀 Craft-Fusion Deployment Script for Digital Ocean
 # ============================================================
@@ -7,14 +6,14 @@
 # It builds frontend (craft-web), backend (craft-nest, craft-go),
 # manages services with PM2, and deploys assets to NGINX.
 # ------------------------------------------------------------
-# ⚠️ REMINDER: Use '--full-clean' for a fresh deployment with cleaned dependencies.
-# ------------------------------------------------------------
+# ⚠️  REMINDER: Use '--full-clean' for a fresh deployment with cleaned dependencies.
+# ============================================================
 
-# === 🛠️ Configuration ===
+# === Configuration ===
 TOTAL_STEPS=13
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
-DEPLOY_START_TIME=$(date +%s)
+START_TIME_GLOBAL=$(date +%s)
 
 # Paths
 FRONTEND_BUILD_PATH="dist/apps/craft-web/browser"
@@ -28,30 +27,14 @@ PM2_APP_NAME_GO="craft-go"
 
 # Flags
 FULL_CLEAN=false
+if [[ "$1" == "--full-clean" ]]; then
+    FULL_CLEAN=true
+    echo -e "\033[1;31m⚠️  FULL CLEAN ENABLED: Performing a complete cleanup of dependencies, cache, and build artifacts.\033[0m"
+fi
 
-# Parse Arguments
-for arg in "$@"; do
-    case $arg in
-        --full-clean)
-            FULL_CLEAN=true
-            ;;
-        --help)
-            echo "Usage: ./deploy-digital-ocean.sh [--full-clean]"
-            echo "--full-clean : Remove node_modules, package-lock.json, and clear npm cache before deployment."
-            exit 0
-            ;;
-    esac
-done
+# === Helper Functions ===
 
-# === 📊 Time Tracker Function ===
-function track_time() {
-    local START_TIME=$1
-    local END_TIME=$(date +%s)
-    local DURATION=$((END_TIME - START_TIME))
-    echo -e "[INFO] ✅ Task completed in: \033[1;32m${DURATION} seconds\033[0m"
-}
-
-# === 🚥 Step Progress Function ===
+# Increment Step Progress
 function step_progress() {
     ((CURRENT_STEP++))
     local percentage=$((CURRENT_STEP * 100 / TOTAL_STEPS))
@@ -63,91 +46,103 @@ function step_progress() {
     echo -e " \033[0;32m✔\033[0m"
 }
 
-# === 🚨 Display Full Clean Notice if Enabled ===
-if [ "$FULL_CLEAN" = true ]; then
-    echo -e "\033[1;31m⚠️  FULL CLEAN ENABLED: Performing a complete cleanup of dependencies, cache, and build artifacts.\033[0m"
+# Track Time for Steps
+function report_time() {
+    local DURATION=$1
+    local STEP_DESC=$2
+    echo -e "[INFO] ✅ $STEP_DESC took: \033[1;32m${DURATION}s\033[0m"
+}
+
+# NPM Module Progress Tracker
+function npm_module_progress() {
+    echo "[INFO] 📦 Tracking individual npm module installation progress..."
+    local MODULE_COUNT=$(npm ls --depth=0 2>/dev/null | grep -c '─')
+    local CURRENT_MODULE=0
+    local TOTAL_SIZE=0
+    local START_TIME=$(date +%s)
+    
+    npm install --verbose 2>&1 | while read -r line; do
+        if [[ "$line" =~ "added" ]]; then
+            CURRENT_MODULE=$((CURRENT_MODULE + 1))
+            local MODULE_NAME=$(echo "$line" | grep -oE "added [^ ]+" | awk '{print $2}')
+            local MODULE_PATH="node_modules/$MODULE_NAME"
+            if [ -d "$MODULE_PATH" ]; then
+                local MODULE_SIZE=$(du -sh "$MODULE_PATH" 2>/dev/null | awk '{print $1}')
+                TOTAL_SIZE=$((TOTAL_SIZE + $(du -s "$MODULE_PATH" 2>/dev/null | awk '{print $1}')))
+                local PERCENTAGE=$((CURRENT_MODULE * 100 / MODULE_COUNT))
+                echo -ne "[INFO] 📦 Module: $MODULE_NAME | Size: $MODULE_SIZE | Progress: $PERCENTAGE% Complete\r"
+            fi
+        fi
+    done
+
+    local END_TIME=$(date +%s)
+    local DURATION=$((END_TIME - START_TIME))
+    echo -e "\n[INFO] 📊 NPM Installation Summary:"
+    echo "[INFO] 📦 Total Modules Installed: $CURRENT_MODULE"
+    echo "[INFO] 💾 Total Size: ${TOTAL_SIZE} KB"
+    report_time $DURATION "NPM Install"
+}
+
+# === Step 1: Estimate Metrics ===
+step_progress
+echo "[STEP 1] 📊 Estimating Deployment Time and NPM Metrics..."
+if [[ "$FULL_CLEAN" == true ]]; then
+    npm_metrics
 fi
 
-# === 1. 🚀 Environment Setup ===
+# === Step 2: Environment Setup ===
 step_progress
-echo "[STEP 1] 🚀 Setting up Environment Variables..."
+echo "[STEP 2] 🚀 Setting up Environment Variables..."
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 
-# === 2. 🔑 SSH Agent Setup ===
+# === Step 3: SSH Agent Setup (Dynamic Key Handling) ===
 step_progress
-echo "[STEP 2] 🔑 Starting SSH Agent..."
+echo "[STEP 3] 🔑 Starting SSH Agent..."
 eval "$(ssh-agent -s)"
-SSH_KEY="/home/jeffrey/.ssh/id_ed25519"
-if [ -f "$SSH_KEY" ]; then
-    ssh-add "$SSH_KEY" || { echo "[ERROR] ❌ Failed to add SSH key: $SSH_KEY."; exit 1; }
-    echo "[INFO] ✅ SSH key added: $SSH_KEY"
+
+SSH_DIR="$HOME/.ssh"
+if [ -d "$SSH_DIR" ]; then
+    echo "[INFO] 🗝️ Scanning for SSH keys in $SSH_DIR..."
+    for SSH_KEY in "$SSH_DIR"/*; do
+        if [[ -f "$SSH_KEY" && "$SSH_KEY" != *.pub && "$SSH_KEY" != *known_hosts* ]]; then
+            ssh-add "$SSH_KEY" 2>/dev/null
+            if [ $? -eq 0 ]; then
+                echo "[INFO] ✅ Successfully added SSH key: $SSH_KEY"
+            fi
+        fi
+    done
 else
-    echo "[ERROR] ❌ SSH key not found at $SSH_KEY."
+    echo "[ERROR] ❌ SSH directory not found at $SSH_DIR."
     exit 1
 fi
 
-# === 3. 🧹 Cleanup Environment ===
+# === Step 4: Managing Dependencies ===
 step_progress
-echo "[STEP 3] 🧹 Managing Dependencies..."
-if [ "$FULL_CLEAN" = true ]; then
-    echo -e "[INFO] 🔄 Performing \033[1;31mFULL CLEANUP\033[0m: Removing node_modules, package-lock.json, and clearing npm cache..."
-    CLEANUP_START=$(date +%s)
-    rm -rf node_modules package-lock.json || { echo "[ERROR] ❌ Failed to remove node_modules or package-lock.json."; exit 1; }
-    npm cache clean --force || { echo "[ERROR] ❌ Failed to clear npm cache."; exit 1; }
-    track_time $CLEANUP_START
+echo "[STEP 4] 🧹 Managing Dependencies..."
+START_TIME=$(date +%s)
+
+if [[ "$FULL_CLEAN" == true ]]; then
+    echo "[INFO] 🔄 Performing FULL CLEANUP: Removing node_modules, package-lock.json, and clearing npm cache..."
+    rm -rf node_modules package-lock.json
+    npm cache clean --force
 fi
 
-INSTALL_START=$(date +%s)
-npm install || { echo "[ERROR] ❌ Failed to install dependencies."; exit 1; }
-track_time $INSTALL_START
+npm_module_progress
 
-# === 4. 🌐 Build Frontend (craft-web) ===
+END_TIME=$(date +%s)
+report_time $((END_TIME - START_TIME)) "Dependency Management"
+
+# === Step 5: Build Frontend ===
 step_progress
-echo "[STEP 4] 🌐 Building Frontend (craft-web)..."
-BUILD_WEB_START=$(date +%s)
+echo "[STEP 5] 🌐 Building Frontend (craft-web)..."
+START_TIME=$(date +%s)
 npx nx run craft-web:build:production || { echo "[ERROR] ❌ Frontend build failed."; exit 1; }
-track_time $BUILD_WEB_START
+END_TIME=$(date +%s)
+report_time $((END_TIME - START_TIME)) "Frontend Build"
 
-# === 5. 🛠️ Build Backend (craft-nest) ===
+# === Final Step: Deployment Complete ===
 step_progress
-echo "[STEP 5] 🛠️ Building Backend (craft-nest)..."
-BUILD_NEST_START=$(date +%s)
-npx nx run craft-nest:build:production || { echo "[ERROR] ❌ Backend (craft-nest) build failed."; exit 1; }
-[ -f "$BACKEND_NEST_PATH" ] || { echo "[ERROR] ❌ NestJS main.js not found."; exit 1; }
-track_time $BUILD_NEST_START
-
-# === 6. 🛠️ Build Backend (craft-go) ===
-step_progress
-echo "[STEP 6] 🛠️ Building Backend (craft-go)..."
-BUILD_GO_START=$(date +%s)
-npx nx run craft-go:build || { echo "[ERROR] ❌ Backend (craft-go) build failed."; exit 1; }
-[ -f "$BACKEND_GO_PATH" ] || { echo "[ERROR] ❌ Go main not found."; exit 1; }
-track_time $BUILD_GO_START
-
-# === 7. 🔄 Restart Services with PM2 ===
-step_progress
-echo "[STEP 7] 🔄 Restarting Services with PM2..."
-pm2 restart "$PM2_APP_NAME_NEST" --update-env || pm2 start "$BACKEND_NEST_PATH" --name "$PM2_APP_NAME_NEST"
-pm2 restart "$PM2_APP_NAME_GO" --update-env || pm2 start "$BACKEND_GO_PATH" --name "$PM2_APP_NAME_GO"
-
-# === 8. 📂 Deploy to NGINX ===
-step_progress
-echo "[STEP 8] 📂 Deploying Frontend to NGINX..."
-sudo rm -rf "$NGINX_PATH"/*
-sudo mv "$FRONTEND_BUILD_PATH"/* "$NGINX_PATH"/
-sudo chown -R nginx:nginx "$NGINX_PATH"
-sudo chmod -R 755 "$NGINX_PATH"
-sudo restorecon -Rv "$NGINX_PATH"
-sudo systemctl restart nginx
-
-# === 9. 🎯 Final Status ===
-step_progress
-echo "[STEP 9] 🎯 Finalizing Deployment..."
+echo "[STEP 13] 🎯 Finalizing Deployment..."
 pm2 status
-DEPLOY_END_TIME=$(date +%s)
-DEPLOY_DURATION=$((DEPLOY_END_TIME - DEPLOY_START_TIME))
-echo "[INFO] 🚀 Total Deployment Time: $DEPLOY_DURATION seconds"
-echo "[INFO] 📊 CPU: $(uptime | awk -F'load average:' '{ print $2 }')"
-echo "[INFO] 🧠 Memory: $(free -h | grep Mem | awk '{print $3 "/" $2}')"
-echo "[INFO] 💾 Disk: $(df -h / | tail -1 | awk '{print $3 "/" $2}')"
-echo "[SUCCESS] 🎉 Deployment completed successfully!"
+echo -e "\n[SUCCESS] 🎉 Deployment completed successfully!"
+echo -e "[INFO] 🕒 Total Deployment Time: \033[1;32m$(($(date +%s) - $START_TIME_GLOBAL)) seconds\033[0m"
