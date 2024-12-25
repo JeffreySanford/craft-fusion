@@ -136,9 +136,9 @@ function setup_ssh_identity() {
 
     for key in "$SSH_DIR"/id_*; do
         if [[ -f "$key" ]]; then
-            if [[ "$key" == *"id_jeffrey"* ]]; then
+            if grep -qi 'Jeffrey\|jeffreysanford@gmail.com' "$key"; then
                 track_time ssh-add "$key"
-                log_info "😄 ✅ Special Key 'jeffrey' added successfully from $key"
+                log_info "😄 ✅ Special Key containing 'Jeffrey' or 'jeffreysanford@gmail.com' added successfully from $key"
             else
                 track_time ssh-add "$key"
                 log_info "✅ SSH Key added successfully from $key"
