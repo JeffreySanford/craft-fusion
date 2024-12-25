@@ -69,15 +69,29 @@ npx nx run craft-nest:build:production || {
 echo "[INFO] 🛠️ Building Backend (craft-go)..."
 
 # Ensure Go is in PATH
-export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+if [ "$EUID" -eq 0 ]; then
+    echo "[INFO] 🛡️ Running as root, adjusting PATH for Go..."
+    export PATH=$PATH:/usr/local/go/bin:/home/jeffrey/go/bin
+else
+    echo "[INFO] 🛡️ Running as non-root, using current PATH."
+    export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+fi
 
 # Verify Go Command is Available
 if ! command -v go &> /dev/null; then
     echo "[ERROR] ❌ Go command not found. Ensure Go is installed and in PATH."
+    echo "[INFO] 🔄 Current PATH: $PATH"
     exit 1
 else
     echo "[INFO] ✅ Go found: $(go version)"
 fi
+
+# Run Go Build
+npx nx run craft-go:build || {
+    echo "[ERROR] ❌ Backend (craft-go) build failed."
+    exit 1
+}
+
 
 # Run Go Build
 npx nx run craft-go:build || {
