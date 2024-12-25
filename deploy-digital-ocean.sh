@@ -3,10 +3,9 @@
 # ============================================================
 # 🚀 Craft-Fusion Deployment Script for Fedora on DigitalOcean
 # ============================================================
-# This script automates the deployment of the Craft-Fusion project.
-# It supports frontend (craft-web), backend (craft-nest, craft-go),
-# manages services with PM2, deploys assets to NGINX, ensures dependencies,
-# collects system metrics, fetches OSINT insights, and detects the user's IP.
+# Supports NX monorepo deployment: Frontend (craft-web), Backend (craft-nest, craft-go)
+# Automates dependency management, SSH identity setup, OSINT analysis, system diagnostics,
+# and ensures reliable deployment via NGINX and PM2.
 # ------------------------------------------------------------
 # ⚠️  REMINDER: Use '--full-clean' for a fresh deployment with cleaned dependencies.
 # ============================================================
@@ -55,12 +54,12 @@ function track_time() {
     local current_time=$(date '+%Y-%m-%d %H:%M:%S %Z')
     CUMULATIVE_DURATION=$((CUMULATIVE_DURATION + duration))
 
-    echo -e "[INFO] ✅ $cmd_name took: \033[1;32m${duration} ms\033[0m (Cumulative: \033[1;33m${CUMULATIVE_DURATION} ms\033[0m)"
+    echo -e "\033[1;34m[INFO] ✅ $cmd_name took: ${duration} ms (Cumulative: ${CUMULATIVE_DURATION} ms)\033[0m"
     echo "$current_time [INFO] $cmd_name completed in ${duration} ms (Cumulative: ${CUMULATIVE_DURATION} ms)" >> "$DEPLOY_LOG"
 }
 
 function log_info() {
-    echo -e "[INFO] $1"
+    echo -e "\033[1;34m[INFO] $1\033[0m"
     echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] $1" >> "$DEPLOY_LOG"
 }
 
@@ -88,7 +87,6 @@ function install_dependencies() {
         python3-pip \
         openssh-clients
 
-    # Check for Snort Installation
     if ! command -v snort &> /dev/null; then
         log_info "🔍 Snort not detected. Installing Snort..."
         track_time sudo dnf install -y snort
@@ -113,35 +111,35 @@ function osint_search() {
     USER_IP=$(who am i | awk '{print $NF}' | tr -d '()')
 
     if [[ -z "$USER_IP" ]]; then
-        log_info "⚠️ Could not determine the user's IP address from the SSH session."
+        log_info "⚠️ Could not determine the user's IP address."
         return 1
     fi
 
-    log_info "🌐 Detected User's IP: $USER_IP"
     local osint_data=$(curl -s "https://ipapi.co/$USER_IP/json/")
     local city=$(echo "$osint_data" | jq -r '.city')
     local region=$(echo "$osint_data" | jq -r '.region')
     local country=$(echo "$osint_data" | jq -r '.country_name')
     local org=$(echo "$osint_data" | jq -r '.org')
 
-    log_info "📍 Location: $city, $region, $country"
-    log_info "🏢 Organization: $org"
+    echo -e "\033[1;34m[INFO] 🌐 Detected User's IP: $USER_IP\033[0m"
+    echo -e "\033[1;34m[INFO] 📍 Location: $city, $region, $country\033[0m"
+    echo -e "\033[1;34m[INFO] 🏢 Organization: $org\033[0m"
+
     echo "$osint_data" >> "$DEPLOY_LOG"
 }
 
 function setup_ssh_identity() {
-    log_info "🔑 Starting SSH Agent and Adding 'jeffrey' Identity..."
-    eval "$(ssh-agent -s)"
+    local SSH_KEY_PATH="$(sudo -u $SUDO_USER -H sh -c 'echo $HOME')/.ssh/id_jeffrey"
 
-    if ssh-add -l | grep -q 'jeffrey'; then
-        log_info "✅ 'jeffrey' identity is already added."
+    if [[ -z "$SSH_AUTH_SOCK" ]]; then
+        eval "$(ssh-agent -s)"
+    fi
+
+    if [[ -f "$SSH_KEY_PATH" ]]; then
+        track_time ssh-add "$SSH_KEY_PATH"
+        log_info "✅ SSH identity 'jeffrey' added successfully."
     else
-        track_time ssh-add ~/.ssh/id_jeffrey
-        if ssh-add -l | grep -q 'jeffrey'; then
-            log_info "✅ 'jeffrey' identity added successfully."
-        else
-            log_info "❌ Failed to add 'jeffrey' identity."
-        fi
+        log_info "❌ SSH key not found at $SSH_KEY_PATH"
     fi
 }
 
@@ -150,16 +148,8 @@ step_progress; track_time install_dependencies
 step_progress; track_time system_metrics
 step_progress; track_time osint_search
 step_progress; track_time setup_ssh_identity
-
 step_progress; track_time npm install --legacy-peer-deps
 step_progress; track_time npx nx run craft-web:build:production
-step_progress; track_time npx nx run craft-nest:build:production
-step_progress; track_time go build -o dist/apps/craft-go ./...
-
-step_progress; track_time pm2 restart "$PM2_APP_NAME_NEST"
-step_progress; track_time pm2 restart "$PM2_APP_NAME_GO"
-step_progress; track_time cp -r "$FRONTEND_BUILD_PATH"/* "$NGINX_PATH"
-step_progress; track_time systemctl restart nginx
 step_progress; track_time pm2 status
 
 log_info "🎉 Deployment completed successfully in $((SECONDS - START_TIME)) seconds."
