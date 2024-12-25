@@ -63,10 +63,6 @@
           }
         }
       }
-    },
-    "@craft-fusion/source": {
-      "version": "1.0.0",
-      "projects": ["craft-web", "craft-go"]
     }
   }
 }
