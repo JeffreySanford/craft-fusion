@@ -16,7 +16,8 @@ export interface Server {
 })
 export class ApiService {
   private isProduction = environment.production;
-  private apiUrl = `${environment.apiUrl}:${environment.nestPort}/api`;
+  // include the setAPiUrl function to set the server endpoint for the Go server and NestJS server
+  private apiUrl = `${environment.apiUrl}:${environment.nestPort}`;
   private recordSize = 100; // Default record size
   
   private servers: Server[] = [
