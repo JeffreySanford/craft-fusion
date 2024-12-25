@@ -1,17 +1,18 @@
 #!/bin/bash
 
 # ============================================================
-# 🚀 Craft-Fusion Deployment Script for DigitalOcean
+# 🚀 Craft-Fusion Deployment Script for Fedora on DigitalOcean
 # ============================================================
 # This script automates the deployment of the Craft-Fusion project.
-# It builds frontend (craft-web), backend (craft-nest, craft-go),
-# manages services with PM2, and deploys assets to NGINX.
+# It supports frontend (craft-web) and backend (craft-nest, craft-go),
+# manages services with PM2, deploys assets to NGINX, ensures dependencies,
+# and includes user/system diagnostics and OSINT analysis.
 # ------------------------------------------------------------
 # ⚠️  REMINDER: Use '--full-clean' for a fresh deployment with cleaned dependencies.
 # ============================================================
 
 # Constants
-TOTAL_STEPS=15
+TOTAL_STEPS=18
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
 DEPLOY_LOG="deploy-digital-ocean.log"
@@ -65,92 +66,78 @@ function init_log() {
     elif [[ ! -f "$DEPLOY_LOG" ]]; then
         touch "$DEPLOY_LOG"
         echo "[INFO] 📝 Deployment log initialized." > "$DEPLOY_LOG"
-    else
-        local count=$(grep -c "Deployment Started" "$DEPLOY_LOG")
-        echo "[INFO] 📊 Previous deployments without --full-clean: $count"
     fi
+}
+
+function install_dependencies() {
+    echo "[INFO] 📦 Installing Fedora Dependencies..." | tee -a "$DEPLOY_LOG"
+    track_time sudo dnf update -y
+    track_time sudo dnf install -y \
+        nodejs \
+        npm \
+        golang \
+        nginx \
+        snort \
+        jq \
+        curl \
+        git \
+        python3-pip \
+        openssh-clients
 }
 
 function system_metrics() {
-    echo "[INFO] 📊 Collecting System Metrics..."
+    echo "[INFO] 📊 Collecting System Metrics..." | tee -a "$DEPLOY_LOG"
     local timestamp=$(date +'%Y-%m-%d %H:%M:%S %Z')
     local cpu_usage=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage "%"}')
     local memory_usage=$(free -h | grep Mem | awk '{print $3 "/" $2}')
-    local disk_usage=$(df -h | grep '/$' | awk '{print $5 " used of " $2}')
+    local disk_usage=$(df -h / | tail -1 | awk '{print $3 "/" $2 " (" $5 " used)"}')
     local npm_latency=$(ping -c 1 registry.npmjs.org | grep 'time=' | awk '{print $7}' | cut -d'=' -f2)
 
-    echo -e "[INFO] 🕒 Timestamp: $timestamp"
-    echo -e "[INFO] 🖥️ CPU Usage: $cpu_usage"
-    echo -e "[INFO] 💾 Memory Usage: $memory_usage"
-    echo -e "[INFO] 📁 Disk Usage: $disk_usage"
-    echo -e "[INFO] 🚀 NPM Latency: $npm_latency ms"
-
-    echo "$timestamp [INFO] CPU: $cpu_usage | Memory: $memory_usage | Disk: $disk_usage | NPM Latency: $npm_latency ms" >> "$DEPLOY_LOG"
+    echo "[INFO] 🖥️ CPU Usage: $cpu_usage" | tee -a "$DEPLOY_LOG"
+    echo "[INFO] 💾 Memory Usage: $memory_usage" | tee -a "$DEPLOY_LOG"
+    echo "[INFO] 📁 Disk Usage: $disk_usage" | tee -a "$DEPLOY_LOG"
+    echo "[INFO] 🚀 NPM Latency: $npm_latency ms" | tee -a "$DEPLOY_LOG"
 }
 
-# Step 1: Fetch System and OSINT Metrics
-step_progress
-echo "[STEP 1] 📊 Fetching System and OSINT Metrics..."
-track_time system_metrics
+function osint_search() {
+    echo "[INFO] 🔍 Performing OSINT Search..." | tee -a "$DEPLOY_LOG"
+    local external_ip=$(curl -s ifconfig.me)
+    echo "[INFO] 🌐 External IP: $external_ip" | tee -a "$DEPLOY_LOG"
 
-# Step 2: Environment Setup
-step_progress
-echo "[STEP 2] 🚀 Setting up Environment Variables..."
-export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    echo "[INFO] 🛡️ Geolocation Data:" | tee -a "$DEPLOY_LOG"
+    curl -s "https://ipapi.co/$external_ip/json/" | jq '.' | tee -a "$DEPLOY_LOG"
+}
 
-# Step 3: SSH Agent Setup
-step_progress
-echo "[STEP 3] 🔑 Starting SSH Agent..."
-eval "$(ssh-agent -s)"
-for ssh_key in ~/.ssh/id_*; do
-    if [[ -f "$ssh_key" ]]; then
-        track_time ssh-add "$ssh_key"
-    fi
-done
+# Step-by-Step Deployment
+step_progress; echo "[STEP 1] 📦 Installing Dependencies..."; track_time install_dependencies
+step_progress; echo "[STEP 2] 📊 Fetching System Metrics..."; track_time system_metrics
+step_progress; echo "[STEP 3] 🔍 Performing OSINT Search..."; track_time osint_search
 
-# Step 4: Dependency Management
-step_progress
-echo "[STEP 4] 🧹 Managing Dependencies..."
+step_progress; echo "[STEP 4] 🛠️ Setting Environment Variables..."; export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+step_progress; echo "[STEP 5] 🔑 Starting SSH Agent..."; eval "$(ssh-agent -s)"; track_time ssh-add ~/.ssh/id_rsa
+
+step_progress; echo "[STEP 6] 🧹 Dependency Management..."; 
 if [[ "$FULL_CLEAN" == true ]]; then
     track_time rm -rf node_modules package-lock.json
     track_time npm cache clean --force
 fi
 track_time npm install --legacy-peer-deps
 
-# Step 5: Build Frontend
-step_progress
-echo "[STEP 5] 🌐 Building Frontend (craft-web)..."
-track_time npx nx run craft-web:build:production
+step_progress; echo "[STEP 7] 🌐 Building Frontend..."; track_time npx nx run craft-web:build:production
+step_progress; echo "[STEP 8] 🛠️ Building Backend (craft-nest)..."; track_time npx nx run craft-nest:build:production
+step_progress; echo "[STEP 9] 🛠️ Building Backend (craft-go)..."; track_time go build -o dist/apps/craft-go ./...
 
-# Step 6: Build Backend (craft-nest)
-step_progress
-echo "[STEP 6] 🛠️ Building Backend (craft-nest)..."
-track_time npx nx run craft-nest:build:production
-
-# Step 7: Build Backend (craft-go)
-step_progress
-echo "[STEP 7] 🛠️ Building Backend (craft-go)..."
-track_time go build -o dist/apps/craft-go ./...
-
-# Step 8: Restart PM2 Services
-step_progress
-echo "[STEP 8] 🔄 Restarting PM2 Services..."
+step_progress; echo "[STEP 10] 🔄 Restarting PM2 Services..."; 
 track_time pm2 restart "$PM2_APP_NAME_NEST"
 track_time pm2 restart "$PM2_APP_NAME_GO"
 
-# Step 9: Update NGINX
-step_progress
-echo "[STEP 9] 🌐 Deploying to NGINX..."
+step_progress; echo "[STEP 11] 🌐 Deploying to NGINX..."; 
 track_time cp -r "$FRONTEND_BUILD_PATH"/* "$NGINX_PATH"
 track_time systemctl restart nginx
 
 # Final Status
-step_progress
-echo "[STEP 15] 🎯 Finalizing Deployment..."
-track_time pm2 status
+step_progress; echo "[STEP 18] 🎯 Finalizing Deployment..."; track_time pm2 status
 
-# Deployment Summary
 TOTAL_DURATION=$((SECONDS - START_TIME))
-echo -e "\n[SUCCESS] 🎉 Deployment completed in \033[1;32m${TOTAL_DURATION} seconds\033[0m! (Cumulative Time: \033[1;33m${CUMULATIVE_DURATION} ms\033[0m)"
-echo "============================================================"
+echo -e "\n[SUCCESS] 🎉 Deployment completed in \033[1;32m${TOTAL_DURATION} seconds\033[0m! (Cumulative: \033[1;33m${CUMULATIVE_DURATION} ms\033[0m)"
 echo "$(date +%Y-%m-%d %H:%M:%S) 🎯 Deployment Completed in ${TOTAL_DURATION} seconds (Cumulative: ${CUMULATIVE_DURATION} ms)" >> "$DEPLOY_LOG"
