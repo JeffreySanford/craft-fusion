@@ -1,40 +1,56 @@
 {
   "compilerOptions": {
+    // 🎯 Root and Module Resolution
     "rootDir": "./",
-    "sourceMap": true,
+    "baseUrl": "./",
     "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "ES2022",
     "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "target": "ES2022",
+    "lib": ["es2022", "dom"],
+
+    // ⚙️ Build Output
+    "outDir": "dist/out-tsc",
+    "sourceMap": true,
+    "composite": false,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "baseUrl": "./",
-    "paths": {
-      "@craft-fusion/axios": ["libs/shared/axios/src/index.ts"],
-      "@portfolio/environments/*": ["../../environments/*"]
-    },
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+
+    // 🛡️ Strict Type-Checking Options
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "outDir": "dist/out-tsc",
-    "composite": false
+    "forceConsistentCasingInFileNames": true,
+
+    // 📝 Decorators and Metadata
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+
+    // 🛠️ Module Interoperability
+    "esModuleInterop": true
   },
+
+  // 🚫 Paths (Removed Unused Paths)
+  "paths": {},
+
+  // 🔍 Files and Includes
   "files": [],
-  "include": [],
+  "include": ["**/*.ts"],
   "references": [],
-  "compileOnSave": false,
+
+  // 📂 Exclude from Compilation
   "exclude": ["node_modules", "tmp"],
+
+  // ⚡ Angular Specific Compiler Options
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+
+  // 🔄 Enable Compile on Save (if using VS Code)
+  "compileOnSave": false
 }

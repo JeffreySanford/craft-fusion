@@ -31,7 +31,7 @@
   },
   "plugins": [
     {
-      "plugin": "@nx/js/typescript",
+      "plugin": "@nx/js",
       "options": {
         "typecheck": {
           "targetName": "typecheck"
@@ -56,10 +56,26 @@
       "sourceRoot": "apps/craft-go/src",
       "targets": {
         "build": {
-          "executor": "@nx/go:build",
+          "executor": "nx:run-commands",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/apps/craft-go"
+            "outputPath": "dist/apps/craft-go",
+            "command": "go build -o dist/apps/craft-go ./...",
+            "cwd": "apps/craft-go"
+          }
+        },
+        "serve": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "go run main.go",
+            "cwd": "apps/craft-go"
+          }
+        },
+        "test": {
+          "executor": "nx:run-commands",
+          "options": {
+            "command": "go test ./...",
+            "cwd": "apps/craft-go"
           }
         }
       }
@@ -70,11 +86,18 @@
       "sourceRoot": "apps/craft-web/src",
       "targets": {
         "build": {
-          "executor": "@nx/angular:build",
+          "executor": "@angular-devkit/build-angular:browser",
           "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/apps/craft-web/browser",
-            "configuration": "production"
+            "index": "apps/craft-web/src/index.html",
+            "main": "apps/craft-web/src/main.ts",
+            "polyfills": "apps/craft-web/src/polyfills.ts",
+            "tsConfig": "apps/craft-web/tsconfig.json",
+            "assets": ["apps/craft-web/src/assets"],
+            "styles": ["apps/craft-web/src/styles/styles.scss"],
+            "scripts": [],
+            "allowedCommonJsDependencies": ["jszip"]
           },
           "configurations": {
             "production": {
@@ -88,7 +111,24 @@
               "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
-              "namedChunks": false
+              "namedChunks": false,
+              "serviceWorker": true
+            }
+          }
+        },
+        "serve": {
+          "executor": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "buildTarget": "craft-web:build"
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "craft-web:build:production",
+              "proxyConfig": "apps/craft-web/src/proxy.config.prod.json"
+            },
+            "development": {
+              "buildTarget": "craft-web:build:development",
+              "proxyConfig": "apps/craft-web/src/proxy.config.json"
             }
           }
         }

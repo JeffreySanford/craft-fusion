@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # ============================================================
 # 🚀 Craft-Fusion Deployment Script for Digital Ocean
 # ============================================================
@@ -9,11 +10,13 @@
 # ⚠️  REMINDER: Use '--full-clean' for a fresh deployment with cleaned dependencies.
 # ============================================================
 
-# === Configuration ===
-TOTAL_STEPS=13
+# === Global Configuration ===
+TOTAL_STEPS=15
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
-START_TIME_GLOBAL=$(date +%s)
+START_TIME=$(date +%s)
+FULL_CLEAN=false
+DEPLOY_LOG="deploy-digital-ocean.log"
 
 # Paths
 FRONTEND_BUILD_PATH="dist/apps/craft-web/browser"
@@ -25,16 +28,12 @@ NGINX_PATH="/usr/share/nginx/html"
 PM2_APP_NAME_NEST="craft-nest"
 PM2_APP_NAME_GO="craft-go"
 
-# Flags
-FULL_CLEAN=false
-if [[ "$1" == "--full-clean" ]]; then
-    FULL_CLEAN=true
-    echo -e "\033[1;31m⚠️  FULL CLEAN ENABLED: Performing a complete cleanup of dependencies, cache, and build artifacts.\033[0m"
-fi
+# OSINT URLs
+NPM_STATS_URL="https://api.npmjs.org/downloads/point/last-month/craft-fusion"
+GITHUB_STATS_URL="https://api.github.com/repos/JeffreySanford/craft-fusion"
 
-# === Helper Functions ===
+# === Utility Functions ===
 
-# Increment Step Progress
 function step_progress() {
     ((CURRENT_STEP++))
     local percentage=$((CURRENT_STEP * 100 / TOTAL_STEPS))
@@ -46,103 +45,112 @@ function step_progress() {
     echo -e " \033[0;32m✔\033[0m"
 }
 
-# Track Time for Steps
 function report_time() {
-    local DURATION=$1
-    local STEP_DESC=$2
-    echo -e "[INFO] ✅ $STEP_DESC took: \033[1;32m${DURATION}s\033[0m"
+    local START=$1
+    local END=$(date +%s)
+    local DURATION=$((END - START))
+    echo -e "[INFO] ✅ $2 took: \033[1;32m${DURATION} seconds\033[0m"
+    echo "[LOG] ✅ $2 took: ${DURATION} seconds" >> "$DEPLOY_LOG"
 }
 
-# NPM Module Progress Tracker
-function npm_module_progress() {
-    echo "[INFO] 📦 Tracking individual npm module installation progress..."
-    local MODULE_COUNT=$(npm ls --depth=0 2>/dev/null | grep -c '─')
-    local CURRENT_MODULE=0
-    local TOTAL_SIZE=0
-    local START_TIME=$(date +%s)
-    
-    npm install --verbose 2>&1 | while read -r line; do
-        if [[ "$line" =~ "added" ]]; then
-            CURRENT_MODULE=$((CURRENT_MODULE + 1))
-            local MODULE_NAME=$(echo "$line" | grep -oE "added [^ ]+" | awk '{print $2}')
-            local MODULE_PATH="node_modules/$MODULE_NAME"
-            if [ -d "$MODULE_PATH" ]; then
-                local MODULE_SIZE=$(du -sh "$MODULE_PATH" 2>/dev/null | awk '{print $1}')
-                TOTAL_SIZE=$((TOTAL_SIZE + $(du -s "$MODULE_PATH" 2>/dev/null | awk '{print $1}')))
-                local PERCENTAGE=$((CURRENT_MODULE * 100 / MODULE_COUNT))
-                echo -ne "[INFO] 📦 Module: $MODULE_NAME | Size: $MODULE_SIZE | Progress: $PERCENTAGE% Complete\r"
-            fi
+function log_metric() {
+    local METRIC=$1
+    local VALUE=$2
+    echo -e "[METRIC] 📊 $METRIC: \033[1;34m$VALUE\033[0m"
+    echo "[LOG] 📊 $METRIC: $VALUE" >> "$DEPLOY_LOG"
+}
+
+function log_info() {
+    local MESSAGE=$1
+    echo "[LOG] $MESSAGE" >> "$DEPLOY_LOG"
+}
+
+function log_error() {
+    local MESSAGE=$1
+    echo -e "\033[1;31m[ERROR] ❌ $MESSAGE\033[0m"
+    echo "[ERROR] ❌ $MESSAGE" >> "$DEPLOY_LOG"
+}
+
+# === LOG FILE MANAGEMENT ===
+
+function manage_log_file() {
+    if [[ "$FULL_CLEAN" == true ]]; then
+        echo -e "\033[1;31m⚠️  FULL CLEAN ENABLED: Deleting existing deployment log.\033[0m"
+        [[ -f "$DEPLOY_LOG" ]] && rm "$DEPLOY_LOG"
+        touch "$DEPLOY_LOG"
+        echo "============================================================" > "$DEPLOY_LOG"
+        echo "🚀 Deployment Log - $(date -u +'%Y-%m-%d %H:%M:%S GMT')" >> "$DEPLOY_LOG"
+        echo "============================================================" >> "$DEPLOY_LOG"
+        echo "[INFO] 🚀 Full clean deployment started." >> "$DEPLOY_LOG"
+    else
+        if [[ ! -f "$DEPLOY_LOG" ]]; then
+            touch "$DEPLOY_LOG"
+            echo "============================================================" > "$DEPLOY_LOG"
+            echo "🚀 Deployment Log - $(date -u +'%Y-%m-%d %H:%M:%S GMT')" >> "$DEPLOY_LOG"
+            echo "============================================================" >> "$DEPLOY_LOG"
+            echo "[INFO] 🚀 First deployment log created." >> "$DEPLOY_LOG"
         fi
-    done
 
-    local END_TIME=$(date +%s)
-    local DURATION=$((END_TIME - START_TIME))
-    echo -e "\n[INFO] 📊 NPM Installation Summary:"
-    echo "[INFO] 📦 Total Modules Installed: $CURRENT_MODULE"
-    echo "[INFO] 💾 Total Size: ${TOTAL_SIZE} KB"
-    report_time $DURATION "NPM Install"
+        # Count Incremental Deployments
+        local DEPLOY_COUNT=$(grep -c "Incremental Deployment" "$DEPLOY_LOG")
+        ((DEPLOY_COUNT++))
+        echo "[INFO] 🚀 Incremental Deployment Run #$DEPLOY_COUNT." >> "$DEPLOY_LOG"
+        echo -e "\033[1;33m⚠️  Incremental Deployment Run #$DEPLOY_COUNT.\033[0m"
+    fi
 }
 
-# === Step 1: Estimate Metrics ===
-step_progress
-echo "[STEP 1] 📊 Estimating Deployment Time and NPM Metrics..."
-if [[ "$FULL_CLEAN" == true ]]; then
-    npm_metrics
+# === OSINT FUNCTIONS ===
+
+function fetch_system_metrics() {
+    echo "[INFO] 📊 Fetching System Metrics..."
+    CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' | cut -d. -f1)
+    MEMORY_TOTAL=$(free -m | grep Mem: | awk '{print $2}')
+    MEMORY_USED=$(free -m | grep Mem: | awk '{print $3}')
+    DISK_USAGE=$(df -h / | grep / | awk '{print $5}')
+    OS=$(lsb_release -d | awk -F"\t" '{print $2}')
+    KERNEL=$(uname -r)
+    CURRENT_USER=$(whoami)
+
+    log_metric "CPU Usage (%)" "${CPU_USAGE}%"
+    log_metric "Memory Usage" "${MEMORY_USED}MB / ${MEMORY_TOTAL}MB"
+    log_metric "Disk Usage" "$DISK_USAGE"
+    log_metric "OS" "$OS"
+    log_metric "Kernel Version" "$KERNEL"
+    log_metric "Current User" "$CURRENT_USER"
+}
+
+# === Parse Arguments ===
+if [[ "$1" == "--full-clean" ]]; then
+    FULL_CLEAN=true
+    echo -e "\033[1;31m⚠️  FULL CLEAN ENABLED: Performing a complete cleanup of dependencies, cache, and build artifacts.\033[0m"
+    log_info "FULL CLEAN ENABLED"
 fi
 
-# === Step 2: Environment Setup ===
+# === STEP 1: Initialize Deployment ===
+manage_log_file
+step_progress
+echo "[STEP 1] 📊 Fetching System and OSINT Metrics..."
+fetch_system_metrics
+
+# === STEP 2: Environment Variables ===
 step_progress
 echo "[STEP 2] 🚀 Setting up Environment Variables..."
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 
-# === Step 3: SSH Agent Setup (Dynamic Key Handling) ===
+# === STEP 3: SSH Key Management ===
 step_progress
 echo "[STEP 3] 🔑 Starting SSH Agent..."
 eval "$(ssh-agent -s)"
+for key in ~/.ssh/id_*; do
+    ssh-add "$key" || echo "[WARNING] ⚠️ Failed to add key: $key"
+    log_info "SSH Key added: $key"
+done
 
-SSH_DIR="$HOME/.ssh"
-if [ -d "$SSH_DIR" ]; then
-    echo "[INFO] 🗝️ Scanning for SSH keys in $SSH_DIR..."
-    for SSH_KEY in "$SSH_DIR"/*; do
-        if [[ -f "$SSH_KEY" && "$SSH_KEY" != *.pub && "$SSH_KEY" != *known_hosts* ]]; then
-            ssh-add "$SSH_KEY" 2>/dev/null
-            if [ $? -eq 0 ]; then
-                echo "[INFO] ✅ Successfully added SSH key: $SSH_KEY"
-            fi
-        fi
-    done
-else
-    echo "[ERROR] ❌ SSH directory not found at $SSH_DIR."
-    exit 1
-fi
-
-# === Step 4: Managing Dependencies ===
-step_progress
-echo "[STEP 4] 🧹 Managing Dependencies..."
-START_TIME=$(date +%s)
-
-if [[ "$FULL_CLEAN" == true ]]; then
-    echo "[INFO] 🔄 Performing FULL CLEANUP: Removing node_modules, package-lock.json, and clearing npm cache..."
-    rm -rf node_modules package-lock.json
-    npm cache clean --force
-fi
-
-npm_module_progress
-
+# === Final Deployment Summary ===
 END_TIME=$(date +%s)
-report_time $((END_TIME - START_TIME)) "Dependency Management"
-
-# === Step 5: Build Frontend ===
-step_progress
-echo "[STEP 5] 🌐 Building Frontend (craft-web)..."
-START_TIME=$(date +%s)
-npx nx run craft-web:build:production || { echo "[ERROR] ❌ Frontend build failed."; exit 1; }
-END_TIME=$(date +%s)
-report_time $((END_TIME - START_TIME)) "Frontend Build"
-
-# === Final Step: Deployment Complete ===
-step_progress
-echo "[STEP 13] 🎯 Finalizing Deployment..."
-pm2 status
-echo -e "\n[SUCCESS] 🎉 Deployment completed successfully!"
-echo -e "[INFO] 🕒 Total Deployment Time: \033[1;32m$(($(date +%s) - $START_TIME_GLOBAL)) seconds\033[0m"
+TOTAL_DURATION=$((END_TIME - START_TIME))
+echo "============================================================"
+echo "🎯 Deployment Complete in $TOTAL_DURATION seconds!"
+log_info "Deployment completed successfully in $TOTAL_DURATION seconds."
+echo "📊 Deployment log saved to deploy-digital-ocean.log"
+echo "============================================================"
