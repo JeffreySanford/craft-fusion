@@ -28,9 +28,9 @@ export class RecordService {
    * });
    */
   getRecordByUID(UID: string): Observable<Record> {
-    const uid = `records/:${UID}`;
+    const uid = `records/${UID}`;
     console.log(`Fetching record by UID: ${UID} from URL: ${this.apiService.getApiUrl()}/${uid}`);
-    debugger
+
     return this.apiService.get<Record>(uid);
   }
 
@@ -92,7 +92,7 @@ export class RecordService {
 
   setServerResource(resource: string): string {
     console.log(`Setting server resource: ${resource}`);
-    debugger
+
     return this.apiService.setApiUrl(resource);
   }
 }

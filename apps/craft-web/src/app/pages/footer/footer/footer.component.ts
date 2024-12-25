@@ -80,16 +80,21 @@ export class FooterComponent implements OnInit, OnDestroy {
   }
 
   private measureNetworkLatency() {
+    const peerConnection = new RTCPeerConnection({ iceServers: [] });
+    peerConnection.createDataChannel('latencyCheck');
     const startTime = performance.now();
-    fetch('https://www.google.com', { method: 'HEAD', mode: 'no-cors' })
-      .then(() => {
-        const endTime = performance.now();
-        const latency = endTime - startTime;
-        this.performanceMetrics.networkLatency = `${latency.toFixed(2)} ms`;
-      })
-      .catch(() => {
-        this.performanceMetrics.networkLatency = 'N/A';
-      });
+
+    peerConnection.createOffer().then(offer => {
+      return peerConnection.setLocalDescription(offer);
+    }).then(() => {
+      const endTime = performance.now();
+      const latency = endTime - startTime;
+      this.performanceMetrics.networkLatency = `${latency.toFixed(2)} ms`;
+      peerConnection.close();
+    }).catch(() => {
+      this.performanceMetrics.networkLatency = 'N/A';
+      peerConnection.close();
+    });
   }
 
   getMemoryUsageClass() {

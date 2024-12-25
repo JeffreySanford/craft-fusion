@@ -27,3 +27,14 @@ func GetRecordsHandler(c *gin.Context) {
 		"records": records,
 	})
 }
+
+// GetRecordByUIDHandler serves a user record based on UID.
+func GetRecordByUIDHandler(c *gin.Context) {
+	uid := c.Param("UID")
+	record, err := services.GetRecordByUID(uid)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Record not found"})
+		return
+	}
+	c.JSON(http.StatusOK, record)
+}

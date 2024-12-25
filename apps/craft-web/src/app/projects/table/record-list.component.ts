@@ -13,6 +13,7 @@ import { MenuItem } from '@craft-web/pages/sidebar/sidebar.types';
 export interface Server {
   name: string;
   language: string;
+  swagger: string;
 }
 
 @Component({
@@ -48,10 +49,12 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     {
       name: 'Nest',
       language: 'NestJS (node.js)',
+      swagger: 'http://localhost:3000/api/swagger',
     },
     {
       name: 'Go',
       language: 'Go',
+      swagger: 'http://localhost:4000/api/swagger',
     },
   ];
   server: Server = this.servers[0];
@@ -137,7 +140,6 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   }
 
   onSelectedServerChange(event: string): void {
-    debugger
     console.log('Event (Server Name): Selected server changed with event:', event);
     console.log('Available servers:', this.servers);
 

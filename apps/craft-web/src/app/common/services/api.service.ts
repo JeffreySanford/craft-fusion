@@ -78,7 +78,6 @@ export class ApiService {
 
   setApiUrl(api: string): string {
     const server = this.servers.find(server => server.name === api);
-    debugger
     
     if (server) {
       this.apiUrl = this.isProduction ? `http://${production.host}:${server.port}/${server.api}` : `http://${environment.host}:${server.port}${server.api}`;

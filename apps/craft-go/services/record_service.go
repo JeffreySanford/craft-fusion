@@ -9,3 +9,8 @@ import (
 func GetRecords(limit int) []models.Record {
 	return repository.GenerateMockRecords(limit)
 }
+
+// GetRecordByUID retrieves a mock record by UID.
+func GetRecordByUID(uid string) (models.Record, error) {
+	return repository.FindRecordByUID(uid)
+}

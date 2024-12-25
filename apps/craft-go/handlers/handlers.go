@@ -15,6 +15,11 @@ import (
 
 var recordGenerationTime int64
 
+func init() {
+	// Initialize the record generation time
+	recordGenerationTime = time.Now().Unix()
+}
+
 // GenerateRecordsHandler handles the request to generate multiple records
 func GenerateRecordsHandler(c *gin.Context) {
 	// Parse the count parameter
