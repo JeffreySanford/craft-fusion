@@ -28,11 +28,27 @@ echo "[DEBUG] 🔍 Current PATH: $PATH"
 
 # === 🔑 Start SSH Agent ===
 echo "[INFO] 🔑 Starting SSH agent..."
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_ed25519 || {
-    echo "[ERROR] ❌ Failed to add SSH key."
+
+# Ensure SSH key path points to the correct user home directory
+SSH_KEY_PATH="/home/jeffrey/.ssh/id_ed25519"
+
+if [ ! -f "$SSH_KEY_PATH" ]; then
+    echo "[ERROR] ❌ SSH key not found at $SSH_KEY_PATH. Ensure the key exists."
+    exit 1
+fi
+
+# Start SSH Agent and add the key
+eval "$(ssh-agent -s)" || {
+    echo "[ERROR] ❌ Failed to start SSH agent."
     exit 1
 }
+
+ssh-add "$SSH_KEY_PATH" || {
+    echo "[ERROR] ❌ Failed to add SSH key: $SSH_KEY_PATH"
+    exit 1
+}
+
+echo "[INFO] ✅ SSH key successfully added."
 
 # === 📥 Pull Latest Changes ===
 echo "[INFO] 📥 Pulling latest changes from Git..."
