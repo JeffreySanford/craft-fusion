@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { environment as production } from 'src/environments/environment.prod';
+
 export interface Server {
   name: string;
   language: string;
@@ -16,42 +17,43 @@ export interface Server {
 })
 export class ApiService {
   private isProduction = environment.production;
-  // include the setAPiUrl function to set the server endpoint for the Go server and NestJS server
-  private apiUrl = `${environment.apiUrl}:${environment.nestPort}`;
+
+  // Default API URL set to NestJS server
+  private apiUrl = `${environment.apiUrl}/api`;
   private recordSize = 100; // Default record size
-  
+
   private servers: Server[] = [
-      {
-        name: 'Nest',
-        language: 'NestJS (node.js)',
-        api: '/api',
-        port: 3000,
-        swagger: '/api/swagger',
-      },
-      {
-        name: 'Go',
-        language: 'Go',
-        api: '',
-        port: 4000,
-        swagger: '/swagger',
-      },
-    ];
+    {
+      name: 'Nest',
+      language: 'NestJS (Node.js)',
+      api: 'api',
+      port: 3000,
+      swagger: '/api/swagger',
+    },
+    {
+      name: 'Go',
+      language: 'Go',
+      api: 'go-api',
+      port: 4000,
+      swagger: '/swagger',
+    },
+  ];
 
-    private server = this.servers[0];
-
+  private currentServer: Server = this.servers[0];
 
   constructor(private http: HttpClient) {
     console.log('API Service: Production mode is', this.isProduction ? 'ON' : 'OFF');
-    console.log(`API Service: Setting environment variable for API URL ${this.apiUrl}`);
+    console.log(`API Service: Initial API URL is ${this.apiUrl}`);
   }
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      Authorization: 'Bearer YOUR_TOKEN_HERE', // Replace with your token logic
+      Authorization: 'Bearer YOUR_TOKEN_HERE', // Replace with dynamic token logic
     });
   }
 
+  // 🛡️ API CRUD Operations
   get<T>(endpoint: string): Observable<T> {
     return this.http.get<T>(`${this.apiUrl}/${endpoint}`, { headers: this.getHeaders() });
   }
@@ -68,56 +70,79 @@ export class ApiService {
     return this.http.delete<T>(`${this.apiUrl}/${endpoint}`, { headers: this.getHeaders() });
   }
 
-  // allow for setting different server endpoint api/go for Go server and api for NestJS server (4000 and 3000)
-  /** The sets dynamic server name, port, and most importantly the apiUrl.  Details this and rewrite this function
-   * @param api - The server endpoint to set
+  /**
+   * Dynamically sets the server API URL based on the selected server name.
+   * Updates `apiUrl` to point to the selected server.
+   * @param serverName - Name of the server ('Nest' or 'Go')
    * @example
-   * setApiUrl('/api/go');
-   * setApiUrl('/api');
-   * 
+   * setApiUrl('Nest');
+   * setApiUrl('Go');
    */
+  setApiUrl(serverName: string): string {
+    const server = this.servers.find(s => s.name === serverName);
 
-  setApiUrl(api: string): string {
-    const server = this.servers.find(server => server.name === api);
-    
     if (server) {
-      this.apiUrl = this.isProduction ? `http://${production.host}:${server.port}/${server.api}` : `http://${environment.host}:${server.port}${server.api}`;
+      this.currentServer = server;
+      const protocol = this.isProduction ? 'https' : 'http';
+      const host = this.isProduction ? production.host : environment.host;
 
-      const apiEndpoint = this.apiUrl + server.api;
-      console.log(`API Service: Setting API URL to ${apiEndpoint}`);
-      
-      return apiEndpoint;
+      this.apiUrl = `${protocol}://${host}/${server.api}`;
+      console.log(`API Service: API URL set to ${this.apiUrl}`);
     } else {
-      console.error('API Service: Server API not found');
-
-      return 'Server API not found';
+      this.apiUrl = '';
+      console.error(`API Service: Server with name '${serverName}' not found`);
     }
+
+    return this.apiUrl;
   }
 
+  /**
+   * Gets the currently active API URL.
+   * @returns The current API URL.
+   */
   getApiUrl(): string {
     return this.apiUrl;
   }
 
+  /**
+   * Sets the number of records to fetch/generate.
+   * @param size - The number of records.
+   */
   setRecordSize(size: number): void {
     this.recordSize = size;
-    console.log(`API Service: Setting record size to ${this.recordSize}`);
+    console.log(`API Service: Record size set to ${this.recordSize}`);
   }
 
+  /**
+   * Selects the server by its name.
+   * @param serverName - The name of the server.
+   */
   setServerType(serverName: string): void {
     const server = this.servers.find(s => s.name === serverName);
     if (server) {
-      this.server = server;
-      console.log(`API Service: Setting server type to ${server.name}`);
+      this.currentServer = server;
+      this.setApiUrl(serverName);
+      console.log(`API Service: Server switched to ${server.name}`);
     } else {
       console.error('API Service: Server not found');
     }
   }
 
+  /**
+   * Logs performance details based on the current configuration.
+   */
   getPerformanceDetails(): void {
-    console.log(`API Service: Performance details for ${this.recordSize} records on ${this.server} server`);
-    // Add logic to fetch and display performance details
+    console.log(`API Service: Performance details for ${this.recordSize} records on ${this.currentServer.name} server`);
   }
 
+  /**
+   * Generates a performance report based on the selected server.
+   * @param selectedServer - Selected server object.
+   * @param totalRecords - Number of records generated.
+   * @param generationTimeLabel - Time taken to generate records.
+   * @param roundtripLabel - Time taken for round-trip delivery.
+   * @returns A performance report string.
+   */
   generatePerformanceReport(selectedServer: { language: string }, totalRecords: number, generationTimeLabel: string, roundtripLabel: string): string {
     return `Using the backend server language, ${selectedServer.language}, Mock record set of ${totalRecords} records was generated in ${generationTimeLabel} and delivered in ${roundtripLabel}.`;
   }
