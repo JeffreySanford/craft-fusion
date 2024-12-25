@@ -8,31 +8,31 @@
 # manages services with PM2, and deploys assets to NGINX.
 # ------------------------------------------------------------
 # ⚠️  REMINDER: Use '--full-clean' for a fresh deployment with cleaned dependencies.
-# ------------------------------------------------------------
+# ============================================================
 
-# === GLOBAL VARIABLES ===
+# Constants
 TOTAL_STEPS=15
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
 DEPLOY_LOG="deploy-digital-ocean.log"
-FULL_CLEAN=false
+START_TIME=$SECONDS
 
 # Paths
+NGINX_PATH="/usr/share/nginx/html"
 FRONTEND_BUILD_PATH="dist/apps/craft-web/browser"
 BACKEND_NEST_PATH="dist/apps/craft-nest/main.js"
 BACKEND_GO_PATH="dist/apps/craft-go/main"
-NGINX_PATH="/usr/share/nginx/html"
-
-# PM2 App Names
 PM2_APP_NAME_NEST="craft-nest"
 PM2_APP_NAME_GO="craft-go"
 
-# Fetch Current User (even under sudo)
-CURRENT_USER=${SUDO_USER:-$USER}
+# Flags
+FULL_CLEAN=false
+if [[ "$1" == "--full-clean" ]]; then
+    FULL_CLEAN=true
+    echo -e "\033[1;31m⚠️  FULL CLEAN ENABLED: Performing a complete cleanup of dependencies, cache, and build artifacts.\033[0m"
+fi
 
-# === FUNCTIONS ===
-
-# Step Progress Bar
+# Utility Functions
 function step_progress() {
     ((CURRENT_STEP++))
     local percentage=$((CURRENT_STEP * 100 / TOTAL_STEPS))
@@ -44,139 +44,88 @@ function step_progress() {
     echo -e " \033[0;32m✔\033[0m"
 }
 
-# Logging Information
-function log_info() {
-    local message="$1"
-    echo "[INFO] $message"
-    echo "$(date +%Y-%m-%d\ %H:%M:%S) [INFO] $message" >> "$DEPLOY_LOG"
-}
-
-# Time Tracking
 function track_time() {
-    local start_time=$SECONDS
+    local start_time=$(date +%s%3N)
     "$@"
-    local duration=$((SECONDS - start_time))
-    echo "[INFO] ✅ $1 took: \033[1;32m${duration} seconds\033[0m"
-    echo "$(date +%Y-%m-%d\ %H:%M:%S) [INFO] $1 completed in ${duration} seconds" >> "$DEPLOY_LOG"
+    local end_time=$(date +%s%3N)
+    local duration=$((end_time - start_time))
+    local cmd_name="$1"
+    echo -e "[INFO] ✅ $cmd_name took: \033[1;32m${duration} ms\033[0m"
+    echo "$(date +%Y-%m-%d %H:%M:%S) [INFO] $cmd_name completed in ${duration} ms" >> "$DEPLOY_LOG"
 }
 
-# OSINT Metrics Collection
-function fetch_osint_metrics() {
-    echo "[INFO] 🧑 User: $CURRENT_USER"
-    echo "[INFO] 🖥️ System: $(uname -a)"
-    echo "[INFO] 📅 Date: $(date)"
-    echo "[INFO] 🕒 Uptime: $(uptime -p)"
-    echo "[INFO] 🧠 Memory Usage:"
-    free -h | grep Mem
-    echo "[INFO] 📂 Disk Space:"
-    df -h | grep '/$'
-    echo "[INFO] 🌐 IP Address: $(curl -s ifconfig.me)"
-    log_info "OSINT Metrics Collected"
-}
-
-# Check or Create Deployment Log
-function initialize_log() {
-    if [[ "$FULL_CLEAN" = true ]]; then
-        echo "[INFO] 🔄 Performing Full Clean - Deleting Deployment Log..."
+function init_log() {
+    if [[ "$FULL_CLEAN" == true ]]; then
         rm -f "$DEPLOY_LOG"
-        echo "Deployment Log Created: $(date)" > "$DEPLOY_LOG"
+        echo "[INFO] 📝 Deployment log reset due to --full-clean." > "$DEPLOY_LOG"
+    elif [[ ! -f "$DEPLOY_LOG" ]]; then
+        touch "$DEPLOY_LOG"
+        echo "[INFO] 📝 Deployment log initialized." > "$DEPLOY_LOG"
     else
-        if [[ ! -f "$DEPLOY_LOG" ]]; then
-            echo "Deployment Log Created: $(date)" > "$DEPLOY_LOG"
-        fi
+        local count=$(grep -c "Deployment Started" "$DEPLOY_LOG")
+        echo "[INFO] 📊 Previous deployments without --full-clean: $count"
     fi
 }
 
-# === ARGUMENT PARSING ===
-if [[ "$1" == "--full-clean" ]]; then
-    FULL_CLEAN=true
-    echo -e "\033[1;31m⚠️  FULL CLEAN ENABLED: Performing a complete cleanup of dependencies, cache, and build artifacts.\033[0m"
-fi
+function system_metrics() {
+    echo "[INFO] 📊 Collecting System Metrics..."
+    echo "[INFO] 🕒 Timestamp: $(date +'%Y-%m-%d %H:%M:%S %Z')" >> "$DEPLOY_LOG"
+    echo "[INFO] 🖥️ CPU Usage: $(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage "%"}')" >> "$DEPLOY_LOG"
+    echo "[INFO] 💾 Memory Usage: $(free -h | grep Mem | awk '{print $3 "/" $2}')" >> "$DEPLOY_LOG"
+    echo "[INFO] 📁 Disk Usage: $(df -h | grep '/$' | awk '{print $5 " used of " $2}')" >> "$DEPLOY_LOG"
+    echo "[INFO] 🚀 NPM Latency: $(ping -c 1 registry.npmjs.org | grep 'time=' | awk '{print $7}' | cut -d'=' -f2) ms" >> "$DEPLOY_LOG"
+}
 
-# === SCRIPT START ===
-clear
-echo "============================================================"
-echo "🚀 Craft-Fusion Deployment Script for Digital Ocean"
-echo "============================================================"
-echo "This script automates the deployment of the Craft-Fusion project."
-echo "It builds frontend (craft-web), backend (craft-nest, craft-go),"
-echo "manages services with PM2, and deploys assets to NGINX."
-echo "------------------------------------------------------------"
-echo -e "\033[1;31m⚠️  REMINDER: Use '--full-clean' for a fresh deployment with cleaned dependencies.\033[0m"
-echo "------------------------------------------------------------"
-
-initialize_log
-
-# === STEP 1: Fetch System Metrics ===
+# Step 1: Fetch System and OSINT Metrics
 step_progress
 echo "[STEP 1] 📊 Fetching System and OSINT Metrics..."
-fetch_osint_metrics
+system_metrics
 
-# === STEP 2: Environment Setup ===
+# Step 2: Environment Setup
 step_progress
 echo "[STEP 2] 🚀 Setting up Environment Variables..."
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 
-# === STEP 3: SSH Key Management ===
+# Step 3: SSH Agent Setup
 step_progress
 echo "[STEP 3] 🔑 Starting SSH Agent..."
 eval "$(ssh-agent -s)"
-SSH_KEYS=($HOME/.ssh/id_*)
-for KEY in "${SSH_KEYS[@]}"; do
-    if [[ -f "$KEY" ]]; then
-        ssh-add "$KEY"
-        log_info "Added SSH key: $KEY"
-    else
-        echo "[WARNING] ⚠️ No valid SSH keys found in $HOME/.ssh"
+for ssh_key in ~/.ssh/id_*; do
+    if [[ -f "$ssh_key" ]]; then
+        track_time ssh-add "$ssh_key"
     fi
 done
 
-# === STEP 4: Dependency Management ===
+# Step 4: Dependency Management
 step_progress
 echo "[STEP 4] 🧹 Managing Dependencies..."
-if [[ "$FULL_CLEAN" = true ]]; then
+if [[ "$FULL_CLEAN" == true ]]; then
     track_time rm -rf node_modules package-lock.json
     track_time npm cache clean --force
 fi
 track_time npm install
 
-# === STEP 5: Build Frontend (craft-web) ===
+# Step 5: Build Frontend
 step_progress
 echo "[STEP 5] 🌐 Building Frontend (craft-web)..."
 track_time npx nx run craft-web:build:production
 
-# === STEP 6: Build Backend (craft-nest) ===
+# Step 6: Build Backend (craft-nest)
 step_progress
 echo "[STEP 6] 🛠️ Building Backend (craft-nest)..."
 track_time npx nx run craft-nest:build:production
 
-# === STEP 7: Build Backend (craft-go) ===
+# Step 7: Build Backend (craft-go)
 step_progress
 echo "[STEP 7] 🛠️ Building Backend (craft-go)..."
 track_time go build -o dist/apps/craft-go ./...
 
-# === STEP 8: Restart Services with PM2 ===
+# Final Status
 step_progress
-echo "[STEP 8] 🔄 Restarting Backend Services with PM2..."
-pm2 restart $PM2_APP_NAME_NEST || pm2 start dist/apps/craft-nest/main.js --name $PM2_APP_NAME_NEST
-pm2 restart $PM2_APP_NAME_GO || pm2 start dist/apps/craft-go/main --name $PM2_APP_NAME_GO
+echo "[STEP 15] 🎯 Finalizing Deployment..."
+track_time pm2 status
 
-# === STEP 9: Deploy Frontend to NGINX ===
-step_progress
-echo "[STEP 9] 📂 Deploying Frontend to NGINX..."
-sudo rm -rf "$NGINX_PATH"/*
-sudo mv "$FRONTEND_BUILD_PATH"/* "$NGINX_PATH"/
-sudo chown -R nginx:nginx "$NGINX_PATH"
-sudo chmod -R 755 "$NGINX_PATH"
-
-# === STEP 10: Final Deployment Status ===
-step_progress
-echo "[STEP 10] 🎯 Finalizing Deployment..."
-pm2 status
-log_info "Deployment Completed Successfully"
-
-# === Deployment Complete ===
+TOTAL_DURATION=$((SECONDS - START_TIME))
+echo -e "\n[SUCCESS] 🎉 Deployment completed in \033[1;32m${TOTAL_DURATION} seconds\033[0m!"
 echo "============================================================"
-echo -e "🎯 Deployment Complete in \033[1;32m$(($SECONDS)) seconds!\033[0m"
-echo "📊 Deployment log saved to $DEPLOY_LOG"
-echo "============================================================"
+echo "$(date +%Y-%m-%d %H:%M:%S) 🎯 Deployment Completed in ${TOTAL_DURATION} seconds" >> "$DEPLOY_LOG"
