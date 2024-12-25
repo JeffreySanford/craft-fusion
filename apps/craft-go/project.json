@@ -1,164 +1,29 @@
-#!/bin/bash
-
-# === 🚀 Deployment Script for Craft-Fusion with Enhanced Metrics and Time Reporting ===
-
-# === Constants ===
-TOTAL_STEPS=13
-CURRENT_STEP=0
-PROGRESS_BAR_LENGTH=50
-START_TIME=$(date +%s)
-
-# Paths
-FRONTEND_BUILD_PATH="dist/apps/craft-web/browser"
-BACKEND_NEST_PATH="dist/apps/craft-nest/main.js"
-BACKEND_GO_PATH="dist/apps/craft-go/main"
-NGINX_PATH="/usr/share/nginx/html"
-
-# PM2 App Names
-PM2_APP_NAME_NEST="craft-nest"
-PM2_APP_NAME_GO="craft-go"
-
-# Flags
-FULL_CLEAN=false
-
-# === Argument Parsing ===
-if [[ "$1" == "--help" ]]; then
-    echo "Usage: ./deploy-digital-ocean.sh [--full-clean]"
-    echo "--full-clean : Perform a complete cleanup (node_modules, cache, package-lock.json)."
-    exit 0
-elif [[ "$1" == "--full-clean" ]]; then
-    FULL_CLEAN=true
-    echo -e "\033[1;31m⚠️  FULL CLEAN ENABLED: Complete system cleanup in progress.\033[0m"
-fi
-
-# === Utility Functions ===
-
-# Display Step Progress
-function step_progress() {
-    ((CURRENT_STEP++))
-    local percentage=$((CURRENT_STEP * 100 / TOTAL_STEPS))
-    local progress=$((CURRENT_STEP * PROGRESS_BAR_LENGTH / TOTAL_STEPS))
-    local remaining=$((PROGRESS_BAR_LENGTH - progress))
-    echo -ne "\033[0;32m[STEP $CURRENT_STEP/$TOTAL_STEPS] [$percentage%] \033[0;37m"
-    printf "%-${PROGRESS_BAR_LENGTH}s" "$(printf '#%.0s' $(seq 1 $progress))"
-    printf "%-${remaining}s" ""
-    echo -e " \033[0;32m✔\033[0m"
+{
+  "name": "craft-go",
+  "type": "application",
+  "root": "apps/craft-go",
+  "sourceRoot": "apps/craft-go",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go build -o dist/craft-go ./...",
+        "cwd": "apps/craft-go/main.go"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go run main.go",
+        "cwd": "apps/craft-go/main.go"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go test ./...",
+        "cwd": "apps/craft-go/main.go"
+      }
+    }
+  }
 }
-
-# Report Duration
-function report_duration() {
-    local START=$1
-    local MESSAGE=$2
-    local END=$(date +%s)
-    local DURATION=$((END - START))
-    echo -e "[INFO] ✅ $MESSAGE completed in \033[1;32m${DURATION}s\033[0m."
-}
-
-# Display System Metrics
-function system_metrics() {
-    echo "[INFO] 📊 System Metrics:"
-    echo "   🖥️ CPU Usage: $(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage "%"}')"
-    echo "   🧠 Memory Usage: $(free -m | awk '/Mem:/ {printf "%.2f%%", $3/$2*100}')"
-    echo "   💾 Disk Usage: $(df -h | awk '$NF=="/"{printf "%s", $5}')"
-    echo "   📡 Current NPM Download Speed: $(npm ping | grep 'npm' | awk '{print $3}')"
-}
-
-# Validate File or Directory
-function validate_path() {
-    local PATH_TO_CHECK=$1
-    local ERROR_MSG=$2
-
-    if [ ! -e "$PATH_TO_CHECK" ]; then
-        echo "[ERROR] ❌ $ERROR_MSG"
-        exit 1
-    fi
-}
-
-# === Step 1: Display Metrics if FULL CLEAN ===
-step_progress
-echo "[STEP 1] 📊 Gathering System and NPM Metrics..."
-if [ "$FULL_CLEAN" = true ]; then
-    system_metrics
-fi
-
-# === Step 2: Environment Setup ===
-step_progress
-echo "[STEP 2] 🚀 Setting up Environment Variables..."
-export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-
-# === Step 3: SSH Agent Setup ===
-step_progress
-echo "[STEP 3] 🔑 Starting SSH Agent..."
-START=$(date +%s)
-eval "$(ssh-agent -s)"
-SSH_KEY="/home/jeffrey/.ssh/id_ed25519"
-if [ -f "$SSH_KEY" ]; then
-    ssh-add "$SSH_KEY" || { echo "[ERROR] ❌ Failed to add SSH key."; exit 1; }
-    echo "[INFO] ✅ SSH key added: $SSH_KEY"
-else
-    echo "[ERROR] ❌ SSH key not found at $SSH_KEY."
-    exit 1
-fi
-report_duration $START "SSH Setup"
-
-# === Step 4: Dependency Management ===
-step_progress
-echo "[STEP 4] 🧹 Managing Dependencies..."
-START=$(date +%s)
-if [ "$FULL_CLEAN" = true ]; then
-    echo "[INFO] 🔄 Performing FULL CLEANUP..."
-    rm -rf node_modules package-lock.json
-    npm cache clean --force || { echo "[ERROR] ❌ Failed to clear npm cache."; exit 1; }
-fi
-npm install || { echo "[ERROR] ❌ Failed to install dependencies."; exit 1; }
-report_duration $START "Dependency Management"
-
-# === Step 5: Build Frontend ===
-step_progress
-echo "[STEP 5] 🌐 Building Frontend (craft-web)..."
-START=$(date +%s)
-npx nx run craft-web:build:production || { echo "[ERROR] ❌ Frontend build failed."; exit 1; }
-report_duration $START "Frontend Build"
-
-# === Step 6: Build Backend (craft-nest) ===
-step_progress
-echo "[STEP 6] 🛠️ Building Backend (craft-nest)..."
-START=$(date +%s)
-npx nx run craft-nest:build:production || { echo "[ERROR] ❌ Backend (craft-nest) build failed."; exit 1; }
-validate_path "$BACKEND_NEST_PATH" "Backend NestJS build failed or path incorrect."
-report_duration $START "Backend (craft-nest) Build"
-
-# === Step 7: Build Backend (craft-go) ===
-step_progress
-echo "[STEP 7] 🛠️ Building Backend (craft-go)..."
-START=$(date +%s)
-npx nx run craft-go:build || { echo "[ERROR] ❌ Backend (craft-go) build failed."; exit 1; }
-validate_path "$BACKEND_GO_PATH" "Backend Go build failed or path incorrect."
-report_duration $START "Backend (craft-go) Build"
-
-# === Step 8: Restart Services ===
-step_progress
-echo "[STEP 8] 🔄 Restarting Services with PM2..."
-pm2 restart $PM2_APP_NAME_NEST
-pm2 restart $PM2_APP_NAME_GO
-
-# === Step 9: Deploy Frontend ===
-step_progress
-echo "[STEP 9] 📂 Deploying Frontend to NGINX..."
-sudo rm -rf "$NGINX_PATH"/*
-sudo mv "$FRONTEND_BUILD_PATH"/* "$NGINX_PATH"/
-sudo systemctl restart nginx
-
-# === Step 10: Snort Check ===
-step_progress
-echo "[STEP 10] 🛡️ Checking Snort Service..."
-sudo systemctl is-active --quiet snort || echo "[WARNING] ⚠️ Snort service is not running."
-
-# === Step 11: Final Summary ===
-step_progress
-echo "[STEP 11] 🎯 Finalizing Deployment..."
-pm2 status
-TOTAL_TIME=$(( $(date +%s) - START_TIME ))
-echo -e "[SUCCESS] 🎉 Deployment completed in \033[1;32m${TOTAL_TIME}s\033[0m."
-echo -e "[INFO] 🚀 System and Service are now operational!"
-
