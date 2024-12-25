@@ -99,54 +99,51 @@ function manage_log_file() {
     fi
 }
 
-# === OSINT FUNCTIONS ===
+# === SSH KEY MANAGEMENT ===
 
-function fetch_system_metrics() {
-    echo "[INFO] 📊 Fetching System Metrics..."
-    CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}' | cut -d. -f1)
-    MEMORY_TOTAL=$(free -m | grep Mem: | awk '{print $2}')
-    MEMORY_USED=$(free -m | grep Mem: | awk '{print $3}')
-    DISK_USAGE=$(df -h / | grep / | awk '{print $5}')
-    OS=$(lsb_release -d | awk -F"\t" '{print $2}')
-    KERNEL=$(uname -r)
-    CURRENT_USER=$(whoami)
+function manage_ssh_keys() {
+    step_progress
+    echo "[STEP $CURRENT_STEP] 🔑 Starting SSH Agent..."
+    eval "$(ssh-agent -s)"
+    
+    # Identify correct .ssh folder
+    SSH_FOLDER="${SUDO_USER:+/home/$SUDO_USER/.ssh}"
+    SSH_FOLDER="${SSH_FOLDER:-$HOME/.ssh}"
 
-    log_metric "CPU Usage (%)" "${CPU_USAGE}%"
-    log_metric "Memory Usage" "${MEMORY_USED}MB / ${MEMORY_TOTAL}MB"
-    log_metric "Disk Usage" "$DISK_USAGE"
-    log_metric "OS" "$OS"
-    log_metric "Kernel Version" "$KERNEL"
-    log_metric "Current User" "$CURRENT_USER"
+    if [[ -d "$SSH_FOLDER" ]]; then
+        for key in "$SSH_FOLDER"/id_*; do
+            if [[ -f "$key" && "$key" != *.pub ]]; then
+                ssh-add "$key" && echo "[INFO] ✅ Added SSH key: $key" || log_error "Failed to add SSH key: $key"
+                log_info "SSH Key added: $key"
+            fi
+        done
+    else
+        log_error "SSH directory not found at $SSH_FOLDER"
+        exit 1
+    fi
 }
 
-# === Parse Arguments ===
+# === MAIN EXECUTION ===
+
+# Parse Arguments
 if [[ "$1" == "--full-clean" ]]; then
     FULL_CLEAN=true
     echo -e "\033[1;31m⚠️  FULL CLEAN ENABLED: Performing a complete cleanup of dependencies, cache, and build artifacts.\033[0m"
     log_info "FULL CLEAN ENABLED"
 fi
 
-# === STEP 1: Initialize Deployment ===
+# Step 1: Log Management
 manage_log_file
+
+# Step 2: System Metrics
 step_progress
-echo "[STEP 1] 📊 Fetching System and OSINT Metrics..."
+echo "[STEP $CURRENT_STEP] 📊 Fetching System and OSINT Metrics..."
 fetch_system_metrics
 
-# === STEP 2: Environment Variables ===
-step_progress
-echo "[STEP 2] 🚀 Setting up Environment Variables..."
-export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+# Step 3: SSH Key Management
+manage_ssh_keys
 
-# === STEP 3: SSH Key Management ===
-step_progress
-echo "[STEP 3] 🔑 Starting SSH Agent..."
-eval "$(ssh-agent -s)"
-for key in ~/.ssh/id_*; do
-    ssh-add "$key" || echo "[WARNING] ⚠️ Failed to add key: $key"
-    log_info "SSH Key added: $key"
-done
-
-# === Final Deployment Summary ===
+# Finalize
 END_TIME=$(date +%s)
 TOTAL_DURATION=$((END_TIME - START_TIME))
 echo "============================================================"
