@@ -8,10 +8,15 @@ import { Company } from './entities/company.interface';
 @Injectable()
 export class RecordsService {
   private mockDatabase: Record[] = [];
+  
 
   getRecordByUID(UID: string): Record {
     // Mock database fetch
-    return this.mockDatabase.find(record => record.UID === UID)!;
+    const record = this.mockDatabase.find(record => record.UID === UID);
+    if (!record) {
+      throw new Error(`Record with UID ${UID} not found`);
+    }
+    return record;
   }
 
   getAllRecords(): Record[] {
@@ -38,7 +43,7 @@ export class RecordsService {
     const rawPhoneNumber = '##########'.replace(/#/g, () => faker.number.int({ max: 9 }).toString());
     const formattedPhoneNumber = rawPhoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
 
-    const areaCode = rawPhoneNumber.slice(0, 3);
+    const areaCode = faker.phone.number().slice(0, 3);
     const hasExtension = faker.datatype.boolean();
     const extension = hasExtension ? faker.number.int({ min: 1000, max: 9999 }).toString() : null;
 

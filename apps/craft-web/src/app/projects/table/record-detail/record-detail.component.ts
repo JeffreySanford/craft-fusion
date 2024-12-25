@@ -27,22 +27,8 @@ export class RecordDetailComponent implements OnInit, OnDestroy {
 
     this.userSub = this.recordService.getRecordByUID(this.selectedUserId).subscribe((user: Record) => {
       this.user = user;
-      /**
-       *  UID: "714270642"
-          address:  {city: 'El Paso', state: 'Illinois', street: '496 Blanda  Brooks', zipcode: '99313'}; 
-          avatar: "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/93.jpg"
-          firstName: "Brigitte"
-          flicker: "https://loremflickr.com/640/480?lock=1424346534903808"
-          lastName: "Rutherford"
-          phone: {number: '028-385-4769', areaCode: '028', hasExtension: true, extension: '8849'}
-          salary: 
-            (4) [{…}, {…}, {…}, {…}]
-          totalHouseholdIncome: 31000537
-       */
-      this.user.address.street = user.address.street;
-      this.user.address.city = user.address.city;
-      this.user.address.state = user.address.state;
-      this.user.address.zipcode = user.address.zipcode;
+      this.user.phone = user.phone;
+      this.user.address = user.address;
     });
   }
 

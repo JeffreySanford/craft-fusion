@@ -28,9 +28,10 @@ export class RecordService {
    * });
    */
   getRecordByUID(UID: string): Observable<Record> {
-    const url = `records/${UID}`;
-    console.log(`Fetching record by UID: ${UID} from URL: ${this.apiService.getApiUrl()}/${url}`);
-    return this.apiService.get<Record>(url);
+    const uid = `records/:${UID}`;
+    console.log(`Fetching record by UID: ${UID} from URL: ${this.apiService.getApiUrl()}/${uid}`);
+    debugger
+    return this.apiService.get<Record>(uid);
   }
 
   /**

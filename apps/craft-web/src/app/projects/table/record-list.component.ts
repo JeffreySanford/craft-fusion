@@ -74,7 +74,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     this.startTime = new Date().getTime();
     const server = this.servers[0];
     this.server = server;
-    
+
     this.apiURL = this.recordService.setServerResource(server.name);
     this.recordService
       .generateNewRecordSet(100)
@@ -241,7 +241,9 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   showDetailView(record: Record): void {
     console.log('Event: Show detail view requested for record:', record);
     this.recordService.setSelectedUID(record.UID);
-    this.router.navigate(['table/:', record.UID]);
+
+    this.router.navigate(['table/', record.UID]); //route with a preface colon
+  
     console.log('Navigation: Navigated to record detail view');
   }
 

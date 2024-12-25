@@ -14,12 +14,6 @@ export class RecordsController {
     return this.recordService.getAllRecords();
   }
 
-  @Get('total-income/:UID')
-  getTotalIncome(@Param('UID') UID: string): number {
-    return this.recordService.calculateTotalIncome(UID);
-  }
-
-  // Generate multiple records api/records/generate?count=100
   @Get('generate')
   generateMultipleRecords(@Query('count') count: number): Record[] {
     console.log('Received request to generate records with count:', count);
@@ -31,28 +25,29 @@ export class RecordsController {
     this.recordGenerationTime = 0;
   
     const startTime = performance.now();
-    console.log('Start time:', startTime);
-
-    // Generate the records
-    const records: Record[] = this.recordService.generateMultipleRecords(recordCount);
-    
-    // End the timer
+    // Generate records logic here...
     const endTime = performance.now();
-    console.log('End time:', endTime);
-    
-    // Calculate the elapsed time
     this.recordGenerationTime = endTime - startTime;
-    console.log('Elapsed time:', this.recordGenerationTime);
-    
-    // Log the number of records generated and the elapsed time
-    console.log(recordCount + ' records generated in: ' + this.recordGenerationTime + ' ms');
 
-    return records;
+    return this.recordService.generateMultipleRecords(recordCount);
+  }
+
+  @Get('total-income/:UID')
+  getTotalIncome(@Param('UID') UID: string): number {
+    return this.recordService.calculateTotalIncome(UID);
   }
 
   @Get('time')
   getCreationTime(): number {
-    console.log('Record generation time:', this.recordGenerationTime);
     return this.recordGenerationTime;
+  }
+
+  @Get(':UID')
+  getUserbyId(@Param('UID') UID: string): Record {
+    console.log('Received request to get record by UID:', UID);
+    // remove the colon from the UID
+    const userID = UID.replace(/^:/, '');
+    console.log('Processed UID:', userID);
+    return this.recordService.getRecordByUID(userID);
   }
 }
