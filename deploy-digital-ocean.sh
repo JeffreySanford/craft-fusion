@@ -129,18 +129,22 @@ function osint_search() {
 }
 
 function setup_ssh_identity() {
-    local SSH_KEY_PATH="$(sudo -u $SUDO_USER -H sh -c 'echo $HOME')/.ssh/id_jeffrey"
+    log_info "🔑 Adding Available SSH Identities..."
 
-    if [[ -z "$SSH_AUTH_SOCK" ]]; then
-        eval "$(ssh-agent -s)"
-    fi
+    local SSH_DIR="$(sudo -u $SUDO_USER -H sh -c 'echo $HOME')/.ssh"
+    eval "$(ssh-agent -s)"
 
-    if [[ -f "$SSH_KEY_PATH" ]]; then
-        track_time ssh-add "$SSH_KEY_PATH"
-        log_info "✅ SSH identity 'jeffrey' added successfully."
-    else
-        log_info "❌ SSH key not found at $SSH_KEY_PATH"
-    fi
+    for key in "$SSH_DIR"/id_*; do
+        if [[ -f "$key" ]]; then
+            if [[ "$key" == *"id_jeffrey"* ]]; then
+                track_time ssh-add "$key"
+                log_info "😄 ✅ Special Key 'jeffrey' added successfully from $key"
+            else
+                track_time ssh-add "$key"
+                log_info "✅ SSH Key added successfully from $key"
+            fi
+        fi
+    done
 }
 
 # Deployment Steps
