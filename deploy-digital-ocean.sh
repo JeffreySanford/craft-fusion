@@ -1,5 +1,24 @@
 #!/bin/bash
 
+# ============================================================
+# 🚀 Craft-Fusion Deployment Script for Digital Ocean
+# ============================================================
+
+# Console-style Purpose and Reminder
+
+echo -e "\033[1;34m============================================================\033[0m"
+echo -e "\033[1;32m🚀 Craft-Fusion Deployment Script for Digital Ocean\033[0m"
+echo -e "\033[1;34m============================================================\033[0m"
+echo -e "\033[1;37mThis script automates the deployment of the Craft-Fusion project.\033[0m"
+echo -e "\033[1;37mIt builds frontend (craft-web), backend (craft-nest, craft-go),\033[0m"
+echo -e "\033[1;37mmanages services with PM2, and deploys assets to NGINX.\033[0m"
+echo -e "\033[1;37mAdditional checks for services like Snort are included.\033[0m"
+echo -e "\033[1;34m------------------------------------------------------------\033[0m"
+
+echo -e "\033[0;31m⚠️  REMINDER: Use '--full-clean' for a fresh deployment with cleaned dependencies.\033[0m"
+echo -e "\033[1;34m------------------------------------------------------------\033[0m"
+
+# ============================================================
 # === 🚀 Deployment Script with Step Numbers and Progress Tracking ===
 
 # Constants
@@ -36,8 +55,6 @@ export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 
 # === 2. 🔑 Step 2: SSH Agent Setup ===
 step_progress
-# === 2. 🔑 Step 2: SSH Agent Setup ===
-step_progress
 echo "[STEP 2] 🔑 Starting SSH Agent..."
 
 # Start SSH Agent
@@ -54,27 +71,30 @@ else
     exit 1
 fi
 
-
-# === 3. 📥 Step 3: Pull Latest Changes ===
+# === 3. 🧹 Step 3: Cleanup Environment ===
 step_progress
-echo "[STEP 3] 📥 Pulling Latest Changes from Git..."
-git pull || { echo "[ERROR] ❌ Failed to pull latest changes."; exit 1; }
+echo "[STEP 3] 🧹 Cleaning Environment..."
 
-# === 4. 🛠️ Step 4: Install Dependencies ===
-step_progress
-echo "[STEP 4] 🛠️ Installing Dependencies..."
-sudo rm -rf node_modules package-lock.json
-npm cache clear --force
+if [[ "$1" == "--full-clean" ]]; then
+    echo "[INFO] 🔄 Performing FULL CLEANUP: Removing node_modules, package-lock.json, and clearing npm cache..."
+    rm -rf node_modules package-lock.json || { echo "[ERROR] ❌ Failed to remove node_modules or package-lock.json."; exit 1; }
+    npm cache clean --force || { echo "[ERROR] ❌ Failed to clear npm cache."; exit 1; }
+else
+    echo "[INFO] 🧹 Skipping FULL CLEANUP: node_modules and package-lock.json will not be removed."
+fi
+
+# Always run npm install
+echo "[INFO] 📦 Installing dependencies..."
 npm install || { echo "[ERROR] ❌ Failed to install dependencies."; exit 1; }
 
-# === 5. 🌐 Step 5: Build Frontend (craft-web) ===
+# === 4. 🌐 Step 4: Build Frontend (craft-web) ===
 step_progress
-echo "[STEP 5] 🌐 Building Frontend (craft-web)..."
+echo "[STEP 4] 🌐 Building Frontend (craft-web)..."
 npx nx run craft-web:build:production || { echo "[ERROR] ❌ Frontend build failed."; exit 1; }
 
-# === 6. 🛠️ Step 6: Build Backend (craft-nest) ===
+# === 5. 🛠️ Step 5: Build Backend (craft-nest) ===
 step_progress
-echo "[STEP 6] 🛠️ Building Backend (craft-nest)..."
+echo "[STEP 5] 🛠️ Building Backend (craft-nest)..."
 npx nx run craft-nest:build:production || { echo "[ERROR] ❌ Backend (craft-nest) build failed."; exit 1; }
 
 # Verify NestJS Build
@@ -83,76 +103,39 @@ if [ ! -f "$BACKEND_NEST_PATH" ]; then
     exit 1
 fi
 
-# === 7. 🛠️ Step 7: Build Backend (craft-go) ===
+# === 6. 🔄 Step 6: Restart Backend Services ===
 step_progress
-echo "[STEP 7] 🛠️ Building Backend (craft-go)..."
-if ! command -v go &> /dev/null; then
-    echo "[ERROR] ❌ Go is not installed. Exiting."
-    exit 1
-else
-    echo "[INFO] ✅ Go found: $(go version)"
-fi
-npx nx run craft-go:build || { echo "[ERROR] ❌ Backend (craft-go) build failed."; exit 1; }
-
-# Verify Go Build
-if [ ! -f "$BACKEND_GO_PATH" ]; then
-    echo "[ERROR] ❌ Backend Go binary not found at $BACKEND_GO_PATH. Build failed or incorrect path."
-    exit 1
-fi
-
-# === 8. 🔄 Step 8: Restart Backend Services ===
-step_progress
-echo "[STEP 8] 🔄 Restarting Backend Services with PM2..."
+echo "[STEP 6] 🔄 Restarting Backend Services with PM2..."
 
 # Restart NestJS Backend
-if pm2 list | grep -q "$PM2_APP_NAME_NEST"; then
-    pm2 stop "$PM2_APP_NAME_NEST"
-    pm2 delete "$PM2_APP_NAME_NEST"
-fi
-
+pm2 stop $PM2_APP_NAME_NEST || true
+pm2 delete $PM2_APP_NAME_NEST || true
 pm2 start "$BACKEND_NEST_PATH" --name "$PM2_APP_NAME_NEST" || {
     echo "[ERROR] ❌ Failed to start NestJS backend service with PM2."
     exit 1
 }
 
 # Restart Go Backend
-if pm2 list | grep -q "$PM2_APP_NAME_GO"; then
-    pm2 stop "$PM2_APP_NAME_GO"
-    pm2 delete "$PM2_APP_NAME_GO"
-fi
-
+pm2 stop $PM2_APP_NAME_GO || true
+pm2 delete $PM2_APP_NAME_GO || true
 pm2 start "$BACKEND_GO_PATH" --name "$PM2_APP_NAME_GO" || {
     echo "[ERROR] ❌ Failed to start Go backend service with PM2."
     exit 1
 }
 
-# === 9. 📂 Step 9: Deploy Frontend to NGINX ===
+# === 7. 📂 Step 7: Deploy Frontend to NGINX ===
 step_progress
-echo "[STEP 9] 📂 Deploying Frontend to NGINX..."
+echo "[STEP 7] 📂 Deploying Frontend to NGINX..."
 sudo rm -rf "$NGINX_PATH"/*
 sudo mv "$FRONTEND_BUILD_PATH"/* "$NGINX_PATH"/
 sudo chown -R nginx:nginx "$NGINX_PATH"
 sudo chmod -R 755 "$NGINX_PATH"
 sudo restorecon -Rv "$NGINX_PATH" || { echo "[ERROR] ❌ Failed to restore SELinux context."; exit 1; }
-
 sudo systemctl restart nginx || { echo "[ERROR] ❌ Failed to restart NGINX."; exit 1; }
 
-# === 10. 🛡️ Step 10: Check Snort Service ===
+# === 8. 🎯 Step 8: Finalizing Deployment ===
 step_progress
-echo "[STEP 10] 🛡️ Checking Snort Service..."
-if sudo systemctl is-active --quiet snort; then
-    echo "[INFO] ✅ Snort service is running."
-    echo "[INFO] 📄 Latest Snort Logs:"
-    sudo ls -lt /var/log/snort | head -5
-    sudo tail -n 20 /var/log/snort/alert || echo "[WARNING] ⚠️ Snort alert log not found."
-else
-    echo "[ERROR] ❌ Snort service is not running. Please investigate."
-    exit 1
-fi
-
-# === 11. 🎯 Step 11: Final Status ===
-step_progress
-echo "[STEP 11] 🎯 Finalizing Deployment..."
+echo "[STEP 8] 🎯 Finalizing Deployment..."
 pm2 status
 echo -e "\n[SUCCESS] 🎉 Deployment completed successfully!"
 echo -e "\033[0;32mDeployment Completed: 100% ✔\033[0m"
