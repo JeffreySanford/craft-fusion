@@ -6,7 +6,7 @@
 # 📚 **Description:**  
 # Automates deployment tasks for the Craft-Fusion project:
 # - Builds frontend (craft-web) and backend (craft-nest, craft-go)
-# - Manages PM2 services
+# - Manages PM2 services for NestJS and Go
 # - Updates environment variables
 # - Collects system, user, and server metadata
 # - Ensures proper logging and health checks
@@ -19,7 +19,7 @@
 # ============================================================
 
 # Constants
-TOTAL_STEPS=32
+TOTAL_STEPS=36
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
 DEPLOY_LOG="deploy-digital-ocean.log"
@@ -32,6 +32,10 @@ NESTJS_URL="http://localhost:3000/api"
 GO_URL="http://localhost:4000/api"
 NESTJS_SWAGGER="http://localhost:3000/api/swagger"
 GO_SWAGGER="http://localhost:4000/api/swagger"
+
+# Build Paths
+NESTJS_BUILD_PATH="dist/apps/craft-nest"
+GO_BUILD_PATH="dist/apps/craft-go"
 
 # Log Paths
 NGINX_ACCESS_LOG="/var/log/nginx/access.log"
@@ -101,30 +105,48 @@ function init_log() {
 }
 
 # ============================================================
-# 📊 Metadata and Environment Information
+# 📦 Build Services
 # ============================================================
 
-function display_versions() {
-    log_info "🛠️ Node Version: $(node -v)"
-    log_info "📦 NPM Version: $(npm -v)"
-    log_info "🌐 NX Version: $(npx nx --version)"
-    log_info "🅰️ Angular CLI Version: $(npx ng version | grep 'Angular CLI')"
-    log_info "🛡️ NestJS Version: $(npx nest --version)"
-    log_info "🐹 Go Version: $(go version)"
+function build_nestjs() {
+    log_info "🛠️ Building NestJS Backend..."
+    track_time npx nx build craft-nest --prod
+    if [[ $? -eq 0 ]]; then
+        log_info "✅ NestJS Build Successful!"
+    else
+        log_info "❌ NestJS Build Failed!"
+        exit 1
+    fi
 }
 
-function display_user_info() {
-    log_info "👤 User: $(whoami)"
-    log_info "📁 Home Directory: $HOME"
-    log_info "🖥️ Hostname: $(hostname)"
+function build_go() {
+    log_info "🐹 Building Go Backend..."
+    track_time go build -o "$GO_BUILD_PATH/main" ./apps/craft-go
+    if [[ $? -eq 0 ]]; then
+        log_info "✅ Go Build Successful!"
+    else
+        log_info "❌ Go Build Failed!"
+        exit 1
+    fi
 }
 
-function display_server_info() {
-    log_info "🕒 Server Uptime: $(uptime -p)"
-    log_info "🚀 Last Boot Time: $(who -b | awk '{print $3, $4}')"
-    log_info "🧠 CPU Cores: $(nproc)"
-    log_info "💾 Total RAM: $(free -h | grep Mem | awk '{print $2}')"
-    log_info "📁 Disk Usage: $(df -h / | tail -1 | awk '{print $3 "/" $2 " (" $5 " used)"}')"
+# ============================================================
+# 🔄 PM2 Process Management
+# ============================================================
+
+function restart_pm2_process() {
+    local process_name=$1
+    if ! pm2 show "$process_name" &>/dev/null; then
+        log_info "❌ PM2 Process '$process_name' not found. Starting now..."
+        track_time pm2 start "$process_name"
+    else
+        if [[ "$UPDATE_ENV" == true ]]; then
+            log_info "🔄 Updating environment for '$process_name' before restart."
+            track_time pm2 restart "$process_name" --update-env
+        else
+            track_time pm2 restart "$process_name"
+        fi
+    fi
 }
 
 # ============================================================
@@ -132,18 +154,9 @@ function display_server_info() {
 # ============================================================
 
 function check_server_health() {
-    log_info "🌐 Checking NestJS Server Health..."
-    if curl -s -o /dev/null -w "%{http_code}" "$NESTJS_URL" | grep -q "200"; then
-        log_info "✅ NestJS Server is UP"
-    else
-        log_info "❌ NestJS Server is DOWN"
-    fi
-}
-
-function collect_logs() {
-    log_info "📝 Collecting Logs"
-    sudo tail -n 10 "$NGINX_ACCESS_LOG"
-    sudo tail -n 10 "$PM2_LOG_NEST"
+    log_info "🌐 Validating Service Health..."
+    curl -s "$NESTJS_URL" &>/dev/null && log_info "✅ NestJS is Healthy!" || log_info "❌ NestJS Health Check Failed!"
+    curl -s "$GO_URL" &>/dev/null && log_info "✅ Go is Healthy!" || log_info "❌ Go Health Check Failed!"
 }
 
 # ============================================================
@@ -151,11 +164,11 @@ function collect_logs() {
 # ============================================================
 
 step_progress; track_time init_log
-step_progress; track_time display_versions
-step_progress; track_time display_user_info
-step_progress; track_time display_server_info
+step_progress; track_time build_nestjs
+step_progress; track_time build_go
+step_progress; track_time restart_pm2_process "craft-nest"
+step_progress; track_time restart_pm2_process "craft-go"
 step_progress; track_time check_server_health
-step_progress; track_time collect_logs
 
 if [[ "$MONITOR_MODE" == true ]]; then
     log_info "📊 Starting Monitoring Loop..."
