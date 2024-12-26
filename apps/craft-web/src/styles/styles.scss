@@ -1,5 +1,5 @@
 @use '@angular/material' as mat;
-@use './_theme' as theme;
+@use './@angular/material/theming.scss' as theme;
 @use './_colors' as colors;
 @use './_material' as material;
 
