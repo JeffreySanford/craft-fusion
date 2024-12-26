@@ -4,7 +4,7 @@
 # 🚀 Craft-Fusion Deployment Script for Fedora on DigitalOcean
 # ============================================================
 # 📚 **Description:**  
-# This script automates deployment tasks for the Craft-Fusion project:
+# Automates deployment tasks for the Craft-Fusion project:
 # - Builds frontend (craft-web) and backend (craft-nest, craft-go)
 # - Manages PM2 services
 # - Updates environment variables
@@ -25,7 +25,7 @@ PROGRESS_BAR_LENGTH=50
 DEPLOY_LOG="deploy-digital-ocean.log"
 START_TIME=$SECONDS
 CUMULATIVE_DURATION=0
-MONITOR_INTERVAL=10
+MONITOR_INTERVAL=10  # Monitoring Interval in seconds
 
 # Service Endpoints
 NESTJS_URL="http://localhost:3000/api"
@@ -62,6 +62,7 @@ done
 # 🎨 Utility Functions
 # ============================================================
 
+# Display step progress
 function step_progress() {
     ((CURRENT_STEP++))
     local percentage=$((CURRENT_STEP * 100 / TOTAL_STEPS))
@@ -73,6 +74,7 @@ function step_progress() {
     echo -e " \033[0;32m✔\033[0m"
 }
 
+# Track execution time of commands
 function track_time() {
     local start_time=$(date +%s%3N)
     "$@"
@@ -81,15 +83,17 @@ function track_time() {
     local cmd_name="$1"
     local current_time=$(date '+%Y-%m-%d %H:%M:%S %Z')
     CUMULATIVE_DURATION=$((CUMULATIVE_DURATION + duration))
-    echo -e "\033[1;34m[INFO] ✅ $cmd_name took: ${duration} ms (Cumulative: ${CUMULATIVE_DURATION} ms)\033[0m"
+    echo -e "\033[1;36m[INFO] ✅ $cmd_name took: ${duration} ms (Cumulative: ${CUMULATIVE_DURATION} ms)\033[0m"
     sudo bash -c "echo \"$current_time [INFO] $cmd_name completed in ${duration} ms (Cumulative: ${CUMULATIVE_DURATION} ms)\" >> \"$DEPLOY_LOG\""
 }
 
+# Log messages to console and file
 function log_info() {
-    echo -e "\033[1;34m[INFO] $1\033[0m"
+    echo -e "\033[1;36m[INFO] $1\033[0m"
     sudo bash -c "echo \"$(date '+%Y-%m-%d %H:%M:%S') [INFO] $1\" >> \"$DEPLOY_LOG\""
 }
 
+# Ensure log file is writable
 function init_log() {
     sudo touch "$DEPLOY_LOG"
     sudo chmod 666 "$DEPLOY_LOG"
@@ -103,7 +107,7 @@ function init_log() {
 function display_versions() {
     log_info "🛠️ Node Version: $(node -v)"
     log_info "📦 NPM Version: $(npm -v)"
-    log_info "🌐 NX Version: $(npx nx version)"
+    log_info "🌐 NX Version: $(npx nx --version)"
     log_info "🅰️ Angular CLI Version: $(npx ng version | grep 'Angular CLI')"
     log_info "🛡️ NestJS Version: $(npx nest --version)"
     log_info "🐹 Go Version: $(go version)"
@@ -154,6 +158,7 @@ step_progress; track_time check_server_health
 step_progress; track_time collect_logs
 
 if [[ "$MONITOR_MODE" == true ]]; then
+    log_info "📊 Starting Monitoring Loop..."
     while true; do
         check_server_health
         sleep "$MONITOR_INTERVAL"
