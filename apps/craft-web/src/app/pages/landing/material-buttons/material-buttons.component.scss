@@ -1,18 +1,18 @@
-@import '@angular/material/theming';
+@use '@angular/material' as mat;
 
 /* webpackBootstrap */
 .container {
   text-align: center;
   padding: 20px;
   background-color: rgba(255, 0, 0, 0.1);
-  color: mat-color($mat-blue, 500);
+  color: mat.get-color-from-palette(mat.$blue-palette, 500);
 
   h1 {
-    color: mat-color($mat-blue, 500);
+    color: mat.get-color-from-palette(mat.$blue-palette, 500);
   }
 
   p {
-    color: mat-color($mat-blue, 500);
+    color: mat.get-color-from-palette(mat.$blue-palette, 500);
   }
 }
 
@@ -87,5 +87,5 @@ button.mat-raised-button-warn {
 /* Load entry module and return exports */
 /* This entry module doesn't tell about its top-level declarations so it can't be inlined */
 .button {
-  color: mat-color($mat-blue, 500);
+  color: mat.get-color-from-palette(mat.$blue-palette, 500);
 }
