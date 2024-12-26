@@ -5,65 +5,65 @@
 // Apply theme
 @include mat.all-component-themes(theme.$theme);
 
-// Rest of your styles
+/* === Base Styles === */
+$base-font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif;
+
 body,
 .mat-typography {
-  font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif !important;
-  background-color: black;
+  font-family: $base-font-family;
+  background-color: colors.$background;
   margin: 0;
-  color: white; /* Replaced with stock color */
+  color: colors.$text;
 }
 
 h1,
 h2,
 h3 {
-  font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif !important;
-  color: colors.$primary-blue; /* Use $primary-blue from colors */
+  font-family: $base-font-family;
+  color: colors.$primary-blue;
 }
 
-/* === Global Variables and Overrides === */
+/* === Global Variables === */
 html {
-  --mat-sort-arrow-color: white;
+  --mat-sort-arrow-color: colors.$text;
   overflow: hidden;
 }
 
-/* === Background Video Styling === */
+/* === Background Video === */
 #background-video {
   position: fixed;
-  top: -2em;
-  left: -2em;
-  bottom: 0;
+  inset: -2em -2em 0 -2em;
   min-height: 100%;
-  transform: scale(1.1);
   width: auto;
   height: auto;
   z-index: -1;
   opacity: 0.4;
   filter: grayscale(50%) blur(0.2em);
   object-fit: cover;
+  transform: scale(1.1);
   overflow: hidden;
 }
 
 /* === Scrollbar Styling === */
 ::-webkit-scrollbar {
   width: 0.5em;
-  background: linear-gradient(to bottom, red, blue);
+  background: linear-gradient(to bottom, colors.$primary, colors.$accent);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: black;
+  background: colors.$background;
   border-radius: 0.5em;
+  
+  &:hover {
+    background: colors.$text;
+  }
 }
 
 ::-webkit-scrollbar-button {
-  background: red;
+  background: colors.$primary;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: white;
-}
-
-/* === Hide Scrollbar in Specific Scenarios === */
+/* === Utility Classes === */
 .table-container::-webkit-scrollbar {
   display: none;
 }
