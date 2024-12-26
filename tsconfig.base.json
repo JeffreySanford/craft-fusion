@@ -28,11 +28,5 @@
     "rootDir": ".",
     "forceConsistentCasingInFileNames": true
   },
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": false
-  },
   "exclude": ["node_modules", "tmp"]
 }
