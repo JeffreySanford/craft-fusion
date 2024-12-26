@@ -1,72 +1,24 @@
-@use 'sass:map';
 @use '@angular/material' as mat;
-
-// Base Colors
-$primary-blue: #0000ff;
-$primary-red: #ff0000;
-$primary-white: #ffffff;
-
-// Lighter Shades
-$light-red: #ff6666;
-$light-blue: #6666ff;
-$light-white: #f2f2f2;
-
-// Darker Shades
-$dark-red: #cc0000;
-$dark-blue: #0000cc;
-$dark-white: #e6e6e6;
-
-// Accent Colors
-$accent-red: #ff9999;
-$accent-blue: rgba(33, 150, 243);
-$accent-white: #e6e6e6; // Updated to match the theme
-
-// Additional Colors
-$charcoal-grey: #333333;
-
-// Patriotic Theme Palette
-$patriotic-theme: (
-  primary: (
-    red: $primary-red,
-    blue: $primary-blue,
-    white: $primary-white
-  ),
-  secondary: (
-    red-light: $light-red,
-    red-dark: $dark-red,
-    blue-light: $light-blue,
-    blue-dark: $dark-blue,
-    white-light: $light-white,
-    white-dark: $dark-white
-  ),
-  accent: (
-    red: $accent-red,
-    blue: $accent-blue,
-    white: $accent-white
-  )
-);
 
 $navy-palette: (
   50: #e3f2fd,
   100: #bbdefb,
-  200: #90caf9,
-  300: #64b5f6,
-  400: #42a5f5,
   500: #002868,  // main navy
-  600: #1e88e5,
-  700: #1976d2,
-  800: #1565c0,
-  900: #0d47a1,
+  700: #001E55,
+  900: #000F3A,
+  A100: #64b5f6,
+  A200: #42a5f5,
+  A400: #1e88e5,
+  A700: #1976d2,
   contrast: (
     50: rgba(0,0,0,0.87),
     100: rgba(0,0,0,0.87),
-    200: rgba(0,0,0,0.87),
-    300: rgba(0,0,0,0.87),
-    400: rgba(0,0,0,0.87),
     500: white,
-    600: white,
     700: white,
-    800: white,
     900: white,
+    A100: rgba(0,0,0,0.87),
+    A200: white,
+    A400: white,
+    A700: white,
   )
 );
