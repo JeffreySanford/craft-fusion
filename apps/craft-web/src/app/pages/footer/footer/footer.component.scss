@@ -157,11 +157,11 @@ mat-expansion-panel {
   color: gold;
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.7) 0%,      // Black with 0.5 opacity
-    rgba(0, 50, 0, 0.7) 25%,    // Darkest Green with 0.5 opacity
-    rgba(0, 100, 0, 0.7) 50%,   // Darker Green with 0.5 opacity
-    rgba(0, 128, 0, 0.7) 75%,   // Green with 0.5 opacity
-    rgba(0, 128, 128, 0.7) 100% // Teal with 0.5 opacity
+    rgba(0, 0, 0, 0.7) 0%,      
+    rgba(0, 50, 0, 0.7) 25%,    
+    rgba(0, 100, 0, 0.7) 50%, 
+    rgba(0, 128, 0, 0.7) 75%,
+    rgba(0, 128, 128, 0.7) 100%
   );
 }
 

@@ -194,7 +194,6 @@
   }
 }
 
-// Additional sparkle animations
 @for $i from 1 through 3 {
   @keyframes sparkle-#{$i} {
     0% {
@@ -252,7 +251,6 @@
   }
 }
 
-// Mobile breakpoint
 @media (max-width: 900px) {
   .title {
     font-size: 200%;

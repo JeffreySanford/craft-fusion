@@ -6,6 +6,7 @@
   flex-direction: column;
   flex-grow: 1;
   overflow: hidden;
+  background-color: map.get($craft-theme, dark-blue);
 }
 
 .selectors {
@@ -14,7 +15,7 @@
   align-items: space-between;
   justify-content: space-between;
   margin-bottom: 1em;
-  width: 100%; /* Ensure it takes full width */
+  width: 100%;
 }
 
 .record-collection {
@@ -30,10 +31,9 @@
   margin-bottom: 1em;
 }
 
-// Material Table with Pagination, Sort, and Filter
 .table-wrapper {
   display: block;
-  max-height: 29em; /* Set a max height to enable scrolling */
+  max-height: 29em;
   overflow-x: auto;
   white-space: nowrap;
   flex-grow: 1;
@@ -41,11 +41,11 @@
   th {
     position: sticky;
     top: 0;
-    background-color: mat-color($craft-theme, $dark-blue); /* Blue background */
-    color: mat-color($craft-theme, $primary-white); /* White text */
-    font-size: 1.2em; /* Font size */
+    background-color: map.get($craft-theme, dark-blue);
+    color: map.get($craft-theme, primary-white);
+    font-size: 1.2em;
     text-align: left;
-    z-index: 1; /* Ensure it stays on top */
+    z-index: 1;
   }
 
   th:last-child, td:last-child {
@@ -54,25 +54,23 @@
 
   tbody {
     display: block;
-    max-height: 29em; /* Set a max height to enable scrolling */
-    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 29em;
+    overflow-y: auto;
   }
 
   thead, tbody tr {
     display: table;
     width: 100%;
-    table-layout: fixed; /* Ensure the table layout is fixed */
+    table-layout: fixed;
   }
 }
 
-// the last cell of the table should be justified right
-
 .mat-paginator {
-  background-color: $dark-blue; /* Blue background */
-  color: $primary-white; /* White text */
-  font-size: 1em; /* Font size */
+  background-color: map.get($craft-theme, dark-blue);
+  color: map.get($craft-theme, primary-white);
+  font-size: 1em;
   text-align: left;
-  z-index: 1; /* Ensure it stays on top */
+  z-index: 1;
 }
 
 @keyframes flyIn {

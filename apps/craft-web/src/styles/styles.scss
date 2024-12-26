@@ -1,25 +1,25 @@
 // === Modern Imports ===
-@use '@angular/material' as mat;
-@use './colors' as *;
+@import '@angular/material/theming';
+@import './colors';
 
 // === Core Theme Setup ===
-@include mat.core();
+@include mat-core();
 
-$primary-blue: mat.define-palette(mat.$blue-palette);
-$accent-red: mat.define-palette(mat.$red-palette);
-$primary-white: mat.define-palette(mat.$grey-palette);
+$primary-blue: mat-palette($mat-blue);
+$accent-red: mat-palette($mat-red);
+$primary-white: mat-palette($mat-grey);
 
-$patriotic-theme: mat.define-light-theme((
+$patriotic-theme: mat-light-theme((
   color: (
     primary: $primary-blue,
     accent: $accent-red,
     warn: $primary-white
   ),
-  typography: mat.define-typography-config(),
+  typography: mat-typography-config(),
   density: 0
 ));
 
-@include mat.all-component-themes($patriotic-theme);
+@include angular-material-theme($patriotic-theme);
 
 // === Fonts ===
 @font-face {
@@ -48,7 +48,7 @@ h1,
 h2,
 h3 {
   font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif !important;
-  color: mat.get-color-from-palette($primary-blue, 500); // Blue from Material theme
+  color: mat-color($primary-blue, 500); // Blue from Material theme
 }
 
 // === Global Variables and Overrides ===

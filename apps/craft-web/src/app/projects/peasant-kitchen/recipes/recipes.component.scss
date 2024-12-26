@@ -1,4 +1,3 @@
-/* Content area */
 .content {
   margin-top: 13em;
   padding: 2em;
@@ -6,28 +5,26 @@
   max-height: 15em;
   flex-grow: 1;
   overflow: auto;
-  z-index: 1; /* Ensure it is below the masthead */
-  display: grid; /* Use CSS Grid for layout */
-  grid-template-columns: repeat(auto-fill, minmax(12em, 1fr)); /* Responsive columns */
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12em, 1fr));
   gap: 16px;
   background-color: rgba(0,0,0, 0.3);
 
-  /* Card styles */
   .recipe-card,
   mat-card {
-    width: 100%; /* Ensure the card takes full width of the grid cell */
+    width: 100%;
     height: 12em;
     border: 2px solid blue;
     box-sizing: border-box;
-    position: relative; /* Ensure the button can be positioned absolutely */
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: flex-start; /* Align items to the start (left) */
-    text-align: left; /* Align text to the left */
+    align-items: flex-start;
+    text-align: left;
   }
 
-  /* Icon styles */
   .recipe-card .recipe-icon,
   mat-card .recipe-icon {
     position: absolute;
@@ -36,20 +33,18 @@
     font-size: 2em;
   }
 
-  /* Title styles */
   .recipe-card .recipe-title,
   mat-card .recipe-title {
-    font-size: 0.8em; /* Decreased font size */
-    white-space: normal; /* Allows text to wrap */
-    overflow: hidden; /* Hides overflow text */
-    text-overflow: ellipsis; /* Adds ellipsis (...) for overflow text */
+    font-size: 0.8em;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
     width: 90%;
-    text-align: left; /* Align text to the left */
+    text-align: left;
     padding: 0.5em 0;
-    background-color: rgba(255, 255, 255, 0.8); /* Optional: Add background for better readability */
+    background-color: rgba(255, 255, 255, 0.8);
   }
 
-  /* Button styles */
   .recipe-card .recipe-button,
   mat-card .recipe-button {
     position: absolute;

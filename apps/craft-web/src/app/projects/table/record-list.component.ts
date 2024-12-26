@@ -8,7 +8,6 @@ import { catchError, switchMap, tap, takeUntil } from 'rxjs/operators';
 import { detailExpand, flyIn } from './animations';
 import { Record } from './models/record';
 import { RecordService } from './record.service';
-import { MenuItem } from '@craft-web/pages/sidebar/sidebar.types';
 
 export interface Server {
   name: string;

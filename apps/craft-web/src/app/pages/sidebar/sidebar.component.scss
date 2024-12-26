@@ -1,4 +1,4 @@
-@use '@angular/material' as mat;
+@import '@angular/material/theming';
 
 .sidebar-container {
   background-color: rgba(0, 0, 255, 0.2);
@@ -35,7 +35,7 @@
   border-radius: 1em;
   outline: 0.1em solid rgba(33, 150, 243, 0.5);
   background-color: rgba(black, 0.6) !important;
-  color: mat.get-color-from-palette($primary-white);
+  color: mat-color($mat-primary, 'white');
 
   &.collapsed {
     width: 5em;
@@ -56,7 +56,7 @@
   }
 
   .mat-icon {
-    color: mat.get-color-from-palette($primary-blue);
+    color: mat-color($mat-primary, 'blue');
     font-size: 2.25em;
     height: 1em;
     width: 2em;
@@ -66,11 +66,47 @@
   }
 
   .menu-text {
-    color: mat.get-color-from-palette($primary-white);
+    color: mat-color($mat-primary, 'white');
     flex-grow: 1;
     text-align: right;
     opacity: 1;
     transform: translateX(-1.25em);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+.sidebar {
+  color: mat-color($mat-grey, 50);
+  width: 250px;
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-right: 1px solid #dee2e6;
+
+  .sidebar-header {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .sidebar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .sidebar-item {
+      padding: 10px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #e9ecef;
+      }
+    }
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    font-size: 14px;
+    color: #6c757d;
   }
 }

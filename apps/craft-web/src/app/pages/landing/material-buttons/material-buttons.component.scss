@@ -1,22 +1,21 @@
-@use '@angular/material' as mat;
+@import '@angular/material/theming';
 
-// Container styles
+/* webpackBootstrap */
 .container {
   text-align: center;
   padding: 20px;
-  background-color: rgba(255, 0, 0, 0.1); // Red translucent background
-  color: mat.get-color-from-palette($primary-blue);
+  background-color: rgba(255, 0, 0, 0.1);
+  color: mat-color($mat-blue, 500);
 
   h1 {
-    color: mat.get-color-from-palette($primary-blue);
+    color: mat-color($mat-blue, 500);
   }
 
   p {
-    color: mat.get-color-from-palette($primary-blue);
+    color: mat-color($mat-blue, 500);
   }
 }
 
-// Button grid styles
 .button-grid {
   display: flex;
   flex-wrap: wrap;
@@ -25,16 +24,15 @@
   margin-top: 20px;
 }
 
-// Card styles
 .button-card {
-  width: 250px; // Reduced width to fit within the main stage
-  padding: 15px; // Reduced padding for a more compact view
-  background-color: #ffffff; // White background for contrast
+  width: 250px;
+  padding: 15px;
+  background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   mat-card-title {
-    font-size: 16px; // Slightly smaller font size
+    font-size: 16px;
     color: $primary-color;
   }
 
@@ -49,7 +47,6 @@
   }
 }
 
-// Custom styles for elevated buttons
 .elevated-button {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease;
@@ -59,7 +56,6 @@
   }
 }
 
-// Custom styles for primary buttons
 button.mat-raised-button-primary {
   background-color: $primary-color;
   color: $accent-color;
@@ -69,7 +65,6 @@ button.mat-raised-button-primary {
   }
 }
 
-// Custom styles for accent buttons
 button.mat-raised-button-accent {
   background-color: $accent-color;
   color: $primary-color;
@@ -79,7 +74,6 @@ button.mat-raised-button-accent {
   }
 }
 
-// Custom styles for warn buttons
 button.mat-raised-button-warn {
   background-color: $warn-color;
   color: white;
@@ -87,4 +81,11 @@ button.mat-raised-button-warn {
   &:hover {
     background-color: darken($warn-color, 10%);
   }
+}
+
+/* startup */
+/* Load entry module and return exports */
+/* This entry module doesn't tell about its top-level declarations so it can't be inlined */
+.button {
+  color: mat-color($mat-blue, 500);
 }
