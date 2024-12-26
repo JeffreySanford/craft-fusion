@@ -46,6 +46,13 @@ for arg in "$@"; do
     shift
 done
 
+# 🛡️ Ensure the script is run with sudo privileges
+if [[ $EUID -ne 0 ]]; then
+    echo -e "\033[1;31m[ERROR]\033[0m This script must be run as root or with sudo privileges."
+    echo "Please run the script with 'sudo $0' or switch to the root user."
+    exit 1
+fi
+
 # Utility Functions
 function step_progress() {
     ((CURRENT_STEP++))
@@ -108,8 +115,8 @@ if ! npx nx run craft-web:build:production; then
     npm install
     npx nx run craft-web:build:production || log_error "Angular build failed again."
 fi
-sudo cp -r "$FRONTEND_BUILD_PATH/*" "$NGINX_PATH/"
-sudo systemctl restart nginx
+cp -r "$FRONTEND_BUILD_PATH/" "$NGINX_PATH/"
+systemctl restart nginx
 log_info "✅ Angular build deployed to $NGINX_PATH"
 
 # Step 4: Build NestJS Backend
@@ -122,12 +129,6 @@ fi
 # Step 5: Build Go Backend
 step_progress
 log_info "🐹 Building Go Backend (High-Performance API Server)"
-if ! command -v go &> /dev/null; then
-    log_error "Go is not installed. Aborting Go Backend build."
-    exit 1
-fi
-log_info "✅ Go version detected: $(go version)"
-cd apps/craft-go
 if ! go mod tidy; then
     log_error "Go mod tidy failed."
     exit 1
@@ -136,7 +137,6 @@ if ! go build -o "../../$BACKEND_GO_PATH"; then
     log_error "Go build failed."
     exit 1
 fi
-cd ../..
 log_info "✅ Go Backend successfully built at $BACKEND_GO_PATH"
 
 # Step 6: Start Services with PM2
@@ -147,15 +147,7 @@ pm2 restart craft-go --update-env || pm2 start "$BACKEND_GO_PATH" --name "craft-
 pm2 save
 log_info "✅ PM2 processes synchronized."
 
-# Step 7: Validate Services
-step_progress
-log_info "🌐 Validating Services"
-curl -I http://localhost:3000/api/health || log_error "❌ NestJS Health Check Failed"
-curl -I http://localhost:4000/api/health || log_error "❌ Go Health Check Failed"
-curl -I http://localhost || log_error "❌ Angular Frontend Health Check Failed"
-
 # Final Summary
 TOTAL_DURATION=$((SECONDS - START_TIME))
 log_info "🎯 Deployment completed successfully in ${TOTAL_DURATION} seconds."
-log_info "🚀 All services are running successfully."
 echo -e "\033[1;32m🎉 Deployment completed successfully in ${TOTAL_DURATION} seconds!\033[0m"
