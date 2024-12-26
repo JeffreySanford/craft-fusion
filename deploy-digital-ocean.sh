@@ -86,13 +86,13 @@ function track_time() {
     local current_time=$(date '+%Y-%m-%d %H:%M:%S %Z')
     CUMULATIVE_DURATION=$((CUMULATIVE_DURATION + duration))
 
-    echo -e "\033[1;34m[INFO] ✅ $cmd_name took: ${duration} ms (Cumulative: ${CUMULATIVE_DURATION} ms)\033[0m"
+    echo -e "\033[1;36m[INFO] ✅ $cmd_name took: ${duration} ms (Cumulative: ${CUMULATIVE_DURATION} ms)\033[0m"
     echo "$current_time [INFO] $cmd_name completed in ${duration} ms (Cumulative: ${CUMULATIVE_DURATION} ms)" >> "$DEPLOY_LOG"
 }
 
 # Log messages to console and file
 function log_info() {
-    echo -e "\033[1;34m[INFO] $1\033[0m"
+    echo -e "\033[1;36m[INFO] $1\033[0m"
     echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] $1" >> "$DEPLOY_LOG"
 }
 
