@@ -3,18 +3,8 @@
 # ============================================================
 # 🚀 🌟 Craft-Fusion Deployment Script – Stability Edition 🛡️🐹
 # ============================================================
-# 📚 **Description:**  
-# Automates deployment tasks:
-# - 🛡️ Builds NestJS Backend (craft-nest)
-# - 🐹 Builds Go Backend (craft-go)
-# - 🔄 Manages PM2 services
-# - 📝 Validates server health endpoints
-# - 🛡️ Fixes SQLite permissions
-# - 📊 Collects and displays server stats
-# - ✅ Ensures Go is properly installed
-# ============================================================
 
-# 🌟 CONSTANTS & VARIABLES
+# CONSTANTS
 TOTAL_STEPS=50
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
@@ -86,18 +76,12 @@ function install_go() {
 function fix_sqlite_permissions() {
     log_info "🛡️ Fixing SQLite Database Permissions..."
     sudo chmod 666 "$NESTJS_DB_PATH"
-    sudo chmod -R 755 "$(dirname "$NESTJS_DB_PATH")"
     sudo chown -R $(whoami):$(whoami) "$(dirname "$NESTJS_DB_PATH")"
 }
 
 # ============================================================
 # 🛠️ BUILD SERVICES
 # ============================================================
-function build_nestjs() {
-    log_info "🛡️ Building NestJS Backend"
-    track_time npx nx build craft-nest --prod
-}
-
 function build_go() {
     log_info "🐹 Building Go Backend"
     sudo mkdir -p "$(dirname "$GO_BINARY_PATH")"
@@ -128,17 +112,9 @@ function check_server_health() {
     curl -s "$GO_URL" && log_info "✅ Go Healthy" || log_info "❌ Go Failed"
 }
 
-# ============================================================
 # 🚀 RUN DEPLOYMENT WORKFLOW
-# ============================================================
-
-log_info "🚀 Starting Deployment Process..."
-step_progress; track_time install_go
-step_progress; track_time fix_sqlite_permissions
-step_progress; track_time build_nestjs
-step_progress; track_time build_go
-step_progress; restart_pm2_process "craft-nest" "dist/apps/craft-nest/main.js"
+step_progress; install_go
+step_progress; fix_sqlite_permissions
+step_progress; build_go
 step_progress; restart_pm2_process "craft-go" "$GO_BINARY_PATH"
-step_progress; track_time check_server_health
-
-log_info "🎯 Deployment completed successfully in $((SECONDS - START_TIME)) seconds."
+step_progress; check_server_health
