@@ -1,6 +1,5 @@
 {
-  "name": "@craft-fusion/source",
-  "version": "0.0.0",
+  "name": "craft-fusion",
   "license": "MIT",
   "scripts": {
     "compress-images": "node compress-images.js",

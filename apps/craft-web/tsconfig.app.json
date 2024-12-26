@@ -9,7 +9,7 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true,
-    "standalone": false
+    "standalone": false // Ensure this is set to false
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/test-setup.ts", "**/*.spec.ts"]

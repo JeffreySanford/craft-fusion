@@ -1,5 +1,6 @@
 {
   "name": "craft-web",
+  "root": "apps/craft-web",
   "projectType": "application",
   "prefix": "app",
   "sourceRoot": "apps/craft-web/src",
@@ -32,7 +33,9 @@
           "aot": true,
           "extractLicenses": true,
           "vendorChunk": false,
-          "buildOptimizer": true
+          "buildOptimizer": true,
+          "extractCss": true,
+          "serviceWorker": true
         },
         "development": {
           "optimization": false,

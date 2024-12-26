@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-record-detail',
   templateUrl: './record-detail.component.html',
-  styleUrl: './record-detail.component.scss'
+  styleUrls: ['./record-detail.component.scss'] // Updated to styleUrls
 })
 export class RecordDetailComponent implements OnInit, OnDestroy {
   user?: Record;
@@ -48,6 +48,6 @@ export class RecordDetailComponent implements OnInit, OnDestroy {
       this.totalAnnualSalary += company.annualSalary;
     });
 
-    return this.totalAnnualSalary
+    return this.totalAnnualSalary;
   }
 }

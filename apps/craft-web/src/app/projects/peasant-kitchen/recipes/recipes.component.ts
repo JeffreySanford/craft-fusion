@@ -7,7 +7,7 @@ import { Recipe } from '../recipe.class';
 @Component({
   selector: 'app-recipes',
   templateUrl: './recipes.component.html',
-  styleUrl: './recipes.component.scss'
+  styleUrls: ['./recipes.component.scss']
 })
 export class RecipesComponent implements OnInit, OnDestroy {
   recipes: Recipe[] = [];

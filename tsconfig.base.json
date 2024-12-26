@@ -1,17 +1,31 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "es2015",
     "module": "esnext",
+    "lib": ["es2018", "dom"],
+    "declaration": false,
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@craft-web/*": ["apps/craft-web/src/app/*"]
+      "@app/*": ["apps/craft-web/src/app/*"],
+      "@env/*": ["apps/craft-web/src/environments/*"]
     },
     "outDir": "dist/out-tsc",
     "rootDir": ".",
-    "sourceMap": true,
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
   "angularCompilerOptions": {
@@ -19,5 +33,6 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": false
-  }
+  },
+  "exclude": ["node_modules", "tmp"]
 }

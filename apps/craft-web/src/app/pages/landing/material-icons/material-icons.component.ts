@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-material-icons',
   templateUrl: './material-icons.component.html',
-  styleUrl: './material-icons.component.scss'
+  styleUrls: ['./material-icons.component.scss']
 })
 export class MaterialIconsComponent {
 
