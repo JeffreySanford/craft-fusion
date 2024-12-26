@@ -1,7 +1,6 @@
 @use '@angular/material' as mat;
+@use './_theme' as theme;
 @use './_colors' as colors;
-@use './typography/_typography' as typography;
-@use './@angular/material/theming.scss' as theme;
 
 // Apply theme
 @include mat.all-component-themes(theme.$theme);
