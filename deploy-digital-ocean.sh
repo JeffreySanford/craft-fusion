@@ -19,7 +19,7 @@
 # ============================================================
 
 # Constants
-TOTAL_STEPS=40
+TOTAL_STEPS=42
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
 DEPLOY_LOG="deploy-digital-ocean.log"
@@ -35,7 +35,7 @@ GO_SWAGGER="http://localhost:4000/api/swagger"
 
 # Build Paths
 NESTJS_BUILD_PATH="dist/apps/craft-nest"
-GO_BUILD_PATH="dist/apps/craft-go"
+GO_BUILD_PATH="dist/apps/craft-go/main"
 
 # Flags
 FULL_DEPLOY=false
@@ -148,8 +148,15 @@ function build_go() {
 
 function restart_pm2_process() {
     local process_name=$1
+    local process_path=$2
     log_info "🔄 Restarting PM2 Process: $process_name"
-    track_time pm2 restart "$process_name" --update-env || track_time pm2 start "dist/apps/$process_name/main" --name "$process_name"
+    if ! pm2 show "$process_name" &>/dev/null; then
+        log_info "❌ PM2 Process '$process_name' not found. Starting now..."
+        track_time pm2 start "$process_path" --name "$process_name"
+    else
+        track_time pm2 restart "$process_name" --update-env
+    fi
+    track_time pm2 save
 }
 
 # ============================================================
@@ -170,8 +177,8 @@ step_progress; track_time init_log
 step_progress; track_time display_versions
 step_progress; track_time build_nestjs
 step_progress; track_time build_go
-step_progress; track_time restart_pm2_process "craft-nest"
-step_progress; track_time restart_pm2_process "craft-go"
+step_progress; restart_pm2_process "craft-nest" "dist/apps/craft-nest/main.js"
+step_progress; restart_pm2_process "craft-go" "dist/apps/craft-go/main"
 step_progress; track_time check_server_health
 
 log_info "🎯 Deployment completed successfully in $((SECONDS - START_TIME)) seconds."
