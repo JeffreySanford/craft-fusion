@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
 @use './_colors' as colors;
-@use './_typography' as typography;
+@use './typography/_typography' as typography;
 @use './@angular/material/theming.scss' as theme;
 
 // Apply theme
