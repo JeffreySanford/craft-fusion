@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # ============================================================
 # 🚀 Craft-Fusion Deployment Script for Digital Ocean
 # ============================================================
@@ -90,22 +92,25 @@ log_info "- NPM Version: $(npm -v 2>/dev/null || echo 'Not Installed')"
 step_progress
 log_info "🛡️ Fixing SQLite Database Permissions..."
 if [[ ! -f "/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite" ]]; then
-    log_error "SQLite file not found"
-else
-    chmod 664 "/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite"
-    chown jeffrey:jeffrey "/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite"
+    log_info "SQLite file not found. Creating a new one..."
+    touch "/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite"
 fi
+chmod 664 "/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite"
+chown jeffrey:jeffrey "/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite"
+log_info "✅ SQLite database permissions fixed."
 
 # Step 3: Build Angular Frontend
 step_progress
 log_info "🌐 Building Angular Frontend (Craft-Web)"
 if ! npx nx run craft-web:build:production; then
-    log_error "Angular build failed."
-else
-    log_info "✅ Angular build deployed to $NGINX_PATH"
-    sudo cp -r "$FRONTEND_BUILD_PATH/*" "$NGINX_PATH/"
-    sudo systemctl restart nginx
+    log_error "Angular build failed. Attempting dependency reinstall..."
+    rm -rf node_modules
+    npm install
+    npx nx run craft-web:build:production || log_error "Angular build failed again."
 fi
+sudo cp -r "$FRONTEND_BUILD_PATH/*" "$NGINX_PATH/"
+sudo systemctl restart nginx
+log_info "✅ Angular build deployed to $NGINX_PATH"
 
 # Step 4: Build NestJS Backend
 step_progress
@@ -116,42 +121,31 @@ fi
 
 # Step 5: Build Go Backend
 step_progress
-log_info "🐹 **Building Go Backend (High-Performance API Server)**"
-log_info "🔍 Verifying Go Installation..."
+log_info "🐹 Building Go Backend (High-Performance API Server)"
 if ! command -v go &> /dev/null; then
-    log_error "Go is not installed. Install it before proceeding."
+    log_error "Go is not installed. Aborting Go Backend build."
     exit 1
 fi
 log_info "✅ Go version detected: $(go version)"
-
-log_info "📂 Navigating to Go application directory..."
-cd apps/craft-go || exit
-
-log_info "⚙️ Initializing Go Modules..."
+cd apps/craft-go
 if ! go mod tidy; then
-    log_error "Failed to tidy Go modules."
+    log_error "Go mod tidy failed."
     exit 1
 fi
-
-log_info "🏗️ Building Go application..."
 if ! go build -o "../../$BACKEND_GO_PATH"; then
     log_error "Go build failed."
     exit 1
-else
-    log_info "✅ Go Backend successfully built at $BACKEND_GO_PATH"
 fi
-
 cd ../..
+log_info "✅ Go Backend successfully built at $BACKEND_GO_PATH"
 
 # Step 6: Start Services with PM2
 step_progress
-log_info "🔄 Restarting PM2 Process: craft-nest"
-pm2 restart "$PM2_APP_NAME_NEST" --update-env || pm2 start "$BACKEND_NEST_PATH" --name "$PM2_APP_NAME_NEST"
+log_info "🔄 Restarting PM2 Services"
+pm2 restart craft-nest --update-env || pm2 start "$BACKEND_NEST_PATH" --name "craft-nest"
+pm2 restart craft-go --update-env || pm2 start "$BACKEND_GO_PATH" --name "craft-go"
 pm2 save
-
-log_info "🔄 Restarting PM2 Process: craft-go"
-pm2 restart "$PM2_APP_NAME_GO" --update-env || pm2 start "$BACKEND_GO_PATH" --name "$PM2_APP_NAME_GO"
-pm2 save
+log_info "✅ PM2 processes synchronized."
 
 # Step 7: Validate Services
 step_progress
