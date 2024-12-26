@@ -17,6 +17,7 @@ export interface Server {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-record-list',
   templateUrl: './record-list.component.html',
   styleUrls: ['./record-list.component.scss'],

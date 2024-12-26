@@ -1,3 +1,5 @@
+@use '@angular/material' as mat;
+
 .sidebar-container {
   background-color: rgba(0, 0, 255, 0.2);
   padding: 1em;
@@ -33,7 +35,7 @@
   border-radius: 1em;
   outline: 0.1em solid rgba(33, 150, 243, 0.5);
   background-color: rgba(black, 0.6) !important;
-  color: $accent-white;
+  color: mat.get-color-from-palette($primary-white);
 
   &.collapsed {
     width: 5em;
@@ -54,7 +56,7 @@
   }
 
   .mat-icon {
-    color: mat-color($craft-theme, primary);
+    color: mat.get-color-from-palette($primary-blue);
     font-size: 2.25em;
     height: 1em;
     width: 2em;
@@ -64,7 +66,7 @@
   }
 
   .menu-text {
-    color: mat-color($craft-theme, white);
+    color: mat.get-color-from-palette($primary-white);
     flex-grow: 1;
     text-align: right;
     opacity: 1;

@@ -7,6 +7,7 @@ module.exports = [
   ...nx.configs['flat/angular-template'],
   {
     files: ['**/*.ts'],
+    extends: ['plugin:@angular-eslint/recommended'],
     rules: {
       '@angular-eslint/directive-selector': [
         'error',
@@ -24,11 +25,17 @@ module.exports = [
           style: 'kebab-case',
         },
       ],
+      '@angular-eslint/prefer-standalone': 'off',
+    },
+  },
+  {
+    files: ['**/*.ts'],
+    rules: {
+      '@angular-eslint/prefer-standalone': 'off',
     },
   },
   {
     files: ['**/*.html'],
-    // Override or add rules here
     rules: {},
   },
 ];

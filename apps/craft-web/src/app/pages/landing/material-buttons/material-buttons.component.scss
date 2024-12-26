@@ -1,21 +1,18 @@
-// Define color palettes
-$primary-color: white;
-$accent-color: #001f3f; // Dark Navy Blue
-$warn-color: #ff0000; // Red
+@use '@angular/material' as mat;
 
 // Container styles
 .container {
   text-align: center;
   padding: 20px;
   background-color: rgba(255, 0, 0, 0.1); // Red translucent background
-  color: mat-color($craft-theme, primary);
+  color: mat.get-color-from-palette($primary-blue);
 
   h1 {
-    color: mat-color($craft-theme, primary);
+    color: mat.get-color-from-palette($primary-blue);
   }
 
   p {
-    color: mat-color($craft-theme, primary);
+    color: mat.get-color-from-palette($primary-blue);
   }
 }
 

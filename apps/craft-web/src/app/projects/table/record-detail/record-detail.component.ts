@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 @Component({
+  standalone: false,
   selector: 'app-record-detail',
   templateUrl: './record-detail.component.html',
   styleUrls: ['./record-detail.component.scss'] // Updated to styleUrls

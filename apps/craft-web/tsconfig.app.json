@@ -1,16 +1,15 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist/out-tsc",
-    "types": ["jest", "node"]
+    "outDir": "../../dist/out-tsc",
+    "types": ["jest"],
+    "sourceMap": true,
+    "baseUrl": "./"
   },
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true,
-    "standalone": false // Ensure this is set to false
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/test-setup.ts", "**/*.spec.ts"]
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "**/*.spec.ts"
+  ]
 }
