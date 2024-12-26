@@ -15,7 +15,7 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
-  "nxCloudId": "67460142be50b45771a5ba56",
+  "nxCloudId": "676dc9093c27485c6fe7270d",
   "targetDefaults": {
     "build": {
       "cache": true,
@@ -32,24 +32,17 @@
     {
       "plugin": "@nx/js",
       "options": {
-        "typecheck": {
-          "targetName": "typecheck"
-        },
-        "build": {
-          "targetName": "build",
-          "configName": "tsconfig.lib.json"
-        }
+        "typecheck": { "targetName": "typecheck" },
+        "build": { "targetName": "build", "configName": "tsconfig.lib.json" }
       }
     },
     {
       "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "eslint:lint"
-      }
+      "options": { "targetName": "eslint:lint" }
     }
   ],
   "projects": {
-    "version": 1.0,
+    "version": 1,
     "projects": {
       "craft-web": "apps/craft-web/project.json",
       "craft-nest": "apps/craft-nest/project.json",
