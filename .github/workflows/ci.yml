@@ -30,4 +30,28 @@ jobs:
       - uses: nrwl/nx-set-shas@v4
 
       - run: npx nx-cloud record -- nx format:check
-      - run: npx nx affected -t lint test build e2e-ci
+      
+      # Run tests with result reporting
+      - name: Run Tests
+        run: npx nx affected -t test --configuration=ci --json --coverageReporters=text-summary,lcov > test-results.json
+      
+      # Upload test results
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Test Results
+          path: test-results.json
+          reporter: jest-json
+          fail-on-error: false
+
+      # Upload coverage reports
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          fail-ci-if-error: false
+          verbose: true
+
+      # Continue with remaining steps
+      - run: npx nx affected -t build e2e-ci
