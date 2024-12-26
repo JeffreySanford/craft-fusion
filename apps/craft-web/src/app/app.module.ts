@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -24,7 +24,7 @@ import { BusyService } from './common/services/busy.service';
 @NgModule({
   declarations: [
     AppComponent,
-    ResumeComponent,
+    ResumeComponent
   ],
   imports: [
     BrowserModule,
@@ -33,14 +33,14 @@ import { BusyService } from './common/services/busy.service';
     FormsModule,
     MaterialModule,
     RouterModule.forRoot(appRoutes),
+    LandingModule,
     SidebarModule,
     HeaderModule,
-    FooterModule,
-    LandingModule,
     DataVisualizationsModule,
     PeasantKitchenModule,
     SpaceVideoModule,
     TableModule,
+    FooterModule,
     HttpClientModule,
     ToastrModule.forRoot({
       timeOut: 3000,
@@ -48,14 +48,12 @@ import { BusyService } from './common/services/busy.service';
       preventDuplicates: true,
     })
   ],
-  exports: [
-    MaterialModule,
-    IonicModule,
-  ],
   providers: [
+    provideAnimations(),
     BusyService,
-    ToastrService,
+    ToastrService
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
+
