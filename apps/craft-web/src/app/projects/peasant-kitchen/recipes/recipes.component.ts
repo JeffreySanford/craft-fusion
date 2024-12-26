@@ -9,7 +9,7 @@ import { Recipe } from '../recipe.class';
   templateUrl: './recipes.component.html',
   styleUrl: './recipes.component.scss'
 })
-export class RecipesComponent implements OnInit, OnDestroy, OnInit {
+export class RecipesComponent implements OnInit, OnDestroy {
   recipes: Recipe[] = [];
   loaded = false;
   recipeSubscription!: Subscription;

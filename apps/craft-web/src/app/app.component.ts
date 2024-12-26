@@ -24,7 +24,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private router: Router, private route: ActivatedRoute, private breakpointObserver: BreakpointObserver) {}
 
   ngOnInit(): void {
-    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
+    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
       this.isSmallScreen = result.matches;
       this.isCollapsed = this.isSmallScreen; // Collapse sidebar on small screens
     });

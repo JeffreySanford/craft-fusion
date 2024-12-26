@@ -13,7 +13,7 @@
         "index": "apps/craft-web/src/index.html",
         "main": "apps/craft-web/src/main.ts",
         "polyfills": "apps/craft-web/src/polyfills.ts",
-        "tsConfig": "apps/craft-web/tsconfig.json",
+        "tsConfig": "apps/craft-web/tsconfig.app.json",
         "assets": ["apps/craft-web/src/assets"],
         "styles": ["apps/craft-web/src/styles/styles.scss"],
         "scripts": [],
@@ -78,7 +78,7 @@
     "test": {
       "executor": "@nx/jest:jest",
       "options": {
-        "tsConfig": "apps/craft-web/tsconfig.json"
+        "tsConfig": "apps/craft-web/tsconfig.app.json"
       }
     },
     "serve-static": {

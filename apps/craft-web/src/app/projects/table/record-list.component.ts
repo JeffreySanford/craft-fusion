@@ -96,7 +96,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
           }
           return of([]); // Ensure an Observable is returned
         }),
-        catchError(error => {
+        catchError((error: any) => {
           console.error('Error: generateNewRecordSet failed:', error);
           this.resolvedSubject.next(true);
           this.changeDetectorRef.detectChanges();
@@ -216,7 +216,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
           }
           return of([]);
         }),
-        catchError(error => {
+        catchError((error: any) => {
           console.error('Error: generateNewRecordSet failed:', error);
           this.resolvedSubject.next(true);
           this.changeDetectorRef.detectChanges();
@@ -322,7 +322,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
           console.log('Resolved: Subject updated');
           this.changeDetectorRef.detectChanges();
         }),
-        catchError(error => {
+        catchError((error: any) => {
           console.error('Error: getCreationTime failed:', error);
           this.resolvedSubject.next(true);
           this.changeDetectorRef.detectChanges();

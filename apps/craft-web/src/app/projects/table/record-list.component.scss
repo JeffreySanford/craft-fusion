@@ -1,5 +1,3 @@
-@import 'src/styles/colors';
-
 .table-container {
   padding: 0.55em;
   width: 99%;
@@ -43,8 +41,8 @@
   th {
     position: sticky;
     top: 0;
-    background-color: $dark-blue; /* Blue background */
-    color: $accent-white; /* White text */
+    background-color: mat-color($craft-theme, $dark-blue); /* Blue background */
+    color: mat-color($craft-theme, $primary-white); /* White text */
     font-size: 1.2em; /* Font size */
     text-align: left;
     z-index: 1; /* Ensure it stays on top */

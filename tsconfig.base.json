@@ -1,56 +1,23 @@
 {
   "compilerOptions": {
-    // 🎯 Root and Module Resolution
-    "rootDir": "./",
-    "baseUrl": "./",
-    "moduleResolution": "node",
-    "module": "esnext",
     "target": "ES2022",
-    "lib": ["es2022", "dom"],
-
-    // ⚙️ Build Output
+    "module": "esnext",
+    "baseUrl": ".",
+    "paths": {
+      "@craft-web/*": ["apps/craft-web/src/app/*"]
+    },
     "outDir": "dist/out-tsc",
+    "rootDir": ".",
     "sourceMap": true,
-    "composite": false,
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-
-    // 🛡️ Strict Type-Checking Options
     "strict": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true,
-
-    // 📝 Decorators and Metadata
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-
-    // 🛠️ Module Interoperability
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-
-  // 🚫 Paths (Removed Unused Paths)
-  "paths": {},
-
-  // 🔍 Files and Includes
-  "files": [],
-  "include": ["**/*.ts"],
-  "references": [],
-
-  // 📂 Exclude from Compilation
-  "exclude": ["node_modules", "tmp"],
-
-  // ⚡ Angular Specific Compiler Options
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true
-  },
-
-  // 🔄 Enable Compile on Save (if using VS Code)
-  "compileOnSave": false
+    "strictTemplates": false
+  }
 }

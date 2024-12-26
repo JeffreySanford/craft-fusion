@@ -18,7 +18,7 @@ export class PeasantKitchenService {
     console.log('Fetching all recipes');
     return this.apiService.get<Recipe[]>(this.endpoint).pipe(
       tap(recipes => console.log(`Retrieved ${recipes.length} recipes`)),
-      catchError(error => {
+      catchError((error: any) => {
         console.error('Error fetching recipes:', error);
         return of([]);
       })
@@ -56,7 +56,7 @@ export class PeasantKitchenService {
     console.log('Adding new recipe:', recipe);
     return this.apiService.post<Recipe>(this.endpoint, recipe).pipe(
       tap(newRecipe => console.log('Created recipe:', newRecipe.id)),
-      catchError(error => {
+      catchError((error: any) => {
         console.error('Error creating recipe:', error);
         throw error;
       })
@@ -72,7 +72,7 @@ export class PeasantKitchenService {
     console.log('Updating recipe:', recipe.id);
     return this.apiService.put<Recipe>(`${this.endpoint}/${recipe.id}`, recipe).pipe(
       tap(updatedRecipe => console.log('Updated recipe:', updatedRecipe.id)),
-      catchError(error => {
+      catchError((error: any) => {
         console.error('Error updating recipe:', error);
         throw error;
       })
@@ -88,7 +88,7 @@ export class PeasantKitchenService {
     console.log('Deleting recipe:', id);
     return this.apiService.delete<void>(`${this.endpoint}/${id}`).pipe(
       tap(() => console.log('Deleted recipe:', id)),
-      catchError(error => {
+      catchError((error: any) => {
         console.error('Error deleting recipe:', error);
         throw error;
       })

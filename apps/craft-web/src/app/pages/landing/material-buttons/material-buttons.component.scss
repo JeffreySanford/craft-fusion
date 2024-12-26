@@ -8,14 +8,14 @@ $warn-color: #ff0000; // Red
   text-align: center;
   padding: 20px;
   background-color: rgba(255, 0, 0, 0.1); // Red translucent background
-  color: $primary-color;
+  color: mat-color($craft-theme, primary);
 
   h1 {
-    color: $primary-color;
+    color: mat-color($craft-theme, primary);
   }
 
   p {
-    color: $primary-color;
+    color: mat-color($craft-theme, primary);
   }
 }
 

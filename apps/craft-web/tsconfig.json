@@ -9,16 +9,10 @@
     },
     "outDir": "dist/out-tsc",
     "types": ["jest", "node"],
-    "rootDir": "../../",
+    "rootDir": "./",
     "sourceMap": true
   },
   "files": [],
   "include": ["src/**/*.ts"],
-  "exclude": ["src/test-setup.ts", "**/*.spec.ts"],
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
-  }
+  "exclude": ["src/test-setup.ts", "**/*.spec.ts"]
 }
