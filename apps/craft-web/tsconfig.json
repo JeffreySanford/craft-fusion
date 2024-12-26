@@ -9,7 +9,8 @@
     "outDir": "dist/out-tsc",
     "types": ["jest", "node"],
     "rootDir": "./",
-    "sourceMap": true
+    "sourceMap": true,
+    "target": "ES2022"
   },
   "files": [],
   "include": ["src/**/*.ts"],
