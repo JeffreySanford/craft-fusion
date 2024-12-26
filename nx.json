@@ -60,7 +60,7 @@
           "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/apps/craft-go",
-            "command": "go build -o dist/apps/craft-go ./...",
+            "command": "go build -o ./dist/",
             "cwd": "apps/craft-go"
           }
         },

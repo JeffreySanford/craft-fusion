@@ -21,6 +21,9 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@craft-go/*": ["apps/craft-go/src/*"],
+      "@craft-nest/*": ["apps/craft-nest/src/*"],
+      "@craft-web/*": ["apps/craft-web/src/app/*"],
       "@app/*": ["apps/craft-web/src/app/*"],
       "@env/*": ["apps/craft-web/src/environments/*"]
     },
