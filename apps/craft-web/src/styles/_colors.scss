@@ -1,3 +1,6 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
 // Base Colors
 $primary-blue: #0000ff;
 $primary-red: #ff0000;
@@ -40,5 +43,30 @@ $patriotic-theme: (
     red: $accent-red,
     blue: $accent-blue,
     white: $accent-white
+  )
+);
+
+$navy-palette: (
+  50: #e3f2fd,
+  100: #bbdefb,
+  200: #90caf9,
+  300: #64b5f6,
+  400: #42a5f5,
+  500: #002868,  // main navy
+  600: #1e88e5,
+  700: #1976d2,
+  800: #1565c0,
+  900: #0d47a1,
+  contrast: (
+    50: rgba(0,0,0,0.87),
+    100: rgba(0,0,0,0.87),
+    200: rgba(0,0,0,0.87),
+    300: rgba(0,0,0,0.87),
+    400: rgba(0,0,0,0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
   )
 );
