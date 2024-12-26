@@ -1,138 +1,167 @@
-#!/bin/bash
-
 # ============================================================
-# 🚀 🌟 Ultimate Craft-Fusion Deployment Script 🛡️🐹🌐
+# 🚀 Craft-Fusion Deployment Script for Digital Ocean
 # ============================================================
-# 📚 **Description:**  
-# - 🛡️ Builds NestJS Backend (craft-nest)
-# - 🐹 Builds Go Backend (craft-go)
-# - 🅰️ Builds Angular Frontend (craft-web)
-# - 🔄 Manages PM2 services (craft-nest, craft-go)
-# - 🌐 Deploys Angular app to NGINX directory (/usr/www/nginx/html)
-# - 🛡️ Fixes SQLite permissions
-# - 🌐 Validates health endpoints
-# - 📝 Detailed logs for junior developers and debugging.
-
-# ============================================================
-# 🌟 CONSTANTS & VARIABLES
+# This script automates the deployment of the Craft-Fusion project.
+# It builds frontend (craft-web), backend (craft-nest, craft-go),
+# manages services with PM2, and deploys assets to NGINX.
+# ------------------------------------------------------------
+# ⚠️ REMINDER: Use '--full-clean' for a fresh deployment with cleaned dependencies.
+# ⚠️ Use '--update-env' to refresh environment variables.
+# ⚠️ Use '--monitor' to enter monitoring mode after deployment.
 # ============================================================
 
+# Constants
 TOTAL_STEPS=60
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
 DEPLOY_LOG="deploy-digital-ocean.log"
 START_TIME=$SECONDS
-CUMULATIVE_DURATION=0
+NGINX_PATH="/usr/share/nginx/html"
+FRONTEND_BUILD_PATH="dist/apps/craft-web/browser"
+BACKEND_NEST_PATH="dist/apps/craft-nest/main.js"
+BACKEND_GO_PATH="dist/apps/craft-go/main"
+PM2_APP_NAME_NEST="craft-nest"
+PM2_APP_NAME_GO="craft-go"
 
-# Paths
-GO_BINARY_PATH="/home/jeffrey/repos/craft-fusion/dist/apps/craft-go/main"
-NESTJS_ENTRY_PATH="/home/jeffrey/repos/craft-fusion/dist/apps/craft-nest/main.js"
-ANGULAR_DIST_PATH="/home/jeffrey/repos/craft-fusion/dist/apps/craft-web/browser"
-NGINX_HTML_PATH="/usr/www/nginx/html"
-NESTJS_DB_PATH="/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite"
+# Flags
+FULL_CLEAN=false
+UPDATE_ENV=false
+MONITOR=false
 
-# Service Endpoints
-NESTJS_URL="http://localhost:3000/api/health"
-GO_URL="http://localhost:4000/api/health"
+# Parse Flags
+for arg in "$@"; do
+    case $arg in
+        --full-clean)
+            FULL_CLEAN=true
+            ;;
+        --update-env)
+            UPDATE_ENV=true
+            ;;
+        --monitor)
+            MONITOR=true
+            ;;
+    esac
+    shift
+done
 
-# ============================================================
-# 🎯 UTILITY FUNCTIONS 🌟
-# ============================================================
-
-# 🛠️ STEP PROGRESS
+# Utility Functions
 function step_progress() {
     ((CURRENT_STEP++))
     local percentage=$((CURRENT_STEP * 100 / TOTAL_STEPS))
     local progress=$((CURRENT_STEP * PROGRESS_BAR_LENGTH / TOTAL_STEPS))
     local remaining=$((PROGRESS_BAR_LENGTH - progress))
-    echo -ne "\033[1;34m[STEP $CURRENT_STEP/$TOTAL_STEPS]\033[0m \033[1;33m($percentage%)\033[0m "
+    echo -ne "\033[0;36m[STEP $CURRENT_STEP/$TOTAL_STEPS] [$percentage%] \033[0;37m"
     printf "%-${PROGRESS_BAR_LENGTH}s" "$(printf '#%.0s' $(seq 1 $progress))"
     printf "%-${remaining}s" ""
-    echo -e " \033[1;32m✔\033[0m"
+    echo -e " \033[0;36m✔\033[0m"
 }
 
-# 📝 LOG INFO
 function log_info() {
-    echo -e "\033[1;34m[INFO]\033[0m \033[1;36m$1\033[0m"
-    sudo bash -c "echo \"$(date '+%Y-%m-%d %H:%M:%S') [INFO] [$CURRENT_STEP/$TOTAL_STEPS] $1\" >> \"$DEPLOY_LOG\""
+    echo -e "\033[1;36m[INFO]\033[0m $1"
+    echo "[INFO] $1" >> "$DEPLOY_LOG"
 }
 
-# ❌ LOG ERROR
 function log_error() {
-    echo -e "\033[1;31m[ERROR]\033[0m \033[1;37m$1\033[0m"
-    sudo bash -c "echo \"$(date '+%Y-%m-%d %H:%M:%S') [ERROR] [$CURRENT_STEP/$TOTAL_STEPS] $1\" >> \"$DEPLOY_LOG\""
+    echo -e "\033[1;31m[ERROR]\033[0m $1"
+    echo "[ERROR] $1" >> "$DEPLOY_LOG"
 }
 
-# 🛡️ STEP SUMMARY
-function log_summary() {
-    echo -e "\033[1;33m[SUMMARY]\033[0m \033[1;37m$1\033[0m"
-}
-
-# ⏱️ TRACK EXECUTION TIME
 function track_time() {
     local start_time=$(date +%s%3N)
     "$@"
     local end_time=$(date +%s%3N)
     local duration=$((end_time - start_time))
-    CUMULATIVE_DURATION=$((CUMULATIVE_DURATION + duration))
-    echo -e "\033[1;35m[TIME]\033[0m \033[1;37m$1 took: ${duration} ms (Cumulative: ${CUMULATIVE_DURATION} ms)\033[0m"
+    echo -e "[INFO] ✅ $1 took: \033[1;32m${duration} ms\033[0m"
+    echo "[INFO] $1 completed in ${duration} ms" >> "$DEPLOY_LOG"
 }
 
-# ============================================================
-# 🛡️ ENVIRONMENT VALIDATION
-# ============================================================
-function log_environment() {
-    log_summary "Logs the current system environment and dependencies."
-    log_info "🧠 User: $USER"
-    log_info "🧠 Go Version: $(go version)"
-    log_info "🧠 Node Version: $(node -v)"
-    log_info "🧠 NPM Version: $(npm -v)"
-}
+# Step 1: Log Environment Details
+step_progress
+log_info "🧠 **System Environment Variables:**"
+log_info "- User: $USER"
+log_info "- Shell: $SHELL"
+log_info "- Path: $PATH"
+log_info "- Current Directory: $PWD"
+log_info "- Go Version: $(go version 2>/dev/null || echo 'Not Installed')"
+log_info "- Node Version: $(node -v 2>/dev/null || echo 'Not Installed')"
+log_info "- NPM Version: $(npm -v 2>/dev/null || echo 'Not Installed')"
 
-# ============================================================
-# 🛡️ FIX SQLITE
-# ============================================================
-function fix_sqlite_permissions() {
-    log_summary "Fixes permissions for SQLite database."
-    sudo chmod 666 "$NESTJS_DB_PATH" || log_error "SQLite not found"
-    sudo chown -R $(whoami) "$(dirname "$NESTJS_DB_PATH")"
-}
+# Step 2: Fix SQLite Permissions
+step_progress
+log_info "🛡️ Fixing SQLite Database Permissions..."
+if [[ ! -f "/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite" ]]; then
+    log_error "SQLite file not found"
+else
+    chmod 664 "/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite"
+    chown jeffrey:jeffrey "/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite"
+fi
 
-# ============================================================
-# 🅰️ BUILD ANGULAR
-# ============================================================
-function build_angular() {
-    log_summary "Builds the Angular frontend (Craft-Web)."
-    track_time npx nx run craft-web:build:production
-    sudo mkdir -p "$NGINX_HTML_PATH"
-    sudo cp -r "$ANGULAR_DIST_PATH"/* "$NGINX_HTML_PATH"
-    log_info "✅ Angular build deployed to $NGINX_HTML_PATH"
-}
+# Step 3: Build Angular Frontend
+step_progress
+log_info "🌐 Building Angular Frontend (Craft-Web)"
+if ! npx nx run craft-web:build:production; then
+    log_error "Angular build failed."
+else
+    log_info "✅ Angular build deployed to $NGINX_PATH"
+    sudo cp -r "$FRONTEND_BUILD_PATH/*" "$NGINX_PATH/"
+    sudo systemctl restart nginx
+fi
 
-# ============================================================
-# 🔄 PM2 MANAGEMENT
-# ============================================================
-function restart_pm2() {
-    track_time pm2 restart craft-nest --update-env || pm2 start "$NESTJS_ENTRY_PATH" --name craft-nest
-    track_time pm2 restart craft-go --update-env || pm2 start "$GO_BINARY_PATH" --name craft-go
-    track_time pm2 save
-}
+# Step 4: Build NestJS Backend
+step_progress
+log_info "🛡️ Building NestJS Backend (REST API Server)"
+if ! npx nx run craft-nest:build:production; then
+    log_error "NestJS build failed."
+fi
 
-# ============================================================
-# 🌐 VALIDATE HEALTH
-# ============================================================
-function validate_services() {
-    curl -s "$NESTJS_URL" && log_info "✅ NestJS Healthy" || log_error "❌ NestJS Failed"
-    curl -s "$GO_URL" && log_info "✅ Go Healthy" || log_error "❌ Go Failed"
-}
+# Step 5: Build Go Backend
+step_progress
+log_info "🐹 **Building Go Backend (High-Performance API Server)**"
+log_info "🔍 Verifying Go Installation..."
+if ! command -v go &> /dev/null; then
+    log_error "Go is not installed. Install it before proceeding."
+    exit 1
+fi
+log_info "✅ Go version detected: $(go version)"
 
-# ============================================================
-# 🚀 RUN DEPLOYMENT WORKFLOW
-# ============================================================
-step_progress; log_environment
-step_progress; fix_sqlite_permissions
-step_progress; build_angular
-step_progress; restart_pm2
-step_progress; validate_services
+log_info "📂 Navigating to Go application directory..."
+cd apps/craft-go || exit
 
-log_info "🎯 Deployment completed in $((SECONDS - START_TIME)) seconds."
+log_info "⚙️ Initializing Go Modules..."
+if ! go mod tidy; then
+    log_error "Failed to tidy Go modules."
+    exit 1
+fi
+
+log_info "🏗️ Building Go application..."
+if ! go build -o "../../$BACKEND_GO_PATH"; then
+    log_error "Go build failed."
+    exit 1
+else
+    log_info "✅ Go Backend successfully built at $BACKEND_GO_PATH"
+fi
+
+cd ../..
+
+# Step 6: Start Services with PM2
+step_progress
+log_info "🔄 Restarting PM2 Process: craft-nest"
+pm2 restart "$PM2_APP_NAME_NEST" --update-env || pm2 start "$BACKEND_NEST_PATH" --name "$PM2_APP_NAME_NEST"
+pm2 save
+
+log_info "🔄 Restarting PM2 Process: craft-go"
+pm2 restart "$PM2_APP_NAME_GO" --update-env || pm2 start "$BACKEND_GO_PATH" --name "$PM2_APP_NAME_GO"
+pm2 save
+
+# Step 7: Validate Services
+step_progress
+log_info "🌐 Validating Services"
+curl -I http://localhost:3000/api/health || log_error "❌ NestJS Health Check Failed"
+curl -I http://localhost:4000/api/health || log_error "❌ Go Health Check Failed"
+curl -I http://localhost || log_error "❌ Angular Frontend Health Check Failed"
+
+# Final Summary
+TOTAL_DURATION=$((SECONDS - START_TIME))
+log_info "🎯 Deployment completed successfully in ${TOTAL_DURATION} seconds."
+log_info "🚀 All services are running successfully."
+echo -e "\033[1;32m🎉 Deployment completed successfully in ${TOTAL_DURATION} seconds!\033[0m"
