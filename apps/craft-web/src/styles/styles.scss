@@ -1,8 +1,9 @@
 @use '@angular/material' as mat;
 @use './_theme' as theme;
-@use './_colors' as colors;
+@use './colors' as colors;
 
-// Apply theme
+// Include theme styles
+@include mat.core();
 @include mat.all-component-themes(theme.$theme);
 
 /* === Base Styles === */
@@ -11,21 +12,21 @@ $base-font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif;
 body,
 .mat-typography {
   font-family: $base-font-family;
-  background-color: colors.$background;
+  background-color: theme.$background;
   margin: 0;
-  color: colors.$text;
+  color: theme.$text;
 }
 
 h1,
 h2,
 h3 {
   font-family: $base-font-family;
-  color: colors.$primary-blue;
+  color: theme.$primary-blue;
 }
 
 /* === Global Variables === */
 html {
-  --mat-sort-arrow-color: colors.$text;
+  --mat-sort-arrow-color: theme.$text;
   overflow: hidden;
 }
 
@@ -47,20 +48,20 @@ html {
 /* === Scrollbar Styling === */
 ::-webkit-scrollbar {
   width: 0.5em;
-  background: linear-gradient(to bottom, colors.$primary, colors.$accent);
+  background: linear-gradient(to bottom, theme.$primary, theme.$accent);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: colors.$background;
+  background: theme.$background;
   border-radius: 0.5em;
   
   &:hover {
-    background: colors.$text;
+    background: theme.$text;
   }
 }
 
 ::-webkit-scrollbar-button {
-  background: colors.$primary;
+  background: theme.$primary;
 }
 
 /* === Utility Classes === */

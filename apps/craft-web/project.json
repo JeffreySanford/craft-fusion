@@ -17,10 +17,13 @@
         "tsConfig": "apps/craft-web/tsconfig.app.json",
         "assets": ["apps/craft-web/src/assets"],
         "styles": [
-          "apps/craft-web/src/styles/_colors.scss",
-          "apps/craft-web/src/styles/_theme.scss",
           "apps/craft-web/src/styles/styles.scss"
         ],
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "apps/craft-web/src/styles"
+          ]
+        },
         "scripts": [],
         "allowedCommonJsDependencies": ["jszip"]
       },
