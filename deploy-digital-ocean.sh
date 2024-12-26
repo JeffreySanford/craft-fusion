@@ -136,7 +136,10 @@ function build_nestjs() {
 
 function build_go() {
     log_info "🐹 Building Go Backend..."
-    track_time go build -o "$GO_BUILD_PATH/main" ./apps/craft-go
+    cd apps/craft-go
+    track_time go mod tidy
+    track_time go build -o ../../dist/apps/craft-go/main
+    cd ../..
 }
 
 # ============================================================
@@ -146,7 +149,7 @@ function build_go() {
 function restart_pm2_process() {
     local process_name=$1
     log_info "🔄 Restarting PM2 Process: $process_name"
-    track_time pm2 restart "$process_name" --update-env || track_time pm2 start "$process_name"
+    track_time pm2 restart "$process_name" --update-env || track_time pm2 start "dist/apps/$process_name/main" --name "$process_name"
 }
 
 # ============================================================
@@ -155,8 +158,8 @@ function restart_pm2_process() {
 
 function check_server_health() {
     log_info "🌐 Validating Services..."
-    curl -s "$NESTJS_URL" &>/dev/null && log_info "✅ NestJS Healthy!" || log_info "❌ NestJS Failed!"
-    curl -s "$GO_URL" &>/dev/null && log_info "✅ Go Healthy!" || log_info "❌ Go Failed!"
+    curl -s "$NESTJS_URL" && log_info "✅ NestJS Healthy" || log_info "❌ NestJS Failed"
+    curl -s "$GO_URL" && log_info "✅ Go Healthy" || log_info "❌ Go Failed"
 }
 
 # ============================================================
