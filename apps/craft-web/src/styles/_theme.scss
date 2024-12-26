@@ -1,89 +1,96 @@
 @use 'sass:map';
 @use 'sass:color';
 @use '@angular/material' as mat;
-@use '@angular/material/theming' as *;
 
-// Include core styles once
+// Include core
 @include mat.core();
 
-// Define palette using Material's API
-$navy-palette: map.deep-merge(mat.$blue-palette, (
+// Define palette
+$navy-palette: (
+  50: #e3f2fd,
+  100: #bbdefb,
   500: #002868,
-  700: #001E55,
-  900: #000F3A,
+  700: #001e55,
+  900: #000f3a,
   contrast: (
+    50: black,
+    100: black,
     500: white,
     700: white,
     900: white,
-  )
-));
+  ),
+);
 
+// Create theme
 $theme-primary: mat.define-palette($navy-palette);
 $theme-accent: mat.define-palette(mat.$red-palette);
 
-$theme: mat.define-dark-theme((
-  color: (
-    primary: $theme-primary,
-    accent: $theme-accent,
+$theme: mat.define-dark-theme(
+  (
+    color: (
+      primary: $theme-primary,
+      accent: $theme-accent,
+    ),
   )
-));
+);
 
-// Export theme variables
+// Export variables
 $background: mat.get-color-from-palette($theme-primary, 500);
 $text: white;
 $primary: mat.get-color-from-palette($theme-primary, 500);
 $accent: mat.get-color-from-palette($theme-accent, A200);
 
 body {
-    background-color: $background;
-    color: $text;
-    font-family: 'Arial', sans-serif;
+  background-color: $background;
+  color: $text;
+  font-family: 'Arial', sans-serif;
 }
 
 a {
-    color: $accent;
-    text-decoration: none;
+  color: $accent;
+  text-decoration: none;
 
-    &:hover {
-        text-decoration: underline;
-    }
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 button {
-    background-color: $accent;
-    color: $text;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
+  background-color: $accent;
+  color: $text;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
 
-    &:hover {
-        background-color: darken($accent, 10%);
-    }
+  &:hover {
+    background-color: darken($accent, 10%);
+  }
 }
 
-header, footer {
-    background-color: $background;
-    color: $text;
-    padding: 20px;
-    text-align: center;
+header,
+footer {
+  background-color: $background;
+  color: $text;
+  padding: 20px;
+  text-align: center;
 }
 
 nav {
-    background-color: $accent;
-    color: $text;
-    padding: 10px;
+  background-color: $accent;
+  color: $text;
+  padding: 10px;
 
-    ul {
-        list-style: none;
-        padding: 0;
+  ul {
+    list-style: none;
+    padding: 0;
 
-        li {
-            display: inline;
-            margin-right: 10px;
+    li {
+      display: inline;
+      margin-right: 10px;
 
-            a {
-                color: $text;
-            }
-        }
+      a {
+        color: $text;
+      }
     }
+  }
 }
