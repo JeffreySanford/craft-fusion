@@ -41,7 +41,7 @@ function step_progress() {
     local percentage=$((CURRENT_STEP * 100 / TOTAL_STEPS))
     local progress=$((CURRENT_STEP * PROGRESS_BAR_LENGTH / TOTAL_STEPS))
     local remaining=$((PROGRESS_BAR_LENGTH - progress))
-    echo -ne "\033[1;34m[STEP $CURRENT_STEP/$TOTAL_STEPS] [$percentage%] \033[0;37m"
+    echo -ne "\033[1;34m[STEP $CURRENT_STEP/$TOTAL_STEPS]\033[0m \033[1;33m($percentage%)\033[0m "
     printf "%-${PROGRESS_BAR_LENGTH}s" "$(printf '#%.0s' $(seq 1 $progress))"
     printf "%-${remaining}s" ""
     echo -e " \033[1;32m✔\033[0m"
@@ -49,14 +49,19 @@ function step_progress() {
 
 # 📝 LOG INFO
 function log_info() {
-    echo -e "\033[1;36m[INFO] [$CURRENT_STEP/$TOTAL_STEPS] $1\033[0m"
+    echo -e "\033[1;34m[INFO]\033[0m \033[1;36m$1\033[0m"
     sudo bash -c "echo \"$(date '+%Y-%m-%d %H:%M:%S') [INFO] [$CURRENT_STEP/$TOTAL_STEPS] $1\" >> \"$DEPLOY_LOG\""
 }
 
 # ❌ LOG ERROR
 function log_error() {
-    echo -e "\033[1;31m[ERROR] [$CURRENT_STEP/$TOTAL_STEPS] $1\033[0m"
+    echo -e "\033[1;31m[ERROR]\033[0m \033[1;37m$1\033[0m"
     sudo bash -c "echo \"$(date '+%Y-%m-%d %H:%M:%S') [ERROR] [$CURRENT_STEP/$TOTAL_STEPS] $1\" >> \"$DEPLOY_LOG\""
+}
+
+# 🛡️ STEP SUMMARY
+function log_summary() {
+    echo -e "\033[1;33m[SUMMARY]\033[0m \033[1;37m$1\033[0m"
 }
 
 # ⏱️ TRACK EXECUTION TIME
@@ -66,11 +71,14 @@ function track_time() {
     local end_time=$(date +%s%3N)
     local duration=$((end_time - start_time))
     CUMULATIVE_DURATION=$((CUMULATIVE_DURATION + duration))
-    echo -e "\033[1;36m[INFO] ✅ $1 took: ${duration} ms (Cumulative: ${CUMULATIVE_DURATION} ms)\033[0m"
+    echo -e "\033[1;35m[TIME]\033[0m \033[1;37m$1 took: ${duration} ms (Cumulative: ${CUMULATIVE_DURATION} ms)\033[0m"
 }
 
+# ============================================================
 # 🧠 SYSTEM ENVIRONMENT
+# ============================================================
 function log_environment() {
+    log_summary "This step logs the current system environment and dependencies."
     log_info "🧠 **System Environment Variables:**"
     log_info "   - User: $USER"
     log_info "   - Shell: $SHELL"
@@ -85,6 +93,7 @@ function log_environment() {
 # 🐹 VERIFY & INSTALL GO
 # ============================================================
 function install_go() {
+    log_summary "Ensures Go is installed and available in the PATH."
     log_info "🐹 Verifying Go Installation"
     if ! command -v go &> /dev/null; then
         log_info "Installing Go..."
@@ -92,9 +101,6 @@ function install_go() {
         sudo curl -LO https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
         sudo tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
         sudo ln -s /usr/local/go/bin/go /usr/bin/go
-        echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
-        echo 'export GOPATH=$HOME/go' >> ~/.bashrc
-        echo 'export PATH=$PATH:$GOPATH/bin' >> ~/.bashrc
         source ~/.bashrc
     fi
     log_info "✅ Go Version: $(go version)"
@@ -104,6 +110,7 @@ function install_go() {
 # 🛡️ FIX SQLITE PERMISSIONS
 # ============================================================
 function fix_sqlite_permissions() {
+    log_summary "Fixes permissions for the SQLite database used by NestJS."
     log_info "🛡️ Fixing SQLite Database Permissions..."
     sudo chmod 666 "$NESTJS_DB_PATH" 2>/dev/null || log_error "SQLite file not found"
     sudo chown -R $(whoami):$(whoami) "$(dirname "$NESTJS_DB_PATH")"
@@ -113,6 +120,7 @@ function fix_sqlite_permissions() {
 # 🛠️ BUILD SERVICES
 # ============================================================
 function build_go() {
+    log_summary "Builds the Go backend into an executable binary."
     log_info "🐹 Building Go Backend"
     sudo mkdir -p "$(dirname "$GO_BINARY_PATH")"
     sudo chown -R $(whoami):$(whoami) "$(dirname "$GO_BINARY_PATH")"
@@ -128,6 +136,7 @@ function build_go() {
 function restart_pm2_process() {
     local process_name=$1
     local process_path=$2
+    log_summary "Manages and restarts PM2 services."
     log_info "🔄 Restarting PM2 Process: $process_name"
     track_time pm2 restart "$process_name" --update-env || track_time pm2 start "$process_path" --name "$process_name"
     track_time pm2 save
@@ -137,16 +146,17 @@ function restart_pm2_process() {
 # 🌐 SERVICE HEALTH CHECK
 # ============================================================
 function check_server_health() {
+    log_summary "Validates that both NestJS and Go services are running and accessible."
     log_info "🌐 Validating Services"
     curl -s "$NESTJS_URL" && log_info "✅ NestJS Healthy" || log_error "❌ NestJS Failed"
     curl -s "$GO_URL" && log_info "✅ Go Healthy" || log_error "❌ Go Failed"
 }
 
 # 🚀 RUN DEPLOYMENT WORKFLOW
-step_progress; track_time log_environment
-step_progress; track_time install_go
-step_progress; track_time fix_sqlite_permissions
-step_progress; track_time build_go
+step_progress; log_environment
+step_progress; install_go
+step_progress; fix_sqlite_permissions
+step_progress; build_go
 step_progress; restart_pm2_process "craft-go" "$GO_BINARY_PATH"
 step_progress; check_server_health
 
