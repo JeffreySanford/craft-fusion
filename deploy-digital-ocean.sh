@@ -5,33 +5,45 @@
 # ============================================================
 # Supports NX monorepo deployment: Frontend (craft-web), Backend (craft-nest, craft-go)
 # Automates dependency management, SSH identity setup, OSINT analysis, system diagnostics,
-# Swagger endpoint validation, and ensures reliable deployment via NGINX and PM2.
+# health monitoring, log collection, and ensures reliable deployment via NGINX and PM2.
 # ------------------------------------------------------------
-# ⚠️  REMINDER: Use '--full-clean' for a fresh deployment with cleaned dependencies.
+# ⚠️  REMINDER: Use '--full' for a fresh deployment.
+# ⚠️  Use '--monitor' for continuous monitoring.
 # ============================================================
 
 # Constants
-TOTAL_STEPS=24
+TOTAL_STEPS=26
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
 DEPLOY_LOG="deploy-digital-ocean.log"
 START_TIME=$SECONDS
 CUMULATIVE_DURATION=0
+NESTJS_URL="http://localhost:3000/api"
+GO_URL="http://localhost:4000/api"
+NESTJS_SWAGGER="http://localhost:3000/api/swagger"
+GO_SWAGGER="http://localhost:4000/api/swagger"
+MONITOR_INTERVAL=10  # Interval in seconds for monitoring loop
 
 # Paths
-NGINX_PATH="/usr/share/nginx/html"
-FRONTEND_BUILD_PATH="dist/apps/craft-web/browser"
-BACKEND_NEST_PATH="dist/apps/craft-nest/main.js"
-BACKEND_GO_PATH="dist/apps/craft-go/main"
-PM2_APP_NAME_NEST="craft-nest"
-PM2_APP_NAME_GO="craft-go"
+NGINX_ACCESS_LOG="/var/log/nginx/access.log"
+NGINX_ERROR_LOG="/var/log/nginx/error.log"
+PM2_LOG_NEST="~/.pm2/logs/craft-nest-out.log"
+PM2_LOG_GO="~/.pm2/logs/craft-go-out.log"
 
 # Flags
-FULL_CLEAN=false
-if [[ "$1" == "--full-clean" ]]; then
-    FULL_CLEAN=true
-    echo -e "\033[1;31m⚠️  FULL CLEAN ENABLED: Performing a complete cleanup of dependencies, cache, and build artifacts.\033[0m"
-fi
+FULL_DEPLOY=false
+MONITOR_MODE=false
+
+for arg in "$@"; do
+    case $arg in
+        --full)
+            FULL_DEPLOY=true
+            ;;
+        --monitor)
+            MONITOR_MODE=true
+            ;;
+    esac
+done
 
 # Utility Functions
 function step_progress() {
@@ -64,82 +76,77 @@ function log_info() {
 }
 
 function init_log() {
-    if [[ "$FULL_CLEAN" == true ]]; then
+    if [[ "$FULL_DEPLOY" == true ]]; then
         rm -f "$DEPLOY_LOG"
-        log_info "📝 Deployment log reset due to --full-clean."
+        log_info "📝 Deployment log reset due to --full deployment."
     elif [[ ! -f "$DEPLOY_LOG" ]]; then
         touch "$DEPLOY_LOG"
         log_info "📝 Deployment log initialized."
     fi
 }
 
-# 🕒 System & User Details
-function show_start_info() {
-    log_info "🕒 Deployment Started: $(date)"
-    log_info "👤 Logged-in User: $(whoami)"
-    log_info "🖥️ Hostname: $(hostname)"
-    log_info "🔗 Server IP: $(curl -s ifconfig.me)"
-    log_info "📦 Operating System: $(cat /etc/os-release | grep PRETTY_NAME | cut -d= -f2)"
+# 🛡️ Server Health Check
+function check_server_health() {
+    log_info "🌐 Checking Server Health..."
+
+    local nest_status=$(curl -s -o /dev/null -w "%{http_code}" $NESTJS_URL)
+    if [[ "$nest_status" -eq 200 ]]; then
+        log_info "✅ NestJS Server is UP. Status Code: $nest_status"
+        log_info "🔗 Swagger: $NESTJS_SWAGGER"
+    else
+        log_info "❌ NestJS Server DOWN. Restarting..."
+        track_time pm2 restart "$PM2_APP_NAME_NEST"
+    fi
+
+    local go_status=$(curl -s -o /dev/null -w "%{http_code}" $GO_URL)
+    if [[ "$go_status" -eq 200 ]]; then
+        log_info "✅ Go Server is UP. Status Code: $go_status"
+        log_info "🔗 Swagger: $GO_SWAGGER"
+    else
+        log_info "❌ Go Server DOWN. Restarting..."
+        track_time pm2 restart "$PM2_APP_NAME_GO"
+    fi
 }
 
-# 🖥️ Server Update Check
-function check_server_status() {
-    log_info "📡 Checking if the server is up to date..."
-    track_time sudo dnf check-update || log_info "✅ Server packages are up to date."
-}
-
-# 🔑 SSH Key Management
-function setup_ssh_identity() {
-    log_info "🔑 Adding Available SSH Identities..."
-    local SSH_DIR="$(sudo -u $SUDO_USER -H sh -c 'echo $HOME')/.ssh"
-    eval "$(ssh-agent -s)"
-
-    for key in "$SSH_DIR"/id_*; do
-        if [[ -f "$key" ]]; then
-            if grep -qi 'Jeffrey\|jeffreysanford@gmail.com' "$key"; then
-                track_time ssh-add "$key"
-                log_info "😄 ✅ Special Key containing 'Jeffrey' or 'jeffreysanford@gmail.com' added successfully from $key"
-            else
-                track_time ssh-add "$key"
-                log_info "✅ SSH Key added successfully from $key"
-            fi
-        fi
+# 📊 Server Monitoring Loop
+function monitor_servers() {
+    log_info "📊 Starting Monitoring Loop (Ctrl+C to exit)..."
+    while true; do
+        check_server_health
+        sleep "$MONITOR_INTERVAL"
     done
 }
 
-# 🌐 Service Checks
-function check_services() {
-    log_info "🌐 Checking NestJS API Status..."
-    curl -s http://localhost:3000/api | jq '.'
+# 📄 Collect Logs
+function collect_logs() {
+    log_info "📄 Collecting Logs for All Systems..."
 
-    log_info "🌐 Checking Go API Status..."
-    curl -s http://localhost:4000/api | jq '.'
+    log_info "📝 Tail NGINX Access Logs:"
+    sudo tail -n 20 "$NGINX_ACCESS_LOG" | tee -a "$DEPLOY_LOG"
 
-    log_info "📜 Swagger Endpoints:"
-    log_info "🔗 NestJS: http://localhost:3000/api/swagger"
-    log_info "🔗 Go: http://localhost:4000/api/swagger"
+    log_info "📝 Tail NGINX Error Logs:"
+    sudo tail -n 20 "$NGINX_ERROR_LOG" | tee -a "$DEPLOY_LOG"
+
+    log_info "📝 Tail NestJS PM2 Logs:"
+    tail -n 20 "$PM2_LOG_NEST" | tee -a "$DEPLOY_LOG"
+
+    log_info "📝 Tail Go PM2 Logs:"
+    tail -n 20 "$PM2_LOG_GO" | tee -a "$DEPLOY_LOG"
 }
 
-# 🛠️ Detailed NX Builds
-function build_nestjs() {
-    log_info "🛠️ Building Backend (NestJS)..."
-    track_time npx nx run craft-nest:build:production
-    track_time pm2 restart "$PM2_APP_NAME_NEST"
-}
-
-function build_go() {
-    log_info "🛠️ Building Backend (Go)..."
-    track_time go build -o dist/apps/craft-go ./...
-    track_time pm2 restart "$PM2_APP_NAME_GO"
-}
-
-# 🏁 Main Steps
+# 🚀 Main Steps
 step_progress; track_time init_log
-step_progress; track_time show_start_info
-step_progress; track_time check_server_status
-step_progress; track_time setup_ssh_identity
-step_progress; track_time check_services
-step_progress; track_time build_nestjs
-step_progress; track_time build_go
+step_progress; log_info "🕒 Deployment Started: $(date)"
+step_progress; track_time check_server_health
+step_progress; track_time collect_logs
+
+if [[ "$FULL_DEPLOY" == true ]]; then
+    step_progress; track_time build_nestjs
+    step_progress; track_time build_go
+fi
+
+if [[ "$MONITOR_MODE" == true ]]; then
+    monitor_servers
+fi
 
 log_info "🎉 Deployment completed successfully in $((SECONDS - START_TIME)) seconds."
