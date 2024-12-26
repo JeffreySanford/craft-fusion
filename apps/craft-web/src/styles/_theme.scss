@@ -1,15 +1,79 @@
-$primary-color: #002868; // Navy Blue
-$secondary-color: #BF0A30; // Red
-$accent-color: #FFFFFF; // White
+@use '@angular/material' as mat;
+
+// Define the palettes
+$primary-palette: mat.define-palette((
+    50: #E3E7ED,
+    100: #B8C3D2,
+    200: #899BB4,
+    300: #5A7295,
+    400: #36547F,
+    500: #002868,  // Your navy blue
+    600: #002460,
+    700: #001E55,
+    800: #00184B,
+    900: #000F3A,
+    contrast: (
+        50: rgba(black, 0.87),
+        100: rgba(black, 0.87),
+        200: rgba(black, 0.87),
+        300: white,
+        400: white,
+        500: white,
+        600: white,
+        700: white,
+        800: white,
+        900: white,
+    )
+));
+
+$accent-palette: mat.define-palette((
+    50: #FFEAED,
+    100: #FFCAD1,
+    200: #F79AA5,
+    300: #E96979,
+    400: #DE4558,
+    500: #BF0A30,  // Your red
+    600: #AF082C,
+    700: #9C0626,
+    800: #8A0420,
+    900: #6A0115,
+    contrast: (
+        50: rgba(black, 0.87),
+        100: rgba(black, 0.87),
+        200: rgba(black, 0.87),
+        300: rgba(black, 0.87),
+        400: white,
+        500: white,
+        600: white,
+        700: white,
+        800: white,
+        900: white,
+    )
+));
+
+// Create the theme
+$theme: mat.define-dark-theme((
+    color: (
+        primary: $primary-palette,
+        accent: $accent-palette
+    )
+));
+
+// Export commonly used colors for other files
+$background: mat.get-color-from-palette($primary-palette, 500);
+$text: #FFFFFF;
+$primary: mat.get-color-from-palette($primary-palette, 500);
+$accent: mat.get-color-from-palette($accent-palette, 500);
+$primary-blue: mat.get-color-from-palette($primary-palette, 500);
 
 body {
-    background-color: $primary-color;
-    color: $accent-color;
+    background-color: $background;
+    color: $text;
     font-family: 'Arial', sans-serif;
 }
 
 a {
-    color: $secondary-color;
+    color: $accent;
     text-decoration: none;
 
     &:hover {
@@ -18,27 +82,27 @@ a {
 }
 
 button {
-    background-color: $secondary-color;
-    color: $accent-color;
+    background-color: $accent;
+    color: $text;
     border: none;
     padding: 10px 20px;
     cursor: pointer;
 
     &:hover {
-        background-color: darken($secondary-color, 10%);
+        background-color: darken($accent, 10%);
     }
 }
 
 header, footer {
-    background-color: $primary-color;
-    color: $accent-color;
+    background-color: $background;
+    color: $text;
     padding: 20px;
     text-align: center;
 }
 
 nav {
-    background-color: $secondary-color;
-    color: $accent-color;
+    background-color: $accent;
+    color: $text;
     padding: 10px;
 
     ul {
@@ -50,7 +114,7 @@ nav {
             margin-right: 10px;
 
             a {
-                color: $accent-color;
+                color: $text;
             }
         }
     }
