@@ -136,10 +136,30 @@ function vps_information() {
 }
 
 # ============================================================
-# 🚀 Deployment Workflow
+# 🔄 PM2 Process Management
+# ============================================================
+function restart_pm2_process() {
+    local process_name=$1
+
+    if ! pm2 show "$process_name" &>/dev/null; then
+        log_info "❌ PM2 Process '$process_name' not found. Attempting to start it..."
+        track_time pm2 start dist/apps/$process_name/main --name $process_name
+    else
+        if [[ "$UPDATE_ENV" == true ]]; then
+            log_info "🔄 Updating environment for '$process_name' before restart."
+            track_time pm2 restart "$process_name" --update-env
+        else
+            track_time pm2 restart "$process_name"
+        fi
+        log_info "✅ PM2 Process '$process_name' restarted successfully."
+    fi
+}
+
+# ============================================================
+# 📊 Deployment Workflow
 # ============================================================
 
-step_progress; track_time init_log
+step_progress; track_time log_info "📝 Initializing Deployment Log..."
 step_progress; track_time log_info "🕒 Deployment Started: $(date)"
 step_progress; track_time server_uptime
 step_progress; track_time vps_information
