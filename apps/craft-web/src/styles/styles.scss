@@ -1,7 +1,4 @@
-// === Modern Imports ===
 @use '@angular/material' as mat;
-@use '@angular/material/color' as mat-color;
-@use './colors' as *;
 
 // === Core Theme Setup ===
 @include mat.core();
@@ -82,3 +79,19 @@ html {
 .table-container::-webkit-scrollbar {
   display: none;
 }
+
+$primary-blue: mat.get-palette(mat.$blue-palette);
+$accent-red: mat.get-palette(mat.$red-palette);
+$primary-white: mat.get-palette(mat.$grey-palette);
+
+$patriotic-theme: mat.define-light-theme((
+  color: (
+    primary: $primary-blue,
+    accent: $accent-red,
+    warn: $primary-white
+  ),
+  typography: mat.define-typography-config(),
+  density: 0
+));
+
+@include mat.all-component-themes($patriotic-theme);
