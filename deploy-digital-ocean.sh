@@ -117,6 +117,12 @@ if ! npx nx run craft-web:build:production; then
 fi
 cp -r "$FRONTEND_BUILD_PATH/" "$NGINX_PATH/"
 systemctl restart nginx
+# Confirm Nginx restart
+if systemctl is-active --quiet nginx; then
+    log_info "✅ Nginx restarted successfully."
+else
+    log_error "Nginx restart failed."
+fi
 log_info "✅ Angular build deployed to $NGINX_PATH"
 
 # Step 4: Build NestJS Backend
@@ -146,6 +152,18 @@ pm2 restart craft-nest --update-env || pm2 start "$BACKEND_NEST_PATH" --name "cr
 pm2 restart craft-go --update-env || pm2 start "$BACKEND_GO_PATH" --name "craft-go"
 pm2 save
 log_info "✅ PM2 processes synchronized."
+
+# Step 7: Update Environment Variables (if --update-env is passed)
+if [ "$UPDATE_ENV" = true ]; then
+    log_info "Updating environment variables..."
+    source /path/to/.env || log_error "Failed to source .env file."
+fi
+
+# Step 8: Monitoring Mode (if --monitor is passed)
+if [ "$MONITOR" = true ]; then
+    log_info "Entering monitoring mode..."
+    pm2 monit
+fi
 
 # Final Summary
 TOTAL_DURATION=$((SECONDS - START_TIME))
