@@ -1,5 +1,10 @@
 @use 'sass:map';
 
+$table-theme: (
+  dark-blue: #00008b,
+  primary-white: #ffffff
+);
+
 .table-container {
   padding: 0.55em;
   width: 99%;
@@ -8,7 +13,7 @@
   flex-direction: column;
   flex-grow: 1;
   overflow: hidden;
-  background-color: map.get($craft-theme, dark-blue);
+  background-color: map.get($table-theme, dark-blue);
 }
 
 .selectors {
@@ -43,8 +48,8 @@
   th {
     position: sticky;
     top: 0;
-    background-color: map.get($craft-theme, dark-blue);
-    color: map.get($craft-theme, primary-white);
+    background-color: map.get($table-theme, dark-blue);
+    color: map.get($table-theme, primary-white);
     font-size: 1.2em;
     text-align: left;
     z-index: 1;
@@ -68,8 +73,8 @@
 }
 
 .mat-paginator {
-  background-color: map.get($craft-theme, dark-blue);
-  color: map.get($craft-theme, primary-white);
+  background-color: map.get($table-theme, dark-blue);
+  color: map.get($table-theme, primary-white);
   font-size: 1em;
   text-align: left;
   z-index: 1;

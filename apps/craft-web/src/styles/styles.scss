@@ -5,9 +5,9 @@
 // === Core Theme Setup ===
 @include mat.core();
 
-$primary-blue: mat.define-palette(mat.$blue-palette);
-$accent-red: mat.define-palette(mat.$red-palette);
-$primary-white: mat.define-palette(mat.$grey-palette);
+$primary-blue: mat.get-palette(mat.$blue-palette);
+$accent-red: mat.get-palette(mat.$red-palette);
+$primary-white: mat.get-palette(mat.$grey-palette);
 
 $patriotic-theme: mat.define-light-theme((
   color: (
