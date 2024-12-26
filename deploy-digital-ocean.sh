@@ -1,22 +1,24 @@
 #!/bin/bash
 
 # ============================================================
-# 🚀 🌟 Craft-Fusion Deployment Script – Debug & Detail Edition 🛡️🐹
+# 🚀 🌟 Ultimate Craft-Fusion Deployment Script 🛡️🐹🌐
 # ============================================================
 # 📚 **Description:**  
 # - 🛡️ Builds NestJS Backend (craft-nest)
 # - 🐹 Builds Go Backend (craft-go)
-# - 🔄 Manages PM2 services
-# - 🌐 Validates health endpoints
+# - 🅰️ Builds Angular Frontend (craft-web)
+# - 🔄 Manages PM2 services (craft-nest, craft-go)
+# - 🌐 Deploys Angular app to NGINX directory (/usr/www/nginx/html)
 # - 🛡️ Fixes SQLite permissions
-# - 📊 Logs server environment and resource usage
-# - 📝 Provides extensive logs for debugging
+# - 🌐 Validates health endpoints
+# - 📊 Logs system stats, environment, and server health
+# - 📝 Junior developer friendly with detailed descriptions and logging.
 
 # ============================================================
 # 🌟 CONSTANTS & VARIABLES
 # ============================================================
 
-TOTAL_STEPS=50
+TOTAL_STEPS=60
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
 DEPLOY_LOG="deploy-digital-ocean.log"
@@ -26,10 +28,12 @@ CUMULATIVE_DURATION=0
 # Paths
 GO_BINARY_PATH="/home/jeffrey/repos/craft-fusion/dist/apps/craft-go/main"
 NESTJS_DB_PATH="/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite"
+ANGULAR_DIST_PATH="/home/jeffrey/repos/craft-fusion/dist/apps/craft-web/browser"
+NGINX_HTML_PATH="/usr/www/nginx/html"
 
 # Service Endpoints
-NESTJS_URL="http://localhost:3000/api"
-GO_URL="http://localhost:4000/api"
+NESTJS_URL="http://localhost:3000/api/health"
+GO_URL="http://localhost:4000/api/health"
 
 # ============================================================
 # 🎯 UTILITY FUNCTIONS 🌟
@@ -78,25 +82,20 @@ function track_time() {
 # 🧠 SYSTEM ENVIRONMENT
 # ============================================================
 function log_environment() {
-    log_summary "This step logs the current system environment and dependencies."
-    log_info "🧠 **System Environment Variables:**"
+    log_summary "Logs the current system environment and dependencies."
+    log_info "🧠 System Variables:"
     log_info "   - User: $USER"
-    log_info "   - Shell: $SHELL"
-    log_info "   - Path: $PATH"
-    log_info "   - Current Directory: $(pwd)"
-    log_info "   - Go Version: $(go version || echo 'Go not found')"
-    log_info "   - Node Version: $(node -v || echo 'Node not found')"
-    log_info "   - NPM Version: $(npm -v || echo 'NPM not found')"
+    log_info "   - Go Version: $(go version)"
+    log_info "   - Node Version: $(node -v)"
+    log_info "   - NPM Version: $(npm -v)"
 }
 
 # ============================================================
-# 🐹 VERIFY & INSTALL GO
+# 🐹 INSTALL GO
 # ============================================================
 function install_go() {
-    log_summary "Ensures Go is installed and available in the PATH."
-    log_info "🐹 Verifying Go Installation"
+    log_summary "Ensures Go is installed and available."
     if ! command -v go &> /dev/null; then
-        log_info "Installing Go..."
         sudo rm -rf /usr/local/go
         sudo curl -LO https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
         sudo tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
@@ -107,47 +106,37 @@ function install_go() {
 }
 
 # ============================================================
-# 🛡️ FIX SQLITE PERMISSIONS
+# 🛡️ FIX SQLITE
 # ============================================================
 function fix_sqlite_permissions() {
-    log_summary "Fixes permissions for the SQLite database used by NestJS."
-    log_info "🛡️ Fixing SQLite Database Permissions..."
-    sudo chmod 666 "$NESTJS_DB_PATH" 2>/dev/null || log_error "SQLite file not found"
-    sudo chown -R $(whoami):$(whoami) "$(dirname "$NESTJS_DB_PATH")"
+    log_summary "Fixes permissions for SQLite database."
+    sudo chmod 666 "$NESTJS_DB_PATH" || log_error "SQLite not found"
+    sudo chown -R $(whoami) "$(dirname "$NESTJS_DB_PATH")"
 }
 
 # ============================================================
-# 🛠️ BUILD SERVICES
+# 🅰️ BUILD ANGULAR
 # ============================================================
-function build_go() {
-    log_summary "Builds the Go backend into an executable binary."
-    log_info "🐹 Building Go Backend"
-    sudo mkdir -p "$(dirname "$GO_BINARY_PATH")"
-    sudo chown -R $(whoami):$(whoami) "$(dirname "$GO_BINARY_PATH")"
-    cd apps/craft-go || log_error "Go project directory not found"
-    track_time go mod tidy
-    track_time go build -o "$GO_BINARY_PATH"
-    cd ../..
+function build_angular() {
+    log_summary "Builds the Angular frontend (Craft-Web)."
+    track_time npx nx run craft-web:build:production
+    sudo mkdir -p "$NGINX_HTML_PATH"
+    sudo cp -r "$ANGULAR_DIST_PATH"/* "$NGINX_HTML_PATH"
 }
 
 # ============================================================
 # 🔄 PM2 MANAGEMENT
 # ============================================================
-function restart_pm2_process() {
-    local process_name=$1
-    local process_path=$2
-    log_summary "Manages and restarts PM2 services."
-    log_info "🔄 Restarting PM2 Process: $process_name"
-    track_time pm2 restart "$process_name" --update-env || track_time pm2 start "$process_path" --name "$process_name"
+function restart_pm2() {
+    track_time pm2 restart craft-nest --update-env || pm2 start dist/apps/craft-nest/main.js --name craft-nest
+    track_time pm2 restart craft-go --update-env || pm2 start "$GO_BINARY_PATH" --name craft-go
     track_time pm2 save
 }
 
 # ============================================================
-# 🌐 SERVICE HEALTH CHECK
+# 🌐 VALIDATE HEALTH
 # ============================================================
-function check_server_health() {
-    log_summary "Validates that both NestJS and Go services are running and accessible."
-    log_info "🌐 Validating Services"
+function validate_services() {
     curl -s "$NESTJS_URL" && log_info "✅ NestJS Healthy" || log_error "❌ NestJS Failed"
     curl -s "$GO_URL" && log_info "✅ Go Healthy" || log_error "❌ Go Failed"
 }
@@ -156,8 +145,8 @@ function check_server_health() {
 step_progress; log_environment
 step_progress; install_go
 step_progress; fix_sqlite_permissions
-step_progress; build_go
-step_progress; restart_pm2_process "craft-go" "$GO_BINARY_PATH"
-step_progress; check_server_health
+step_progress; build_angular
+step_progress; restart_pm2
+step_progress; validate_services
 
-log_info "🎯 Deployment completed successfully in $((SECONDS - START_TIME)) seconds."
+log_info "🎯 Deployment completed in $((SECONDS - START_TIME)) seconds."
