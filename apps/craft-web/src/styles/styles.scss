@@ -1,9 +1,7 @@
 @use '@angular/material' as mat;
-@use 'sass:map';
 @use './_theme' as theme;
 
-// Include theme styles
-@include mat.core();
+// Include theme
 @include mat.all-component-themes(theme.$theme);
 
 /* === Base Styles === */
