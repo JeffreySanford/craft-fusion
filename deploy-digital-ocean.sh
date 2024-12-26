@@ -5,13 +5,13 @@
 # ============================================================
 # Supports NX monorepo deployment: Frontend (craft-web), Backend (craft-nest, craft-go)
 # Automates dependency management, SSH identity setup, OSINT analysis, system diagnostics,
-# and ensures reliable deployment via NGINX and PM2.
+# Swagger endpoint validation, and ensures reliable deployment via NGINX and PM2.
 # ------------------------------------------------------------
 # ⚠️  REMINDER: Use '--full-clean' for a fresh deployment with cleaned dependencies.
 # ============================================================
 
 # Constants
-TOTAL_STEPS=19
+TOTAL_STEPS=24
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
 DEPLOY_LOG="deploy-digital-ocean.log"
@@ -73,64 +73,24 @@ function init_log() {
     fi
 }
 
-function install_dependencies() {
-    log_info "📦 Installing Fedora Dependencies..."
-    track_time sudo dnf update -y
-    track_time sudo dnf install -y \
-        nodejs \
-        npm \
-        golang \
-        nginx \
-        jq \
-        curl \
-        git \
-        python3-pip \
-        openssh-clients
-
-    if ! command -v snort &> /dev/null; then
-        log_info "🔍 Snort not detected. Installing Snort..."
-        track_time sudo dnf install -y snort
-    else
-        log_info "✅ Snort detected and ready."
-    fi
+# 🕒 System & User Details
+function show_start_info() {
+    log_info "🕒 Deployment Started: $(date)"
+    log_info "👤 Logged-in User: $(whoami)"
+    log_info "🖥️ Hostname: $(hostname)"
+    log_info "🔗 Server IP: $(curl -s ifconfig.me)"
+    log_info "📦 Operating System: $(cat /etc/os-release | grep PRETTY_NAME | cut -d= -f2)"
 }
 
-function system_metrics() {
-    log_info "📊 Collecting System Metrics..."
-    local cpu_usage=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage "%"}')
-    local memory_usage=$(free -h | grep Mem | awk '{print $3 "/" $2}')
-    local disk_usage=$(df -h / | tail -1 | awk '{print $3 "/" $2 " (" $5 " used)"}')
-
-    log_info "🖥️ CPU Usage: $cpu_usage"
-    log_info "💾 Memory Usage: $memory_usage"
-    log_info "📁 Disk Usage: $disk_usage"
+# 🖥️ Server Update Check
+function check_server_status() {
+    log_info "📡 Checking if the server is up to date..."
+    track_time sudo dnf check-update || log_info "✅ Server packages are up to date."
 }
 
-function osint_search() {
-    log_info "🔍 Performing OSINT Search..."
-    USER_IP=$(who am i | awk '{print $NF}' | tr -d '()')
-
-    if [[ -z "$USER_IP" ]]; then
-        log_info "⚠️ Could not determine the user's IP address."
-        return 1
-    fi
-
-    local osint_data=$(curl -s "https://ipapi.co/$USER_IP/json/")
-    local city=$(echo "$osint_data" | jq -r '.city')
-    local region=$(echo "$osint_data" | jq -r '.region')
-    local country=$(echo "$osint_data" | jq -r '.country_name')
-    local org=$(echo "$osint_data" | jq -r '.org')
-
-    echo -e "\033[1;34m[INFO] 🌐 Detected User's IP: $USER_IP\033[0m"
-    echo -e "\033[1;34m[INFO] 📍 Location: $city, $region, $country\033[0m"
-    echo -e "\033[1;34m[INFO] 🏢 Organization: $org\033[0m"
-
-    echo "$osint_data" >> "$DEPLOY_LOG"
-}
-
+# 🔑 SSH Key Management
 function setup_ssh_identity() {
     log_info "🔑 Adding Available SSH Identities..."
-
     local SSH_DIR="$(sudo -u $SUDO_USER -H sh -c 'echo $HOME')/.ssh"
     eval "$(ssh-agent -s)"
 
@@ -147,13 +107,39 @@ function setup_ssh_identity() {
     done
 }
 
-# Deployment Steps
-step_progress; track_time install_dependencies
-step_progress; track_time system_metrics
-step_progress; track_time osint_search
+# 🌐 Service Checks
+function check_services() {
+    log_info "🌐 Checking NestJS API Status..."
+    curl -s http://localhost:3000/api | jq '.'
+
+    log_info "🌐 Checking Go API Status..."
+    curl -s http://localhost:4000/api | jq '.'
+
+    log_info "📜 Swagger Endpoints:"
+    log_info "🔗 NestJS: http://localhost:3000/api/swagger"
+    log_info "🔗 Go: http://localhost:4000/api/swagger"
+}
+
+# 🛠️ Detailed NX Builds
+function build_nestjs() {
+    log_info "🛠️ Building Backend (NestJS)..."
+    track_time npx nx run craft-nest:build:production
+    track_time pm2 restart "$PM2_APP_NAME_NEST"
+}
+
+function build_go() {
+    log_info "🛠️ Building Backend (Go)..."
+    track_time go build -o dist/apps/craft-go ./...
+    track_time pm2 restart "$PM2_APP_NAME_GO"
+}
+
+# 🏁 Main Steps
+step_progress; track_time init_log
+step_progress; track_time show_start_info
+step_progress; track_time check_server_status
 step_progress; track_time setup_ssh_identity
-step_progress; track_time npm install --legacy-peer-deps
-step_progress; track_time npx nx run craft-web:build:production
-step_progress; track_time pm2 status
+step_progress; track_time check_services
+step_progress; track_time build_nestjs
+step_progress; track_time build_go
 
 log_info "🎉 Deployment completed successfully in $((SECONDS - START_TIME)) seconds."
