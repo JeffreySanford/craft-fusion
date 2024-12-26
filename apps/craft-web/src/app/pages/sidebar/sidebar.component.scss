@@ -1,5 +1,11 @@
 @use '@angular/material' as mat;
 
+/* webpackBootstrap */
+/* ...existing code... */
+/* startup */
+/* Load entry module and return exports */
+/* This entry module doesn't tell about its top-level declarations so it can't be inlined */
+
 .sidebar-container {
   background-color: rgba(0, 0, 255, 0.2);
   padding: 1em;

@@ -78,7 +78,7 @@
     "@types/shapefile": "^0.6.4",
     "@types/web-animations-js": "^2.2.16",
     "@typescript-eslint/utils": "^8.0.0",
-    "angular-eslint": "19.0.2",
+    "angular-eslint": "^19.0.2",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-playwright": "^1.6.2",
