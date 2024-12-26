@@ -1,45 +1,34 @@
 @use '@angular/material' as mat;
+@use './_theme' as theme;
+@use './_colors' as colors;
+@use './_material' as material;
 
-// === Core Theme Setup ===
-@include mat.core();
+// Apply the theme to all components
+@include mat.all-component-themes(theme.$theme);
 
-// === Fonts ===
-@font-face {
-  font-family: 'Calibri';
-  src: url('/assets/fonts/calibri.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Candara';
-  src: url('/assets/fonts/candara.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Segoe UI';
-  src: url('/assets/fonts/segoe-ui.ttf') format('truetype');
-}
-
-// === Typography ===
+// Rest of your styles
 body,
 .mat-typography {
   font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif !important;
   background-color: black;
+  margin: 0;
+  color: white; /* Replaced with stock color */
 }
 
 h1,
 h2,
 h3 {
   font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif !important;
-  color: mat-color.$primary-palette-500; // Blue from Material theme
+  color: colors.$primary-blue; /* Use $primary-blue from colors */
 }
 
-// === Global Variables and Overrides ===
+/* === Global Variables and Overrides === */
 html {
   --mat-sort-arrow-color: white;
   overflow: hidden;
 }
 
-// === Background Video ===
+/* === Background Video Styling === */
 #background-video {
   position: fixed;
   top: -2em;
@@ -56,7 +45,7 @@ html {
   overflow: hidden;
 }
 
-// === Scrollbar Styling ===
+/* === Scrollbar Styling === */
 ::-webkit-scrollbar {
   width: 0.5em;
   background: linear-gradient(to bottom, red, blue);
@@ -75,23 +64,7 @@ html {
   background: white;
 }
 
-// === Hide Scrollbar in Specific Scenarios ===
+/* === Hide Scrollbar in Specific Scenarios === */
 .table-container::-webkit-scrollbar {
   display: none;
 }
-
-$primary-blue: mat.get-palette(mat.$blue-palette);
-$accent-red: mat.get-palette(mat.$red-palette);
-$primary-white: mat.get-palette(mat.$grey-palette);
-
-$patriotic-theme: mat.define-light-theme((
-  color: (
-    primary: $primary-blue,
-    accent: $accent-red,
-    warn: $primary-white
-  ),
-  typography: mat.define-typography-config(),
-  density: 0
-));
-
-@include mat.all-component-themes($patriotic-theme);

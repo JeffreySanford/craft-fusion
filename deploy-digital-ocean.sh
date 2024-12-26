@@ -106,7 +106,25 @@ chmod 664 "/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite"
 chown jeffrey:jeffrey "/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite"
 log_info "✅ SQLite database permissions fixed."
 
-# Step 3: Build Angular Frontend
+# Step 3: Clean Build Artifacts
+step_progress
+log_info "🧹 Cleaning build artifacts using NX scripts..."
+if ! npm run nx:clean:all; then
+    log_error "Cleaning build artifacts failed."
+    exit 1
+fi
+log_info "✅ Build artifacts cleaned."
+
+# Step 4: Install Development Environment
+step_progress
+log_info "🔧 Installing development environment dependencies..."
+if ! npm install; then
+    log_error "Development environment installation failed."
+    exit 1
+fi
+log_info "✅ Development environment dependencies installed."
+
+# Step 5: Build Angular Frontend
 step_progress
 log_info "🌐 Building Angular Frontend (Craft-Web)"
 if ! npx nx run craft-web:build:production; then
@@ -119,14 +137,14 @@ cp -r "$FRONTEND_BUILD_PATH/" "$NGINX_PATH/"
 systemctl restart nginx
 log_info "✅ Angular build deployed to $NGINX_PATH"
 
-# Step 4: Build NestJS Backend
+# Step 6: Build NestJS Backend
 step_progress
 log_info "🛡️ Building NestJS Backend (REST API Server)"
 if ! npx nx run craft-nest:build:production; then
     log_error "NestJS build failed."
 fi
 
-# Step 5: Build Go Backend
+# Step 7: Build Go Backend
 step_progress
 log_info "🐹 Building Go Backend (High-Performance API Server)"
 if ! go mod tidy; then
@@ -139,7 +157,7 @@ if ! go build -o "../../$BACKEND_GO_PATH"; then
 fi
 log_info "✅ Go Backend successfully built at $BACKEND_GO_PATH"
 
-# Step 6: Start Services with PM2
+# Step 8: Start Services with PM2
 step_progress
 log_info "🔄 Restarting PM2 Services"
 pm2 restart craft-nest --update-env || pm2 start "$BACKEND_NEST_PATH" --name "craft-nest"

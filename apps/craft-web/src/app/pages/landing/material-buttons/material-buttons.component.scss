@@ -1,17 +1,15 @@
-@use '@angular/material' as mat;
-
 .container {
   text-align: center;
   padding: 20px;
   background-color: rgba(255, 0, 0, 0.1);
-  color: mat.get-color(mat.$blue-palette, 500);
+  color: #000;
 
   h1 {
-    color: mat.get-color(mat.$blue-palette, 500);
+    color: #000;
   }
 
   p {
-    color: mat.get-color(mat.$blue-palette, 500);
+    color: #000;
   }
 }
 
@@ -32,7 +30,7 @@
 
   mat-card-title {
     font-size: 16px;
-    color: $primary-color;
+    color: #f00;
   }
 
   mat-card-content {
@@ -56,35 +54,36 @@
 }
 
 button.mat-raised-button-primary {
-  background-color: $primary-color;
-  color: $accent-color;
+  background-color: #f00;
+  color: #ff9999;
 
   &:hover {
-    background-color: darken($primary-color, 10%);
+    background-color: #c00;
   }
 }
 
 button.mat-raised-button-accent {
-  background-color: $accent-color;
-  color: $primary-color;
+  background-color: #ff9999;
+  color: #f00;
 
   &:hover {
-    background-color: darken($accent-color, 10%);
+    background-color: #e66;
   }
 }
 
 button.mat-raised-button-warn {
-  background-color: $warn-color;
+  background-color: #f00;
   color: white;
 
   &:hover {
-    background-color: darken($warn-color, 10%);
+    background-color: #c00;
   }
 }
 
-/* startup */
-/* Load entry module and return exports */
-/* This entry module doesn't tell about its top-level declarations so it can't be inlined */
 .button {
-  color: mat.get-color(mat.$blue-palette, 500);
+  color: #000;
+}
+
+button {
+  color: #000;
 }

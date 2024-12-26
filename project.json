@@ -1,8 +1,3 @@
 {
-  "version": 1,
-  "projects": {
-    "craft-web": "apps/craft-web/project.json",
-    "craft-nest": "apps/craft-nest/project.json",
-    "craft-go": "apps/craft-go/project.json"
-  }
+
 }

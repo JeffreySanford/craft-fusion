@@ -47,5 +47,13 @@
         "targetName": "eslint:lint"
       }
     }
-  ]
+  ],
+  "projects": {
+    "version": 1.0,
+    "projects": {
+      "craft-web": "apps/craft-web/project.json",
+      "craft-nest": "apps/craft-nest/project.json",
+      "craft-go": "apps/craft-go/project.json"
+    }
+  }
 }

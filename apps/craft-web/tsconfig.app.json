@@ -1,17 +1,25 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": ["jest"],
-    "sourceMap": true,
-    "baseUrl": "./",
-    "target": "ES2022",
-    "useDefineForClassFields": true
+    "types": []
   },
+  "files": [
+    "src/main.ts",
+    "src/polyfills.ts"
+  ],
   "include": [
-    "**/*.ts"
+    "src/**/*.d.ts",
+    "src/app/app.module.ts",
+    "src/app/app.component.ts",
+    "src/app/app.routes.ts",
+    "src/environments/environment.ts",
+    "src/environments/environment.prod.ts"
   ],
   "exclude": [
-    "**/*.spec.ts"
+    "jest.config.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "src/test-setup.ts"
   ]
 }

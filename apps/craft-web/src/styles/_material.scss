@@ -1,0 +1,20 @@
+@use '@angular/material' as mat;
+@use 'sass:map';
+@use './_colors' as colors;
+
+// Include Material core styles
+@include mat.core();
+
+// Create palettes
+$primary: mat.define-palette(mat.$indigo-palette);
+$accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$warn: mat.define-palette(mat.$red-palette);
+
+// Create theme object
+$theme: mat.define-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+  )
+));

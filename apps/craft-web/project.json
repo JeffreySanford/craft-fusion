@@ -16,10 +16,14 @@
         "polyfills": "apps/craft-web/src/polyfills.ts",
         "tsConfig": "apps/craft-web/tsconfig.app.json",
         "assets": ["apps/craft-web/src/assets"],
-        "styles": ["apps/craft-web/src/styles/styles.scss"],
+        "styles": [
+          "@angular/material/prebuilt-themes/indigo-pink.css",
+          "apps/craft-web/src/styles/_colors.scss",
+          "apps/craft-web/src/styles/_material.scss",
+          "apps/craft-web/src/styles/styles.scss"
+        ],
         "scripts": [],
-        "allowedCommonJsDependencies": ["jszip"],
-        "browserslist": "browserslist"
+        "allowedCommonJsDependencies": ["jszip"]
       },
       "configurations": {
         "production": {
@@ -35,7 +39,6 @@
           "extractLicenses": true,
           "vendorChunk": false,
           "buildOptimizer": true,
-          "extractCss": true,
           "serviceWorker": true
         },
         "development": {
