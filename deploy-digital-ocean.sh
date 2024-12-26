@@ -11,8 +11,7 @@
 # - 🌐 Deploys Angular app to NGINX directory (/usr/www/nginx/html)
 # - 🛡️ Fixes SQLite permissions
 # - 🌐 Validates health endpoints
-# - 📊 Logs system stats, environment, and server health
-# - 📝 Junior developer friendly with detailed descriptions and logging.
+# - 📝 Detailed logs for junior developers and debugging.
 
 # ============================================================
 # 🌟 CONSTANTS & VARIABLES
@@ -27,9 +26,10 @@ CUMULATIVE_DURATION=0
 
 # Paths
 GO_BINARY_PATH="/home/jeffrey/repos/craft-fusion/dist/apps/craft-go/main"
-NESTJS_DB_PATH="/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite"
+NESTJS_ENTRY_PATH="/home/jeffrey/repos/craft-fusion/dist/apps/craft-nest/main.js"
 ANGULAR_DIST_PATH="/home/jeffrey/repos/craft-fusion/dist/apps/craft-web/browser"
 NGINX_HTML_PATH="/usr/www/nginx/html"
+NESTJS_DB_PATH="/home/jeffrey/repos/craft-fusion/apps/craft-nest/database.sqlite"
 
 # Service Endpoints
 NESTJS_URL="http://localhost:3000/api/health"
@@ -79,30 +79,14 @@ function track_time() {
 }
 
 # ============================================================
-# 🧠 SYSTEM ENVIRONMENT
+# 🛡️ ENVIRONMENT VALIDATION
 # ============================================================
 function log_environment() {
     log_summary "Logs the current system environment and dependencies."
-    log_info "🧠 System Variables:"
-    log_info "   - User: $USER"
-    log_info "   - Go Version: $(go version)"
-    log_info "   - Node Version: $(node -v)"
-    log_info "   - NPM Version: $(npm -v)"
-}
-
-# ============================================================
-# 🐹 INSTALL GO
-# ============================================================
-function install_go() {
-    log_summary "Ensures Go is installed and available."
-    if ! command -v go &> /dev/null; then
-        sudo rm -rf /usr/local/go
-        sudo curl -LO https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
-        sudo tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
-        sudo ln -s /usr/local/go/bin/go /usr/bin/go
-        source ~/.bashrc
-    fi
-    log_info "✅ Go Version: $(go version)"
+    log_info "🧠 User: $USER"
+    log_info "🧠 Go Version: $(go version)"
+    log_info "🧠 Node Version: $(node -v)"
+    log_info "🧠 NPM Version: $(npm -v)"
 }
 
 # ============================================================
@@ -122,13 +106,14 @@ function build_angular() {
     track_time npx nx run craft-web:build:production
     sudo mkdir -p "$NGINX_HTML_PATH"
     sudo cp -r "$ANGULAR_DIST_PATH"/* "$NGINX_HTML_PATH"
+    log_info "✅ Angular build deployed to $NGINX_HTML_PATH"
 }
 
 # ============================================================
 # 🔄 PM2 MANAGEMENT
 # ============================================================
 function restart_pm2() {
-    track_time pm2 restart craft-nest --update-env || pm2 start dist/apps/craft-nest/main.js --name craft-nest
+    track_time pm2 restart craft-nest --update-env || pm2 start "$NESTJS_ENTRY_PATH" --name craft-nest
     track_time pm2 restart craft-go --update-env || pm2 start "$GO_BINARY_PATH" --name craft-go
     track_time pm2 save
 }
@@ -141,9 +126,10 @@ function validate_services() {
     curl -s "$GO_URL" && log_info "✅ Go Healthy" || log_error "❌ Go Failed"
 }
 
+# ============================================================
 # 🚀 RUN DEPLOYMENT WORKFLOW
+# ============================================================
 step_progress; log_environment
-step_progress; install_go
 step_progress; fix_sqlite_permissions
 step_progress; build_angular
 step_progress; restart_pm2
