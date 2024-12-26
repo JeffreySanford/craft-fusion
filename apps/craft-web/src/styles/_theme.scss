@@ -1,0 +1,57 @@
+$primary-color: #002868; // Navy Blue
+$secondary-color: #BF0A30; // Red
+$accent-color: #FFFFFF; // White
+
+body {
+    background-color: $primary-color;
+    color: $accent-color;
+    font-family: 'Arial', sans-serif;
+}
+
+a {
+    color: $secondary-color;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+button {
+    background-color: $secondary-color;
+    color: $accent-color;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: darken($secondary-color, 10%);
+    }
+}
+
+header, footer {
+    background-color: $primary-color;
+    color: $accent-color;
+    padding: 20px;
+    text-align: center;
+}
+
+nav {
+    background-color: $secondary-color;
+    color: $accent-color;
+    padding: 10px;
+
+    ul {
+        list-style: none;
+        padding: 0;
+
+        li {
+            display: inline;
+            margin-right: 10px;
+
+            a {
+                color: $accent-color;
+            }
+        }
+    }
+}
