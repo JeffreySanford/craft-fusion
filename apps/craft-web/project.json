@@ -19,7 +19,7 @@
         "styles": [
           "@angular/material/prebuilt-themes/indigo-pink.css",
           "apps/craft-web/src/styles/_colors.scss",
-          "apps/craft-web/src/styles/_material.scss",
+          "apps/craft-web/src/styles/_theme.scss",
           "apps/craft-web/src/styles/styles.scss"
         ],
         "scripts": [],
