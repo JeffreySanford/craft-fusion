@@ -6,6 +6,12 @@ on:
       - master
   pull_request:
 
+env:
+  NX_CLOUD_DISTRIBUTED_EXECUTION: true
+  NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
+  NX_BRANCH: ${{ github.event.number || github.ref_name }}
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
 # Needed for nx-set-shas when run on the main branch
 permissions:
   actions: read
@@ -13,27 +19,46 @@ permissions:
 
 jobs:
   main:
-    runs-on: fedora-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      
       - uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: 'npm'
-      # This line enables distribution
-      # The "--stop-agents-after" is optional, but allows idle agents to shut down once the "e2e-ci" targets have been requested
-      # - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
-      - run: npm ci
+      
+      - name: Nx Cloud Setup
+        run: npx nx-cloud start-ci-run --distribute-on="5 linux-medium-js" --stop-agents-after="build"
+      
+      - name: Install Dependencies
+        run: npm ci
+        
+      - name: Initialize Nx Cloud
+        run: npx nx-cloud init
+      
+      # Caching
+      - name: Cache Nx
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules/.cache/nx
+            .nx/cache
+          key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-
 
       - uses: nrwl/nx-set-shas@v4
-
-      - run: npx nx-cloud record -- nx format:check
       
-      # Run tests with result reporting
-      - name: Run Tests
-        run: npx nx affected -t test --configuration=ci --json --coverageReporters=text-summary,lcov > test-results.json
+      # Format and Lint
+      - run: npx nx format:check --all
+      - run: npx nx affected --target=lint --parallel=3
+      
+      # Build and Test
+      - run: npx nx affected --target=build --parallel=3
+      - run: npx nx affected --target=test --parallel=3 --configuration=ci
       
       # Upload test results
       - name: Test Report
@@ -53,5 +78,7 @@ jobs:
           fail_ci_if_error: false
           verbose: true
 
-      # Continue with remaining steps
-      - run: npx nx affected -t build e2e-ci
+      # Stop Nx Cloud agents
+      - name: Stop Nx Cloud agents
+        if: always()
+        run: npx nx-cloud stop-all-agents
