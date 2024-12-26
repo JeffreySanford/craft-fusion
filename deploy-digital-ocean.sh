@@ -4,27 +4,38 @@
 # 🚀 Craft-Fusion Deployment Script for Fedora on DigitalOcean
 # ============================================================
 # Supports NX monorepo deployment: Frontend (craft-web), Backend (craft-nest, craft-go)
-# Automates dependency management, SSH identity setup, OSINT analysis, system diagnostics,
-# health monitoring, log collection, and ensures reliable deployment via NGINX and PM2.
+# Automates:
+# - Dependency management
+# - SSH identity setup
+# - OSINT analysis
+# - System diagnostics
+# - Health monitoring
+# - Log collection
+# - Server uptime tracking
+# - VPS hardware and provider details
 # ------------------------------------------------------------
-# ⚠️  REMINDER: Use '--full' for a fresh deployment.
-# ⚠️  Use '--monitor' for continuous monitoring.
+# ⚠️ Flags:
+# --full       : Full deployment with clean build
+# --monitor    : Start health monitoring
+# --update-env : Update environment variables for PM2 processes
 # ============================================================
 
 # Constants
-TOTAL_STEPS=26
+TOTAL_STEPS=32
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
 DEPLOY_LOG="deploy-digital-ocean.log"
 START_TIME=$SECONDS
 CUMULATIVE_DURATION=0
+MONITOR_INTERVAL=10  # Monitoring Interval in seconds
+
+# Service Endpoints
 NESTJS_URL="http://localhost:3000/api"
 GO_URL="http://localhost:4000/api"
 NESTJS_SWAGGER="http://localhost:3000/api/swagger"
 GO_SWAGGER="http://localhost:4000/api/swagger"
-MONITOR_INTERVAL=10  # Interval in seconds for monitoring loop
 
-# Paths
+# Log Paths
 NGINX_ACCESS_LOG="/var/log/nginx/access.log"
 NGINX_ERROR_LOG="/var/log/nginx/error.log"
 PM2_LOG_NEST="~/.pm2/logs/craft-nest-out.log"
@@ -33,6 +44,7 @@ PM2_LOG_GO="~/.pm2/logs/craft-go-out.log"
 # Flags
 FULL_DEPLOY=false
 MONITOR_MODE=false
+UPDATE_ENV=false
 
 for arg in "$@"; do
     case $arg in
@@ -42,10 +54,17 @@ for arg in "$@"; do
         --monitor)
             MONITOR_MODE=true
             ;;
+        --update-env)
+            UPDATE_ENV=true
+            ;;
     esac
 done
 
-# Utility Functions
+# ============================================================
+# 🛠️ Utility Functions
+# ============================================================
+
+# Display step progress
 function step_progress() {
     ((CURRENT_STEP++))
     local percentage=$((CURRENT_STEP * 100 / TOTAL_STEPS))
@@ -57,6 +76,7 @@ function step_progress() {
     echo -e " \033[0;32m✔\033[0m"
 }
 
+# Track execution time of commands
 function track_time() {
     local start_time=$(date +%s%3N)
     "$@"
@@ -70,83 +90,71 @@ function track_time() {
     echo "$current_time [INFO] $cmd_name completed in ${duration} ms (Cumulative: ${CUMULATIVE_DURATION} ms)" >> "$DEPLOY_LOG"
 }
 
+# Log messages to console and file
 function log_info() {
     echo -e "\033[1;34m[INFO] $1\033[0m"
     echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] $1" >> "$DEPLOY_LOG"
 }
 
-function init_log() {
-    if [[ "$FULL_DEPLOY" == true ]]; then
-        rm -f "$DEPLOY_LOG"
-        log_info "📝 Deployment log reset due to --full deployment."
-    elif [[ ! -f "$DEPLOY_LOG" ]]; then
-        touch "$DEPLOY_LOG"
-        log_info "📝 Deployment log initialized."
+# ============================================================
+# 🛡️ Server Information & Uptime
+# ============================================================
+
+# 🕒 Server Uptime
+function server_uptime() {
+    log_info "🕒 Fetching Server Uptime..."
+    local uptime=$(uptime -p)
+    local boot_time=$(who -b | awk '{print $3, $4}')
+    log_info "🕒 Server Uptime: $uptime"
+    log_info "🚀 Last Boot Time: $boot_time"
+}
+
+# 🛠️ VPS Hardware & Provider Information
+function vps_information() {
+    log_info "🌐 Gathering VPS Information..."
+
+    # General System Information
+    local os=$(cat /etc/os-release | grep PRETTY_NAME | cut -d= -f2)
+    local cpu_count=$(nproc)
+    local total_ram=$(free -h | grep Mem | awk '{print $2}')
+    local disk_usage=$(df -h / | tail -1 | awk '{print $3 "/" $2 " (" $5 " used)"}')
+
+    log_info "⚙️ OS: $os"
+    log_info "🧠 CPU Cores: $cpu_count"
+    log_info "💾 Total RAM: $total_ram"
+    log_info "📁 Disk Usage: $disk_usage"
+
+    # VPS Provider Info (If DigitalOcean Metadata Exists)
+    if [[ -f /sys/class/dmi/id/product_name ]]; then
+        local product_name=$(cat /sys/class/dmi/id/product_name)
+        local product_vendor=$(cat /sys/class/dmi/id/sys_vendor)
+        log_info "🏢 Provider: $product_vendor"
+        log_info "💻 Product: $product_name"
+    else
+        log_info "🏢 Provider Information: Not Available"
     fi
 }
 
-# 🛡️ Server Health Check
-function check_server_health() {
-    log_info "🌐 Checking Server Health..."
+# ============================================================
+# 🚀 Deployment Workflow
+# ============================================================
 
-    local nest_status=$(curl -s -o /dev/null -w "%{http_code}" $NESTJS_URL)
-    if [[ "$nest_status" -eq 200 ]]; then
-        log_info "✅ NestJS Server is UP. Status Code: $nest_status"
-        log_info "🔗 Swagger: $NESTJS_SWAGGER"
-    else
-        log_info "❌ NestJS Server DOWN. Restarting..."
-        track_time pm2 restart "$PM2_APP_NAME_NEST"
-    fi
+step_progress; track_time init_log
+step_progress; track_time log_info "🕒 Deployment Started: $(date)"
+step_progress; track_time server_uptime
+step_progress; track_time vps_information
+step_progress; track_time restart_pm2_process "craft-nest"
+step_progress; track_time restart_pm2_process "craft-go"
+step_progress; track_time check_server_health
+step_progress; track_time collect_logs
 
-    local go_status=$(curl -s -o /dev/null -w "%{http_code}" $GO_URL)
-    if [[ "$go_status" -eq 200 ]]; then
-        log_info "✅ Go Server is UP. Status Code: $go_status"
-        log_info "🔗 Swagger: $GO_SWAGGER"
-    else
-        log_info "❌ Go Server DOWN. Restarting..."
-        track_time pm2 restart "$PM2_APP_NAME_GO"
-    fi
-}
-
-# 📊 Server Monitoring Loop
-function monitor_servers() {
-    log_info "📊 Starting Monitoring Loop (Ctrl+C to exit)..."
+# 📊 Monitor Servers
+if [[ "$MONITOR_MODE" == true ]]; then
+    log_info "📊 Starting Monitoring Loop..."
     while true; do
         check_server_health
         sleep "$MONITOR_INTERVAL"
     done
-}
-
-# 📄 Collect Logs
-function collect_logs() {
-    log_info "📄 Collecting Logs for All Systems..."
-
-    log_info "📝 Tail NGINX Access Logs:"
-    sudo tail -n 20 "$NGINX_ACCESS_LOG" | tee -a "$DEPLOY_LOG"
-
-    log_info "📝 Tail NGINX Error Logs:"
-    sudo tail -n 20 "$NGINX_ERROR_LOG" | tee -a "$DEPLOY_LOG"
-
-    log_info "📝 Tail NestJS PM2 Logs:"
-    tail -n 20 "$PM2_LOG_NEST" | tee -a "$DEPLOY_LOG"
-
-    log_info "📝 Tail Go PM2 Logs:"
-    tail -n 20 "$PM2_LOG_GO" | tee -a "$DEPLOY_LOG"
-}
-
-# 🚀 Main Steps
-step_progress; track_time init_log
-step_progress; log_info "🕒 Deployment Started: $(date)"
-step_progress; track_time check_server_health
-step_progress; track_time collect_logs
-
-if [[ "$FULL_DEPLOY" == true ]]; then
-    step_progress; track_time build_nestjs
-    step_progress; track_time build_go
-fi
-
-if [[ "$MONITOR_MODE" == true ]]; then
-    monitor_servers
 fi
 
 log_info "🎉 Deployment completed successfully in $((SECONDS - START_TIME)) seconds."
