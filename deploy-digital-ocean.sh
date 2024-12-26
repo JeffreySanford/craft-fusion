@@ -1,18 +1,20 @@
 #!/bin/bash
 
 # ============================================================
-# 🌟 🚀 Craft-Fusion Deployment Script 
+# 🚀 🌟 Craft-Fusion Deployment Script – Comprehensive Edition 🛠️🌈
 # ============================================================
 # 📚 **Description:**  
-# This script automates deployment tasks for the Craft-Fusion project:
+# Automates deployment tasks for the Craft-Fusion project:
 # - 🅰️ Builds Angular Frontend (craft-web)
 # - 🛡️ Builds NestJS Backend (craft-nest)
 # - 🐹 Builds Go Backend (craft-go)
-# - 🔄 Manages PM2 Services
-# - 📦 Installs and configures Go (if missing)
-# - 📝 Logs deployment details and system stats
-# - 📊 Ensures clean health checks for all services
-# ------------------------------------------------------------
+# - 🔄 Manages PM2 services
+# - 📝 Validates server health endpoints
+# - 🛡️ Fixes SQLite permissions
+# - 📊 Collects and displays server stats
+# - 🔄 Supports monitoring mode with live updates
+# - 📦 Ensures Go is installed properly
+# ============================================================
 # ⚠️ **Flags:**
 # --full       : Full deployment with clean build
 # --monitor    : Start health monitoring
@@ -23,7 +25,7 @@
 # 🎨 CONSTANTS & VARIABLES 🖌️
 # ============================================================
 
-TOTAL_STEPS=45
+TOTAL_STEPS=50
 CURRENT_STEP=0
 PROGRESS_BAR_LENGTH=50
 DEPLOY_LOG="deploy-digital-ocean.log"
@@ -93,7 +95,20 @@ function log_info() {
     sudo bash -c "echo \"$(date '+%Y-%m-%d %H:%M:%S') [INFO] $1\" >> \"$DEPLOY_LOG\""
 }
 
-# 📊 SYSTEM STATS
+# ============================================================
+# 📝 INITIALIZATION AND LOGGING
+# ============================================================
+
+function init_log() {
+    sudo touch "$DEPLOY_LOG"
+    sudo chmod 666 "$DEPLOY_LOG"
+    log_info "📝 Deployment log initialized."
+}
+
+# ============================================================
+# 📊 SERVER METADATA
+# ============================================================
+
 function system_stats() {
     log_info "🧠 CPU Cores: $(nproc)"
     log_info "💾 Total RAM: $(free -h | grep Mem | awk '{print $2}')"
@@ -102,7 +117,7 @@ function system_stats() {
 }
 
 # ============================================================
-# 🐹 GO INSTALLATION 🌟
+# 🐹 GO INSTALLATION
 # ============================================================
 
 function install_go() {
@@ -119,16 +134,27 @@ function install_go() {
 }
 
 # ============================================================
-# 📦 BUILD SERVICES 🌐
+# 🛡️ FIX SQLITE PERMISSIONS
+# ============================================================
+
+function fix_sqlite_permissions() {
+    log_info "🛡️ Fixing SQLite Database Permissions..."
+    sudo chmod 666 /path/to/sqlite.db
+    sudo chmod -R 755 /path/to/database/directory
+    sudo chown -R $(whoami):$(whoami) /path/to/database/directory
+}
+
+# ============================================================
+# 📦 BUILD SERVICES
 # ============================================================
 
 function build_nestjs() {
-    log_info "🛡️ Building NestJS Backend (NodeJS REST API Server)"
+    log_info "🛡️ Building NestJS Backend"
     track_time npx nx build craft-nest --prod
 }
 
 function build_go() {
-    log_info "🐹 Building Go Backend (High-performance API Server)"
+    log_info "🐹 Building Go Backend"
     cd apps/craft-go
     track_time go mod tidy
     track_time go build -o ../../dist/apps/craft-go/main
@@ -136,7 +162,7 @@ function build_go() {
 }
 
 # ============================================================
-# 🔄 PM2 SERVICE MANAGEMENT 📊
+# 🔄 PM2 MANAGEMENT
 # ============================================================
 
 function restart_pm2_process() {
@@ -148,7 +174,7 @@ function restart_pm2_process() {
 }
 
 # ============================================================
-# 🌐 SERVICE HEALTH CHECKS ✅
+# 🌐 SERVICE HEALTH CHECK
 # ============================================================
 
 function check_server_health() {
@@ -157,13 +183,11 @@ function check_server_health() {
     curl -s "$GO_URL" && log_info "✅ Go Healthy" || log_info "❌ Go Failed"
 }
 
-# ============================================================
 # 🚀 DEPLOYMENT WORKFLOW
-# ============================================================
-
 step_progress; track_time init_log
 step_progress; track_time install_go
 step_progress; track_time system_stats
+step_progress; track_time fix_sqlite_permissions
 step_progress; track_time build_nestjs
 step_progress; track_time build_go
 step_progress; restart_pm2_process "craft-nest" "dist/apps/craft-nest/main.js"
