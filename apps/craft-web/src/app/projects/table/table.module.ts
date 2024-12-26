@@ -12,7 +12,10 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     FormsModule,
-    MaterialModule
+    MaterialModule,
+    RecordListComponent,
+    RecordDetailComponent,
+    EmploymentIncomePipe
   ],
   exports: [
     RecordListComponent,

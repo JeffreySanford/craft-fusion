@@ -9,5 +9,6 @@ import { SpaceVideoComponent } from './space-video.component';
     CommonModule,
     MaterialModule
   ],
+  exports: [SpaceVideoComponent]
 })
 export class SpaceVideoModule {}

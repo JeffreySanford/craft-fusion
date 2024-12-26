@@ -5,15 +5,6 @@
 // === Core Theme Setup ===
 @include mat.core();
 
-// === Define Color Palettes ===
-$primary-red: mat.define-palette(mat.$red-palette);
-$primary-blue: mat.define-palette(mat.$blue-palette);
-$primary-white: mat.define-palette(mat.$grey-palette, 50); // Using grey 50 for white approximation
-
-$accent-red: mat.define-palette(mat.$red-palette, A200, A100, A400);
-$accent-blue: mat.define-palette(mat.$blue-palette, A200, A100, A400);
-$accent-white: mat.define-palette(mat.$grey-palette, 50);
-
 // === Define Theme ===
 $patriotic-theme: mat.define-light-theme((
   color: (

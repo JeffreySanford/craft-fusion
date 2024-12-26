@@ -21,6 +21,6 @@ import { IonicModule } from '@ionic/angular';
     MaterialModule,
     IonicModule
   ],
-  exports: [DataVisualizationsComponent],
+  exports: [],
 })
 export class DataVisualizationsModule { }
