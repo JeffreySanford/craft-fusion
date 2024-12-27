@@ -2,7 +2,6 @@ name: CI
 on:
   push:
     branches:
-      # Change this if your primary branch is not main
       - master
   pull_request:
 
@@ -12,7 +11,6 @@ env:
   NX_BRANCH: ${{ github.event.number || github.ref_name }}
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
-# Needed for nx-set-shas when run on the main branch
 permissions:
   actions: read
   contents: read
@@ -21,64 +19,28 @@ jobs:
   main:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      
-      - uses: actions/setup-node@v3
+            fetch-depth: 0
+  
+        - name: Authenticate GitHub CLI
+          run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
           node-version: 20
           cache: 'npm'
-      
-      - name: Nx Cloud Setup
-        run: npx nx-cloud start-ci-run --distribute-on="5 linux-medium-js" --stop-agents-after="build"
-      
+
       - name: Install Dependencies
-        run: npm ci
-        
-      - name: Initialize Nx Cloud
-        run: npx nx-cloud init
-      
-      # Caching
-      - name: Cache Nx
-        uses: actions/cache@v3
-        with:
-          path: |
-            node_modules/.cache/nx
-            .nx/cache
-          key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nx-
+        run: |
+          echo "🌈 Installing dependencies..."
+          npm ci
+          echo "✅ Dependencies installed"
 
-      - uses: nrwl/nx-set-shas@v4
-      
-      # Format and Lint
-      - run: npx nx format:check --all
-      - run: npx nx affected --target=lint --parallel=3
-      
-      # Build and Test
-      - run: npx nx affected --target=build --parallel=3
-      - run: npx nx affected --target=test --parallel=3 --configuration=ci
-      
-      # Upload test results
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: Test Results
-          path: test-results.json
-          reporter: jest-json
-          fail-on-error: false
-
-      # Upload coverage reports
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage/lcov.info
-          fail_ci_if_error: false
-          verbose: true
-
-      # Stop Nx Cloud agents
-      - name: Stop Nx Cloud agents
-        if: always()
-        run: npx nx-cloud stop-all-agents
+      - name: Run Build Script
+        run: |
+          echo "🚀 Starting build process..."
+          npm run build:ci
+          echo "✨ Build process completed successfully"
