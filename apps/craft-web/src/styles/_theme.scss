@@ -8,7 +8,7 @@
 $theme: mat.define-theme((
   color: (
     primary: colors.$navy-palette,
-    secondary: colors.$pink-palette,
+    tertiary: colors.$pink-palette
   ),
   typography: (
     brand-family: 'Roboto, Arial, sans-serif',
@@ -16,7 +16,7 @@ $theme: mat.define-theme((
     bold-weight: 700,
     medium-weight: 500,
     regular-weight: 400,
-    letter-spacing: 0.5px,
+    letter-spacing: 0.5px
   ),
   density: 0
 ));
@@ -25,7 +25,7 @@ $theme: mat.define-theme((
 $background: mat.get-theme-color($theme, surface);
 $text: mat.get-theme-color($theme, on-surface);
 $primary: mat.get-theme-color($theme, primary);
-$accent: mat.get-theme-color($theme, secondary);
+$accent: mat.get-theme-color($theme, tertiary);
 
 /* === Apply the Theme Globally === */
 @include mat.all-component-themes($theme);
