@@ -1,63 +1,44 @@
 @use 'sass:map';
 @use 'sass:color';
 @use '@angular/material' as mat;
-@use '@angular/material/theming' as mat-themes;
 
-// Include Material core
+// Include core
 @include mat.core();
 
-// Define main palette first
-$primary-palette: (
+// Define palette
+$navy-palette: (
   50: #e3f2fd,
   100: #bbdefb,
-  200: #90caf9,
-  300: #64b5f6,
-  400: #42a5f5,
   500: #002868,
-  600: #1e88e5,
-  700: #001E55,
-  800: #1565c0,
-  900: #000F3A,
-  A100: #82b1ff,
-  A200: #448aff,
-  A400: #2979ff,
-  A700: #2962ff,
+  700: #001e55,
+  900: #000f3a,
   contrast: (
-    50: rgba(black, 0.87),
-    100: rgba(black, 0.87),
-    200: rgba(black, 0.87),
-    300: rgba(black, 0.87),
-    400: rgba(black, 0.87),
+    50: black,
+    100: black,
     500: white,
-    600: white,
     700: white,
-    800: white,
     900: white,
-    A100: rgba(black, 0.87),
-    A200: white,
-    A400: white,
-    A700: white,
+  ),
+);
+
+// Create theme
+$theme-primary: mat.define-palette($navy-palette);
+$theme-accent: mat.define-palette(mat.$red-palette);
+
+$theme: mat.define-dark-theme(
+  (
+    color: (
+      primary: $theme-primary,
+      accent: $theme-accent,
+    ),
   )
 );
 
-// Create the palettes
-$theme-primary: mat-themes.define-palette($primary-palette);
-$theme-accent: mat-themes.define-palette(mat.$red-palette);
-
-// Create the theme
-$theme: mat-themes.define-dark-theme((
-  color: (
-    primary: $theme-primary,
-    accent: $theme-accent
-  )
-));
-
 // Export variables
-$background: mat-themes.get-color-from-palette($theme-primary, 500);
+$background: mat.get-color-from-palette($theme-primary, 500);
 $text: white;
-$primary: mat-themes.get-color-from-palette($theme-primary, 500);
-$accent: mat-themes.get-color-from-palette($theme-accent, A200);
-$primary-blue: mat-themes.get-color-from-palette($theme-primary, 500);
+$primary: mat.get-color-from-palette($theme-primary, 500);
+$accent: mat.get-color-from-palette($theme-accent, A200);
 
 body {
   background-color: $background;

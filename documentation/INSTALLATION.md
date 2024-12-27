@@ -77,7 +77,7 @@ swag --version
 # Clone and Install
 git clone https://github.com/your-repo/craft-fusion.git
 cd craft-fusion
-npm install
+npm run install:deps
 
 # Start Development
 npm start

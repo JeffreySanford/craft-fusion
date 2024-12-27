@@ -2,45 +2,56 @@ name: CI
 on:
   push:
     branches:
+      # Change this if your primary branch is not main
       - master
   pull_request:
 
-env:
-  NX_CLOUD_DISTRIBUTED_EXECUTION: true
-  NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
-  NX_BRANCH: ${{ github.event.number || github.ref_name }}
-  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-
+# Needed for nx-set-shas when run on the main branch
 permissions:
   actions: read
   contents: read
 
 jobs:
   main:
-    runs-on: ubuntu-latest
+    runs-on: fedora-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-            fetch-depth: 0
-  
-        - name: Authenticate GitHub CLI
-          run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: 'npm'
+      # This line enables distribution
+      # The "--stop-agents-after" is optional, but allows idle agents to shut down once the "e2e-ci" targets have been requested
+      # - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
+      - run: npm ci
 
-      - name: Install Dependencies
-        run: |
-          echo "🌈 Installing dependencies..."
-          npm ci
-          echo "✅ Dependencies installed"
+      - uses: nrwl/nx-set-shas@v4
 
-      - name: Run Build Script
-        run: |
-          echo "🚀 Starting build process..."
-          npm run build:ci
-          echo "✨ Build process completed successfully"
+      - run: npx nx-cloud record -- nx format:check
+      
+      # Run tests with result reporting
+      - name: Run Tests
+        run: npx nx affected -t test --configuration=ci --json --coverageReporters=text-summary,lcov > test-results.json
+      
+      # Upload test results
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Test Results
+          path: test-results.json
+          reporter: jest-json
+          fail-on-error: false
+
+      # Upload coverage reports
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
+          verbose: true
+
+      # Continue with remaining steps
+      - run: npx nx affected -t build e2e-ci
