@@ -1,22 +1,19 @@
-@import '~@angular/material/theming';
-@import '~@angular/material/core/theming/all-theme';
-@import '~@angular/material/core/theming/palette';
-@import '~@angular/material/core/theming/typography';
+@use '@angular/material' as mat;
 
-$typography: mat-typography-config(
-    $font-family: "Roboto, sans-serif",
-    $display-4: mat-typography-level(112px, $font-family, 400),
-    $display-3: mat-typography-level(56px, $font-family, 400),
-    $display-2: mat-typography-level(45px, $font-family, 400),
-    $display-1: mat-typography-level(34px, $font-family, 400),
-    $headline: mat-typography-level(24px, $font-family, 400),
-    $title: mat-typography-level(20px, $font-family, 500),
-    $subheading-2: mat-typography-level(15px, $font-family, 400),
-    $subheading-1: mat-typography-level(15px, $font-family, 400),
-    $body-2: mat-typography-level(14px, $font-family, 500),
-    $body-1: mat-typography-level(14px, $font-family, 400),
-    $caption: mat-typography-level(12px, $font-family, 400),
-    $button: mat-typography-level(14px, $font-family, 500)
+$typography: mat.define-typography-config(
+  $font-family: "Roboto, sans-serif",
+  $display-4: mat.define-typography-level(112px, $font-family, 400),
+  $display-3: mat.define-typography-level(56px, $font-family, 400),
+  $display-2: mat.define-typography-level(45px, $font-family, 400),
+  $display-1: mat.define-typography-level(34px, $font-family, 400),
+  $headline: mat.define-typography-level(24px, $font-family, 400),
+  $title: mat.define-typography-level(20px, $font-family, 500),
+  $subheading-2: mat.define-typography-level(15px, $font-family, 400),
+  $subheading-1: mat.define-typography-level(15px, $font-family, 400),
+  $body-2: mat.define-typography-level(14px, $font-family, 500),
+  $body-1: mat.define-typography-level(14px, $font-family, 400),
+  $caption: mat.define-typography-level(12px, $font-family, 400),
+  $button: mat.define-typography-level(14px, $font-family, 500)
 );
 
-@include angular-material-typography($typography);
+@include mat.typography($typography);

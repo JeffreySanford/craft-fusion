@@ -13,26 +13,17 @@ $navy-palette: (
   700: #001e55,
   900: #000f3a,
   contrast: (
-    50: black,
-    100: black,
-    500: white,
-    700: white,
-    900: white,
+    contrast-50: black,
+    contrast-100: black,
+    contrast-500: white,
+    contrast-700: white,
+    contrast-900: white,
   ),
 );
 
-// Create theme
-$theme-primary: mat.define-palette($navy-palette);
-$theme-accent: mat.define-palette(mat.$red-palette);
-
-$theme: mat.define-dark-theme(
-  (
-    color: (
-      primary: $theme-primary,
-      accent: $theme-accent,
-    ),
-  )
-);
+// Define primary and accent palettes
+$theme-primary: mat.get-palette($navy-palette);
+$theme-accent: mat.get-palette(mat.$pink-palette);
 
 // Export variables
 $background: mat.get-color-from-palette($theme-primary, 500);
