@@ -1,87 +1,31 @@
-@use 'sass:map';
-@use 'sass:color';
 @use '@angular/material' as mat;
+@use './_colors' as colors;
 
-// Include core
+/* === Core Styles === */
 @include mat.core();
 
-// Define palette
-$navy-palette: (
-  50: #e3f2fd,
-  100: #bbdefb,
-  500: #002868,
-  700: #001e55,
-  900: #000f3a,
-  contrast: (
-    contrast-50: black,
-    contrast-100: black,
-    contrast-500: white,
-    contrast-700: white,
-    contrast-900: white,
+/* === Define Material 3 Theme === */
+$theme: mat.define-theme((
+  color: (
+    primary: colors.$navy-palette,
+    secondary: colors.$pink-palette,
   ),
-);
+  typography: (
+    brand-family: 'Roboto, Arial, sans-serif',
+    plain-family: 'Roboto, Arial, sans-serif',
+    bold-weight: 700,
+    medium-weight: 500,
+    regular-weight: 400,
+    letter-spacing: 0.5px,
+  ),
+  density: 0
+));
 
-// Define primary and accent palettes
-$theme-primary: mat.get-palette($navy-palette);
-$theme-accent: mat.get-palette(mat.$pink-palette);
+/* === Export Variables === */
+$background: mat.get-theme-color($theme, surface);
+$text: mat.get-theme-color($theme, on-surface);
+$primary: mat.get-theme-color($theme, primary);
+$accent: mat.get-theme-color($theme, secondary);
 
-// Export variables
-$background: mat.get-color-from-palette($theme-primary, 500);
-$text: white;
-$primary: mat.get-color-from-palette($theme-primary, 500);
-$accent: mat.get-color-from-palette($theme-accent, A200);
-
-body {
-  background-color: $background;
-  color: $text;
-  font-family: 'Arial', sans-serif;
-}
-
-a {
-  color: $accent;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
-button {
-  background-color: $accent;
-  color: $text;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: darken($accent, 10%);
-  }
-}
-
-header,
-footer {
-  background-color: $background;
-  color: $text;
-  padding: 20px;
-  text-align: center;
-}
-
-nav {
-  background-color: $accent;
-  color: $text;
-  padding: 10px;
-
-  ul {
-    list-style: none;
-    padding: 0;
-
-    li {
-      display: inline;
-      margin-right: 10px;
-
-      a {
-        color: $text;
-      }
-    }
-  }
-}
+/* === Apply the Theme Globally === */
+@include mat.all-component-themes($theme);

@@ -1,24 +1,17 @@
-@use '@angular/material' as mat;
-
+// Navy Theme
 $navy-palette: (
-  50: #e3f2fd,
-  100: #bbdefb,
-  500: #002868,  // main navy
-  700: #001E55,
-  900: #000F3A,
-  A100: #64b5f6,
-  A200: #42a5f5,
-  A400: #1e88e5,
-  A700: #1976d2,
-  contrast: (
-    50: rgba(0,0,0,0.87),
-    100: rgba(0,0,0,0.87),
-    500: white,
-    700: white,
-    900: white,
-    A100: rgba(0,0,0,0.87),
-    A200: white,
-    A400: white,
-    A700: white,
-  )
+  primary: #002868,
+  on-primary: white,
+  primary-container: #001E55,
+  on-primary-container: white,
+  surface-tint: #002868,
+);
+
+// Pink Theme
+$pink-palette: (
+  secondary: #e91e63,
+  on-secondary: white,
+  secondary-container: #c2185b,
+  on-secondary-container: white,
+  surface-tint: #e91e63,
 );
