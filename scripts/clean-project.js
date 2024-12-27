@@ -1,14 +1,14 @@
-const { rimraf } = require('rimraf');
 const progress = require('./install-progress');
 const path = require('path');
 const chalk = require('chalk');
 const { execSync } = require('child_process');
 const os = require('os');
-const checkDiskSpace = require('check-disk-space');
+const checkDiskSpace = require('check-disk-space').default;
 const npmlog = require('npmlog');
 const osUtils = require('os-utils');
 const speedTest = require('speedtest-net');
 const cliProgress = require('cli-progress');
+const rimraf = require('rimraf');
 
 let peakCpuUsage = 0;
 let peakMemoryUsage = 0;
@@ -20,7 +20,37 @@ const progressBar = new cliProgress.SingleBar({
     hideCursor: true
 });
 
+function logSystemInfo() {
+    const userInfo = os.userInfo();
+    const cpus = os.cpus();
+    const totalMemory = (os.totalmem() / (1024 ** 3)).toFixed(2);
+    const freeMemory = (os.freemem() / (1024 ** 3)).toFixed(2);
+    const networkInterfaces = os.networkInterfaces();
+
+    npmlog.info('System Info', `User: ${userInfo.username}`);
+    npmlog.info('System Info', `Home Directory: ${userInfo.homedir}`);
+    npmlog.info('System Info', `Processor: ${cpus[0].model}`);
+    npmlog.info('System Info', `Cores: ${cpus.length}`);
+    npmlog.info('System Info', `Total Memory: ${totalMemory} GB`);
+    npmlog.info('System Info', `Free Memory: ${freeMemory} GB`);
+
+    Object.keys(networkInterfaces).forEach((iface) => {
+        networkInterfaces[iface].forEach((details) => {
+            if (details.family === 'IPv4') {
+                npmlog.info('Network Info', `Interface: ${iface}, Address: ${details.address}`);
+            }
+        });
+    });
+
+    const rootPath = os.platform() === 'win32' ? 'C:\\' : '/';
+    checkDiskSpace(rootPath).then((diskSpace) => {
+        npmlog.info('Disk Info', `Disk Space: ${(diskSpace.size / (1024 ** 3)).toFixed(2)} GB`);
+        npmlog.info('Disk Info', `Free Disk Space: ${(diskSpace.free / (1024 ** 3)).toFixed(2)} GB`);
+    });
+}
+
 async function cleanProject() {
+    await progress.init();
     const startTime = Date.now();
     logSystemInfo();
     monitorSystemUsage();
@@ -70,7 +100,7 @@ async function cleanProject() {
 
         // Clean TypeScript build info files
         progress.updateProgress(6, 'Removing TypeScript build info files...');
-        await exec('find-exec "*.tsbuildinfo" -type f -delete || rimraf **/*.tsbuildinfo');
+        await rimrafPromise(['**/*.tsbuildinfo']);
         progress.complete('TypeScript build info files removed');
         progressBar.update(6);
 
@@ -106,35 +136,6 @@ function rimrafPromise(paths) {
     });
 }
 
-function logSystemInfo() {
-    const userInfo = os.userInfo();
-    const cpus = os.cpus();
-    const totalMemory = (os.totalmem() / (1024 ** 3)).toFixed(2);
-    const freeMemory = (os.freemem() / (1024 ** 3)).toFixed(2);
-    const networkInterfaces = os.networkInterfaces();
-
-    npmlog.info('System Info', `User: ${userInfo.username}`);
-    npmlog.info('System Info', `Home Directory: ${userInfo.homedir}`);
-    npmlog.info('System Info', `Processor: ${cpus[0].model}`);
-    npmlog.info('System Info', `Cores: ${cpus.length}`);
-    npmlog.info('System Info', `Total Memory: ${totalMemory} GB`);
-    npmlog.info('System Info', `Free Memory: ${freeMemory} GB`);
-
-    Object.keys(networkInterfaces).forEach((iface) => {
-        networkInterfaces[iface].forEach((details) => {
-            if (details.family === 'IPv4') {
-                npmlog.info('Network Info', `Interface: ${iface}, Address: ${details.address}`);
-            }
-        });
-    });
-
-    const rootPath = os.platform() === 'win32' ? 'C:\\' : '/';
-    checkDiskSpace(rootPath).then((diskSpace) => {
-        npmlog.info('Disk Info', `Disk Space: ${(diskSpace.size / (1024 ** 3)).toFixed(2)} GB`);
-        npmlog.info('Disk Info', `Free Disk Space: ${(diskSpace.free / (1024 ** 3)).toFixed(2)} GB`);
-    });
-}
-
 function monitorSystemUsage() {
     setInterval(() => {
         osUtils.cpuUsage((v) => {
@@ -153,7 +154,7 @@ function monitorSystemUsage() {
 }
 
 function monitorNetworkPerformance() {
-    speedTest({ maxTime: 5000 }).then((result) => {
+    speedTest({ acceptLicense: true, maxTime: 5000 }).then((result) => {
         networkPerformance = {
             downloadSpeed: (result.download.bandwidth / 125000).toFixed(2), // Convert from bps to Mbps
             uploadSpeed: (result.upload.bandwidth / 125000).toFixed(2), // Convert from bps to Mbps
@@ -193,6 +194,81 @@ async function logFinalSystemInfo() {
     console.log(chalk.blue(`Used Disk Space: ${usedDiskSpace} GB`));
     console.log(chalk.blue(`Free Disk Space: ${(diskSpace.free / (1024 ** 3)).toFixed(2)} GB`));
 }
+
+async function cleanDirectories(directories) {
+    for (const dir of directories) {
+        await new Promise((resolve, reject) => {
+            rimraf(path.resolve(__dirname, '..', dir), (err) => {
+                if (err) {
+                    reject(`Error cleaning directory ${dir}: ${err}`);
+                } else {
+                    resolve(`Successfully cleaned directory ${dir}`);
+                }
+            });
+        });
+    }
+}
+
+(async () => {
+    const directoriesToClean = [
+        'dist',
+        'node_modules',
+        'coverage'
+    ];
+
+    logSystemInfo();
+
+    progressBar.start(directoriesToClean.length + 1, 0, {
+        cpu: peakCpuUsage,
+        freeMem: (os.freemem() / (1024 ** 3)).toFixed(2),
+        usedMem: ((os.totalmem() - os.freemem()) / (1024 ** 3)).toFixed(2)
+    });
+
+    try {
+        for (const dir of directoriesToClean) {
+            progressBar.increment({
+                cpu: peakCpuUsage,
+                freeMem: (os.freemem() / (1024 ** 3)).toFixed(2),
+                usedMem: ((os.totalmem() - os.freemem()) / (1024 ** 3)).toFixed(2)
+            });
+            console.log(chalk.blue(`Cleaning ${dir}...`));
+            await cleanDirectories([dir]);
+            console.log(chalk.green(`Successfully cleaned ${dir}`));
+        }
+
+        progressBar.increment({
+            cpu: peakCpuUsage,
+            freeMem: (os.freemem() / (1024 ** 3)).toFixed(2),
+            usedMem: ((os.totalmem() - os.freemem()) / (1024 ** 3)).toFixed(2)
+        });
+        console.log(chalk.blue('Reinstalling dependencies...'));
+        await new Promise((resolve, reject) => {
+            const installProcess = exec('npm install');
+
+            installProcess.stdout.on('data', (data) => {
+                console.log(chalk.green(data));
+            });
+
+            installProcess.stderr.on('data', (data) => {
+                console.log(chalk.red(data));
+            });
+
+            installProcess.on('close', (code) => {
+                if (code === 0) {
+                    resolve('Dependencies installed successfully');
+                } else {
+                    reject(`npm install process exited with code ${code}`);
+                }
+            });
+        });
+        console.log(chalk.green('Dependencies installed successfully'));
+
+        progressBar.stop();
+    } catch (error) {
+        progressBar.stop();
+        console.error(chalk.red('An error occurred:'), error);
+    }
+})();
 
 module.exports = cleanProject;
 
