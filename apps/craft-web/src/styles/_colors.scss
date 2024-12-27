@@ -1,17 +1,19 @@
+// _colors.scss
+
 // Navy Theme
 $navy-palette: (
   primary: #002868,
-  on-primary: white,
+  on-primary: #ffffff,
   primary-container: #001E55,
-  on-primary-container: white,
-  surface-tint: #002868,
+  on-primary-container: #ffffff,
+  surface-tint: #002868
 );
 
 // Pink Theme
 $pink-palette: (
-  secondary: #e91e63,
-  on-secondary: white,
-  secondary-container: #c2185b,
-  on-secondary-container: white,
-  surface-tint: #e91e63,
+  tertiary: #e91e63,
+  on-tertiary: #ffffff,
+  tertiary-container: #c2185b,
+  on-tertiary-container: #ffffff,
+  surface-tint: #e91e63
 );
