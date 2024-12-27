@@ -17,11 +17,11 @@
     "affected:e2e": "nx affected:e2e",
     "affected:lint": "nx affected:lint",
     "affected:dep-graph": "nx affected:dep-graph",
-    "clean:cache": "nx reset",
-    "clean:build": "rimraf ./dist ./tmp",
-    "clean:deps": "nx reset && rimraf ./node_modules ./package-lock.json && npm cache clean --force && npm install",
-    "clean:ts": "rimraf ./**/*.tsbuildinfo",
-    "clean:all": "npm run clean:build && npm run clean:deps && npm run clean:ts"
+    "clean:cache": "node scripts/clean.js --cache-only",
+    "clean:build": "node scripts/clean.js --build-only",
+    "clean:deps": "node scripts/clean.js --deps-only",
+    "clean:all": "node scripts/clean.js",
+    "build:ci": "node scripts/build.js"
   },
   "private": true,
   "dependencies": {
@@ -115,7 +115,10 @@
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.0.0",
     "webpack-cli": "^5.1.4",
-    "rimraf": "^5.0.1"
+    "rimraf": "^5.0.1",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1",
+    "npmlog": "^6.0.2"
   },
   "nx": {
     "includedScripts": []
