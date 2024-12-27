@@ -2,10 +2,14 @@
 @use './_theme' as theme;
 
 // Apply theme
-@include mat.all-component-themes(theme.$theme);
+@include mat.core();
+@include mat.all-component-colors(theme.$theme-primary, theme.$theme-accent);
 
 /* === Base Styles === */
 $base-font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif;
+
+
+@include mat.typography();
 
 body,
 .mat-typography {
@@ -19,7 +23,7 @@ h1,
 h2,
 h3 {
   font-family: $base-font-family;
-  color: theme.$primary-blue;
+  color: theme.$primary;
 }
 
 /* === Global Variables === */
