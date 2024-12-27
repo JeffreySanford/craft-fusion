@@ -1,15 +1,17 @@
 @use '@angular/material' as mat;
 @use './_theme' as theme;
 
-// Apply theme
+/* === Core Material Styles === */
 @include mat.core();
-@include mat.all-component-colors(theme.$theme-primary, theme.$theme-accent);
+
+/* === Apply Theme === */
+@include mat.all-component-themes(theme.$theme);
+
+/* === Typography === */
+@include mat.typography(theme.$theme);
 
 /* === Base Styles === */
 $base-font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif;
-
-
-@include mat.typography();
 
 body,
 .mat-typography {
@@ -26,28 +28,7 @@ h3 {
   color: theme.$primary;
 }
 
-/* === Global Variables === */
-html {
-  --mat-sort-arrow-color: theme.$text;
-  overflow: hidden;
-}
-
-/* === Background Video === */
-#background-video {
-  position: fixed;
-  inset: -2em -2em 0 -2em;
-  min-height: 100%;
-  width: auto;
-  height: auto;
-  z-index: -1;
-  opacity: 0.4;
-  filter: grayscale(50%) blur(0.2em);
-  object-fit: cover;
-  transform: scale(1.1);
-  overflow: hidden;
-}
-
-/* === Scrollbar Styling === */
+/* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 0.5em;
   background: linear-gradient(to bottom, theme.$primary, theme.$accent);
@@ -56,7 +37,7 @@ html {
 ::-webkit-scrollbar-thumb {
   background: theme.$background;
   border-radius: 0.5em;
-  
+
   &:hover {
     background: theme.$text;
   }
@@ -66,7 +47,7 @@ html {
   background: theme.$primary;
 }
 
-/* === Utility Classes === */
+/* Utility Classes */
 .table-container::-webkit-scrollbar {
   display: none;
 }
