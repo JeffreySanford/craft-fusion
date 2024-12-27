@@ -1,19 +1,9 @@
-// _colors.scss
+@use '@angular/material' as mat;
 
-// Navy Theme
-$navy-palette: (
+$navy-palette: mat.m3-define-palette((
   primary: #002868,
   on-primary: #ffffff,
   primary-container: #001E55,
   on-primary-container: #ffffff,
   surface-tint: #002868
-);
-
-// Pink Theme
-$pink-palette: (
-  tertiary: #e91e63,
-  on-tertiary: #ffffff,
-  tertiary-container: #c2185b,
-  on-tertiary-container: #ffffff,
-  surface-tint: #e91e63
-);
+));

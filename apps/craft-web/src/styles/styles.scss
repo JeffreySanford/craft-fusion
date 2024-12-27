@@ -1,53 +1,17 @@
 @use '@angular/material' as mat;
+@use './_colors' as colors;
 @use './_theme' as theme;
 
-/* === Core Material Styles === */
+/* Material Core */
 @include mat.core();
 
-/* === Apply Theme === */
+/* Apply Theme */
+@include mat.all-component-colors(theme.$theme);
 @include mat.all-component-themes(theme.$theme);
 
-/* === Typography === */
-@include mat.typography(theme.$theme);
-
-/* === Base Styles === */
-$base-font-family: 'Calibri', 'Candara', 'Segoe UI', sans-serif;
-
-body,
-.mat-typography {
-  font-family: $base-font-family;
-  background-color: theme.$background;
-  margin: 0;
-  color: theme.$text;
-}
-
-h1,
-h2,
-h3 {
-  font-family: $base-font-family;
-  color: theme.$primary;
-}
-
-/* Scrollbar Styling */
-::-webkit-scrollbar {
-  width: 0.5em;
-  background: linear-gradient(to bottom, theme.$primary, theme.$accent);
-}
-
-::-webkit-scrollbar-thumb {
-  background: theme.$background;
-  border-radius: 0.5em;
-
-  &:hover {
-    background: theme.$text;
-  }
-}
-
-::-webkit-scrollbar-button {
-  background: theme.$primary;
-}
-
-/* Utility Classes */
-.table-container::-webkit-scrollbar {
-  display: none;
+/* Base Styles */
+body {
+  font-family: 'Roboto, Arial, sans-serif';
+  background-color: mat.get-theme-color(theme.$theme, surface);
+  color: mat.get-theme-color(theme.$theme, on-surface);
 }

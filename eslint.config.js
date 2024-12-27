@@ -29,6 +29,14 @@ module.exports = [
     },
   },
   {
+    files: ['**/*.scss'],
+    extends: ['stylelint-config-standard-scss', 'stylelint-config-prettier'],
+    rules: {
+      'at-rule-no-unknown': null,
+      'scss/at-rule-no-unknown': true,
+    },
+  },
+  {
     files: ['**/*.html'],
     rules: {},
   },

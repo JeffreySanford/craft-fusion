@@ -9,6 +9,7 @@
     "prebuild": "npm run compress-images",
     "test": "nx test",
     "lint": "nx lint",
+    "lint:scss": "stylelint 'apps/craft-web/src/**/*.scss'",
     "e2e": "nx e2e",
     "affected:apps": "nx affected:apps",
     "affected:libs": "nx affected:libs",
@@ -111,10 +112,10 @@
     "jest-preset-angular": "14.4.2",
     "npmlog": "^7.0.1",
     "ora": "^6.0.0",
-    "prettier": "^2.6.2",
+    "prettier": "^2.8.8",
     "rimraf": "^5.0.1",
     "sass": "^1.83.0",
-    "sass-loader": "^14.2.1",
+    "sass-loader": "^16.0.3",
     "shapefile": "^0.6.6",
     "sharp": "^0.33.5",
     "ts-jest": "^29.1.0",
@@ -124,10 +125,30 @@
     "typescript-eslint": "^8.0.0",
     "webpack-cli": "^5.1.4"
   },
-  "nx": {
-    "includedScripts": [
-      "scripts/install-dependencies.js",
-      "scripts/clean-project.js"
-    ]
+  "overrides": {
+    "typescript": {
+      "version": "5.6.3"
+    },
+    "eslint": {
+      "version": "8.56.0"
+    },
+    "jest": {
+      "version": "29.7.0"
+    },
+    "angular-eslint": {
+      "version": "19.0.2"
+    },
+    "nx": {
+      "version": "20.3.0"
+    },
+    "angular": {
+      "version": "19.0.5"
+    },
+    "sass": {
+      "version": "1.83.0"
+    },
+    "sass-loader": {
+      "version": "16.0.3"
+    }
   }
 }

@@ -1,10 +1,6 @@
 @use '@angular/material' as mat;
 @use './_colors' as colors;
 
-/* === Core Styles === */
-@include mat.core();
-
-/* === Define Material 3 Theme === */
 $theme: mat.define-theme((
   color: (
     primary: colors.$navy-palette,
@@ -20,12 +16,3 @@ $theme: mat.define-theme((
   ),
   density: 0
 ));
-
-/* === Export Variables === */
-$background: mat.get-theme-color($theme, surface);
-$text: mat.get-theme-color($theme, on-surface);
-$primary: mat.get-theme-color($theme, primary);
-$accent: mat.get-theme-color($theme, tertiary);
-
-/* === Apply the Theme Globally === */
-@include mat.all-component-themes($theme);

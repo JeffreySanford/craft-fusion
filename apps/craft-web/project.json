@@ -80,7 +80,8 @@
       "options": {
         "lintFilePatterns": [
           "apps/craft-web/src/**/*.ts",
-          "apps/craft-web/src/**/*.html"
+          "apps/craft-web/src/**/*.html",
+          "apps/craft-web/src/**/*.scss"
         ]
       }
     },
