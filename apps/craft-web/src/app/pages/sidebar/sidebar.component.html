@@ -6,7 +6,6 @@
       (click)="setActive(item)"
       class="mat-elevation-z5 menu-item"
       [class.mat-elevation-z8]="item.active"
-      [class.collapsed]="isCollapsed"
     >
       <mat-icon>{{ item.icon }}</mat-icon>
       <span class="menu-text" *ngIf="!isCollapsed">{{ item.label }}</span>
