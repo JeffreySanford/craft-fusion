@@ -1,16 +1,21 @@
-module.exports = {
-  root: true,
-  ignorePatterns: ['**/*'],
-  parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint'],
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: './tsconfig.json',
+const tsPlugin = require('@typescript-eslint/eslint-plugin');
+const importPlugin = require('eslint-plugin-import');
+
+module.exports = [
+  {
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      'import': importPlugin,
+    },
+    files: ['**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'warn',
+      'import/no-cycle': 'error',
+    },
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      project: './tsconfig.base.json',
+    },
   },
-  rules: {
-    '@typescript-eslint/no-unused-vars': 'warn',
-    'import/no-cycle': 'error',
-  }
-};
+];

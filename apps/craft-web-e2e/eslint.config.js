@@ -1,13 +1,18 @@
-const playwright = require('eslint-plugin-playwright');
 const baseConfig = require('../../eslint.base.config.js');
 
 module.exports = [
-  playwright.configs['flat/recommended'],
-
   ...baseConfig,
   {
-    files: ['**/*.ts', '**/*.js'],
-    // Override or add rules here
-    rules: {},
+    files: ['**/*.ts'],
+    languageOptions: {
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: './tsconfig.json',
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'warn',
+      'import/no-cycle': 'error',
+    },
   },
 ];

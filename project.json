@@ -1,7 +1,8 @@
 {
   "name": "craft-fusion",
   "$schema": "node_modules/nx/schemas/project-schema.json",
-  "angularCompilerOptions": {
-    "enableIvy": true
-  }
+  "tags": [
+    "scope:craft-fusion",
+    "type:mono-repo"
+  ]
 }

@@ -1,16 +1,19 @@
 const nx = require('@nx/eslint-plugin');
-const baseConfig = require('../../eslint.base.config.js');
+const angularPlugin = require('@angular-eslint/eslint-plugin');
+const angularTemplatePlugin = require('@angular-eslint/eslint-plugin-template');
+const typescriptPlugin = require('@typescript-eslint/eslint-plugin');
+const importPlugin = require('eslint-plugin-import');
 
 module.exports = [
-  ...baseConfig,
   ...nx.configs['flat/angular'],
   ...nx.configs['flat/angular-template'],
   {
     files: ['**/*.ts'],
-    extends: [
-      'plugin:@angular-eslint/recommended',
-      'plugin:@angular-eslint/template/process-inline-templates'
-    ],
+    plugins: {
+      '@angular-eslint': angularPlugin,
+      '@typescript-eslint': typescriptPlugin,
+      'import': importPlugin,
+    },
     rules: {
       '@angular-eslint/directive-selector': [
         'error',
@@ -28,16 +31,18 @@ module.exports = [
           style: 'kebab-case',
         },
       ],
-      '@angular-eslint/prefer-standalone': 'off', // Ensures non-standalone mode
-      'import/no-cycle': 'error', // Prevent circular dependencies
-      '@typescript-eslint/no-unused-vars': 'warn', // Highlight unused variables
+      '@angular-eslint/prefer-standalone': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      'import/no-cycle': 'error',
     },
   },
   {
     files: ['**/*.html'],
-    extends: ['plugin:@angular-eslint/template/recommended'],
+    plugins: {
+      '@angular-eslint/template': angularTemplatePlugin,
+    },
     rules: {
-      '@angular-eslint/template/no-negated-async': 'warn'
+      '@angular-eslint/template/no-negated-async': 'warn',
     },
   },
 ];
