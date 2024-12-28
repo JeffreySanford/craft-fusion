@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LandingComponent } from './landing.component';
-import { MaterialModule } from '../../material.module';
 
 describe('LandingComponent', () => {
   let component: LandingComponent;
@@ -17,7 +16,7 @@ describe('LandingComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [LandingComponent],
-      imports: [MaterialModule],
+      imports: [],
       providers: []
     }).compileComponents();
   

@@ -4,6 +4,7 @@ import { Subscription, interval } from 'rxjs';
 
 @Component({
   selector: 'app-footer',
+  standalone: false,
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss']
 })

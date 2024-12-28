@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-peasant-kitchen',
+  standalone: false,
   templateUrl: './peasant-kitchen.component.html',
   styleUrls: ['./peasant-kitchen.component.scss'],
 })

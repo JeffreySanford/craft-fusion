@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RecipesComponent } from './recipes.component';
 import { PeasantKitchenService } from '../peasant-kitchen.service';
-import { MaterialModule } from '../../../material.module';
 
 
 describe('RecipesComponent', () => {
@@ -12,7 +11,7 @@ describe('RecipesComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [RecipesComponent],
-      imports: [HttpClientTestingModule, MaterialModule],
+      imports: [HttpClientTestingModule],
       providers: [PeasantKitchenService]  
     })
     .compileComponents();

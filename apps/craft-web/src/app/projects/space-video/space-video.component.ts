@@ -2,6 +2,7 @@ import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 
 @Component({
   selector: 'app-space-video',
+  standalone: false,
   templateUrl: './space-video.component.html',
   styleUrls: ['./space-video.component.scss']
 })

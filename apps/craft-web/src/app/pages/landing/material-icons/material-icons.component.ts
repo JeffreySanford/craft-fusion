@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-material-icons',
+  standalone: false,
   templateUrl: './material-icons.component.html',
   styleUrls: ['./material-icons.component.scss']
 })

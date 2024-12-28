@@ -6,6 +6,7 @@ import { Recipe } from '../recipe.class';
 
 @Component({
   selector: 'app-recipes',
+  standalone: false,
   templateUrl: './recipes.component.html',
   styleUrls: ['./recipes.component.scss']
 })
