@@ -8,6 +8,11 @@ module.exports = [
   {
     files: ['**/*.ts'],
     extends: ['plugin:@angular-eslint/recommended'],
+    "plugins": ["@angular-eslint", "@typescript-eslint"],
+    parser: '@typescript-eslint/parser',
+    parserOptions: {
+      project: './tsconfig.json',
+    },
     rules: {
       '@angular-eslint/directive-selector': [
         'error',
