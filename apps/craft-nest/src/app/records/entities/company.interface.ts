@@ -1,4 +1,4 @@
 export class Company {
-    companyName: string = '';
-    annualSalary: number = 0;
+    companyName = '';
+    annualSalary = 0;
 }

@@ -1,3 +1,12 @@
-const baseConfig = require('../../eslint.base.config.js');
+const baseConfig = require('../../eslint.config.js');
 
-module.exports = [...baseConfig];
+module.exports = [
+  ...baseConfig,
+  {
+    files: ['**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+    },
+  },
+];
