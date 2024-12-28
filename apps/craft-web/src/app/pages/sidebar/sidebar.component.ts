@@ -24,10 +24,10 @@ import { Router } from '@angular/router';
 
 export class SidebarComponent implements OnInit {
   @Output() sidebarToggle = new EventEmitter<boolean>();
-  @Input() public isCollapsed = false;
   @Input() isSmallScreen = false;
   @ViewChild('drawer') drawer!: MatDrawer;
   isMobile = false;
+  isCollapsed = false
 
   menuGroups: MenuGroup[] = [
     {
