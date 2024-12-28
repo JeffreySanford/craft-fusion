@@ -6,7 +6,7 @@
     "start": "npm run prestart && nx serve",
     "prestart": "npm run compress-images",
     "build": "npm run prebuild && nx build",
-    "prebuild": "npm run compress-images",
+    "prebuild": "npm run scripts/compress-images",
     "test": "nx test",
     "lint": "nx lint",
     "lint:scss": "stylelint 'apps/craft-web/src/**/*.scss'",
@@ -33,6 +33,7 @@
     "@angular/compiler": "19.0.5",
     "@angular/core": "19.0.5",
     "@angular/forms": "19.0.5",
+    "@angular/material": "~19.0.4",
     "@angular/platform-browser": "19.0.5",
     "@angular/platform-browser-dynamic": "^19.0.5",
     "@angular/router": "19.0.5",
@@ -114,8 +115,8 @@
     "ora": "^6.0.0",
     "prettier": "^2.8.8",
     "rimraf": "^5.0.1",
-    "sass": "^1.83.0",
-    "sass-loader": "^16.0.3",
+    "sass": "1.80.7",
+    "sass-loader": "16.0.3",
     "shapefile": "^0.6.6",
     "sharp": "^0.33.5",
     "ts-jest": "^29.1.0",
@@ -125,30 +126,5 @@
     "typescript-eslint": "^8.0.0",
     "webpack-cli": "^5.1.4"
   },
-  "overrides": {
-    "typescript": {
-      "version": "5.6.3"
-    },
-    "eslint": {
-      "version": "8.56.0"
-    },
-    "jest": {
-      "version": "29.7.0"
-    },
-    "angular-eslint": {
-      "version": "19.0.2"
-    },
-    "nx": {
-      "version": "20.3.0"
-    },
-    "angular": {
-      "version": "19.0.5"
-    },
-    "sass": {
-      "version": "1.83.0"
-    },
-    "sass-loader": {
-      "version": "16.0.3"
-    }
-  }
+  "overrides": {}
 }

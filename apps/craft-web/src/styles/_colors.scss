@@ -1,6 +1,7 @@
 @use '@angular/material' as mat;
 
-$navy-palette: mat.m3-define-palette((
+// Define a Navy Palette for Material Theme
+$navy-palette: mat.define-palette((
   primary: #002868,
   on-primary: #ffffff,
   primary-container: #001E55,

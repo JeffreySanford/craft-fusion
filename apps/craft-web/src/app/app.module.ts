@@ -46,7 +46,8 @@ import { BusyService } from './common/services/busy.service';
       timeOut: 3000,
       positionClass: 'toast-bottom-center',
       preventDuplicates: true,
-    })
+    }),
+    RouterModule
   ],
   providers: [
     provideAnimations(),

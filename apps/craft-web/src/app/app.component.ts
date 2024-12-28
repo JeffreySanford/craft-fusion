@@ -28,6 +28,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isSmallScreen = result.matches;
       this.isCollapsed = this.isSmallScreen; // Collapse sidebar on small screens
     });
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
+    if (this.videoCheckSubscription) {
+      this.videoCheckSubscription.unsubscribe();
+    }
+
+    this.isSmallScreen  = this.breakpointObserver.isMatched('(max-width: 599px)');
   }
 
   ngAfterViewInit() {
