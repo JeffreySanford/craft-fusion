@@ -19,7 +19,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'Home', icon: 'home', routerLink: '/home', active: false },
     // Add more menu items as needed
   ];
-  polling =true;
+  polling = true;
 
   constructor(private router: Router, private route: ActivatedRoute, private breakpointObserver: BreakpointObserver) {}
 
@@ -35,7 +35,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.videoCheckSubscription.unsubscribe();
     }
 
-    this.isSmallScreen  = this.breakpointObserver.isMatched('(max-width: 599px)');
+    this.isSmallScreen = this.breakpointObserver.isMatched('(max-width: 599px)');
   }
 
   ngAfterViewInit() {
@@ -72,7 +72,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           });
       } else {
         if (this.polling) {
-          console.log('Video is already playing, stoping polling');
+          console.log('Video is already playing, stopping polling');
           this.stopVideoCheckPolling();
         }
       }

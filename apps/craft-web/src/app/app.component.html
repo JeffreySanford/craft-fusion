@@ -1,12 +1,12 @@
 <div class="page-container">
   <app-header></app-header>
   <div class="layout-container">
-      <aside class="sidebar">
-        <app-sidebar [isSmallScreen]="isSmallScreen" [isCollapsed]="isCollapsed" [ngClass]="{ 'collapased': !isCollapsed }"></app-sidebar>
-      </aside>
-      <main class="main-stage">
-        <router-outlet></router-outlet>
-      </main>
+    <aside class="sidebar">
+      <app-sidebar [isSmallScreen]="isSmallScreen" [isCollapsed]="isCollapsed" [ngClass]="{ 'collapsed': !isCollapsed }"></app-sidebar>
+    </aside>
+    <main class="main-stage">
+      <router-outlet></router-outlet>
+    </main>
   </div>
   <app-footer></app-footer>
   <video id="background-video" autoplay loop muted>
