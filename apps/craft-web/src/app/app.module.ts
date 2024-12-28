@@ -14,9 +14,9 @@ import { ResumeComponent } from './pages/resume/resume.component';
 import { LandingModule } from './pages/landing/landing.module';
 import { SidebarModule } from './pages/sidebar/sidebar.module';
 import { HeaderModule } from './pages/header/header.module';
+import { FooterModule } from './pages/footer/footer.module';
 import { DataVisualizationsModule } from './projects/data-visualizations/data-visualizations.module';
 import { SpaceVideoModule } from './projects/space-video/space-video.module';
-import { FooterModule } from './pages/footer/footer/footer.module';
 import { TableModule } from './projects/table/table.module';
 import { PeasantKitchenModule } from './projects/peasant-kitchen/peasant-kitchen.module';
 import { BusyService } from './common/services/busy.service';
@@ -29,10 +29,10 @@ import { BusyService } from './common/services/busy.service';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    RouterModule.forRoot(appRoutes),
+    MaterialModule,
     IonicModule.forRoot(),
     FormsModule,
-    MaterialModule,
-    RouterModule.forRoot(appRoutes),
     LandingModule,
     SidebarModule,
     HeaderModule,
@@ -56,5 +56,5 @@ import { BusyService } from './common/services/busy.service';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }
 

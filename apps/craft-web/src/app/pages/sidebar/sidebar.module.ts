@@ -4,15 +4,11 @@ import { SidebarComponent } from './sidebar.component';
 import { MaterialModule } from '../../material.module';
 
 @NgModule({
-  declarations: [
-    SidebarComponent
-  ],
+  declarations: [SidebarComponent],
   imports: [
     CommonModule,
     MaterialModule
   ],
-  exports: [
-    SidebarComponent
-  ]
+  exports: [SidebarComponent]
 })
 export class SidebarModule { }

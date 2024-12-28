@@ -17,13 +17,11 @@ import { FormsModule } from '@angular/forms';
     RecordDetailComponent,
     EmploymentIncomePipe
   ],
-  exports: [
-    RecordListComponent,
-    RecordDetailComponent,
-    EmploymentIncomePipe
+  exports: [RecordListComponent, RecordDetailComponent, EmploymentIncomePipe
   ],
   providers: [
-    RecordService
+    RecordService,
+    EmploymentIncomePipe
   ],
 })
 export class TableModule { }

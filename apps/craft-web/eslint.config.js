@@ -29,12 +29,6 @@ module.exports = [
     },
   },
   {
-    files: ['**/*.ts'],
-    rules: {
-      '@angular-eslint/prefer-standalone': 'off',
-    },
-  },
-  {
     files: ['**/*.html'],
     rules: {},
   },
