@@ -1,17 +1,8 @@
 @use '@angular/material' as mat;
-@use './_colors' as colors;
-@use './_theme' as theme;
+@use './_theme.scss' as theme;
 
-/* Material Core */
+// Apply Material Core and Custom Theme
 @include mat.core();
-
-/* Apply Theme */
-@include mat.all-component-colors(theme.$theme);
-@include mat.all-component-themes(theme.$theme);
-
-/* Base Styles */
-body {
-  font-family: 'Roboto, Arial, sans-serif';
-  background-color: mat.get-theme-color(theme.$theme, surface);
-  color: mat.get-theme-color(theme.$theme, on-surface);
-}
+@include theme.theme();
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

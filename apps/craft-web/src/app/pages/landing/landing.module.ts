@@ -18,7 +18,8 @@ import { MaterialIconsComponent } from './material-icons/material-icons.componen
     MaterialModule
   ],
   exports: [
-    MaterialModule
+    MaterialModule,
+    LandingComponent
   ],
   providers: []
 })

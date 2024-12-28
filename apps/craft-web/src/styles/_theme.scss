@@ -1,18 +1,11 @@
 @use '@angular/material' as mat;
-@use './_colors' as colors;
 
-$theme: mat.define-theme((
+$navy-palette: mat.define-palette(mat.$indigo-palette);
+$theme: mat.define-light-theme((
   color: (
-    primary: colors.$navy-palette,
-    tertiary: colors.$pink-palette
-  ),
-  typography: (
-    brand-family: 'Roboto, Arial, sans-serif',
-    plain-family: 'Roboto, Arial, sans-serif',
-    bold-weight: 700,
-    medium-weight: 500,
-    regular-weight: 400,
-    letter-spacing: 0.5px
-  ),
-  density: 0
+    primary: $navy-palette,
+    accent: mat.define-palette(mat.$pink-palette)
+  )
 ));
+
+@include mat.all-component-themes($theme);
