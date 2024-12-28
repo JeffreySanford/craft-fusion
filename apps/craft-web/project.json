@@ -4,7 +4,7 @@
   "prefix": "app",
   "sourceRoot": "apps/craft-web/src",
   "tags": [],
-  "schematics": {  // <-- Place it here, at the root level
+  "schematics": {
     "@schematics/angular:component": {
       "standalone": false
     }
