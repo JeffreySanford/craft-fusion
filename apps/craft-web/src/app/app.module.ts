@@ -49,11 +49,7 @@ import { BusyService } from './common/services/busy.service';
     }),
     RouterModule
   ],
-  providers: [
-    provideAnimations(),
-    BusyService,
-    ToastrService
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

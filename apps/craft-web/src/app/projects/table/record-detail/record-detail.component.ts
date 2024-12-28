@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-record-detail',
+  standalone: false,
   templateUrl: './record-detail.component.html',
   styleUrls: ['./record-detail.component.scss'] // Updated to styleUrls
 })

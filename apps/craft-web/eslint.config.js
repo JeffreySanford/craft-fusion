@@ -7,7 +7,10 @@ module.exports = [
   ...nx.configs['flat/angular-template'],
   {
     files: ['**/*.ts'],
-    extends: ['plugin:@angular-eslint/recommended'],
+    extends: [
+      'plugin:@angular-eslint/recommended',
+      'plugin:@angular-eslint/template/process-inline-templates'
+    ],
     rules: {
       '@angular-eslint/directive-selector': [
         'error',
@@ -25,11 +28,16 @@ module.exports = [
           style: 'kebab-case',
         },
       ],
-      '@angular-eslint/prefer-standalone': 'off',
+      '@angular-eslint/prefer-standalone': 'off', // Ensures non-standalone mode
+      'import/no-cycle': 'error', // Prevent circular dependencies
+      '@typescript-eslint/no-unused-vars': 'warn', // Highlight unused variables
     },
   },
   {
     files: ['**/*.html'],
-    rules: {},
+    extends: ['plugin:@angular-eslint/template/recommended'],
+    rules: {
+      '@angular-eslint/template/no-negated-async': 'warn'
+    },
   },
 ];

@@ -4,6 +4,7 @@ import { LineChartData } from '../data-visualizations.interfaces';
 
 @Component({
   selector: 'app-line-chart',
+  standalone: false,
   templateUrl: './line.component.html',
   styleUrls: ['./line.component.scss']
 })

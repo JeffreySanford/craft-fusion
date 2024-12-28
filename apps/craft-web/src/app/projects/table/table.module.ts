@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RecordListComponent } from './record-list.component';
 import { RecordDetailComponent } from './record-detail/record-detail.component';
 import { RecordService } from './record.service';
-import { MaterialModule } from '../../material.module';
 import { EmploymentIncomePipe } from './pipes/employment-income.pipe';
 import { FormsModule } from '@angular/forms';
 
@@ -12,7 +11,6 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     FormsModule,
-    MaterialModule,
     RecordListComponent,
     RecordDetailComponent,
     EmploymentIncomePipe

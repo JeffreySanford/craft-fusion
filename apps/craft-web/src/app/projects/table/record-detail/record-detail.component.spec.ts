@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RecordDetailComponent } from './record-detail.component';
-import { MaterialModule } from '../../../material.module';
 import { RouterModule } from '@angular/router';
 import { appRoutes } from '../../../app.routes';
 import { FormsModule } from '@angular/forms';
@@ -26,7 +25,6 @@ describe('RecordDetailComponent', () => {
       await TestBed.configureTestingModule({
         imports: [
           RouterModule.forRoot(appRoutes),
-          MaterialModule,
           FormsModule,
           BrowserAnimationsModule,
           HttpClientTestingModule

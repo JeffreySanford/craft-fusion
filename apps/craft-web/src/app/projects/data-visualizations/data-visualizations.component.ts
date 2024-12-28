@@ -4,6 +4,7 @@ import { BarChartData, ChartData, FintechChartData, LineChartData, MapChartData 
 
 @Component({
   selector: 'app-data-visualizations',
+  standalone: false,
   templateUrl: './data-visualizations.component.html',
   styleUrls: ['./data-visualizations.component.scss']
 })
