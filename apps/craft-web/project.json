@@ -4,6 +4,11 @@
   "prefix": "app",
   "sourceRoot": "apps/craft-web/src",
   "tags": [],
+  "schematics": {  // <-- Place it here, at the root level
+    "@schematics/angular:component": {
+      "standalone": false
+    }
+  },
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
