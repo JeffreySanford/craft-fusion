@@ -120,3 +120,19 @@ $density-scales: (-1, -2, -3, -4, minimum, maximum);
 mat-nav-list.demo-nav-list {
   margin: 8px;
 }
+
+
+/* === Background Video === */
+#background-video {
+  position: fixed;
+  inset: -2em -2em 0 -2em;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -1;
+  opacity: 0.4;
+  filter: grayscale(50%) blur(0.2em);
+  object-fit: cover;
+  transform: scale(1.1);
+  overflow: hidden;
+}
