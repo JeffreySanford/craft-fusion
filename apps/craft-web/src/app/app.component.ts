@@ -12,11 +12,12 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   isCollapsed = false;
   isSmallScreen = false;
+  isExpanded = false;
 
   title = 'frontend';
   private routerSubscription!: Subscription;
   private videoCheckSubscription!: Subscription;
-  isExpanded = false;
+
   menuItems = [
     { label: 'Home', icon: 'home', routerLink: '/home', active: false },
     // Add more menu items as needed
@@ -28,7 +29,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
       this.isSmallScreen = result.matches;
-      this.isCollapsed = this.isSmallScreen; // Collapse sidebar on small screens
+      this.isCollapsed = this.isSmallScreen;
+      debugger// Collapse sidebar on small screens
     });
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe();

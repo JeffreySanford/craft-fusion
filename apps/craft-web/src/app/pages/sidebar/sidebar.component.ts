@@ -25,8 +25,8 @@ import { Router } from '@angular/router';
 
 export class SidebarComponent implements OnInit {
   @Output() sidebarToggle = new EventEmitter<boolean>();
-  @Input() isSmallScreen: boolean = false;
-  @Input() isCollapsed: boolean = false;
+  @Input() isSmallScreen = false;
+  @Input() isCollapsed = false;
   @ViewChild('drawer') drawer!: MatDrawer;
   isMobile = false;
 
