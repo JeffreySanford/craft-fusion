@@ -26,7 +26,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/craft-nest",
-        "main": "apps/craft-nest/src/main.ts",
+        "main": "apps/craft-nest/src/main.js",
         "tsConfig": "apps/craft-nest/tsconfig.json",
         "assets": ["apps/craft-nest/src/assets"],
         "fileReplacements": [

@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from './app/app.module';
+import { AppModule } from './app/app.module'; // Ensure this path is correct
 import { Logger } from '@nestjs/common';
 import helmet from 'helmet';
 import * as fs from 'fs';
