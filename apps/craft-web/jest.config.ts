@@ -1,7 +1,8 @@
 export default {
   displayName: 'craft-web',
   preset: '../../jest.preset.js',
-  setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
+  // Remove the following unused file
+  // setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   coverageDirectory: '../../coverage/apps/craft-web',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
