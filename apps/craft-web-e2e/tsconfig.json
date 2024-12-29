@@ -23,13 +23,7 @@
     "../../apps/craft-web/src/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "dist",
-    "jest.config.ts",
-    "playwright.config.ts",
-    "src/**/*.test.ts",
-    "src/**/*.test.js",
     "src/**/*.spec.ts",
-    "src/**/*.spec.js"
+    "src/**/*.e2e-spec.ts"
   ]
 }

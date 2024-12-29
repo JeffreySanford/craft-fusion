@@ -7,6 +7,8 @@
   "schematics": {
     "@schematics/angular:component": {
       "standalone": false
+        }
+      }
     }
   },
   "targets": {
@@ -97,5 +99,3 @@
         "spa": true
       }
     }
-  }
-}

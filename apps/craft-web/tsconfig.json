@@ -7,8 +7,6 @@
   "include": [
     "src/**/*.ts",
     "src/main.ts"
-    // Remove the following unused files
-    // "src/polyfills.ts"
   ],
-  "exclude": ["node_modules", "tmp"]
+  "exclude": ["tmp"]
 }
