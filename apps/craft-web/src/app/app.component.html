@@ -2,7 +2,7 @@
   <app-header></app-header>
   <div class="layout-container">
     <aside class="sidebar">
-      <app-sidebar [isSmallScreen]="isSmallScreen" [isCollapsed]="isCollapsed" [ngClass]="{ 'collapsed': !isCollapsed }"></app-sidebar>
+      <app-sidebar [ngClass]="{ 'collapsed': !isCollapsed }"></app-sidebar>
     </aside>
     <main class="main-stage">
       <router-outlet></router-outlet>
