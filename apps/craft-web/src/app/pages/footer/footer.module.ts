@@ -9,6 +9,6 @@ import { MaterialModule } from '../../material.module';
     CommonModule,
     MaterialModule,
   ],
-  exports: [FooterComponent] // Export FooterComponent
+  exports: [FooterComponent]
 })
 export class FooterModule { }

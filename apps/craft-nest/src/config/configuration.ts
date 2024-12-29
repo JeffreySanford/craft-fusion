@@ -1,4 +1,4 @@
-import { environment } from "@craft-nest/environments/environment";
+import { environment } from "../environments/environment";
 
 export default () => ({
     apiUrl: environment.apiUrl ?? 'http://localhost',
