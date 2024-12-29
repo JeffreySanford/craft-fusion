@@ -16,10 +16,11 @@
 
   .sidebar {
     width: auto;
-    height: 35m;
+    height: 35em;
     transition: width 0.3s ease-in-out;
     flex-shrink: 0;
     margin-right: 1em;
+    z-index: 20;
 
     .collapsed {
       max-width: 0;
