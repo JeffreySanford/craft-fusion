@@ -52,6 +52,37 @@
           ]
         }
       }
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "browserTarget": "craft-web:build"
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "craft-web:build:production"
+        }
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "craft-web:build"
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/craft-web"],
+      "options": {
+        "jestConfig": "apps/craft-web/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["apps/craft-web/**/*.ts"]
+      }
     }
   }
 }
