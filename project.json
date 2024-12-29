@@ -1,8 +1,4 @@
 {
   "name": "craft-fusion",
-  "$schema": "node_modules/nx/schemas/project-schema.json",
-  "tags": [
-    "scope:craft-fusion",
-    "type:mono-repo"
-  ]
+  "$schema": "node_modules/nx/schemas/project-schema.json"
 }

@@ -5,14 +5,25 @@ const typescriptPlugin = require('@typescript-eslint/eslint-plugin');
 const importPlugin = require('eslint-plugin-import');
 
 module.exports = [
-  ...nx.configs['flat/angular'],
-  ...nx.configs['flat/angular-template'],
+  ...nx.configs['flat/angular'], // Extends Nx's Angular flat configuration
+  ...nx.configs['flat/angular-template'], // Extends Nx's Angular template configuration
+
+  // TypeScript Configuration
   {
     files: ['**/*.ts'],
     plugins: {
       '@angular-eslint': angularPlugin,
       '@typescript-eslint': typescriptPlugin,
       'import': importPlugin,
+    },
+    languageOptions: {
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: '../../tsconfig.base.json',
+        tsconfigRootDir: __dirname,
+        sourceType: 'module',
+        ecmaVersion: 'latest',
+      },
     },
     rules: {
       '@angular-eslint/directive-selector': [
@@ -36,6 +47,8 @@ module.exports = [
       'import/no-cycle': 'error',
     },
   },
+
+  // Angular Template Configuration
   {
     files: ['**/*.html'],
     plugins: {

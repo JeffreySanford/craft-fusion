@@ -12,31 +12,20 @@
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/craft-web/browser",
         "index": "apps/craft-web/src/index.html",
         "main": "apps/craft-web/src/main.ts",
         "polyfills": "apps/craft-web/src/polyfills.ts",
         "tsConfig": "apps/craft-web/tsconfig.app.json",
-        "assets": [
-          "apps/craft-web/src/assets"
-        ],
-        "styles": [
-          "@angular/material/prebuilt-themes/azure-blue.css",
-          "apps/craft-web/src/styles/styles.scss"
-        ],
+        "assets": ["apps/craft-web/src/assets"],
+        "styles": ["@angular/material/prebuilt-themes/azure-blue.css", "apps/craft-web/src/styles/styles.scss"],
         "stylePreprocessorOptions": {
-          "includePaths": [
-            "apps/craft-web/src/styles"
-          ]
+          "includePaths": ["apps/craft-web/src/styles"]
         },
         "scripts": [],
-        "allowedCommonJsDependencies": [
-          "jszip"
-        ]
+        "allowedCommonJsDependencies": ["jszip"]
       },
       "configurations": {
         "production": {
@@ -91,11 +80,7 @@
     "lint": {
       "executor": "@nx/linter:eslint",
       "options": {
-        "lintFilePatterns": [
-          "apps/craft-web/src/**/*.ts",
-          "apps/craft-web/src/**/*.html",
-          "apps/craft-web/src/**/*.scss"
-        ]
+        "lintFilePatterns": ["apps/craft-web/src/**/*.ts", "apps/craft-web/src/**/*.html", "apps/craft-web/src/**/*.scss"]
       }
     },
     "test": {

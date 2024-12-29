@@ -1,13 +1,15 @@
-const baseConfig = require('../../eslint.base.config.js');
+const baseConfig = require('../../eslint.config.js');
+const tsParser = require('@typescript-eslint/parser');
 
 module.exports = [
   ...baseConfig,
   {
     files: ['**/*.ts'],
     languageOptions: {
-      parser: '@typescript-eslint/parser',
+      parser: tsParser,
       parserOptions: {
         project: './tsconfig.json',
+        tsconfigRootDir: __dirname,
       },
     },
     rules: {
