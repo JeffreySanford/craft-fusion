@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
@@ -55,10 +55,10 @@ import { ResumeComponent } from './pages/resume/resume.component';
     ToastrService,
     provideAnimations()
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  schemas: []
 })
 export class AppModule {
-  // Add this line to detect circular imports
   constructor() {
     console.log('AppModule loaded');
   }

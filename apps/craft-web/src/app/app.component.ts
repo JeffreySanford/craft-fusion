@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
@@ -10,12 +10,13 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
   standalone: false
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
+  isCollapsed = false;
+  isSmallScreen = false;
+
   title = 'frontend';
   private routerSubscription!: Subscription;
   private videoCheckSubscription!: Subscription;
   isExpanded = false;
-  isSmallScreen = false;
-  isCollapsed = false;
   menuItems = [
     { label: 'Home', icon: 'home', routerLink: '/home', active: false },
     // Add more menu items as needed
