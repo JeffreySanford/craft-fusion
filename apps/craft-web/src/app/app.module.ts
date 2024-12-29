@@ -49,7 +49,12 @@ import { ResumeComponent } from './pages/resume/resume.component';
     RouterModule,
     ResumeComponent
   ],
-  providers: [],
+  exports: [MaterialModule],
+  providers: [
+    BusyService,
+    ToastrService,
+    provideAnimations()
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

@@ -19,7 +19,8 @@ import { Router } from '@angular/router';
   ],
   host: {
     '[class.collapsed]': 'isCollapsed'
-  }
+  },
+  standalone: false
 })
 
 export class SidebarComponent implements OnInit {

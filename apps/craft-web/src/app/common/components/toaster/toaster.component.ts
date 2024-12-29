@@ -5,7 +5,6 @@ import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-toaster',
-  standalone: false,
   templateUrl: './toaster.component.html',
   styleUrls: ['./toaster.component.scss'],
 })

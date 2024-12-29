@@ -19,7 +19,6 @@ interface GeoJSONCollection {
 
 @Component({
   selector: 'app-map-chart',
-  standalone: false,
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss']
 })

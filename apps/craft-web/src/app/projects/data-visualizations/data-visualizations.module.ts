@@ -6,16 +6,11 @@ import { LineComponent } from './line/line.component';
 import { FintechComponent } from './fintech/fintech.component';
 import { MapComponent } from './map/map.component';
 import { IonicModule } from '@ionic/angular';
+import { MaterialModule } from '../../material.module';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    DataVisualizationsComponent,
-    BarComponent,
-    LineComponent,
-    FintechComponent,
-    MapComponent,
-    IonicModule
-  ]
+  declarations: [DataVisualizationsComponent, BarComponent, LineComponent, FintechComponent, MapComponent],
+  imports: [CommonModule, MaterialModule, IonicModule],
+  exports: [],
 })
-export class DataVisualizationsModule { }
+export class DataVisualizationsModule {}
