@@ -30,7 +30,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
       this.isSmallScreen = result.matches;
       this.isCollapsed = this.isSmallScreen;
-      debugger// Collapse sidebar on small screens
     });
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe();
