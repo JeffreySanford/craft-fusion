@@ -55,8 +55,7 @@ import { ResumeComponent } from './pages/resume/resume.component';
     ToastrService,
     provideAnimations()
   ],
-  bootstrap: [AppComponent],
-  schemas: []
+  bootstrap: [AppComponent]
 })
 export class AppModule {
   constructor() {
