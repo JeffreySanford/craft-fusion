@@ -52,5 +52,10 @@ import { BusyService } from './common/services/busy.service';
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+  // Add this line to detect circular imports
+  constructor() {
+    console.log('AppModule loaded');
+  }
+}
 

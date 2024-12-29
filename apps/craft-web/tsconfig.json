@@ -4,6 +4,11 @@
     "outDir": "../../dist/out-tsc",
     "rootDir": "./src"
   },
-  "include": ["src/**/*.ts", "src/main.ts", "src/polyfills.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/main.ts"
+    // Remove the following unused files
+    // "src/polyfills.ts"
+  ],
   "exclude": ["node_modules", "tmp"]
 }
