@@ -5,6 +5,7 @@ import { Component } from '@angular/core';
   standalone: false,
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss'],
+  standalone: false
 })
 export class LandingComponent {
   items = ['Architect', 'Developer', 'Designer'];

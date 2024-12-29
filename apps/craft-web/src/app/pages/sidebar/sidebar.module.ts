@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { SidebarComponent } from './sidebar.component';
 
 @NgModule({
-  declarations: [SidebarComponent],
-  imports: [CommonModule],
-  exports: [SidebarComponent],
+  imports: [
+    CommonModule,
+    SidebarComponent
+  ],
+  exports: [SidebarComponent]
 })
 export class SidebarModule {}

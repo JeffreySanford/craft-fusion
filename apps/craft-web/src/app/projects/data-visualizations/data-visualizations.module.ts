@@ -8,17 +8,14 @@ import { MapComponent } from './map/map.component';
 import { IonicModule } from '@ionic/angular';
 
 @NgModule({
-  declarations: [
+  imports: [
+    CommonModule,
     DataVisualizationsComponent,
     BarComponent,
     LineComponent,
     FintechComponent,
-    MapComponent
-  ],
-  imports: [
-    CommonModule,
+    MapComponent,
     IonicModule
-  ],
-  exports: [],
+  ]
 })
 export class DataVisualizationsModule { }

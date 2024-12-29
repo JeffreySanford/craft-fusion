@@ -6,12 +6,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
-  declarations: [FooterComponent],
   imports: [
     CommonModule,
-    MatExpansionModule,
-    MatIconModule,
-    MatCardModule  ],
+    FooterComponent
+  ],
   exports: [FooterComponent]
 })
 export class FooterModule { }

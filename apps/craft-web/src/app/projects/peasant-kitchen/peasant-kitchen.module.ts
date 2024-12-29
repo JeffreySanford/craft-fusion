@@ -8,10 +8,7 @@ import { RecipesComponent } from './recipes/recipes.component';
 
 @NgModule({
   declarations: [RecipeComponent, PeasantKitchenComponent, RecipesComponent],
-  imports: [
-    CommonModule,
-    RouterModule
-  ],
+  imports: [CommonModule],
   providers: [PeasantKitchenService],
 })
-export class PeasantKitchenModule { }
+export class PeasantKitchenModule {}
