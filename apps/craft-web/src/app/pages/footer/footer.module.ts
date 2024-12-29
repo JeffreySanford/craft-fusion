@@ -7,13 +7,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MaterialModule } from '../../material.module';
 
 @NgModule({
-  declarations: [FooterComponent],
   imports: [
     CommonModule,
-    MatExpansionModule,
-    MatIconModule,
-    MatCardModule,
-    MaterialModule
+    FooterComponent
   ],
   exports: [FooterComponent]
 })

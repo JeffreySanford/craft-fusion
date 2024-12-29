@@ -4,8 +4,11 @@ import { HeaderComponent } from './header.component';
 import { MaterialModule } from '@craft-web/material.module';
 
 @NgModule({
-  declarations: [HeaderComponent],
-  imports: [CommonModule, MaterialModule],
+  imports: [
+    CommonModule,
+    HeaderComponent,
+    MaterialModule
+  ],
   exports: [HeaderComponent]
 })
 export class HeaderModule { }

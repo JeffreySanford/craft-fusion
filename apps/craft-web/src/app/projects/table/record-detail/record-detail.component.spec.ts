@@ -26,7 +26,6 @@ describe('RecordDetailComponent', () => {
       await TestBed.configureTestingModule({
         imports: [
           RouterModule.forRoot(appRoutes),
-          MaterialModule,
           FormsModule,
           BrowserAnimationsModule,
           HttpClientTestingModule
