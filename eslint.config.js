@@ -4,11 +4,11 @@ const tsParser = require('@typescript-eslint/parser');
 const importPlugin = require('eslint-plugin-import');
 
 module.exports = [
-  ...nx.configs['flat/typescript'], 
+  ...nx.configs['flat/typescript'],
   {
     plugins: {
-      '@typescript-eslint': tsPlugin,
-      'import': importPlugin,
+      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
+      import: require('eslint-plugin-import'),
     },
     files: ['**/*.ts'],
     languageOptions: {
@@ -19,7 +19,7 @@ module.exports = [
         ecmaVersion: 'latest',
         sourceType: 'module',
         tsconfigRootDir: __dirname,
-        project: ['./tsconfig.base.json'],
+        project: './tsconfig.base.json',
       },
     },
     rules: {
