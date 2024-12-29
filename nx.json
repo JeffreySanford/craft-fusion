@@ -36,23 +36,19 @@
   },
   "plugins": [
     {
-      "plugin": "@nx/js",
-      "options": {
-        "typecheck": { "targetName": "typecheck" },
-        "build": { "targetName": "build", "configName": "tsconfig.lib.json" }
-      }
-    },
-    {
       "plugin": "@nx/eslint/plugin",
       "options": { "targetName": "eslint:lint" }
     }
   ],
   "projects": {
-    "version": 1,
-    "projects": {
-      "craft-web": "apps/craft-web/project.json",
-      "craft-nest": "apps/craft-nest/project.json",
-      "craft-go": "apps/craft-go/project.json"
-    }
+    "craft-web": "apps/craft-web/project.json",
+    "craft-nest": "apps/craft-nest/project.json",
+    "craft-go": "apps/craft-go/project.json",
+    "craft-web-e2e": "apps/craft-web-e2e/project.json"
+  },
+  "npmScope": "craft-fusion",
+  "workspaceLayout": {
+    "appsDir": "apps",
+    "libsDir": "libs"
   }
 }
