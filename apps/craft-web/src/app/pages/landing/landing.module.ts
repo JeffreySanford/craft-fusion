@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LandingRoutingModule } from './landing-routing.module';
 import { LandingComponent } from './landing.component';
 
 import { MaterialButtonsComponent } from './material-buttons/material-buttons.component';
@@ -8,13 +7,12 @@ import { MaterialIconsComponent } from './material-icons/material-icons.componen
 
 @NgModule({
   declarations: [
-    LandingComponent,
-    MaterialIconsComponent,
-    MaterialButtonsComponent
+    LandingComponent
   ],
   imports: [
     CommonModule,
-    LandingRoutingModule
+    MaterialIconsComponent,
+    MaterialButtonsComponent
   ],
   exports: [
     LandingComponent

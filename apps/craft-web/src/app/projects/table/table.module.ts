@@ -7,19 +7,9 @@ import { EmploymentIncomePipe } from './pipes/employment-income.pipe';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [RecordListComponent, RecordDetailComponent, EmploymentIncomePipe],
-  imports: [
-    CommonModule,
-    FormsModule,
-    RecordListComponent,
-    RecordDetailComponent,
-    EmploymentIncomePipe
-  ],
-  exports: [RecordListComponent, RecordDetailComponent, EmploymentIncomePipe
-  ],
-  providers: [
-    RecordService,
-    EmploymentIncomePipe
-  ],
+  declarations: [RecordListComponent, RecordDetailComponent],
+  imports: [CommonModule, FormsModule,  EmploymentIncomePipe],
+  exports: [],
+  providers: [RecordService, EmploymentIncomePipe],
 })
-export class TableModule { }
+export class TableModule {}
