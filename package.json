@@ -3,10 +3,8 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "npm run prestart && nx serve",
-    "prestart": "npm run compress-images",
-    "build": "npm run prebuild && nx build",
-    "prebuild": "npm run scripts/compress-images",
+    "start": "nx serve",
+    "build": "node build.js",
     "test": "nx test",
     "lint": "nx lint",
     "lint:scss": "stylelint 'apps/craft-web/src/**/*.scss'",

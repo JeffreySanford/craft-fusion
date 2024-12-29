@@ -35,5 +35,5 @@
     "strictInjectionParameters": true,
     "strictTemplates": true
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [ "tmp"]
 }
