@@ -1,11 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://jeffreysanford.us/api',
-  goApiUrl: 'https://jeffreysanford.us/go-api',
-  host: 'jeffreysanford.us',
-  port: 443,
-  keyPath: '/etc/letsencrypt/live/jeffreysanford.us/privkey.pem',
-  certPath: '/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem',
-  nestPort: 3000,
-  goPort: 4000
+  apiUrl: 'https://api.yourdomain.com',
+  host: 'api.yourdomain.com'
 };

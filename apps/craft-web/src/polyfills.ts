@@ -1,7 +1,7 @@
 /***************************************************************************************************
  * Zone JS is required by Angular itself.
  */
-import 'zone.js';  // Required for Angular
+import 'zone.js';  // Included with Angular CLI.
 
 /***************************************************************************************************
  * Polyfills for older browsers.

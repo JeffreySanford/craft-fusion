@@ -1,7 +1,7 @@
 export default {
   displayName: 'craft-fusion',
   preset: './jest.preset.js',
-  setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
+  setupFilesAfterEnv: ['./test-setup.ts'],
   coverageDirectory: './coverage/craft-fusion',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [

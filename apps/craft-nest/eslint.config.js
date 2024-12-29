@@ -1,32 +1,26 @@
-const baseConfig = require('../../eslint.config.js');
 const typescriptParser = require('@typescript-eslint/parser');
+const typescriptPlugin = require('@typescript-eslint/eslint-plugin');
 
 module.exports = [
-  ...baseConfig,
   {
     files: ['**/*.ts'],
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
-        project: '../../tsconfig.base.json',
         tsconfigRootDir: __dirname,
-        sourceType: 'module',
+        project: './tsconfig.json', // App-specific tsconfig
         ecmaVersion: 'latest',
+        sourceType: 'module',
       },
     },
     plugins: {
-      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
+      '@typescript-eslint': typescriptPlugin,
     },
     rules: {
+      '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-function-return-type': 'off',
-    },
-    lint: {
-      executor: '@nx/eslint:lint',
-      outputs: ['{options.outputFile}'],
-      options: {
-        lintFilePatterns: ['apps/craft-nest-e2e/**/*.ts'],
-      },
+      'import/no-cycle': 'error',
     },
   },
 ];

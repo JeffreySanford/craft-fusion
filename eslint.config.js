@@ -1,30 +1,24 @@
-const nx = require('@nx/eslint-plugin');
-const tsPlugin = require('@typescript-eslint/eslint-plugin');
 const tsParser = require('@typescript-eslint/parser');
-const importPlugin = require('eslint-plugin-import');
 
 module.exports = [
-  ...nx.configs['flat/typescript'],
   {
-    plugins: {
-      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
-      import: require('eslint-plugin-import'),
-    },
+    ignores: ['node_modules', 'dist'],
+  },
+  {
     files: ['**/*.ts'],
     languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
       parser: tsParser,
       parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-        tsconfigRootDir: __dirname,
         project: './tsconfig.base.json',
-      },
+        tsconfigRootDir: __dirname,
+        ecmaVersion: 'latest',
+        sourceType: 'module'
+      }
     },
+    plugins: ['@typescript-eslint'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'warn',
-      'import/no-cycle': 'error',
-    },
-  },
+      '@typescript-eslint/no-explicit-any': 'warn'
+    }
+  }
 ];
