@@ -4,20 +4,12 @@ import { LandingComponent } from './landing.component';
 
 import { MaterialButtonsComponent } from './material-buttons/material-buttons.component';
 import { MaterialIconsComponent } from './material-icons/material-icons.component';
+import { MaterialModule } from '../../material.module';
 
 @NgModule({
-  declarations: [
-    LandingComponent
-  ],
-  imports: [
-    CommonModule,
-    MaterialIconsComponent,
-    MaterialButtonsComponent
-  ],
-  exports: [
-    LandingComponent
-  ],
-  providers: []
+  declarations: [LandingComponent, MaterialButtonsComponent, MaterialIconsComponent],
+  imports: [CommonModule, MaterialModule],
+  exports: [MaterialModule],
+  providers: [],
 })
-
 export class LandingModule {}

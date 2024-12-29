@@ -37,7 +37,6 @@ import { MatGridListModule } from '@angular/material/grid-list';
     MatSliderModule,
     MatExpansionModule,
     MatProgressSpinnerModule,
-    MatSliderModule,
     MatGridListModule
   ],
   exports: [

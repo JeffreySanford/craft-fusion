@@ -4,9 +4,9 @@ import { BarChartData, ChartData, FintechChartData, LineChartData, MapChartData 
 
 @Component({
   selector: 'app-data-visualizations',
-  standalone: false,
   templateUrl: './data-visualizations.component.html',
-  styleUrls: ['./data-visualizations.component.scss']
+  styleUrls: ['./data-visualizations.component.scss'],
+  standalone: false
 })
 export class DataVisualizationsComponent implements OnInit {
   isMobile = false;

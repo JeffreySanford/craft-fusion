@@ -5,11 +5,12 @@ import { RecordDetailComponent } from './record-detail/record-detail.component';
 import { RecordService } from './record.service';
 import { EmploymentIncomePipe } from './pipes/employment-income.pipe';
 import { FormsModule } from '@angular/forms';
+import { MaterialModule } from '../../material.module';
 
 @NgModule({
-  declarations: [RecordListComponent, RecordDetailComponent],
-  imports: [CommonModule, FormsModule,  EmploymentIncomePipe],
+  declarations: [RecordListComponent, RecordDetailComponent, EmploymentIncomePipe], // Add EmploymentIncomePipe here
+  imports: [CommonModule, FormsModule, MaterialModule],
   exports: [],
-  providers: [RecordService, EmploymentIncomePipe],
+  providers: [RecordService],
 })
 export class TableModule {}

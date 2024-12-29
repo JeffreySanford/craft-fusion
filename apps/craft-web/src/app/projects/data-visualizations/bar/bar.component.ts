@@ -4,7 +4,6 @@ import { BarChartData } from '../data-visualizations.interfaces';
 
 @Component({
   selector: 'app-bar-chart',
-  standalone: false,
   templateUrl: './bar.component.html',
   styleUrls: ['./bar.component.scss']
 })
