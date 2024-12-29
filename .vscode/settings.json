@@ -1,0 +1,19 @@
+{
+  "typescript.preferences.autoImportSpecifierExcludeRegexes": [],
+  "typescript.preferences.organizeImports": {},
+    "typescript.suggest.autoImports": true,
+    "typescript.suggest.paths": true,
+    "typescript.suggest.autoImportsOverwrite": true,
+    "typescript.suggest.completeJSDocs": true,
+    "typescript.suggest.completeFunctionCalls": true,
+    "ngrx-uml.tsConfigFileName": "tsconfig.base.json",
+    "ngrx-uml.baseDir": "c:\\repos\\craft-fusion",
+    "ngrx-uml.ignorePattern": ["**/*.spec.ts", "**/node_modules/**"],
+    "ngrx-uml.outDir": "c:\\repos\\craft-fusion\\out",
+    "ngrx-uml.generateImages": false,
+    "ngrx-uml.imageFormat": "off",
+    "ngrx-uml.saveConvertResultToJson": true,
+    "ngrx-uml.saveWsd": true,
+    "ngrx-uml.logLevel": "INFO",
+    "ngrx-uml.clickableLinks": true
+}
