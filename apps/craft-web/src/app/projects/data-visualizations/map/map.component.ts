@@ -20,7 +20,8 @@ interface GeoJSONCollection {
 @Component({
   selector: 'app-map-chart',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss']
+  styleUrls: ['./map.component.scss'],
+  standalone: false
 })
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() data: MapChartData[] | undefined;

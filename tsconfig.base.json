@@ -22,11 +22,6 @@
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-    //   "@craft-go/*": ["apps/craft-go/src/*"],
-    //   "@craft-nest/*": ["apps/craft-nest/src/app/*"],
-    //   "@craft-web/*": ["apps/craft-web/src/*"],
-    //   "@craft-nest/environments/environment": ["apps/craft-nest/src/environments/environment.ts"]
-  
     },
     "outDir": "./dist/out-tsc",
     "rootDir": ".",

@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
+  standalone: false,
   animations: [
     trigger('flyInOut', [
       state('in', style({ transform: 'translateX(0)' })),
@@ -19,14 +20,13 @@ import { Router } from '@angular/router';
   ],
   host: {
     '[class.collapsed]': 'isCollapsed'
-  },
-  standalone: false
+  }
 })
 
 export class SidebarComponent implements OnInit {
   @Output() sidebarToggle = new EventEmitter<boolean>();
-  @Input() isSmallScreen = false;
-  @Input() isCollapsed = false;
+  @Input() isSmallScreen: boolean = false;
+  @Input() isCollapsed: boolean = false;
   @ViewChild('drawer') drawer!: MatDrawer;
   isMobile = false;
 
