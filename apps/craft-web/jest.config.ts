@@ -1,12 +1,17 @@
+import baseConfig from '../../jest.config';
+
 export default {
+  ...baseConfig,
+  rootDir: '../../', // Set the rootDir to the correct path
   displayName: 'craft-web',
-  preset: '../../jest.preset.js',
-  coverageDirectory: '../../coverage/apps/craft-web',
+  preset: '../../jest.preset',
+  setupFilesAfterEnv: ['./test-setup.ts'],
+  coverageDirectory: '../../coverage/craft-web',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',
       {
-        tsconfig: '<rootDir>/tsconfig.json',
+        tsconfig: '<rootDir>/apps/craft-web/tsconfig.spec.json', // Update the tsconfig path
         stringifyContentPathRegex: '\\.(html|svg)$',
       },
     ],
@@ -18,7 +23,7 @@ export default {
     'jest-preset-angular/build/serializers/html-comment',
   ],
   testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.[jt]s?(x)',
-    '<rootDir>/src/**/*(*.)@(spec|test).[jt]s?(x)',
+    '<rootDir>/src/**/*.spec.ts',
+    '<rootDir>/src/**/*.e2e-spec.ts'
   ],
 };

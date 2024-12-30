@@ -1,8 +1,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "esnext",
+    "target": "ES2022",      // Use ES2022 for modern JavaScript features
+    "module": "NodeNext",    // NodeNext for interoperability with Node.js ES modules
+    "moduleResolution": "NodeNext", // Ensure proper resolution for NodeNext modules
+    "esModuleInterop": true, // Allows compatibility between CommonJS and ESModule
     "lib": ["es2018", "dom"],
     "declaration": false,
     "sourceMap": true,
@@ -16,10 +18,10 @@
     "noImplicitThis": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "esModuleInterop": true,
     "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+
     "baseUrl": "./",
     "paths": {
     },
