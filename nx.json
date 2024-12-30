@@ -40,7 +40,7 @@
       "options": { "targetName": "eslint:lint" }
     },
     {
-      "plugins": ["@nrwl/jest"]
+      "plugin": "@nrwl/jest"
     },
     {
       "plugin": "@nrwl/nx-cloud",
