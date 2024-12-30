@@ -1,4 +1,7 @@
+import baseConfig from './jest.config';
+
 export default {
+  ...baseConfig,
   displayName: 'craft-fusion',
   preset: './jest.preset.js',
   setupFilesAfterEnv: ['./test-setup.ts'],
