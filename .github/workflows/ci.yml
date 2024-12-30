@@ -1,4 +1,5 @@
 name: CI
+
 on:
   push:
     branches:
@@ -12,45 +13,66 @@ permissions:
 jobs:
   main:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      # 📥 Checkout Repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v3
+      # ⚙️ Setup Node Environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: 'npm'
 
-      - run: npm ci
+      # 📦 Install Dependencies
+      - name: Install Dependencies
+        run: npm ci
 
-      - uses: nrwl/nx-set-shas@v4
+      # 🔄 Set NX SHAs
+      - name: Set NX SHAs
+        uses: nrwl/nx-set-shas@v4
 
-      # Run format check
-      - run: npx nx-cloud record -- nx format:check
+      # ✅ Run Format Check
+      - name: Format Check
+        run: npx nx-cloud record -- nx format:check
 
-      # Run tests with result reporting
-      - name: Run Tests
-        run: npx nx affected -t test --configuration=ci --coverage --coverageReporters=text-summary,lcov --outputFile=reports/jest/results.json
+      # 🧪 Run Jest Tests with Coverage
+      - name: Run Jest Tests
+        run: npx nx affected -t test --configuration=ci --coverage --coverageReporters=text-summary,lcov --outputFile=reports/jest/results.xml
 
-      # Upload test results
-      - name: Test Report
+      # 📊 Upload Jest Test Results
+      - name: Upload Jest Test Results
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
           name: Jest Test Results
-          path: reports/jest/results.json
+          path: reports/jest/results.xml
           reporter: jest-junit
           fail-on-error: false
 
-      # Upload coverage reports
-      - name: Upload coverage reports
+      # 📈 Upload Coverage Reports
+      - name: Upload Coverage Reports
         uses: codecov/codecov-action@v3
         with:
           files: ./coverage/lcov.info
           fail_ci_if_error: false
           verbose: true
 
-      # Build and run E2E tests
-      - name: Build and E2E
-        run: npx nx affected -t build e2e-ci
+      # 🏗️ Build and E2E Tests
+      - name: Build Affected Projects
+        run: npx nx affected -t build --configuration=ci
+
+      - name: Run E2E Tests
+        run: npx nx affected -t e2e-ci --configuration=ci
+
+      # 📤 Upload Build Artifacts (Optional)
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        if: success()
+        with:
+          name: build-artifacts
+          path: dist
