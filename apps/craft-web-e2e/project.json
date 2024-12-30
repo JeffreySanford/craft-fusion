@@ -4,5 +4,16 @@
   "projectType": "application",
   "sourceRoot": "apps/craft-web-e2e/src",
   "implicitDependencies": ["craft-web"],
-  "targets": {}
+  "targets": {
+    "targets": {
+      "test": {
+        "executor": "@nx/jest:jest",
+        "outputs": ["{workspaceRoot}/coverage/craft-web-e2e"],
+        "options": {
+          "jestConfig": "apps/craft-web-e2e/jest.config.ts",
+          "passWithNoTests": true
+        }
+      }
+    }
+  }
 }

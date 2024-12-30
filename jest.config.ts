@@ -1,4 +1,4 @@
-import nxPreset from './jest.preset';
+import nxPreset from './jest.presetts';
 
 export default {
   ...nxPreset,

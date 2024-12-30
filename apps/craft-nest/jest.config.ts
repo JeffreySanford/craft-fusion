@@ -4,7 +4,7 @@ export default {
   ...baseConfig,
   displayName: 'craft-nest',
   testMatch: ['**/*.spec.ts'],
-  preset: '../../jest.preset.js',
+  preset: '../../jest.preset',
   testEnvironment: 'node',
   moduleNameMapper: {
     "@craft-nest/environments/environment": "<rootDir>/src/environments/environment"
