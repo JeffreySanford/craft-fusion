@@ -1,6 +1,10 @@
+import baseConfig from '../../jest.config';
+
 export default {
+  ...baseConfig,
   displayName: 'craft-nest',
-  preset: '../../jest.preset.js',
+  testMatch: ['**/*.spec.ts'],
+  preset: '../../jest.preset',
   testEnvironment: 'node',
   moduleNameMapper: {
     "@craft-nest/environments/environment": "<rootDir>/src/environments/environment"

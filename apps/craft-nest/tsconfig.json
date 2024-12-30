@@ -3,7 +3,6 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "target": "ES2022",
-    "module": "commonjs",
     "baseUrl": "./",
     "paths": {
       "@craft-nest/*": ["src/*"]
@@ -13,14 +12,15 @@
     "rootDir": "../../apps/craft-nest",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "noEmit": true
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.spec.ts",
     "src/**/*.test.ts",
     "src/**/*.d.ts",
-    "jest.config.ts"
-, "src/ecosystem.config.js"  ],
+    "src/ecosystem.config.js"
+  ],
   "exclude": ["node_modules"]
 }
