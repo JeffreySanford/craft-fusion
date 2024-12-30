@@ -2,13 +2,14 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "rootDir": "./src",
+    "rootDir": ".",
     "target": "ES2022",
     "useDefineForClassFields": false
   },
   "include": [
     "src/**/*.ts",
-    "src/main.ts"
+    "src/main.ts",
+    "jest.config.ts"
   ],
   "exclude": ["tmp"]
 }

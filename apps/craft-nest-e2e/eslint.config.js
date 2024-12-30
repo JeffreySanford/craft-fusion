@@ -14,6 +14,9 @@ module.exports = [
         sourceType: 'module'
       },
     },
+    plugins: {
+      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
+    },
     rules: {
       '@typescript-eslint/no-unused-vars': 'warn',
       'import/no-cycle': 'error',
