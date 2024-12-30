@@ -62,6 +62,15 @@ jobs:
           fail_ci_if_error: false
           verbose: true
 
+      # 📦 Cache npm dependencies
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-
+
       # 🏗️ Build and E2E Tests
       - name: Build Affected Projects
         run: npx nx affected -t build --configuration=ci
