@@ -57,6 +57,13 @@
       "options": {
         "lintFilePatterns": ["apps/craft-nest/**/*.ts"]
       }
+    },
+    "stylelint": {
+      "executor": "nx-stylelint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/craft-nest/**/*.css"]
+      }
     }
   }
 }

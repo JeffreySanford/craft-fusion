@@ -85,6 +85,12 @@
         "lintFilePatterns": ["apps/craft-web/src/**/*.ts", "apps/craft-web/src/**/*.html", "apps/craft-web/src/**/*.scss"]
       }
     },
+    "stylelint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx stylelint '**/*.{css,scss,sass,less}' --config .stylelintrc.json"
+      }
+    },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/craft-web"],
