@@ -15,20 +15,6 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
-  "cloud": {
-    "accessToken": "your-access-token",
-    "baseUrl": "https://cloud.nx.app"
-  },
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "@nrwl/nx-cloud",
-      "options": {
-        "cacheableOperations": ["build", "lint", "test"],
-        "baseUrl": "https://cloud.nx.app",
-        "accessToken": "6772d6df2bb7dc08eb8f15aa"
-      }
-    }
-  },
   "targetDefaults": {
     "build": {
       "cache": true,
