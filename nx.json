@@ -42,12 +42,6 @@
       "plugin": "@nrwl/jest"
     }
   ],
-  "cloud": {
-    "cache": {
-      "nxCloudId": "676dc9093c27485c6fe7270d",
-      "url": "https://cloud.nx.app"
-    }
-  },
   "projects": {
     "craft-web": "apps/craft-web/project.json",
     "craft-nest": "apps/craft-nest/project.json",

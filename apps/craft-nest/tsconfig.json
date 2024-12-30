@@ -7,7 +7,7 @@
     "paths": {
       "@craft-nest/*": ["src/*"]
     },
-    "outDir": "../../dist/out-tsc",
+    "outDir": "../../dist/apps/craft-nest",
     "types": ["jest", "node"],
     "rootDir": ".",
     "sourceMap": true,
