@@ -15,7 +15,6 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
-  "nxCloudId": "676dc9093c27485c6fe7270d",
   "targetDefaults": {
     "build": {
       "cache": true,
@@ -38,8 +37,17 @@
     {
       "plugin": "@nx/eslint/plugin",
       "options": { "targetName": "eslint:lint" }
+    },
+    {
+      "plugin": "@nrwl/jest"
     }
   ],
+  "cloud": {
+    "cache": {
+      "nxCloudId": "676dc9093c27485c6fe7270d",
+      "url": "https://cloud.nx.app"
+    }
+  },
   "projects": {
     "craft-web": "apps/craft-web/project.json",
     "craft-nest": "apps/craft-nest/project.json",
@@ -50,5 +58,17 @@
   "workspaceLayout": {
     "appsDir": "apps",
     "libsDir": "libs"
+  },
+  "stylelint": {
+    "inputs": ["default", "{projectRoot}/**/*"]
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx-cloud",
+      "options": {
+        "accessToken": "6772d6df2bb7dc08eb8f15aa",
+        "cacheDirectory": ".nx/cache"
+      }
+    }
   }
 }
