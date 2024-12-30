@@ -20,7 +20,6 @@
         "polyfills": "apps/craft-web/src/polyfills.ts",
         "tsConfig": "apps/craft-web/tsconfig.app.json",
         "assets": ["apps/craft-web/src/assets"],
-        "jestConfig": "./jest.config.ts",
         "serviceWorker": false,
         "styles": ["@angular/material/prebuilt-themes/azure-blue.css", "apps/craft-web/src/styles/styles.scss"],
         "stylePreprocessorOptions": {
@@ -89,14 +88,6 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "npx stylelint '**/*.{css,scss,sass,less}' --config .stylelintrc.json"
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/craft-web"],
-      "options": {
-        "jestConfig": "apps/craft-web/jest.config.ts",
-        "passWithNoTests": true
       }
     },
     "serve-static": {
