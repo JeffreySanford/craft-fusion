@@ -2,11 +2,9 @@ name: CI
 on:
   push:
     branches:
-      # Change this if your primary branch is not main
       - master
   pull_request:
 
-# Needed for nx-set-shas when run on the main branch
 permissions:
   actions: read
   contents: read
@@ -18,31 +16,31 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: 'npm'
-      # This line enables distribution
-      # The "--stop-agents-after" is optional, but allows idle agents to shut down once the "e2e-ci" targets have been requested
-      # - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
+
       - run: npm ci
 
       - uses: nrwl/nx-set-shas@v4
 
+      # Run format check
       - run: npx nx-cloud record -- nx format:check
-      
+
       # Run tests with result reporting
       - name: Run Tests
-        run: npx nx affected -t test --configuration=ci --json --coverageReporters=text-summary,lcov > test-results.json
-      
+        run: npx nx affected -t test --configuration=ci --coverage --coverageReporters=text-summary,lcov --outputFile=reports/jest/results.json
+
       # Upload test results
       - name: Test Report
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: Test Results
-          path: test-results.json
-          reporter: jest-json
+          name: Jest Test Results
+          path: reports/jest/results.json
+          reporter: jest-junit
           fail-on-error: false
 
       # Upload coverage reports
@@ -53,5 +51,6 @@ jobs:
           fail_ci_if_error: false
           verbose: true
 
-      # Continue with remaining steps
-      - run: npx nx affected -t build e2e-ci
+      # Build and run E2E tests
+      - name: Build and E2E
+        run: npx nx affected -t build e2e-ci

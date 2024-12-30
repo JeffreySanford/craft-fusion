@@ -5,5 +5,13 @@
     "module": "commonjs",
     "types": ["jest", "node"]
   },
-  "include": ["**/*.spec.ts", "**/*.d.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "src/**/*.d.ts",
+    "jest.config.ts",
+    "src/ecosystem.config.js"
+  ],
+  "exclude": ["node_modules"]
 }
