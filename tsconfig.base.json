@@ -1,10 +1,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "ES2022",      // Use ES2022 for modern JavaScript features
-    "module": "NodeNext",    // NodeNext for interoperability with Node.js ES modules
-    "moduleResolution": "NodeNext", // Ensure proper resolution for NodeNext modules
-    "esModuleInterop": true, // Allows compatibility between CommonJS and ESModule
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
     "lib": ["es2018", "dom"],
     "declaration": false,
     "sourceMap": true,
@@ -21,10 +21,8 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
-
     "baseUrl": "./",
-    "paths": {
-    },
+    "paths": {},
     "outDir": "./dist/out-tsc",
     "rootDir": ".",
     "forceConsistentCasingInFileNames": true,
@@ -35,8 +33,6 @@
     "strictInjectionParameters": true,
     "strictTemplates": true
   },
-  "include": [
-    "jest.config.ts"
-  ],
+  "include": ["jest.config.ts"],
   "exclude": ["tmp"]
 }

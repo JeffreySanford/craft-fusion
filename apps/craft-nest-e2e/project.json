@@ -26,6 +26,13 @@
         "jestConfig": "apps/craft-nest-e2e/jest.config.ts",
         "passWithNoTests": true
       }
+    },
+    "stylelint": {
+      "executor": "nx-stylelint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/craft-nest-e2e/**/*.css"]
+      }
     }
   }
 }

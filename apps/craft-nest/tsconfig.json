@@ -3,7 +3,6 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "target": "ES2022",
-    "module": "commonjs",
     "baseUrl": "./",
     "paths": {
       "@craft-nest/*": ["src/*"]
@@ -13,7 +12,8 @@
     "rootDir": "../../apps/craft-nest",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "noEmit": true
   },
   "include": [
     "src/**/*.ts",

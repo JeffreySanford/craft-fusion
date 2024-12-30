@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "defaultBase": "master",
+  "defaultBase": "main",
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
@@ -15,7 +15,6 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
-  "nxCloudId": "676dc9093c27485c6fe7270d",
   "targetDefaults": {
     "build": {
       "cache": true,
@@ -41,12 +40,6 @@
     },
     {
       "plugin": "@nrwl/jest"
-    },
-    {
-      "plugin": "@nrwl/nx-cloud",
-      "options": {
-        "id": "676dc9093c27485c6fe7270d"
-      }
     }
   ],
   "projects": {
@@ -64,11 +57,16 @@
     "executor": "@nx/jest:jest",
     "outputs": ["coverage/craft-web"]
   },
+  "stylelint": {
+    "inputs": ["default", "{projectRoot}/**/*"]
+  },
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
-        "cacheableOperations": ["build", "lint", "test"]
+        "cacheableOperations": ["build", "lint", "test"],
+        "accessToken": "676dc9093c27485c6fe7270d",
+        "baseUrl": "https://cloud.nx.app"
       }
     }
   }
