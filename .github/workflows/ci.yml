@@ -28,6 +28,15 @@ jobs:
           node-version: 20
           cache: 'npm'
 
+      # 📦 Cache npm Dependencies
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-
+
       # 📦 Install Dependencies
       - name: Install Dependencies
         run: npm ci
@@ -35,6 +44,8 @@ jobs:
       # 🔄 Set NX SHAs
       - name: Set NX SHAs
         uses: nrwl/nx-set-shas@v4
+        with:
+          error-on-no-successful-workflow: false
 
       # ✅ Run Format Check
       - name: Format Check
@@ -62,23 +73,15 @@ jobs:
           fail_ci_if_error: false
           verbose: true
 
-      # 📦 Cache npm dependencies
-      - name: Cache npm dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            npm-
-
-      # 🏗️ Build and E2E Tests
+      # 🏗️ Build Affected Projects
       - name: Build Affected Projects
         run: npx nx affected -t build --configuration=ci
 
+      # 🧪 Run E2E Tests
       - name: Run E2E Tests
         run: npx nx affected -t e2e-ci --configuration=ci
 
-      # 📤 Upload Build Artifacts (Optional)
+      # 📤 Upload Build Artifacts
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         if: success()
