@@ -1,6 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "noEmit": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "lib": ["es2022", "dom"],
     "outDir": "../../dist/out-tsc"
   },
   "include": ["**/*.ts"],
