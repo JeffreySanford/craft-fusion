@@ -15,6 +15,7 @@ module.exports = {
       optimization: false,
       outputHashing: 'none',
       generatePackageJson: true,
+      outputPath: join(__dirname, '../../dist/apps/craft-nest'),
     }),
   ],
 };
