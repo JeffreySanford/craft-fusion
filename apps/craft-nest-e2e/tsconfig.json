@@ -3,9 +3,16 @@
   "compilerOptions": {
     "noEmit": true,
     "target": "ES2022",
-    "module": "NodeNext",
     "lib": ["es2022", "dom"],
-    "outDir": "../../dist/out-tsc"
+    "outDir": "../../dist/out-tsc",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "allowImportingTsExtensions": true,
+    "types": ["jest", "node"],
+    "baseUrl": "./",
+    "paths": {
+      "@craft-nest-e2e/*": ["src/*"]
+    }
   },
   "include": ["**/*.ts"],
   "exclude": ["dist"]

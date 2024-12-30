@@ -7,20 +7,23 @@
     "paths": {
       "@craft-nest/*": ["src/*"]
     },
-    "outDir": "dist/out-tsc",
+    "outDir": "../../dist/out-tsc",
     "types": ["jest", "node"],
-    "rootDir": "../../apps/craft-nest",
+    "rootDir": ".",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "noEmit": true
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "allowImportingTsExtensions": true
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.spec.ts",
     "src/**/*.test.ts",
     "src/**/*.d.ts",
-    "src/ecosystem.config.js"
+    "src/ecosystem.config.js",
+    "src/main.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["tmp"]
 }
