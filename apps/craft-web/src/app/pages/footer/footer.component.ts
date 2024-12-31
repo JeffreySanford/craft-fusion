@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Renderer2 } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 
@@ -17,8 +17,11 @@ export class FooterComponent implements OnInit, OnDestroy {
   };
   private performanceSubscription!: Subscription;
   private appStartTime: number;
+  width: number;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private renderer: Renderer2, private window: Window) {  
+    this.width = this.renderer.selectRootElement('body').clientWidth;
+
     this.appStartTime = performance.now();
   }
 
@@ -136,10 +139,10 @@ export class FooterComponent implements OnInit, OnDestroy {
   }
 
   sendEmail(): void {
-    window.location.href = 'mailto:jeffreysanford@gmail.com';
+    this.window.location.href = 'mailto:jeffreysanford@gmail.com';
   }
 
   openGitHub(): void {
-    window.open('https://github.com/jeffreysanford', '_blank');
+    this.window.open('https://github.com/jeffreysanford', '_blank');
   }
 }

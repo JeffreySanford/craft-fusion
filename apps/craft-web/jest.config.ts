@@ -7,6 +7,7 @@ export default {
   preset: '../../jest.preset',
   setupFilesAfterEnv: ['./test-setup.ts'],
   coverageDirectory: '../../coverage/craft-web',
+  testEnvironment: 'jsdom',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',

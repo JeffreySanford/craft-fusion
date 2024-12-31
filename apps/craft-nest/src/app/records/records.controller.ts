@@ -10,7 +10,6 @@ export class RecordsController {
 
   @Get()
   getAllRecords(): Record[] {
-    console.log('Received request to get all records');
     return this.recordService.getAllRecords();
   }
 

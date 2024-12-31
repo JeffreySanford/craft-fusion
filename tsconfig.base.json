@@ -2,10 +2,10 @@
   "compileOnSave": false,
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ESNext",
+    "module": "commonjs",
     "moduleResolution": "Node",
     "esModuleInterop": true,
-    "lib": ["es2022", "dom"],
+    "lib": ["ES2022"],
     "declaration": true,
     "sourceMap": true,
     "emitDecoratorMetadata": true,
@@ -28,12 +28,17 @@
     "typeRoots": ["node_modules/@types"],
     "useDefineForClassFields": false,
     "noEmit": false,
-    "emitDeclarationOnly": false
+    "emitDeclarationOnly": false,
+    "strict": true,
+    "strictBindCallApply": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
     "strictTemplates": true
   },
   "include": ["jest.config.ts"],
-  "exclude": ["tmp"]
+  "exclude": ["node_modules", "tmp"]
 }
