@@ -61,7 +61,13 @@ jobs:
 
       # ✅ Run Format Check
       - name: Format Check
-        run: npx nx-cloud record -- nx format:check
+        run: |
+          if [ -z "${{ steps.set_nx_shas.outputs.base }}" ]; then
+            echo "NX_BASE is empty, defaulting to all files."
+            npx nx format:check --all
+          else
+            npx nx-cloud record -- nx format:check
+          fi
         env:
           NX_BASE: ${{ steps.set_nx_shas.outputs.base }}
           NX_HEAD: ${{ steps.set_nx_shas.outputs.head }}
