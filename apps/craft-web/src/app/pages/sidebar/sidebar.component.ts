@@ -3,7 +3,6 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer } from '@angular/material/sidenav';
 import { MenuItem, MenuGroup } from './sidebar.types';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -44,7 +43,7 @@ export class SidebarComponent implements OnInit {
   ];
   menuItems: MenuItem[] = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
 
-  constructor(private breakpointObserver: BreakpointObserver, private router: Router, private renderer: Renderer2) {}
+  constructor(private breakpointObserver: BreakpointObserver, private renderer: Renderer2) {}
 
   ngOnInit() {
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {

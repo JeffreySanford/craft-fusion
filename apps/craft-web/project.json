@@ -1,8 +1,9 @@
 {
   "name": "craft-web",
+  "root": "apps/craft-web",
+  "sourceRoot": "apps/craft-web/src",
   "projectType": "application",
   "prefix": "app",
-  "sourceRoot": "apps/craft-web/src",
   "tags": [],
   "schematics": {
     "@schematics/angular:component": {
@@ -11,22 +12,14 @@
   },
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:browser",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@nx/esbuild:esbuild",
       "options": {
-        "outputPath": "dist/apps/craft-web/browser",
+        "esbuildConfig": "apps/craft-web/esbuild.config.js",
+        "outputPath": "dist/apps/craft-web",
         "index": "apps/craft-web/src/index.html",
         "main": "apps/craft-web/src/main.ts",
-        "polyfills": "apps/craft-web/src/polyfills.ts",
         "tsConfig": "apps/craft-web/tsconfig.app.json",
-        "assets": ["apps/craft-web/src/assets"],
-        "serviceWorker": false,
-        "styles": ["@angular/material/prebuilt-themes/azure-blue.css", "apps/craft-web/src/styles/styles.scss"],
-        "stylePreprocessorOptions": {
-          "includePaths": ["apps/craft-web/src/styles"]
-        },
-        "scripts": [],
-        "allowedCommonJsDependencies": ["jszip"]
+        "assets": ["apps/craft-web/src/assets"]
       },
       "configurations": {
         "production": {

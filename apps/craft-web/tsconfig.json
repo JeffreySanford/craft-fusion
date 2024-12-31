@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "types": ["jest", "node"],
-    "lib": ["ES2020", "dom"], // Ensure 'dom' is included
+    "lib": ["ES2020", "dom"],
     "baseUrl": "./",
     "paths": {
       "@craft-web/*": ["src/*"]

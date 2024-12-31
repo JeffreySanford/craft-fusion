@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "projects": {
+    "craft-web": {
+      "root": "apps/craft-web",
+      "sourceRoot": "apps/craft-web/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@x/esbuild:esbuild",
+          "options": {
+            "esbuildConfig": "apps/craft-web/esbuild.config.js",
+            "outputPath": "dist/apps/craft-web",
+            "main": "apps/craft-web/src/main.ts",
+            "tsConfig": "apps/craft-web/tsconfig.app.json",
+            "assets": ["apps/craft-web/src/assets"],
+            "index": "apps/craft-web/src/index.html"
+          }
+        }
+      }
+    }
+  }
+}

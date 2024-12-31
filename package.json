@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "start": "nx serve",
-    "build": "node build.js",
+    "build": "esbuild --config=apps/craft-web/esbuild.config.js",
     "test": "nx test",
     "lint": "nx lint",
     "lint:scss": "stylelint 'apps/craft-web/src/**/*.scss'",
@@ -49,6 +49,7 @@
     "@nx/node": "20.3.0",
     "@types/axios": "^0.9.36",
     "@types/helmet": "^0.0.48",
+    "assert": "^2.0.0",
     "axios": "^1.5.0",
     "check-disk-space": "^3.1.0",
     "core-js": "^3.39.0",
@@ -60,10 +61,12 @@
     "migrate": "^2.1.0",
     "ngx-toastr": "^19.0.0",
     "nx": "20.3.0",
+    "process": "^0.11.10",
     "reflect-metadata": "^0.1.13",
     "resize-observer-polyfill": "^1.5.1",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
+    "util": "^0.12.5",
     "web-animations-js": "^2.3.2",
     "zone.js": "0.15.0"
   },
@@ -103,6 +106,7 @@
     "@typescript-eslint/utils": "^8.18.2",
     "angular-eslint": "^19.0.2",
     "cli-progress": "^3.12.0",
+    "constants-browserify": "^1.0.0",
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.31.0",
@@ -118,15 +122,18 @@
     "jest-preset-angular": "^14.4.2",
     "npmlog": "^7.0.1",
     "ora": "^6.0.0",
+    "path-browserify": "^1.0.1",
     "prettier": "^2.8.8",
     "rimraf": "^5.0.1",
     "sass": "1.80.7",
     "sass-loader": "16.0.3",
     "shapefile": "^0.6.6",
     "sharp": "^0.33.5",
+    "stream-browserify": "^3.0.0",
     "ts-jest": "^29.2.5",
     "ts-node": "10.9.1",
     "tslib": "^2.8.1",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "url": "^0.11.4"
   }
 }

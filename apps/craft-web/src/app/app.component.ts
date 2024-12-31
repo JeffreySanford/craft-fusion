@@ -71,8 +71,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             this.stopVideoCheckPolling();
             this.polling = false;
           })
-          .catch(error => {
-            // console.error('Error attempting to play the video:', error);
+          .catch(() => {
+            // Handle error
           });
       } else {
         if (this.polling) {

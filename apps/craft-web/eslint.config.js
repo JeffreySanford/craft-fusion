@@ -46,6 +46,11 @@ module.exports = [
       '@typescript-eslint/no-unused-vars': 'warn',
       'import/no-cycle': 'error',
     },
+    resolve: {
+      fallback: {
+        "path": require.resolve("path-browserify")
+      }
+    }
   },
 
   // Angular Template Configuration
@@ -57,5 +62,10 @@ module.exports = [
     rules: {
       '@angular-eslint/template/no-negated-async': 'warn',
     },
+    resolve: {
+      fallback: {
+        "path": require.resolve("path-browserify")
+      }
+    }
   },
 ];

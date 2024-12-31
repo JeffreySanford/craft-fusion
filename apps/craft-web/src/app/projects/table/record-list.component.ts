@@ -294,13 +294,9 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     return (a < b ? -1 : a > b ? 1 : 0) * (isAsc ? 1 : -1);
   }
 
-  applyFilter(event: Event) {
-    console.log('Event: Filter applied with event:', event);
+  applyFilter(event: KeyboardEvent) {
     const filterValue = (event.target as HTMLInputElement).value;
-    if (filterValue.length >= 2 || filterValue === '') {
-      this.dataSource.filter = filterValue.trim().toLowerCase();
-      console.log('Filter: Applied with value:', filterValue);
-    }
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   private updateCreationTime(): void {
