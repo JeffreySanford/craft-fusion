@@ -27,4 +27,7 @@ export default {
     '<rootDir>/src/**/*.spec.ts',
     '<rootDir>/src/**/*.e2e-spec.ts'
   ],
+  moduleNameMapper: {
+    '^path$': require.resolve('path-browserify')
+  }
 };
