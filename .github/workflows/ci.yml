@@ -3,8 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
+    branches:
+      - main
 
 permissions:
   actions: read
@@ -20,6 +22,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      # Fetch all branches
+      - name: Fetch all branches
+        run: git fetch --all
 
       # ⚙️ Setup Node Environment
       - name: Setup Node.js
@@ -43,13 +49,22 @@ jobs:
 
       # 🔄 Set NX SHAs
       - name: Set NX SHAs
+        id: set_nx_shas
         uses: nrwl/nx-set-shas@v4
         with:
+          main-branch-name: main
           error-on-no-successful-workflow: false
+          last-successful-event: push
+          working-directory: .
+          workflow-id: ''
+          fallback-sha: ''
 
       # ✅ Run Format Check
       - name: Format Check
         run: npx nx-cloud record -- nx format:check
+        env:
+          NX_BASE: ${{ steps.set_nx_shas.outputs.base }}
+          NX_HEAD: ${{ steps.set_nx_shas.outputs.head }}
 
       # 🧪 Run Jest Tests with Coverage
       - name: Run Jest Tests
