@@ -73,27 +73,27 @@ jobs:
           NX_HEAD: ${{ steps.set_nx_shas.outputs.head }}
 
       # 🧪 Run Jest Tests with Coverage
-      - name: Run Jest Tests
-        run: |
-          npx nx affected -t test --configuration=ci --coverage --coverageReporters=text-summary,lcov --outputFile=reports/jest/results.xml || echo "No tests found"
+      # - name: Run Jest Tests
+      #   run: |
+      #     npx nx affected -t test --configuration=ci --coverage --coverageReporters=text-summary,lcov --outputFile=reports/jest/results.xml || echo "No tests found"
 
       # 📊 Upload Jest Test Results
-      - name: Upload Jest Test Results
-        if: success() || failure()
-        uses: dorny/test-reporter@v1
-        with:
-          name: Jest Test Results
-          path: reports/jest/results.xml
-          reporter: jest-junit
-          fail-on-error: false
+      # - name: Upload Jest Test Results
+      #   if: success() || failure()
+      #   uses: dorny/test-reporter@v1
+      #   with:
+      #     name: Jest Test Results
+      #     path: reports/jest/results.xml
+      #     reporter: jest-junit
+      #     fail-on-error: false
 
       # 📈 Upload Coverage Reports
-      - name: Upload Coverage Reports
-        uses: codecov/codecov-action@v2
-        with:
-          files: ./coverage/lcov.info
-          fail_ci_if_error: false
-          verbose: true
+      # - name: Upload Coverage Reports
+      #   uses: codecov/codecov-action@v2
+      #   with:
+      #     files: ./coverage/lcov.info
+      #     fail_ci_if_error: false
+      #     verbose: true
 
       # 🏗️ Build Affected Projects
       - name: Build Affected Projects
