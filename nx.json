@@ -28,9 +28,7 @@
     },
     "lint": {
       "executor": "@nx/eslint:eslint",
-      "options": {
-        "lintFilePatterns": ["apps/**/*.ts", "libs/**/*.ts"]
-      }
+      "options": { "lintFilePatterns": ["apps/**/*.ts", "libs/**/*.ts"] }
     }
   },
   "plugins": [
@@ -38,9 +36,7 @@
       "plugin": "@nx/eslint/plugin",
       "options": { "targetName": "eslint:lint" }
     },
-    {
-      "plugin": "@nrwl/jest"
-    }
+    { "plugin": "@nrwl/jest" }
   ],
   "projects": {
     "craft-web": "apps/craft-web/project.json",
@@ -49,15 +45,8 @@
     "craft-web-e2e": "apps/craft-web-e2e/project.json"
   },
   "npmScope": "craft-fusion",
-  "workspaceLayout": {
-    "appsDir": "apps",
-    "libsDir": "libs"
-  },
-  "test": {
-    "executor": "@nx/jest:jest",
-    "outputs": ["coverage/craft-web"]
-  },
-  "stylelint": {
-    "inputs": ["default", "{projectRoot}/**/*"]
-  }
+  "workspaceLayout": { "appsDir": "apps", "libsDir": "libs" },
+  "test": { "executor": "@nx/jest:jest", "outputs": ["coverage/craft-web"] },
+  "stylelint": { "inputs": ["default", "{projectRoot}/**/*"] },
+  "nxCloudId": "6772d6df2bb7dc08eb8f15aa"
 }
