@@ -44,7 +44,9 @@
   "plugins": [
     {
       "plugin": "@nx/eslint/plugin",
-      "options": { "targetName": "eslint:lint" }
+      "options": {
+        "targetName": "eslint:lint"
+      }
     },
     {
       "plugin": "@nrwl/jest"
@@ -56,7 +58,6 @@
     "craft-go": "apps/craft-go/project.json",
     "craft-web-e2e": "apps/craft-web-e2e/project.json"
   },
-  "npmScope": "craft-fusion",
   "workspaceLayout": {
     "appsDir": "apps",
     "libsDir": "libs"
