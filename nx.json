@@ -31,6 +31,14 @@
       "options": {
         "lintFilePatterns": ["apps/**/*.ts", "libs/**/*.ts"]
       }
+    },
+    "craft-nest:build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{workspaceRoot}/dist/apps/craft-nest"],
+      "options": {
+        "tsConfig": "apps/craft-nest/tsconfig.app.json",
+        "outputPath": "dist/apps/craft-nest"
+      }
     }
   },
   "plugins": [
@@ -59,15 +67,5 @@
   },
   "stylelint": {
     "inputs": ["default", "{projectRoot}/**/*"]
-  },
-  "tasksRunnerOptions": {
-    
-    "default": {
-      "runner": "@nrwl/workspace/tasks-runners/default",
-      "options": {
-        "cacheableOperations": ["build", "test", "lint", "e2e"],
-        "accessToken": "6772d6df2bb7dc08eb8f15aa"
-      }
-    }
   }
 }
