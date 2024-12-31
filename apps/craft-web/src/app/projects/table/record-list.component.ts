@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, AfterContentChecked } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, AfterContentChecked, Renderer2 } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -58,15 +58,15 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     },
   ];
   server: Server = this.servers[0];
-  apiURL = ''
+  apiURL = '';
 
-  constructor(private router: Router, private recordService: RecordService, private changeDetectorRef: ChangeDetectorRef) {
+  constructor(private router: Router, private recordService: RecordService, private changeDetectorRef: ChangeDetectorRef, private renderer: Renderer2) {
     console.log('Constructor: RecordListComponent created');
     console.log('Initial servers:', this.servers);
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event: Event): void {
+  @HostListener('window:resize')
+  onResize(): void {
     console.log('Event: Window resized');
     this.updateDisplayedColumns();
   }
@@ -144,7 +144,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     console.log('Available servers:', this.servers);
 
     const server = this.servers.find(element => event === element.name);
-    
+
     if (server) {
       console.log('Found server:', server);
       this.apiURL = this.recordService.setServerResource(server.name);
@@ -159,27 +159,23 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
 
   private updateDisplayedColumns(): void {
     console.log('Method: updateDisplayedColumns called');
-    const width = window.innerWidth;
+    const width = this.renderer.selectRootElement('body').clientWidth;
 
     if (width < 800) {
       this.displayedColumns = ['userID', 'icons'];
-      console.log('Displayed Columns: Width < 800, updated to:', this.displayedColumns);
     } else if (width < 900) {
       this.displayedColumns = ['userID', 'name', 'icons'];
-      console.log('Displayed Columns: Width < 900, updated to:', this.displayedColumns);
     } else if (width < 1000) {
       this.displayedColumns = ['userID', 'name', 'icons'];
-      console.log('Displayed Columns: Width < 1000, updated to:', this.displayedColumns);
     } else if (width < 1200) {
       this.displayedColumns = ['userID', 'name', 'state', 'zip', 'icons'];
-      console.log('Displayed Columns: Width < 1200, updated to:', this.displayedColumns);
     } else if (width < 1400) {
       this.displayedColumns = ['userID', 'name', 'city', 'state', 'zip', 'icons'];
-      console.log('Displayed Columns: Width < 1400, updated to:', this.displayedColumns);
     } else {
       this.displayedColumns = ['userID', 'name', 'address', 'city', 'state', 'zip', 'phone', 'icons'];
-      console.log('Displayed Columns: Width >= 1400, updated to:', this.displayedColumns);
     }
+
+    console.log('Displayed Columns: Updated to:', this.displayedColumns);
   }
 
   onDatasetChange(count: number): void {
@@ -245,7 +241,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     this.recordService.setSelectedUID(record.UID);
 
     this.router.navigate(['table/', record.UID]); //route with a preface colon
-  
+
     console.log('Navigation: Navigated to record detail view');
   }
 
@@ -306,7 +302,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
       console.log('Filter: Applied with value:', filterValue);
     }
   }
-  
+
   private updateCreationTime(): void {
     this.recordService
       .getCreationTime()

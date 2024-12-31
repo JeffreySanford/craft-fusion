@@ -1,5 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, OnInit, AfterViewInit, OnDestroy, Renderer2 } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
@@ -24,7 +23,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
   polling = true;
 
-  constructor(private router: Router, private route: ActivatedRoute, private breakpointObserver: BreakpointObserver) {}
+  constructor(private breakpointObserver: BreakpointObserver, private renderer: Renderer2) {}
 
   ngOnInit(): void {
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
@@ -43,7 +42,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     console.log('Step 2: ngAfterViewInit called');
-    this.ensureVideoIsPlaying();
+    const video = this.renderer.selectRootElement('#background-video') as HTMLVideoElement;
+    this.ensureVideoIsPlaying(video);
     this.addUserInteractionListener();
     this.startVideoCheckPolling();
   }
@@ -52,6 +52,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('Step 4: ngOnDestroy called');
     this.removeUserInteractionListener();
     this.stopVideoCheckPolling();
+    document.removeEventListener('click', this.handleUserInteraction);
+    document.removeEventListener('keydown', this.handleUserInteraction);
   }
 
   setActive(item: any) {
@@ -59,8 +61,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     item.active = true;
   }
 
-  private ensureVideoIsPlaying() {
-    const video = document.getElementById('background-video') as HTMLVideoElement;
+  private ensureVideoIsPlaying(video: HTMLVideoElement) {
     if (video) {
       video.playbackRate = 0.5; // Slow down the video
       if (video.paused || video.ended) {
@@ -84,29 +85,39 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  private clickListener: () => void = () => {};
+  private keydownListener: () => void = () => {};
+
   private addUserInteractionListener() {
     console.log('Adding user interaction listeners');
-    document.addEventListener('click', this.handleUserInteraction);
-    document.addEventListener('keydown', this.handleUserInteraction);
+    this.clickListener = this.renderer.listen('document', 'click', this.handleUserInteraction);
+    this.keydownListener = this.renderer.listen('document', 'keydown', this.handleUserInteraction);
   }
 
   private removeUserInteractionListener() {
     console.log('Removing user interaction listeners');
-    document.removeEventListener('click', this.handleUserInteraction);
-    document.removeEventListener('keydown', this.handleUserInteraction);
+    if (this.clickListener) {
+      this.clickListener();
+    }
+    if (this.keydownListener) {
+      this.keydownListener();
+    }
   }
 
   private handleUserInteraction = () => {
     if (this.polling) {
       console.log('User interaction detected');
-      this.ensureVideoIsPlaying();
+      this.ensureVideoIsPlaying(
+        this.renderer.selectRootElement('#background-video').nativeElement.querySelector('video').nativeElement as HTMLVideoElement);
     }
   };
 
   private startVideoCheckPolling() {
     const videoCheckInterval = interval(5000); // Emit every 5 seconds
     this.videoCheckSubscription = videoCheckInterval.subscribe(() => {
-      this.ensureVideoIsPlaying();
+      this.ensureVideoIsPlaying(
+        this.renderer.selectRootElement('#background-video')
+      );
     });
   }
 

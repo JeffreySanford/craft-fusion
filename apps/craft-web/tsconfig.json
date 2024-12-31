@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "types": ["jest", "node"],
+    "lib": ["ES2020", "dom"], // Ensure 'dom' is included
     "baseUrl": "./",
     "paths": {
       "@craft-web/*": ["src/*"]
@@ -11,9 +12,6 @@
     "emitDeclarationOnly": true,
     "allowImportingTsExtensions": true
   },
-  "include": [
-    "src/**/*.ts",
-    "src/main.ts"
-  ],
+  "include": ["src/**/*.ts", "src/main.ts"],
   "exclude": ["tmp"]
 }

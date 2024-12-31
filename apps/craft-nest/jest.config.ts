@@ -1,17 +1,14 @@
-import baseConfig from '../../jest.config';
+import type { Config } from 'jest';
 
-export default {
-  ...baseConfig,
-  displayName: 'craft-nest',
-  testMatch: ['**/*.spec.ts'],
-  preset: '../../jest.preset',
-  testEnvironment: 'node',
-  moduleNameMapper: {
-    "@craft-nest/environments/environment": "<rootDir>/src/environments/environment"
-  },
+const config: Config = {
+  moduleFileExtensions: ['ts', 'js', 'json'],
+  rootDir: '.',
+  testRegex: '.*\\.spec\\.ts$',
   transform: {
-    '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.json' }],
+    '^.+\\.(t|j)s$': 'ts-jest',
   },
-  moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apps/craft-nest',
+  testEnvironment: 'node',
 };
+
+export default config;

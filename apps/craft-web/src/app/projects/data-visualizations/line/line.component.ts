@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { Line } from 'd3';
 import { LineChartData } from '../data-visualizations.interfaces';
 
 @Component({

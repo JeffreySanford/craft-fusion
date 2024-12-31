@@ -38,7 +38,7 @@
     "@angular/service-worker": "^19.0.5",
     "@faker-js/faker": "^9.2.0",
     "@ionic/angular": "^8.4.0",
-    "@nestjs/axios": "^3.1.3",
+    "@nestjs/axios": "^3.0.0",
     "@nestjs/common": "^10.0.2",
     "@nestjs/config": "^3.3.0",
     "@nestjs/core": "^10.0.2",
@@ -49,9 +49,11 @@
     "@nx/node": "20.3.0",
     "@types/axios": "^0.9.36",
     "@types/helmet": "^0.0.48",
-    "axios": "^1.7.9",
+    "axios": "^1.5.0",
     "check-disk-space": "^3.1.0",
+    "core-js": "^3.39.0",
     "d3": "^7.9.0",
+    "es6-promise": "^4.2.8",
     "helmet": "^8.0.0",
     "intersection-observer": "^0.12.2",
     "jszip": "^3.10.1",
@@ -59,6 +61,7 @@
     "ngx-toastr": "^19.0.0",
     "nx": "20.3.0",
     "reflect-metadata": "^0.1.13",
+    "resize-observer-polyfill": "^1.5.1",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",
     "web-animations-js": "^2.3.2",
@@ -124,6 +127,6 @@
     "ts-jest": "^29.2.5",
     "ts-node": "10.9.1",
     "tslib": "^2.8.1",
-    "typescript": "^5.6.3"
+    "typescript": "^5.5.3"
   }
 }
