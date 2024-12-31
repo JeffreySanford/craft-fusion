@@ -7,8 +7,6 @@
   "targets": {
     "serve": {
       "executor": "@nx/js:node",
-      "defaultConfiguration": "development",
-      "dependsOn": ["build"],
       "options": {
         "buildTarget": "craft-nest:build"
       },
@@ -26,8 +24,8 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/craft-nest",
-        "main": "apps/craft-nest/src/main.js",
-        "tsConfig": "apps/craft-nest/tsconfig.json",
+        "main": "apps/craft-nest/src/main.ts",
+        "tsConfig": "apps/craft-nest/tsconfig.app.json",
         "assets": ["apps/craft-nest/src/assets"],
         "fileReplacements": [
           {
