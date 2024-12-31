@@ -80,13 +80,12 @@ jobs:
       # 📊 Upload Jest Test Results
       - name: Upload Jest Test Results
         if: success() || failure()
-        run: |
-          if [ -f reports/jest/results.xml ]; then
-            echo "Test report found, uploading..."
-            npx dorny/test-reporter@v1 --name "Jest Test Results" --path reports/jest/results.xml --reporter jest-junit --fail-on-error false
-          else
-            echo "No test report files were found"
-          fi
+        uses: dorny/test-reporter@v1
+        with:
+          name: Jest Test Results
+          path: reports/jest/results.xml
+          reporter: jest-junit
+          fail-on-error: false
 
       # 📈 Upload Coverage Reports
       - name: Upload Coverage Reports
