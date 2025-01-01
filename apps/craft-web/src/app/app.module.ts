@@ -5,7 +5,6 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
-import { IonicModule } from '@ionic/angular';
 import { MaterialModule } from './material.module';
 import { appRoutes } from './app.routes';
 
@@ -30,7 +29,6 @@ import { ResumeComponent } from './pages/resume/resume.component';
     BrowserAnimationsModule,
     RouterModule.forRoot(appRoutes),
     MaterialModule,
-    IonicModule.forRoot(),
     FormsModule,
     LandingModule,
     SidebarModule,
