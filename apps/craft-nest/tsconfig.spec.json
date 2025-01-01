@@ -4,7 +4,7 @@
     "outDir": "../../dist/out-tsc",
     "target": "ES2020",
     "module": "commonjs",
-    "types": ["jest", "node"],
+    "types": ["jest", "node", "zone.js", "polyfills"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "esModuleInterop": true,

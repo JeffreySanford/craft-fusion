@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, Renderer2 } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Renderer2, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
@@ -9,9 +9,13 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
   standalone: false
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('backgroundVideo') backgroundVideo!: ElementRef<HTMLVideoElement>;
   isCollapsed = false;
   isSmallScreen = false;
   isExpanded = false;
+  pollingstarted = false;
+  isVideoVisible = true;
+  isUserInteracted = false;
 
   title = 'frontend';
   private routerSubscription!: Subscription;
@@ -23,9 +27,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
   polling = true;
 
-  constructor(private breakpointObserver: BreakpointObserver, private renderer: Renderer2) {}
+  constructor(private breakpointObserver: BreakpointObserver, private renderer: Renderer2) {
+    console.log('AppComponent constructor called');
+  }
 
   ngOnInit(): void {
+    console.log('AppComponent ngOnInit called');
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
       this.isSmallScreen = result.matches;
       this.isCollapsed = this.isSmallScreen;
@@ -41,15 +48,22 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    console.log('Step 2: ngAfterViewInit called');
-    const video = this.renderer.selectRootElement('#background-video') as HTMLVideoElement;
-    this.ensureVideoIsPlaying(video);
-    this.addUserInteractionListener();
-    this.startVideoCheckPolling();
+    console.log('AppComponent ngAfterViewInit called');
+    setTimeout(() => {
+      if (this.backgroundVideo?.nativeElement) {
+        console.log('✅ Background video element found:', this.backgroundVideo.nativeElement);
+        this.backgroundVideo.nativeElement.play();
+        this.startVideoCheckPolling();
+        this.addUserInteractionListener();
+        
+      } else {
+        console.warn('❌ The #backgroundVideo element was not found.');
+      }
+    }, 0); // Ensures it's run after the current lifecycle completes
   }
 
   ngOnDestroy() {
-    console.log('Step 4: ngOnDestroy called');
+    console.log('AppComponent ngOnDestroy called');
     this.removeUserInteractionListener();
     this.stopVideoCheckPolling();
     document.removeEventListener('click', this.handleUserInteraction);
@@ -62,6 +76,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private ensureVideoIsPlaying(video: HTMLVideoElement) {
+    console.log('ensureVideoIsPlaying called');
     if (video) {
       video.playbackRate = 0.5; // Slow down the video
       if (video.paused || video.ended) {
@@ -104,20 +119,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private handleUserInteraction = () => {
-    if (this.polling) {
-      console.log('User interaction detected');
-      this.ensureVideoIsPlaying(
-        this.renderer.selectRootElement('#background-video').nativeElement.querySelector('video').nativeElement as HTMLVideoElement);
-    }
-  };
+  @HostListener('window:click')
+  handleUserInteraction(): void {
+    this.isUserInteracted = true;
+    console.log('✅ User interaction detected');
+    this.ensureVideoIsPlaying(this.backgroundVideo.nativeElement);
+  }
 
   private startVideoCheckPolling() {
+    console.log('startVideoCheckPolling called');
     const videoCheckInterval = interval(5000); // Emit every 5 seconds
     this.videoCheckSubscription = videoCheckInterval.subscribe(() => {
-      this.ensureVideoIsPlaying(
-        this.renderer.selectRootElement('#background-video')
-      );
+      this.ensureVideoIsPlaying(this.backgroundVideo.nativeElement);
     });
   }
 

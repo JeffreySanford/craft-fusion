@@ -18,6 +18,7 @@
         "outputPath": "dist/apps/craft-web",
         "index": "apps/craft-web/src/index.html",
         "main": "apps/craft-web/src/main.ts",
+        "polyfills": "apps/craft-web/src/polyfills.ts",
         "tsConfig": "apps/craft-web/tsconfig.app.json",
         "assets": ["apps/craft-web/src/assets"]
       },
