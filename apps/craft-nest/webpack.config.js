@@ -6,6 +6,23 @@ module.exports = {
     path: join(__dirname, '../../dist/apps/craft-nest'),
     filename: 'main.js',
   },
+  resolve: {
+    extensions: ['.ts', '.js', '.mjs'],
+  },
+  module: {
+    rules: [
+      {
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: 'javascript/auto',
+      },
+      {
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
   plugins: [
     new NxAppWebpackPlugin({
       target: 'node',
