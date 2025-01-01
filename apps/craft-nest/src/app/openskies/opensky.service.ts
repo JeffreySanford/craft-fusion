@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from '@angular/core';
 import { HttpService } from '@nestjs/axios';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AxiosResponse } from 'axios';
 
 export interface Flight {
-  icao24?: string;
-  callsign?: string;
+  icao24: string;
+  callsign: string;
   origin_country: string;
   time_position: number;
   last_contact: number;
@@ -17,10 +18,10 @@ export interface Flight {
   true_track: number;
   vertical_rate: number;
   sensors: number[];
-  geo_altitude: number;
-  squawk: string;
-  spi: boolean;
-  position_source: number;
+  geo_altitude?: number;
+  squawk?: string;
+  spi?: boolean;
+  position_source?: number;
 }
 
 export interface OpenSkyResponse {
@@ -36,7 +37,13 @@ export class OpenSkyService {
 
   fetchFlightData(): Observable<Flight[]> {
     return this.httpService.get<OpenSkyResponse>(this.API_URL).pipe(
-      map(response => response.data.states || [])
+      map((response: AxiosResponse<OpenSkyResponse>) => {
+        const data = response.data;
+        if (data?.states) {
+          return data.states;
+        }
+        throw new Error('Invalid response structure from OpenSky API');
+      })
     );
   }
 }
