@@ -5,12 +5,11 @@ import { BarComponent } from './bar/bar.component';
 import { LineComponent } from './line/line.component';
 import { FintechComponent } from './fintech/fintech.component';
 import { MapComponent } from './map/map.component';
-import { IonicModule } from '@ionic/angular';
 import { MaterialModule } from '../../material.module';
 
 @NgModule({
   declarations: [DataVisualizationsComponent, BarComponent, LineComponent, FintechComponent, MapComponent],
-  imports: [CommonModule, MaterialModule, IonicModule],
+  imports: [CommonModule, MaterialModule],
   exports: [],
 })
 export class DataVisualizationsModule {}

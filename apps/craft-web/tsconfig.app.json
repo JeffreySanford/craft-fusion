@@ -6,8 +6,7 @@
     "lib": ["ES2020", "dom"] // Ensure 'dom' is included
   },
   "files": [
-    "src/main.ts",
-    "src/polyfills.ts"
+    "src/main.ts"
   ],
   "include": [
     "src/**/*.d.ts"
