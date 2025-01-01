@@ -5,7 +5,7 @@
     "module": "commonjs",
     "rootDir": ".",
     "outDir": "../../dist/apps/craft-nest",
-    "types": ["node", "axios"],
+    "types": ["node", "axios", "express", "jest", "reflect-metadata"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "esModuleInterop": true,

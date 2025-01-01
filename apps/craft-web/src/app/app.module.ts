@@ -22,7 +22,8 @@ import { ResumeComponent } from './pages/resume/resume.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ResumeComponent
   ],
   imports: [
     BrowserModule,
@@ -44,14 +45,14 @@ import { ResumeComponent } from './pages/resume/resume.component';
       positionClass: 'toast-bottom-center',
       preventDuplicates: true,
     }),
-    RouterModule,
-    ResumeComponent
+    RouterModule
   ],
   exports: [MaterialModule],
   providers: [
     BusyService,
     ToastrService,
-    provideAnimations()
+    provideAnimations(),
+    { provide: Window, useValue: window }
   ],
   bootstrap: [AppComponent]
 })

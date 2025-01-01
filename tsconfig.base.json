@@ -40,6 +40,10 @@
     "strictInjectionParameters": true,
     "strictTemplates": true
   },
-  "include": ["jest.config.ts"],
+  "include": [
+    "jest.config.ts",
+    "apps/**/src/**/*.ts",
+    "libs/**/src/**/*.ts"
+  ],
   "exclude": ["node_modules", "tmp"]
 }
