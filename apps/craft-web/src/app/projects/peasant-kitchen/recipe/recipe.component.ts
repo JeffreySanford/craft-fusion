@@ -7,6 +7,7 @@ import { PeasantKitchenService } from '../peasant-kitchen.service';
   selector: 'app-recipe',
   templateUrl: './recipe.component.html',
   styleUrls: ['./recipe.component.scss'],
+  standalone: false
 })
 export class RecipeComponent implements OnInit {
   recipe!: Recipe;

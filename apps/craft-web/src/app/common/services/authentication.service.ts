@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { NotificationService } from './notification.service';
+// import { NotificationService } from './notification.service';
 import { SessionService, User } from './session.service';
 import { switchMap, catchError, EMPTY, of } from 'rxjs';
 
@@ -68,8 +68,10 @@ export class AuthenticationService {
   private isAuthenticated = new BehaviorSubject<boolean>(false);
   private readonly isProduction = false;
 
-  constructor(private http: HttpClient, private router: Router, private notificationService: NotificationService, private sessionService: SessionService) {
+
+  constructor(private http: HttpClient, private router: Router, private sessionService: SessionService) {
     this.initializeAuthentication();
+    console.log('Set isProduction to false', this.isProduction);
   }
 
   get currentUser$(): Observable<User> {

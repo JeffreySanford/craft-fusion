@@ -52,6 +52,7 @@ module.exports = [
     files: ['**/*.html'],
     rules: {
       '@angular-eslint/template/no-negated-async': 'warn',
+      "@angular-eslint/component-class-suffix": ["error", { "standalone": false }]
     },
     resolve: {
       fallback: {

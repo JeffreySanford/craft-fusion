@@ -5,6 +5,7 @@ import { FintechChartData } from '../data-visualizations.interfaces';
   selector: 'app-fintech-chart',
   templateUrl: './fintech.component.html',
   styleUrls: ['./fintech.component.scss'],
+  standalone: false
 })
 export class FintechComponent {
   @Input() data: FintechChartData[] | undefined;

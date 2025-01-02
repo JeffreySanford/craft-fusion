@@ -8,6 +8,7 @@ import { MenuItem, MenuGroup } from './sidebar.types';
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
+  standalone: false,
   animations: [
     trigger('flyInOut', [
       state('in', style({ transform: 'translateX(0)' })),
