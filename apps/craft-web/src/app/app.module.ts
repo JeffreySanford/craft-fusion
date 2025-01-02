@@ -18,12 +18,10 @@ import { SpaceVideoModule } from './projects/space-video/space-video.module';
 import { TableModule } from './projects/table/table.module';
 import { PeasantKitchenModule } from './projects/peasant-kitchen/peasant-kitchen.module';
 import { BusyService } from './common/services/busy.service';
-import { ResumeComponent } from './pages/resume/resume.component';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    ResumeComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
