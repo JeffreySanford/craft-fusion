@@ -29,5 +29,5 @@ export const appRoutes: Routes = [
   { path: 'material-icons', component: MaterialIconsComponent },
   { path: 'material-buttons', component: MaterialButtonsComponent },
   { path: 'resume', component: ResumeComponent },
-  { path: '**', redirectTo: '/landing' }
+  { path: '**', redirectTo: 'home' }
 ];

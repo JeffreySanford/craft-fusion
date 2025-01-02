@@ -33,6 +33,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     console.log('AppComponent ngOnInit called');
+    debugger
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
       this.isSmallScreen = result.matches;
       this.isCollapsed = this.isSmallScreen;
