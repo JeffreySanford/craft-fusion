@@ -9,13 +9,13 @@
       "outputs": ["{workspaceRoot}/dist/apps/craft-web"],
       "options": {
         "outputPath": "dist/apps/craft-web",
+        "allowedCommonJsDependencies": ["jszip"],
         "index": "apps/craft-web/src/index.html",
         "main": "apps/craft-web/src/main.ts",
         "polyfills": "apps/craft-web/src/polyfills.ts",
         "tsConfig": "apps/craft-web/tsconfig.app.json",
         "assets": ["apps/craft-web/src/assets"],
-        "styles": ["apps/craft-web/src/styles/styles.scss"],
-        "scripts": []
+        "styles": ["apps/craft-web/src/styles/styles.scss"]
       }
     },
     "serve": {

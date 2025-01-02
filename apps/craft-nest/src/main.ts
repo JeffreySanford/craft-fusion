@@ -1,35 +1,28 @@
-import 'zone.js'; // Add this line
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from './app/app.module'; // Ensure this path is correct
+import { AppModule } from './app/app.module';
 import { Logger } from '@nestjs/common';
 import helmet from 'helmet';
 import * as fs from 'fs';
-import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
-  const appInstance = await NestFactory.create(AppModule);
-  const configService = appInstance.get(ConfigService);
-
-  const NODE_ENV = configService.get<string>('NODE_ENV') || 'development';
-  const isProduction = NODE_ENV === 'production';
+  const isProduction = process.env.NODE_ENV === 'production';
   const HOST = isProduction ? 'jeffreysanford.us' : 'localhost';
-  const PORT = configService.get<number>('NEST_PORT') || 3000;
+  const PORT = Number(process.env.NEST_PORT) || 3000;
   const protocol = isProduction ? 'https' : 'http';
 
-  Logger.log(`Starting server in ${NODE_ENV} mode`);
+  Logger.log(`Starting server in ${isProduction ? 'production' : 'development'} mode`);
   Logger.log(`Host: ${HOST}, Port: ${PORT}`);
 
-  const httpsOptions = isProduction ? {
-    key: fs.readFileSync('/etc/letsencrypt/live/jeffreysanford.us/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem'),
-  } : undefined;
+  const httpsOptions = isProduction
+    ? {
+        key: fs.readFileSync('/etc/letsencrypt/live/jeffreysanford.us/privkey.pem'),
+        cert: fs.readFileSync('/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem'),
+      }
+    : undefined;
 
-  const app = await NestFactory.create(AppModule, {
-    httpsOptions
-  });
+  const app = await NestFactory.create(AppModule, { httpsOptions });
 
-  // Set global prefix for all routes
   app.setGlobalPrefix('api');
 
   app.enableCors({
@@ -38,7 +31,7 @@ async function bootstrap() {
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
     exposedHeaders: ['Content-Range', 'X-Content-Range'],
-    maxAge: 3600
+    maxAge: 3600,
   });
 
   app.use(helmet());

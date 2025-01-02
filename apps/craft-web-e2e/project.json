@@ -12,6 +12,19 @@
         "jestConfig": "apps/craft-web-e2e/jest.config.ts",
         "passWithNoTests": true
       }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/craft-web-e2e/**/*.ts",
+          "apps/craft-web-e2e/**/*.tsx",
+          "apps/craft-web-e2e/jest.config.ts",
+          "apps/craft-web-e2e/playwright.config.ts",
+          "apps/craft-web-e2e/global-setup.ts",
+          "apps/craft-web-e2e/global-teardown.ts"
+        ]
+      }
     }
   }
 }
