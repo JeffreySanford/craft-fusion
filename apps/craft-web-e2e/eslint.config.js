@@ -19,6 +19,7 @@ module.exports = [
     rules: {
       '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
+      "@angular-eslint/component-class-suffix": ["error", { "standalone": false }]
     },
   },
   {

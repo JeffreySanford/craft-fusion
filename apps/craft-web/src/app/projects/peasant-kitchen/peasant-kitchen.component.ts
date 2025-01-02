@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-peasant-kitchen',
   templateUrl: './peasant-kitchen.component.html',
   styleUrls: ['./peasant-kitchen.component.scss'],
+  standalone: false
 })
 export class PeasantKitchenComponent {
 

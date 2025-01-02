@@ -1,6 +1,11 @@
 {
   "name": "craft-web",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "schematics": {
+    "@schematics/angular:component": {
+      "standalone": false
+    }
+  },
   "projectType": "application",
   "sourceRoot": "apps/craft-web/src",
   "targets": {

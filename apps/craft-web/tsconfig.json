@@ -2,6 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
+    "target": "ES2022",
+    "useDefineForClassFields": false,
     "types": ["jest", "node"],
     "lib": ["ES2020", "dom"],
     "baseUrl": "./",

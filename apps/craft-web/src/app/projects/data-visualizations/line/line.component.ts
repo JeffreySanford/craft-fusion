@@ -5,6 +5,7 @@ import { LineChartData } from '../data-visualizations.interfaces';
   selector: 'app-line-chart',
   templateUrl: './line.component.html',
   styleUrls: ['./line.component.scss'],
+  standalone: false
 
 })
 export class LineComponent {
