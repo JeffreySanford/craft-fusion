@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, Renderer2, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Renderer2, ElementRef, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
@@ -27,12 +27,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
   polling = true;
 
-  constructor(private breakpointObserver: BreakpointObserver, private renderer: Renderer2) {
+  constructor(private breakpointObserver: BreakpointObserver, private renderer: Renderer2, private cdr: ChangeDetectorRef) {
     console.log('AppComponent constructor called');
+    console.log('AppComponent initialized');
   }
 
   ngOnInit(): void {
     console.log('AppComponent ngOnInit called');
+    
     debugger
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
       this.isSmallScreen = result.matches;
@@ -44,8 +46,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.videoCheckSubscription) {
       this.videoCheckSubscription.unsubscribe();
     }
-
-    this.isSmallScreen = this.breakpointObserver.isMatched('(max-width: 599px)');
   }
 
   ngAfterViewInit() {
@@ -56,7 +56,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.backgroundVideo.nativeElement.play();
         this.startVideoCheckPolling();
         this.addUserInteractionListener();
-        
+        this.cdr.detectChanges(); // Trigger change detection
       } else {
         console.warn('❌ The #backgroundVideo element was not found.');
       }

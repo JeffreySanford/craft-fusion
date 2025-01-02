@@ -1,13 +1,14 @@
 <div class="page-container">
+  <p>Debug: AppComponent rendered</p>
   <app-header></app-header>
   <div class="layout-container">
     <aside class="sidebar">
       <app-sidebar [isSmallScreen]="isSmallScreen" [isCollapsed]="isCollapsed" [ngClass]="{ 'collapsed': !isCollapsed }"></app-sidebar>
     </aside>
     <main class="main-stage">
-        <!-- ...existing code... -->
-        <router-outlet></router-outlet>
-        <!-- ...existing code... -->
+        <div>
+          <router-outlet></router-outlet>
+        </div>
     </main>
   </div>
   <app-footer></app-footer>
