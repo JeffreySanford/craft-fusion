@@ -1,99 +1,41 @@
 {
   "name": "craft-web",
-  "root": "apps/craft-web",
-  "sourceRoot": "apps/craft-web/src",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "prefix": "app",
-  "tags": [],
-  "schematics": {
-    "@schematics/angular:component": {
-      "standalone": false,
-      "style": "scss",
-      "project": "craft-web"
-    }
-  },
+  "sourceRoot": "apps/craft-web/src",
   "targets": {
     "build": {
-      "executor": "@nx/esbuild:esbuild",
+      "executor": "@angular-devkit/build-angular:browser",
+      "outputs": ["{workspaceRoot}/dist/apps/craft-web"],
       "options": {
-        "esbuildConfig": "apps/craft-web/esbuild.config.js",
         "outputPath": "dist/apps/craft-web",
         "index": "apps/craft-web/src/index.html",
         "main": "apps/craft-web/src/main.ts",
         "polyfills": "apps/craft-web/src/polyfills.ts",
         "tsConfig": "apps/craft-web/tsconfig.app.json",
-        "assets": ["apps/craft-web/src/assets"]
-      },
-      "configurations": {
-        "production": {
-          "fileReplacements": [
-            {
-              "replace": "apps/craft-web/src/environments/environment.ts",
-              "with": "apps/craft-web/src/environments/environment.prod.ts"
-            }
-          ],
-          "optimization": true,
-          "outputHashing": "all",
-          "sourceMap": false,
-          "namedChunks": false,
-          "aot": true,
-          "extractLicenses": true,
-          "vendorChunk": false,
-          "buildOptimizer": true,
-          "serviceWorker": true
-        },
-        "development": {
-          "aot": false,
-          "optimization": false,
-          "sourceMap": true,
-          "namedChunks": true,
-          "extractLicenses": false,
-          "vendorChunk": true
-        }
+        "assets": ["apps/craft-web/src/assets"],
+        "styles": ["apps/craft-web/src/styles.scss"],
+        "scripts": []
       }
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
         "buildTarget": "craft-web:build"
-      },
-      "configurations": {
-        "production": {
-          "buildTarget": "craft-web:build:production",
-          "proxyConfig": "apps/craft-web/src/proxy.config.prod.json"
-        },
-        "development": {
-          "buildTarget": "craft-web:build:development",
-          "proxyConfig": "apps/craft-web/src/proxy.config.json"
-        }
-      },
-      "defaultConfiguration": "development"
-    },
-    "extract-i18n": {
-      "executor": "@angular-devkit/build-angular:extract-i18n",
-      "options": {
-        "buildTarget": "craft-web:build"
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
+      "executor": "@nx/eslint:eslint",
       "options": {
-        "lintFilePatterns": ["apps/craft-web/src/**/*.ts", "apps/craft-web/src/**/*.html", "apps/craft-web/src/**/*.scss"]
+        "lintFilePatterns": ["apps/craft-web/**/*.ts"]
       }
     },
-    "stylelint": {
-      "executor": "nx:run-commands",
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["coverage/craft-web"],
       "options": {
-        "command": "npx stylelint '**/*.{css,scss,sass,less}' --config .stylelintrc.json"
-      }
-    },
-    "serve-static": {
-      "executor": "@nx/web:file-server",
-      "options": {
-        "buildTarget": "craft-web:build",
-        "port": 4200,
-        "staticFilePath": "dist/apps/craft-web/browser",
-        "spa": true
+        "jestConfig": "apps/craft-web/jest.config.ts",
+        "passWithNoTests": true
       }
     }
   }
