@@ -9,6 +9,7 @@ export class OpenSkyController {
   
   @Get('flightParams')
   getFlightParams(descriptor: any): Observable<Flight[]> {
+    console.log(descriptor);
     return this.openSkyService.fetchFlightData();
   }
 

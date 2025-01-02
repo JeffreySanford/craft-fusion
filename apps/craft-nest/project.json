@@ -8,8 +8,7 @@
     "serve": {
       "executor": "@nx/js:node",
       "options": {
-        "buildTarget": "craft-nest:build",
-           "scripts": ["node_modules/zone.js/dist/zone.js"]
+        "buildTarget": "craft-nest:build"
       },
       "configurations": {
         "development": {

@@ -6,7 +6,6 @@ import { Logger } from '@nestjs/common';
 import helmet from 'helmet';
 import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 async function bootstrap() {
   const appInstance = await NestFactory.create(AppModule);
