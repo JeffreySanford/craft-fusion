@@ -7,6 +7,7 @@ export class AppController {
 
   @Get()
   getData(descriptor: any): { message: string } {
+    console.log(descriptor);
     return this.appService.getData();
   }
 }
