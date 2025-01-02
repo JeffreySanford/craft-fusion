@@ -14,7 +14,7 @@ export default {
       }
     ]
   },
-  resolver: '@nrwl/jest/plugins/resolver',
+  resolver: '@nx/jest/plugins/resolver',
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/test-setup.ts'],

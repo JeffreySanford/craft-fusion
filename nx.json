@@ -49,7 +49,7 @@
       }
     },
     {
-      "plugin": "@nrwl/jest"
+      "plugin": "@nx/jest"
     }
   ],
   "projects": {

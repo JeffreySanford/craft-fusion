@@ -1,29 +1,24 @@
-const nx = require('@nx/eslint-plugin');
-const angularPlugin = require('@angular-eslint/eslint-plugin');
-const angularTemplatePlugin = require('@angular-eslint/eslint-plugin-template');
-const typescriptPlugin = require('@typescript-eslint/eslint-plugin');
-const importPlugin = require('eslint-plugin-import');
+const tsParser = require('@typescript-eslint/parser');
+const tsPlugin = require('@typescript-eslint/eslint-plugin');
 
 module.exports = [
-  ...nx.configs['flat/angular'], // Extends Nx's Angular flat configuration
-  ...nx.configs['flat/angular-template'], // Extends Nx's Angular template configuration
-
-  // TypeScript Configuration
   {
-    files: ['**/*.ts'],
-    plugins: {
-      '@angular-eslint': angularPlugin,
-      '@typescript-eslint': typescriptPlugin,
-      'import': importPlugin,
-    },
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
-      parser: '@typescript-eslint/parser',
+      parser: tsParser,
       parserOptions: {
-        project: '../../tsconfig.base.json',
+        project: ['./tsconfig.json'],
         tsconfigRootDir: __dirname,
-        sourceType: 'module',
         ecmaVersion: 'latest',
+        sourceType: 'module',
       },
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-explicit-any': 'warn',
     },
     rules: {
       '@angular-eslint/directive-selector': [
@@ -47,24 +42,21 @@ module.exports = [
     },
     resolve: {
       fallback: {
-        "path": require.resolve("path-browserify")
-      }
-    }
+        path: require.resolve('path-browserify'),
+      },
+    },
   },
 
   // Angular Template Configuration
   {
     files: ['**/*.html'],
-    plugins: {
-      '@angular-eslint/template': angularTemplatePlugin,
-    },
     rules: {
       '@angular-eslint/template/no-negated-async': 'warn',
     },
     resolve: {
       fallback: {
-        "path": require.resolve("path-browserify")
-      }
-    }
+        path: require.resolve('path-browserify'),
+      },
+    },
   },
 ];

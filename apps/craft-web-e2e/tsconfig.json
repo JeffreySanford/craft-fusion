@@ -2,15 +2,24 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": ["jest", "node"],
-    "baseUrl": "./",
-    "paths": {
-      "@craft-web/*": ["src/*"]
-    },
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "allowImportingTsExtensions": true
+    "types": ["node", "jest"],
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strict": true
   },
-  "include": ["src/**/*.ts", "../../apps/craft-web/src/**/*.ts", "src/**/*.spec.ts", "src/**/*.e2e-spec.ts"],
-  "exclude": ["src/**/*.spec.ts", "src/**/*.e2e-spec.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "jest.config.ts",
+    "playwright.config.ts",
+    "global-setup.ts",
+    "global-teardown.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spec.ts",
+    "**/*.e2e-spec.ts"
+  ]
 }
