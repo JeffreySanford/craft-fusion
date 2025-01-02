@@ -2,21 +2,26 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "lib": ["ES2020", "dom"]
+    "target": "ES2022", // Set the target to ES2022
+    "types": [],
+    "lib": ["ES2020", "dom"] // Ensure 'dom' is included
   },
   "files": [
-    "src/main.ts"
-  ],
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts",
+    "src/main.ts",
     "src/polyfills.ts"
   ],
+  "include": [
+    "src/**/*.d.ts",
+    "src/app/**/*.ts"
+  ],
   "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "src/test-setup.ts",
+    "src/app/common/components/toaster/toaster.component.ts",
+    "src/app/common/directives/spinner.directive.ts",
+    "src/app/common/interceptors/**/*.ts",
+    "src/app/common/services/**/*.ts",
+    "src/app/projects/table/pipes/total-income.pipe.ts",
+    "src/global.ts"
   ]
 }
