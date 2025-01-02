@@ -10,7 +10,7 @@ import { MaterialModule } from '../../material.module';
 @NgModule({
   declarations: [RecordListComponent, RecordDetailComponent, EmploymentIncomePipe], // Add EmploymentIncomePipe here
   imports: [CommonModule, FormsModule, MaterialModule],
-  exports: [RecordListComponent],
+  exports: [],
   providers: [RecordService],
 })
 export class TableModule {}

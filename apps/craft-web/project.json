@@ -14,7 +14,7 @@
         "polyfills": "apps/craft-web/src/polyfills.ts",
         "tsConfig": "apps/craft-web/tsconfig.app.json",
         "assets": ["apps/craft-web/src/assets"],
-        "styles": ["apps/craft-web/src/styles.scss"],
+        "styles": ["apps/craft-web/src/styles/styles.scss"],
         "scripts": []
       }
     },

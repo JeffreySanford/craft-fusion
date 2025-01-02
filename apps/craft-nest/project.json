@@ -9,7 +9,8 @@
       "outputs": ["{workspaceRoot}/dist/apps/craft-nest"],
       "options": {
         "tsConfig": "apps/craft-nest/tsconfig.app.json",
-        "outputPath": "dist/apps/craft-nest"
+        "outputPath": "dist/apps/craft-nest",
+        "main": "apps/craft-nest/src/main.ts"
       }
     },
     "serve": {
