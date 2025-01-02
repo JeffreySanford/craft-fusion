@@ -7,6 +7,6 @@ import { RouterLink } from '@angular/router';
 @NgModule({
   declarations: [SidebarComponent],
   imports: [CommonModule, MaterialModule, RouterLink],
-  exports: [SidebarComponent, MaterialModule],
+  exports: [SidebarComponent],
 })
 export class SidebarModule {}

@@ -42,7 +42,6 @@ module.exports = [
           style: 'kebab-case',
         },
       ],
-      '@angular-eslint/prefer-standalone': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
       'import/no-cycle': 'error',
     },

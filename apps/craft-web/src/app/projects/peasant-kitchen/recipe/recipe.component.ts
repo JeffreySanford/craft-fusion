@@ -5,7 +5,6 @@ import { PeasantKitchenService } from '../peasant-kitchen.service';
 
 @Component({
   selector: 'app-recipe',
-  standalone: false,
   templateUrl: './recipe.component.html',
   styleUrls: ['./recipe.component.scss'],
 })
