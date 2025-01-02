@@ -38,7 +38,9 @@
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
-    "strictTemplates": true
+    "strictTemplates": true,
+    "enableIvy": true,
+    "compilationMode": "full"
   },
   "include": [
     "jest.config.ts",

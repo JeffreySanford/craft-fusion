@@ -9,7 +9,7 @@ import { MaterialModule } from '../../material.module';
 @NgModule({
   declarations: [LandingComponent, MaterialButtonsComponent, MaterialIconsComponent],
   imports: [CommonModule, MaterialModule],
-  exports: [],
+  exports: [LandingComponent],
   providers: [],
 })
 export class LandingModule {}

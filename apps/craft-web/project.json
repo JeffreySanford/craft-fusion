@@ -7,7 +7,9 @@
   "tags": [],
   "schematics": {
     "@schematics/angular:component": {
-      "standalone": false
+      "standalone": false,
+      "style": "scss",
+      "project": "craft-web"
     }
   },
   "targets": {
@@ -41,6 +43,7 @@
           "serviceWorker": true
         },
         "development": {
+          "aot": false,
           "optimization": false,
           "sourceMap": true,
           "namedChunks": true,

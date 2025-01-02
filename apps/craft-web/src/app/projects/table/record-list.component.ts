@@ -17,7 +17,6 @@ export interface Server {
 
 @Component({
   selector: 'app-record-list',
-  standalone: false,
   templateUrl: './record-list.component.html',
   styleUrls: ['./record-list.component.scss'],
   animations: [detailExpand, flyIn],

@@ -16,11 +16,12 @@ module.exports = [
       },
     },
     plugins: {
-      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
+      '@typescript-eslint': require('@typescript-eslint/eslint-plugin')
     },
     rules: {
       '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
+      '@angular-eslint/prefer-standalone': 'off'
     },
   },
 ];

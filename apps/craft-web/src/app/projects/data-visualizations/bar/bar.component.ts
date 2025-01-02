@@ -6,7 +6,6 @@ import { BarChartData } from '../data-visualizations.interfaces';
   selector: 'app-bar-chart',
   templateUrl: './bar.component.html',
   styleUrls: ['./bar.component.scss'],
-  standalone: false
 })
 export class BarComponent implements OnInit {
   @Input() data: BarChartData[] | undefined;

@@ -2,8 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { Company } from '../models/company';
 
 @Pipe({
-  name: 'employmentIncome',
-  standalone: false
+  name: 'employmentIncome'
 })
 export class EmploymentIncomePipe implements PipeTransform {
   transform(companies: Company[]): number {

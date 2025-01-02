@@ -10,6 +10,6 @@ import { MaterialModule } from '../../material.module';
 @NgModule({
   declarations: [DataVisualizationsComponent, BarComponent, LineComponent, FintechComponent, MapComponent],
   imports: [CommonModule, MaterialModule],
-  exports: [],
+  exports: [DataVisualizationsComponent, BarComponent, LineComponent, FintechComponent, MapComponent],
 })
 export class DataVisualizationsModule {}
