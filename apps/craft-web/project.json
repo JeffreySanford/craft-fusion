@@ -10,7 +10,7 @@
   "sourceRoot": "apps/craft-web/src",
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:browser",
+      "executor": "@nrwl/angular:webpack-browser",
       "outputs": ["{workspaceRoot}/dist/apps/craft-web"],
       "options": {
         "outputPath": "dist/apps/craft-web",
@@ -21,22 +21,53 @@
         "tsConfig": "apps/craft-web/tsconfig.app.json",
         "assets": ["apps/craft-web/src/assets"],
         "styles": ["apps/craft-web/src/styles/styles.scss"]
+      },
+      "configurations": {
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/craft-web/src/environments/environment.ts",
+              "with": "apps/craft-web/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "extractCss": true,
+          "namedChunks": false,
+          "aot": true,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "buildOptimizer": true,
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "2mb",
+              "maximumError": "5mb"
+            }
+          ]
+        }
       }
     },
     "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
+      "executor": "@nrwl/angular:webpack-dev-server",
       "options": {
         "buildTarget": "craft-web:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "craft-web:build:production"
+        }
       }
     },
     "lint": {
-      "executor": "@nx/eslint:eslint",
+      "executor": "@nx/linter:eslint",
       "options": {
         "lintFilePatterns": ["apps/craft-web/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
+      "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/craft-web"],
       "options": {
         "jestConfig": "apps/craft-web/jest.config.ts",
