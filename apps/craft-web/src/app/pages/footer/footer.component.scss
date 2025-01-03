@@ -1,4 +1,8 @@
 /* Styles for the footer component */
+
+.mat-expansion-panel {
+  border-radius: 0.25em;
+}
 .footer-container {
   position: fixed;
   bottom: 1em;
@@ -7,7 +11,6 @@
   justify-content: space-between;
   align-items: center;
   width: 99%;
-  border-radius: 0;
   overflow: visible;
 
   .top-containers {
