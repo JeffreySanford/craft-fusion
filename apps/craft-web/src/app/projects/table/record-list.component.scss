@@ -34,14 +34,15 @@ $table-theme: (
 }
 
 .record-collection {
-  height: 14em;
+  height: 15em;
+  border-radius: 0.25em;
   margin-bottom: 1em;
 }
 
 .report {
   display: inline-block;
   width: 100%;
-  font-size: 1.6em;
+  font-size: 1.5em;
   color: black;
   margin-bottom: 1em;
 }
