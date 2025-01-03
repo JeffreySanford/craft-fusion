@@ -22,9 +22,7 @@ import { BusyService } from './common/services/busy.service';
 import { ResumeComponent } from './pages/resume/resume.component';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -47,19 +45,14 @@ import { ResumeComponent } from './pages/resume/resume.component';
       preventDuplicates: true,
     }),
     RouterModule,
-    ResumeComponent
+    ResumeComponent,
   ],
   exports: [MaterialModule],
-  providers: [
-    BusyService,
-    ToastrService,
-    provideAnimations()
-  ],
-  bootstrap: [AppComponent]
+  providers: [BusyService, ToastrService, provideAnimations()],
+  bootstrap: [AppComponent],
 })
 export class AppModule {
   constructor() {
     console.log('AppModule loaded');
   }
 }
-

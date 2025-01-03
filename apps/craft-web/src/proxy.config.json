@@ -1,17 +1,17 @@
 {
   "/api": {
-    "target": "https://localhost:3000",
+    "target": "https://localhost",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
-  "/go-api": {
+  "/api-go": {
     "target": "http://localhost:4000",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",
     "pathRewrite": {
-      "^/go-api": ""
+      "^/api-go": ""
     }
   }
 }

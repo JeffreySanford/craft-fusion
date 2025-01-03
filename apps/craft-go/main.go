@@ -57,18 +57,18 @@ func main() {
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	// Health Check
-	router.GET("/health", func(c *gin.Context) {
+	router.GET("/api-go/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "OK"})
 	})
 
 	// User Records API
-	router.GET("/records", handlers.GetRecordsHandler)
-	router.GET("/records/generate", handlers.GenerateRecordsHandler)
-	router.GET("/records/time", handlers.GetCreationTimeHandler) // Ensure the correct route
-	router.GET("/records/:UID", handlers.GetRecordByUIDHandler)  // Ensure the correct route
+	router.GET("/api-go/records", handlers.GetRecordsHandler)
+	router.GET("/api-go/records/generate", handlers.GenerateRecordsHandler)
+	router.GET("/api-go/records/time", handlers.GetCreationTimeHandler) // Ensure the correct route
+	router.GET("/api-go/records/:UID", handlers.GetRecordByUIDHandler)  // Ensure the correct route
 
 	// Swagger
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.GET("/api-go/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Log all registered routes
 	for _, route := range router.Routes() {
