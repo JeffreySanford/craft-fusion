@@ -5,24 +5,22 @@
   overflow: visible;
   font-size: 0.8em;
   width: 99vw;
-  height: 100vh;
+  height: 86vh;
 
   .layout-container {
     display: flex;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    flex: 1;
   }
 
   .sidebar {
-    width: 250px;
+    width: auto;
     height: 35em;
     transition: width 0.3s ease-in-out;
     flex-shrink: 0;
     margin-right: 1em;
     z-index: 20;
-    background-color: #f4f4f4;
 
     .collapsed {
       max-width: 0;
@@ -31,7 +29,12 @@
   }
 
   .main-stage {
-    background-color: black;
+    background-color: rgba(
+      255,
+      0,
+      0,
+      0.5
+    ); /* Semi-transparent red background */
     display: flex; /* Use flexbox layout */
     flex-direction: column; /* Arrange children in a column */
     justify-content: stretch; /* Align children to the top */
@@ -44,22 +47,4 @@
     width: 77vw;
     height: 100%;
   }
-}
-
-// video#backgroundVideo {
-//   position: fixed;
-//   top: 0;
-//   left: 0;
-//   width: 100%;
-//   height: 100%;
-//   object-fit: cover;
-//   z-index: -1;
-// }
-
-p {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  color: red;
-  z-index: 1;
 }
