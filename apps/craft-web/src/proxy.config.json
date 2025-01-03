@@ -5,13 +5,13 @@
     "changeOrigin": true,
     "logLevel": "debug"
   },
-  "/api/go": {
+  "/go-api": {
     "target": "http://localhost:4000",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",
     "pathRewrite": {
-      "^/api/go": ""
+      "^/go-api": ""
     }
   }
 }
