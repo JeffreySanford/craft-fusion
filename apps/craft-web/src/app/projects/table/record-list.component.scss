@@ -5,10 +5,18 @@ $table-theme: (
   primary-white: #ffffff
 );
 
+.no-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+  color: map.get($table-theme, dark-blue);
+}
+
 .table-container {
   padding: 0.55em;
   width: 99%;
-  height: 100%;
+  height: 77vh;
   display: flex;
   flex-direction: column;
   flex-grow: 1;

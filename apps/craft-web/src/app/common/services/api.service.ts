@@ -33,7 +33,7 @@ export class ApiService {
     {
       name: 'Go',
       language: 'Go',
-      api: 'go-api',
+      api: 'api-go',
       port: 4000,
       swagger: '/swagger',
     },
@@ -86,7 +86,8 @@ export class ApiService {
       const protocol = this.isProduction ? 'https' : 'http';
       const host = this.isProduction ? production.host : environment.host;
 
-      this.apiUrl = `${protocol}://${host}/${server.api}`;
+      // Use the server's port instead of a hardcoded port
+      this.apiUrl = `${protocol}://${host}:${server.port}/${server.api}`;
       console.log(`API Service: API URL set to ${this.apiUrl}`);
     } else {
       this.apiUrl = '';
