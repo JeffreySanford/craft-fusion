@@ -35,6 +35,8 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   startTime = 0;
   generationTimeLabel = '';
   roundtripLabel = '';
+  networkPerformance = '';
+  diskTransferTime = '';
   showAddressColumns = true;
   showMediumColumns = true;
   showMinimalColumns = false;
@@ -49,16 +51,17 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     {
       name: 'Nest',
       language: 'NestJS (node.js)',
-      swagger: 'https://jeffreysanford.us:3000/api/swagger',
+      swagger: this.getSwaggerUrl('Nest'),
     },
     {
       name: 'Go',
       language: 'Go',
-      swagger: 'https://jeffreysanford.us:4000/api/swagger',
+      swagger: this.getSwaggerUrl('Go'),
     },
   ];
   server: Server = this.servers[0];
-  apiURL = ''
+  apiURL = '';
+  fadeToRedClass = false;
 
   constructor(private router: Router, private recordService: RecordService, private changeDetectorRef: ChangeDetectorRef) {
     console.log('Constructor: RecordListComponent created');
@@ -93,6 +96,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
             console.log('Data: New record set generated with length:', dataset.length);
 
             this.updateCreationTime();
+            this.triggerFadeToRed();
           }
           return of([]); // Ensure an Observable is returned
         }),
@@ -213,6 +217,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
             console.log('Data: New record set generated with length:', dataset.length);
 
             this.updateCreationTime();
+            this.triggerFadeToRed();
           }
           return of([]);
         }),
@@ -317,10 +322,13 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
           const roundtrip = endTime - this.startTime;
           this.roundtripLabel = roundtrip > 1000 ? `${(roundtrip / 1000).toFixed(2)} seconds` : `${roundtrip.toFixed(2)} milliseconds`;
           this.generationTimeLabel = generationTime > 1000 ? `${(generationTime / 1000).toFixed(2)} seconds` : `${generationTime.toFixed(2)} milliseconds`;
-          console.log('Timing: Data generation time:', this.generationTimeLabel, 'Roundtrip time:', this.roundtripLabel);
+          this.networkPerformance = `${(roundtrip - generationTime).toFixed(2)} milliseconds`;
+          this.diskTransferTime = `${(generationTime / 2).toFixed(2)} milliseconds`;
+          console.log('Timing: Data generation time:', this.generationTimeLabel, 'Roundtrip time:', this.roundtripLabel, 'Network performance:', this.networkPerformance, 'Disk transfer time:', this.diskTransferTime);
           this.resolvedSubject.next(true);
           console.log('Resolved: Subject updated');
           this.changeDetectorRef.detectChanges();
+          this.triggerFadeToRed();
         }),
         catchError((error: any) => {
           console.error('Error: getCreationTime failed:', error);
@@ -330,5 +338,26 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
         }),
       )
       .subscribe();
+  }
+
+  private getSwaggerUrl(serverName: string): string {
+    const isDevelopment = window.location.hostname === 'localhost';
+    const baseUrl = isDevelopment ? 'http://localhost' : 'https://jeffreysanford.us';
+    const port = serverName === 'Nest' ? '3000' : '4000';
+    return `${baseUrl}:${port}/api/docs`;
+  }
+
+  private triggerFadeToRed(): void {
+    this.fadeToRedClass = true;
+    setTimeout(() => {
+      this.fadeToRedClass = false;
+      this.changeDetectorRef.detectChanges();
+    }, 1000);
+  }
+
+  onSwaggerButtonClick(): void {
+    console.log('Event: Swagger button clicked');
+    window.open(this.server.swagger, '_blank');
+    console.log('Navigation: Opened Swagger UI');
   }
 }
