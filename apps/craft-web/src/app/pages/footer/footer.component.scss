@@ -21,12 +21,13 @@
   .contact-block {
     display: flex;
     flex-direction: column;
-    border: 0.125em solid lime;
+    justify-content: flex-start;
     padding: 0.625em;
+    width: 10em;
 
     p {
       font-size: 0.8em;
-      color: gold;
+      color: white;
       margin: 0;
       padding-left: 1em;
     }
@@ -37,11 +38,12 @@
       align-items: center;
       margin: 0;
       padding: 0.125em 0;
-      color: gold;
-      background: none;
+      color: white;
+      background-color: rgba(255,255,255,0.1);
       border: none;
       cursor: pointer;
       text-decoration: none;
+      margin-bottom: 0.25em;
 
       &:hover {
         text-decoration: underline;
@@ -56,46 +58,41 @@
   .logo-performance-block {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-end; /* Changed to flex-end */
     position: relative;
     z-index: 10;
-    margin-top: -4em;
     overflow: visible;
 
     .logo-row {
       display: flex !important;
-      justify-content: center;
+      flex-wrap: wrap; /* Allow wrapping to multiple rows */
+      justify-content: flex-end; /* Changed to flex-end */
       align-items: center;
-      margin: 0.5em 0 0 0;
+      margin: 0.5em 0 1em 0;
       overflow: visible;
 
       img {
         width: auto;
         height: 3.5em;
         padding: 0.25em;
-        margin: 0 0.5em;
-        border: 0.0625em solid gold;
-        background: linear-gradient(to bottom, green, black);
+        margin: 0 1.5em; /* Changed to 1.5em */
+        border: 0.0625em solid blue;
+        background: linear-gradient(to bottom, darkblue, black);
         transition: transform 0.3s, z-index 0.3s;
         position: relative;
 
         &:hover {
           transform: scale(3);
-          z-index: 20;
+          z-index: 9999; /* Ensure the hover zoom is visible on top of the entire application */
         }
       }
     }
   }
 
   .performance-card {
-    margin-top: 1em;
     background-color: rgba(0, 0, 0, 0.4);
-    height: 2em;
-    width: 65vw;
-    justify-content: center;
-    position: absolute;
-    right: 1em;
-    bottom: 0.25em;
+    height: 3em;
+    width: 80%;
   }
 
   .performance-metrics {
@@ -160,11 +157,11 @@ mat-expansion-panel {
   color: gold;
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.7) 0%,      
-    rgba(0, 50, 0, 0.7) 25%,    
-    rgba(0, 100, 0, 0.7) 50%, 
-    rgba(0, 128, 0, 0.7) 75%,
-    rgba(0, 128, 128, 0.7) 100%
+    rgba(0, 0, 255, 0.7) 0%,      
+    rgba(0, 0, 128, 0.7) 25%,    
+    rgba(0, 0, 100, 0.7) 50%, 
+    rgba(0, 0, 50, 0.7) 75%,
+    rgba(0, 0, 0, 0.7) 100%
   );
 }
 
