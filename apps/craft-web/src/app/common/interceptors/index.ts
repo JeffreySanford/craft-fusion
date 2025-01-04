@@ -1,6 +1,6 @@
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
 import { Provider } from "@angular/core";
-// import { AuthHttpInterceptor } from "./auth.interceptor";
+import { AuthHttpInterceptor } from "./auth.interceptor";
 import { BusyHttpInterceptor } from "./busy.interceptor";
 import { LoggingHttpInterceptor } from "./logging.interceptor";
 import { ReadOnlyInterceptor } from "./readonly.interceptor";

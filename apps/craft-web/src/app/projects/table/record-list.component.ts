@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, AfterContentChecked, Renderer2 } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, AfterContentChecked } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -17,9 +17,9 @@ export interface Server {
 
 @Component({
   selector: 'app-record-list',
+  standalone: false,
   templateUrl: './record-list.component.html',
   styleUrls: ['./record-list.component.scss'],
-  standalone: false,
   animations: [detailExpand, flyIn],
 })
 export class RecordListComponent implements OnInit, OnDestroy, AfterContentChecked {
@@ -35,6 +35,8 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   startTime = 0;
   generationTimeLabel = '';
   roundtripLabel = '';
+  networkPerformance = '';
+  diskTransferTime = '';
   showAddressColumns = true;
   showMediumColumns = true;
   showMinimalColumns = false;
@@ -48,25 +50,26 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   servers: Server[] = [
     {
       name: 'Nest',
-      language: 'NestJS (node.js)',
-      swagger: 'https://jeffreysanford.us:3000/api/swagger',
+      language: 'NestJS',
+      swagger: this.getSwaggerUrl('Nest'),
     },
     {
       name: 'Go',
       language: 'Go',
-      swagger: 'https://jeffreysanford.us:4000/api/swagger',
+      swagger: this.getSwaggerUrl('Go'),
     },
   ];
   server: Server = this.servers[0];
   apiURL = '';
+  fadeToRedClass = false;
 
-  constructor(private router: Router, private recordService: RecordService, private changeDetectorRef: ChangeDetectorRef, private renderer: Renderer2) {
+  constructor(private router: Router, private recordService: RecordService, private changeDetectorRef: ChangeDetectorRef) {
     console.log('Constructor: RecordListComponent created');
     console.log('Initial servers:', this.servers);
   }
 
-  @HostListener('window:resize')
-  onResize(): void {
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
     console.log('Event: Window resized');
     this.updateDisplayedColumns();
   }
@@ -93,6 +96,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
             console.log('Data: New record set generated with length:', dataset.length);
 
             this.updateCreationTime();
+            this.triggerFadeToRed();
           }
           return of([]); // Ensure an Observable is returned
         }),
@@ -144,7 +148,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     console.log('Available servers:', this.servers);
 
     const server = this.servers.find(element => event === element.name);
-
+    
     if (server) {
       console.log('Found server:', server);
       this.apiURL = this.recordService.setServerResource(server.name);
@@ -159,23 +163,27 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
 
   private updateDisplayedColumns(): void {
     console.log('Method: updateDisplayedColumns called');
-    const width = this.renderer.selectRootElement('body').clientWidth;
+    const width = window.innerWidth;
 
     if (width < 800) {
       this.displayedColumns = ['userID', 'icons'];
+      console.log('Displayed Columns: Width < 800, updated to:', this.displayedColumns);
     } else if (width < 900) {
       this.displayedColumns = ['userID', 'name', 'icons'];
+      console.log('Displayed Columns: Width < 900, updated to:', this.displayedColumns);
     } else if (width < 1000) {
       this.displayedColumns = ['userID', 'name', 'icons'];
+      console.log('Displayed Columns: Width < 1000, updated to:', this.displayedColumns);
     } else if (width < 1200) {
       this.displayedColumns = ['userID', 'name', 'state', 'zip', 'icons'];
+      console.log('Displayed Columns: Width < 1200, updated to:', this.displayedColumns);
     } else if (width < 1400) {
       this.displayedColumns = ['userID', 'name', 'city', 'state', 'zip', 'icons'];
+      console.log('Displayed Columns: Width < 1400, updated to:', this.displayedColumns);
     } else {
       this.displayedColumns = ['userID', 'name', 'address', 'city', 'state', 'zip', 'phone', 'icons'];
+      console.log('Displayed Columns: Width >= 1400, updated to:', this.displayedColumns);
     }
-
-    console.log('Displayed Columns: Updated to:', this.displayedColumns);
   }
 
   onDatasetChange(count: number): void {
@@ -209,6 +217,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
             console.log('Data: New record set generated with length:', dataset.length);
 
             this.updateCreationTime();
+            this.triggerFadeToRed();
           }
           return of([]);
         }),
@@ -241,7 +250,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     this.recordService.setSelectedUID(record.UID);
 
     this.router.navigate(['table/', record.UID]); //route with a preface colon
-
+  
     console.log('Navigation: Navigated to record detail view');
   }
 
@@ -294,11 +303,15 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     return (a < b ? -1 : a > b ? 1 : 0) * (isAsc ? 1 : -1);
   }
 
-  applyFilter(event: KeyboardEvent) {
+  applyFilter(event: Event) {
+    console.log('Event: Filter applied with event:', event);
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (filterValue.length >= 2 || filterValue === '') {
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+      console.log('Filter: Applied with value:', filterValue);
+    }
   }
-
+  
   private updateCreationTime(): void {
     this.recordService
       .getCreationTime()
@@ -309,10 +322,13 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
           const roundtrip = endTime - this.startTime;
           this.roundtripLabel = roundtrip > 1000 ? `${(roundtrip / 1000).toFixed(2)} seconds` : `${roundtrip.toFixed(2)} milliseconds`;
           this.generationTimeLabel = generationTime > 1000 ? `${(generationTime / 1000).toFixed(2)} seconds` : `${generationTime.toFixed(2)} milliseconds`;
-          console.log('Timing: Data generation time:', this.generationTimeLabel, 'Roundtrip time:', this.roundtripLabel);
+          this.networkPerformance = `${(roundtrip - generationTime).toFixed(2)} milliseconds`;
+          this.diskTransferTime = `${(generationTime / 2).toFixed(2)} milliseconds`;
+          console.log('Timing: Data generation time:', this.generationTimeLabel, 'Roundtrip time:', this.roundtripLabel, 'Network performance:', this.networkPerformance, 'Disk transfer time:', this.diskTransferTime);
           this.resolvedSubject.next(true);
           console.log('Resolved: Subject updated');
           this.changeDetectorRef.detectChanges();
+          this.triggerFadeToRed();
         }),
         catchError((error: any) => {
           console.error('Error: getCreationTime failed:', error);
@@ -322,5 +338,26 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
         }),
       )
       .subscribe();
+  }
+
+  private getSwaggerUrl(serverName: string): string {
+    const isDevelopment = window.location.hostname === 'localhost';
+    const baseUrl = isDevelopment ? 'http://localhost' : 'https://jeffreysanford.us';
+    const port = serverName === 'Nest' ? '3000' : '4000';
+    return `${baseUrl}:${port}/api/api-docs`;
+  }
+
+  private triggerFadeToRed(): void {
+    this.fadeToRedClass = true;
+    setTimeout(() => {
+      this.fadeToRedClass = false;
+      this.changeDetectorRef.detectChanges();
+    }, 1000);
+  }
+
+  onSwaggerButtonClick(): void {
+    console.log('Event: Swagger button clicked');
+    window.open(this.server.swagger, '_blank');
+    console.log('Navigation: Opened Swagger UI');
   }
 }

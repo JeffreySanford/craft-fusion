@@ -14,7 +14,6 @@ import { RouterModule } from '@angular/router';
     MaterialModule,
     RouterModule
   ],
-  exports: [PeasantKitchenComponent],
   providers: [PeasantKitchenService],
 })
 export class PeasantKitchenModule {}

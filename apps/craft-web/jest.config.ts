@@ -1,18 +1,14 @@
-import baseConfig from '../../jest.config';
-
 export default {
-  ...baseConfig,
-  rootDir: '../../', // Set the rootDir to the correct path
   displayName: 'craft-web',
-  preset: '../../jest.preset',
-  setupFilesAfterEnv: ['./test-setup.ts'],
-  coverageDirectory: '../../coverage/craft-web',
-  testEnvironment: 'jsdom',
+  preset: '../../jest.preset.js',
+  // Remove the following unused file
+  // setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
+  coverageDirectory: '../../coverage/apps/craft-web',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',
       {
-        tsconfig: '<rootDir>/apps/craft-web/tsconfig.spec.json', // Update the tsconfig path
+        tsconfig: '<rootDir>/tsconfig.json',
         stringifyContentPathRegex: '\\.(html|svg)$',
       },
     ],
@@ -23,11 +19,4 @@ export default {
     'jest-preset-angular/build/serializers/ng-snapshot',
     'jest-preset-angular/build/serializers/html-comment',
   ],
-  testMatch: [
-    '<rootDir>/src/**/*.spec.ts',
-    '<rootDir>/src/**/*.e2e-spec.ts'
-  ],
-  moduleNameMapper: {
-    '^path$': require.resolve('path-browserify')
-  }
 };

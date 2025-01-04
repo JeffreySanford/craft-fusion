@@ -6,10 +6,10 @@ module.exports = {
     instances: 'max',
     exec_mode: 'cluster',
     cwd: '/home/jeffrey/repos/craft-fusion',
-    env: {
+    env: {  // Changed from env_production
       NODE_ENV: 'production',
-      PORT: 3000,
-      HOST: 'localhost',
+      PORT: 3000,  // Force port 3000
+      HOST: 'localhost',  // Use localhost since nginx handles external
     },
     error_file: '/home/jeffrey/logs/craft-nest/error.log',
     out_file: '/home/jeffrey/logs/craft-nest/out.log',

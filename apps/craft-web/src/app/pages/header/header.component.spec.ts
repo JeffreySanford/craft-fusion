@@ -20,4 +20,10 @@ describe('HeaderComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should handle user menu actions', () => {
+    spyOn(console, 'log');
+    component.handleUserMenuAction('login');
+    expect(console.log).toHaveBeenCalledWith('Login triggered');
+  });
 });

@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 import JSZip from 'jszip';
 import * as shapefile from 'shapefile';
 import { Observable, of, Subject, from } from 'rxjs';
-import { catchError, mergeMap, takeUntil } from 'rxjs/operators';
+import { catchError, mergeMap, takeUntil, switchMap } from 'rxjs/operators';
 import { MapChartData } from '../data-visualizations.interfaces';
 
 interface ShapefileResult {
@@ -22,7 +22,6 @@ interface GeoJSONCollection {
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
   standalone: false
-
 })
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() data: MapChartData[] | undefined;

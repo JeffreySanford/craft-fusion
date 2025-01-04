@@ -1,51 +1,36 @@
 /***************************************************************************************************
- * BROWSER POLYFILLS
+ * Zone JS is required by Angular itself.
  */
-
-(window as any).global = window;
-declare var global: any;
-
-/** IE9, IE10 and IE11 requires all of the following polyfills. **/
-// import 'core-js/es6/symbol';
-// import 'core-js/es6/object';
-// import 'core-js/es6/function';
-// import 'core-js/es6/parse-int';
-// import 'core-js/es6/parse-float';
-// import 'core-js/es6/number';
-// import 'core-js/es6/math';
-// import 'core-js/es6/string';
-// import 'core-js/es6/date';
-// import 'core-js/es6/array';
-// import 'core-js/es6/regexp';
-// import 'core-js/es6/map';
-// import 'core-js/es6/set';
-
-/** Evergreen browsers require these. **/
-import 'core-js/es/reflect';
-
-/**
- * Web Animations `@angular/platform-browser/animations`
- * Only required if AnimationBuilder is used within the application and using IE/Edge or Safari.
- * Standard animation support in Angular DOES NOT require any polyfills (as of Angular 6.0).
- **/
-// import 'web-animations-js';  // Run `npm install --save web-animations-js`.
-
 import 'zone.js';  // Included with Angular CLI.
-import 'zone.js';  // Included with Angular CLI.
-import 'tslib';
 
 /***************************************************************************************************
- * Additional Safe Guards
- *
- * Provide fallbacks for common `document`, and global references.
- * These environments might not be fully implemented in non-browser environments.
+ * Polyfills for older browsers.
  */
-(global as any).ResizeObserver = (global as any).ResizeObserver || class {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-};
+
+// Modern Array Methods (if targeting very old browsers)
+if (!Array.prototype.includes) {
+  Array.prototype.includes = function (searchElement: any, fromIndex?: number): boolean {
+    return this.indexOf(searchElement, fromIndex) !== -1;
+  };
+}
+
+// Modern localStorage Polyfill (if targeting very old browsers)
+if (!('localStorage' in window)) {
+  const storage = new Map<string, string>();
+  Object.defineProperty(window, 'localStorage', {
+    value: {
+      getItem: (key: string) => storage.get(key) || null,
+      setItem: (key: string, value: string) => storage.set(key, value),
+      removeItem: (key: string) => storage.delete(key),
+      clear: () => storage.clear(),
+      key: (index: number) => Array.from(storage.keys())[index] || null,
+      length: storage.size
+    },
+    writable: false
+  });
+}
 
 /***************************************************************************************************
- * APPLICATION IMPORTS
+ * Other Browser Compatibility Features.
+ * Add any other specific polyfills you need here.
  */

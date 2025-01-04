@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Renderer2 } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 
@@ -17,11 +17,18 @@ export class FooterComponent implements OnInit, OnDestroy {
   };
   private performanceSubscription!: Subscription;
   private appStartTime: number;
-  width: number;
 
-  constructor(private router: Router, private renderer: Renderer2, private window: Window) {  
-    this.width = this.renderer.selectRootElement('body').clientWidth;
+  logoLinks = [
+    { src: 'assets/images/compressed/nodejs-new-pantone-white.png', alt: 'Node.js' },
+    { src: 'assets/images/mongo.svg', alt: 'MongoDB' }, // Ensure the correct file extension
+    { src: 'assets/images/compressed/angular.png', alt: 'Angular' },
+    { src: 'assets/images/compressed/us-army-logo.png', alt: 'United States Army (DOD)', class: 'army' },
+    { src: 'assets/images/compressed/US-GOVT-DLA.png', alt: 'Defense Logistics Agency', class: 'DLA' },
+    { src: 'assets/images/compressed/US-GOVT-DVA-Seal.png', alt: 'Department of Veterans Affairs', class: 'DVA' },
+    { src: 'assets/images/compressed/US-GOVT-DTIC.png', alt: 'Defense Technical Information Center', class: 'DTIC' }
+  ];
 
+  constructor(private router: Router) {
     this.appStartTime = performance.now();
   }
 
@@ -139,10 +146,10 @@ export class FooterComponent implements OnInit, OnDestroy {
   }
 
   sendEmail(): void {
-    this.window.location.href = 'mailto:jeffreysanford@gmail.com';
+    window.location.href = 'mailto:jeffreysanford@gmail.com';
   }
 
   openGitHub(): void {
-    this.window.open('https://github.com/jeffreysanford', '_blank');
+    window.open('https://github.com/jeffreysanford', '_blank');
   }
 }

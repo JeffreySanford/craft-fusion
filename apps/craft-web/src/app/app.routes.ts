@@ -12,7 +12,6 @@ import { RecipesComponent } from './projects/peasant-kitchen/recipes/recipes.com
 import { ResumeComponent } from './pages/resume/resume.component';
 
 export const appRoutes: Routes = [
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: LandingComponent },
   { path: 'table', component: RecordListComponent },
   { path: 'table/:id', component: RecordDetailComponent },
@@ -29,5 +28,7 @@ export const appRoutes: Routes = [
   { path: 'material-icons', component: MaterialIconsComponent },
   { path: 'material-buttons', component: MaterialButtonsComponent },
   { path: 'resume', component: ResumeComponent },
-  { path: '**', redirectTo: 'home' }
+  { path: '404', component: LandingComponent },
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '**', redirectTo: '/404' }
 ];

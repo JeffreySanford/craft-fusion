@@ -1,15 +1,14 @@
 <mat-card class="header-card">
     <div class="header-content">
       <!-- Other header content can go here -->
-      <button mat-icon-button [matMenuTriggerFor]="menu">
+      <button mat-icon-button [matMenuTriggerFor]="userMenu">
         <mat-icon class="profile-icon">person</mat-icon>
       </button>
-      <mat-menu #menu="matMenu">
-        <button mat-menu-item>Home</button>
-        <button mat-menu-item>Profile</button>
-        <button mat-menu-item>Documentation</button>
-        <button mat-menu-item>Development</button>
-        <button mat-menu-item>Design</button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item *ngFor="let item of userMenuItems" (click)="handleUserMenuAction(item.action)">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </button>
       </mat-menu>
     </div>
   </mat-card>

@@ -17,11 +17,26 @@ export class HeaderComponent {
   ];
   polling = true;
 
+  userMenuItems = [
+    { label: 'Profile', icon: 'person', action: 'profile' },
+    { label: 'Settings', icon: 'settings', action: 'settings' },
+    { label: 'Theme', icon: 'palette', action: 'theme' },
+    { label: 'Reports', icon: 'bar_chart', action: 'reports' },
+    { label: 'Login', icon: 'login', action: 'login' }
+  ];
+
   constructor() {}
 
   setActive(item: any) {
     this.menuItems.forEach(menuItem => (menuItem.active = false));
     item.active = true;
   }
-  
+
+  handleUserMenuAction(action: string) {
+    if (action === 'login') {
+      // Trigger login logic here
+      console.log('Login triggered');
+    }
+    // Handle other actions as needed
+  }
 }

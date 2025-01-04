@@ -1,25 +1,29 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
-    "types": ["node", "jest"],
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "strict": true
+    "allowJs": true,
+    "sourceMap": false,
+    "module": "commonjs",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "../dist/out-tsc-e2e",
+    "target": "es6",
+    "types": ["jest", "node"],
+    "baseUrl": "./",
+    "paths": {
+      "@craft-web/*": ["src/*"]
+    }
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx",
-    "jest.config.ts",
-    "playwright.config.ts",
-    "global-setup.ts",
-    "global-teardown.ts"
+    "../../apps/craft-web/src/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.spec.ts",
-    "**/*.e2e-spec.ts"
+    "src/**/*.spec.ts",
+    "src/**/*.e2e-spec.ts"
   ]
 }

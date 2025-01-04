@@ -1,35 +1,8 @@
 {
   "name": "craft-web-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "schematics": {
-    "@schematics/angular:component": {
-      "standalone": false
-    }
-  },
   "projectType": "application",
   "sourceRoot": "apps/craft-web-e2e/src",
   "implicitDependencies": ["craft-web"],
-  "targets": {
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/craft-web-e2e"],
-      "options": {
-        "jestConfig": "apps/craft-web-e2e/jest.config.ts",
-        "passWithNoTests": true
-      }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": [
-          "apps/craft-web-e2e/**/*.ts",
-          "apps/craft-web-e2e/**/*.tsx",
-          "apps/craft-web-e2e/jest.config.ts",
-          "apps/craft-web-e2e/playwright.config.ts",
-          "apps/craft-web-e2e/global-setup.ts",
-          "apps/craft-web-e2e/global-teardown.ts"
-        ]
-      }
-    }
-  }
+  "targets": {}
 }

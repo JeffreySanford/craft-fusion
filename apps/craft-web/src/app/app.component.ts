@@ -1,4 +1,5 @@
-import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
@@ -23,7 +24,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
   polling = true;
 
-  constructor(private breakpointObserver: BreakpointObserver) {}
+  constructor(private router: Router, private route: ActivatedRoute, private breakpointObserver: BreakpointObserver) {}
 
   ngOnInit(): void {
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
@@ -68,10 +69,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           .then(() => {
             this.stopVideoCheckPolling();
             this.polling = false;
-          });
-          // .catch(error => {
+          })
+          .catch(error => {
             // console.error('Error attempting to play the video:', error);
-          // });
+          });
       } else {
         if (this.polling) {
           console.log('Video is already playing, stopping polling');

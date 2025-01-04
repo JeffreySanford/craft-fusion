@@ -1,16 +1,5 @@
-import nxPreset from './jest.preset';
+import { getJestProjectsAsync } from '@nx/jest';
 
-export default {
-  ...nxPreset,
-  coverageDirectory: './coverage',
-  coverageReporters: ['text-summary', 'lcov'],
-  testEnvironment: 'node',
-  reporters: [
-    'default',
-    ['jest-junit', {
-      outputDirectory: './reports/jest',
-      outputName: 'results.xml'
-    }]
-  ],
-  setupFilesAfterEnv: ['./test-setup.ts']
-};
+export default async () => ({
+  projects: await getJestProjectsAsync(),
+});

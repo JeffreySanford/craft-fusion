@@ -1,10 +1,11 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
+import { IonicModule } from '@ionic/angular';
 import { MaterialModule } from './material.module';
 import { appRoutes } from './app.routes';
 
@@ -18,16 +19,16 @@ import { SpaceVideoModule } from './projects/space-video/space-video.module';
 import { TableModule } from './projects/table/table.module';
 import { PeasantKitchenModule } from './projects/peasant-kitchen/peasant-kitchen.module';
 import { BusyService } from './common/services/busy.service';
+import { ResumeComponent } from './pages/resume/resume.component';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     RouterModule.forRoot(appRoutes),
     MaterialModule,
+    IonicModule.forRoot(),
     FormsModule,
     LandingModule,
     SidebarModule,
@@ -43,20 +44,15 @@ import { BusyService } from './common/services/busy.service';
       positionClass: 'toast-bottom-center',
       preventDuplicates: true,
     }),
-    RouterModule
+    RouterModule,
+    ResumeComponent,
   ],
   exports: [MaterialModule],
-  providers: [
-    BusyService,
-    ToastrService,
-    provideAnimations(),
-    { provide: Window, useValue: window }
-  ],
-  bootstrap: [AppComponent]
+  providers: [BusyService, ToastrService, provideAnimations()],
+  bootstrap: [AppComponent],
 })
 export class AppModule {
   constructor() {
     console.log('AppModule loaded');
   }
 }
-

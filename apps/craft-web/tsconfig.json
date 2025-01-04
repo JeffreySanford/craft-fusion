@@ -2,18 +2,13 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
+    "rootDir": "./src",
     "target": "ES2022",
-    "useDefineForClassFields": false,
-    "types": ["jest", "node"],
-    "lib": ["ES2020", "dom"],
-    "baseUrl": "./",
-    "paths": {
-      "@craft-web/*": ["src/*"]
-    },
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "allowImportingTsExtensions": true
+    "useDefineForClassFields": false
   },
-  "include": ["src/**/*.ts", "src/main.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/main.ts"
+  ],
   "exclude": ["tmp"]
 }
