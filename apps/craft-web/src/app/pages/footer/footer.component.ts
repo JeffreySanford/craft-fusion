@@ -150,6 +150,6 @@ export class FooterComponent implements OnInit, OnDestroy {
   }
 
   openGitHub(): void {
-    window.open('https://github.com/jeffreysanford', '_blank');
+    window.open('https://github.com/JeffreySanford/craft-fusion/', '_blank');
   }
 }
