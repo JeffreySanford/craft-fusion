@@ -50,10 +50,16 @@ export class SidebarComponent implements OnInit {
   ngOnInit() {
     this.breakpointObserver.observe([Breakpoints.Handset])
       .subscribe(result => {
-
         this.isMobile = result.matches;
       });
-    }
+
+    this.router.events.subscribe(() => {
+      const activeRoute = this.router.url;
+      this.menuItems.forEach(item => {
+        item.active = item.routerLink === activeRoute;
+      });
+    });
+  }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
