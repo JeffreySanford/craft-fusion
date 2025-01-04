@@ -344,7 +344,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     const isDevelopment = window.location.hostname === 'localhost';
     const baseUrl = isDevelopment ? 'http://localhost' : 'https://jeffreysanford.us';
     const port = serverName === 'Nest' ? '3000' : '4000';
-    return `${baseUrl}:${port}/api/docs`;
+    return `${baseUrl}:${port}/api/api-docs`;
   }
 
   private triggerFadeToRed(): void {
