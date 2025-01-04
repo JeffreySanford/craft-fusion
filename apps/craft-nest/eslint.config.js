@@ -20,7 +20,6 @@ module.exports = [
     rules: {
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
     },
     lint: {
       executor: '@nx/eslint:lint',

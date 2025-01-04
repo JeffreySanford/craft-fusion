@@ -1,36 +1,60 @@
 {
   "name": "craft-nest",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "projectType": "application",
   "sourceRoot": "apps/craft-nest/src",
+  "projectType": "application",
+  "tags": [],
   "targets": {
-    "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{workspaceRoot}/dist/apps/craft-nest"],
-      "options": {
-        "tsConfig": "apps/craft-nest/tsconfig.app.json",
-        "outputPath": "dist/apps/craft-nest",
-        "main": "apps/craft-nest/src/main.ts"
-      }
-    },
     "serve": {
       "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
       "options": {
         "buildTarget": "craft-nest:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "craft-nest:build:development"
+        },
+        "production": {
+          "buildTarget": "craft-nest:build:production"
+        }
+      }
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/craft-nest",
+        "main": "apps/craft-nest/src/main.js",
+        "tsConfig": "apps/craft-nest/tsconfig.json",
+        "assets": ["apps/craft-nest/src/assets"],
+        "fileReplacements": [
+          {
+            "replace": "apps/craft-nest/src/environments/environment.ts",
+            "with": "apps/craft-nest/src/environments/environment.prod.ts"
+          }
+        ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/craft-nest/jest.config.ts"
       }
     },
     "lint": {
       "executor": "@nx/eslint:eslint",
       "options": {
         "lintFilePatterns": ["apps/craft-nest/**/*.ts"]
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["coverage/craft-nest"],
-      "options": {
-        "jestConfig": "apps/craft-nest/jest.config.ts",
-        "passWithNoTests": true
       }
     }
   }

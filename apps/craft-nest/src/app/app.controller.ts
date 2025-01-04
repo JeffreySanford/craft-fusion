@@ -6,8 +6,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  getData(descriptor: any): { message: string } {
-    console.log(descriptor);
+  getData() {
     return this.appService.getData();
   }
 }

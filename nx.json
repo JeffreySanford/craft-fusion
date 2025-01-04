@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "defaultBase": "master",
+  "defaultBase": "main",
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
@@ -15,6 +15,7 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
+  "nxCloudId": "676dc9093c27485c6fe7270d",
   "targetDefaults": {
     "build": {
       "cache": true,
@@ -31,25 +32,12 @@
       "options": {
         "lintFilePatterns": ["apps/**/*.ts", "libs/**/*.ts"]
       }
-    },
-    "craft-nest:build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{workspaceRoot}/dist/apps/craft-nest"],
-      "options": {
-        "tsConfig": "apps/craft-nest/tsconfig.app.json",
-        "outputPath": "dist/apps/craft-nest"
-      }
     }
   },
   "plugins": [
     {
       "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "eslint:lint"
-      }
-    },
-    {
-      "plugin": "@nx/jest"
+      "options": { "targetName": "eslint:lint" }
     }
   ],
   "projects": {
@@ -58,15 +46,9 @@
     "craft-go": "apps/craft-go/project.json",
     "craft-web-e2e": "apps/craft-web-e2e/project.json"
   },
+  "npmScope": "craft-fusion",
   "workspaceLayout": {
     "appsDir": "apps",
     "libsDir": "libs"
-  },
-  "test": {
-    "executor": "@nx/jest:jest",
-    "outputs": ["coverage/craft-web"]
-  },
-  "stylelint": {
-    "inputs": ["default", "{projectRoot}/**/*"]
   }
 }

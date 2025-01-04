@@ -5,9 +5,9 @@ import { PeasantKitchenService } from '../peasant-kitchen.service';
 
 @Component({
   selector: 'app-recipe',
+  standalone: false,
   templateUrl: './recipe.component.html',
   styleUrls: ['./recipe.component.scss'],
-  standalone: false
 })
 export class RecipeComponent implements OnInit {
   recipe!: Recipe;

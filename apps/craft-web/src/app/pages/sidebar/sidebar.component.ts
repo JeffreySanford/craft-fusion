@@ -1,8 +1,9 @@
-import { Component, HostListener, EventEmitter, Output, Input, OnInit, ViewChild, Renderer2 } from '@angular/core';
+import { Component, HostListener, EventEmitter, Output, Input, OnInit, ViewChild } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer } from '@angular/material/sidenav';
-import { MenuItem, MenuGroup } from './sidebar.types';
+import { MenuItem, MenuGroup } from './sidebar.types'
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,9 +19,10 @@ import { MenuItem, MenuGroup } from './sidebar.types';
     ]),
   ],
   host: {
-    '[class.collapsed]': 'isCollapsed',
-  },
+    '[class.collapsed]': 'isCollapsed'
+  }
 })
+
 export class SidebarComponent implements OnInit {
   @Output() sidebarToggle = new EventEmitter<boolean>();
   @Input() isSmallScreen = false;
@@ -37,27 +39,34 @@ export class SidebarComponent implements OnInit {
         { icon: 'table_chart', label: 'Table', routerLink: '/table', active: false },
         { icon: 'bar_chart', label: 'Data Visualizations', routerLink: '/data-visualizations', active: false },
         { icon: 'restaurant', label: 'Peasant Kitchen', routerLink: '/peasant-kitchen', active: false },
-        { icon: 'movie', label: 'HTML Video', routerLink: '/space-video', active: false },
+        { icon: 'movie', label: 'HTML Video', routerLink: '/space-video', active: false }
       ],
-    },
+    }
   ];
   menuItems: MenuItem[] = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
-
-  constructor(private breakpointObserver: BreakpointObserver, private renderer: Renderer2) {}
+  
+  constructor(private breakpointObserver: BreakpointObserver, private router: Router) {}
 
   ngOnInit() {
-    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
-      this.isMobile = result.matches;
+    this.breakpointObserver.observe([Breakpoints.Handset])
+      .subscribe(result => {
+        this.isMobile = result.matches;
+      });
+
+    this.router.events.subscribe(() => {
+      const activeRoute = this.router.url;
+      this.menuItems.forEach(item => {
+        item.active = item.routerLink === activeRoute;
+      });
     });
   }
 
   @HostListener('window:resize', ['$event'])
-  onResize() {
-    const width = this.renderer.selectRootElement('body').clientWidth;
-    console.log('Render updates width with: ', width);
+  onResize(event: Event) {
+    const width = (event.target as Window).innerWidth;
     this.isCollapsed = width < 900;
     this.isSmallScreen = true;
-
+  
     this.sidebarToggle.emit(!this.isCollapsed);
   }
 
@@ -67,7 +76,7 @@ export class SidebarComponent implements OnInit {
   }
 
   setActive(item: MenuItem) {
-    this.menuItems.forEach(menuItem => (menuItem.active = false));
+    this.menuItems.forEach(menuItem => menuItem.active = false);
     item.active = true;
   }
 
@@ -75,6 +84,7 @@ export class SidebarComponent implements OnInit {
     const activeItem = this.menuItems.find(item => item.active);
     return activeItem ? activeItem.label : '';
   }
+
 
   toggleMenu() {
     this.isCollapsed = !this.isCollapsed;

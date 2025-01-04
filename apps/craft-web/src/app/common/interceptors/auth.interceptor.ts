@@ -2,11 +2,14 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
-import { catchError, EMPTY, Observable, throwError } from "rxjs";
+import { catchError, EMPTY, finalize, Observable, throwError } from "rxjs";
+import { AuthenticationService } from "../services/authentication.service";
+import { BusyService } from "../services/busy.service";
+
 @Injectable({ providedIn: 'root' })
 
 export class AuthHttpInterceptor implements HttpInterceptor {
-    constructor(private router: Router) { }
+    constructor(private authenticationService: AuthenticationService, private router: Router) { }
     intercept(request: HttpRequest<any>, next: HttpHandler) {
 
         const headers = { 'Authorization': 'Bearer ${accessToken}' };

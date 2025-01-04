@@ -7,7 +7,6 @@ import { NotificationService } from '../../services/notification.service';
   selector: 'app-toaster',
   templateUrl: './toaster.component.html',
   styleUrls: ['./toaster.component.scss'],
-  standalone: false
 })
 export class ToasterComponent implements OnInit {
   constructor(private toastr: ToastrService, private notifyService: NotificationService) {}

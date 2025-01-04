@@ -7,9 +7,9 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-record-detail',
+  standalone: false,
   templateUrl: './record-detail.component.html',
-  styleUrls: ['./record-detail.component.scss'],
-  standalone: false
+  styleUrls: ['./record-detail.component.scss'] // Updated to styleUrls
 })
 export class RecordDetailComponent implements OnInit, OnDestroy {
   user?: Record;

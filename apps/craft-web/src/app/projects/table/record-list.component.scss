@@ -5,10 +5,18 @@ $table-theme: (
   primary-white: #ffffff
 );
 
+.no-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+  color: map.get($table-theme, dark-blue);
+}
+
 .table-container {
   padding: 0.55em;
   width: 99%;
-  height: 100%;
+  height: 77vh;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -16,26 +24,46 @@ $table-theme: (
   background-color: map.get($table-theme, dark-blue);
 }
 
+.swagger-button {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.report-text {
+  height: 3em;
+  margin-bottom: 1em;
+  visibility: hidden;
+}
+
+.report-text.visible {
+  visibility: visible;
+}
+
 .selectors {
   display: flex;
   flex-direction: row;
   align-items: space-between;
   justify-content: space-between;
-  margin-bottom: 1em;
   width: 100%;
 }
 
 .record-collection {
-  height: 14em;
-  margin-bottom: 1em;
+  height: 16em;
+  border-radius: 0.25em;
+  margin-bottom: 2em;
 }
 
 .report {
   display: inline-block;
   width: 100%;
-  font-size: 1.6em;
+  font-size: 1.25em;
   color: black;
   margin-bottom: 1em;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .table-wrapper {
@@ -91,4 +119,20 @@ $table-theme: (
 
 .flyIn {
   animation: flyIn 1s ease-in-out;
+}
+
+@keyframes fadeToRed {
+  0% {
+    color: inherit;
+  }
+  50% {
+    color: red;
+  }
+  100% {
+    color: inherit;
+  }
+}
+
+.fadeToRed {
+  animation: fadeToRed 2s ease-in-out;
 }

@@ -1,15 +1,12 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "lib": ["ES2020", "DOM"],
-    "types": ["node"],
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "esModuleInterop": true,
-    "declaration": true,
+    "target": "ES2022",
+    "module": "esnext",
+    "lib": ["es2018", "dom"],
+    "declaration": false,
     "sourceMap": true,
+    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
     "noImplicitAny": true,
@@ -19,34 +16,22 @@
     "noImplicitThis": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
     "resolveJsonModule": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
     "baseUrl": "./",
-    "paths": {},
+    "paths": {
+    },
     "outDir": "./dist/out-tsc",
     "rootDir": ".",
     "forceConsistentCasingInFileNames": true,
     "typeRoots": ["node_modules/@types"],
-    "useDefineForClassFields": false,
-    "noEmit": false,
-    "emitDeclarationOnly": false,
-    "strict": true,
-    "strictBindCallApply": true,
-    "alwaysStrict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "allowSyntheticDefaultImports": true
+    "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
-    "strictTemplates": true,
-    "enableIvy": true,
-    "compilationMode": "full"
+    "strictTemplates": true
   },
-  "include": [
-    "jest.config.ts",
-    "apps/**/src/**/*.ts",
-    "libs/**/src/**/*.ts"
-  ],
-  "exclude": ["node_modules", "tmp"]
+  "exclude": ["tmp"]
 }

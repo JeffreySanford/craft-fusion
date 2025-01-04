@@ -2,21 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "target": "ES2020",
     "module": "commonjs",
-    "types": ["jest", "node", "zone.js", "polyfills"],
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "types": ["jest", "node"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts",
-    "**/*.e2e-spec.ts",
-    "src/**/*.d.ts",
-    "src/ecosystem.config.js"
-  ],
-  "exclude": ["node_modules"]
+  "include": ["**/*.spec.ts", "**/*.d.ts"]
 }

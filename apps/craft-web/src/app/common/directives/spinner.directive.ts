@@ -4,7 +4,7 @@ import { ThemePalette } from '@angular/material/core';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Directive({
-    selector: '[appSpinner]'
+    selector: '[appSpinner]',
 })
 export class SpinnerDirective implements OnChanges {
     private spinner!: ComponentRef<MatProgressSpinner> | null;
