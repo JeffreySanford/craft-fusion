@@ -30,38 +30,38 @@
 }
 
 button {
-  position: absolute;
-  right: -1.25em;
-  top: 0;
+  position: relative;
+  right: 0.5em;
+  top: -0.1em;
+  margin-left: auto;
 }
 
 .profile-icon {
-  position: absolute;
-  right: 2em;
-  top: -0.25em;
   color: rgba(255, 223, 0, 1);
   border: 2px solid #00f0ff;
-  padding: 4px;
-  border-radius: 0,25em;
+  padding: 0.15em;
+  border-radius: 0.25em;
 }
 
-mat-menu {
+.cdk-overlay-pane {
   background-color: rgba(255, 255, 255, 0.9);
   border: 2px solid #000;
-  height: 200px;
-  width: 300px;
-}
+  padding: 0.5em;
+  margin-top: 1em;
+  width: auto;
 
-mat-menu-item {
-  color: #000;
-  font-size: 1em;
-  padding: 0.5em 1em;
-  transition: background-color 0.3s;
-  height: 10em;
-}
+  mat-menu-item {
+    color: #000;
+    font-size: 1em;
+    padding: 0.5em 1em;
+    transition: background-color 0.3s;
 
-mat-icon {
-  color: white;
-  font-size: 1em;
-  margin-left: auto;
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    mat-icon {
+      margin-right: 0.5em;
+    }
+  }
 }
