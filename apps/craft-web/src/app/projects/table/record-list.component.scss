@@ -24,27 +24,36 @@ $table-theme: (
   background-color: map.get($table-theme, dark-blue);
 }
 
+.swagger-button {
+  margin-top: -4em;
+}
+
 .selectors {
+  margin-top: -1.5em;
   display: flex;
   flex-direction: row;
   align-items: space-between;
   justify-content: space-between;
-  margin-bottom: 1em;
   width: 100%;
 }
 
 .record-collection {
-  height: 15em;
+  height: 18em;
   border-radius: 0.25em;
-  margin-bottom: 1em;
+  margin-bottom: 2em;
 }
 
 .report {
   display: inline-block;
   width: 100%;
-  font-size: 1.5em;
+  font-size: 1.25em;
   color: black;
   margin-bottom: 1em;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .table-wrapper {
@@ -100,4 +109,20 @@ $table-theme: (
 
 .flyIn {
   animation: flyIn 1s ease-in-out;
+}
+
+@keyframes fadeToRed {
+  0% {
+    color: inherit;
+  }
+  50% {
+    color: red;
+  }
+  100% {
+    color: inherit;
+  }
+}
+
+.fadeToRed {
+  animation: fadeToRed 2s ease-in-out;
 }

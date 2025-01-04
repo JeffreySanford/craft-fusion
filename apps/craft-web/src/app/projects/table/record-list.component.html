@@ -3,15 +3,29 @@
     <mat-progress-spinner mode="indeterminate" [diameter]="100" [style.color]="'lightblue'"></mat-progress-spinner>
   </div>
 </ng-template>
-<div class="table-container"> 
+<div class="table-container">
   <mat-card class="record-collection" [@flyIn]>
     <mat-card-content *ngIf="roundtripLabel">
       <div class="report">
         <p>
-          Using the backend server language, {{ server.language }}, a mock record set of {{ totalRecords }} records was generated in {{ generationTimeLabel }} and delivered in
-          {{ roundtripLabel }} to the Angular frontend. The a descriptive document of the endpoint is currently: {{ server.swagger }}.
+          Using the backend server language,
+          <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ server.language }}</span>
+          , a mock record set of
+          <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ totalRecords }}</span>
+          records was generated in <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ generationTimeLabel }}</span> and delivered in
+          <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ roundtripLabel }}</span> to the Angular frontend.
         </p>
+        <p>
+          Network performance: <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ networkPerformance }}</span>
+        </p>
+        <p>
+          Disk transfer time: <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ diskTransferTime }}</span>
+        </p>
+        <div class="button-container">
+          <button mat-raised-button color="primary" class="swagger-button" (click)="onSwaggerButtonClick()">Swagger API for {{ server.language }}</button>
+        </div>
       </div>
+
       <div class="selectors" [@flyIn]>
         <mat-form-field class="performance" appearance="outline">
           <mat-label>Select dataset size</mat-label>
@@ -30,6 +44,7 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
+
         <mat-form-field appearance="outline" class="filter">
           <mat-label>Filter</mat-label>
           <input matInput (keyup)="applyFilter($event)" placeholder="Type to search..." [(ngModel)]="dataSource.filter" />

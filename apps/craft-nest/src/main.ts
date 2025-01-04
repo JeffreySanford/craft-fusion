@@ -49,7 +49,9 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api-docs', app, document);
+  SwaggerModule.setup('api/api-docs', app, document);
+
+  Logger.log('Swagger is set up at /api/api-docs');
 
   await app.listen(PORT, HOST);
   Logger.log(`Server running on ${protocol}://${HOST}:${PORT}`);
