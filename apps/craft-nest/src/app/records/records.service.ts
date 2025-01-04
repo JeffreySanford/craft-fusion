@@ -8,6 +8,7 @@ import { Company } from './entities/company.interface';
 @Injectable()
 export class RecordsService {
   private mockDatabase: Record[] = [];
+  recordGenerationTime: number = 0;
   
 
   getRecordByUID(UID: string): Record {
@@ -83,9 +84,20 @@ export class RecordsService {
   }
 
   generateMultipleRecords(count: number): Record[] {
+    const startTime = performance.now();
+
     this.mockDatabase = Array.from({ length: count }, () => this.generateRecord());
+    
+    const endTime = performance.now();
+
+    this.recordGenerationTime = endTime - startTime;
+
     console.log('Generated ' + count + ' records');
 
     return this.mockDatabase;
+  }
+
+  getCreationTime(): number {
+    return this.recordGenerationTime;
   }
 }

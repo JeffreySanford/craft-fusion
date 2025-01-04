@@ -13,11 +13,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var recordGenerationTime int64
+var startTime int64
 
 func init() {
 	// Initialize the record generation time
-	recordGenerationTime = time.Now().Unix()
+	startTime = time.Now().Unix()
 }
 
 // GenerateRecordsHandler handles the request to generate multiple records
@@ -30,9 +30,6 @@ func GenerateRecordsHandler(c *gin.Context) {
 		return
 	}
 
-	// Start the timer
-	startTime := time.Now()
-
 	// Generate the records
 	records := generateRecords(recordCount)
 
@@ -40,7 +37,8 @@ func GenerateRecordsHandler(c *gin.Context) {
 	endTime := time.Now()
 
 	// Calculate the elapsed time
-	elapsedTime := endTime.Sub(startTime).Milliseconds()
+	elapsedTime := endTime.Sub(time.Unix(startTime, 0)).Milliseconds()
+	var recordGenerationTime int64
 	atomic.StoreInt64(&recordGenerationTime, elapsedTime)
 
 	// Log the number of records generated and the elapsed time
@@ -52,6 +50,7 @@ func GenerateRecordsHandler(c *gin.Context) {
 
 // GetCreationTimeHandler handles the request to get the record generation time
 func GetCreationTimeHandler(c *gin.Context) {
+	var recordGenerationTime int64
 	elapsedTime := atomic.LoadInt64(&recordGenerationTime)
 	c.JSON(http.StatusOK, gin.H{"generationTime": elapsedTime})
 }
