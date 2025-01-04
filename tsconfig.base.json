@@ -23,7 +23,7 @@
     "baseUrl": "./",
     "paths": {
     },
-    "outDir": "./dist/out-tsc",
+    "outDir": "./dist",
     "rootDir": ".",
     "forceConsistentCasingInFileNames": true,
     "typeRoots": ["node_modules/@types"],
