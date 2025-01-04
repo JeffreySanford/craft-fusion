@@ -1,26 +1,21 @@
 <ng-template #noData>
   <div class="no-data">
-    <mat-progress-spinner mode="indeterminate" [diameter]="100" [style.color]="'lightblue'"></mat-progress-spinner>
+    <mat-progress-spinner mode="indeterminate" [diameter]="100" [style.color]="'teal'"></mat-progress-spinner>
   </div>
 </ng-template>
 <div class="table-container">
   <mat-card class="record-collection" [@flyIn]>
-    <mat-card-content *ngIf="roundtripLabel">
+    <mat-card-content>
       <div class="report">
-        <p>
-          Using the backend server language,
-          <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ server.language }}</span>
-          , a mock record set of
-          <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ totalRecords }}</span>
-          records was generated in <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ generationTimeLabel }}</span> and delivered in
-          <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ roundtripLabel }}</span> to the Angular frontend.
-        </p>
-        <p>
-          Network performance: <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ networkPerformance }}</span>
-        </p>
-        <p>
-          Disk transfer time: <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ diskTransferTime }}</span>
-        </p>
+        <div [hidden]="!resolved" class="report-text visible">
+          <p>Using the backend server language,
+            <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ server.language }}</span>
+            , a mock record set of
+            <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ totalRecords }}</span>
+            records was generated in <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ generationTimeLabel }}</span> and delivered in
+            <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ roundtripLabel }}</span> to the Angular frontend with a latency of <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ networkPerformance }}</span>
+        </div>
+        
         <div class="button-container">
           <button mat-raised-button color="primary" class="swagger-button" (click)="onSwaggerButtonClick()">Swagger API for {{ server.language }}</button>
         </div>
@@ -57,7 +52,7 @@
   </mat-card>
 
   <!-- Table and other elements -->
-  <div class="scrollable-container">
+  <div class="scrollable-container" [hidden]="!resolved">
     <div class="table-wrapper">
       <table
         mat-table

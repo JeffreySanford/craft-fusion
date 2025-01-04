@@ -50,7 +50,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   servers: Server[] = [
     {
       name: 'Nest',
-      language: 'NestJS (node.js)',
+      language: 'NestJS',
       swagger: this.getSwaggerUrl('Nest'),
     },
     {
