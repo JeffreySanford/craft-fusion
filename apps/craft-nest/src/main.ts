@@ -64,7 +64,7 @@ async function bootstrap() {
 
   Logger.log('Swagger is set up at /api/api-docs');
 
-  await app.listen(PORT, HOST);
+  await app.listen(PORT, '0.0.0.0');
   Logger.log(`Server running on ${protocol}://${HOST}:${PORT}`);
 }
 
