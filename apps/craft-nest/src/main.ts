@@ -24,10 +24,14 @@ async function bootstrap() {
     const keyPath = '/etc/letsencrypt/live/jeffreysanford.us/privkey.pem';
     const certPath = '/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem';
     if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
-      httpsOptions = {
-        key: fs.readFileSync(keyPath),
-        cert: fs.readFileSync(certPath),
-      };
+      try {
+        httpsOptions = {
+          key: fs.readFileSync(keyPath),
+          cert: fs.readFileSync(certPath),
+        };
+      } catch (error) {
+        Logger.error('Error reading SSL files, running without HTTPS', error);
+      }
     } else {
       Logger.error('SSL files not found, running without HTTPS');
     }
