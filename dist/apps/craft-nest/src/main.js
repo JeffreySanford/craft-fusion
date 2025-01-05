@@ -18,13 +18,21 @@ async function bootstrap() {
     const protocol = isProduction ? 'https' : 'http';
     common_1.Logger.log(`Starting server in ${NODE_ENV} mode`);
     common_1.Logger.log(`Host: ${HOST}, Port: ${PORT}`);
-    const httpsOptions = isProduction ? {
-        key: fs.readFileSync('/etc/letsencrypt/live/jeffreysanford.us/privkey.pem'),
-        cert: fs.readFileSync('/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem'),
-    } : undefined;
-    const app = await core_1.NestFactory.create(app_module_1.AppModule, {
-        httpsOptions
-    });
+    let httpsOptions;
+    if (isProduction) {
+        const keyPath = '/etc/letsencrypt/live/jeffreysanford.us/privkey.pem';
+        const certPath = '/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem';
+        if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+            httpsOptions = {
+                key: fs.readFileSync(keyPath),
+                cert: fs.readFileSync(certPath),
+            };
+        }
+        else {
+            common_1.Logger.error('SSL files not found, running without HTTPS');
+        }
+    }
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, { httpsOptions });
     // Set global prefix for all routes
     app.setGlobalPrefix('api');
     app.enableCors({

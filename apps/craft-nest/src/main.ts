@@ -19,14 +19,21 @@ async function bootstrap() {
   Logger.log(`Starting server in ${NODE_ENV} mode`);
   Logger.log(`Host: ${HOST}, Port: ${PORT}`);
 
-  const httpsOptions = isProduction ? {
-    key: fs.readFileSync('/etc/letsencrypt/live/jeffreysanford.us/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem'),
-  } : undefined;
+  let httpsOptions;
+  if (isProduction) {
+    const keyPath = '/etc/letsencrypt/live/jeffreysanford.us/privkey.pem';
+    const certPath = '/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem';
+    if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+      httpsOptions = {
+        key: fs.readFileSync(keyPath),
+        cert: fs.readFileSync(certPath),
+      };
+    } else {
+      Logger.error('SSL files not found, running without HTTPS');
+    }
+  }
 
-  const app = await NestFactory.create(AppModule, {
-    httpsOptions
-  });
+  const app = await NestFactory.create(AppModule, { httpsOptions });
 
   // Set global prefix for all routes
   app.setGlobalPrefix('api');
