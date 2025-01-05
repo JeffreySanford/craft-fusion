@@ -1,4 +1,3 @@
-// ecosystem.config.js
 module.exports = {
   apps: [
     {
@@ -12,10 +11,10 @@ module.exports = {
         PORT: 3000,
         HOST: 'localhost',
       },
-      env_production: { // Explicitly define production environment
+      env_production: {
         NODE_ENV: 'production',
         PORT: 3000,
-        HOST: 'localhost',
+        HOST: '0.0.0.0',
       },
       error_file: './logs/craft-nest/error.log',
       out_file: './logs/craft-nest/out.log',
@@ -36,10 +35,10 @@ module.exports = {
         PORT: 4000,
         HOST: 'localhost',
       },
-      env_production: { // Explicitly define production environment
+      env_production: {
         NODE_ENV: 'production',
         PORT: 4000,
-        HOST: 'localhost',
+        HOST: '0.0.0.0',
       },
       error_file: './logs/craft-go/error.log',
       out_file: './logs/craft-go/out.log',
