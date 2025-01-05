@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { environment as production } from '../../..//environments/environment.prod';
+import { environment as production } from '../../../environments/environment.prod';
 
 export interface Server {
   name: string;
