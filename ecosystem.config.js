@@ -4,10 +4,15 @@ module.exports = {
     {
       name: 'craft-nest-api',
       script: './dist/apps/craft-nest/src/main.js',
-      instances: 1,  // Set to a single instance
-      exec_mode: 'fork',  // Use fork mode for a single instance
+      instances: 1,
+      exec_mode: 'fork',
       cwd: './',
       env: {
+        NODE_ENV: 'development',
+        PORT: 3000,
+        HOST: 'localhost',
+      },
+      env_production: { // Explicitly define production environment
         NODE_ENV: 'production',
         PORT: 3000,
         HOST: 'localhost',
@@ -27,6 +32,11 @@ module.exports = {
       exec_mode: 'fork',
       cwd: './',
       env: {
+        NODE_ENV: 'development',
+        PORT: 4000,
+        HOST: 'localhost',
+      },
+      env_production: { // Explicitly define production environment
         NODE_ENV: 'production',
         PORT: 4000,
         HOST: 'localhost',
