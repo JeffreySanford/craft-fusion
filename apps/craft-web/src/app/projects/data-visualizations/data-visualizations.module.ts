@@ -6,10 +6,11 @@ import { LineComponent } from './line/line.component';
 import { FintechComponent } from './fintech/fintech.component';
 import { MapComponent } from './map/map.component';
 import { MaterialModule } from '../../material.module';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [DataVisualizationsComponent, BarComponent, LineComponent, FintechComponent, MapComponent],
-  imports: [CommonModule, MaterialModule],
+  imports: [CommonModule, MaterialModule, DragDropModule],
   exports: [],
 })
 export class DataVisualizationsModule {}
