@@ -11,10 +11,10 @@
   },
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:browser",
+      "executor": "@nx/angular:webpack-browser",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/craft-web/browser",
+        "outputPath": "dist/apps/craft-web",
         "index": "apps/craft-web/src/index.html",
         "main": "apps/craft-web/src/main.ts",
         "polyfills": "apps/craft-web/src/polyfills.ts",
@@ -42,7 +42,6 @@
           "aot": true,
           "extractLicenses": true,
           "vendorChunk": false,
-          "buildOptimizer": true,
           "serviceWorker": false
         },
         "development": {
@@ -55,7 +54,7 @@
       }
     },
     "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
+      "executor": "@nx/angular:dev-server",
       "options": {
         "buildTarget": "craft-web:build"
       },
@@ -72,7 +71,7 @@
       "defaultConfiguration": "development"
     },
     "extract-i18n": {
-      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "executor": "@nx/angular:extract-i18n",
       "options": {
         "buildTarget": "craft-web:build"
       }
@@ -94,7 +93,7 @@
       "options": {
         "buildTarget": "craft-web:build",
         "port": 4200,
-        "staticFilePath": "dist/apps/craft-web/browser",
+        "staticFilePath": "dist/apps/craft-web",
         "spa": true
       }
     }
