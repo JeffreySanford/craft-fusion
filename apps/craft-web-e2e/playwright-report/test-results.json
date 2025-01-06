@@ -1,0 +1,171 @@
+{
+  "config": {
+    "configFile": "C:\\repos\\craft-fusion\\apps\\craft-web-e2e\\playwright.config.ts",
+    "rootDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "C:\\repos\\craft-fusion\\apps\\craft-web-e2e\\global-setup.ts",
+    "globalTeardown": "C:\\repos\\craft-fusion\\apps\\craft-web-e2e\\global-teardown.ts",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "playwright-report/test-results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "playwright-report/junit.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 15000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "setup",
+        "name": "setup",
+        "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
+        "testIgnore": [],
+        "testMatch": [
+          "/.*\\.setup\\.ts/"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "mobile-chrome",
+        "name": "mobile-chrome",
+        "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "mobile-safari",
+        "name": "mobile-safari",
+        "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "tablet",
+        "name": "tablet",
+        "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "version": "1.49.1",
+    "workers": 8,
+    "webServer": {
+      "command": "npx nx run craft-web:serve",
+      "url": "http://localhost:4200",
+      "reuseExistingServer": true,
+      "timeout": 120000,
+      "cwd": "C:\\repos\\craft-fusion"
+    }
+  },
+  "suites": [],
+  "errors": [
+    {
+      "message": "TimeoutError: page.fill: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[name=\"username\"]')\u001b[22m\n",
+      "stack": "TimeoutError: page.fill: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[name=\"username\"]')\u001b[22m\n\n    at globalSetup (C:\\repos\\craft-fusion\\apps\\craft-web-e2e\\global-setup.ts:28:16)",
+      "location": {
+        "file": "C:\\repos\\craft-fusion\\apps\\craft-web-e2e\\global-setup.ts",
+        "column": 16,
+        "line": 28
+      },
+      "snippet": "\u001b[90m   at \u001b[39m..\\global-setup.ts:28\n\n\u001b[0m \u001b[90m 26 |\u001b[39m     \u001b[90m// Login and save authentication state\u001b[39m\n \u001b[90m 27 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m`${environment.apiUrl}/login`\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 28 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'input[name=\"username\"]'\u001b[39m\u001b[33m,\u001b[39m environment\u001b[33m.\u001b[39mtestUser\u001b[33m.\u001b[39musername)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 29 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mfill(\u001b[32m'input[name=\"password\"]'\u001b[39m\u001b[33m,\u001b[39m environment\u001b[33m.\u001b[39mtestUser\u001b[33m.\u001b[39mpassword)\u001b[33m;\u001b[39m\n \u001b[90m 30 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'button[type=\"submit\"]'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 31 |\u001b[39m     \u001b[0m"
+    }
+  ],
+  "stats": {
+    "startTime": "2025-01-06T14:11:26.821Z",
+    "duration": 47951.387,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
