@@ -24,7 +24,7 @@ async function globalSetup(config: FullConfig) {
   
   try {
     // Login and save authentication state
-    await page.goto(`${environment.apiUrl}/login`);
+    await page.goto(`${environment.apiUrl}/home`);
     await page.fill('input[name="username"]', environment.testUser.username);
     await page.fill('input[name="password"]', environment.testUser.password);
     await page.click('button[type="submit"]');

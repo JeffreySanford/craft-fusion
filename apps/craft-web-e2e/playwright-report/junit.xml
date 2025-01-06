@@ -1,2 +1,146 @@
-<testsuites id="" name="" tests="0" failures="0" skipped="0" errors="0" time="47.951387000000004">
+<testsuites id="" name="" tests="6" failures="6" skipped="0" errors="0" time="11.710542">
+<testsuite name="example.spec.ts" timestamp="2025-01-06T14:18:06.754Z" hostname="chromium" tests="1" failures="1" skipped="0" time="0.019" errors="0">
+<testcase name="has title" classname="example.spec.ts" time="0.019">
+<failure message="example.spec.ts:3:5 has title" type="FAILURE">
+<![CDATA[  [chromium] › example.spec.ts:3:5 › has title ─────────────────────────────────────────────────────
+
+    Error: Error reading storage state from playwright/.auth/user.json:
+    ENOENT: no such file or directory, open 'C:\repos\craft-fusion\playwright\.auth\user.json'
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    apps\craft-web-e2e\playwright\test-results\example-has-title-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|..\playwright\test-results\example-has-title-chromium\trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="example.spec.ts" timestamp="2025-01-06T14:18:06.754Z" hostname="firefox" tests="1" failures="1" skipped="0" time="0.02" errors="0">
+<testcase name="has title" classname="example.spec.ts" time="0.02">
+<failure message="example.spec.ts:3:5 has title" type="FAILURE">
+<![CDATA[  [firefox] › example.spec.ts:3:5 › has title ──────────────────────────────────────────────────────
+
+    Error: Error reading storage state from playwright/.auth/user.json:
+    ENOENT: no such file or directory, open 'C:\repos\craft-fusion\playwright\.auth\user.json'
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    apps\craft-web-e2e\playwright\test-results\example-has-title-firefox\trace.zip
+    Usage:
+
+        npx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-firefox\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|..\playwright\test-results\example-has-title-firefox\trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="example.spec.ts" timestamp="2025-01-06T14:18:06.754Z" hostname="webkit" tests="1" failures="1" skipped="0" time="0.015" errors="0">
+<testcase name="has title" classname="example.spec.ts" time="0.015">
+<failure message="example.spec.ts:3:5 has title" type="FAILURE">
+<![CDATA[  [webkit] › example.spec.ts:3:5 › has title ───────────────────────────────────────────────────────
+
+    Error: Error reading storage state from playwright/.auth/user.json:
+    ENOENT: no such file or directory, open 'C:\repos\craft-fusion\playwright\.auth\user.json'
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    apps\craft-web-e2e\playwright\test-results\example-has-title-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|..\playwright\test-results\example-has-title-webkit\trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="example.spec.ts" timestamp="2025-01-06T14:18:06.754Z" hostname="mobile-chrome" tests="1" failures="1" skipped="0" time="0.017" errors="0">
+<testcase name="has title" classname="example.spec.ts" time="0.017">
+<failure message="example.spec.ts:3:5 has title" type="FAILURE">
+<![CDATA[  [mobile-chrome] › example.spec.ts:3:5 › has title ────────────────────────────────────────────────
+
+    Error: Error reading storage state from playwright/.auth/user.json:
+    ENOENT: no such file or directory, open 'C:\repos\craft-fusion\playwright\.auth\user.json'
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    apps\craft-web-e2e\playwright\test-results\example-has-title-mobile-chrome\trace.zip
+    Usage:
+
+        npx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-mobile-chrome\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|..\playwright\test-results\example-has-title-mobile-chrome\trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="example.spec.ts" timestamp="2025-01-06T14:18:06.754Z" hostname="mobile-safari" tests="1" failures="1" skipped="0" time="0.018" errors="0">
+<testcase name="has title" classname="example.spec.ts" time="0.018">
+<failure message="example.spec.ts:3:5 has title" type="FAILURE">
+<![CDATA[  [mobile-safari] › example.spec.ts:3:5 › has title ────────────────────────────────────────────────
+
+    Error: Error reading storage state from playwright/.auth/user.json:
+    ENOENT: no such file or directory, open 'C:\repos\craft-fusion\playwright\.auth\user.json'
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    apps\craft-web-e2e\playwright\test-results\example-has-title-mobile-safari\trace.zip
+    Usage:
+
+        npx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-mobile-safari\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|..\playwright\test-results\example-has-title-mobile-safari\trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="example.spec.ts" timestamp="2025-01-06T14:18:06.754Z" hostname="tablet" tests="1" failures="1" skipped="0" time="0.017" errors="0">
+<testcase name="has title" classname="example.spec.ts" time="0.017">
+<failure message="example.spec.ts:3:5 has title" type="FAILURE">
+<![CDATA[  [tablet] › example.spec.ts:3:5 › has title ───────────────────────────────────────────────────────
+
+    Error: Error reading storage state from playwright/.auth/user.json:
+    ENOENT: no such file or directory, open 'C:\repos\craft-fusion\playwright\.auth\user.json'
+
+    attachment #1: trace (application/zip) ─────────────────────────────────────────────────────────
+    apps\craft-web-e2e\playwright\test-results\example-has-title-tablet\trace.zip
+    Usage:
+
+        npx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-tablet\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|..\playwright\test-results\example-has-title-tablet\trace.zip]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
 </testsuites>

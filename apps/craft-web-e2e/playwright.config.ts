@@ -4,11 +4,11 @@ import { workspaceRoot } from '@nx/devkit';
 
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
-  
+
   // Global timeout
   timeout: 30000,
   expect: {
-    timeout: 5000
+    timeout: 5000,
   },
 
   // Test retry and workers
@@ -21,14 +21,14 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
-    
+
     // Browser configuration
     viewport: { width: 1280, height: 720 },
     ignoreHTTPSErrors: true,
     actionTimeout: 10000,
-    
+
     // Authentication state
-    storageState: 'playwright/.auth/user.json'
+    storageState: 'playwright/.auth/user.json',
   },
 
   webServer: {
@@ -46,61 +46,60 @@ export default defineConfig({
     },
     {
       name: 'chromium',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
-        viewport: { width: 1280, height: 720 }
+        viewport: { width: 1280, height: 720 },
       },
-      dependencies: ['setup']
+      dependencies: ['setup'],
     },
     {
       name: 'firefox',
-      use: { 
+      use: {
         ...devices['Desktop Firefox'],
-        viewport: { width: 1280, height: 720 }
+        viewport: { width: 1280, height: 720 },
       },
-      dependencies: ['setup']
+      dependencies: ['setup'],
     },
     {
       name: 'webkit',
-      use: { 
+      use: {
         ...devices['Desktop Safari'],
-        viewport: { width: 1280, height: 720 }
+        viewport: { width: 1280, height: 720 },
       },
-      dependencies: ['setup']
+      dependencies: ['setup'],
     },
     {
       name: 'mobile-chrome',
-      use: { 
+      use: {
         ...devices['Pixel 5'],
       },
-      dependencies: ['setup']
+      dependencies: ['setup'],
     },
     {
       name: 'mobile-safari',
       use: {
         ...devices['iPhone 12'],
       },
-      dependencies: ['setup']
+      dependencies: ['setup'],
     },
     {
       name: 'tablet',
       use: {
         ...devices['iPad Pro 11'],
       },
-      dependencies: ['setup']
-    }
+      dependencies: ['setup'],
+    },
   ],
 
-  reporter: [
-    ['html'],
-    ['json', { outputFile: 'playwright-report/test-results.json' }],
-    ['junit', { outputFile: 'playwright-report/junit.xml' }]
-  ],
+  reporter: [['html'], ['json', { outputFile: 'playwright-report/test-results.json' }], ['junit', { outputFile: 'playwright-report/junit.xml' }]],
 
   // Output folder
   outputDir: 'playwright/test-results',
 
   // Global setup
-  globalSetup: require.resolve('./global-setup.ts'),
-  globalTeardown: require.resolve('./global-teardown'),
+  // This will test the login page and the authentication of
+  // a test user here.  It has been commented out for now.
+
+  // globalSetup: require.resolve('./global-setup.ts'),
+  // globalTeardown: require.resolve('./global-teardown'),
 });
