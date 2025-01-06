@@ -16,7 +16,7 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3000,
         HOST: 'jeffreysanford.us',
-        LOG_LEVEL: 'info',
+        LOG_LEVEL: 'debug',
       },
       error_file: './logs/craft-nest/error.log',
       out_file: './logs/craft-nest/out.log',
