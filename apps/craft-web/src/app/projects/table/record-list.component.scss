@@ -5,15 +5,16 @@ $table-theme: (
   primary-white: #ffffff
 );
 
-.no-data {
+.no-data, .mat-paginator {
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 1.5em;
   color: map.get($table-theme, dark-blue);
+  background-color: map.get($table-theme, dark-blue);
 }
 
-.table-container {
+.table-container, .mat-paginator {
   padding: 0.55em;
   width: 99%;
   height: 77vh;
@@ -21,28 +22,20 @@ $table-theme: (
   flex-direction: column;
   flex-grow: 1;
   overflow: hidden;
-  background-color: map.get($table-theme, dark-blue);
 }
 
-.swagger-button {
+.swagger-button, .button-container {
   display: flex;
   justify-content: flex-end;
 }
 
 .report-text {
-  height: 3em;
-  margin-bottom: 1em;
-  visibility: hidden;
-}
-
-.report-text.visible {
-  visibility: visible;
+  min-height: 3em;
 }
 
 .selectors {
   display: flex;
   flex-direction: row;
-  align-items: space-between;
   justify-content: space-between;
   width: 100%;
 }
@@ -50,7 +43,6 @@ $table-theme: (
 .record-collection {
   height: 16em;
   border-radius: 0.25em;
-  margin-bottom: 2em;
 }
 
 .report {
@@ -59,11 +51,6 @@ $table-theme: (
   font-size: 1.25em;
   color: black;
   margin-bottom: 1em;
-}
-
-.button-container {
-  display: flex;
-  justify-content: flex-end;
 }
 
 .table-wrapper {
@@ -100,14 +87,6 @@ $table-theme: (
   }
 }
 
-.mat-paginator {
-  background-color: map.get($table-theme, dark-blue);
-  color: map.get($table-theme, primary-white);
-  font-size: 1em;
-  text-align: left;
-  z-index: 1;
-}
-
 @keyframes flyIn {
   from {
     transform: translateX(-100%);
@@ -122,14 +101,11 @@ $table-theme: (
 }
 
 @keyframes fadeToRed {
-  0% {
+  0%, 100% {
     color: inherit;
   }
   50% {
     color: red;
-  }
-  100% {
-    color: inherit;
   }
 }
 
