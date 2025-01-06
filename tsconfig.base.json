@@ -26,6 +26,7 @@
     "outDir": "./dist",
     "rootDir": ".",
     "forceConsistentCasingInFileNames": true,
+    "types": ["jest", "node"],
     "typeRoots": ["node_modules/@types"],
     "useDefineForClassFields": false
   },
