@@ -1179,3 +1179,14 @@
 2025-01-05T08:31:52: [32m[Nest] 26476  - [39m01/05/2025, 8:31:52 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/flightParams, GET} route[39m[38;5;3m +0ms[39m
 2025-01-05T08:31:52: [32m[Nest] 26476  - [39m01/05/2025, 8:31:52 AM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +4ms[39m
 2025-01-05T08:31:52: [32m[Nest] 26476  - [39m01/05/2025, 8:31:52 AM [32m    LOG[39m [32mServer running on http://localhost:3000[39m
+2025-01-05T10:51:49: Received request to generate records with count: 100
+2025-01-05T10:51:49: Generated 100 records
+2025-01-05T10:51:49: Received request to get creation time
+2025-01-05T11:16:42: Received request to generate records with count: 100
+2025-01-05T11:16:42: Generated 100 records
+2025-01-06T06:29:51: Received request to generate records with count: 100
+2025-01-06T06:29:51: Generated 100 records
+2025-01-06T06:29:51: Received request to get creation time
+2025-01-06T06:29:56: Received request to generate records with count: 100
+2025-01-06T06:29:56: Generated 100 records
+2025-01-06T06:29:56: Received request to get creation time

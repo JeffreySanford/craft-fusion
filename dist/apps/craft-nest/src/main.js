@@ -23,10 +23,15 @@ async function bootstrap() {
         const keyPath = '/etc/letsencrypt/live/jeffreysanford.us/privkey.pem';
         const certPath = '/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem';
         if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
-            httpsOptions = {
-                key: fs.readFileSync(keyPath),
-                cert: fs.readFileSync(certPath),
-            };
+            try {
+                httpsOptions = {
+                    key: fs.readFileSync(keyPath),
+                    cert: fs.readFileSync(certPath),
+                };
+            }
+            catch (error) {
+                common_1.Logger.error('Error reading SSL files, running without HTTPS', error);
+            }
         }
         else {
             common_1.Logger.error('SSL files not found, running without HTTPS');
@@ -52,7 +57,7 @@ async function bootstrap() {
     const document = swagger_1.SwaggerModule.createDocument(app, swaggerConfig);
     swagger_1.SwaggerModule.setup('api/api-docs', app, document);
     common_1.Logger.log('Swagger is set up at /api/api-docs');
-    await app.listen(PORT, HOST);
+    await app.listen(PORT, '0.0.0.0');
     common_1.Logger.log(`Server running on ${protocol}://${HOST}:${PORT}`);
 }
 bootstrap();
