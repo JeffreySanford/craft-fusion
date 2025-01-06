@@ -26,7 +26,7 @@
     "outDir": "./dist",
     "rootDir": ".",
     "forceConsistentCasingInFileNames": true,
-    "types": ["jest", "node"],
+    "types": ["node"],
     "typeRoots": ["node_modules/@types"],
     "useDefineForClassFields": false
   },
@@ -34,5 +34,5 @@
     "strictInjectionParameters": true,
     "strictTemplates": true
   },
-  "exclude": ["tmp"]
+  "exclude": ["node_modules", "dist", "tmp", "**/*.spec.ts"]
 }
