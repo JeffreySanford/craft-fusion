@@ -24,13 +24,13 @@ module.exports = {
       time: true,
       max_memory_restart: '1G',
       watch: process.env.NODE_ENV === 'development',
-      windowsHide: true
+      windowsHide: true,
     },
     {
       name: 'craft-go-api',
-      script: './apps/craft-go/dist/apps/craft-go/main',
-      instances: process.env.NODE_ENV === 'production' ? 'max' : 1,
-      exec_mode: process.env.NODE_ENV === 'production' ? 'cluster' : 'fork',
+      script: './apps/craft-go/dist/apps/craft-go/main', // Path to Go binary
+      exec_mode: 'fork', // Use fork mode for Go binary
+      instances: 1, // No clustering for Go binary
       cwd: './',
       env: {
         NODE_ENV: 'development',
@@ -50,7 +50,7 @@ module.exports = {
       time: true,
       max_memory_restart: '1G',
       watch: process.env.NODE_ENV === 'development',
-      windowsHide: true
+      windowsHide: true,
     }
   ]
 };
