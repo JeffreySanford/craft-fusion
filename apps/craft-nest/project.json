@@ -50,12 +50,6 @@
       "options": {
         "jestConfig": "apps/craft-nest/jest.config.ts"
       }
-    },
-    "lint": {
-      "executor": "@nx/eslint:eslint",
-      "options": {
-        "lintFilePatterns": ["apps/craft-nest/**/*.ts"]
-      }
     }
   }
 }
