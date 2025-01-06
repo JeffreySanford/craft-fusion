@@ -594,3 +594,11 @@ Error: ENOENT: no such file or directory, open 'C:\etc\letsencrypt\live\jeffreys
 2025-01-05T08:18:05:   address: '::1',
 2025-01-05T08:18:05:   port: 3000
 2025-01-05T08:18:05: }
+2025-01-06T14:34:36: [31m[Nest] 25464  - [39m01/06/2025, 2:34:36 PM [31m  ERROR[39m [31mSSL files not found, running without HTTPS[39m
+2025-01-06T14:47:43: [31m[Nest] 4476  - [39m01/06/2025, 2:47:43 PM [31m  ERROR[39m [31mSSL files not found, running without HTTPS[39m
+2025-01-06T14:49:01: [31m[Nest] 10064  - [39m01/06/2025, 2:49:01 PM [31m  ERROR[39m [31mSSL files not found, running without HTTPS[39m
+2025-01-06T14:50:14: [31m[Nest] 6664  - [39m01/06/2025, 2:50:14 PM [31m  ERROR[39m [31mSSL files not found, running without HTTPS[39m
+2025-01-06T14:50:49: [31m[Nest] 26824  - [39m01/06/2025, 2:50:49 PM [31m  ERROR[39m [31mSSL files not found, running without HTTPS[39m
+2025-01-06T14:51:19: [31m[Nest] 26132  - [39m01/06/2025, 2:51:19 PM [31m  ERROR[39m [31mSSL files not found, running without HTTPS[39m
+2025-01-06T14:52:35: [31m[Nest] 15224  - [39m01/06/2025, 2:52:35 PM [31m  ERROR[39m [31mSSL files not found, running without HTTPS[39m
+2025-01-06T14:54:40: [31m[Nest] 18092  - [39m01/06/2025, 2:54:40 PM [31m  ERROR[39m [31mSSL files not found, running without HTTPS[39m

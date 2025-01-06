@@ -1,0 +1,8 @@
+2025-01-06T15:28:28: 2025/01/06 15:28:28 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-06T15:28:28: 2025/01/06 15:28:28 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-06T15:28:28: 2025/01/06 15:28:28 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-06T15:28:28: 2025/01/06 15:28:28 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-06T15:28:28: 2025/01/06 15:28:28 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-06T15:28:28: 2025/01/06 15:28:28 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-06T15:28:28: 2025/01/06 15:28:28 Starting Go Backend on :4000
+2025-01-06T15:29:41: 2025/01/06 15:29:41 100 records generated in: 73325 ms

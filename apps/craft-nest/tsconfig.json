@@ -9,7 +9,7 @@
       "@craft-nest/*": ["src/*"]
     },
     "outDir": "../../dist/out-tsc",
-    "types": ["jest", "node"],
+    "types": ["node"],
     "rootDir": "../../apps/craft-nest",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
@@ -20,7 +20,6 @@
     "src/**/*.spec.ts",
     "src/**/*.test.ts",
     "src/**/*.d.ts",
-    "jest.config.ts",
     "src/ecosystem.config.js"
   ],
   "exclude": ["**/*.spec.ts", "node_modules"]

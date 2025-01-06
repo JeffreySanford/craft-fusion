@@ -3,7 +3,7 @@
 # compiled output
 tmp
 /out-tsc
-
+/dist
 # dependencies
 node_modules
 
@@ -59,14 +59,3 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
-
-# NestJS Build
-/packages/*/dist
-/packages/*/node_modules
-/packages/*/coverage
-/packages/*/test
-/packages/*/tsconfig.tsbuildinfo
-
-# Vite and Vitest
-vite.config.*.timestamp*
-vitest.config.*.timestamp*
