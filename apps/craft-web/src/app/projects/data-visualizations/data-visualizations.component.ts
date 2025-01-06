@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { BarChartData, ChartData, FintechChartData, LineChartData, MapChartData } from './data-visualizations.interfaces';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-data-visualizations',
@@ -54,5 +55,10 @@ export class DataVisualizationsComponent implements OnInit {
 
   openTile(index: number) {
     this.expandedTileIndex = this.expandedTileIndex === index ? null : index;
+  }
+
+  drop(event: CdkDragDrop<ChartData[]>) {
+    moveItemInArray(this.charts, event.previousIndex, event.currentIndex);
+    // Save the new order to the state if needed
   }
 }
