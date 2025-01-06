@@ -1,13 +1,13 @@
-const esbuild = require('esbuild');
-const path = require('path');
+import { build as _build } from 'esbuild';
+import { resolve } from 'path';
 
-esbuild.build({
+_build({
   entryPoints: [
-    path.resolve(__dirname, 'src/polyfills.ts'),
-    path.resolve(__dirname, 'src/main.ts')
+    resolve(__dirname, 'src/polyfills.ts'),
+    resolve(__dirname, 'src/main.ts')
   ],
   bundle: true,
-  outdir: path.resolve(__dirname, '../../dist/apps/craft-web'),
+  outdir: resolve(__dirname, '../../dist/apps/craft-web'),
   define: {
     'process.env.NODE_ENV': '"production"',
     global: 'window',
@@ -22,7 +22,7 @@ esbuild.build({
         build.onResolve({ filter: /^stream$/ }, () => ({ path: require.resolve('stream-browserify') }));
         build.onResolve({ filter: /^constants$/ }, () => ({ path: require.resolve('constants-browserify') }));
         build.onResolve({ filter: /^process$/ }, () => ({ path: require.resolve('process/browser') }));
-        build.onResolve({ filter: /^fs$/ }, () => ({ path: path.resolve(__dirname, 'empty-module.js') })); // Use the empty module
+        build.onResolve({ filter: /^fs$/ }, () => ({ path: resolve(__dirname, 'empty-module.js') })); // Use the empty module
       },
     },
   ],
