@@ -25,6 +25,7 @@
     "@nx/node": "20.3.0",
     "@types/axios": "^0.9.36",
     "@types/helmet": "^0.0.48",
+    "@types/shapefile": "^0.6.4",
     "axios": "^1.7.9",
     "check-disk-space": "^3.1.0",
     "d3": "^7.9.0",
@@ -35,6 +36,7 @@
     "ngx-toastr": "^19.0.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~7.8.0",
+    "shapefile": "^0.6.6",
     "swagger-ui-express": "^5.0.1",
     "web-animations-js": "^2.3.2",
     "zone.js": "0.15.0"
