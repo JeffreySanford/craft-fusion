@@ -20,12 +20,6 @@
       }
     }
   },
-  "lint": {
-    "executor": "@nx/linter:eslint",
-    "options": {
-      "lintFilePatterns": ["apps/craft-web-e2e/src/**/*.ts", "apps/craft-web-e2e/src/**/*.js", "apps/craft-web-e2e/src/**/*.json"]
-    }
-  },
   "test": {
     "executor": "@nx/jest:jest",
     "options": {

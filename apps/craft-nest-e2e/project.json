@@ -12,14 +12,6 @@
         "passWithNoTests": true
       },
       "dependsOn": ["craft-nest:build"]
-    },
-    "lint": {
-      "executor": "@nx/eslint:eslint",
-      "options": {
-        "lintFilePatterns": [
-          "apps/craft-nest-e2e/**/*.ts"
-        ]
-      }
     }
   }
 }
