@@ -43,13 +43,6 @@
           "inspect": false
         }
       }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/craft-nest/jest.config.ts"
-      }
     }
   }
 }

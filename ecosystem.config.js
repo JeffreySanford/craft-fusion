@@ -2,10 +2,10 @@ module.exports = {
   apps: [
     {
       name: 'craft-nest-api',
-      script: './dist/apps/craft-nest/src/main.js',
+      script: './dist/apps/craft-nest/src/main.js', // Updated path
       instances: process.env.NODE_ENV === 'production' ? 'max' : 1,
       exec_mode: process.env.NODE_ENV === 'production' ? 'cluster' : 'fork',
-      cwd: './',
+      cwd: __dirname,
       env: {
         NODE_ENV: 'development',
         PORT: 3000,
@@ -23,12 +23,11 @@ module.exports = {
       merge_logs: true,
       time: true,
       max_memory_restart: '1G',
-      watch: process.env.NODE_ENV === 'development',
-      windowsHide: true,
+      watch: process.env.NODE_ENV === 'development'
     },
     {
       name: 'craft-go-api',
-      script: './apps/craft-go/dist/apps/craft-go/main', // Path to Go binary
+      script: './dist/apps/craft-go/main.exe', // Ensure this path is correct for Windows
       exec_mode: 'fork', // Use fork mode for Go binary
       instances: 1, // No clustering for Go binary
       cwd: './',
@@ -49,8 +48,7 @@ module.exports = {
       merge_logs: true,
       time: true,
       max_memory_restart: '1G',
-      watch: process.env.NODE_ENV === 'development',
-      windowsHide: true,
+      watch: process.env.NODE_ENV === 'development'
     }
   ]
 };

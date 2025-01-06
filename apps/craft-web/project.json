@@ -75,27 +75,6 @@
       "options": {
         "buildTarget": "craft-web:build"
       }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "options": {
-        "lintFilePatterns": ["apps/craft-web/src/**/*.ts", "apps/craft-web/src/**/*.html", "apps/craft-web/src/**/*.scss"]
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "options": {
-        "tsConfig": "apps/craft-web/tsconfig.app.json"
-      }
-    },
-    "serve-static": {
-      "executor": "@nx/web:file-server",
-      "options": {
-        "buildTarget": "craft-web:build",
-        "port": 4200,
-        "staticFilePath": "dist/apps/craft-web",
-        "spa": true
-      }
     }
   }
 }
