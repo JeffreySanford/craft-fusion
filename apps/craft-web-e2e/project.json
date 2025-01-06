@@ -4,5 +4,33 @@
   "projectType": "application",
   "sourceRoot": "apps/craft-web-e2e/src",
   "implicitDependencies": ["craft-web"],
-  "targets": {}
+  "targets": {
+    "e2e": {
+      "executor": "@nx/playwright:playwright",
+      "options": {
+        "config": "apps/craft-web-e2e/playwright.config.ts"
+      }
+    },
+    "configurations": {
+      "production": {
+        "devServerTarget": "craft-web:serve:production"
+      },
+      "development": {
+        "devServerTarget": "craft-web:serve:development"
+      }
+    }
+  },
+  "lint": {
+    "executor": "@nx/linter:eslint",
+    "options": {
+      "lintFilePatterns": ["apps/craft-web-e2e/src/**/*.ts", "apps/craft-web-e2e/src/**/*.js", "apps/craft-web-e2e/src/**/*.json"]
+    }
+  },
+  "test": {
+    "executor": "@nx/jest:jest",
+    "options": {
+      "tsConfig": "apps/craft-web-e2e/tsconfig.spec.json",
+      "jestConfig": "apps/craft-web-e2e/jest.config.ts"
+    }
+  }
 }
