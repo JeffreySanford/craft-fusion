@@ -7,8 +7,8 @@
   <mat-card class="record-collection" [@flyIn]>
     <mat-card-content>
       <div class="report">
-        <div [hidden]="!resolved" class="report-text visible">
-          <p>Using the backend server language,
+        <div class="report-text">
+          <p [hidden]="!resolved">Using the backend server language,
             <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ server.language }}</span>
             , a mock record set of
             <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ totalRecords }}</span>
