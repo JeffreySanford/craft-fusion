@@ -67,7 +67,10 @@ Thumbs.db
 /packages/*/test
 /packages/*/tsconfig.tsbuildinfo
 
-
-
+# Vite and Vitest
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
+
+# Dist folders
+/dist
+**/dist
