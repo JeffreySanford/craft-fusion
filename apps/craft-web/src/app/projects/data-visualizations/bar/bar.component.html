@@ -1,3 +1,13 @@
 
-<h1>Bar chart loaded</h1>
-<div class="bar-chart-container"></div>
+<ng-container *ngIf="data">
+  <div class="bar-chart-container"></div>
+    <!-- <div class="bar-chart-legend">
+        <div
+        *ngFor="let item of data; let i = index"
+        class="bar-chart-legend-item"
+        [style.backgroundColor]="colors[i]"
+        >
+        {{ item.label }}
+        </div>
+    </div> -->
+</ng-container>

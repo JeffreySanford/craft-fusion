@@ -10,7 +10,8 @@ import { BarChartData } from '../data-visualizations.interfaces';
 })
 export class BarComponent implements OnInit {
   @Input() data: BarChartData[] | undefined;
-
+  title = 'Bar Chart';
+  
   constructor(private el: ElementRef) { }
 
   ngOnInit(): void {
