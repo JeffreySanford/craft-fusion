@@ -129,18 +129,13 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     this.destroy$.complete();
   }
 
-  onDisplayRowChange(event: PageEvent): void {
+  onTableChange(event: PageEvent): void {
     console.log('Event: Display row change with event:', event);
-    if (this.paginator) {
-      this.paginator.pageIndex = event.pageIndex;
-      this.paginator.pageSize = event.pageSize;
-      this.paginator.length = event.length;
 
-      if (this.dataSource.paginator && event.pageSize !== this.dataSource.paginator.pageSize) {
-        this.dataSource.paginator = this.paginator;
-        console.log('Paginator: Updated with pageIndex:', event.pageIndex, 'pageSize:', event.pageSize, 'length:', event.length);
-      }
-    }
+    this.recordService.getAllRecords().subscribe((records) => {
+      this.dataSource.data = records;
+      this.totalRecords = records.length;
+    });
   }
 
   onSelectedServerChange(event: string): void {
@@ -189,6 +184,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   onDatasetChange(count: number): void {
     this.resolved = false;
     this.totalRecords = 0;
+    this.dataSource.data = [];
 
     console.log('Event: Dataset change requested with count:', count);
     this.startTime = new Date().getTime();
