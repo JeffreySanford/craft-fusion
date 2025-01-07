@@ -173,8 +173,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   createUSMap(geojsonData: GeoJSONCollection): void {
     console.log('Step 8: Creating D3 map visualization');
     const element = this.chartContainer?.nativeElement;
-    const width = 960;
-    const height = 600;
+    const width = element.clientWidth;
+    const height = element.clientHeight;
 
     const svgElement = this.renderer.createElement('svg', 'svg');
     this.renderer.setAttribute(svgElement, 'width', `${width}`);

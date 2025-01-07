@@ -11,6 +11,6 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 @NgModule({
   declarations: [DataVisualizationsComponent, BarComponent, LineComponent, FintechComponent, MapComponent],
   imports: [CommonModule, MaterialModule, DragDropModule],
-  exports: [],
+  exports: [DataVisualizationsComponent],
 })
-export class DataVisualizationsModule {}
+export class DataVisualizationsModule { }
