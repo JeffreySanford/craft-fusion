@@ -245,7 +245,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     console.log('Event: Show detail view requested for record:', record);
     this.recordService.setSelectedUID(record.UID);
 
-    this.router.navigate(['table/', record.UID]); //route with a preface colon
+    this.router.navigate(['table/:', record.UID]); //route with a preface colon
   
     console.log('Navigation: Navigated to record detail view');
   }
