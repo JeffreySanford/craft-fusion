@@ -8,11 +8,21 @@
   flex: 1 1 calc(33.333% - 1em);
   max-width: calc(33.333% - 1em);
   box-sizing: border-box;
+  color: red;
 }
 
 .chart-card {
+  background-color: rgba(255,255,255, 0.1);
+  color: white;
   transition: transform 0.3s ease;
   cursor: pointer;
+  border: 1px solid darkred;
+}
+
+.chart-name {
+  font-size: 1.5em;
+  margin-bottom: 0.5em;
+  color: darkred;
 }
 
 .chart-card:hover {
@@ -21,15 +31,4 @@
 
 .chart-card.expanded {
   transform: scale(1.1);
-}
-
-ion-grid {
-  padding: 1em;
-}
-
-ion-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }

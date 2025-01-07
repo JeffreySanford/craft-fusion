@@ -14,7 +14,7 @@
       [class.expanded]="expandedTileIndex === i"
     >
       <mat-card-header>
-        <mat-card-title>{{ chart.name }}</mat-card-title>
+        <mat-card-title class="chart-name">{{ chart.name }}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <ng-container *ngIf="chart.component === 'app-line-chart'">
