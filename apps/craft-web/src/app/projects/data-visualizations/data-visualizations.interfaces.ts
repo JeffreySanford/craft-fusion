@@ -23,6 +23,9 @@ export interface FintechChartData {
   task: string;
   startTime: Date;
   endTime: Date;
+  startValue: number;
+  endValue: number;
+  group: string;
 }
 
 export interface MapChartData {

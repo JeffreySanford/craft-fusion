@@ -1,12 +1,104 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
+import * as d3 from 'd3';
 import { FintechChartData } from '../data-visualizations.interfaces';
 
 @Component({
   selector: 'app-fintech-chart',
   templateUrl: './fintech.component.html',
   styleUrls: ['./fintech.component.scss'],
-  standalone: false
+  standalone: false,
 })
-export class FintechComponent {
+export class FintechComponent implements OnChanges {
   @Input() data: FintechChartData[] | undefined;
+  @ViewChild('chart', { static: true }) private chartContainer: ElementRef | undefined;
+
+  constructor(private cdr: ChangeDetectorRef) {}
+
+  private colors = {
+    buy: 'blue',
+    sell: 'green',
+    extreme: 'red',
+  };
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['data']) {
+      this.renderChart();
+    }
+  }
+
+  renderChart(): void {
+    if (this.data && this.chartContainer) {
+      const element = this.chartContainer.nativeElement;
+      d3.select(element).selectAll('*').remove();
+      const colors = [
+        { name: 'buy', color: 'blue' },
+        { name: 'sell', color: 'green' },
+        { name: 'extreme', color: 'red' },
+      ];
+
+      const margin = { top: 10, right: 10, bottom: 20, left: 30 };
+      const width = element.offsetWidth - margin.left - margin.right;
+      const height = element.offsetHeight - margin.top - margin.bottom;
+
+      const svg = d3
+        .select(element)
+        .append('svg')
+        .attr('width', width + margin.left + margin.right)
+        .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
+      const x = d3
+        .scaleTime()
+        .domain([d3.min(this.data, d => d.startTime)!, d3.max(this.data, d => d.endTime)!])
+        .range([0, width]);
+
+      const y = d3
+        .scaleBand()
+        .domain(this.data.map(d => d.task))
+        .range([0, height])
+        .padding(0.1);
+
+      svg.append('g').attr('class', 'x axis').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x));
+
+      svg.append('g').attr('class', 'y axis').call(d3.axisLeft(y));
+
+      svg
+        .selectAll('.bar')
+        .data(this.data)
+        .enter()
+        .append('rect')
+        .attr('class', 'bar')
+        .attr('x', d => x(d.startTime))
+        .attr('y', d => y(d.task)!)
+        .attr('width', d => x(d.endTime) - x(d.startTime))
+        .attr('height', y.bandwidth())
+        .attr('fill', d => colors.find(color => color.name === d.group)?.color || 'black');
+
+      // Add legend
+      const legend = svg
+        .selectAll('.legend')
+        .data(Object.keys(this.colors))
+        .enter()
+        .append('g')
+        .attr('class', 'legend')
+        .attr('transform', (d, i) => `translate(0,${i * 20})`);
+
+      legend
+        .append('rect')
+        .attr('x', width - 18)
+        .attr('width', 18)
+        .attr('height', 18)
+        .style('fill', d => this.colors[d as keyof typeof this.colors]);
+
+      legend
+        .append('text')
+        .attr('x', width - 24)
+        .attr('y', 9)
+        .attr('dy', '.35em')
+        .style('text-anchor', 'end')
+        .text(d => d);
+
+      this.cdr.detectChanges();
+    }
+  }
 }
