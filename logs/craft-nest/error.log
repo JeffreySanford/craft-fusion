@@ -602,3 +602,43 @@ Error: ENOENT: no such file or directory, open 'C:\etc\letsencrypt\live\jeffreys
 2025-01-06T14:51:19: [31m[Nest] 26132  - [39m01/06/2025, 2:51:19 PM [31m  ERROR[39m [31mSSL files not found, running without HTTPS[39m
 2025-01-06T14:52:35: [31m[Nest] 15224  - [39m01/06/2025, 2:52:35 PM [31m  ERROR[39m [31mSSL files not found, running without HTTPS[39m
 2025-01-06T14:54:40: [31m[Nest] 18092  - [39m01/06/2025, 2:54:40 PM [31m  ERROR[39m [31mSSL files not found, running without HTTPS[39m
+2025-01-08T09:16:10: [31m[Nest] 10512  - [39m01/08/2025, 9:16:10 AM [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39m[31mRecord with UID creation-time not found[39m
+2025-01-08T09:16:10: Error: Record with UID creation-time not found
+2025-01-08T09:16:10:     at RecordsService.getRecordByUID (C:\repos\craft-fusion\apps\craft-nest\src\app\records\records.service.ts:18:13)
+2025-01-08T09:16:10:     at RecordsController.getUserbyId (C:\repos\craft-fusion\apps\craft-nest\src\app\records\records.controller.ts:46:31)
+2025-01-08T09:16:10:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-execution-context.js:38:29
+2025-01-08T09:16:10:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-01-08T09:16:10:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+2025-01-08T09:16:10:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-proxy.js:9:17
+2025-01-08T09:16:15: [31m[Nest] 10512  - [39m01/08/2025, 9:16:15 AM [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39m[31mRecord with UID creation-time not found[39m
+2025-01-08T09:16:15: Error: Record with UID creation-time not found
+2025-01-08T09:16:15:     at RecordsService.getRecordByUID (C:\repos\craft-fusion\apps\craft-nest\src\app\records\records.service.ts:18:13)
+2025-01-08T09:16:15:     at RecordsController.getUserbyId (C:\repos\craft-fusion\apps\craft-nest\src\app\records\records.controller.ts:46:31)
+2025-01-08T09:16:15:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-execution-context.js:38:29
+2025-01-08T09:16:15:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-01-08T09:16:15:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+2025-01-08T09:16:15:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-proxy.js:9:17
+2025-01-08T09:20:15: [31m[Nest] 10512  - [39m01/08/2025, 9:20:15 AM [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39m[31mRecord with UID creation-time not found[39m
+2025-01-08T09:20:15: Error: Record with UID creation-time not found
+2025-01-08T09:20:15:     at RecordsService.getRecordByUID (C:\repos\craft-fusion\apps\craft-nest\src\app\records\records.service.ts:18:13)
+2025-01-08T09:20:15:     at RecordsController.getUserbyId (C:\repos\craft-fusion\apps\craft-nest\src\app\records\records.controller.ts:46:31)
+2025-01-08T09:20:15:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-execution-context.js:38:29
+2025-01-08T09:20:15:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-01-08T09:20:15:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+2025-01-08T09:20:15:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-proxy.js:9:17
+2025-01-08T09:23:18: [31m[Nest] 10512  - [39m01/08/2025, 9:23:18 AM [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39m[31mRecord with UID creation-time not found[39m
+2025-01-08T09:23:18: Error: Record with UID creation-time not found
+2025-01-08T09:23:18:     at RecordsService.getRecordByUID (C:\repos\craft-fusion\apps\craft-nest\src\app\records\records.service.ts:18:13)
+2025-01-08T09:23:18:     at RecordsController.getUserbyId (C:\repos\craft-fusion\apps\craft-nest\src\app\records\records.controller.ts:46:31)
+2025-01-08T09:23:18:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-execution-context.js:38:29
+2025-01-08T09:23:18:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-01-08T09:23:18:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+2025-01-08T09:23:18:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-proxy.js:9:17
+2025-01-08T09:23:21: [31m[Nest] 10512  - [39m01/08/2025, 9:23:21 AM [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39m[31mRecord with UID creation-time not found[39m
+2025-01-08T09:23:21: Error: Record with UID creation-time not found
+2025-01-08T09:23:21:     at RecordsService.getRecordByUID (C:\repos\craft-fusion\apps\craft-nest\src\app\records\records.service.ts:18:13)
+2025-01-08T09:23:21:     at RecordsController.getUserbyId (C:\repos\craft-fusion\apps\craft-nest\src\app\records\records.controller.ts:46:31)
+2025-01-08T09:23:21:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-execution-context.js:38:29
+2025-01-08T09:23:21:     at processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-01-08T09:23:21:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-execution-context.js:46:28
+2025-01-08T09:23:21:     at C:\repos\craft-fusion\node_modules\@nestjs\core\router\router-proxy.js:9:17

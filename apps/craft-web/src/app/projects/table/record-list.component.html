@@ -8,14 +8,17 @@
     <mat-card-content>
       <div class="report">
         <div class="report-text">
-          <p [hidden]="!resolved">Using the backend server language,
+          <p [hidden]="!resolved">
+            Using the backend server language,
             <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ server.language }}</span>
             , a mock record set of
             <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ totalRecords }}</span>
             records was generated in <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ generationTimeLabel }}</span> and delivered in
-            <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ roundtripLabel }}</span> to the Angular frontend with a latency of <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ networkPerformance }}</span>
+            <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ roundtripLabel }}</span> to the Angular frontend with a latency of
+            <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ networkPerformance }}</span>
+          </p>
         </div>
-        
+
         <div class="button-container">
           <button mat-raised-button color="primary" class="swagger-button" (click)="onSwaggerButtonClick()">Swagger API for {{ server.language }}</button>
         </div>
