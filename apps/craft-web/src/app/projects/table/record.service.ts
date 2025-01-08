@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { Record } from './models/record';
 import { ApiService } from '../../common/services/api.service';
 
@@ -45,7 +46,12 @@ export class RecordService {
   getAllRecords(): Observable<Record[]> {
     const url = 'records';
     console.log(`Fetching all records from URL: ${this.apiService.getApiUrl()}/${url}`);
-    return this.apiService.get<Record[]>(url);
+    return this.apiService.get<Record[]>(url).pipe(
+      catchError((error: any): Observable<Record[]> => {
+        console.error('Error: getAllRecords failed:', error);
+        return of([]); // Ensure an Observable is returned
+      })
+    );
   }
 
   /**
@@ -80,14 +86,24 @@ export class RecordService {
   generateNewRecordSet(count: number): Observable<Record[]> {
     const url = `records/generate?count=${count}`;
     console.log(`Generating new record set with count: ${count} from URL: ${this.apiService.getApiUrl()}/${url}`);
-    return this.apiService.get<Record[]>(url);
+    return this.apiService.get<Record[]>(url).pipe(
+      catchError((error: any): Observable<Record[]> => {
+        console.error('Error: generateNewRecordSet failed:', error);
+        return of([]); // Ensure an Observable is returned
+      })
+    );
   }
 
   // This is performance testing service to get the creation time of the records
   getCreationTime(): Observable<number> {
     const url = `records/time`;
     console.log(`Fetching creation time from URL: ${this.apiService.getApiUrl()}/${url}`);
-    return this.apiService.get<number>(url);
+    return this.apiService.get<number>(url).pipe(
+      catchError((error: any): Observable<number> => {
+        console.error('Error: getCreationTime failed:', error);
+        return of(0); // Ensure an Observable is returned
+      })
+    );
   }
 
   setServerResource(resource: string): string {

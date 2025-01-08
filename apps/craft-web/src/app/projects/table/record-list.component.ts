@@ -3,7 +3,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { Subject, BehaviorSubject, of } from 'rxjs';
+import { Subject, BehaviorSubject, of, Subscription } from 'rxjs';
 import { catchError, switchMap, tap, takeUntil } from 'rxjs/operators';
 import { detailExpand, flyIn } from './animations';
 import { Record } from './models/record';
@@ -15,6 +15,13 @@ export interface Server {
   swagger: string;
 }
 
+interface Report {
+  roundtripLabel: string;
+  generationTimeLabel: string;
+  networkPerformance: string;
+  diskTransferTime: string;
+}
+
 @Component({
   selector: 'app-record-list',
   standalone: false,
@@ -22,7 +29,7 @@ export interface Server {
   styleUrls: ['./record-list.component.scss'],
   animations: [detailExpand, flyIn],
 })
-export class RecordListComponent implements OnInit, OnDestroy, AfterContentChecked {
+export class RecordListComponent implements OnInit, OnDestroy /*, AfterContentChecked*/ {
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
   rowExpanded = false;
@@ -62,6 +69,10 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   server: Server = this.servers[0];
   apiURL = '';
   fadeToRedClass = false;
+  private dataSubject = new BehaviorSubject<Record[]>([]);
+  data$ = this.dataSubject.asObservable();
+  private reportSubject = new BehaviorSubject<Report | null>(null);
+  report$ = this.reportSubject.asObservable();
 
   constructor(private router: Router, private recordService: RecordService, private changeDetectorRef: ChangeDetectorRef) {
     console.log('Constructor: RecordListComponent created');
@@ -82,34 +93,29 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     this.server = server;
 
     this.apiURL = this.recordService.setServerResource(server.name);
-    this.recordService
-      .generateNewRecordSet(100)
-      .pipe(
-        takeUntil(this.destroy$),
-        switchMap((dataset: Record[]) => {
-          if (dataset) {
-            this.dataSource.data = dataset;
-            this.totalRecords = dataset.length;
-            this.resolved = true;
-            this.newData = true;
+    this.fetchData(100);
 
-            console.log('Data: New record set generated with length:', dataset.length);
+    // Subscribe to the data$ observable to update the dataSource
+    this.data$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
+      this.dataSource.data = data;
+      this.changeDetectorRef.detectChanges();
+    });
 
-            this.updateCreationTime();
-            this.triggerFadeToRed();
-          }
-          return of([]); // Ensure an Observable is returned
-        }),
-        catchError((error: any) => {
-          console.error('Error: generateNewRecordSet failed:', error);
-          this.resolvedSubject.next(true);
-          this.changeDetectorRef.detectChanges();
-          return of([]); // Ensure an Observable is returned
-        }),
-      )
-      .subscribe();
+    // Subscribe to the report$ observable to get the report object
+    this.report$.pipe(takeUntil(this.destroy$)).subscribe((report) => {
+      if (report) {
+        console.log('Report:', report);
+        // You can use the report object here
+        this.roundtripLabel = report.roundtripLabel;
+        this.generationTimeLabel = report.generationTimeLabel;
+        this.networkPerformance = report.networkPerformance;
+        this.diskTransferTime = report.diskTransferTime;
+      }
+    });
   }
 
+  // Commenting out ngAfterContentChecked to see if it is still required
+  /*
   ngAfterContentChecked(): void {
     if (this.resolved && this.dataSource.data.length > 0 && this.newData) {
       console.log('Lifecycle: ngAfterContentChecked called');
@@ -122,6 +128,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
       }
     }
   }
+  */
 
   ngOnDestroy(): void {
     console.log('Lifecycle: ngOnDestroy called');
@@ -133,8 +140,14 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     console.log('Event: Display row change with event:', event);
 
     this.recordService.getAllRecords().subscribe((records) => {
+      this.clearDataSource();
       this.dataSource.data = records;
       this.totalRecords = records.length;
+
+      console.log('Data: New record set generated with length:', records.length);
+
+      this.updateCreationTime();
+      this.changeDetectorRef.detectChanges();
     });
   }
 
@@ -147,10 +160,10 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
     if (server) {
       console.log('Found server:', server);
       this.apiURL = this.recordService.setServerResource(server.name);
-      this.dataSource.data = [];
-      this.onDatasetChange(this.totalRecords);
+      this.clearDataSource();
       this.server = server;
       console.log('Server: Selected server updated to:', this.server.name);
+      this.fetchData(this.totalRecords);
     } else {
       console.error('Error: No matching server found for event:', event);
     }
@@ -176,7 +189,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
       this.displayedColumns = ['userID', 'name', 'city', 'state', 'zip', 'icons'];
       console.log('Displayed Columns: Width < 1400, updated to:', this.displayedColumns);
     } else {
-      this.displayedColumns = ['userID', 'name', 'address', 'city', 'state', 'zip', 'phone', 'icons'];
+      
       console.log('Displayed Columns: Width >= 1400, updated to:', this.displayedColumns);
     }
   }
@@ -184,10 +197,49 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
   onDatasetChange(count: number): void {
     this.resolved = false;
     this.totalRecords = 0;
-    this.dataSource.data = [];
+    this.clearDataSource();
 
     console.log('Event: Dataset change requested with count:', count);
     this.startTime = new Date().getTime();
+    this.recordService.generateNewRecordSet(count).pipe(
+      takeUntil(this.destroy$),
+      switchMap((dataset: Record[]) => {
+        if (dataset) {
+          this.dataSource.data = dataset;
+          this.resolved = true;
+          this.newData = true;
+
+          this.paginator.pageIndex = 0;
+          this.paginator.pageSize = 5;
+          this.paginator.length = dataset.length;
+          this.changeDetectorRef.detectChanges();
+
+          this.dataSource.filterPredicate = (data: Record, filter: string) => {
+            return data.UID.toLowerCase().includes(filter);
+          };
+
+          this.sort = { active: 'userID', direction: 'asc' } as MatSort;
+          this.updateDisplayedColumns();
+
+          this.totalRecords = dataset.length;
+          console.log('Data: New record set generated with length:', dataset.length);
+
+          this.updateCreationTime();
+          this.triggerFadeToRed();
+
+        }
+        return of([]);
+      }),
+      catchError((error: any) => {
+        console.error('Error: generateNewRecordSet failed:', error);
+        this.resolvedSubject.next(true);
+        this.changeDetectorRef.detectChanges();
+        return of([]);
+      }),
+    ).subscribe();
+  }
+
+  private fetchData(count: number): void {
     this.recordService
       .generateNewRecordSet(count)
       .pipe(
@@ -214,6 +266,7 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
 
             this.updateCreationTime();
             this.triggerFadeToRed();
+            this.changeDetectorRef.detectChanges();
           }
           return of([]);
         }),
@@ -316,15 +369,17 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
         tap((generationTime: number) => {
           const endTime = new Date().getTime();
           const roundtrip = endTime - this.startTime;
-          this.roundtripLabel = roundtrip > 1000 ? `${(roundtrip / 1000).toFixed(2)} seconds` : `${roundtrip.toFixed(2)} milliseconds`;
-          this.generationTimeLabel = generationTime > 1000 ? `${(generationTime / 1000).toFixed(2)} seconds` : `${generationTime.toFixed(2)} milliseconds`;
-          this.networkPerformance = `${(roundtrip - generationTime).toFixed(2)} milliseconds`;
-          this.diskTransferTime = `${(generationTime / 2).toFixed(2)} milliseconds`;
-          console.log('Timing: Data generation time:', this.generationTimeLabel, 'Roundtrip time:', this.roundtripLabel, 'Network performance:', this.networkPerformance, 'Disk transfer time:', this.diskTransferTime);
+          const roundtripLabel = roundtrip > 1000 ? `${(roundtrip / 1000).toFixed(2)} seconds` : `${roundtrip.toFixed(2)} milliseconds`;
+          const generationTimeLabel = generationTime > 1000 ? `${(generationTime / 1000).toFixed(2)} seconds` : `${generationTime.toFixed(2)} milliseconds`;
+          const networkPerformance = `${(roundtrip - generationTime).toFixed(2)} milliseconds`;
+          const diskTransferTime = `${(generationTime / 2).toFixed(2)} milliseconds`;
+
+          const report: Report = { roundtripLabel, generationTimeLabel, networkPerformance, diskTransferTime };
+          this.reportSubject.next(report);
+
+          console.log('Timing: Data generation time:', generationTimeLabel, 'Roundtrip time:', roundtripLabel, 'Network performance:', networkPerformance, 'Disk transfer time:', diskTransferTime);
           this.resolvedSubject.next(true);
-          console.log('Resolved: Subject updated');
           this.changeDetectorRef.detectChanges();
-          this.triggerFadeToRed();
         }),
         catchError((error: any) => {
           console.error('Error: getCreationTime failed:', error);
@@ -349,6 +404,11 @@ export class RecordListComponent implements OnInit, OnDestroy, AfterContentCheck
       this.fadeToRedClass = false;
       this.changeDetectorRef.detectChanges();
     }, 1000);
+  }
+
+  private clearDataSource(): void {
+    this.dataSource.data = [];
+    this.changeDetectorRef.detectChanges();
   }
 
   onSwaggerButtonClick(): void {
