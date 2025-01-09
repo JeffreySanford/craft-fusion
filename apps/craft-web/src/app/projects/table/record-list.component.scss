@@ -17,43 +17,13 @@ $table-theme: (
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgba(255, 255, 255, 0.3); /* Optional: to add a semi-transparent background */
-  z-index: 1000; /* Ensure it is above other elements */
+  background-color: rgba(0, 0, 0, 0.3); /* Optional: to add a semi-transparent background */
+  z-index: 1000;
 }
 
-.table-container,
-.mat-paginator {
-  padding: 0.55em;
-  width: 99%;
-  height: 77vh;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  overflow: hidden;
-}
-
-.swagger-button,
-.button-container {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.swagger-button {
-  border: 1px solid blue;
-  background-color: map.get($table-theme, primary-white);
-  color: map.get($table-theme, teal);
-  padding: 0.5em 1em;
-  border-radius: 0.5em;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-
-  &:hover {
-    background-color: map.get($table-theme, dark-blue);
-    color: map.get($table-theme, primary-white);
-  }
-}
 .record-collection {
-  height: 16em;
+  height: 13em;
+  margin-bottom: 1em;
   border-radius: 0.25em;
 
   .report {
@@ -73,9 +43,40 @@ $table-theme: (
       min-height: 3em;
       flex: 1; /* Allow the report text to take available space */
       border: 1px solid map.get($table-theme, blue); /* 1px solid blue border */
-      color: map.get($table-theme, blue); /* Blue text */
+      border-radius: 0.25em;
+      color: map.get($table-theme, dark-blue);
       margin-right: 1em;
+      padding: 0.25em 0.5em;
     }
+
+    .swagger-button,
+    .button-container {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .swagger-button {
+      border: 1px solid blue;
+      background-color: map.get($table-theme, primary-white);
+      color: map.get($table-theme, teal);
+      padding: 0.5em 1em;
+      border-radius: 0.25em;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+
+      &:hover {
+        background-color: map.get($table-theme, dark-blue);
+        color: map.get($table-theme, primary-white);
+      }
+    }
+  }
+
+  .selectors {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25em;
   }
 
   .table-container,
@@ -87,33 +88,6 @@ $table-theme: (
     flex-direction: column;
     flex-grow: 1;
     overflow: hidden;
-  }
-
-  .selectors {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center; /* Ensure items are aligned vertically */
-    gap: 1em; /* Add space between items */
-
-    .mat-form-field-appearance-outline {
-      flex: 1; /* Allow the form fields to take available space */
-      background-color: map.get($table-theme, teal);
-      cursor: pointer;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      position: relative;
-      overflow: hidden;
-
-      &:hover {
-      background-color: map.get($table-theme, dark-blue);
-      color: map.get($table-theme, primary-white);
-      }
-
-      &:active::after {
-      transform: scale(1);
-      transition: transform 0s;
-      }
-    }
   }
 
   .table-wrapper {
