@@ -7,8 +7,16 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+  height: 20em;
 
+
+}
+.chart {
+  width: calc(100% - 40px);
+  margin: 0 auto;
+  height: 20em;
+  background-color: red;
+}
 /* SVG Styling */
 svg {
   font-family: 'Arial', sans-serif;
@@ -44,28 +52,32 @@ path {
 /* Logo and Attribution Styling */
 .logo-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-around;
   align-items: center;
   margin-top: 20px;
-  opacity: 0;
   animation: fadeInLogo 2s forwards;
-}
+  background-color: rgba(0,0,255,0.7);
 
-.logo {
-  width: 150px;
-  margin-bottom: 10px;
-  transform: scale(0.8);
-  transition: transform 0.3s ease-in-out;
-
-  &:hover {
-    transform: scale(1);
+  .logo {
+    width: 150px;
+    color: black;
+    margin-bottom: 10px;
+    transform: scale(0.8);
+    transition: transform 0.3s ease-in-out;
+  
+    &:hover {
+      transform: scale(1);
+    }
   }
+  
+  .data-source {
+    font-size: 1em;
+    color: white;
+  }
+  
 }
 
-.data-source {
-  font-size: 14px;
-  color: #333;
-}
 
 /* Logo Animation */
 @keyframes fadeInLogo {

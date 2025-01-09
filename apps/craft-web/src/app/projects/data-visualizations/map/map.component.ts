@@ -28,6 +28,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('chart') private chartContainer: ElementRef | undefined;
 
   private shapefileUrl = '/census/geo/tiger/GENZ2021/shp/cb_2021_us_state_20m.zip';
+  logoUrl = 'https://www.naturalearthdata.com/wp-content/themes/NEV/images/nev_logo.png';
   private blobSubject = new Subject<Blob>();
   private unzipSubject = new Subject<JSZip>();
   private destroy$ = new Subject<void>();
@@ -176,6 +177,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     const width = element.clientWidth;
     const height = element.clientHeight;
 
+    debugger
     const svgElement = this.renderer.createElement('svg', 'svg');
     this.renderer.setAttribute(svgElement, 'width', `${width}`);
     this.renderer.setAttribute(svgElement, 'height', `${height}`);
