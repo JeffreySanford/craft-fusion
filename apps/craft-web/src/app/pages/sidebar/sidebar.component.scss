@@ -2,7 +2,8 @@
   background-color: rgba(0, 0, 255, 0.2);
   padding: 1em;
   height: 100%;
-  margin: 0 0 0 0.125em;;
+  margin: 0 0 0 0.125em;
+  border-radius: 0.25em;
 
   &.collapsed {
     width: 7em;
@@ -13,13 +14,14 @@
     top: 38em;
     left: 2em;
     right: 0;
-    color: darkblue;
+    color: #00FFFF;
+    border: 1px solid #00FFFF;
     font-size: 1em;
     cursor: pointer;
-    transition: color 3s ease;
+    transition: color 300ms ease;
 
     &:hover {
-      color: red;
+      color: teal;
     }
   }
 }
@@ -36,8 +38,8 @@
   border-radius: 0.25em;
   border: 1px solid darkblue;
   outline: 0.1em solid rgba(4, 0, 252, 0.3);;
-  background-color: rgba(4, 0, 252, 0.6) !important;
-  color: white; /* Replaced with stock color */
+  background-color: rgba(4, 0, 252, 0.7) !important;
+  color: white;
 
   &.collapsed {
     width: 5em;
@@ -53,6 +55,11 @@
   &.active {
     outline-color: rgba(33, 236, 243, 0.8);
     box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(33, 194, 243, 0.3);
+    color: #00FFFF; // Neon cyan
+    
+    .mat-icon, .menu-text {
+      color: #00FFFF;
+    }
   }
 
   .mat-icon {
@@ -76,7 +83,7 @@
 }
 
 .sidebar {
-  color: white; /* Replaced with stock color */
+  color: white;
   width: 250px;
   background-color: #f8f9fa;
   padding: 15px;
@@ -103,7 +110,7 @@
 
       &.collapsed {
         width: 7em;
-        border: 1px solid teal;
+        border: 1px solid #00FFFF;
       }
     }
   }
@@ -119,6 +126,6 @@
 :host ::ng-deep .collapsed {
   .menu-item.mdc-button {
     padding: 0 0 0 1.25em;
-    max-width: 7em; // Adjust the width as needed for the collapsed state
+    max-width: 7em;
   }
 }

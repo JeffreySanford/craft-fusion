@@ -1,9 +1,9 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, AfterContentChecked } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { Subject, BehaviorSubject, of, Subscription } from 'rxjs';
+import { Subject, BehaviorSubject, of } from 'rxjs';
 import { catchError, switchMap, tap, takeUntil } from 'rxjs/operators';
 import { detailExpand, flyIn } from './animations';
 import { Record } from './models/record';
@@ -29,9 +29,10 @@ interface Report {
   styleUrls: ['./record-list.component.scss'],
   animations: [detailExpand, flyIn],
 })
-export class RecordListComponent implements OnInit, OnDestroy /*, AfterContentChecked*/ {
+export class RecordListComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
   @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
+  @ViewChild('filterInput', { static: true }) filterInput!: ElementRef;
   rowExpanded = false;
   filterValue = '';
   dataSetSizes = [100, 1000, 15000, 100000, 1000000];
@@ -95,6 +96,13 @@ export class RecordListComponent implements OnInit, OnDestroy /*, AfterContentCh
     this.apiURL = this.recordService.setServerResource(server.name);
     this.fetchData(100);
 
+    // Set up paginator and sort
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+
+    // Set focus on the filter input field
+    this.filterInput.nativeElement.focus();
+
     // Subscribe to the data$ observable to update the dataSource
     this.data$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
       this.dataSource.data = data;
@@ -114,41 +122,17 @@ export class RecordListComponent implements OnInit, OnDestroy /*, AfterContentCh
     });
   }
 
-  // Commenting out ngAfterContentChecked to see if it is still required
-  /*
-  ngAfterContentChecked(): void {
-    if (this.resolved && this.dataSource.data.length > 0 && this.newData) {
-      console.log('Lifecycle: ngAfterContentChecked called');
-      if (this.sort && this.paginator) {
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-        this.changeDetectorRef.detectChanges();
-        this.updateDisplayedColumns();
-        this.newData = false;
-      }
-    }
-  }
-  */
-
   ngOnDestroy(): void {
     console.log('Lifecycle: ngOnDestroy called');
     this.destroy$.next();
     this.destroy$.complete();
   }
 
+  // tABLE PAGEsIZE HAS BEEN CHANGED
   onTableChange(event: PageEvent): void {
+    debugger
     console.log('Event: Display row change with event:', event);
-
-    this.recordService.getAllRecords().subscribe((records) => {
-      this.clearDataSource();
-      this.dataSource.data = records;
-      this.totalRecords = records.length;
-
-      console.log('Data: New record set generated with length:', records.length);
-
-      this.updateCreationTime();
-      this.changeDetectorRef.detectChanges();
-    });
+    this.paginator.pageSize = event.pageSize;
   }
 
   onSelectedServerChange(event: string): void {
@@ -189,7 +173,7 @@ export class RecordListComponent implements OnInit, OnDestroy /*, AfterContentCh
       this.displayedColumns = ['userID', 'name', 'city', 'state', 'zip', 'icons'];
       console.log('Displayed Columns: Width < 1400, updated to:', this.displayedColumns);
     } else {
-      
+      this.displayedColumns = ['userID', 'name', 'address', 'city', 'state', 'zip', 'phone', 'icons'];
       console.log('Displayed Columns: Width >= 1400, updated to:', this.displayedColumns);
     }
   }
@@ -226,7 +210,6 @@ export class RecordListComponent implements OnInit, OnDestroy /*, AfterContentCh
 
           this.updateCreationTime();
           this.triggerFadeToRed();
-
         }
         return of([]);
       }),
@@ -250,8 +233,6 @@ export class RecordListComponent implements OnInit, OnDestroy /*, AfterContentCh
             this.resolved = true;
             this.newData = true;
 
-            this.paginator.pageIndex = 0;
-            this.paginator.pageSize = 5;
             this.paginator.length = dataset.length;
 
             this.dataSource.filterPredicate = (data: Record, filter: string) => {
