@@ -20,6 +20,8 @@ export interface LineChartData {
 }
 
 export interface FintechChartData {
+  stockIndicator: string;
+  trade: string;
   task: string;
   startTime: Date;
   endTime: Date;

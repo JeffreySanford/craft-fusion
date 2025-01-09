@@ -40,3 +40,386 @@
 2025-01-07T04:35:04: 2025/01/07 04:35:04 1000 records generated in: 35399185 ms
 2025-01-07T04:35:07: 2025/01/07 04:35:07 15000 records generated in: 35402800 ms
 2025-01-07T04:49:33: 2025/01/07 04:49:33 100 records generated in: 36268582 ms
+2025-01-09T10:12:29: 2025/01/09 10:12:29 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:29: 2025/01/09 10:12:29 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:29: 2025/01/09 10:12:29 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:29: 2025/01/09 10:12:29 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:29: 2025/01/09 10:12:29 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:29: 2025/01/09 10:12:29 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:29: 2025/01/09 10:12:29 Starting Go Backend on :4000
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Starting Go Backend on :4000
+2025-01-09T10:12:30: 2025/01/09 10:12:30 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Starting Go Backend on :4000
+2025-01-09T10:12:30: 2025/01/09 10:12:30 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Starting Go Backend on :4000
+2025-01-09T10:12:30: 2025/01/09 10:12:30 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Starting Go Backend on :4000
+2025-01-09T10:12:30: 2025/01/09 10:12:30 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Starting Go Backend on :4000
+2025-01-09T10:12:30: 2025/01/09 10:12:30 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Starting Go Backend on :4000
+2025-01-09T10:12:30: 2025/01/09 10:12:30 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Starting Go Backend on :4000
+2025-01-09T10:12:30: 2025/01/09 10:12:30 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Starting Go Backend on :4000
+2025-01-09T10:12:30: 2025/01/09 10:12:30 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Starting Go Backend on :4000
+2025-01-09T10:12:30: 2025/01/09 10:12:30 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Starting Go Backend on :4000
+2025-01-09T10:12:30: 2025/01/09 10:12:30 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Starting Go Backend on :4000
+2025-01-09T10:12:30: 2025/01/09 10:12:30 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Starting Go Backend on :4000
+2025-01-09T10:12:30: 2025/01/09 10:12:30 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:30: 2025/01/09 10:12:30 Starting Go Backend on :4000
+2025-01-09T10:12:30: 2025/01/09 10:12:30 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:12:31: 2025/01/09 10:12:31 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:31: 2025/01/09 10:12:31 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:31: 2025/01/09 10:12:31 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:31: 2025/01/09 10:12:31 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:31: 2025/01/09 10:12:31 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:31: 2025/01/09 10:12:31 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:31: 2025/01/09 10:12:31 Starting Go Backend on :4000
+2025-01-09T10:12:31: 2025/01/09 10:12:31 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:12:31: 2025/01/09 10:12:31 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:12:31: 2025/01/09 10:12:31 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:12:31: 2025/01/09 10:12:31 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:12:31: 2025/01/09 10:12:31 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:12:31: 2025/01/09 10:12:31 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:12:31: 2025/01/09 10:12:31 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:12:31: 2025/01/09 10:12:31 Starting Go Backend on :4000
+2025-01-09T10:12:31: 2025/01/09 10:12:31 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T10:13:09: 2025/01/09 10:13:09 Starting Go Backend on :4000
+2025-01-09T10:13:09: 2025/01/09 10:13:09 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Starting Go Backend on :4000
+2025-01-09T11:09:11: 2025/01/09 11:09:11 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Starting Go Backend on :4000
+2025-01-09T11:09:11: 2025/01/09 11:09:11 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Starting Go Backend on :4000
+2025-01-09T11:09:11: 2025/01/09 11:09:11 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Starting Go Backend on :4000
+2025-01-09T11:09:11: 2025/01/09 11:09:11 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Starting Go Backend on :4000
+2025-01-09T11:09:11: 2025/01/09 11:09:11 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Starting Go Backend on :4000
+2025-01-09T11:09:11: 2025/01/09 11:09:11 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Starting Go Backend on :4000
+2025-01-09T11:09:11: 2025/01/09 11:09:11 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:11: 2025/01/09 11:09:11 Starting Go Backend on :4000
+2025-01-09T11:09:11: 2025/01/09 11:09:11 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Starting Go Backend on :4000
+2025-01-09T11:09:12: 2025/01/09 11:09:12 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Starting Go Backend on :4000
+2025-01-09T11:09:12: 2025/01/09 11:09:12 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Starting Go Backend on :4000
+2025-01-09T11:09:12: 2025/01/09 11:09:12 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Starting Go Backend on :4000
+2025-01-09T11:09:12: 2025/01/09 11:09:12 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Starting Go Backend on :4000
+2025-01-09T11:09:12: 2025/01/09 11:09:12 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Starting Go Backend on :4000
+2025-01-09T11:09:12: 2025/01/09 11:09:12 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Starting Go Backend on :4000
+2025-01-09T11:09:12: 2025/01/09 11:09:12 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/generate
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/time
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/records/:UID
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/health
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Endpoint: GET http://localhost:4000/api-go/swagger/*any
+2025-01-09T11:09:12: 2025/01/09 11:09:12 Starting Go Backend on :4000
+2025-01-09T11:09:12: 2025/01/09 11:09:12 listen: listen tcp :4000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
