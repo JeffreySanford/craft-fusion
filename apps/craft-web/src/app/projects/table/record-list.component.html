@@ -25,7 +25,7 @@
       </div>
 
       <div class="selectors" [@flyIn]>
-        <mat-form-field class="performance" appearance="outline">
+        <mat-form-field appearance="outline">
           <mat-label>Select dataset size</mat-label>
           <mat-select class="selector" [(value)]="totalRecords" (selectionChange)="onDatasetChange($event.value)">
             <mat-option *ngFor="let size of dataSetSizes" [value]="size">
@@ -34,7 +34,7 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field class="performance" appearance="outline">
+        <mat-form-field appearance="outline">
           <mat-label>Select backend server</mat-label>
           <mat-select class="selector" [value]="server.name" (selectionChange)="onSelectedServerChange($event.value)">
             <mat-option *ngFor="let server of servers" [value]="server.name">
@@ -43,9 +43,9 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="filter">
+        <mat-form-field appearance="outline" class="filter mat-elevation-z8">
           <mat-label>Filter</mat-label>
-          <input matInput (keyup)="applyFilter($event)" placeholder="Type to search..." [(ngModel)]="dataSource.filter" />
+          <input matInput #filterInput (keyup)="applyFilter($event)" placeholder="Type to search..." [(ngModel)]="dataSource.filter" />
           <button class="clear-button" mat-icon-button matSuffix (click)="clearFilter()">
             <mat-icon>close</mat-icon>
           </button>
@@ -96,9 +96,7 @@
 
         <ng-container matColumnDef="zip">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Zip</th>
-          <td mat-cell *matCellDef="let record">
-            {{ record.address.zipcode }}
-          </td>
+          <td mat-cell *matCellDef="let record">{{ record.address.zipcode }}</td>
         </ng-container>
 
         <ng-container matColumnDef="phone">
