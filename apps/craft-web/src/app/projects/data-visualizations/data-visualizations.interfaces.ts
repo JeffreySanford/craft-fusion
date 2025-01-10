@@ -1,15 +1,16 @@
 export interface ChartData {
   name: string;
   component: string;
+  data: any;
   color: string;
-  data: any[];
 }
 
 export interface BarChartData {
-  date: string;
-  value1: number;
-  value2: number;
-  value3: number;
+  month: string;
+  values: {
+    label: string;
+    amount: number;
+  }[];
 }
 
 export interface LineChartData {
