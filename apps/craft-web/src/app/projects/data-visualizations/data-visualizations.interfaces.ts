@@ -22,13 +22,13 @@ export interface LineChartData {
 
 export interface FintechChartData {
   stockIndicator: string;
-  trade: string;
+  trade: 'buy' | 'sell'; // Ensure trade is either 'buy' or 'sell'
   task: string;
   startTime: Date;
   endTime: Date;
   startValue: number;
   endValue: number;
-  group: string;
+  group: 'normal' | 'extreme'; // Ensure group is either 'normal' or 'extreme'
 }
 
 export interface MapChartData {
