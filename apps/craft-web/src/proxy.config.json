@@ -16,5 +16,11 @@
     "pathRewrite": {
       "^/api-go": "/api-go"
     }
+  },
+  "/census": {
+    "target": "https://example.com",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
   }
 }

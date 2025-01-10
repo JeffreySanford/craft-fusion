@@ -3,20 +3,19 @@
   display: flex;
   justify-content: center;
   margin: 20px auto;
-  background-color: #f9f9f9;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  height: 20em;
-
-
+  height: 40em; /* Increase height for better visibility */
 }
+
 .chart {
   width: calc(100% - 40px);
   margin: 0 auto;
-  height: 20em;
-  background-color: red;
+  
+  min-height: 20em;/* Increase height for better visibility */
 }
+
 /* SVG Styling */
 svg {
   font-family: 'Arial', sans-serif;
@@ -39,7 +38,7 @@ text {
 
 /* Path (States) Styling */
 path {
-  fill: #69b3a2;
+  fill: #69b3a2; /* Default fill color */
   stroke: black;
   transition: fill 0.3s ease, stroke-width 0.3s ease;
 
@@ -57,7 +56,6 @@ path {
   align-items: center;
   margin-top: 20px;
   animation: fadeInLogo 2s forwards;
-  background-color: rgba(0,0,255,0.7);
 
   .logo {
     width: 150px;
@@ -75,9 +73,7 @@ path {
     font-size: 1em;
     color: white;
   }
-  
 }
-
 
 /* Logo Animation */
 @keyframes fadeInLogo {
