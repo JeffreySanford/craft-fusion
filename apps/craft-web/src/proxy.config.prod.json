@@ -9,12 +9,9 @@
     }
   },
   "/census": {
-    "target": "https://www2.census.gov",
-    "secure": true,
+    "target": "https://example.com",
+    "secure": false,
     "changeOrigin": true,
-    "logLevel": "debug",
-    "pathRewrite": {
-      "^/census": ""
-    }
+    "logLevel": "debug"
   }
 }
