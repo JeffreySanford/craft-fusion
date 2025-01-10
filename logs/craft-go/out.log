@@ -688,3 +688,195 @@
 2025-01-09T11:09:12: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
 2025-01-09T11:09:12: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
 2025-01-09T11:09:12: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:37: 
+2025-01-09T17:24:37: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:37:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:37:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:37: 
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:37: 
+2025-01-09T17:24:37: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:37:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:37:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:37: 
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:37: 
+2025-01-09T17:24:37: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:37:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:37:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:37: 
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:37: 
+2025-01-09T17:24:37: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:37:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:37:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:37: 
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:37: 
+2025-01-09T17:24:37: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:37:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:37:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:37: 
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:37: 
+2025-01-09T17:24:37: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:37:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:37:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:37: 
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:37: 
+2025-01-09T17:24:37: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:37:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:37:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:37: 
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:37: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:38:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:38:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:38:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:38:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:38:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:38:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:38:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:38:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:38:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:38:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:38:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:38:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:38:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:38:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:38:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:38:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+2025-01-09T17:24:38:  - using env:	export GIN_MODE=release
+2025-01-09T17:24:38:  - using code:	gin.SetMode(gin.ReleaseMode)
+2025-01-09T17:24:38: 
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/health            --> main.main.func2 (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records           --> craft-fusion/craft-go/handlers.GetRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/generate  --> craft-fusion/craft-go/handlers.GenerateRecordsHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/time      --> craft-fusion/craft-go/handlers.GetCreationTimeHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/records/:UID      --> craft-fusion/craft-go/handlers.GetRecordByUIDHandler (5 handlers)
+2025-01-09T17:24:38: [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (5 handlers)

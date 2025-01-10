@@ -8,9 +8,11 @@ import { BarChartData } from '../data-visualizations.interfaces';
   styleUrls: ['./bar.component.scss'],
   standalone: false
 })
+
 export class BarComponent implements OnInit {
   @Input() data: BarChartData[] | undefined;
   title = 'Bar Chart';
+  colors: string[] = [];
   
   constructor(private el: ElementRef) { }
 
@@ -23,10 +25,10 @@ export class BarComponent implements OnInit {
     const data = this.data;
 
     if (data) {
-
+      this.colors = ['#69b3a2', '#404080', '#ff4d4d'];
       const margin = { top: 20, right: 30, bottom: 40, left: 40 };
-      const width = 450 - margin.left - margin.right;
-      const height = 300 - margin.top - margin.bottom;
+      const width = 410 - margin.left - margin.right;
+      const height = 250 - margin.top - margin.bottom;
 
       const svg = d3.select(element)
         .append('svg')
@@ -36,7 +38,7 @@ export class BarComponent implements OnInit {
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
       const x = d3.scaleBand()
-        .domain(data.map(d => d.date))
+        .domain(data.map(d => d.month))
         .range([0, width])
         .padding(0.2);
 
@@ -45,45 +47,24 @@ export class BarComponent implements OnInit {
         .call(d3.axisBottom(x));
 
       const y = d3.scaleLinear()
-        .domain([0, d3.max(data, d => Math.max(d.value1, d.value2, d.value3)) as number])
+        .domain([0, d3.max(data, d => Math.max(...d.values.map(v => v.amount))) as number])
         .nice()
         .range([height, 0]);
 
       svg.append('g')
         .call(d3.axisLeft(y));
 
-      svg.selectAll('.bar1')
-        .data(data)
-        .enter()
-        .append('rect')
-        .attr('class', 'bar1')
-        .attr('x', d => x(d.date)!)
-        .attr('y', d => y(d.value1))
-        .attr('width', x.bandwidth() / 3)
-        .attr('height', d => height - y(d.value1))
-        .attr('fill', '#69b3a2');
-
-      svg.selectAll('.bar2')
-        .data(data)
-        .enter()
-        .append('rect')
-        .attr('class', 'bar2')
-        .attr('x', d => x(d.date)! + x.bandwidth() / 3)
-        .attr('y', d => y(d.value2))
-        .attr('width', x.bandwidth() / 3)
-        .attr('height', d => height - y(d.value2))
-        .attr('fill', '#404080');
-
-      svg.selectAll('.bar3')
-        .data(data)
-        .enter()
-        .append('rect')
-        .attr('class', 'bar3')
-        .attr('x', d => x(d.date)! + (x.bandwidth() * 2) / 3)
-        .attr('y', d => y(d.value3))
-        .attr('width', x.bandwidth() / 3)
-        .attr('height', d => height - y(d.value3))
-        .attr('fill', '#ff4d4d');
+      data.forEach((d, i) => {
+        d.values.forEach((v, j) => {
+          svg.append('rect')
+            .attr('class', `bar${j + 1}`)
+            .attr('x', x(d.month)! + (x.bandwidth() / d.values.length) * j)
+            .attr('y', y(v.amount))
+            .attr('width', x.bandwidth() / d.values.length)
+            .attr('height', height - y(v.amount))
+            .attr('fill', this.colors[j]);
+        });
+      });
     }
   }
 }
