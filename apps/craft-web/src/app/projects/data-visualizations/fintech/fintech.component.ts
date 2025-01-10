@@ -1,22 +1,23 @@
-import { Component, Input, OnChanges, SimpleChanges, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import * as d3 from 'd3';
-import { FintechChartData } from '../data-visualizations.interfaces';
 
 @Component({
   selector: 'app-fintech-chart',
   templateUrl: './fintech.component.html',
   styleUrls: ['./fintech.component.scss'],
-  standalone: false,
+  standalone: false
 })
 export class FintechComponent implements OnChanges {
-  @Input() data: FintechChartData[] | undefined;
-  @ViewChild('chart', { static: true }) private chartContainer: ElementRef | undefined;
-
   constructor(private cdr: ChangeDetectorRef) {}
+  @Input() data: any[] = [];
+  @ViewChild('chart', { static: true }) chartContainer!: ElementRef;
 
-  private colors = {
-    buy: 'blue',
-    sell: 'green',
+  colors: Record<string, string> = {
+    LOL: 'blue',
+    OMG: 'green',
+    WTF: 'purple',
+    BBQ: 'orange',
+    ROFL: 'cyan',
     extreme: 'red',
   };
 
@@ -30,41 +31,42 @@ export class FintechComponent implements OnChanges {
     if (this.data && this.chartContainer) {
       const element = this.chartContainer.nativeElement;
       d3.select(element).selectAll('*').remove();
-      const colors = [
-        { name: 'GOOGL', color: 'blue' },
-        { name: 'AMZN', color: 'green' },
-        { name: 'BAH', color: 'purple' },
-        { name: 'ACN', color: 'orange' },
-      ];
 
-      const margin = { top: 10, right: 10, bottom: 50, left: 50 };
+      const margin = { top: 10, right: 10, bottom: 60, left: 30 };
       const width = element.offsetWidth - margin.left - margin.right;
       const height = element.offsetHeight - margin.top - margin.bottom;
 
-      const svg = d3
-        .select(element)
+      const svg = d3.select(element)
         .append('svg')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
-      const x = d3
-        .scaleTime()
-        .domain([d3.min(this.data, d => d.startTime)!, d3.max(this.data, d => d.endTime)!])
+      const tooltip = d3.select(element)
+        .append('div')
+        .attr('class', 'tooltip')
+        .style('opacity', 0);
+
+      const filteredData = this.data.filter(d => d.group !== 'extreme' && (d.trade === 'buy' || d.trade === 'sell'));
+      const extremeEvents = this.data.filter(d => d.group === 'extreme');
+
+      const x = d3.scaleTime()
+        .domain([d3.min(filteredData, d => d.startTime)!, d3.max(filteredData, d => d.endTime)!])
         .range([0, width]);
 
-      const y = d3
-        .scaleLinear()
-        .domain([d3.min(this.data, d => Math.min(d.startValue, d.endValue))!, d3.max(this.data, d => Math.max(d.startValue, d.endValue))!])
+      const y = d3.scaleLinear()
+        .domain([d3.min(filteredData, d => Math.min(d.startValue, d.endValue))!, d3.max(filteredData, d => Math.max(d.startValue, d.endValue))!])
         .range([height, 0]);
 
-      svg.append('g').attr('class', 'x axis').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x).ticks(d3.timeMonth.every(1)).tickFormat((domainValue: Date | d3.NumberValue) => d3.timeFormat("%b %Y")(domainValue instanceof Date ? domainValue : new Date(domainValue.valueOf()))));
-      svg.append('g').attr('class', 'y axis').call(d3.axisLeft(y));
+      const xAxis = d3.axisBottom(x).ticks(d3.timeYear.every(1));
+      const yAxis = d3.axisLeft(y).ticks(5);
 
-      svg
-        .selectAll('.bar')
-        .data(this.data)
+      svg.append('g').attr('class', 'x axis').attr('transform', `translate(0,${height})`).call(xAxis);
+      svg.append('g').attr('class', 'y axis').call(yAxis);
+
+      svg.selectAll('.bar')
+        .data(filteredData)
         .enter()
         .append('rect')
         .attr('class', 'bar')
@@ -72,31 +74,54 @@ export class FintechComponent implements OnChanges {
         .attr('y', d => y(Math.max(d.startValue, d.endValue)))
         .attr('width', d => x(d.endTime) - x(d.startTime))
         .attr('height', d => Math.abs(y(d.startValue) - y(d.endValue)))
-        .attr('fill', d => colors.find(color => color.name === d.stockIndicator)?.color || 'black');
+        .attr('fill', d => this.colors[d.stockIndicator] || 'black');
 
-      // Add legend
-      const legend = svg
-        .selectAll('.legend')
-        .data(colors)
+      svg.selectAll('.extreme-bar')
+        .data(extremeEvents)
         .enter()
-        .append('g')
-        .attr('class', 'legend')
-        .attr('transform', (d, i) => `translate(0,${i * 20})`);
-
-      legend
         .append('rect')
-        .attr('x', width - 18)
-        .attr('width', 18)
-        .attr('height', 18)
-        .style('fill', d => d.color);
+        .attr('class', 'extreme-bar')
+        .attr('x', d => x(d.startTime) - 2.5)
+        .attr('y', d => y(Math.max(d.startValue, d.endValue)))
+        .attr('width', 5)
+        .attr('height', d => Math.abs(y(d.startValue) - y(d.endValue)))
+        .attr('fill', 'none')
+        .attr('stroke', 'red')
+        .attr('stroke-width', 2);
 
-      legend
-        .append('text')
-        .attr('x', width - 24)
-        .attr('y', 9)
-        .attr('dy', '.35em')
-        .style('text-anchor', 'end')
-        .text(d => d.name);
+      // Add dashed line chart
+      svg.selectAll('.line')
+        .data(filteredData)
+        .enter()
+        .append('line')
+        .attr('x1', d => x(d.startTime))
+        .attr('y1', d => y(d.startValue))
+        .attr('x2', d => x(d.endTime))
+        .attr('y2', d => y(d.endValue))
+        .attr('stroke', d => this.colors[d.stockIndicator] || 'black')
+        .attr('stroke-dasharray', '5,5');
+
+      // Add average lines for each stock
+      const stockIndicators = Object.keys(this.colors).filter(key => key !== 'extreme');
+      stockIndicators.forEach(stock => {
+        const stockData = filteredData.filter(d => d.stockIndicator === stock);
+        const avgData = d3.rollups(
+          stockData,
+          v => d3.mean(v, d => (d.startValue + d.endValue) / 2),
+          d => d.startTime.getFullYear()
+        ).filter(d => d[1] !== undefined) as [number, number][];
+        const avgLine = d3.line()
+          .x(d => x(new Date(d[0], 0, 1)))
+          .y(d => y(d[1]!));
+
+        svg.append('path')
+          .datum(avgData)
+          .attr('class', 'avg-line')
+          .attr('fill', 'none')
+          .attr('stroke', this.colors[stock])
+          .attr('stroke-width', 2)
+          .attr('d', avgLine);
+      });
 
       this.cdr.detectChanges();
     }
