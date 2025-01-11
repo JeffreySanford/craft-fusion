@@ -27,5 +27,10 @@
     "appsDir": "apps",
     "libsDir": "libs"
   },
-  "defaultProject": "craft-web"
+  "defaultProject": "craft-web",
+  "generators": {
+    "@nx/angular:component": {
+      "style": "scss"
+    }
+  }
 }

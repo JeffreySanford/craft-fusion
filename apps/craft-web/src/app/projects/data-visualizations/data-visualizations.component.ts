@@ -96,6 +96,7 @@ export class DataVisualizationsComponent implements OnInit {
     { name: 'Bar Chart', component: 'app-bar-chart', color: 'green', data: this.barChartData },
     { name: 'FinTech Chart', component: 'app-fintech-chart', color: 'red', data: this.fintechChartData },
     { name: 'Map Chart', component: 'app-map-chart', color: 'purple', data: this.mapChartData },
+    { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [] },
   ];
 
   constructor(private breakpointObserver: BreakpointObserver) {}

@@ -26,9 +26,9 @@ export class BarComponent implements OnInit {
 
     if (data) {
       this.colors = ['#69b3a2', '#404080', '#ff4d4d'];
-      const margin = { top: 20, right: 30, bottom: 40, left: 40 };
-      const width = 410 - margin.left - margin.right;
-      const height = 250 - margin.top - margin.bottom;
+      const margin = { top: 10, right: 30, bottom: 40, left: 40 };
+      const width = 390 - margin.left - margin.right;
+      const height = 200 - margin.top - margin.bottom;
 
       const svg = d3.select(element)
         .append('svg')
