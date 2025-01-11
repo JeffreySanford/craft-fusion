@@ -8,12 +8,12 @@
   flex: 1 1 calc(33.333% - 1em);
   max-width: calc(33.333% - 1em);
   box-sizing: border-box;
-  color: red;
+  color: yellow;
   height: 300px; /* Adjust height to fit the map */
 }
 
 .chart-card {
-  background-color: rgba(255,255,255, 0.1);
+  background-color: rgba(0,0,0, 0.2);
   color: white;
   transition: transform 0.3s ease;
   cursor: pointer;
@@ -23,7 +23,7 @@
 .chart-name {
   font-size: 1.5em;
   margin-bottom: 0.5em;
-  color: darkred;
+  color: gold;
 }
 
 .chart-card:hover {

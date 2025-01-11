@@ -1,8 +1,8 @@
 <div class="fintech-chart-container">
   <div class="fintech-chart" #chart></div>
-  <div class="legend-container" style="display: flex; justify-content: center; margin-top: 10px;">
-    <div class="legend-item" *ngFor="let color of colors | keyvalue" style="display: inline-flex; align-items: center; margin-right: 10px;">
-      <span class="legend-color" [style.background-color]="color.value" style="width: 20px; height: 20px; display: inline-block; margin-right: 5px;"></span>
+  <div class="legend-container">
+    <div class="legend-item" *ngFor="let color of colors | keyvalue">
+      <span class="legend-color" [style.background-color]="color.value"></span>
       <span class="legend-label">{{ color.key }}</span>
     </div>
   </div>

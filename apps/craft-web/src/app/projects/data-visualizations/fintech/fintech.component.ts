@@ -17,8 +17,7 @@ export class FintechComponent implements OnChanges {
     OMG: 'green',
     WTF: 'purple',
     BBQ: 'orange',
-    ROFL: 'cyan',
-    extreme: 'red',
+    ROFL: 'cyan'
   };
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -74,20 +73,56 @@ export class FintechComponent implements OnChanges {
         .attr('y', d => y(Math.max(d.startValue, d.endValue)))
         .attr('width', d => x(d.endTime) - x(d.startTime))
         .attr('height', d => Math.abs(y(d.startValue) - y(d.endValue)))
-        .attr('fill', d => this.colors[d.stockIndicator] || 'black');
+        .attr('fill', d => this.colors[d.stockIndicator] || 'black')
+        .on('mouseover', function(event, d) {
+          tooltip.transition().duration(200).style('opacity', .9);
+          tooltip.html(`Start: ${d.startValue}<br>End: ${d.endValue}`)
+            .style('left', (event.pageX + 5) + 'px')
+            .style('top', (event.pageY - 28) + 'px');
+        })
+        .on('mouseout', function() {
+          tooltip.transition().duration(500).style('opacity', 0);
+        });
+
+      // Function to calculate the average value
+      function averageValue(d: { startValue: number; endValue: number }) {
+        return (d.startValue + d.endValue) / 2;
+      }
 
       svg.selectAll('.extreme-bar')
         .data(extremeEvents)
         .enter()
         .append('rect')
         .attr('class', 'extreme-bar')
-        .attr('x', d => x(d.startTime) - 2.5)
-        .attr('y', d => y(Math.max(d.startValue, d.endValue)))
+        .attr('x', d => {
+          const xPos = x(d.startTime) - 2.5;
+          console.log(`x: ${xPos}, startTime: ${d.startTime}`);
+          return xPos;
+        })
+        .attr('y', d => {
+          const avgValue = averageValue(d);
+          const yPos = y(avgValue);
+          console.log(`y: ${yPos}, avgValue: ${avgValue}`);
+          return yPos;
+        })
         .attr('width', 5)
-        .attr('height', d => Math.abs(y(d.startValue) - y(d.endValue)))
+        .attr('height', d => {
+          const height = Math.abs(y(d.startValue) - y(d.endValue));
+          console.log(`height: ${height}, startValue: ${d.startValue}, endValue: ${d.endValue}`);
+          return height;
+        })
         .attr('fill', 'none')
         .attr('stroke', 'red')
-        .attr('stroke-width', 2);
+        .attr('stroke-width', 2)
+        .on('mouseover', function(event, d) {
+          tooltip.transition().duration(200).style('opacity', .9);
+          tooltip.html(`Start: ${d.startValue}<br>End: ${d.endValue}`)
+            .style('left', (event.pageX + 5) + 'px')
+            .style('top', (event.pageY - 28) + 'px');
+        })
+        .on('mouseout', function() {
+          tooltip.transition().duration(500).style('opacity', 0);
+        });
 
       // Add dashed line chart
       svg.selectAll('.line')
@@ -122,8 +157,6 @@ export class FintechComponent implements OnChanges {
           .attr('stroke-width', 2)
           .attr('d', avgLine);
       });
-
-      this.cdr.detectChanges();
     }
   }
 }
