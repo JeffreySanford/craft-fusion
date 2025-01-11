@@ -1,23 +1,15 @@
 <div class="page-container">
   <mat-card class="video-container">
     <video #videoPlayer class="player" controls autoplay>
-      <source src="assets/video/haynes-astronaut.mp4" type="video/mp4">
-      <source src="assets/video/haynes-astronaut.ogg" type="video/ogg">
-      <source src="assets/video/haynes-astronaut.webm" type="video/webm">
+      <source [src]="videoSrc" type="video/mp4">
+      <source [src]="videoSrc" type="video/ogg">
+      <source [src]="videoSrc" type="video/webm">
       Your browser does not support the video tag. Please try using a modern browser.
     </video>
-    <mat-card-actions class="controls">
-      <button mat-raised-button color="primary" (click)="playVideo()">Play</button>
-      <button mat-raised-button color="primary" (click)="pauseVideo()">Pause</button>
-      <button mat-raised-button color="primary" (click)="stopVideo()">Stop</button>
-      <button mat-raised-button color="primary" (click)="rewindVideo()">Rewind</button>
-      <button mat-raised-button color="primary" (click)="fastForwardVideo()">Fast Forward</button>
-      <mat-slider min="0" max="1" step="0.01" thumbLabel>
-        <input matSliderThumb (input)="changeVolume($event)">
-      </mat-slider>
-      <mat-slider min="0" max="100" step="1" thumbLabel>
-        <input matSliderThumb (input)="seekVideo($event)">
-      </mat-slider>
-    </mat-card-actions>
+    <audio #audioPlayer class="player" controls>
+      <source [attr.src]="audioSrc" type="audio/mp3">
+      <source [attr.src]="audioSrc" type="audio/ogg">
+      Your browser does not support the audio tag. Please try using a modern browser.
+    </audio>
   </mat-card>
 </div>

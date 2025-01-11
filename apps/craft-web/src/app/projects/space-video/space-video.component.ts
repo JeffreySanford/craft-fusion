@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, Renderer2, Input } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, Renderer2, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-space-video',
@@ -6,17 +6,23 @@ import { Component, ViewChild, ElementRef, AfterViewInit, Renderer2, Input } fro
   styleUrls: ['./space-video.component.scss'],
   standalone: false
 })
-export class SpaceVideoComponent implements AfterViewInit {
+export class SpaceVideoComponent implements AfterViewInit, OnInit {
   @ViewChild('videoPlayer', { static: true }) videoPlayer!: ElementRef<HTMLVideoElement>;
-  @Input() videoSrc = 'assets/video/haynes-astronaut';
+  videoSrc!: string;
+  audioSrc!: string;
 
   constructor(private renderer: Renderer2) {}
+
+  ngOnInit(): void {
+    this.videoSrc = '../../../assets/video/haynes-astronauts.mp4';
+    this.audioSrc = '../../../assets/video/haynes-astronauts.ogg';
+  }
 
   ngAfterViewInit() {
     console.log('ngAfterViewInit called');
     this.renderer.listen(this.videoPlayer.nativeElement, 'canplay', () => {
       console.log('canplay event triggered');
-      this.renderer.setProperty(this.videoPlayer.nativeElement, 'muted', true);
+      this.renderer.setProperty(this.videoPlayer.nativeElement, 'muted', false);
       this.renderer.setProperty(this.videoPlayer.nativeElement, 'autoplay', true);
       this.renderer.setProperty(this.videoPlayer.nativeElement, 'controls', true);
       this.videoPlayer.nativeElement.play().then(() => {
@@ -25,7 +31,7 @@ export class SpaceVideoComponent implements AfterViewInit {
         console.error('Error playing video:', error);
       });
     });
-    this.renderer.setAttribute(this.videoPlayer.nativeElement, 'src', this.videoSrc + '.mp4');
+    this.renderer.setAttribute(this.videoPlayer.nativeElement, 'src', this.videoSrc);
     this.renderer.setProperty(this.videoPlayer.nativeElement, 'load', true);
   }
 
