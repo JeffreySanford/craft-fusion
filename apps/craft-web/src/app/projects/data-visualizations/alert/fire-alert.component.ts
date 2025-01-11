@@ -1,5 +1,5 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
-import * as mapboxgl from 'mapbox-gl';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { MapboxService } from '../../../common/services/mapbox.service';
 
 @Component({
   selector: 'app-fire-alert',
@@ -7,35 +7,27 @@ import * as mapboxgl from 'mapbox-gl';
   templateUrl: './fire-alert.component.html',
   styleUrl: './fire-alert.component.scss',
 })
-export class FireAlertComponent implements OnInit, AfterViewInit {
-  map!: mapboxgl.Map;
+export class FireAlertComponent implements OnInit, OnDestroy {
+  alerts: string[] = [
+    'LA'
+  ];
 
-  ngOnInit() {
+  constructor(private mapboxService: MapboxService) {}
+
+  ngOnInit(): void {
     console.log('ngOnInit called');
-    (mapboxgl as any).accessToken = 'pk.eyJ1IjoiamVmZnJleXNhbmZvcmQiLCJhIjoiY201c2psaW8yMG1vMDJrcTJ4ZzNic3YxbyJ9.7e5Pub4Ub0v-tHK9uzIuEA';
+    const map = this.mapboxService.initializeMap('map', [-118.2437, 34.0522], 12);
+
+    map.on('click', (event) => {
+      const coords = event.lngLat;
+      const alertMessage = `Alert triggered at [${coords.lng}, ${coords.lat}]`;
+      this.alerts.push(alertMessage);
+      this.mapboxService.addMarker([coords.lng, coords.lat], alertMessage);
+    });
+    
   }
 
-  ngAfterViewInit() {
-    console.log('ngAfterViewInit called');
-    const mapContainer = document.getElementById('map');
-    if (mapContainer) {
-      console.log('Map container found');
-      this.map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v11',
-        center: [-118.2437, 34.0522], // Coordinates for Los Angeles
-        zoom: 10
-      });
-
-      this.map.on('load', () => {
-        console.log('Map has been loaded');
-      });
-
-      this.map.on('error', (error) => {
-        console.error('Mapbox error:', error);
-      });
-    } else {
-      console.error('Map container not found');
-    }
+  ngOnDestroy(): void {
+    this.mapboxService.destroyMap();
   }
 }

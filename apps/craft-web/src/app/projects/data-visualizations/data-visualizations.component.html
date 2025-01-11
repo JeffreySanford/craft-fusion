@@ -1,18 +1,6 @@
 <div class="dashboard" cdkDropList (cdkDropListDropped)="drop($event)">
-  <div
-    class="dashboard-tile"
-    *ngFor="let chart of charts; let i = index"
-    cdkDrag
-    [cdkDragData]="chart"
-  >
-    <mat-card
-      (click)="openTile(i)"
-      (keydown.enter)="openTile(i)"
-      (keydown.space)="openTile(i)"
-      tabindex="0"
-      class="chart-card"
-      [class.expanded]="expandedTileIndex === i"
-    >
+  <div class="dashboard-tile" *ngFor="let chart of charts; let i = index" cdkDrag [cdkDragData]="chart">
+    <mat-card (click)="openTile(i)" (keydown.enter)="openTile(i)" (keydown.space)="openTile(i)" tabindex="0" class="chart-card" [class.expanded]="expandedTileIndex === i">
       <mat-card-header>
         <mat-card-title class="chart-name">{{ chart.name }}</mat-card-title>
       </mat-card-header>
@@ -28,6 +16,9 @@
         </ng-container>
         <ng-container *ngIf="chart.component === 'app-map-chart'">
           <app-map-chart [data]="chart.data" class="map-chart"></app-map-chart>
+        </ng-container>
+        <ng-container *ngIf="chart.component === 'app-fire-alert'">
+          <app-fire-alert></app-fire-alert>
         </ng-container>
       </mat-card-content>
     </mat-card>
