@@ -1,1 +1,13 @@
-<div id="map"></div>
+<mat-card-header class="mat-mdc-card-header">
+  <div class="mat-mdc-card-header-text">
+    <mat-card-title class="mat-mdc-card-title chart-name">Fire Alert Chart</mat-card-title>
+  </div>
+</mat-card-header>
+<div id="map" class="container">
+  <div class="alert-panel">
+    <h3>Active Alerts</h3>
+    <ul>
+      <li *ngFor="let alert of alerts">{{ alert }}</li>
+    </ul>
+  </div>
+</div>
