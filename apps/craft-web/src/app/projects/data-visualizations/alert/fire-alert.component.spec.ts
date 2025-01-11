@@ -18,4 +18,8 @@ describe('FireAlertComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should initialize the map', () => {
+    expect(component.map).toBeDefined();
+  });
 });
