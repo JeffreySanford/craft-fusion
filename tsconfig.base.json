@@ -21,8 +21,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "baseUrl": "./",
-    "paths": {
-    },
+    "paths": {},
     "outDir": "./dist",
     "rootDir": ".",
     "forceConsistentCasingInFileNames": true,
