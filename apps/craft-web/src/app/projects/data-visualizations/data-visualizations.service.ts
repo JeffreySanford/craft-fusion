@@ -12,12 +12,16 @@ export class DataVisualizationService {
   constructor(private http: HttpClient) {}
 
   /**
-   * Fetch historical stock data from Alpha Vantage.
+   * Fetch historical stock data from Finnhub.
    * @param symbol Stock symbol (e.g., "AAPL").
-   * @param startDate Start date for historical data (YYYY-MM-DD).
-   * @param endDate End date for historical data (YYYY-MM-DD).
+   * @param resolution Resolution of the data (e.g., "D" for daily).
+   * @param from Start timestamp for historical data.
+   * @param to End timestamp for historical data.
    */
   getStockData(symbol: string, resolution: string, from: number, to: number): Observable<any> {
+    // this should be using the finnhub.io api
+    const url = `http://finnhub.io/api/v1`;
+    
     const params = {
       symbol,
       resolution,
@@ -25,7 +29,8 @@ export class DataVisualizationService {
       to: to.toString(),
       token: this.apiKey,
     };
+    debugger
 
-    return this.http.get(`${this.baseUrl}/stock/candle`, { params });
+    return this.http.get(`${url}/stock/candle`, { params });
   }
 }
