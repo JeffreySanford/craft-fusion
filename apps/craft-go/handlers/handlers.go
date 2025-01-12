@@ -15,13 +15,10 @@ import (
 
 var startTime int64
 
-func init() {
-	// Initialize the record generation time
-	startTime = time.Now().Unix()
-}
-
 // GenerateRecordsHandler handles the request to generate multiple records
 func GenerateRecordsHandler(c *gin.Context) {
+	// Set the start time
+	startTime = time.Now().Unix()
 	// Parse the count parameter
 	count := c.DefaultQuery("count", "10")
 	recordCount, err := strconv.Atoi(count)
@@ -32,16 +29,15 @@ func GenerateRecordsHandler(c *gin.Context) {
 
 	// Generate the records
 	records := generateRecords(recordCount)
-
-	// End the timer
-	endTime := time.Now()
-
+	endTime := time.Now().Unix()
 	// Calculate the elapsed time
-	elapsedTime := endTime.Sub(time.Unix(startTime, 0)).Milliseconds()
+	elapsedTime := time.Now().UnixMilli() - (startTime * 1000)
+
 	var recordGenerationTime int64
 	atomic.StoreInt64(&recordGenerationTime, elapsedTime)
 
 	// Log the number of records generated and the elapsed time
+	log.Printf("Start time: %v, End time: %v", startTime, endTime)
 	log.Printf("%d records generated in: %d ms", recordCount, elapsedTime)
 
 	// Return the generated records

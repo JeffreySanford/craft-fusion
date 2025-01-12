@@ -7,11 +7,8 @@ module.exports = [
       sourceType: 'module',
       project: './tsconfig.base.json',
     },
-    plugins: ['@typescript-eslint', 'import'],
-    extends: [
-      'eslint:recommended',
-      'plugin:@typescript-eslint/recommended',
-    ],
+    plugins: ['@angular-eslint', '@typescript-eslint', 'import'],
+    extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
     settings: {
       'import/resolver': {
         typescript: {
@@ -25,5 +22,5 @@ module.exports = [
       es6: true,
     },
     overrides: [],
-  }
+  },
 ];

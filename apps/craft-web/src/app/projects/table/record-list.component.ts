@@ -104,13 +104,13 @@ export class RecordListComponent implements OnInit, OnDestroy {
     this.filterInput.nativeElement.focus();
 
     // Subscribe to the data$ observable to update the dataSource
-    this.data$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
+    this.data$.pipe(takeUntil(this.destroy$)).subscribe(data => {
       this.dataSource.data = data;
       this.changeDetectorRef.detectChanges();
     });
 
     // Subscribe to the report$ observable to get the report object
-    this.report$.pipe(takeUntil(this.destroy$)).subscribe((report) => {
+    this.report$.pipe(takeUntil(this.destroy$)).subscribe(report => {
       if (report) {
         console.log('Report:', report);
         // You can use the report object here
@@ -130,7 +130,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
   // tABLE PAGEsIZE HAS BEEN CHANGED
   onTableChange(event: PageEvent): void {
-    debugger
+    debugger;
     console.log('Event: Display row change with event:', event);
     this.paginator.pageSize = event.pageSize;
   }
@@ -140,7 +140,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('Available servers:', this.servers);
 
     const server = this.servers.find(element => event === element.name);
-    
+
     if (server) {
       console.log('Found server:', server);
       this.apiURL = this.recordService.setServerResource(server.name);
@@ -185,41 +185,44 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
     console.log('Event: Dataset change requested with count:', count);
     this.startTime = new Date().getTime();
-    this.recordService.generateNewRecordSet(count).pipe(
-      takeUntil(this.destroy$),
-      switchMap((dataset: Record[]) => {
-        if (dataset) {
-          this.dataSource.data = dataset;
-          this.resolved = true;
-          this.newData = true;
+    this.recordService
+      .generateNewRecordSet(count)
+      .pipe(
+        takeUntil(this.destroy$),
+        switchMap((dataset: Record[]) => {
+          if (dataset) {
+            this.dataSource.data = dataset;
+            this.resolved = true;
+            this.newData = true;
 
-          this.paginator.pageIndex = 0;
-          this.paginator.pageSize = 5;
-          this.paginator.length = dataset.length;
+            this.paginator.pageIndex = 0;
+            this.paginator.pageSize = 5;
+            this.paginator.length = dataset.length;
+            this.changeDetectorRef.detectChanges();
+
+            this.dataSource.filterPredicate = (data: Record, filter: string) => {
+              return data.UID.toLowerCase().includes(filter);
+            };
+
+            this.sort = { active: 'userID', direction: 'asc' } as MatSort;
+            this.updateDisplayedColumns();
+
+            this.totalRecords = dataset.length;
+            console.log('Data: New record set generated with length:', dataset.length);
+
+            this.updateCreationTime();
+            this.triggerFadeToRed();
+          }
+          return of([]);
+        }),
+        catchError((error: any) => {
+          console.error('Error: generateNewRecordSet failed:', error);
+          this.resolvedSubject.next(true);
           this.changeDetectorRef.detectChanges();
-
-          this.dataSource.filterPredicate = (data: Record, filter: string) => {
-            return data.UID.toLowerCase().includes(filter);
-          };
-
-          this.sort = { active: 'userID', direction: 'asc' } as MatSort;
-          this.updateDisplayedColumns();
-
-          this.totalRecords = dataset.length;
-          console.log('Data: New record set generated with length:', dataset.length);
-
-          this.updateCreationTime();
-          this.triggerFadeToRed();
-        }
-        return of([]);
-      }),
-      catchError((error: any) => {
-        console.error('Error: generateNewRecordSet failed:', error);
-        this.resolvedSubject.next(true);
-        this.changeDetectorRef.detectChanges();
-        return of([]);
-      }),
-    ).subscribe();
+          return of([]);
+        }),
+      )
+      .subscribe();
   }
 
   private fetchData(count: number): void {
@@ -280,7 +283,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
     this.recordService.setSelectedUID(record.UID);
 
     this.router.navigate(['table/:', record.UID]); //route with a preface colon
-  
+
     console.log('Navigation: Navigated to record detail view');
   }
 
@@ -341,7 +344,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
       console.log('Filter: Applied with value:', filterValue);
     }
   }
-  
+
   private updateCreationTime(): void {
     this.recordService
       .getCreationTime()
@@ -356,9 +359,23 @@ export class RecordListComponent implements OnInit, OnDestroy {
           const diskTransferTime = `${(generationTime / 2).toFixed(2)} milliseconds`;
 
           const report: Report = { roundtripLabel, generationTimeLabel, networkPerformance, diskTransferTime };
+
+          console.log('Start Time:', this.startTime);
+          console.log('End Time:', endTime);
+          console.log('Roundtrip Time:', roundtrip);
+          console.log('Generation Time:', generationTime);
           this.reportSubject.next(report);
 
-          console.log('Timing: Data generation time:', generationTimeLabel, 'Roundtrip time:', roundtripLabel, 'Network performance:', networkPerformance, 'Disk transfer time:', diskTransferTime);
+          console.log(
+            'Timing: Data generation time:',
+            generationTimeLabel,
+            'Roundtrip time:',
+            roundtripLabel,
+            'Network performance:',
+            networkPerformance,
+            'Disk transfer time:',
+            diskTransferTime,
+          );
           this.resolvedSubject.next(true);
           this.changeDetectorRef.detectChanges();
         }),
