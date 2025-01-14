@@ -2651,3 +2651,46 @@
 2025-01-11T03:01:50: Received request to generate records with count: 100
 2025-01-11T03:01:50: Generated 100 records
 2025-01-11T03:01:50: Received request to get creation time
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHttpModule dependencies initialized[39m[38;5;3m +39ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecipesModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOpenSkyModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [32mStarting server in development mode[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [32mHost: localhost, Port: 3000[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m[38;5;3m +1ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHttpModule dependencies initialized[39m[38;5;3m +10ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecipesModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOpenSkyModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [32mSwagger is set up at /api/api-docs[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/api}:[39m[38;5;3m +11ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api, GET} route[39m[38;5;3m +10ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +0ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRecordsController {/api/records}:[39m[38;5;3m +1ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records, GET} route[39m[38;5;3m +1ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/generate, GET} route[39m[38;5;3m +2ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/total-income/:UID, GET} route[39m[38;5;3m +2ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/time, GET} route[39m[38;5;3m +1ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/:UID, GET} route[39m[38;5;3m +1ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRecipesController {/api/recipes}:[39m[38;5;3m +1ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/recipes, GET} route[39m[38;5;3m +0ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/recipes/:url, GET} route[39m[38;5;3m +2ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mOpenSkyController {/api/opensky}:[39m[38;5;3m +0ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/flightParams, GET} route[39m[38;5;3m +2ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +11ms[39m
+2025-01-12T17:17:51: [32m[Nest] 28840  - [39m01/12/2025, 5:17:51 PM [32m    LOG[39m [32mServer running on http://localhost:3000[39m
+2025-01-12T17:18:20: Received request to generate records with count: 100
+2025-01-12T17:18:20: Generated 100 records
+2025-01-12T17:18:20: Received request to get creation time
+2025-01-13T08:09:32: Received request to generate records with count: 100
+2025-01-13T08:09:32: Generated 100 records
+2025-01-13T08:09:32: Received request to get creation time
