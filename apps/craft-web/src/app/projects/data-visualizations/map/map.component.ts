@@ -19,11 +19,10 @@ interface GeoJSONCollection {
 })
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() data: MapChartData[] | undefined;
-  @Input() shapefileBaseName: string = 'ne_10m_land'; // Base name for shapefiles
+  @Input() geojsonData: GeoJSONCollection | undefined; // Add input for pre-extracted GeoJSON data
   @ViewChild('chart') private chartContainer: ElementRef | undefined;
   logoUrl = 'https://www.naturalearthdata.com/wp-content/themes/NEV/images/nev_logo.png';
   
-  private shapefileBaseUrl = '/assets/shapefiles/10m_physical/'; // Base URL for shapefiles
   private destroy$ = new Subject<void>();
 
   constructor(private renderer: Renderer2, private http: HttpClient) {}
@@ -34,13 +33,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     console.log('Step 2: AfterViewInit - Start loading shapefile');
-    if (this.chartContainer) {
-      this.loadShapefile().subscribe(geojsonData => {
-        if (geojsonData) {
-          console.log('Step 3: Shapefile loaded and converted to GeoJSON, starting D3 map creation');
-          this.createUSMap(geojsonData);
-        }
-      });
+    if (this.chartContainer && this.geojsonData) {
+      console.log('Step 3: GeoJSON data provided, starting D3 map creation');
+      this.createUSMap(this.geojsonData);
     }
   }
 
@@ -48,39 +43,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('Component is being destroyed. Cleaning up subscriptions.');
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  loadShapefile(): Observable<GeoJSONCollection | null> {
-    const shpUrl = `${this.shapefileBaseUrl}${this.shapefileBaseName}.shp`;
-    const dbfUrl = `${this.shapefileBaseUrl}${this.shapefileBaseName}.dbf`;
-
-    return from(shapefile.open(shpUrl, dbfUrl)).pipe(
-      mergeMap(source => {
-        const features: GeoJSON.Feature[] = [];
-        return new Observable<GeoJSONCollection>(subscriber => {
-          function readFeature() {
-            from(source.read()).subscribe({
-              next: (result: any) => {
-                if (result.done) {
-                  subscriber.next({ type: 'FeatureCollection', features });
-                  subscriber.complete();
-                } else if (result.value) {
-                  features.push(result.value);
-                  readFeature(); // Recursively process next feature
-                }
-              },
-              error: (err: Error) => subscriber.error(err),
-            });
-          }
-          readFeature(); // Start reading features
-        });
-      }),
-      catchError(error => {
-        console.error('Error loading shapefile:', error);
-        return of(null);
-      }),
-      takeUntil(this.destroy$)
-    );
   }
 
   createUSMap(geojsonData: GeoJSONCollection): void {

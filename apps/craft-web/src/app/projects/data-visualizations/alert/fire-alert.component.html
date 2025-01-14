@@ -1,13 +1,10 @@
 <mat-card>
   <mat-card-header>
     <div class="mat-mdc-card-header-text">
-      <mat-card-title>Fire Alert Visualization</mat-card-title>
     </div>
   </mat-card-header>
   <mat-card-content>
     <div class="fire-alert-container">
-      <h2>Fire Alert Visualization</h2>
-    
       <!-- Mapbox Map -->
       <div id="map" class="map-container"></div>
     
@@ -18,7 +15,17 @@
           <li *ngFor="let item of legendItems">{{ item }}</li>
         </ul>
       </div>
-    
+ 
+      <!-- Flights List -->
+      <div class="flights-list">
+        <h3>Nearby Flights</h3>
+        <ul>
+          <li *ngFor="let flight of flights">
+            {{ flight.callSign }} - Altitude: {{ flight.altitude }}
+          </li>
+        </ul>
+      </div>
+      
       <!-- Alerts List -->
       <div class="alerts-list">
         <h3>Active Alerts</h3>

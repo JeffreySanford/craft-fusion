@@ -15,7 +15,11 @@ export const environment = {
     endpoint: 'https://www.fire.ca.gov/api',
   },
   flightRadar24: {
-    apiKey: 'your-development-flightradar24-api-key-here',
-    endpoint: 'https://flightradar24.com/api',
+    apiKey: '9df1bdd8-b573-4e99-9b23-ff47fab4c035|PxsBdnqI1p0vbt3PiAi079zIDoq8TK01PTi3ZITYd19a63d7',
+    endpoint: 'https://fr24api.flightradar24.com/api/sandbox',
+  },
+  flightAware: {
+    apiKey: 'nfLsA7DYMbptvaOF4KIkCkSM79WIXArZ', // Ensure this is the correct API key
+    endpoint: 'https://aeroapi.flightaware.com/aeroapi', // Ensure this is the correct endpoint
   },
 };
