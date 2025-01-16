@@ -13,6 +13,8 @@ import { FlightAwareService } from '../../../common/services/flightaware.service
 export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() alerts: any[] = [];
 
+  fr24Flights: any[] = [];  // Add this property to store FlightRadar24 flight data
+
   // Legend items for visualization
   legendItems: string[] = ['High Priority', 'Medium Priority', 'Low Priority'];
 
@@ -65,33 +67,35 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     const lat2 = 34.5;
     const lon2 = -117.5;
 
-    const aircraftType = 'Boeing 737'; // Example aircraft type
-    this.flightAwareService.getFlightsByAircraftType(aircraftType).subscribe(
-      (data) => {
-        console.log('STEP 7: Flight data fetched', data);
-        this.flights = data.flights; // Store flight data
-        debugger
-        // Process and display flight data on the map
-        data.flights.forEach((flight: any) => {
-          const coordinates: [number, number] = [flight.longitude, flight.latitude];
-          this.mapboxService.addMarker(coordinates, `Flight: ${flight.ident}`);
-          console.log('STEP 8: Flight marker added', flight);
-        });
-      },
-      (error) => {
-        console.error('STEP 9: Error fetching flight data', error);
-        alert('Failed to fetch flight data. Please check your API key and network connection.');
-      }
-    );
+    // const aircraftType = 'Boeing 737'; // Example aircraft type
+    // this.flightAwareService.getFlightsByAircraftType(aircraftType).subscribe(
+    //   (data) => {
+    //     console.log('STEP 7: Flight data fetched', data);
+    //     this.flights = data.flights; // Store flight data
+    //     debugger
+    //     // Process and display flight data on the map
+    //     data.flights.forEach((flight: any) => {
+    //       const coordinates: [number, number] = [flight.longitude, flight.latitude];
+    //       this.mapboxService.addMarker(coordinates, `Flight: ${flight.ident}`);
+    //       console.log('STEP 8: Flight marker added', flight);
+    //     });
+    //   },
+    //   (error) => {
+    //     console.error('STEP 9: Error fetching flight data', error);
+    //     alert('Failed to fetch flight data. Please check your API key and network connection.');
+    //   }
+    // );
 
     this.flightRadarService.getFlightsByBoundingBox(lat1, lon1, lat2, lon2).subscribe(
       (data) => {
         console.log('STEP 7: Flight data fetched', data);
-        this.flights = data.flights; // Store flight data
         // Process and display flight data on the map
-        data.flights.forEach((flight: any) => {
-          const coordinates: [number, number] = [flight.longitude, flight.latitude];
-          this.mapboxService.addMarker(coordinates, `Flight: ${flight.ident}`);
+        this.fr24Flights = data.data;
+
+        debugger
+        this.fr24Flights.forEach((flight: any) => {
+          const coordinates: [number, number] = [flight.lon, flight.lat];
+          this.mapboxService.addMarker(coordinates, `Flight: ${flight.flight}`);
           console.log('STEP 8: Flight marker added', flight);
         });
       },

@@ -130,6 +130,34 @@ $table-theme: (
   }
 }
 
+:host ::ng-deep .mat-mdc-table {
+  thead {
+    th {
+      background-color: map.get($table-theme, dark-blue);
+      color: map.get($table-theme, primary-white);
+
+      .mat-sort-header-arrow {
+        color: teal;
+      }
+    }
+    tbody {
+      td {
+        .odd-row {
+          background-color: mintcream;
+        }
+
+        .even-row {
+          background-color: white;
+        }
+
+        :hover {
+          background-color: lightblue;
+        }
+      }
+    }
+  }
+}
+
 @keyframes flyIn {
   from {
     transform: translateX(-100%);

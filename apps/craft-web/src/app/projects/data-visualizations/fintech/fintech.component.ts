@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ViewChild, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild, ChangeDetectorRef, OnChanges, SimpleChanges, Renderer2 } from '@angular/core';
 import * as d3 from 'd3';
 import { DataVisualizationService } from '../data-visualizations.service';
 
@@ -20,7 +20,7 @@ export class FintechComponent implements OnChanges {
     ROFL: 'cyan',
   };
 
-  constructor(private cdr: ChangeDetectorRef, private datavisualizationService: DataVisualizationService) {}
+  constructor(private renderer: Renderer2, private datavisualizationService: DataVisualizationService) {}
   
   ngInit(): void {
     const stocks = ['BAH', 'BA', 'AAPL', 'MSFT', 'AMZN', 'GOOGL', 'TSLA', 'NVDA', 'JPM', 'V', 'PG'];
@@ -43,7 +43,7 @@ export class FintechComponent implements OnChanges {
 
   renderChart(): void {
     if (this.data && this.chartContainer) {
-      const element = this.chartContainer.nativeElement;
+      const element = this.renderer.selectRootElement(this.chartContainer.nativeElement);
       d3.select(element).selectAll('*').remove();
 
       const margin = { top: 10, right: 10, bottom: 60, left: 30 };
