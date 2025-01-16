@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, Input } from '@angular/core';
 import { MapboxService } from '../../../common/services/mapbox.service';
 import { FlightRadarService } from '../../../common/services/flightradar.service';
-import * as mapboxgl from 'mapbox-gl';
 import { FlightAwareService } from '../../../common/services/flightaware.service';
 
 @Component({
@@ -13,19 +12,16 @@ import { FlightAwareService } from '../../../common/services/flightaware.service
 export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() alerts: any[] = [];
 
-  fr24Flights: any[] = [];  // Add this property to store FlightRadar24 flight data
-
-  // Legend items for visualization
+  fr24Flights: any[] = [];
   legendItems: string[] = ['High Priority', 'Medium Priority', 'Low Priority'];
 
-  // Temporary hash map of city names and coordinates
   cityCoordinates: { [key: string]: [number, number] } = {
     'Los Angeles': [-118.2437, 34.0522],
     'New York': [-74.006, 40.7128],
     'Chicago': [-87.6298, 41.8781],
   };
 
-  flights: any[] = []; // Add this property to store flight data
+  flights: any[] = [];
 
   constructor(
     private mapboxService: MapboxService,
