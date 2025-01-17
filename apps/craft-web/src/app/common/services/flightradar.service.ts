@@ -73,12 +73,17 @@ export class FlightRadarService {
 
     getFlightById(flightId: string): Observable<any> {
         console.log('STEP 4: Fetching flight by ID', flightId);
-        const url = `${this.baseUrl}/flights/${flightId}`;
+        const url = `${this.baseUrl}/flight-tracks?flight_id=${flightId}`;
+        debugger
         const headers = this.getHeaders();
 
         return this.http.get(url, { headers }).pipe(
-            catchError((error) => {
-                console.error('Error fetching flight by ID', error);
+            catchError((error: HttpErrorResponse) => {
+                if (error.status === 404) {
+                    console.warn('Error fetching flight by ID: Flight not found', flightId);
+                } else {
+                    console.error('Error fetching flight by ID', error);
+                }
                 return throwError(() => new Error('Failed to fetch flight.'));
             })
         );
