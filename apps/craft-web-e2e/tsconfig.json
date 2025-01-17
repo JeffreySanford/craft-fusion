@@ -1,17 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "allowJs": true,
-    "sourceMap": false,
-    "module": "commonjs",
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
     "outDir": "../dist/out-tsc-e2e",
-    "target": "es6",
+    "target": "ES2022",
     "types": ["jest", "node"],
     "baseUrl": "./",
     "paths": {
