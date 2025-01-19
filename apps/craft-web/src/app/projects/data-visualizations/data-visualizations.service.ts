@@ -1,15 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { FinnhubService } from '../../common/services/finnhub.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataVisualizationService {
-  private readonly baseUrl = environment.finnHubAPI;
-  private readonly apiKey = environment.finnhubApiKey;
-  constructor(private http: HttpClient) {}
+  constructor(private finnhubService: FinnhubService) {}
 
   /**
    * Fetch historical stock data from Finnhub.
@@ -19,18 +16,6 @@ export class DataVisualizationService {
    * @param to End timestamp for historical data.
    */
   getStockData(symbol: string, resolution: string, from: number, to: number): Observable<any> {
-    // this should be using the finnhub.io api
-    const url = `http://finnhub.io/api/v1`;
-    
-    const params = {
-      symbol,
-      resolution,
-      from: from.toString(),
-      to: to.toString(),
-      token: this.apiKey,
-    };
-    debugger
-
-    return this.http.get(`${url}/stock/candle`, { params });
+    return this.finnhubService.getStockData(symbol);
   }
 }

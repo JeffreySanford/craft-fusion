@@ -65,7 +65,6 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     //   (data) => {
     //     console.log('STEP 7: Flight data fetched', data);
     //     this.flights = data.flights; // Store flight data
-    //     debugger
     //     // Process and display flight data on the map
     //     data.flights.forEach((flight: any) => {
     //       const coordinates: [number, number] = [flight.longitude, flight.latitude];
@@ -89,7 +88,6 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
           // for each flight, look up the information for the flight and include it on the addMarker report
           const coordinates: [number, number] = [flight.lon, flight.lat];
 
-          debugger
           this.flightRadarService.getFlightById(flight.fr24_id).subscribe(
             next => {
               console.log('STEP 7.1: Flight data fetched', next);
@@ -107,23 +105,22 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
                 r24_id: flightData.r24_id,
                 tracks: flightData.tracks,
               };
-              debugger
 
-                flight.aircraft.type = flightData.aircraft.type;
-                flight.aircraft.registration = flightData.aircraft.registration;
-                flight.origin = flightData.origin;
-                flight.destination = flightData.destination;
-                flight.altitude = flightData.altitude;
-                flight.speed = flightData.speed;
+              flight.aircraft.type = flightData.aircraft.type;
+              flight.aircraft.registration = flightData.aircraft.registration;
+              flight.origin = flightData.origin;
+              flight.destination = flightData.destination;
+              flight.altitude = flightData.altitude;
+              flight.speed = flightData.speed;
 
-                // Add marker for the flight
-                this.mapboxService.addMarker(coordinates, `Flight: ${flight.flight} - ${flight.origin} to ${flight.destination} - ${flight.aircraft.type}`);
+              // Add marker for the flight
+              this.mapboxService.addMarker(coordinates, `Flight: ${flight.flight} - ${flight.origin} to ${flight.destination} - ${flight.aircraft.type}`);
 
-                // Draw lines for the tracks points
-                if (flight.tracks && flight.tracks.length > 1) {
+              // Draw lines for the tracks points
+              if (flight.tracks && flight.tracks.length > 1) {
                 const trackCoordinates = flight.tracks.map((track: any) => [track.lon, track.lat]);
                 this.mapboxService.addPolyline(trackCoordinates);
-                }
+              }
               this.mapboxService.addMarker(coordinates, `Flight: ${flight.flight} - ${flight.origin} to ${flight.destination} - ${flight.aircraft.type}`);
             },
             error => {

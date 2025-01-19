@@ -22,15 +22,12 @@ export class FintechComponent implements OnChanges {
 
   constructor(private renderer: Renderer2, private datavisualizationService: DataVisualizationService) {}
   
-  ngInit(): void {
-    const stocks = ['BAH', 'BA', 'AAPL', 'MSFT', 'AMZN', 'GOOGL', 'TSLA', 'NVDA', 'JPM', 'V', 'PG'];
-    debugger
+  ngOnInit(): void {
+    const stocks = ['BAH', 'BA', 'AAPL', 'BTC'];
     stocks.forEach((stock: string) => {
-      debugger;
       this.datavisualizationService.getStockData(stock, 'D', 1704067200, 1717238400).subscribe(response => {
-        debugger;
-        console.log(response);
         this.data = response;
+        this.renderChart();
       });
     });
   }
@@ -106,42 +103,42 @@ export class FintechComponent implements OnChanges {
         return (d.startValue + d.endValue) / 2;
       }
 
-      svg
-        .selectAll('.extreme-bar')
-        .data(extremeEvents)
-        .enter()
-        .append('rect')
-        .attr('class', 'extreme-bar')
-        .attr('x', d => {
-          const xPos = x(d.startTime) - 2.5;
-          console.log(`x: ${xPos}, startTime: ${d.startTime}`);
-          return xPos;
-        })
-        .attr('y', d => {
-          const avgValue = averageValue(d);
-          const yPos = y(avgValue);
-          console.log(`y: ${yPos}, avgValue: ${avgValue}`);
-          return yPos;
-        })
-        .attr('width', 5)
-        .attr('height', d => {
-          const height = Math.abs(y(d.startValue) - y(d.endValue));
-          console.log(`height: ${height}, startValue: ${d.startValue}, endValue: ${d.endValue}`);
-          return height;
-        })
-        .attr('fill', 'none')
-        .attr('stroke', 'red')
-        .attr('stroke-width', 2)
-        .on('mouseover', function (event, d) {
-          tooltip.transition().duration(200).style('opacity', 0.9);
-          tooltip
-            .html(`Start: ${d.startValue}<br>End: ${d.endValue}`)
-            .style('left', event.pageX + 5 + 'px')
-            .style('top', event.pageY - 28 + 'px');
-        })
-        .on('mouseout', function () {
-          tooltip.transition().duration(500).style('opacity', 0);
-        });
+      // svg
+      //   .selectAll('.extreme-bar')
+      //   .data(extremeEvents)
+      //   .enter()
+      //   .append('rect')
+      //   .attr('class', 'extreme-bar')
+      //   .attr('x', d => {
+      //     const xPos = x(d.startTime) - 2.5;
+      //     console.log(`x: ${xPos}, startTime: ${d.startTime}`);
+      //     return xPos;
+      //   })
+      //   .attr('y', d => {
+      //     const avgValue = averageValue(d);
+      //     const yPos = y(avgValue);
+      //     console.log(`y: ${yPos}, avgValue: ${avgValue}`);
+      //     return yPos;
+      //   })
+      //   .attr('width', 5)
+      //   .attr('height', d => {
+      //     const height = Math.abs(y(d.startValue) - y(d.endValue));
+      //     console.log(`height: ${height}, startValue: ${d.startValue}, endValue: ${d.endValue}`);
+      //     return height;
+      //   })
+      //   .attr('fill', 'none')
+      //   .attr('stroke', 'red')
+      //   .attr('stroke-width', 2)
+      //   .on('mouseover', function (event, d) {
+      //     tooltip.transition().duration(200).style('opacity', 0.9);
+      //     tooltip
+      //       .html(`Start: ${d.startValue}<br>End: ${d.endValue}`)
+      //       .style('left', event.pageX + 5 + 'px')
+      //       .style('top', event.pageY - 28 + 'px');
+      //   })
+      //   .on('mouseout', function () {
+      //     tooltip.transition().duration(500).style('opacity', 0);
+      //   });
 
       // Add dashed line chart
       svg

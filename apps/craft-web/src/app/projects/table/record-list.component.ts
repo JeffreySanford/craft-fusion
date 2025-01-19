@@ -130,7 +130,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
   // tABLE PAGEsIZE HAS BEEN CHANGED
   onTableChange(event: PageEvent): void {
-    debugger;
     console.log('Event: Display row change with event:', event);
     this.paginator.pageSize = event.pageSize;
   }
