@@ -3,13 +3,14 @@ import { MapboxService } from '../../../common/services/mapbox.service';
 import { FlightRadarService } from '../../../common/services/flightradar.service';
 import { FlightAwareService } from '../../../common/services/flightaware.service';
 import { interval, Subscription } from 'rxjs';
-import { utc } from 'moment';
+import moment from 'moment-timezone';
 
 interface City {
   name: string;
   coords: { lat: number; lng: number };
   alerts: { id: number; name: string; time: string }[];
-  timezoneOffset: number; 
+  timezoneOffset: number;
+  timezone: string;
 }
 
 @Component({
@@ -24,17 +25,10 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   fr24Flights: any[] = [];
   legendItems: string[] = ['High Priority', 'Medium Priority', 'Low Priority'];
 
-  cityCoordinates: { [key: string]: [number, number] } = {
-    'Los Angeles': [-118.2437, 34.0522],
-    'New York': [-74.006, 40.7128],
-    'Chicago': [-87.6298, 41.8781],
-    'Las Vegas': [-115.1398, 36.1699],
-    'San Francisco': [-122.4194, 37.7749]
-  };
-
   flights: any[] = [];
   selectedCity: any;
-  currentTime!: number;
+  currentTime!: string;
+  utcTime!: string;
   timeSubscription?: Subscription;
 
   cities = [
@@ -46,7 +40,8 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
         { id: 1, name: 'Alert 1', time: '2023-10-01T10:00:00Z' },
         { id: 2, name: 'Alert 2', time: '2023-10-01T12:00:00Z' }
       ],
-      timezoneOffset: -7
+      timezoneOffset: -8,
+      timezone: 'PDT -08:00'
     },
     {
       name: 'New York',
@@ -56,7 +51,8 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
         { id: 3, name: 'Alert 3', time: '2023-10-02T14:00:00Z' },
         { id: 4, name: 'Alert 4', time: '2023-10-02T16:00:00Z' }
       ],
-      timezoneOffset: -4
+      timezoneOffset: -5,
+      timezone: 'EDT -05:00'
     },
     {
       name: 'Chicago',
@@ -66,7 +62,8 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
         { id: 5, name: 'Alert 5', time: '2023-10-03T18:00:00Z' },
         { id: 6, name: 'Alert 6', time: '2023-10-03T20:00:00Z' }
       ],
-      timezoneOffset: -5
+      timezoneOffset: -6,
+      timezone: 'CDT -06:00'
     }
   ];
 
@@ -92,8 +89,10 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
 
   initializeMap(city: string, alertId: number): void {
     console.log('STEP 4: Initializing map for city', city);
-    const coordinates = this.cityCoordinates[city] || [-118.2437, 34.0522]; // Default to Los Angeles if city not found
-    const map = this.mapboxService.initializeMap(`map-${alertId}`, coordinates, 12);
+    const cityObj = this.cities.find(c => c.name === city);
+    const coordinates = cityObj ? cityObj.coords : { lat: 34.0522, lng: -118.2437 }; // Default to Los Angeles if city not found
+    const map = this.mapboxService.initializeMap(`map-${alertId}`, [coordinates.lng, coordinates.lat], 12);
+    this.startCurrentTimeStream(this.selectedCity);
 
     map.on('load', () => {
       console.log(`Map for alert ${alertId} in ${city} loaded`);
@@ -192,9 +191,10 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       this.timeSubscription.unsubscribe();
     }
 
-    const timezoneOffset = city.timezoneOffset * 60 * 60 * 1000;
+    const timezoneOffset = city.timezoneOffset;
     this.timeSubscription = interval(100).subscribe(() => {
-      this.currentTime = utc().add(timezoneOffset, 'milliseconds').valueOf();      
+      this.utcTime = moment.utc().format('HH:mm:ss.SSS');
+      this.currentTime = moment.utc().add(timezoneOffset, 'hours').format('HH:mm:ss.SSS');
     });
   }
 

@@ -8,6 +8,8 @@ describe('FireAlertComponent', () => {
   const mockCities = [
     {
       name: 'City A',
+      state: 'State A',
+      timezone: 'PST',
       coords: { lat: 34.0522, lng: -118.2437 },
       alerts: [
         { id: 1, name: 'Alert 1' },
@@ -16,6 +18,8 @@ describe('FireAlertComponent', () => {
     },
     {
       name: 'City B',
+      state: 'State B',
+      timezone: 'PST',
       coords: { lat: 36.1699, lng: -115.1398 },
       alerts: [
         { id: 3, name: 'Alert 3' },
