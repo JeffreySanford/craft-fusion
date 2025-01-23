@@ -49,6 +49,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('Step 4: Creating D3 map visualization');
     console.log('GeoJSON Data:', geojsonData); // Debugging: Log the GeoJSON data
 
+    debugger
     const element = this.chartContainer?.nativeElement;
     const width = element.clientWidth;
     const height = element.clientHeight;

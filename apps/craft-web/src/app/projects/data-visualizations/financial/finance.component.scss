@@ -18,43 +18,6 @@
   height: 100%;
 }
 
-.legend {
-  transform: translate(0, 1em);
-}
-
-.legend-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  position: absolute;
-  bottom: 1em;
-  left: 50%;
-  transform: translateX(-50%);
-  background: color-mix(in srgb, black 30%, transparent);
-  padding: 0.5em;
-  border-radius: 0.5em;
-  width: 90%; /* Adjust width to fit within the container */
-  max-width: 600px; /* Ensure it doesn't get too wide */
-  margin-top: 1em; /* Add spacing between the chart and the legend */
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  margin-right: 1em;
-}
-
-.legend-color {
-  width: 1em;
-  height: 1em;
-  margin-right: 0.5em;
-  border-radius: 0.25em;
-}
-
-.legend-label {
-  font-size: 0.875em;
-}
-
 .tooltip {
   position: absolute;
   text-align: center;

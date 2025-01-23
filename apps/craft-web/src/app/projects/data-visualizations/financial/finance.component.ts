@@ -77,7 +77,9 @@ export class FinanceComponent implements OnInit, OnChanges {
           .domain([d3.min(formattedData, (d: { date: Date; close: number }) => +d.close)!, d3.max(formattedData, (d: { date: Date; close: number }) => +d.close)!])
           .range([height, 0]);
 
-        const xAxis = d3.axisBottom(x).ticks(d3.timeMonth.every(1));
+        const xAxis = d3.axisBottom(x).ticks(d3.timeMonth.every(2)).tickFormat((domainValue: Date | d3.NumberValue) => {
+          return d3.timeFormat('%m/%y')(domainValue instanceof Date ? domainValue : new Date(domainValue.valueOf()));
+        });
         const yAxis = d3.axisLeft(y).ticks(5);
 
         if (index === 0) {
@@ -86,37 +88,55 @@ export class FinanceComponent implements OnInit, OnChanges {
         }
 
         const line = d3
-          .line();
+          .line<{ date: Date; close: number }>()
 
+          .x(d => x(d.date))
+          .y(d => y(d.close));
 
         svg
           .append('path')
           .datum(formattedData)
-          .attr('class', 'line')
-          .attr('d', line as unknown as string)
-          .attr('stroke', color(index.toString()));
+          .attr('class', `line stock-${stock.symbol.toLowerCase()}`)
+          .attr('d', line)
+          .attr('stroke', color(index.toString()))
+          .attr('fill', 'none');
 
+        // Add circles for each data point to enable tooltip
         svg
-          .selectAll(`.bar-${index}`)
+          .selectAll(`.dot-${index}`)
           .data(formattedData)
           .enter()
-          .append('rect')
-          .attr('class', `bar bar-${index}`)
-          .attr('x', d => x(d.date!) as number)
-          .attr('y', d => y(d.close))
-          .attr('width', 1)
-          .attr('height', d => height - y(d.close))
+          .append('circle')
+          .attr('class', `dot dot-${index}`)
+          .attr('cx', d => x(d.date))
+          .attr('cy', d => y(d.close))
+          .attr('r', 1)
           .attr('fill', color(index.toString()))
           .on('mouseover', function (event, d) {
             tooltip.transition().duration(200).style('opacity', 0.9);
             tooltip
-              .html(`Close: ${d.close}`)
-              .style('left', event.pageX + 5 + 'px')
-              .style('top', event.pageY - 28 + 'px');
+              .html(`Date: ${d.date.toLocaleDateString()}<br>Close: ${d.close}`)
+              .style('left', '50%')
+              .style('top', '0.5em')
+              .style('transform', 'translateX(-50%)');
+            d3.select(this).attr('r', 3); // Highlight the circle
+            svg
+              .append('line')
+              .attr('class', 'hover-line')
+              .attr('x1', x(d.date))
+              .attr('x2', x(d.date))
+              .attr('y1', 0)
+              .attr('y2', height)
+              .attr('stroke', 'gray')
+              .attr('stroke-width', 1)
+              .attr('stroke-dasharray', '4');
           })
           .on('mouseout', function () {
             tooltip.transition().duration(500).style('opacity', 0);
+            d3.select(this).attr('r', 1); // Remove highlight from the circle
+            svg.selectAll('.hover-line').remove(); // Remove the hover line
           });
+
       });
 
       // Add legend

@@ -1,9 +1,3 @@
 <div class="fintech-chart-container">
   <div class="fintech-chart" #chart></div>
-  <div class="legend-container">
-    <div class="legend-item" *ngFor="let stock of stocks">
-      <span class="legend-color" [ngClass]="'stock-' + stock.toLowerCase()"></span>
-      <span class="legend-label">{{ stock }}</span>
-    </div>
-  </div>
 </div>
