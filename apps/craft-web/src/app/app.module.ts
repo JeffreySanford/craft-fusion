@@ -46,7 +46,11 @@ import { ResumeComponent } from './pages/resume/resume.component';
     ResumeComponent,
   ],
   exports: [MaterialModule],
-  providers: [BusyService, ToastrService, provideAnimations()],
+  providers: [
+    BusyService,
+    ToastrService,
+    provideAnimations()
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {

@@ -3,21 +3,21 @@ import { CommonModule } from '@angular/common';
 import { DataVisualizationsComponent } from './data-visualizations.component';
 import { BarComponent } from './bar/bar.component';
 import { LineComponent } from './line/line.component';
-import { FintechComponent } from './fintech/fintech.component';
+import { FinanceComponent } from './financial/finance.component';
 import { MapComponent } from './map/map.component';
 import { MaterialModule } from '../../material.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { DataVisualizationService } from './data-visualizations.service';
 import { FireAlertComponent } from './alert/fire-alert.component';
 import { FlightAwareService } from '../../common/services/flightaware.service';
 import { FlightRadarService } from '../../common/services/flightradar.service';
+import { AlphaVantageService } from '../../common/services/alpha-vantage.service';
 
 @NgModule({
   declarations: [
-    DataVisualizationsComponent, BarComponent, LineComponent, FintechComponent,
-    MapComponent, FireAlertComponent],
+    DataVisualizationsComponent, BarComponent, LineComponent, FinanceComponent,
+    MapComponent, FireAlertComponent, FinanceComponent],
   imports: [CommonModule, MaterialModule, DragDropModule],
   exports: [DataVisualizationsComponent],
-  providers: [DataVisualizationService, FlightAwareService, FlightRadarService],
+  providers: [AlphaVantageService, FlightAwareService, FlightRadarService],
 })
 export class DataVisualizationsModule {}

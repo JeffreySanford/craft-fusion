@@ -83,7 +83,7 @@ $table-theme: (
   .mat-paginator {
     padding: 0.55em;
     width: 99%;
-    height: 77vh;
+    height: 78vh;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -97,28 +97,10 @@ $table-theme: (
     white-space: nowrap;
     flex-grow: 1;
 
-    .mat-header-cell {
-      position: sticky;
-      top: 0;
-      border: 1px solid map.get($table-theme, teal); /* Teal outline */
-      color: map.get($table-theme, teal); /* Teal-colored content */
-      text-align: left;
-      z-index: 1;
-      padding: 0.25em; /* Add padding to header cells */
-      line-height: 1em; /* Set line height */
-      height: 1em; /* Set height to 1em */
-      margin: 0.25em; /* Add space between the outline and content */
-    }
-
-    .mat-header-cell:last-child,
-    .mat-cell:last-child {
-      text-align: right;
-    }
-
-    tbody {
+    table {
       display: block;
-      max-height: 29em;
-      overflow-y: auto;
+      max-height: 20em; /* Adjust this value to ensure the scrollbar appears */
+      overflow-y: auto; /* Ensure scrollbar appears when rows exceed screen height */
     }
 
     thead,
@@ -183,4 +165,66 @@ $table-theme: (
 
 .fadeToRed {
   animation: fadeToRed 2s ease-in-out;
+}
+
+.table-wrapper {
+  display: block;
+  max-height: 23em; /* Set a max height to enable scrolling */
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-grow: 1;
+
+  /* Scrollbar styling */
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: linear-gradient(to bottom, red, white, blue) transparent; /* For Firefox */
+
+  &::-webkit-scrollbar {
+    width: 8px; /* Thin scrollbar width */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, red, white, blue);
+    border-radius: 10px;
+    border: 2px solid transparent; /* Transparent border to create padding effect */
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent; /* Transparent background */
+  }
+
+  &::-webkit-scrollbar-button {
+    background-color: blue; /* Blue controls */
+    display: block;
+    height: 16px;
+    width: 16px;
+  }
+}
+
+:host ::ng-deep .stripped {
+  tr:nth-child(odd) {
+    background-color: red;
+  }
+
+  tr:nth-child(even) {
+    background-color: green;
+  }
+}
+
+.table-wrapper th {
+  position: sticky;
+  top: 0;
+  background-color: #3f51b5; /* Blue background */
+  color: #fff; /* White text */
+  font-size: 1em; /* Font size */
+  text-align: left;
+  z-index: 1; /* Ensure it stays on top */
+}
+
+.mat-paginator {
+  background-color: #3f51b5; /* Blue background */
+  color: #fff; /* White text */
+  font-size: 1em; /* Font size */
+  text-align: left;
+  z-index: 1; /* Ensure it stays on top */
 }

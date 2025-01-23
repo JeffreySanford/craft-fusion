@@ -74,7 +74,7 @@ export class FlightRadarService {
     getFlightById(flightId: string): Observable<any> {
         console.log('STEP 4: Fetching flight by ID', flightId);
         const url = `${this.baseUrl}/flight-tracks?flight_id=${flightId}`;
-        debugger
+
         const headers = this.getHeaders();
 
         return this.http.get(url, { headers }).pipe(

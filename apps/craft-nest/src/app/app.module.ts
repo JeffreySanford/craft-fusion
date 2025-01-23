@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { RecordsModule } from './records/records.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { OpenSkyModule } from './openskies/opensky.module';
+import { AlphaVantageModule } from './financial/alpha-vantage/alpha-vantage.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { OpenSkyModule } from './openskies/opensky.module';
     UsersModule,
     RecordsModule,
     RecipesModule,
-    OpenSkyModule
+    OpenSkyModule,
+    AlphaVantageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

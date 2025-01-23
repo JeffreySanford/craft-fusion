@@ -7,11 +7,5 @@
     "pathRewrite": {
       "^/api": "/api"
     }
-  },
-  "/census": {
-    "target": "https://example.com",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "debug"
   }
 }

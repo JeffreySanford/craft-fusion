@@ -10,7 +10,6 @@ export class MapboxService {
 
   constructor() {
     mapboxgl.accessToken = environment.mapbox.accessToken;
-    console.log('Mapbox access token:', environment.mapbox.accessToken);
   }
 
   /**

@@ -1,3 +1,9 @@
+:root {
+  --color-aapl: #FF5733;
+  --color-googl: #33FF57;
+  --color-msft: #3357FF;
+}
+
 .fintech-chart-container {
   width: 100%;
   height: 25vh;
@@ -24,7 +30,7 @@
   bottom: 1em;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.3);
+  background: color-mix(in srgb, black 30%, transparent);
   padding: 0.5em;
   border-radius: 0.5em;
   width: 90%; /* Adjust width to fit within the container */
@@ -57,8 +63,29 @@
   padding: 5px;
   font: 12px sans-serif;
   background: lightsteelblue;
-  border: 0px;
+  border: 0;
   border-radius: 8px;
   pointer-events: none;
   z-index: 10; /* Ensure tooltip appears above other elements */
+}
+
+.bar.stock-aapl,
+.line.stock-aapl,
+.avg-line.stock-aapl {
+  stroke: var(--color-aapl);
+  fill: var(--color-aapl);
+}
+
+.bar.stock-googl,
+.line.stock-googl,
+.avg-line.stock-googl {
+  stroke: var(--color-googl);
+  fill: var(--color-googl);
+}
+
+.bar.stock-msft,
+.line.stock-msft,
+.avg-line.stock-msft {
+  stroke: var(--color-msft);
+  fill: var(--color-msft);
 }
