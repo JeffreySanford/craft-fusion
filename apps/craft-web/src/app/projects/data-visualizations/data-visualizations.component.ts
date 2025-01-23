@@ -59,17 +59,10 @@ export class DataVisualizationsComponent implements OnInit {
     { date: new Date('2024-12-01'), series1: 7600, series2: 8200, series3: 9000 },
   ];
 
-  public mapChartData: MapChartData[] = [
-    { name: 'Restaurant A', coordinates: [40.7128, -74.006], city: 'New York', state: 'NY' },
-    { name: 'Restaurant B', coordinates: [34.0522, -118.2437], city: 'Los Angeles', state: 'CA' },
-    { name: 'Restaurant C', coordinates: [41.8781, -87.6298], city: 'Chicago', state: 'IL' },
-  ];
-
   public charts: ChartData[] = [
     { name: 'Line Chart', component: 'app-line-chart', color: 'blue', data: this.lineChartData },
     { name: 'Bar Chart', component: 'app-bar-chart', color: 'green', data: this.barChartData },
     { name: 'FinTech Chart', component: 'app-finance-chart', color: 'red', data: [] },
-    { name: 'Map Chart', component: 'app-map-chart', color: 'purple', data: this.mapChartData },
     { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [] },
   ];
 

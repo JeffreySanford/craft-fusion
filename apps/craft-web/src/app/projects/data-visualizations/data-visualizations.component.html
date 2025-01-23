@@ -14,9 +14,6 @@
         <ng-container *ngIf="chart.component === 'app-finance-chart'">
           <app-finance-chart [data]="chart.data"></app-finance-chart>
         </ng-container>
-        <ng-container *ngIf="chart.component === 'app-map-chart'">
-          <app-map-chart [data]="chart.data" class="map-chart"></app-map-chart>
-        </ng-container>
         <ng-container *ngIf="chart.component === 'app-fire-alert'">
           <app-fire-alert></app-fire-alert>
         </ng-container>
