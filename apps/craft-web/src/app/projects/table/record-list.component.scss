@@ -112,64 +112,13 @@ $table-theme: (
   }
 }
 
-:host ::ng-deep .mat-mdc-table {
-  thead {
-    th {
-      background-color: map.get($table-theme, dark-blue);
-      color: map.get($table-theme, primary-white);
-
-      .mat-sort-header-arrow {
-        color: teal;
-      }
-    }
-    tbody {
-      td {
-        .odd-row {
-          background-color: mintcream;
-        }
-
-        .even-row {
-          background-color: white;
-        }
-
-        :hover {
-          background-color: lightblue;
-        }
-      }
-    }
-  }
-}
-
-@keyframes flyIn {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-.flyIn {
-  animation: flyIn 1s ease-in-out;
-}
-
-@keyframes fadeToRed {
-  0%,
-  100% {
-    color: inherit;
-  }
-  50% {
-    color: red;
-  }
-}
-
-.fadeToRed {
-  animation: fadeToRed 2s ease-in-out;
+.fade-to-red {
+  animation: fade-to-red 2s ease-in-out;
 }
 
 .table-wrapper {
   display: block;
-  max-height: 23em; /* Set a max height to enable scrolling */
+  max-height: 25em; /* Set a max height to enable scrolling */
   overflow-y: auto;
   overflow-x: auto;
   white-space: nowrap;
@@ -201,16 +150,6 @@ $table-theme: (
   }
 }
 
-:host ::ng-deep .stripped {
-  tr:nth-child(odd) {
-    background-color: red;
-  }
-
-  tr:nth-child(even) {
-    background-color: green;
-  }
-}
-
 .table-wrapper th {
   position: sticky;
   top: 0;
@@ -227,4 +166,29 @@ $table-theme: (
   font-size: 1em; /* Font size */
   text-align: left;
   z-index: 1; /* Ensure it stays on top */
+}
+
+@keyframes fly-in {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.fly-in {
+  animation: fly-in 1s ease-in-out;
+}
+
+@keyframes fade-to-red {
+  0%,
+  100% {
+    color: inherit;
+  }
+  
+  50% {
+    color: red;
+  }
 }

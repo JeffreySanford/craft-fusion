@@ -78,53 +78,19 @@
     position: absolute;
     bottom: 1em;
     right: 1em;
-    background: rgba(255, 255, 255, 0.9);
+    background-color: white;
     border-radius: 0.5em;
-    padding: 0.5em;
-    box-shadow: 0 0.125em 0.25em rgba(0, 0, 0, 0.2);
 
-    h3 {
-      font-size: 0.875em;
-      margin-bottom: 0.5em;
-      color: #003366; /* Dark blue text */
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-
-      li {
-        font-size: 0.75em;
-        margin-bottom: 0.25em;
-        color: #555;
-      }
+    [contains="mat-expansion-panel-header"] {
+      font-size: 0.75em;
     }
   }
 
-  .alerts-list {
-    margin-top: 1em;
+  :host .mat-expansion-panel .mat-content {
+    font-size: 0.5em;
+  }
 
-    h3 {
-      font-size: 1em;
-      margin-bottom: 0.5em;
-      color: #003366; /* Dark blue text */
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-
-      li {
-        cursor: pointer;
-        color: #cc0000; /* Red text */
-        text-decoration: underline;
-        margin-bottom: 0.25em;
-
-        &:hover {
-          color: #990000; /* Darker red text */
-        }
-      }
-    }
+  .mat-list-item {
+    font-size: 0.5em;
   }
 }

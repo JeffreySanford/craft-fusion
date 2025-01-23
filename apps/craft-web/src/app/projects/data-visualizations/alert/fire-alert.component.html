@@ -15,14 +15,25 @@
       <mat-tab-group (selectedTabChange)="onTabChange($event)">
         <mat-tab *ngFor="let city of cities" label="{{ city.name }}">
           <!-- Mapbox Map -->
-          <div id="map-{{ city.alerts[0].id }}" class="map-container"></div>
-          
+           <div *ngIf="city.alerts && city.alerts.length > 0" 
+                id="map-{{ city.alerts[0].id }}" class="map-container"></div>
+                
           <!-- Legend -->
           <div class="legend">
-            <h3>Legend</h3>
-            <ul>
-              <li *ngFor="let item of legendItems">{{ item }}</li>
-            </ul>
+            <mat-accordion>
+              <mat-expansion-panel *ngFor="let item of legendItems">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{ item }}
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-list>
+                  <mat-list-item *ngFor="let alert of city.alerts" [ngClass]="getPriorityClass(alert.level)">
+                    <span *ngIf="alert.level === item">{{ alert.name }}</span>
+                  </mat-list-item>
+                </mat-list>
+              </mat-expansion-panel>
+            </mat-accordion>
           </div>
           
           <!-- Flights List -->

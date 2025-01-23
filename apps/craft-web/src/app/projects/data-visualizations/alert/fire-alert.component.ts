@@ -7,8 +7,9 @@ import moment from 'moment-timezone';
 
 interface City {
   name: string;
+  state: string;
   coords: { lat: number; lng: number };
-  alerts: { id: number; name: string; time: string }[];
+  alerts: { id: number; name: string; time: string; level: string; }[];
   timezoneOffset: number;
   timezone: string;
 }
@@ -26,7 +27,6 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   legendItems: string[] = ['High Priority', 'Medium Priority', 'Low Priority'];
 
   flights: any[] = [];
-  selectedCity: any;
   currentTime!: string;
   utcTime!: string;
   timeSubscription?: Subscription;
@@ -37,8 +37,8 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       state: 'California',
       coords: { lat: 34.0522, lng: -118.2437 },
       alerts: [
-        { id: 1, name: 'Alert 1', time: '2023-10-01T10:00:00Z' },
-        { id: 2, name: 'Alert 2', time: '2023-10-01T12:00:00Z' }
+        { id: 1, name: 'Mock Alert', time: '2023-10-01T10:00:00Z', level: 'High Priority' },
+        { id: 2, name: 'Alert 2', time: '2023-10-01T12:00:00Z', level: 'Medium Priority' }
       ],
       timezoneOffset: -8,
       timezone: 'PDT -08:00'
@@ -48,8 +48,8 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       state: 'New York',
       coords: { lat: 40.7128, lng: -74.0060 },
       alerts: [
-        { id: 3, name: 'Alert 3', time: '2023-10-02T14:00:00Z' },
-        { id: 4, name: 'Alert 4', time: '2023-10-02T16:00:00Z' }
+        { id: 3, name: 'Alert 3', time: '2023-10-02T14:00:00Z', level: this.getRandomLevel() },
+        { id: 4, name: 'Alert 4', time: '2023-10-02T16:00:00Z', level: this.getRandomLevel() }
       ],
       timezoneOffset: -5,
       timezone: 'EDT -05:00'
@@ -59,13 +59,14 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       state: 'Illinois',
       coords: { lat: 41.8781, lng: -87.6298 },
       alerts: [
-        { id: 5, name: 'Alert 5', time: '2023-10-03T18:00:00Z' },
-        { id: 6, name: 'Alert 6', time: '2023-10-03T20:00:00Z' }
+        { id: 5, name: 'Alert 5', time: '2023-10-03T18:00:00Z', level: this.getRandomLevel() },
+        { id: 6, name: 'Alert 6', time: '2023-10-03T20:00:00Z', level: this.getRandomLevel() }
       ],
       timezoneOffset: -6,
       timezone: 'CDT -06:00'
     }
   ];
+  selectedCity: City = this.cities[0]; // Default to the first city
 
   constructor(
     private mapboxService: MapboxService,
@@ -193,9 +194,27 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const timezoneOffset = city.timezoneOffset;
     this.timeSubscription = interval(100).subscribe(() => {
-      this.utcTime = moment.utc().format('HH:mm:ss.SSS');
-      this.currentTime = moment.utc().add(timezoneOffset, 'hours').format('HH:mm:ss.SSS');
+      this.utcTime = moment.utc().format('HH:mm');
+      this.currentTime = moment.utc().add(timezoneOffset, 'hours').format('HH:mm');
     });
+  }
+
+  getPriorityClass(item: string): string {
+    switch (item) {
+      case 'High Priority':
+        return 'high';
+      case 'Medium Priority':
+        return 'medium';
+      case 'Low Priority':
+        return 'low';
+      default:
+        return 'none';
+    }
+  }
+
+  getRandomLevel(): string {
+    const levels = ['High Priority', 'Medium Priority', 'Low Priority', 'None'];
+    return levels[Math.floor(Math.random() * levels.length)];
   }
 
   // Focus on a specific alert
