@@ -5,36 +5,40 @@
   </mat-card-header>
   <mat-card-content>
     <div class="fire-alert-container">
-      <!-- Mapbox Map -->
-      <div id="map" class="map-container"></div>
-    
-      <!-- Legend -->
-      <div class="legend">
-        <h3>Legend</h3>
-        <ul>
-          <li *ngFor="let item of legendItems">{{ item }}</li>
-        </ul>
-      </div>
- 
-      <!-- Flights List -->
-      <div class="flights-list">
-        <h3>Nearby Flights</h3>
-        <ul>
-          <li *ngFor="let flight of flights">
-            {{ flight.callSign }} - Altitude: {{ flight.altitude }}
-          </li>
-        </ul>
-      </div>
-      
-      <!-- Alerts List -->
-      <div class="alerts-list">
-        <h3>Active Alerts</h3>
-        <ul>
-          <li *ngFor="let alert of alerts" (click)="focusAlert(alert)">
-            {{ alert.name }}
-          </li>
-        </ul>
-      </div>
+      <mat-tab-group (selectedTabChange)="onTabChange($event)">
+        <mat-tab *ngFor="let city of cities" label="{{ city.name }}">
+          <!-- Mapbox Map -->
+          <div id="map-{{ city.alerts[0].id }}" class="map-container"></div>
+          
+          <!-- Legend -->
+          <div class="legend">
+            <h3>Legend</h3>
+            <ul>
+              <li *ngFor="let item of legendItems">{{ item }}</li>
+            </ul>
+          </div>
+          
+          <!-- Flights List -->
+          <div class="flights-list">
+            <h3>Nearby Flights</h3>
+            <ul>
+              <li *ngFor="let flight of flights">
+                {{ flight.callSign }} - Altitude: {{ flight.altitude }}
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Alerts List -->
+          <div class="alerts-list">
+            <h3>Active Alerts</h3>
+            <ul>
+              <li *ngFor="let alert of city.alerts" (click)="focusAlert(alert)">
+                {{ alert.name }} - {{ alert.time }}
+              </li>
+            </ul>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
     </div>
   </mat-card-content>
 </mat-card>

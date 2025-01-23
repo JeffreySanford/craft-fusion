@@ -19,10 +19,39 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   cityCoordinates: { [key: string]: [number, number] } = {
     'Los Angeles': [-118.2437, 34.0522],
     'New York': [-74.006, 40.7128],
-    Chicago: [-87.6298, 41.8781],
+    'Chicago': [-87.6298, 41.8781],
+    'Las Vegas': [-115.1398, 36.1699],
+    'San Francisco': [-122.4194, 37.7749]
   };
 
   flights: any[] = [];
+
+  cities = [
+    {
+      name: 'Los Angeles',
+      coords: { lat: 34.0522, lng: -118.2437 },
+      alerts: [
+        { id: 1, name: 'Alert 1', time: '2023-10-01T10:00:00Z' },
+        { id: 2, name: 'Alert 2', time: '2023-10-01T12:00:00Z' }
+      ]
+    },
+    {
+      name: 'New York',
+      coords: { lat: 40.7128, lng: -74.0060 },
+      alerts: [
+        { id: 3, name: 'Alert 3', time: '2023-10-02T14:00:00Z' },
+        { id: 4, name: 'Alert 4', time: '2023-10-02T16:00:00Z' }
+      ]
+    },
+    {
+      name: 'Chicago',
+      coords: { lat: 41.8781, lng: -87.6298 },
+      alerts: [
+        { id: 5, name: 'Alert 5', time: '2023-10-03T18:00:00Z' },
+        { id: 6, name: 'Alert 6', time: '2023-10-03T20:00:00Z' }
+      ]
+    }
+  ];
 
   constructor(private mapboxService: MapboxService, private flightRadarService: FlightRadarService, private flightAwareService: FlightAwareService) {
     console.log('STEP 1: FireAlertComponent initialized');
@@ -34,14 +63,19 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit(): void {
     console.log('STEP 3: ngAfterViewInit called');
-    this.initializeMap('Los Angeles'); // Default city
+    this.initializeMap(this.cities[0].name, this.cities[0].alerts[0].id); // Initialize the first tab by default
     this.fetchFlightData();
   }
 
-  initializeMap(city: string): void {
+  initializeMap(city: string, alertId: number): void {
     console.log('STEP 4: Initializing map for city', city);
-    const coordinates = this.cityCoordinates[city]; // Default to Los Angeles if city not found
-    const map = this.mapboxService.initializeMap('map', coordinates, 12);
+    const coordinates = this.cityCoordinates[city] || [-118.2437, 34.0522]; // Default to Los Angeles if city not found
+    const map = this.mapboxService.initializeMap(`map-${alertId}`, coordinates, 12);
+
+    debugger
+    map.on('load', () => {
+      console.log(`Map for alert ${alertId} in ${city} loaded`);
+    });
 
     map.on('click', event => {
       const coords = event.lngLat;
@@ -50,6 +84,11 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       this.mapboxService.addMarker([coords.lng, coords.lat], alertMessage);
       console.log('STEP 5: Map clicked, alert triggered', alertMessage);
     });
+  }
+
+  onTabChange(event: any): void {
+    const city = this.cities[event.index];
+    this.initializeMap(city.name, city.alerts[0].id);
   }
 
   fetchFlightData(): void {
