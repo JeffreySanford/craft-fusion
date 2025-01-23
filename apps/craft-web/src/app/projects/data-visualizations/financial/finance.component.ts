@@ -29,7 +29,7 @@ export class FinanceComponent implements OnInit, OnChanges {
     if (this.data) {
       this.stocks = this.data.map((stock: any) => stock.symbol);
       if(this.stocks.length > 0) {
-        debugger
+
         this.renderChart(this.data);
       }
     }

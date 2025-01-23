@@ -4,7 +4,7 @@
 
 .container {
   width: 100%;
-  height: 22em;
+  height: 100%;
   position: relative;
 
   .alert-panel {
@@ -39,8 +39,8 @@
   align-items: center;
   padding: 1em;
   border-bottom: 1px solid #ddd;
-  background-color: #003366; /* Dark blue background */
-  color: #ffffff; /* White text */
+  background-color: #036; /* Dark blue background */
+  color: #fff; /* White text */
 }
 
 .mat-mdc-card-header-text {
@@ -57,12 +57,12 @@
   padding: 1em;
   border: 1px solid #ccc;
   border-radius: 0.5em;
-  background-color: #ffffff; /* White background */
+  background-color: #fff; /* White background */
   box-shadow: 0 0.25em 0.5em rgb(0 0 0 / 10%);
 
   h2 {
     font-size: 1.25em;
-    color: #003366; /* Dark blue text */
+    color: #036; /* Dark blue text */
     margin-bottom: 1em;
   }
 

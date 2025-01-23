@@ -5,15 +5,13 @@
 }
 
 .dashboard-tile {
-  flex: 1 1 calc(33.333% - 1em);
-  max-width: calc(33.333% - 1em);
+  flex: 1 1;
+  min-width: 30em;
   box-sizing: border-box;
-  color: yellow;
-  height: 300px; /* Adjust height to fit the map */
 }
 
 .chart-card {
-  background-color: rgba(0 0 0 / 20%);
+  background-color: rgba(0, 0, 0, 0.2);
   color: white;
   transition: transform 0.3s ease;
   cursor: pointer;
@@ -27,9 +25,11 @@
 }
 
 .chart-card:hover {
-  transform: scale(1.05);
+  background-color: rgba(0, 0, 0, 0.3);
+  border-color: gold;
 }
 
-.chart-card.expanded {
-  transform: scale(1.1);
+.chart-card:focus-within {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-color: gold;
 }

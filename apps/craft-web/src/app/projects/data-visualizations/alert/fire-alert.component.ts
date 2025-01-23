@@ -40,6 +40,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   cities = [
     {
       name: 'Los Angeles',
+      state: 'California',
       coords: { lat: 34.0522, lng: -118.2437 },
       alerts: [
         { id: 1, name: 'Alert 1', time: '2023-10-01T10:00:00Z' },
@@ -49,6 +50,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     },
     {
       name: 'New York',
+      state: 'New York',
       coords: { lat: 40.7128, lng: -74.0060 },
       alerts: [
         { id: 3, name: 'Alert 3', time: '2023-10-02T14:00:00Z' },
@@ -58,6 +60,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     },
     {
       name: 'Chicago',
+      state: 'Illinois',
       coords: { lat: 41.8781, lng: -87.6298 },
       alerts: [
         { id: 5, name: 'Alert 5', time: '2023-10-03T18:00:00Z' },

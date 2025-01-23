@@ -73,7 +73,7 @@ export class DataVisualizationsComponent implements OnInit {
     this.loadFintechChartData()
       .pipe()
       .subscribe(data => {
-        debugger
+
         this.fintechChartData = data;
         this.charts[2].data = this.fintechChartData;
         this.cdr.detectChanges();

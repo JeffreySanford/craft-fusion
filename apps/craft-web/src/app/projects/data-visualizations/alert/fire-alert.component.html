@@ -1,7 +1,10 @@
 <mat-card>
   <mat-card-header>
     <div class="mat-mdc-card-header-text">
-      {{ selectedCity?.name }} - Time: {{ currentTime | date:'HH:mm:ss.SSS' }}
+      <div style="display: flex; justify-content: space-between; width: 100%;">
+        <span>{{ selectedCity?.name }}, {{ selectedCity?.state }}</span>
+        <span>{{ currentTime | date:'HH:mm:ss.SSS' }}</span>
+      </div>
     </div>
   </mat-card-header>
   <mat-card-content>
