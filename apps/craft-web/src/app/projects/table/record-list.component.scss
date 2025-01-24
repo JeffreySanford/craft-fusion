@@ -21,6 +21,40 @@ $table-theme: (
   z-index: 1000;
 }
 
+.table-wrapper {
+  display: block;
+  max-height: 25em; /* Set a max height to enable scrolling */
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-grow: 1;
+
+  /* Scrollbar styling */
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: linear-gradient(to bottom, red, white, blue) transparent; /* For Firefox */
+
+  &::-webkit-scrollbar {
+    width: 8px; /* Thin scrollbar width */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, red, white, blue);
+    border-radius: 10px;
+    border: 2px solid transparent; /* Transparent border to create padding effect */
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent; /* Transparent background */
+  }
+
+  &::-webkit-scrollbar-button {
+    background-color: blue; /* Blue controls */
+    display: block;
+    height: 16px;
+    width: 16px;
+  }
+}
+
 .record-collection {
   height: 13em;
   margin-bottom: 1em;
@@ -114,40 +148,6 @@ $table-theme: (
 
 .fade-to-red {
   animation: fade-to-red 2s ease-in-out;
-}
-
-.table-wrapper {
-  display: block;
-  max-height: 25em; /* Set a max height to enable scrolling */
-  overflow-y: auto;
-  overflow-x: auto;
-  white-space: nowrap;
-  flex-grow: 1;
-
-  /* Scrollbar styling */
-  scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: linear-gradient(to bottom, red, white, blue) transparent; /* For Firefox */
-
-  &::-webkit-scrollbar {
-    width: 8px; /* Thin scrollbar width */
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, red, white, blue);
-    border-radius: 10px;
-    border: 2px solid transparent; /* Transparent border to create padding effect */
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent; /* Transparent background */
-  }
-
-  &::-webkit-scrollbar-button {
-    background-color: blue; /* Blue controls */
-    display: block;
-    height: 16px;
-    width: 16px;
-  }
 }
 
 .table-wrapper th {
