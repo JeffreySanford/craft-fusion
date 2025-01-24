@@ -41,7 +41,7 @@ async function bootstrap() {
     // Set global prefix for all routes
     app.setGlobalPrefix('api');
     app.enableCors({
-        origin: 'https://www.jeffreysanford.us',
+        origin: ['https://jeffreysanford.us', 'https://www.jeffreysanford.us'],
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
         credentials: true,
         allowedHeaders: ['Content-Type', 'Authorization'],
