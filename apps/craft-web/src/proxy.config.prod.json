@@ -7,5 +7,14 @@
     "pathRewrite": {
       "^/api": "/api"
     }
+  },
+  "/api-go": {
+    "target": "https://jeffreysanford.us",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api-go": "/api-go"
+    }
   }
 }
