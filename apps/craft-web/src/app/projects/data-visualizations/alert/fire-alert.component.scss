@@ -81,7 +81,7 @@
     background-color: white;
     border-radius: 0.5em;
 
-    [contains="mat-expansion-panel-header"] {
+    [contains='mat-expansion-panel-header'] {
       font-size: 0.75em;
     }
   }
@@ -93,4 +93,10 @@
   .mat-list-item {
     font-size: 0.5em;
   }
+}
+
+.mat-mdc-card-header-title {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }

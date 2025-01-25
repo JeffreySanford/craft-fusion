@@ -1,8 +1,8 @@
 <mat-card>
   <mat-card-header>
     <div class="mat-mdc-card-header-text">
-      <div style="display: flex; justify-content: space-between; width: 100%;">
-        <span>{{ selectedCity?.name }}, {{ selectedCity?.state }} ({{ selectedCity?.timezone }})</span>
+      <div class="mat-mdc-card-header-title">
+        <span>{{ selectedCity.name }}, {{ selectedCity.state }} ({{ selectedCity.timezone }})</span>
         <span>
           {{ currentTime }} {{ selectedCity?.timezone }} / 
           {{ utcTime }} UTC
