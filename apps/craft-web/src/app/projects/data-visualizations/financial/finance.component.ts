@@ -146,11 +146,12 @@ export class FinanceComponent implements OnInit, OnChanges {
         .enter()
         .append('g')
         .attr('class', 'legend')
-        .attr('transform', (d, i) => `translate(0,${i * 20})`);
+        .attr('transform', (d, i) => `translate(0,${i * 25})`);
 
       legend
         .append('rect')
         .attr('x', width - 18)
+        .attr('y', -30)
         .attr('width', 18)
         .attr('height', 18)
         .style('fill', (d, i) => color(i.toString()));

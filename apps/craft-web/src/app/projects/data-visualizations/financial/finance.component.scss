@@ -8,14 +8,15 @@
   width: 100%;
   height: 25vh;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-end; /* Align chart to the bottom */
+  align-items: flex-end; /* Align chart to the bottom */
   overflow: hidden;
 }
 
 .fintech-chart {
   width: 100%;
   height: 100%;
+
 }
 
 .tooltip {
@@ -37,18 +38,4 @@
 .avg-line.stock-aapl {
   stroke: var(--color-aapl);
   fill: var(--color-aapl);
-}
-
-.bar.stock-googl,
-.line.stock-googl,
-.avg-line.stock-googl {
-  stroke: var(--color-googl);
-  fill: var(--color-googl);
-}
-
-.bar.stock-msft,
-.line.stock-msft,
-.avg-line.stock-msft {
-  stroke: var(--color-msft);
-  fill: var(--color-msft);
 }
