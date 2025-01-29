@@ -19,9 +19,10 @@ import { TableModule } from './projects/table/table.module';
 import { PeasantKitchenModule } from './projects/peasant-kitchen/peasant-kitchen.module';
 import { BusyService } from './common/services/busy.service';
 import { ResumeComponent } from './pages/resume/resume.component';
+import { ChatComponent } from './projects/chat/chat.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, ChatComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -46,11 +47,7 @@ import { ResumeComponent } from './pages/resume/resume.component';
     ResumeComponent,
   ],
   exports: [MaterialModule],
-  providers: [
-    BusyService,
-    ToastrService,
-    provideAnimations()
-  ],
+  providers: [BusyService, ToastrService, provideAnimations()],
   bootstrap: [AppComponent],
 })
 export class AppModule {

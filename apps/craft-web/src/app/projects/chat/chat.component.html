@@ -1,0 +1,7 @@
+<div id="chatbox">
+  <h2>Chat with DeepSeek</h2>
+  <div *ngFor="let msg of messages" [ngClass]="msg.sender">
+    {{ msg.text }}
+  </div>
+  <input [(ngModel)]="userInput" (keyup.enter)="sendMessage()" placeholder="Type a message..." />
+</div>

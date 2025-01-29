@@ -16,6 +16,7 @@ export const appRoutes: Routes = [
   { path: 'table', component: RecordListComponent },
   { path: 'table/:id', component: RecordDetailComponent },
   { path: 'data-visualizations', component: DataVisualizationsComponent},
+  { path: 'deepseek', loadChildren: () => import('./projects/deepseek/deepseek.module').then(m => m.DeepSeekModule) },
   {
     path: 'peasant-kitchen',
     component: PeasantKitchenComponent,
