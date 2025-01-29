@@ -24,7 +24,7 @@
   <mat-card-content id="messages">
     <mat-list>
       <mat-list-item *ngFor="let msg of messages" [ngClass]="msg.sender === 'user' ? 'reply' : 'response'">
-        <div class="message-content">
+        <div class="message-content" style="flex-grow: 1;">
           <p *ngFor="let paragraph of msg.text.split('\n')">{{ paragraph }}</p>
         </div>
       </mat-list-item>
