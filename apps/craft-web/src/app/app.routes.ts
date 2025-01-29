@@ -3,7 +3,7 @@ import { LandingComponent } from './pages/landing/landing.component';
 import { PeasantKitchenComponent } from './projects/peasant-kitchen/peasant-kitchen.component';
 import { SpaceVideoComponent } from './projects/space-video/space-video.component';
 import { DataVisualizationsComponent } from './projects/data-visualizations/data-visualizations.component';
-import { RecordListComponent} from './projects/table/record-list.component';
+import { RecordListComponent } from './projects/table/record-list.component';
 import { RecordDetailComponent } from './projects/table/record-detail/record-detail.component';
 import { MaterialIconsComponent } from './pages/landing/material-icons/material-icons.component';
 import { MaterialButtonsComponent } from './pages/landing/material-buttons/material-buttons.component';
@@ -15,8 +15,8 @@ export const appRoutes: Routes = [
   { path: 'home', component: LandingComponent },
   { path: 'table', component: RecordListComponent },
   { path: 'table/:id', component: RecordDetailComponent },
-  { path: 'data-visualizations', component: DataVisualizationsComponent},
-  { path: 'deepseek', loadChildren: () => import('./projects/deepseek/deepseek.module').then(m => m.DeepSeekModule) },
+  { path: 'data-visualizations', component: DataVisualizationsComponent },
+  { path: 'chat', loadChildren: () => import('./projects/chat/chat.module').then(m => m.ChatModule) },
   {
     path: 'peasant-kitchen',
     component: PeasantKitchenComponent,
@@ -31,5 +31,5 @@ export const appRoutes: Routes = [
   { path: 'resume', component: ResumeComponent },
   { path: '404', component: LandingComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: '**', redirectTo: '/404' }
+  { path: '**', redirectTo: '/404' },
 ];

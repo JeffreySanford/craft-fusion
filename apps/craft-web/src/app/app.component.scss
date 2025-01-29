@@ -29,12 +29,7 @@
   }
 
   .main-stage {
-    background-color: rgba(
-      255,
-      0,
-      0,
-      0.5
-    ); /* Semi-transparent red background */
+    background-color: rgba( 0 0 0 / 50%);
     display: flex; /* Use flexbox layout */
     flex-direction: column; /* Arrange children in a column */
     justify-content: stretch; /* Align children to the top */
@@ -43,7 +38,7 @@
     padding: 1em; /* Add padding for spacing */
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
     overflow: visible; /* Allow scrolling if content overflows */
-    margin: 0.15em 0.15em 0.5em 0.15em;
+    margin: 0.15em 0.15em 0.5em;
     width: 80%;
     height: 83vh;
     border-radius: 0.25em;
