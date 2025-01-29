@@ -19,7 +19,7 @@ setup(
         'setuptools==57.4.0',
         'matplotlib==3.4.3',
         'pandas==1.3.3',
-        'transformers==4.11.3',
+        'transformers==4.38.0',
         'datasets==1.12.1',
         'peft==0.0.1',
         'psutil==5.8.0',
