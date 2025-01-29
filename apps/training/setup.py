@@ -9,7 +9,7 @@ setup(
     ]),
     install_requires=[
         'beautifulsoup4==4.11.1',
-        'requests==2.26.0',
+        'requests==2.32.2',
         'spacy==3.3.0',
         'cython==0.29.24',
         'thinc==8.0.10',
