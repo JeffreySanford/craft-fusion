@@ -16,7 +16,7 @@ setup(
         'numpy==1.21.2',
         'preshed==3.0.5',
         'murmurhash==1.0.7',
-        'setuptools==57.4.0',
+        'setuptools==70.0.0',
         'matplotlib==3.4.3',
         'pandas==1.3.3',
         'transformers==4.11.3',
