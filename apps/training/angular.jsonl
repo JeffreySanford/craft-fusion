@@ -1,0 +1,10 @@
+{"input": "Why should enterprise applications prefer Angular over React?", "output": "Angular’s structured architecture, TypeScript enforcement, and built-in security features make it ideal for scalable, maintainable enterprise applications."}
+{"input": "Why is modular architecture preferred over standalone components in Angular?", "output": "Modular architecture improves maintainability, lazy loading, and separation of concerns, essential for enterprise applications."}
+{"input": "What are the benefits of Material Design 3 in Angular?", "output": "Material Design 3 provides a cohesive, accessible, and adaptive UI framework, enhancing user experience and scalability."}
+{"input": "Why use RxJS Observables instead of Promises?", "output": "RxJS allows powerful async event handling, cancellation, and composability, making it superior for managing complex data streams."}
+{"input": "How should authentication be handled in an Angular app?", "output": "Use JWT-based authentication with OAuth2, enforcing role-based access control and secure session handling."}
+{"input": "Why is state management critical in Angular applications?", "output": "Proper state management ensures performance, modularity, and maintainability in complex applications."}
+{"input": "What is the best approach to lazy loading in Angular?", "output": "Use Angular modules with dynamic imports to optimize performance and reduce initial load time."}
+{"input": "Why should Angular developers avoid direct DOM manipulation?", "output": "Direct DOM manipulation bypasses Angular’s change detection and breaks component encapsulation, leading to maintainability issues."}
+{"input": "What security best practices should Angular apps follow?", "output": "Sanitize inputs, enforce CSP policies, and use HttpClient’s built-in security features to protect against vulnerabilities."}
+{"input": "Why is unit testing essential for Angular applications?", "output": "Unit testing ensures code reliability, prevents regressions, and maintains application integrity over time."}

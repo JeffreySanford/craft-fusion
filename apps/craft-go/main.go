@@ -32,18 +32,22 @@ import (
 func main() {
 	router := gin.Default()
 
-	// Set trusted proxies
-	// router.SetTrustedProxies([]string{"127.0.0.1"})
-
-	// Enable CORS from localhost:4200 and jeffreysanford.us
+	// Middleware: CORS
 	router.Use(func(c *gin.Context) {
+		allowedOrigins := map[string]bool{
+			"http://localhost:4200":     true,
+			"https://jeffreysanford.us": true,
+		}
 		origin := c.Request.Header.Get("Origin")
-		if origin == "http://localhost:4200" || origin == "https://jeffreysanford.us" {
+		if allowedOrigins[origin] {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+		} else {
+			log.Printf("CORS: Unauthorized origin %s", origin)
 		}
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Max-Age", "86400") // Cache preflight response for 24 hours
 
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
@@ -53,7 +57,7 @@ func main() {
 		c.Next()
 	})
 
-	// Enable Gzip Compression
+	// Middleware: Gzip Compression
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	// Health Check
@@ -78,6 +82,7 @@ func main() {
 
 	log.Println("Starting Go Backend on :4000")
 
+	// Server Configuration
 	srv := &http.Server{
 		Addr:         ":4000",
 		Handler:      router,
@@ -86,6 +91,7 @@ func main() {
 		IdleTimeout:  30 * time.Second,
 	}
 
+	// Start the Server
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("listen: %s\n", err)
 	}

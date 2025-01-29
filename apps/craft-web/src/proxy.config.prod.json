@@ -8,10 +8,13 @@
       "^/api": "/api"
     }
   },
-  "/census": {
-    "target": "https://example.com",
-    "secure": false,
+  "/api-go": {
+    "target": "https://jeffreysanford.us",
+    "secure": true,
     "changeOrigin": true,
-    "logLevel": "debug"
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api-go": "/api-go"
+    }
   }
 }

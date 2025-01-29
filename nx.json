@@ -24,8 +24,7 @@
   },
   "npmScope": "craft-fusion",
   "workspaceLayout": {
-    "appsDir": "apps",
-    "libsDir": "libs"
+    "appsDir": "apps"
   },
   "defaultProject": "craft-web",
   "generators": {

@@ -18,10 +18,11 @@ import { SpaceVideoModule } from './projects/space-video/space-video.module';
 import { TableModule } from './projects/table/table.module';
 import { PeasantKitchenModule } from './projects/peasant-kitchen/peasant-kitchen.module';
 import { BusyService } from './common/services/busy.service';
+// import { ChatModule } from './projects/chat/chat.module'; // Ensure this import is removed
 import { ResumeComponent } from './pages/resume/resume.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, ResumeComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -42,8 +43,7 @@ import { ResumeComponent } from './pages/resume/resume.component';
       positionClass: 'toast-bottom-center',
       preventDuplicates: true,
     }),
-    RouterModule,
-    ResumeComponent,
+    RouterModule
   ],
   exports: [MaterialModule],
   providers: [BusyService, ToastrService, provideAnimations()],

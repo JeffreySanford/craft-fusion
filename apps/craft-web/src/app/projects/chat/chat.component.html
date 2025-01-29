@@ -1,0 +1,43 @@
+<mat-card id="chatbox">
+  <mat-card-header>
+    <mat-card-title>Chat with {{ selectedModel.name }}</mat-card-title>
+    <div class="model-info-container">
+      <div class="model-info information">
+        <p>Model: {{ selectedModel.name }}</p>
+        <p>API URL: {{ selectedModel.apiUrl }}</p>
+        <p>Port: {{ selectedModel.port }}</p>
+        <p>Description: {{ selectedModel.description }}</p>
+      </div>
+      <mat-form-field class="model-selector" style="margin-left: 10px;">
+        <mat-label>Select Model</mat-label>
+        <mat-select [(value)]="selectedModel">
+          <mat-option *ngFor="let model of models" [value]="model">{{ model.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="thinking-duration">
+      <mat-label>Thinking Duration: {{ thinkingDuration / 1000 }} seconds</mat-label>
+      <mat-slider min="1000" max="10000" step="1000" [(ngModel)]="thinkingDuration"></mat-slider>
+      <p>Actual Thinking Duration: {{ actualThinkingDuration / 1000 }} seconds</p>
+    </div>
+  </mat-card-header>
+  <mat-card-content id="messages">
+    <mat-list>
+      <mat-list-item *ngFor="let msg of messages" [ngClass]="msg.sender === 'user' ? 'reply' : 'response'">
+        <div class="message-content" style="flex-grow: 1;">
+          <p *ngFor="let paragraph of msg.text.split('\n')">{{ paragraph }}</p>
+        </div>
+      </mat-list-item>
+    </mat-list>
+    <div *ngIf="isThinking" class="thinking progress">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+      <span>DeepSeek is thinking...</span>
+    </div>
+  </mat-card-content>
+  <mat-card-actions id="input">
+    <mat-form-field class="full-width" appearance="outline">
+      <textarea matInput [(ngModel)]="userInput" (keyup.enter)="sendMessage()" placeholder="Type a message..." rows="1"></textarea>
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="sendMessage()">Send</button>
+  </mat-card-actions>
+</mat-card>

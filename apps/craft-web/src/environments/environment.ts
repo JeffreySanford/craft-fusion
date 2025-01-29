@@ -2,7 +2,7 @@ export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000',
   host: 'localhost',
-  finnhubApiKey: 'cps6s5hr01qkode1001gcps6s5hr01qkode10020',
+  finnhubApiKey: 'cu8gbkpr01qt63vgue4gcu8gbkpr01qt63vgue50',
   finnHubAPI: 'https://finnhub.io/api/v1',
   mapbox: {
     accessToken: 'pk.eyJ1IjoiamVmZnJleXNhbmZvcmQiLCJhIjoiY201c2psaW8yMG1vMDJrcTJ4ZzNic3YxbyJ9.7e5Pub4Ub0v-tHK9uzIuEA',
@@ -21,5 +21,10 @@ export const environment = {
   flightAware: {
     apiKey: 'nfLsA7DYMbptvaOF4KIkCkSM79WIXArZ', // Ensure this is the correct API key
     endpoint: 'https://aeroapi.flightaware.com/aeroapi', // Ensure this is the correct endpoint
+  },
+  alphaVantageApiKey: '3EP39QPLULHFVD7Y',
+  yahooFinance: {
+    url: 'https://yfapi.net/',
+    apiKey: 'uANiNS5imM7YUDOxZNpu3qrmLEYkoqu2r6OzqCW8' // Replace with your Yahoo Finance API key
   },
 };

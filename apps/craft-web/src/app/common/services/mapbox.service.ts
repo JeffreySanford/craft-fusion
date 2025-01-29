@@ -10,7 +10,6 @@ export class MapboxService {
 
   constructor() {
     mapboxgl.accessToken = environment.mapbox.accessToken;
-    console.log('Mapbox access token:', environment.mapbox.accessToken);
   }
 
   /**
@@ -53,6 +52,36 @@ export class MapboxService {
     }
   }
 
+  addPolyline(coordinates: [number, number][]): void {
+    if (!this.map) {
+      console.error('Map is not initialized. Call initializeMap() first.');
+      return;
+    }
+
+    this.map.addLayer({
+      id: 'route',
+      type: 'line',
+      source: {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: coordinates,
+          },
+        },
+      },
+      layout: {
+        'line-join': 'round',
+        'line-cap': 'round',
+      },
+      paint: {
+        'line-color': '#888',
+        'line-width': 8,
+      },
+    });
+  }
   /**
    * Clean up the map instance
    */

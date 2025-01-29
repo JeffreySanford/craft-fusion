@@ -13,6 +13,18 @@ let OpenSkyService = class OpenSkyService {
     fetchFlightData() {
         return this.httpService.get(this.API_URL).pipe((0, operators_1.map)(response => response.data.states || []));
     }
+    fetchAirportData() {
+        return this.httpService.get('https://api.opensky-network.org/airports')
+            .pipe((0, operators_1.map)(response => response.data));
+    }
+    fetchFlightDataByAirline(airline) {
+        return this.httpService.get(`https://api.opensky-network.org/flights/airline?icao=${airline}`)
+            .pipe((0, operators_1.map)(response => response.data));
+    }
+    fetchFlightDataByAircraft(aircraft) {
+        return this.httpService.get(`https://api.opensky-network.org/flights/aircraft?icao24=${aircraft}`)
+            .pipe((0, operators_1.map)(response => response.data));
+    }
 };
 exports.OpenSkyService = OpenSkyService;
 exports.OpenSkyService = OpenSkyService = tslib_1.__decorate([

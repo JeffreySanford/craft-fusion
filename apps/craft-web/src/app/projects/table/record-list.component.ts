@@ -8,6 +8,7 @@ import { catchError, switchMap, tap, takeUntil } from 'rxjs/operators';
 import { detailExpand, flyIn } from './animations';
 import { Record } from './models/record';
 import { RecordService } from './record.service';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 export interface Server {
   name: string;
@@ -27,7 +28,16 @@ interface Report {
   standalone: false,
   templateUrl: './record-list.component.html',
   styleUrls: ['./record-list.component.scss'],
-  animations: [detailExpand, flyIn],
+  animations: [
+    detailExpand,
+    flyIn,
+    trigger('fly-in', [
+      state('void', style({ transform: 'translateX(-100%)' })),
+      state('*', style({ transform: 'translateX(0)' })),
+      transition(':enter', animate('300ms ease-in')),
+      transition(':leave', animate('300ms ease-out'))
+    ]),
+  ],
 })
 export class RecordListComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
@@ -130,7 +140,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
   // tABLE PAGEsIZE HAS BEEN CHANGED
   onTableChange(event: PageEvent): void {
-    debugger;
     console.log('Event: Display row change with event:', event);
     this.paginator.pageSize = event.pageSize;
   }

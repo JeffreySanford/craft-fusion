@@ -39,4 +39,19 @@ export class OpenSkyService {
       map(response => response.data.states || [])
     );
   }
+
+  fetchAirportData(): Observable<any> {
+    return this.httpService.get('https://api.opensky-network.org/airports')
+      .pipe(map(response => response.data));
+  }
+
+  fetchFlightDataByAirline(airline: string): Observable<Flight[]> {
+    return this.httpService.get(`https://api.opensky-network.org/flights/airline?icao=${airline}`)
+      .pipe(map(response => response.data));
+  }
+
+  fetchFlightDataByAircraft(aircraft: string): Observable<Flight[]> {
+    return this.httpService.get(`https://api.opensky-network.org/flights/aircraft?icao24=${aircraft}`)
+      .pipe(map(response => response.data));
+  }
 }

@@ -20,7 +20,7 @@ export interface LineChartData {
   series3: number;
 }
 
-export interface FintechChartData {
+export interface FinanceChartData {
   stockIndicator: string;
   trade: 'buy' | 'sell'; // Ensure trade is either 'buy' or 'sell'
   task: string;

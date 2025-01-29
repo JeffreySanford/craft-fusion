@@ -1,40 +1,62 @@
 <mat-card>
   <mat-card-header>
     <div class="mat-mdc-card-header-text">
+      <div class="mat-mdc-card-header-title">
+        <span>{{ selectedCity.name }}, {{ selectedCity.state }} ({{ selectedCity.timezone }})</span>
+        <span>
+          {{ currentTime }} {{ selectedCity.timezone }} / 
+          {{ utcTime }} UTC
+        </span>
+      </div>
     </div>
   </mat-card-header>
   <mat-card-content>
     <div class="fire-alert-container">
-      <!-- Mapbox Map -->
-      <div id="map" class="map-container"></div>
-    
-      <!-- Legend -->
-      <div class="legend">
-        <h3>Legend</h3>
-        <ul>
-          <li *ngFor="let item of legendItems">{{ item }}</li>
-        </ul>
-      </div>
- 
-      <!-- Flights List -->
-      <div class="flights-list">
-        <h3>Nearby Flights</h3>
-        <ul>
-          <li *ngFor="let flight of flights">
-            {{ flight.callSign }} - Altitude: {{ flight.altitude }}
-          </li>
-        </ul>
-      </div>
-      
-      <!-- Alerts List -->
-      <div class="alerts-list">
-        <h3>Active Alerts</h3>
-        <ul>
-          <li *ngFor="let alert of alerts" (click)="focusAlert(alert)">
-            {{ alert.name }}
-          </li>
-        </ul>
-      </div>
+      <mat-tab-group (selectedTabChange)="onTabChange($event)">
+        <mat-tab *ngFor="let city of cities" label="{{ city.name }}">
+          <!-- Mapbox Map -->
+           <div *ngIf="city.alerts && city.alerts.length > 0" 
+                id="map-{{ city.alerts[0].id }}" class="map-container"></div>
+                
+          <!-- Legend -->
+          <div class="legend">
+            <mat-accordion>
+              <mat-expansion-panel *ngFor="let item of legendItems">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{ item }}
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <mat-list>
+                  <mat-list-item *ngFor="let alert of city.alerts" [ngClass]="getPriorityClass(alert.level)">
+                    <span *ngIf="alert.level === item">{{ alert.name }}</span>
+                  </mat-list-item>
+                </mat-list>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </div>
+          
+          <!-- Flights List -->
+          <div class="flights-list">
+            <h3>Nearby Flights</h3>
+            <ul>
+              <li *ngFor="let flight of flights">
+                {{ flight.callSign }} - Altitude: {{ flight.altitude }}
+              </li>
+            </ul>
+          </div>
+          
+          <!-- Alerts List -->
+          <div class="alerts-list">
+            <h3>Active Alerts</h3>
+            <ul>
+              <li *ngFor="let alert of city.alerts" (click)="focusAlert(alert)">
+                {{ alert.name }} - {{ alert.time }}
+              </li>
+            </ul>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
     </div>
   </mat-card-content>
 </mat-card>
