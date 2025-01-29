@@ -13,7 +13,7 @@ setup(
         'spacy==3.3.0',
         'cython==0.29.24',
         'thinc==8.0.10',
-        'numpy==1.21.2',
+        'numpy==1.22.0',
         'preshed==3.0.5',
         'murmurhash==1.0.7',
         'setuptools==57.4.0',
