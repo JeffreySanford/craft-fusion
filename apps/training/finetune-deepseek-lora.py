@@ -10,9 +10,10 @@ import concurrent.futures  # For multi-threaded downloads
 # Mock function to replace the missing import
 import transformers.pytorch_utils
 transformers.pytorch_utils.is_torch_greater_or_equal_than_1_10 = lambda: True
+transformers.pytorch_utils.is_torch_greater_or_equal_than_1_13 = lambda: True  # Add this line
 
 # Authenticate with Hugging Face
-login(token="")  # Ensure to set the token securely
+login(token="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")  # Ensure to set the token securely
 
 # Load model configuration and set quantization_config to None
 config = AutoConfig.from_pretrained("deepseek-ai/DeepSeek-R1", trust_remote_code=True)
