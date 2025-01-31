@@ -1,6 +1,8 @@
 import time
 import psutil  # System monitoring
 import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments, Trainer
+from peft import LoraConfig, get_peft_model
 from datasets import load_dataset, concatenate_datasets
 import concurrent.futures  # For multi-threaded downloads
 import argparse  # For command-line argument parsing
@@ -17,7 +19,7 @@ transformers.pytorch_utils.is_torch_greater_or_equal_than_1_10 = lambda: True
 transformers.pytorch_utils.is_torch_greater_or_equal_than_1_13 = lambda: True  # Add this line
 
 # Parse command-line arguments
-parser = argparse.ArgumentParser(description="Fine-tune DeepSeek with LoRA")
+parser = argparse.ArgumentParser(description="Fine-tune Mistral with LoRA")
 parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
 args = parser.parse_args()
 
@@ -38,16 +40,9 @@ def start_ollama_server():
         else:
             raise requests.ConnectionError
     except requests.ConnectionError:
-        try:
-            logger.info(Fore.YELLOW + "Starting Ollama server on the default port..." + Style.RESET_ALL)
-            subprocess.Popen(["ollama", "start"])
-            return default_ollama_host
-        except Exception as e:
-            logger.error(Fore.RED + f"Error starting Ollama server: {e}" + Style.RESET_ALL)
-            exit(1)
-    except Exception as e:
-        logger.error(Fore.RED + f"Error: {e}" + Style.RESET_ALL)
-        exit(1)
+        logger.info(Fore.YELLOW + "Starting Ollama server on the default port..." + Style.RESET_ALL)
+        subprocess.Popen(["ollama", "start"])
+        return default_ollama_host
 
 ollama_host = start_ollama_server()
 
@@ -57,7 +52,6 @@ def get_ollama_models():
         result = subprocess.run(["ollama", "list"], capture_output=True, text=True)
         if result.returncode == 0:
             models = result.stdout.splitlines()
-            logger.info(Fore.GREEN + "Successfully retrieved the list of models from Ollama." + Style.RESET_ALL)
             return models
         else:
             logger.error(Fore.RED + "Failed to get the list of models from Ollama." + Style.RESET_ALL)
@@ -69,7 +63,7 @@ def get_ollama_models():
 models = get_ollama_models()
 
 # Check if the proper model is loaded
-model_name = "deepseek-r1:1.5b"
+model_name = "mistral:latest"
 if any(model_name in model for model in models):
     logger.info(Fore.GREEN + f"Ollama is running and the model '{model_name}' is loaded." + Style.RESET_ALL)
 else:
@@ -77,24 +71,14 @@ else:
     exit(1)
 
 # Use the correct directory path for loading the model
-model_path = "./models/deepseek_model"
+model_path = "./models/mistral_model"
 try:
     # Load model & tokenizer
-    # Replace Hugging Face model loading with custom loading logic
-    logger.info(Fore.CYAN + "Loading model and tokenizer..." + Style.RESET_ALL)
-    model = torch.load(os.path.join(model_path, "pytorch_model.bin"), weights_only=False)
-    with open(os.path.join(model_path, "tokenizer.json"), "r") as f:
-        tokenizer = f.read()
-    with open(os.path.join(model_path, "config.json"), "r") as f:
-        config = f.read()
-    logger.info(Fore.GREEN + "Model, tokenizer, and config loaded successfully." + Style.RESET_ALL)
+    model = AutoModelForCausalLM.from_pretrained(model_path)
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
 except EnvironmentError as e:
     logger.error(Fore.RED + f"Error: {e}" + Style.RESET_ALL)
     logger.error(Fore.RED + "Please ensure that the model path is correct and that the required files are available." + Style.RESET_ALL)
-    exit(1)
-except Exception as e:
-    logger.error(Fore.RED + f"Unpickling error: {e}" + Style.RESET_ALL)
-    logger.error(Fore.RED + "Please ensure that the model file is correctly formatted." + Style.RESET_ALL)
     exit(1)
 
 # Function to download a single dataset file
@@ -124,17 +108,14 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
     datasets = list(executor.map(download_dataset_file, data_files))
 
 dataset = concatenate_datasets(datasets)
-logger.info(Fore.GREEN + "Dataset download complete." + Style.RESET_ALL)
 
 # LoRA fine-tuning configuration
-logger.info(Fore.CYAN + "Applying LoRA configuration..." + Style.RESET_ALL)
 lora_config = LoraConfig(r=8, lora_alpha=32, lora_dropout=0.1)
 model = get_peft_model(model, lora_config)
-logger.info(Fore.GREEN + "LoRA configuration applied." + Style.RESET_ALL)
 
 # Training arguments
 training_args = TrainingArguments(
-    output_dir="./fine-tuned-deepseek",
+    output_dir="./fine-tuned-mistral",
     per_device_train_batch_size=1,
     num_train_epochs=3,
     save_steps=100,
@@ -164,7 +145,6 @@ def log_system_usage(epoch):
 
 # Start time tracking
 start_time = time.time()
-logger.info(Fore.CYAN + "Training started." + Style.RESET_ALL)
 
 # Start training
 for epoch in range(training_args.num_train_epochs):
@@ -181,4 +161,3 @@ final_entry = f"\n🔥 Training Complete! Total Time: {total_time:.2f} minutes\n
 logger.info(Fore.GREEN + final_entry + Style.RESET_ALL)
 with open("training_performance.log", "a") as log_file:
     log_file.write(final_entry)
-logger.info(Fore.CYAN + "Training finished." + Style.RESET_ALL)
