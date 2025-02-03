@@ -71,9 +71,9 @@ else:
     exit(1)
 
 # Use the correct directory path for loading the model
-model_path = "./models/mistral_model"
 try:
     # Load model & tokenizer
+    model_path = "path/to/local/mistral"  # Update this to the correct local path or repo_id
     model = AutoModelForCausalLM.from_pretrained(model_path)
     tokenizer = AutoTokenizer.from_pretrained(model_path)
 except EnvironmentError as e:

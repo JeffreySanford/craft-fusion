@@ -1,8 +1,0 @@
-include LICENSE
-include requirements.txt
-include setup.py
-recursive-include thinc/tests/mypy/outputs *
-recursive-include thinc/tests/mypy/configs *
-recursive-include thinc/tests/regression/issue519 *
-recursive-include training/datasets *
-include training/*.jsonl

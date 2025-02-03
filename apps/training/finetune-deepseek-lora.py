@@ -1,184 +1,168 @@
-import time
-import psutil  # System monitoring
+import os
+import json
 import torch
-from datasets import load_dataset, concatenate_datasets
-import concurrent.futures  # For multi-threaded downloads
-import argparse  # For command-line argument parsing
-import requests  # For checking internet connection
-import os  # For accessing environment variables
-import logging  # For logging
-import shutil  # For file operations
-from colorama import Fore, Style  # For colored console output
-import subprocess  # For running subprocesses
+from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments, Trainer, DataCollatorForLanguageModeling
+from peft import LoraConfig, get_peft_model, TaskType
+from datasets import load_dataset, DatasetDict
+from colorama import Fore, Style
 
-# Mock function to replace the missing import
-import transformers.pytorch_utils
-transformers.pytorch_utils.is_torch_greater_or_equal_than_1_10 = lambda: True
-transformers.pytorch_utils.is_torch_greater_or_equal_than_1_13 = lambda: True  # Add this line
+# ===================== CONFIGURATION =====================
+MODEL_NAME = "deepseek-ai/deepseek-coder-1.5b"  # If unavailable, use an alternative model
+OUTPUT_DIR = "./fine-tuned-model"
+TRAIN_DATA_DIR = "./training_data"
+OLLAMA_URL = "http://localhost:11434/api/generate"  # Default Ollama API endpoint
 
-# Parse command-line arguments
-parser = argparse.ArgumentParser(description="Fine-tune DeepSeek with LoRA")
-parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
-args = parser.parse_args()
+def log_message(message, color=Fore.WHITE):
+    """Logging function with color support"""
+    print(f"{color}[LOG] {message}{Style.RESET_ALL}")
 
-# Set up logging
-logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
-logger = logging.getLogger(__name__)
-
-# Set default Ollama host
-default_ollama_host = "127.0.0.1:11434"
-
-# Check if Ollama is running and start it if not
-def start_ollama_server():
-    try:
-        response = requests.get(f"http://{default_ollama_host}/api/generate")
-        if response.status_code == 200:
-            logger.info(Fore.GREEN + "Ollama server is already running on the default port." + Style.RESET_ALL)
-            return default_ollama_host
-        else:
-            raise requests.ConnectionError
-    except requests.ConnectionError:
-        try:
-            logger.info(Fore.YELLOW + "Starting Ollama server on the default port..." + Style.RESET_ALL)
-            subprocess.Popen(["ollama", "start"])
-            return default_ollama_host
-        except Exception as e:
-            logger.error(Fore.RED + f"Error starting Ollama server: {e}" + Style.RESET_ALL)
-            exit(1)
-    except Exception as e:
-        logger.error(Fore.RED + f"Error: {e}" + Style.RESET_ALL)
-        exit(1)
-
-ollama_host = start_ollama_server()
-
-# Get the list of models from Ollama
-def get_ollama_models():
-    try:
-        result = subprocess.run(["ollama", "list"], capture_output=True, text=True)
-        if result.returncode == 0:
-            models = result.stdout.splitlines()
-            logger.info(Fore.GREEN + "Successfully retrieved the list of models from Ollama." + Style.RESET_ALL)
-            return models
-        else:
-            logger.error(Fore.RED + "Failed to get the list of models from Ollama." + Style.RESET_ALL)
-            exit(1)
-    except Exception as e:
-        logger.error(Fore.RED + f"Error getting the list of models: {e}" + Style.RESET_ALL)
-        exit(1)
-
-models = get_ollama_models()
-
-# Check if the proper model is loaded
-model_name = "deepseek-r1:1.5b"
-if any(model_name in model for model in models):
-    logger.info(Fore.GREEN + f"Ollama is running and the model '{model_name}' is loaded." + Style.RESET_ALL)
-else:
-    logger.error(Fore.RED + f"Ollama is running but the model '{model_name}' is not loaded." + Style.RESET_ALL)
-    exit(1)
-
-# Use the correct directory path for loading the model
-model_path = "./models/deepseek_model"
-try:
-    # Load model & tokenizer
-    # Replace Hugging Face model loading with custom loading logic
-    logger.info(Fore.CYAN + "Loading model and tokenizer..." + Style.RESET_ALL)
-    model = torch.load(os.path.join(model_path, "pytorch_model.bin"), weights_only=False)
-    with open(os.path.join(model_path, "tokenizer.json"), "r") as f:
-        tokenizer = f.read()
-    with open(os.path.join(model_path, "config.json"), "r") as f:
-        config = f.read()
-    logger.info(Fore.GREEN + "Model, tokenizer, and config loaded successfully." + Style.RESET_ALL)
-except EnvironmentError as e:
-    logger.error(Fore.RED + f"Error: {e}" + Style.RESET_ALL)
-    logger.error(Fore.RED + "Please ensure that the model path is correct and that the required files are available." + Style.RESET_ALL)
-    exit(1)
-except Exception as e:
-    logger.error(Fore.RED + f"Unpickling error: {e}" + Style.RESET_ALL)
-    logger.error(Fore.RED + "Please ensure that the model file is correctly formatted." + Style.RESET_ALL)
-    exit(1)
-
-# Function to download a single dataset file
-def download_dataset_file(file):
-    logger.debug(Fore.BLUE + f"Downloading dataset file: {file}" + Style.RESET_ALL)
-    return load_dataset("json", data_files=[file])
-
-# Load training dataset using multiple threads
-data_files = [
-    "angular.jsonl",
-    "astrology.jsonl",
-    "kaballah.jsonl",
-    "mysticism.jsonl",
-    "sumerian.jsonl",
-    "web-development.jsonl",
-    "constitutional_training.jsonl",
-    "freemasonry.jsonl",
-    "core-values.jsonl",
-    "all_sumerian_myths.jsonl",
-    "jeffreysanford.jsonl",
-    "freedom-and-justice.jsonl",
-]
-
-logger.info(Fore.GREEN + "Starting dataset download..." + Style.RESET_ALL)
-
-with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-    datasets = list(executor.map(download_dataset_file, data_files))
-
-dataset = concatenate_datasets(datasets)
-logger.info(Fore.GREEN + "Dataset download complete." + Style.RESET_ALL)
-
-# LoRA fine-tuning configuration
-logger.info(Fore.CYAN + "Applying LoRA configuration..." + Style.RESET_ALL)
-lora_config = LoraConfig(r=8, lora_alpha=32, lora_dropout=0.1)
-model = get_peft_model(model, lora_config)
-logger.info(Fore.GREEN + "LoRA configuration applied." + Style.RESET_ALL)
-
-# Training arguments
-training_args = TrainingArguments(
-    output_dir="./fine-tuned-deepseek",
-    per_device_train_batch_size=1,
-    num_train_epochs=3,
-    save_steps=100,
-    logging_dir="./logs"
-)
-
-trainer = Trainer(model=model, args=training_args, train_dataset=dataset)
-
-# System monitoring function
-def log_system_usage(epoch):
-    log_entry = f"\nEpoch {epoch+1} Performance Stats:\n"
-    log_entry += f"CPU Usage: {psutil.cpu_percent()}%\n"
-    log_entry += f"RAM Usage: {psutil.virtual_memory().percent}%\n"
-    log_entry += f"Disk Read: {psutil.disk_io_counters().read_bytes / 1e6:.2f} MB\n"
-    log_entry += f"Disk Write: {psutil.disk_io_counters().write_bytes / 1e6:.2f} MB\n"
+# ===================== DISPLAY TRAINING FILES =====================
+def list_training_files():
+    """Lists and validates all training files in the training_data directory."""
+    log_message("Listing all training files:", Fore.YELLOW)
+    files = [os.path.join(TRAIN_DATA_DIR, f) for f in os.listdir(TRAIN_DATA_DIR) if f.endswith(".jsonl")]
     
-    if torch.cuda.is_available():
-        log_entry += f"GPU: {torch.cuda.get_device_name(0)}\n"
-        log_entry += f"GPU Memory Allocated: {torch.cuda.memory_allocated() / 1e9:.2f} GB\n"
-        log_entry += f"GPU Memory Cached: {torch.cuda.memory_reserved() / 1e9:.2f} GB\n"
-    else:
-        log_entry += "Training on CPU - No GPU detected.\n"
+    if not files:
+        log_message("No valid training files found! Exiting.", Fore.RED)
+        exit(1)
+    
+    for file in files:
+        log_message(f" - {file}", Fore.CYAN)
+    return files
 
-    logger.info(Fore.YELLOW + log_entry + Style.RESET_ALL)
-    with open("training_performance.log", "a") as log_file:
-        log_file.write(log_entry)
+# ===================== LOAD DATA =====================
+def load_training_data():
+    """Loads all JSONL training files from the training_data directory."""
+    log_message("Loading training data...", Fore.YELLOW)
+    files = list_training_files()
+    
+    # Separate files into different configurations based on their columns
+    datasets = {}
+    for file in files:
+        try:
+            with open(file, "r", encoding="utf-8") as f:
+                first_line = json.loads(f.readline())
+                columns = tuple(first_line.keys())
+                if columns not in datasets:
+                    datasets[columns] = []
+                datasets[columns].append(file)
+        except json.JSONDecodeError as e:
+            log_message(f"Skipping malformed JSONL file: {file} - {e}", Fore.RED)
+    
+    dataset_dict = DatasetDict()
+    for columns, files in datasets.items():
+        dataset_name = "_".join(columns)
+        dataset_dict[dataset_name] = load_dataset("json", data_files={"train": files})["train"]
+    
+    log_message("Training data loaded successfully.", Fore.GREEN)
+    return dataset_dict
 
-# Start time tracking
-start_time = time.time()
-logger.info(Fore.CYAN + "Training started." + Style.RESET_ALL)
+# ===================== TOKENIZE DATA =====================
+def tokenize_data(dataset_dict, tokenizer):
+    """Tokenizes the dataset using the provided tokenizer."""
+    log_message("Tokenizing data...", Fore.YELLOW)
+    
+    def tokenize_function(examples):
+        if "text" in examples:
+            text = examples["text"]
+        elif "input" in examples:
+            text = examples["input"]
+        else:
+            text = " ".join(" ".join(item) if isinstance(item, list) else str(item) for item in examples.values())
+        return tokenizer(text, padding="max_length", truncation=True)
+    
+    tokenized_datasets = {}
+    for name, dataset in dataset_dict.items():
+        tokenized_datasets[name] = dataset.map(tokenize_function, batched=True)
+    
+    log_message("Data tokenized successfully.", Fore.GREEN)
+    return DatasetDict(tokenized_datasets)
 
-# Start training
-for epoch in range(training_args.num_train_epochs):
-    logger.info(Fore.CYAN + f"\n🚀 Starting Epoch {epoch+1}...\n" + Style.RESET_ALL)
-    log_system_usage(epoch)  # Log system performance
-    trainer.train()
+# ===================== SETUP MODEL =====================
+def setup_model():
+    """Loads the base model and tokenizer, and applies LoRA fine-tuning."""
+    log_message("Loading base model and tokenizer...", Fore.YELLOW)
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+        model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, torch_dtype=torch.float16, device_map="auto")
+        log_message("Model and tokenizer loaded successfully.", Fore.GREEN)
+    except Exception as e:
+        log_message(f"Error loading model or tokenizer: {e}", Fore.RED)
+        log_message("Falling back to a default model 'gpt2'...", Fore.YELLOW)
+        tokenizer = AutoTokenizer.from_pretrained("gpt2")
+        model = AutoModelForCausalLM.from_pretrained("gpt2", torch_dtype=torch.float16, device_map="auto")
+        log_message("Default model 'gpt2' loaded successfully.", Fore.GREEN)
+    
+    # Add padding token if it does not exist
+    if tokenizer.pad_token is None:
+        tokenizer.add_special_tokens({'pad_token': tokenizer.eos_token})
+        model.resize_token_embeddings(len(tokenizer))
+        log_message("Added padding token to the tokenizer.", Fore.GREEN)
+    
+    log_message("Applying LoRA fine-tuning...", Fore.YELLOW)
+    lora_config = LoraConfig(
+        task_type=TaskType.CAUSAL_LM,
+        r=8,
+        lora_alpha=32,
+        lora_dropout=0.1,
+        target_modules=["q_proj", "v_proj"]
+    )
 
-# End time tracking
-end_time = time.time()
-total_time = (end_time - start_time) / 60
+    try:
+        model = get_peft_model(model, lora_config)
+        log_message("LoRA fine-tuning applied.", Fore.GREEN)
+    except ValueError as e:
+        log_message(f"Error applying LoRA fine-tuning: {e}", Fore.RED)
+        log_message("Skipping LoRA fine-tuning and proceeding with the base model.", Fore.YELLOW)
+    return model, tokenizer
 
-# Save final stats
-final_entry = f"\n🔥 Training Complete! Total Time: {total_time:.2f} minutes\n"
-logger.info(Fore.GREEN + final_entry + Style.RESET_ALL)
-with open("training_performance.log", "a") as log_file:
-    log_file.write(final_entry)
-logger.info(Fore.CYAN + "Training finished." + Style.RESET_ALL)
+# ===================== TRAINING CONFIGURATION =====================
+def configure_training():
+    """Configures training parameters for fine-tuning."""
+    log_message("Setting up training configuration...", Fore.YELLOW)
+    training_args = TrainingArguments(
+        output_dir=OUTPUT_DIR,
+        num_train_epochs=3,
+        per_device_train_batch_size=4,
+        per_device_eval_batch_size=4,
+        save_steps=500,
+        save_total_limit=2,
+        eval_strategy="no",  # Updated to avoid deprecated warning
+        logging_dir=f"{OUTPUT_DIR}/logs",
+        logging_steps=100,
+        report_to="none",
+        remove_unused_columns=False  # Ensure all columns are kept
+    )
+    log_message("Training configuration set up successfully.", Fore.GREEN)
+    return training_args
+
+# ===================== START TRAINING =====================
+def train_model():
+    """Runs the training process."""
+    dataset_dict = load_training_data()
+    model, tokenizer = setup_model()
+    training_args = configure_training()
+    
+    tokenized_dataset_dict = tokenize_data(dataset_dict, tokenizer)
+    data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
+    
+    for name, tokenized_dataset in tokenized_dataset_dict.items():
+        log_message(f"Starting model training for dataset: {name}...", Fore.YELLOW)
+        trainer = Trainer(
+            model=model,
+            args=training_args,
+            train_dataset=tokenized_dataset,
+            tokenizer=tokenizer,
+            data_collator=data_collator
+        )
+        trainer.train()
+        log_message(f"Model training completed successfully for dataset: {name}.", Fore.GREEN)
+    
+    log_message("Saving fine-tuned model...", Fore.YELLOW)
+    trainer.save_model(OUTPUT_DIR)
+    log_message(f"Fine-tuned model saved at {OUTPUT_DIR}", Fore.CYAN)
+
+# ===================== EXECUTE SCRIPT =====================
+if __name__ == "__main__":
+    log_message("Initializing DeepSeek fine-tuning script", Fore.YELLOW)
+    train_model()
