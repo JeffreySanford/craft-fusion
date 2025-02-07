@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, Input } from '@angular/core';
 import { MapboxService } from '../../../common/services/mapbox.service';
 import { FlightRadarService } from '../../../common/services/flightradar.service';
-import { FlightAwareService } from '../../../common/services/flightaware.service';
 import { interval, Subscription } from 'rxjs';
 import moment from 'moment-timezone';
 
@@ -70,8 +69,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private mapboxService: MapboxService,
-    private flightRadarService: FlightRadarService,
-    private flightAwareService: FlightAwareService
+    private flightRadarService: FlightRadarService
   ) {
     console.log('STEP 1: FireAlertComponent initialized');
   }

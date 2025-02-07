@@ -7,7 +7,6 @@ import { FinanceComponent } from './financial/finance.component';
 import { MaterialModule } from '../../material.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { FireAlertComponent } from './alert/fire-alert.component';
-import { FlightAwareService } from '../../common/services/flightaware.service';
 import { FlightRadarService } from '../../common/services/flightradar.service';
 import { AlphaVantageService } from '../../common/services/alpha-vantage.service';
 
@@ -17,6 +16,6 @@ import { AlphaVantageService } from '../../common/services/alpha-vantage.service
     FireAlertComponent, FinanceComponent],
   imports: [CommonModule, MaterialModule, DragDropModule],
   exports: [DataVisualizationsComponent],
-  providers: [AlphaVantageService, FlightAwareService, FlightRadarService],
+  providers: [AlphaVantageService, FlightRadarService],
 })
 export class DataVisualizationsModule {}
