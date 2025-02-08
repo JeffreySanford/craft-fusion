@@ -1,0 +1,31 @@
+<mat-sidenav-container>
+  <mat-sidenav #sidenav mode="side" closed>
+    <input type="file" (change)="onFileSelected($event)" accept=".pdf,.docx,.txt" />
+    <mat-nav-list>
+      <mat-list-item *ngFor="let document of documents" (click)="onDocumentSelected(document)">
+        {{ document }}
+      </mat-list-item>
+    </mat-nav-list>
+    <div *ngIf="selectedDocument" class="outline-box">
+      <h3>Outline of {{ selectedDocument }}</h3>
+      <mat-nav-list>
+        <mat-list-item *ngFor="let chapter of chapters">
+          {{ chapter }}
+        </mat-list-item>
+      </mat-nav-list>
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <button mat-fab color="primary" aria-label="Toggle Sidebar" (click)="toggleSidebar()">
+      menu
+    </button>
+    <div class="tinymce-container">
+      <editor
+        [init]="init"
+        [(ngModel)]="editorData"
+        (onChange)="onChange($event)"
+        (onInit)="onInit($event)"
+      ></editor>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

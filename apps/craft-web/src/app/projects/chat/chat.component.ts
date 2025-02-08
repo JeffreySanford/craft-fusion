@@ -31,7 +31,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   thinkingDuration = 3000; // Default thinking duration in milliseconds
   actualThinkingDuration = 0; // Actual thinking duration
 
-  constructor(private deepSeekService: DeepSeekService, private snackBar: MatSnackBar) {}
+  constructor(private deepSeekService: DeepSeekService, private snackBar: MatSnackBar) {
+    debugger
+  }
 
   ngOnInit() {
     console.log('ChatComponent initialized');

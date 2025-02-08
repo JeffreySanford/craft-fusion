@@ -1,8 +1,8 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { MaterialModule } from './material.module';
@@ -18,11 +18,14 @@ import { SpaceVideoModule } from './projects/space-video/space-video.module';
 import { TableModule } from './projects/table/table.module';
 import { PeasantKitchenModule } from './projects/peasant-kitchen/peasant-kitchen.module';
 import { BusyService } from './common/services/busy.service';
-// import { ChatModule } from './projects/chat/chat.module'; // Ensure this import is removed
 import { ResumeComponent } from './pages/resume/resume.component';
+import { BookModule } from './projects/book/book.module';
 
 @NgModule({
-  declarations: [AppComponent, ResumeComponent],
+  declarations: [
+    AppComponent,
+    ResumeComponent
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -43,9 +46,11 @@ import { ResumeComponent } from './pages/resume/resume.component';
       positionClass: 'toast-bottom-center',
       preventDuplicates: true,
     }),
-    RouterModule
+    RouterModule,
+    ReactiveFormsModule,
+    BookModule
   ],
-  exports: [MaterialModule],
+  exports: [MaterialModule, ReactiveFormsModule],
   providers: [BusyService, ToastrService, provideAnimations()],
   bootstrap: [AppComponent],
 })

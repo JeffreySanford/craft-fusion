@@ -10,12 +10,14 @@ import { MaterialButtonsComponent } from './pages/landing/material-buttons/mater
 import { RecipeComponent } from './projects/peasant-kitchen/recipe/recipe.component'; // Import RecipeComponent
 import { RecipesComponent } from './projects/peasant-kitchen/recipes/recipes.component';
 import { ResumeComponent } from './pages/resume/resume.component';
+import { BookComponent } from './projects/book/book.component';
 
 export const appRoutes: Routes = [
   { path: 'home', component: LandingComponent },
   { path: 'table', component: RecordListComponent },
   { path: 'table/:id', component: RecordDetailComponent },
   { path: 'data-visualizations', component: DataVisualizationsComponent },
+  { path: 'book', component: BookComponent },
   { path: 'chat', loadChildren: () => import('./projects/chat/chat.module').then(m => m.ChatModule) },
   {
     path: 'peasant-kitchen',
