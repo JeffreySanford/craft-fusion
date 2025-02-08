@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChildren, QueryList, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChildren, QueryList, AfterViewInit, ElementRef } from '@angular/core';
 import { ChatService } from './chat.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
@@ -9,8 +9,9 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./chat.component.scss'],
   standalone: false
 })
-export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren('messageTextarea') messageTextareas!: QueryList<any>;
+  @ViewChildren('responseText') responseTexts!: QueryList<ElementRef>;
 
   userInput = '';
   messages: { text: string; sender: string }[] = [];
@@ -25,6 +26,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.responseSubscription = this.chatService.getResponseStream().subscribe(
       response => {
         this.isThinking = false;
+        debugger
         this.messages.push({ text: 'Bot: ' + (response || 'No response'), sender: 'bot' });
       },
       error => {
@@ -35,45 +37,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     );
   }
 
-  ngAfterViewChecked() {
-    this.adjustAllTextareas();
-  }
-
-  adjustAllTextareas() {
-    this.messageTextareas.forEach(textarea => this.adjustTextareaHeight({
-      target: textarea.nativeElement,
-      bubbles: false,
-      cancelBubble: false,
-      cancelable: false,
-      composed: false,
-      currentTarget: null,
-      defaultPrevented: false,
-      eventPhase: 0,
-      isTrusted: false,
-      returnValue: false,
-      srcElement: null,
-      timeStamp: 0,
-      type: '',
-      composedPath: function (): EventTarget[] {
-        throw new Error('Function not implemented.');
-      },
-      initEvent: function (type: string, bubbles?: boolean, cancelable?: boolean): void {
-        throw new Error('Function not implemented.');
-      },
-      preventDefault: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      stopImmediatePropagation: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      stopPropagation: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      NONE: 0,
-      CAPTURING_PHASE: 1,
-      AT_TARGET: 2,
-      BUBBLING_PHASE: 3
-    }));
+  ngAfterViewInit(): void {
+    this.responseTexts.changes.subscribe(() => {
+      this.adjustTextareaHeight();
+    });
   }
 
   sendMessage() {
@@ -87,10 +54,12 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.chatService.sendMessage(input);
   }
 
-  adjustTextareaHeight(event: Event): void {
-    const textarea = event.target as HTMLTextAreaElement;
-    textarea.style.height = 'auto'; // Reset height
-    textarea.style.height = `${textarea.scrollHeight}px`; // Adjust to content
+  adjustTextareaHeight(): void {
+    this.responseTexts.forEach((element: ElementRef) => {
+      const textarea = element.nativeElement;
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    });
   }
   
   ngOnDestroy() {

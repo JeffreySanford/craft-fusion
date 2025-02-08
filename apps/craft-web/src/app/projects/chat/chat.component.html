@@ -5,12 +5,12 @@
   <mat-card-content id="messages">
     <mat-list>
       <mat-list-item *ngFor="let msg of messages" [ngClass]="msg.sender === 'user' ? 'reply' : 'response'">
-        <div class="message-content" style="flex-grow: 1;">
+        <div #responseText class="message-content" style="flex-grow: 1;">
           <mat-icon class="message-icon">{{ msg.sender === 'user' ? 'person' : 'smart_toy' }}</mat-icon>
           <div class="message-text">
             <ng-container *ngFor="let paragraph of msg.text | splitTextPipe">
-                <p>{{ paragraph }}</p>
-                <mat-icon class="response-count">{{ msg.text.length }}</mat-icon>
+              <p>{{ paragraph }}</p>
+              <mat-icon class="response-count">{{ msg.text.length }}</mat-icon>
             </ng-container>
           </div>
           <div class="future-icons">
