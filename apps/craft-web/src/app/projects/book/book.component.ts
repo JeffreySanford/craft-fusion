@@ -6,9 +6,12 @@ import tinymce, { Editor, EditorOptions } from 'tinymce';
 import { DocParseService } from '../../common/services/doc-parse.service';
 import { PdfParseService } from '../../common/services/pdf-parse.service';
 import { UserStateService } from '../../common/services/user-state.service';
+import { FileUploadService } from '../../common/services/file-upload.service';
 import TurndownService from 'turndown';
 import * as marked from 'marked';
 import * as hljs from 'highlight.js';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-book',
@@ -21,7 +24,6 @@ export class BookComponent implements OnInit {
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild(EditorComponent) editorComponent!: EditorComponent;
 
-  documents = ['Document 1', 'Document 2', 'Document 3'];
   editorData = '<p>Initial content</p>';
   selectedDocument: string | null = null;
   chapters: string[] = [];
@@ -37,7 +39,8 @@ export class BookComponent implements OnInit {
     toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code | toggleMarkdown',
     setup: (editor: Editor) => {
       editor.ui.registry.addButton('toggleMarkdown', {
-        text: 'Toggle Markdown',
+        icon: 'code',
+        tooltip: 'Toggle Markdown',
         onAction: () => {
           this.toggleMarkdownView();
         }
@@ -61,12 +64,18 @@ export class BookComponent implements OnInit {
       });
     }
   };
+  openedDocuments: string[] = [];
+  fileUploadService: FileUploadService;
+  isWinking: boolean = false;
 
   constructor(
     private docParseService: DocParseService,
     private pdfParseService: PdfParseService,
-    private userStateService: UserStateService
-  ) { }
+    private userStateService: UserStateService,
+    fileUploadService: FileUploadService
+  ) {
+    this.fileUploadService = fileUploadService;
+  }
 
   ngOnInit(): void { }
 
@@ -74,33 +83,69 @@ export class BookComponent implements OnInit {
     console.log('EditorComponent initialized');
     tinymce.init({
       selector: 'textarea',
-      plugins: 'code',
-      toolbar: 'code',
+      plugins: 'code lists advlist link image imagetools media table',
+      toolbar: 'code | undo redo | formatselect | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor | removeformat | link image media | table',
       height: 500,
       setup: (editor: Editor) => {
         editor.on('Change', (e) => this.onChange(e));
       }
     });
+
+    setInterval(() => {
+      this.isWinking = !this.isWinking;
+    }, 2000);
+
+    this.openedDocuments = this.userStateService.getOpenedDocuments();
+    this.addHeaderIds();
   }
 
   onChange({ editor }: { editor: Editor }) {
     const content = editor.getContent();
     console.log(content); // Handle editor data here
     this.updateChapters(content);
+    this.addHeaderIds();
   }
 
   onDocumentSelected(document: string): void {
     // Load the selected document into TinyMCE
     this.selectedDocument = document;
-    this.editorData = `<h1>${document}</h1><h2>Chapter 1</h2><p>Content of ${document} - Chapter 1</p><h2>Chapter 2</h2><p>Content of ${document} - Chapter 2</p>`;
-    this.updateChapters(this.editorData);
+    this.editorData = '<p>Content from ' + document + '</p>';
+    this.chapters = this.updateChapters(this.editorData);
     this.userStateService.addOpenedDocument(document);
+    this.addHeaderIds();
   }
 
-  updateChapters(content: string): void {
+  updateChapters(content: string): string[] {
+    debugger
     const parser = new DOMParser();
     const doc = parser.parseFromString(content, 'text/html');
-    this.chapters = Array.from(doc.querySelectorAll('h1, h2, h3, h4, h5, h6')).map(header => header.textContent || '');
+    this.chapters = Array.from(doc.querySelectorAll('h1, h2, h3, h4, h5, h6')).map(header => (header.textContent || '') + '\n');
+
+    return this.chapters;
+  }
+
+  addHeaderIds(): void {
+    const editor = this.editorComponent.editor;
+    if (editor) {
+      const content = editor.getContent();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(content, 'text/html');
+      const headers = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      headers.forEach((header, index) => {
+        header.id = `header-${index}`;
+      });
+      editor.setContent(doc.body.innerHTML);
+    }
+  }
+
+  scrollToChapter(index: number): void {
+    const editor = this.editorComponent.editor;
+    if (editor) {
+      const header = editor.getDoc().getElementById(`header-${index}`);
+      if (header) {
+        header.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
   }
 
   toggleSidebar(): void {
@@ -121,6 +166,14 @@ export class BookComponent implements OnInit {
         content = turndown.turndown(text);
       }
       this.renderMarkdown(content);
+      this.fileUploadService.uploadFile(file).pipe(
+        catchError(err => {
+          console.error('Failed to upload file', err);
+          return of(null);
+        })
+      ).subscribe(() => {
+        this.userStateService.addOpenedDocument(file.name);
+      });
     }
   }
 

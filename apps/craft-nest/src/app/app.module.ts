@@ -7,6 +7,7 @@ import { RecordsModule } from './records/records.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { OpenSkyModule } from './openskies/opensky.module';
 import { AlphaVantageModule } from './financial/alpha-vantage/alpha-vantage.module';
+import { FileModule } from './documents/file.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AlphaVantageModule } from './financial/alpha-vantage/alpha-vantage.modu
     RecipesModule,
     OpenSkyModule,
     AlphaVantageModule,
+    FileModule
   ],
   controllers: [AppController],
   providers: [AppService],

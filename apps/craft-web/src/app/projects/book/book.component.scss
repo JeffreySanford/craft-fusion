@@ -22,3 +22,118 @@
   border-radius: 4px;
   overflow-x: auto;
 }
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.sun-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation-delay: 2s; /* Add delay before animation starts */
+  animation: fadeInOut 4s forwards;
+}
+
+.sun {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, #ffd93b, #ffa800);
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(255, 200, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.eye {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: black;
+  border-radius: 50%;
+  top: 25px;
+}
+
+.left-eye {
+  left: 20px;
+}
+
+.right-eye {
+  right: 20px;
+  animation: wink 2s forwards;
+}
+
+.blush {
+  position: absolute;
+  width: 12px;
+  height: 8px;
+  background: #ffadad;
+  border-radius: 50%;
+  top: 40px;
+}
+
+.left-blush {
+  left: 12px;
+}
+
+.right-blush {
+  right: 12px;
+}
+
+.nose {
+  position: absolute;
+  width: 6px;
+  height: 20px;
+  background: orange;
+  border-radius: 50%;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.smile {
+  position: absolute;
+  width: 40px;
+  height: 20px;
+  border: 2px solid black;
+  border-top: none;
+  border-radius: 0 0 40px 40px;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+
+
+@keyframes wink {
+  0%, 100% {
+    height: 10px;
+  }
+  50% {
+    height: 1px;
+  }
+}

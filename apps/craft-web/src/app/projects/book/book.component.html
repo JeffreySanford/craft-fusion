@@ -1,15 +1,28 @@
+<div class="sun-container">
+  <div class="sun">
+    <div class="face">
+      <div class="eye left-eye"></div>
+      <div class="eye right-eye"></div>
+      <div class="blush left-blush"></div>
+      <div class="blush right-blush"></div>
+      <div class="nose"></div>
+      <div class="smile"></div>
+    </div>
+  </div>
+</div>
+
 <mat-sidenav-container>
   <mat-sidenav #sidenav mode="side" closed>
     <input type="file" (change)="onFileSelected($event)" accept=".pdf,.docx,.txt" />
     <mat-nav-list>
-      <mat-list-item *ngFor="let document of documents" (click)="onDocumentSelected(document)">
+      <mat-list-item *ngFor="let document of openedDocuments" (click)="onDocumentSelected(document)">
         {{ document }}
       </mat-list-item>
     </mat-nav-list>
     <div *ngIf="selectedDocument" class="outline-box">
-      <h3>Outline of {{ selectedDocument }}</h3>
+      <p>Outline of {{ selectedDocument }}</p>
       <mat-nav-list>
-        <mat-list-item *ngFor="let chapter of chapters">
+        <mat-list-item *ngFor="let chapter of chapters; let i = index" (click)="scrollToChapter(i)">
           {{ chapter }}
         </mat-list-item>
       </mat-nav-list>
@@ -17,7 +30,7 @@
   </mat-sidenav>
   <mat-sidenav-content>
     <button mat-fab color="primary" aria-label="Toggle Sidebar" (click)="toggleSidebar()">
-      menu
+      <mat-icon>menu</mat-icon>
     </button>
     <div class="tinymce-container">
       <editor
