@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { MaterialModule } from './material.module';
 import { appRoutes } from './app.routes';
@@ -20,6 +20,7 @@ import { PeasantKitchenModule } from './projects/peasant-kitchen/peasant-kitchen
 import { BusyService } from './common/services/busy.service';
 import { ResumeComponent } from './pages/resume/resume.component';
 import { BookModule } from './projects/book/book.module';
+import { UserStateInterceptor } from './common/interceptors/user-state.interceptor';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,16 @@ import { BookModule } from './projects/book/book.module';
     BookModule
   ],
   exports: [MaterialModule, ReactiveFormsModule],
-  providers: [BusyService, ToastrService, provideAnimations()],
+  providers: [
+    BusyService,
+    ToastrService,
+    provideAnimations(),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: UserStateInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {

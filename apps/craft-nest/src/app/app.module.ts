@@ -8,6 +8,7 @@ import { RecipesModule } from './recipes/recipes.module';
 import { OpenSkyModule } from './openskies/opensky.module';
 import { AlphaVantageModule } from './financial/alpha-vantage/alpha-vantage.module';
 import { FileModule } from './documents/file.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { FileModule } from './documents/file.module';
     RecipesModule,
     OpenSkyModule,
     AlphaVantageModule,
-    FileModule
+    FileModule,
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService],

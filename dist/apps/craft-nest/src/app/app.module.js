@@ -12,6 +12,7 @@ const recipes_module_1 = require("./recipes/recipes.module");
 const opensky_module_1 = require("./openskies/opensky.module");
 const alpha_vantage_module_1 = require("./financial/alpha-vantage/alpha-vantage.module");
 const file_module_1 = require("./documents/file.module");
+const user_module_1 = require("./user/user.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -26,7 +27,8 @@ exports.AppModule = AppModule = tslib_1.__decorate([
             recipes_module_1.RecipesModule,
             opensky_module_1.OpenSkyModule,
             alpha_vantage_module_1.AlphaVantageModule,
-            file_module_1.FileModule
+            file_module_1.FileModule,
+            user_module_1.UserModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

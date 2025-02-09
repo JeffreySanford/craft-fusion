@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { UserStateService } from './common/services/user-state.service';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +27,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   polling = true;
   editorForm: FormGroup = new FormGroup({});
 
-  constructor(private fb: FormBuilder, private router: Router, private route: ActivatedRoute, private breakpointObserver: BreakpointObserver) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private route: ActivatedRoute,
+    private breakpointObserver: BreakpointObserver,
+    private userStateService: UserStateService
+  ) {}
 
   ngOnInit(): void {
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
@@ -41,6 +48,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.isSmallScreen = this.breakpointObserver.isMatched('(max-width: 599px)');
+
+    // Removed login event registration to avoid infinite loop
   }
 
   ngAfterViewInit() {

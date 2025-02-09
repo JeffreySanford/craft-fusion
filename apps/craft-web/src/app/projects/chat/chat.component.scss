@@ -22,6 +22,31 @@
     flex-direction: column;
     gap: 0.5em;
 
+    /* Scrollbar styling */
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: linear-gradient(to bottom, red, white, blue) transparent; /* For Firefox */
+
+    &::-webkit-scrollbar {
+      width: 8px; /* Thin scrollbar width */
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, red, white, blue);
+      border-radius: 10px;
+      border: 2px solid transparent; /* Transparent border to create padding effect */
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent; /* Transparent background */
+    }
+
+    &::-webkit-scrollbar-button {
+      background-color: blue; /* Blue controls */
+      display: block;
+      height: 16px;
+      width: 16px;
+    }
+
     mat-list-item {
       display: flex;
       align-items: flex-start;
@@ -111,6 +136,7 @@
 
   .message-icon {
     color: red;
+    width: 2em;
   }
 }
 
@@ -120,6 +146,7 @@
 
   .message-icon {
     color: blue;
+    width: 2em;
   }
 }
 
@@ -147,6 +174,13 @@
 .message-icon {
   margin-right: 0.5em;
   font-size: 1.5em;
+  background-color: rgba(0, 0, 0, 0.7); // Dark background
+  border-radius: 50%; // Circle shape
+  min-width: 2em;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .future-icons {

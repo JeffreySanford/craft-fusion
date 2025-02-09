@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChildren, QueryList, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChildren, QueryList, AfterViewChecked } from '@angular/core';
 import { ChatService } from './chat.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
@@ -9,15 +9,14 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./chat.component.scss'],
   standalone: false
 })
-export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
+export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChildren('messageTextarea') messageTextareas!: QueryList<any>;
-  @ViewChildren('responseText') responseTexts!: QueryList<ElementRef>;
 
   userInput = '';
   messages: { text: string; sender: string }[] = [];
   private responseSubscription: Subscription = new Subscription();
   isThinking = false;
-  private startTime: number = 0;
+  thinkingStartTime: number | null = null;
 
   constructor(private chatService: ChatService, private snackBar: MatSnackBar) {}
 
@@ -27,10 +26,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
     this.responseSubscription = this.chatService.getResponseStream().subscribe(
       response => {
         this.isThinking = false;
-        const endTime = Date.now();
-        const thinkingTime = ((endTime - this.startTime) / 1000).toFixed(2);
-        const parsedResponse = this.parseThinkingTag(response, thinkingTime);
-        this.messages.push({ text: (parsedResponse || 'No response'), sender: 'bot' });
+        const thinkingDuration = this.thinkingStartTime ? (Date.now() - this.thinkingStartTime) / 1000 : 0;
+        this.snackBar.open(`Response received in ${thinkingDuration.toFixed(2)} seconds`, 'Close', { duration: 3000 });
+        const cleanedResponse = response.replace(/<\/?think>/g, ''); // Remove <think> and </think> tags
+        this.messages.push({ text: (cleanedResponse || 'No response'), sender: 'bot' });
       },
       error => {
         console.error('Error from ChatService:', error);
@@ -40,10 +39,46 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
     );
   }
 
-  ngAfterViewInit(): void {
-    this.responseTexts.changes.subscribe(() => {
-      this.adjustTextareaHeight();
-    });
+  ngAfterViewChecked() {
+    this.adjustAllTextareas();
+    this.scrollToBottom();
+  }
+
+  adjustAllTextareas() {
+    this.messageTextareas.forEach(textarea => this.adjustTextareaHeight({
+      target: textarea.nativeElement,
+      bubbles: false,
+      cancelBubble: false,
+      cancelable: false,
+      composed: false,
+      currentTarget: null,
+      defaultPrevented: false,
+      eventPhase: 0,
+      isTrusted: false,
+      returnValue: false,
+      srcElement: null,
+      timeStamp: 0,
+      type: '',
+      composedPath: function (): EventTarget[] {
+        throw new Error('Function not implemented.');
+      },
+      initEvent: function (type: string, bubbles?: boolean, cancelable?: boolean): void {
+        throw new Error('Function not implemented.');
+      },
+      preventDefault: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      stopImmediatePropagation: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      stopPropagation: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      NONE: 0,
+      CAPTURING_PHASE: 1,
+      AT_TARGET: 2,
+      BUBBLING_PHASE: 3
+    }));
   }
 
   sendMessage() {
@@ -53,21 +88,22 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
     const input = this.userInput;
     this.userInput = '';
     this.isThinking = true;
-    this.startTime = Date.now();
+    this.thinkingStartTime = Date.now(); // Record the start time
 
     this.chatService.sendMessage(input);
   }
 
-  adjustTextareaHeight(): void {
-    this.responseTexts.forEach((element: ElementRef) => {
-      const textarea = element.nativeElement;
-      textarea.style.height = 'auto';
-      textarea.style.height = textarea.scrollHeight + 'px';
-    });
+  adjustTextareaHeight(event: Event): void {
+    const textarea = event.target as HTMLTextAreaElement;
+    textarea.style.height = 'auto'; // Reset height
+    textarea.style.height = `${textarea.scrollHeight}px`; // Adjust to content
   }
-
-  parseThinkingTag(response: string, thinkingTime: string): string {
-    return response.replace('<think></think>', ` (AI thought for ${thinkingTime} seconds)`).replace(/<\/?think>/g, '');
+  
+  scrollToBottom(): void {
+    const messagesContainer = document.getElementById('messages');
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
   }
 
   ngOnDestroy() {
