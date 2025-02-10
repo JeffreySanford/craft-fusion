@@ -25,7 +25,7 @@ export class BookComponent implements OnInit {
   @ViewChild(EditorComponent) editorComponent!: EditorComponent;
 
   editorData = '<p>Initial content</p>';
-  selectedDocument: string | null = null;
+  selectedDocument: string[] = [];
   chapters: string[] = [];
   isMarkdownView = false;
 
@@ -127,10 +127,12 @@ export class BookComponent implements OnInit {
 
   onDocumentSelected(document: string): void {
     // Load the selected document into TinyMCE
-    this.selectedDocument = document;
+    this.selectedDocument = this.userStateService.setOpenedDocument(document);
     this.editorData = '<p>Content from ' + document + '</p>';
     this.chapters = this.updateChapters(this.editorData);
-    this.userStateService.addOpenedDocument(document);
+    this.userStateService.setOpenedDocument(document);
+    this.openedDocuments = this.userStateService.getOpenedDocuments();
+    debugger
     this.addHeaderIds();
     this.assignDocumentColor(document);
   }
@@ -199,7 +201,8 @@ export class BookComponent implements OnInit {
           return of(null);
         })
       ).subscribe(() => {
-        this.userStateService.addOpenedDocument(file.name);
+        this.userStateService.setOpenedDocument(file.name);
+        this.openedDocuments = this.userStateService.getOpenedDocuments();
       });
     }
   }

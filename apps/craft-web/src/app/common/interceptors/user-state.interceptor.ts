@@ -43,7 +43,7 @@ export class UserStateInterceptor implements HttpInterceptor {
 
       const pageName = this.pageNameMapping[req.url.split('?')[0]] || 'Unknown';
       console.log('Page name determined:', pageName);
-      this.userStateService.addVisitedPage(pageName);
+      this.userStateService.setVisitedPage(pageName);
       console.log('STATE: Visited page added:', pageName);
 
       return next.handle(req).pipe(

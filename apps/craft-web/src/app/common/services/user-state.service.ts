@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-interface OpenedDocument {
+interface Document {
   name: string;
   color: string;
 }
@@ -12,7 +12,7 @@ interface OpenedDocument {
   providedIn: 'root'
 })
 export class UserStateService {
-  private openedDocuments: OpenedDocument[] = [];
+  private openedDocuments: Document[] = [];
   private loginDateTime: Date | null = null;
   private visitLength: number | null = null;
   private visitedPages: string[] = [];
@@ -35,18 +35,20 @@ export class UserStateService {
 
   constructor(private http: HttpClient) { }
 
-  addOpenedDocument(document: string): void {
+  setOpenedDocument(document: string): string[] {
     if (!this.openedDocuments.some(doc => doc.name === document)) {
       const color = this.documentColors[this.openedDocuments.length % this.documentColors.length];
       this.openedDocuments.push({ name: document, color });
       this.saveOpenedDocuments().subscribe(() => {
         console.log('STATE: Opened documents saved:', this.openedDocuments);
+        return document;
       });
       console.log('STATE: Opened documents:', this.openedDocuments);
     }
+    return this.openedDocuments.map(doc => doc.name);
   }
 
-  getOpenedDocuments(): OpenedDocument[] {
+  getOpenedDocuments(): Document[] {
     this.loadOpenedDocuments().subscribe(docs => {
       this.openedDocuments = docs.map(doc => ({ name: doc, color: this.documentColors[this.openedDocuments.length % this.documentColors.length] }));
       console.log('STATE: Loaded opened documents:', this.openedDocuments);
@@ -84,7 +86,7 @@ export class UserStateService {
     return this.visitLength;
   }
 
-  addVisitedPage(page: string): void {
+  setVisitedPage(page: string): void {
     const pageName = this.pageNameMapping[page] || page;
     if (!this.visitedPages.includes(pageName)) {
       this.visitedPages.push(pageName);
