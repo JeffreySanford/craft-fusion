@@ -11,12 +11,12 @@
   </div>
 </div>
 
-<mat-sidenav-container>
-  <mat-sidenav #sidenav mode="side" closed>
+<mat-sidenav-container #container class="sidenav-container">
+  <mat-sidenav #sidenav mode="side" closed class="sidenav-custom-width">
     <input type="file" (change)="onFileSelected($event)" accept=".pdf,.docx,.txt" />
     <mat-nav-list>
-      <mat-list-item *ngFor="let document of openedDocuments" (click)="onDocumentSelected(document)">
-        {{ document }}
+      <mat-list-item *ngFor="let document of openedDocuments" (click)="onDocumentSelected(document.name)" [ngStyle]="{'background-color': document.color}">
+        {{ document.name }}
       </mat-list-item>
     </mat-nav-list>
     <div *ngIf="selectedDocument" class="outline-box">

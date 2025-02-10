@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Renderer2 } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { EditorComponent } from '@tinymce/tinymce-angular';
 import { EventObj } from '@tinymce/tinymce-angular/editor/Events';
@@ -36,13 +36,20 @@ export class BookComponent implements OnInit {
     selector: 'textarea', // Textarea selector
     height: 500, // Editor height
     menubar: false, // Menubar
-    toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code | toggleMarkdown',
+    toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor | removeformat | link image media | table | code | toggleMarkdown | aiAssistant',
     setup: (editor: Editor) => {
       editor.ui.registry.addButton('toggleMarkdown', {
         icon: 'code',
         tooltip: 'Toggle Markdown',
         onAction: () => {
           this.toggleMarkdownView();
+        }
+      });
+      editor.ui.registry.addButton('aiAssistant', {
+        icon: 'robot',
+        tooltip: 'AI Assistant',
+        onAction: () => {
+          this.invokeAIAssistant();
         }
       });
       editor.ui.registry.addSidebar('mysidebar', {
@@ -64,7 +71,8 @@ export class BookComponent implements OnInit {
       });
     }
   };
-  openedDocuments: string[] = [];
+  openedDocuments: { name: string, color: string }[] = [];
+  documentColors: string[] = ['#FFCDD2', '#C8E6C9', '#BBDEFB', '#FFF9C4', '#D1C4E9', '#FFECB3', '#B2EBF2', '#FFCCBC'];
   fileUploadService: FileUploadService;
   isWinking: boolean = false;
 
@@ -72,6 +80,8 @@ export class BookComponent implements OnInit {
     private docParseService: DocParseService,
     private pdfParseService: PdfParseService,
     private userStateService: UserStateService,
+    private ref: ElementRef,
+    private renderer2: Renderer2,
     fileUploadService: FileUploadService
   ) {
     this.fileUploadService = fileUploadService;
@@ -79,13 +89,21 @@ export class BookComponent implements OnInit {
 
   ngOnInit(): void { }
 
+  getFullHeight(): number {
+    const container = this.ref.nativeElement.querySelector('.sidenav-container');
+    if (container) {
+      return container.clientHeight;
+    }
+    return 500; // Default height if container is not found
+  }
+
   onInit(event: EventObj<any>): void {
     console.log('EditorComponent initialized');
     tinymce.init({
       selector: 'textarea',
       plugins: 'code lists advlist link image imagetools media table',
       toolbar: 'code | undo redo | formatselect | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor | removeformat | link image media | table',
-      height: 500,
+      height: this.getFullHeight(),
       setup: (editor: Editor) => {
         editor.on('Change', (e) => this.onChange(e));
       }
@@ -96,6 +114,7 @@ export class BookComponent implements OnInit {
     }, 2000);
 
     this.openedDocuments = this.userStateService.getOpenedDocuments();
+    this.userStateService.getLoginDateTime();
     this.addHeaderIds();
   }
 
@@ -113,6 +132,14 @@ export class BookComponent implements OnInit {
     this.chapters = this.updateChapters(this.editorData);
     this.userStateService.addOpenedDocument(document);
     this.addHeaderIds();
+    this.assignDocumentColor(document);
+  }
+
+  assignDocumentColor(document: string): void {
+    if (!this.openedDocuments.some(doc => doc.name === document)) {
+      const color = this.documentColors[this.openedDocuments.length % this.documentColors.length];
+      this.openedDocuments.push({ name: document, color });
+    }
   }
 
   updateChapters(content: string): string[] {
@@ -208,5 +235,10 @@ export class BookComponent implements OnInit {
       this.setEditorContent(markdown);
     }
     this.isMarkdownView = !this.isMarkdownView;
+  }
+
+  invokeAIAssistant(): void {
+    console.log('AI Assistant invoked');
+    // Implement AI assistant interaction logic here
   }
 }
