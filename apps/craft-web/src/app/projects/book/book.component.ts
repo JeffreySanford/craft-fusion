@@ -26,6 +26,7 @@ export class BookComponent implements OnInit {
 
   editorData = '<p>Initial content</p>';
   selectedDocument: string[] = [];
+  selectedDocuments: string[] = [];
   chapters: string[] = [];
   isMarkdownView = false;
 
@@ -128,8 +129,10 @@ export class BookComponent implements OnInit {
   onDocumentSelected(document: string): void {
     // Load the selected document into TinyMCE
     this.userStateService.setOpenedDocument(document).subscribe(openedDocuments => {
-      this.selectedDocument = [document];
-      this.editorData = '<p>Content from ' + document + '</p>';
+      if (!this.selectedDocuments.includes(document)) {
+        this.selectedDocuments.push(document);
+      }
+      this.editorData += '<p>Content from ' + document + '</p>';
       this.chapters = this.updateChapters(this.editorData);
       this.openedDocuments = openedDocuments;
       this.addHeaderIds();
@@ -183,8 +186,8 @@ export class BookComponent implements OnInit {
   }
 
   async onFileSelected(event: any): Promise<void> {
-    const file: File = event.target.files[0];
-    if (file) {
+    const files: File[] = Array.from(event.target.files);
+    for (const file of files) {
       let content = '';
       if (file.type === 'application/pdf') {
         content = await this.pdfParseService.parsePdf(file);

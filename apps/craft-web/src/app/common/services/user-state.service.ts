@@ -48,6 +48,19 @@ export class UserStateService {
     return of(this.openedDocuments);
   }
 
+  setOpenedDocuments(documents: string[]): Observable<Document[]> {
+    documents.forEach(document => {
+      if (!this.openedDocuments.some(doc => doc.name === document)) {
+        const color = this.documentColors[this.openedDocuments.length % this.documentColors.length];
+        this.openedDocuments.push({ name: document, color });
+      }
+    });
+    return this.saveOpenedDocuments().pipe(
+      map(() => this.openedDocuments),
+      catchError(this.handleError)
+    );
+  }
+
   getOpenedDocuments(): Document[] {
     if (this.openedDocuments.length === 0) {
       this.loadOpenedDocuments().subscribe(docs => {
