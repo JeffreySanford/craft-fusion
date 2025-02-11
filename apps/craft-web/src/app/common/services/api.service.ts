@@ -58,8 +58,8 @@ export class ApiService {
     return this.http.get<T>(`${this.apiUrl}/${endpoint}`, { headers: this.getHeaders() });
   }
 
-  post<T>(endpoint: string, body: T): Observable<T> {
-    return this.http.post<T>(`${this.apiUrl}/${endpoint}`, body, { headers: this.getHeaders() });
+  post<T, R>(endpoint: string, body: T): Observable<R> {
+    return this.http.post<R>(`${this.apiUrl}/${endpoint}`, body, { headers: this.getHeaders() });
   }
 
   put<T>(endpoint: string, body: T): Observable<T> {
@@ -68,6 +68,31 @@ export class ApiService {
 
   delete<T>(endpoint: string): Observable<T> {
     return this.http.delete<T>(`${this.apiUrl}/${endpoint}`, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Fetches the current user state.
+   * @returns An observable of the user state.
+   */
+  getUserState(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/user-state`, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Updates the user state.
+   * @param userState - The new user state.
+   * @returns An observable of the updated user state.
+   */
+  updateUserState(userState: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/user-state`, userState, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Deletes the user state.
+   * @returns An observable of the deletion result.
+   */
+  deleteUserState(): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/user-state`, { headers: this.getHeaders() });
   }
 
   /**
@@ -146,5 +171,17 @@ export class ApiService {
    */
   generatePerformanceReport(selectedServer: { language: string }, totalRecords: number, generationTimeLabel: string, roundtripLabel: string): string {
     return `Using the backend server language, ${selectedServer.language}, Mock record set of ${totalRecords} records was generated in ${generationTimeLabel} and delivered in ${roundtripLabel}.`;
+  }
+
+  /**
+   * Handles an array of strings.
+   * @param data - An array of strings.
+   * @returns A processed result.
+   */
+  handleStringArray(data: string[]): any {
+    // Implement your logic here
+    console.log('Handling string array:', data);
+    // Example: Return the length of each string
+    return data.map(str => str.length);
   }
 }

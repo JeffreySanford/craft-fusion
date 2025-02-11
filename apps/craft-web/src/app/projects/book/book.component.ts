@@ -132,7 +132,6 @@ export class BookComponent implements OnInit {
     this.chapters = this.updateChapters(this.editorData);
     this.userStateService.setOpenedDocument(document);
     this.openedDocuments = this.userStateService.getOpenedDocuments();
-    debugger
     this.addHeaderIds();
     this.assignDocumentColor(document);
   }

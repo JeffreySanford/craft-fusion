@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { ApiService } from './api.service';
 
 interface Document {
   name: string;
@@ -33,7 +34,7 @@ export class UserStateService {
     // Add more mappings as needed
   };
 
-  constructor(private http: HttpClient) { }
+  constructor(private api: ApiService) { }
 
   setOpenedDocument(document: string): string[] {
     if (!this.openedDocuments.some(doc => doc.name === document)) {
@@ -107,14 +108,14 @@ export class UserStateService {
 
   private saveOpenedDocuments(): Observable<void> {
     console.log('STATE: Saving opened documents:', this.openedDocuments);
-    return this.http.post<void>('/api/files/saveOpenedDocuments', this.openedDocuments).pipe(
+    return this.api.post<Document[], void>('/api/files/saveOpenedDocuments', this.openedDocuments).pipe(
       catchError(this.handleError)
     );
   }
 
   private loadOpenedDocuments(): Observable<string[]> {
     console.log('STATE: Loading opened documents');
-    return this.http.get<string[]>('/api/files/getOpenedDocuments').pipe(
+    return this.api.get<string[]>('/api/files/getOpenedDocuments').pipe(
       catchError(error => {
       if (error.status === 404) {
         console.log('STATE: No opened documents found, returning empty array.');
@@ -131,42 +132,42 @@ export class UserStateService {
 
   private saveLoginDateTime(): Observable<void> {
     console.log('STATE: Saving login date/time:', this.loginDateTime);
-    return this.http.post<void>('/api/user/saveLoginDateTime', { dateTime: this.loginDateTime?.toISOString() }).pipe(
+    return this.api.post<{ dateTime: string | undefined }, void>('/api/user/saveLoginDateTime', { dateTime: this.loginDateTime?.toISOString() }).pipe(
       catchError(this.handleError)
     );
   }
 
   private loadLoginDateTime(): Observable<Date> {
     console.log('STATE: Loading login date/time');
-    return this.http.get<Date>('/api/user/getLoginDateTime').pipe(
+    return this.api.get<Date>('/api/user/getLoginDateTime').pipe(
       catchError(this.handleError)
     );
   }
 
   private saveVisitLength(): Observable<void> {
     console.log('STATE: Saving visit length:', this.visitLength);
-    return this.http.post<void>('/api/user/saveVisitLength', { length: this.visitLength }).pipe(
+    return this.api.post<{ length: number | null }, void>('/api/user/saveVisitLength', { length: this.visitLength }).pipe(
       catchError(this.handleError)
     );
   }
 
   private loadVisitLength(): Observable<number> {
     console.log('STATE: Loading visit length');
-    return this.http.get<number>('/api/user/getVisitLength').pipe(
+    return this.api.get<number>('/api/user/getVisitLength').pipe(
       catchError(this.handleError)
     );
   }
 
   private saveVisitedPages(): Observable<void> {
     console.log('STATE: Saving visited pages:', this.visitedPages);
-    return this.http.post<void>('/api/user/saveVisitedPages', this.visitedPages).pipe(
+    return this.api.post<string[], void>('/api/user/saveVisitedPages', this.visitedPages).pipe(
       catchError(this.handleError)
     );
   }
 
   private loadVisitedPages(): Observable<string[]> {
     console.log('STATE: Loading visited pages');
-    return this.http.get<string[]>('/api/user/getVisitedPages').pipe(
+    return this.api.get<string[]>('/api/user/getVisitedPages').pipe(
       catchError(this.handleError)
     );
   }

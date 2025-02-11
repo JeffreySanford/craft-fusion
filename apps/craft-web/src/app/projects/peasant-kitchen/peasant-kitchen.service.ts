@@ -54,7 +54,7 @@ export class PeasantKitchenService {
    */
   addRecipe(recipe: Recipe): Observable<Recipe> {
     console.log('Adding new recipe:', recipe);
-    return this.apiService.post<Recipe>(this.endpoint, recipe).pipe(
+    return this.apiService.post<Recipe, Recipe>(this.endpoint, recipe).pipe(
       tap(newRecipe => console.log('Created recipe:', newRecipe.id)),
       catchError((error: any) => {
         console.error('Error creating recipe:', error);

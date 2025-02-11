@@ -67,7 +67,7 @@ export class RecordService {
   addRecord(record: Record): Observable<Record> {
     const url = 'records';
     console.log(`Adding record to URL: ${this.apiService.getApiUrl()}/${url}`);
-    return this.apiService.post<Record>(url, record);
+    return this.apiService.post<Record, Record>(url, record);
   }
 
   // sets the currently selected user to prepare to user detail presentation
