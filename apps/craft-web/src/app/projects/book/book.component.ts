@@ -210,9 +210,16 @@ export class BookComponent implements OnInit {
 
   renderMarkdown(markdown: string): void {
     marked.setOptions({
+      breaks: true,
+      gfm: true,
       highlight: (code: string) => {
         return hljs.default.highlightAuto(code).value;
-      }
+      },
+      pedantic: false,
+      sanitize: true,
+      smartLists: true,
+      smartypants: true,
+      xhtml: false
     } as marked.MarkedOptions);
     const parsedMarkdown = marked.parse(markdown);
     if (parsedMarkdown instanceof Promise) {

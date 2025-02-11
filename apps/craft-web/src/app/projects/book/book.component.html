@@ -16,15 +16,15 @@
     <input type="file" (change)="onFileSelected($event)" accept=".pdf,.docx,.txt" />
     <mat-nav-list>
       <mat-list-item *ngFor="let document of openedDocuments" (click)="onDocumentSelected(document.name)" [ngStyle]="{'background-color': document.color}">
-        {{ document.name }}
+        {{ document.name.split('.').slice(0, -1).join('.') }}
       </mat-list-item>
     </mat-nav-list>
     <div *ngIf="selectedDocument" class="outline-box">
       <p>Outline of {{ selectedDocument }}</p>
       <mat-nav-list>
-        <mat-list-item *ngFor="let chapter of chapters; let i = index" (click)="scrollToChapter(i)">
-          {{ chapter }}  
-        </mat-list-item>
+        <a mat-list-item *ngFor="let chapter of chapters; let i = index" (click)="scrollToChapter(i)" class="chapter-link">
+          {{ chapter }}
+        </a>
       </mat-nav-list>
     </div>
   </mat-sidenav>
