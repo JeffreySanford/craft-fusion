@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, throwError, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 
 interface Document {
@@ -36,24 +36,28 @@ export class UserStateService {
 
   constructor(private api: ApiService) { }
 
-  setOpenedDocument(document: string): string[] {
+  setOpenedDocument(document: string): Observable<Document[]> {
     if (!this.openedDocuments.some(doc => doc.name === document)) {
       const color = this.documentColors[this.openedDocuments.length % this.documentColors.length];
       this.openedDocuments.push({ name: document, color });
-      this.saveOpenedDocuments().subscribe(() => {
-        console.log('STATE: Opened documents saved:', this.openedDocuments);
-        return document;
-      });
-      console.log('STATE: Opened documents:', this.openedDocuments);
+      return this.saveOpenedDocuments().pipe(
+        map(() => this.openedDocuments),
+        catchError(this.handleError)
+      );
     }
-    return this.openedDocuments.map(doc => doc.name);
+    return of(this.openedDocuments);
   }
 
   getOpenedDocuments(): Document[] {
-    this.loadOpenedDocuments().subscribe(docs => {
-      this.openedDocuments = docs.map(doc => ({ name: doc, color: this.documentColors[this.openedDocuments.length % this.documentColors.length] }));
-      console.log('STATE: Loaded opened documents:', this.openedDocuments);
-    });
+    if (this.openedDocuments.length === 0) {
+      this.loadOpenedDocuments().subscribe(docs => {
+        this.openedDocuments = docs.map((doc, index) => ({
+          name: doc,
+          color: this.documentColors[index % this.documentColors.length]
+        }));
+        console.log('STATE: Loaded opened documents:', this.openedDocuments);
+      });
+    }
     return this.openedDocuments;
   }
 

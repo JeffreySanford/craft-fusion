@@ -11,7 +11,7 @@ import TurndownService from 'turndown';
 import * as marked from 'marked';
 import * as hljs from 'highlight.js';
 import { catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { of, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-book',
@@ -127,13 +127,14 @@ export class BookComponent implements OnInit {
 
   onDocumentSelected(document: string): void {
     // Load the selected document into TinyMCE
-    this.selectedDocument = this.userStateService.setOpenedDocument(document);
-    this.editorData = '<p>Content from ' + document + '</p>';
-    this.chapters = this.updateChapters(this.editorData);
-    this.userStateService.setOpenedDocument(document);
-    this.openedDocuments = this.userStateService.getOpenedDocuments();
-    this.addHeaderIds();
-    this.assignDocumentColor(document);
+    this.userStateService.setOpenedDocument(document).subscribe(openedDocuments => {
+      this.selectedDocument = [document];
+      this.editorData = '<p>Content from ' + document + '</p>';
+      this.chapters = this.updateChapters(this.editorData);
+      this.openedDocuments = openedDocuments;
+      this.addHeaderIds();
+      this.assignDocumentColor(document);
+    });
   }
 
   assignDocumentColor(document: string): void {
@@ -167,6 +168,7 @@ export class BookComponent implements OnInit {
   }
 
   scrollToChapter(index: number): void {
+    debugger
     const editor = this.editorComponent.editor;
     if (editor) {
       const header = editor.getDoc().getElementById(`header-${index}`);

@@ -28,6 +28,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.isThinking = false;
         const thinkingDuration = this.thinkingStartTime ? (Date.now() - this.thinkingStartTime) / 1000 : 0;
         this.snackBar.open(`Response received in ${thinkingDuration.toFixed(2)} seconds`, 'Close', { duration: 3000 });
+        debugger
         const cleanedResponse = response.replace(/<\/?think>/g, ''); // Remove <think> and </think> tags
         this.messages.push({ text: (cleanedResponse || 'No response'), sender: 'bot' });
       },
@@ -40,8 +41,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngAfterViewChecked() {
-    this.adjustAllTextareas();
-    this.scrollToBottom();
+    if(!this.isThinking) {
+      this.adjustAllTextareas();
+      this.scrollToBottom();  
+    }
   }
 
   adjustAllTextareas() {
