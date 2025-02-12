@@ -81,6 +81,7 @@ export class BookComponent implements OnInit {
   documentColors: string[] = ['#FFCDD2', '#C8E6C9', '#BBDEFB', '#FFF9C4', '#D1C4E9', '#FFECB3', '#B2EBF2', '#FFCCBC'];
   fileUploadService: FileUploadService;
   isWinking: boolean = false;
+  currentTitle: string = '';
 
   constructor(
     private docParseService: DocParseService,
@@ -132,8 +133,7 @@ export class BookComponent implements OnInit {
   }
 
   onDocumentSelected(document: string): void {
-    // Load the selected document into TinyMCE
-    debugger
+    // Load the selected document into TinyMCE editor
     this.userStateService.setOpenedDocument(document).subscribe(openedDocuments => {
       this.selectedDocument = this.openedDocuments.find(doc => doc.name === document);
       this.editorData += '<p>Content from ' + document + '</p>';
@@ -152,10 +152,10 @@ export class BookComponent implements OnInit {
   }
 
   updateChapters(content: string): string[] {
-    debugger
     const parser = new DOMParser();
     const doc = parser.parseFromString(content, 'text/html');
-    this.chapters = Array.from(doc.querySelectorAll('h1, h2, h3, h4, h5, h6')).map(header => (header.textContent || '') + '\n');
+    this.currentTitle = Array.from(doc.querySelectorAll('h1')).map(header => header.textContent || '')[0] || 'Untitled';
+    this.chapters = Array.from(doc.querySelectorAll('h3')).map(header => (header.textContent || '') + '\n');
 
     return this.chapters;
   }
@@ -163,7 +163,6 @@ export class BookComponent implements OnInit {
   addHeaderIds(): void {
     const editor = this.editorComponent.editor;
 
-    debugger
     if (editor) {
       const content = editor.getContent();
       const parser = new DOMParser();
@@ -172,16 +171,17 @@ export class BookComponent implements OnInit {
       headers.forEach((header, index) => {
         header.id = `header-${index}`;
       });
-      debugger
+
       editor.setContent(doc.body.innerHTML);
     }
   }
 
   scrollToChapter(index: number): void {
-    debugger
+
     const editor = this.editorComponent.editor;
     if (editor) {
-      const header = editor.getDoc().getElementById(`header-${index}`);
+      const headers = editor.getDoc().querySelectorAll('h3');
+      const header = headers[index];
       if (header) {
         header.scrollIntoView({ behavior: 'smooth' });
       }
