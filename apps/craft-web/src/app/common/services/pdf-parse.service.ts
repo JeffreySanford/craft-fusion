@@ -20,6 +20,7 @@ export class PdfParseService {
     }
 
     const turndown = new TurndownService();
+    debugger
     return turndown.turndown(textContent);
   }
 }

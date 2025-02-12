@@ -13,6 +13,11 @@ import * as hljs from 'highlight.js';
 import { catchError } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 
+export interface Document {
+  name: string;
+  color: string;
+}
+
 @Component({
   selector: 'app-book',
   templateUrl: './book.component.html',
@@ -25,7 +30,7 @@ export class BookComponent implements OnInit {
   @ViewChild(EditorComponent) editorComponent!: EditorComponent;
 
   editorData = '<p>Initial content</p>';
-  selectedDocument: string[] = [];
+  selectedDocument?: Document;
   selectedDocuments: string[] = [];
   chapters: string[] = [];
   isMarkdownView = false;
@@ -128,10 +133,9 @@ export class BookComponent implements OnInit {
 
   onDocumentSelected(document: string): void {
     // Load the selected document into TinyMCE
+    debugger
     this.userStateService.setOpenedDocument(document).subscribe(openedDocuments => {
-      if (!this.selectedDocuments.includes(document)) {
-        this.selectedDocuments.push(document);
-      }
+      this.selectedDocument = this.openedDocuments.find(doc => doc.name === document);
       this.editorData += '<p>Content from ' + document + '</p>';
       this.chapters = this.updateChapters(this.editorData);
       this.openedDocuments = openedDocuments;
@@ -158,6 +162,8 @@ export class BookComponent implements OnInit {
 
   addHeaderIds(): void {
     const editor = this.editorComponent.editor;
+
+    debugger
     if (editor) {
       const content = editor.getContent();
       const parser = new DOMParser();
@@ -166,6 +172,7 @@ export class BookComponent implements OnInit {
       headers.forEach((header, index) => {
         header.id = `header-${index}`;
       });
+      debugger
       editor.setContent(doc.body.innerHTML);
     }
   }

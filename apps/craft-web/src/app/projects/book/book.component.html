@@ -15,25 +15,15 @@
   <mat-sidenav #sidenav mode="side" closed class="sidenav-custom-width">
     <input type="file" (change)="onFileSelected($event)" accept=".pdf,.docx,.txt" multiple />
     <mat-nav-list>
-      <mat-list-item *ngFor="let document of openedDocuments" (click)="onDocumentSelected(document.name)" [ngStyle]="{'background-color': document.color}">
-        {{ document.name.split('.').slice(0, -1).join('.') }}
+      <mat-list-item class="document" *ngFor="let document of openedDocuments" (click)="onDocumentSelected(document.name)" [ngStyle]="{'background-color': document.color}">
+        <p>{{ document.name.split('.').slice(0, -1).join('.') }}</p>
       </mat-list-item>
     </mat-nav-list>
     <div *ngIf="selectedDocument" class="outline-box">
-      <p>Outline of {{ selectedDocument }}</p>
-      <mat-nav-list>
-        <a mat-list-item *ngFor="let chapter of chapters; let i = index" (click)="scrollToChapter(i)" class="chapter-link">
-          {{ chapter }}
-        </a>
-      </mat-nav-list>
-    </div>
-    <div *ngIf="selectedDocuments.length > 0" class="outline-box">
-      <p>Outline of selected documents</p>
-      <mat-nav-list>
-        <a mat-list-item *ngFor="let chapter of chapters; let i = index" (click)="scrollToChapter(i)" class="chapter-link">
-          {{ chapter }}
-        </a>
-      </mat-nav-list>
+      <p [ngStyle]="{'color': selectedDocument.color}">Outline of {{ selectedDocument.name }}</p>
+      <div *ngFor="let chapter of chapters; let i = index" (click)="scrollToChapter(i)" class="chapter-link">
+        {{ chapter }}
+      </div>
     </div>
   </mat-sidenav>
   <mat-sidenav-content>

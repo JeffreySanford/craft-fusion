@@ -7,6 +7,11 @@
   overflow-y: auto;
 }
 
+.outline-box p {
+  text-align: center;
+  padding: 10px;
+}
+
 .markdown-preview {
   margin-top: 20px;
   padding: 20px;
@@ -131,8 +136,31 @@
   width: 200px;
 }
 
+.mat-mdc-list-item {
+  height: 2em;
+  width: 90%;
+  margin: 0.5em auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8em;
+}
+
+.document {
+  font-size: 0.8em;
+  color: white;
+
+  p {
+    margin: auto;
+    color: white;
+    font-size:0.9em;
+    font-weight: 200;
+  }
+}
+
 @keyframes wink {
-  0%, 100% {
+  0%,
+  100% {
     height: 10px;
   }
   50% {
@@ -147,4 +175,12 @@
   &:hover {
     text-decoration: underline;
   }
+}
+
+.mat-list-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5em 0.5em;
+  text-align: center;
 }
