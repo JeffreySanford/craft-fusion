@@ -30,8 +30,12 @@
     <button mat-fab color="primary" aria-label="Toggle Sidebar" (click)="toggleSidebar()">
       <mat-icon>menu</mat-icon>
     </button>
-    <div class="tinymce-container">
-      <editor
+    <button mat-fab color="accent" aria-label="Toggle Read-Only" (click)="toggleMarkdownPrettyView()">
+      <mat-icon>{{ isMarkdownPrettyView ? 'edit' : 'visibility' }}</mat-icon>
+    </button>
+    <div class="tinymce-container book-content">
+      <div *ngIf="isMarkdownPrettyView" class="markdown-preview" [innerHTML]="editorData | safeHtml"></div>
+      <editor *ngIf="!isMarkdownPrettyView"
         [init]="init"
         [(ngModel)]="editorData"
         (onChange)="onChange($event)"

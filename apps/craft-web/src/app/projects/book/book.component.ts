@@ -11,7 +11,7 @@ import TurndownService from 'turndown';
 import * as marked from 'marked';
 import * as hljs from 'highlight.js';
 import { catchError } from 'rxjs/operators';
-import { of, Observable } from 'rxjs';
+import { of } from 'rxjs';
 
 export interface Document {
   name: string;
@@ -34,14 +34,16 @@ export class BookComponent implements OnInit {
   selectedDocuments: string[] = [];
   chapters: string[] = [];
   isMarkdownView = false;
+  isReadOnly = true;
+  isMarkdownPrettyView = true;
 
   init: Partial<EditorOptions> = {
-    license_key: 'gpl', // License key
-    base_url: '/tinymce', // Base URL for Tinymce
-    suffix: '.min', // File suffix
-    selector: 'textarea', // Textarea selector
-    height: 636, // Editor height
-    menubar: false, // Menubar
+    license_key: 'gpl',
+    base_url: '/tinymce',
+    suffix: '.min',
+    selector: 'textarea',
+    height: 636,
+    menubar: false,
     toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor | removeformat | link image media | table | code | toggleMarkdown | aiAssistant',
     setup: (editor: Editor) => {
       editor.ui.registry.addButton('toggleMarkdown', {
@@ -94,16 +96,16 @@ export class BookComponent implements OnInit {
     this.fileUploadService = fileUploadService;
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.init.readonly = this.isReadOnly;
+  }
 
   getFullHeight(): number {
     const container = this.ref.nativeElement.querySelector('.sidenav-container');
-    debugger
     if (container) {
       return container.clientHeight + 400;
     }
-    debugger
-    return 500; // Default height if container is not found
+    return 500;
   }
 
   onInit(event: EventObj<any>): void {
@@ -129,13 +131,12 @@ export class BookComponent implements OnInit {
 
   onChange({ editor }: { editor: Editor }) {
     const content = editor.getContent();
-    console.log(content); // Handle editor data here
+    console.log(content);
     this.updateChapters(content);
     this.addHeaderIds();
   }
 
   onDocumentSelected(document: string): void {
-    // Load the selected document into TinyMCE editor
     this.userStateService.setOpenedDocument(document).subscribe(openedDocuments => {
       this.selectedDocument = this.openedDocuments.find(doc => doc.name === document);
       this.editorData += '<p>Content from ' + document + '</p>';
@@ -179,7 +180,6 @@ export class BookComponent implements OnInit {
   }
 
   scrollToChapter(index: number): void {
-
     const editor = this.editorComponent.editor;
     if (editor) {
       const headers = editor.getDoc().querySelectorAll('h3');
@@ -229,7 +229,6 @@ export class BookComponent implements OnInit {
         content = await this.pdfParseService.parsePdf(file);
       } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
         content = await this.docParseService.parseDoc(file);
-        debugger
       } else if (file.type === 'text/plain') {
         const text = await file.text();
         const turndown = new TurndownService();
@@ -288,8 +287,21 @@ export class BookComponent implements OnInit {
     this.isMarkdownView = !this.isMarkdownView;
   }
 
+  toggleReadOnly(): void {
+    this.isReadOnly = !this.isReadOnly;
+    if (this.editorComponent && this.editorComponent.editor) {
+      this.editorComponent.editor.mode.set(this.isReadOnly ? 'readonly' : 'design');
+    }
+  }
+
+  toggleMarkdownPrettyView(): void {
+    this.isMarkdownPrettyView = !this.isMarkdownPrettyView;
+    if (!this.isMarkdownPrettyView) {
+      this.toggleReadOnly();
+    }
+  }
+
   invokeAIAssistant(): void {
     console.log('AI Assistant invoked');
-    // Implement AI assistant interaction logic here
   }
 }

@@ -8,13 +8,14 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { FileUploadService } from '../../common/services/file-upload.service';
 import { MatIconModule } from '@angular/material/icon';
+import { SafeHtmlPipe } from '../../common/pipes/safe-html.pipe';
 
 const routes: Routes = [
   { path: '', component: BookComponent }
 ];
 
 @NgModule({
-  declarations: [BookComponent],
+  declarations: [BookComponent, SafeHtmlPipe],
   imports: [
     CommonModule,
     FormsModule,

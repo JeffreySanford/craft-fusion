@@ -41,12 +41,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatProgressSpinnerModule,
     MatGridListModule,
     DragDropModule,
-    MatSnackBarModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatSliderModule
+    MatSnackBarModule
   ],
   exports: [
     MatButtonModule,
@@ -68,12 +63,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatProgressSpinnerModule,
     MatGridListModule,
     DragDropModule,
-    MatSnackBarModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatSliderModule
+    MatSnackBarModule
   ]
 })
 export class MaterialModule { }
