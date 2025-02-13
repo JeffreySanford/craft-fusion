@@ -1,21 +1,36 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BookComponent } from './book.component';
-import { FileService } from '../../common/services/file.service';
+import { FileUploadService } from '../../common/services/file-upload.service';
+import { PdfParseService } from '../../common/services/pdf-parse.service';
+import { DocParseService } from '../../common/services/doc-parse.service';
+import { UserStateService } from '../../common/services/user-state.service';
+import { of } from 'rxjs';
 
 describe('BookComponent', () => {
   let component: BookComponent;
   let fixture: ComponentFixture<BookComponent>;
-  let fileService: FileService;
+  let fileUploadService: FileUploadService;
+  let pdfParseService: PdfParseService;
+  let docParseService: DocParseService;
+  let userStateService: UserStateService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [BookComponent],
-      providers: [FileService]
+      providers: [
+        FileUploadService,
+        PdfParseService,
+        DocParseService,
+        UserStateService
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(BookComponent);
     component = fixture.componentInstance;
-    fileService = TestBed.inject(FileService);
+    fileUploadService = TestBed.inject(FileUploadService);
+    pdfParseService = TestBed.inject(PdfParseService);
+    docParseService = TestBed.inject(DocParseService);
+    userStateService = TestBed.inject(UserStateService);
     fixture.detectChanges();
   });
 
@@ -23,15 +38,17 @@ describe('BookComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should store file and update user state on file selection', async () => {
+  it('should store file and update user state on file selection', () => {
     const file = new File(['content'], 'test.txt', { type: 'text/plain' });
     const event = { target: { files: [file] } };
-    spyOn(fileService, 'saveFile').and.returnValue(Promise.resolve());
-    spyOn(component.userStateService, 'addOpenedDocument');
+    spyOn(fileUploadService, 'uploadFile').and.returnValue(of(null));
+    spyOn(userStateService, 'setOpenedDocument').and.returnValue(of(null));
+    spyOn(userStateService, 'getOpenedDocuments').and.returnValue([]);
 
-    await component.onFileSelected(event);
+    component.onFileSelected(event);
 
-    expect(fileService.saveFile).toHaveBeenCalledWith(file);
-    expect(component.userStateService.addOpenedDocument).toHaveBeenCalledWith('test.txt');
+    expect(fileUploadService.uploadFile).toHaveBeenCalledWith(file);
+    expect(userStateService.setOpenedDocument).toHaveBeenCalledWith('test.txt');
+    expect(component.openedDocuments).toEqual([]);
   });
 });

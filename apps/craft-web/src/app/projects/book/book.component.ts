@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer2 } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Renderer2, AfterViewInit } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { EditorComponent } from '@tinymce/tinymce-angular';
 import { EventObj } from '@tinymce/tinymce-angular/editor/Events';
@@ -10,8 +10,8 @@ import { FileUploadService } from '../../common/services/file-upload.service';
 import TurndownService from 'turndown';
 import * as marked from 'marked';
 import * as hljs from 'highlight.js';
-import { catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { of, from } from 'rxjs';
 
 export interface Document {
   name: string;
@@ -24,10 +24,11 @@ export interface Document {
   styleUrls: ['./book.component.scss'],
   standalone: false
 })
-export class BookComponent implements OnInit {
+export class BookComponent implements OnInit, AfterViewInit {
   @ViewChild('sidebar', { static: true }) sidebar!: ElementRef;
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild(EditorComponent) editorComponent!: EditorComponent;
+  @ViewChild('markdownPreview') markdownPreview!: ElementRef;
 
   editorData = '<p>Initial content</p>';
   selectedDocument?: Document;
@@ -100,6 +101,10 @@ export class BookComponent implements OnInit {
     this.init.readonly = this.isReadOnly;
   }
 
+  ngAfterViewInit(): void {
+    this.addHeaderIds();
+  }
+
   getFullHeight(): number {
     const container = this.ref.nativeElement.querySelector('.sidenav-container');
     if (container) {
@@ -164,9 +169,8 @@ export class BookComponent implements OnInit {
   }
 
   addHeaderIds(): void {
-    const editor = this.editorComponent.editor;
-
-    if (editor) {
+    if (this.editorComponent && this.editorComponent.editor) {
+      const editor = this.editorComponent.editor;
       const content = editor.getContent();
       const parser = new DOMParser();
       const doc = parser.parseFromString(content, 'text/html');
@@ -177,42 +181,33 @@ export class BookComponent implements OnInit {
 
       editor.setContent(doc.body.innerHTML);
     }
+
+    if (this.markdownPreview) {
+      const markdownContent = this.markdownPreview.nativeElement.innerHTML;
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(markdownContent, 'text/html');
+      const headers = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      headers.forEach((header, index) => {
+        header.id = `header-${index}`;
+      });
+
+      this.markdownPreview.nativeElement.innerHTML = doc.body.innerHTML;
+    }
   }
 
   scrollToChapter(index: number): void {
-    const editor = this.editorComponent.editor;
-    if (editor) {
+    if (this.isMarkdownPrettyView && this.markdownPreview) {
+      const headers = this.markdownPreview.nativeElement.querySelectorAll('h3');
+      const header = headers[index];
+      if (header) {
+        header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else if (this.editorComponent && this.editorComponent.editor) {
+      const editor = this.editorComponent.editor;
       const headers = editor.getDoc().querySelectorAll('h3');
       const header = headers[index];
       if (header) {
         header.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        const animateScroll = () => {
-          const start = window.pageYOffset;
-          const end = header.getBoundingClientRect().top + start;
-          const duration = 1000;
-          let startTime: number | null = null;
-
-          const easeInOutQuad = (time: number, from: number, distance: number, duration: number) => {
-            time /= duration / 2;
-            if (time < 1) return (distance / 2) * time * time + from;
-            time--;
-            return (-distance / 2) * (time * (time - 2) - 1) + from;
-          };
-
-          const step = (timestamp: number) => {
-            if (!startTime) startTime = timestamp;
-            const progress = timestamp - startTime;
-            const position = easeInOutQuad(progress, start, end - start, duration);
-            window.scrollTo(0, position);
-            if (progress < duration) {
-              window.requestAnimationFrame(step);
-            }
-          };
-
-          window.requestAnimationFrame(step);
-        };
-
-        animateScroll();
       }
     }
   }
@@ -221,29 +216,52 @@ export class BookComponent implements OnInit {
     this.sidenav.toggle();
   }
 
-  async onFileSelected(event: any): Promise<void> {
+  onFileSelected(event: any): void {
     const files: File[] = Array.from(event.target.files);
     for (const file of files) {
-      let content = '';
+      let content$;
       if (file.type === 'application/pdf') {
-        content = await this.pdfParseService.parsePdf(file);
+        content$ = this.pdfParseService.parsePdf(file);
       } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-        content = await this.docParseService.parseDoc(file);
+        content$ = from(this.docParseService.parseDoc(file));
       } else if (file.type === 'text/plain') {
-        const text = await file.text();
-        const turndown = new TurndownService();
-        content = turndown.turndown(text);
+        content$ = from(file.text()).pipe(
+          map(text => {
+            const turndown = new TurndownService();
+            return turndown.turndown(text);
+          })
+        );
       }
-      this.renderMarkdown(content);
-      this.fileUploadService.uploadFile(file).pipe(
-        catchError(err => {
-          console.error('Failed to upload file', err);
-          return of(null);
-        })
-      ).subscribe(() => {
-        this.userStateService.setOpenedDocument(file.name);
-        this.openedDocuments = this.userStateService.getOpenedDocuments();
-      });
+
+      if (content$) {
+        if (content$ instanceof Promise) {
+          content$.then(content => {
+            this.renderMarkdown(content);
+            this.fileUploadService.uploadFile(file).pipe(
+              catchError(err => {
+                console.error('Failed to upload file', err);
+                return of(null);
+              })
+            ).subscribe(() => {
+              this.userStateService.setOpenedDocument(file.name);
+              this.openedDocuments = this.userStateService.getOpenedDocuments();
+            });
+          });
+        } else {
+          content$.subscribe(content => {
+            this.renderMarkdown(content);
+            this.fileUploadService.uploadFile(file).pipe(
+              catchError(err => {
+                console.error('Failed to upload file', err);
+                return of(null);
+              })
+            ).subscribe(() => {
+              this.userStateService.setOpenedDocument(file.name);
+              this.openedDocuments = this.userStateService.getOpenedDocuments();
+            });
+          });
+        }
+      }
     }
   }
 
@@ -272,6 +290,9 @@ export class BookComponent implements OnInit {
     this.editorData = content;
     if (this.editorComponent && this.editorComponent.editor) {
       this.editorComponent.editor.setContent(content);
+    }
+    if (this.markdownPreview) {
+      this.markdownPreview.nativeElement.innerHTML = content;
     }
     this.updateChapters(content);
   }

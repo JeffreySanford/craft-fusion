@@ -34,7 +34,7 @@
       <mat-icon>{{ isMarkdownPrettyView ? 'edit' : 'visibility' }}</mat-icon>
     </button>
     <div class="tinymce-container book-content">
-      <div *ngIf="isMarkdownPrettyView" class="markdown-preview" [innerHTML]="editorData | safeHtml"></div>
+      <div *ngIf="isMarkdownPrettyView" #markdownPreview class="markdown-preview" [innerHTML]="editorData | safeHtml"></div>
       <editor *ngIf="!isMarkdownPrettyView"
         [init]="init"
         [(ngModel)]="editorData"
