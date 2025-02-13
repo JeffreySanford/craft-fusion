@@ -1,10 +1,18 @@
 .outline-box {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #f4f4f4;
-  border: 1px solid #ddd;
-  max-height: 200px;
+  margin-top: 1em;
+  padding: 0.5em;
+  background-color: rgba(orange, 0.1);
+  border: 1px solid gold;
+  height: 60vh;
   overflow-y: auto;
+}
+
+.mat-drawer-content {
+  height: 80vh;
+}
+
+.tox-tinymce {
+  height: 78vh !important;
 }
 
 .outline-box p {
@@ -153,7 +161,7 @@
   p {
     margin: auto;
     color: white;
-    font-size:0.9em;
+    font-size: 0.9em;
     font-weight: 200;
   }
 }

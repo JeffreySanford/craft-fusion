@@ -40,7 +40,7 @@ export class BookComponent implements OnInit {
     base_url: '/tinymce', // Base URL for Tinymce
     suffix: '.min', // File suffix
     selector: 'textarea', // Textarea selector
-    height: 500, // Editor height
+    height: 636, // Editor height
     menubar: false, // Menubar
     toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor | removeformat | link image media | table | code | toggleMarkdown | aiAssistant',
     setup: (editor: Editor) => {
@@ -98,9 +98,11 @@ export class BookComponent implements OnInit {
 
   getFullHeight(): number {
     const container = this.ref.nativeElement.querySelector('.sidenav-container');
+    debugger
     if (container) {
-      return container.clientHeight;
+      return container.clientHeight + 400;
     }
+    debugger
     return 500; // Default height if container is not found
   }
 
@@ -183,7 +185,34 @@ export class BookComponent implements OnInit {
       const headers = editor.getDoc().querySelectorAll('h3');
       const header = headers[index];
       if (header) {
-        header.scrollIntoView({ behavior: 'smooth' });
+        header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const animateScroll = () => {
+          const start = window.pageYOffset;
+          const end = header.getBoundingClientRect().top + start;
+          const duration = 1000;
+          let startTime: number | null = null;
+
+          const easeInOutQuad = (time: number, from: number, distance: number, duration: number) => {
+            time /= duration / 2;
+            if (time < 1) return (distance / 2) * time * time + from;
+            time--;
+            return (-distance / 2) * (time * (time - 2) - 1) + from;
+          };
+
+          const step = (timestamp: number) => {
+            if (!startTime) startTime = timestamp;
+            const progress = timestamp - startTime;
+            const position = easeInOutQuad(progress, start, end - start, duration);
+            window.scrollTo(0, position);
+            if (progress < duration) {
+              window.requestAnimationFrame(step);
+            }
+          };
+
+          window.requestAnimationFrame(step);
+        };
+
+        animateScroll();
       }
     }
   }
@@ -200,6 +229,7 @@ export class BookComponent implements OnInit {
         content = await this.pdfParseService.parsePdf(file);
       } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
         content = await this.docParseService.parseDoc(file);
+        debugger
       } else if (file.type === 'text/plain') {
         const text = await file.text();
         const turndown = new TurndownService();
