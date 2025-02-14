@@ -1,3 +1,28 @@
+@font-face {
+  font-family: 'Lora';
+  src: url('/assets/fonts/Lora-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'IBM Plex Serif';
+  src: url('/assets/fonts/IBMPlexSerif-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Libre Baskerville';
+  src: url('/assets/fonts/LibreBaskerville-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('/assets/fonts/EBGaramond-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Crimson Pro';
+  src: url('/assets/fonts/CrimsonPro-Regular.ttf') format('truetype');
+}
+
 .outline-box {
   margin-top: 1em;
   padding: 0.5em;
@@ -9,6 +34,7 @@
 
 .mat-drawer-content {
   height: 80vh;
+  width: 78.5vw;
 }
 
 .tox-tinymce {
@@ -21,12 +47,17 @@
 }
 
 .markdown-preview {
-  margin-top: 20px;
+  margin: 1em;
   padding: 20px;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 68.5%;
+
+  ::ng-deep img {
+    width: 100%;
+  }
 }
 
 .markdown-preview pre {
@@ -194,5 +225,74 @@
 }
 
 .book-content {
-  font-family: 'Merriweather', serif;
+  font-family: 'IBM Plex Serif', serif;
+  font-size: 1.25em;
+  line-height: 1.5em;
+  margin: 1em 0;
+  padding: 1em;
+  background-color: #f5f5f5;
+  border: 1px solid red;
+  border-radius: 4px;
+
+  img {
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 2em;
+    font-weight: 700;
+    margin: 1em 0;
+    color: purple;
+  }
+
+  h2 {
+    font-size: 1.5em;
+    font-weight: 700;
+    margin: 1em 0;
+    color: blue;
+  }
+
+  h3 {
+    font-size: 1.2em;
+    font-weight: 700;
+    margin: 1em 0;
+    color: red;
+  }
+
+  h4 {
+    font-size: 1em;
+    font-weight: 700;
+    margin: 1em 0;
+    color: green;
+  }
+
 }
+
+.font-selection {
+  display: flex;
+  align-items: center;
+  margin: 1em 0;
+
+  label {
+    margin-right: 0.5em;
+  }
+
+  select {
+    margin-right: 1em;
+    padding: 0.5em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+}
+
+.readonly-banner {
+  background-color: #ffcc00;
+  color: #333;
+  padding: 0.5em;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 1em;
+  border-radius: 4px;
+}
+
+

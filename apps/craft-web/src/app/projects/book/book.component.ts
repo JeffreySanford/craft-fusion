@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer2, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Renderer2, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { EditorComponent } from '@tinymce/tinymce-angular';
 import { EventObj } from '@tinymce/tinymce-angular/editor/Events';
@@ -37,6 +37,24 @@ export class BookComponent implements OnInit, AfterViewInit {
   isMarkdownView = false;
   isReadOnly = true;
   isMarkdownPrettyView = true;
+  selectedFont = 'IBM Plex Serif';
+  selectedFontSize = '1.25em';
+
+  availableFonts = [
+    'Lora',
+    'IBM Plex Serif',
+    'Libre Baskerville',
+    'EB Garamond',
+    'Crimson Pro'
+  ];
+
+  availableFontSizes = [
+    '1em',
+    '1.25em',
+    '1.5em',
+    '1.75em',
+    '2em'
+  ];
 
   init: Partial<EditorOptions> = {
     license_key: 'gpl',
@@ -92,7 +110,8 @@ export class BookComponent implements OnInit, AfterViewInit {
     private userStateService: UserStateService,
     private ref: ElementRef,
     private renderer2: Renderer2,
-    fileUploadService: FileUploadService
+    fileUploadService: FileUploadService,
+    private cdr: ChangeDetectorRef
   ) {
     this.fileUploadService = fileUploadService;
   }
@@ -164,7 +183,7 @@ export class BookComponent implements OnInit, AfterViewInit {
     const doc = parser.parseFromString(content, 'text/html');
     this.currentTitle = Array.from(doc.querySelectorAll('h1')).map(header => header.textContent || '')[0] || 'Untitled';
     this.chapters = Array.from(doc.querySelectorAll('h3')).map(header => (header.textContent || '') + '\n');
-
+    this.addHeaderIds();
     return this.chapters;
   }
 
@@ -245,6 +264,7 @@ export class BookComponent implements OnInit, AfterViewInit {
             ).subscribe(() => {
               this.userStateService.setOpenedDocument(file.name);
               this.openedDocuments = this.userStateService.getOpenedDocuments();
+              this.onDocumentSelected(this.openedDocuments[this.openedDocuments.length - 1].name);
             });
           });
         } else {
@@ -324,5 +344,35 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   invokeAIAssistant(): void {
     console.log('AI Assistant invoked');
+  }
+
+  changeFont(event: Event): void {
+    const font = (event.target as HTMLSelectElement).value;
+    console.log('Selected font:', font);
+    this.selectedFont = font;
+    if (this.editorComponent && this.editorComponent.editor) {
+      console.log('Setting font in editor:', font);
+      this.editorComponent.editor.getBody().style.fontFamily = font;
+    }
+    if (this.markdownPreview) {
+      console.log('Setting font in markdown preview:', font);
+      this.markdownPreview.nativeElement.style.fontFamily = font;
+    }
+    this.cdr.detectChanges();
+  }
+
+  changeFontSize(event: Event): void {
+    const fontSize = (event.target as HTMLSelectElement).value;
+    console.log('Selected font size:', fontSize);
+    this.selectedFontSize = fontSize;
+    if (this.editorComponent && this.editorComponent.editor) {
+      console.log('Setting font size in editor:', fontSize);
+      this.editorComponent.editor.getBody().style.fontSize = fontSize;
+    }
+    if (this.markdownPreview) {
+      console.log('Setting font size in markdown preview:', fontSize);
+      this.markdownPreview.nativeElement.style.fontSize = fontSize;
+    }
+    this.cdr.detectChanges();
   }
 }
