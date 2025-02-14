@@ -27,14 +27,13 @@
   margin-top: 1em;
   padding: 0.5em;
   background-color: rgba(orange, 0.1);
-  border: 1px solid gold;
   height: 60vh;
   overflow-y: auto;
 }
 
 .mat-drawer-content {
   height: 80vh;
-  width: 98%;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -48,13 +47,12 @@
 }
 
 .markdown-preview {
-  margin: 1em;
   padding: 20px;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 90%;
+  width: 81%;
 
   ::ng-deep img {
     width: 100%;
@@ -186,6 +184,10 @@
   font-size: 0.8em;
 }
 
+.mdc-list {
+  padding: 0.25em 0;
+}
+
 .document {
   font-size: 0.8em;
   color: white;
@@ -232,9 +234,7 @@
   margin: 1em 0;
   padding: 1em;
   background-color: #f5f5f5;
-  border: 1px solid blue;
   border-radius: 4px;
-  width: 94.5%;
 
   img {
     width: 100%;
@@ -272,7 +272,10 @@
 .toolbar {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 1em;
+  margin: 0.5em 0 0 0.5em;
+  width: 98.5%;
 }
 
 .font-selection {
@@ -295,6 +298,7 @@
   display: flex;
   align-items: center;
   gap: 1em;
+  margin-left: 1em;
 }
 
 .file-actions button {
@@ -314,11 +318,29 @@
 .readonly-banner {
   background-color: #ffcc00;
   color: #333;
-  padding: 0.5em;
+  padding: 0.25em; /* Make the banner thinner vertically */
   text-align: center;
   font-weight: bold;
-  margin-bottom: 1em;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
+.vibrant-red {
+  color: #ff0000;
+}
+
+.vibrant-blue {
+  color: #0000ff;
+}
+
+.vibrant-green {
+  color: #00ff00;
+}
+
+.vibrant-orange {
+  color: #ff6600;
+}
 

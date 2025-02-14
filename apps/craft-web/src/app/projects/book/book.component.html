@@ -21,10 +21,10 @@
     <div class="file-actions">
       <button mat-icon-button color="primary" aria-label="Choose Files" matTooltip="Choose Files">
         <input type="file" (change)="onFileSelected($event)" accept=".pdf,.docx,.txt" multiple />
-        <mat-icon>attach_file</mat-icon>
+        <mat-icon class="vibrant-blue">attach_file</mat-icon>
       </button>
       <button mat-icon-button color="primary" aria-label="Save" (click)="onSave()" matTooltip="Save">
-        <mat-icon>save</mat-icon>
+        <mat-icon class="vibrant-green">save</mat-icon>
       </button>
     </div>
     <div *ngIf="selectedDocument" class="outline-box">
@@ -35,23 +35,21 @@
     </div>
   </mat-sidenav>
   <mat-sidenav-content>
-    <div class="toolbar">
-      <button mat-fab color="primary" aria-label="Toggle Sidebar" (click)="toggleSidebar()">
-        <mat-icon>menu</mat-icon>
-      </button>
-      <button mat-fab color="accent" aria-label="Toggle Read-Only" (click)="toggleMarkdownPrettyView()">
-        <mat-icon>{{ isMarkdownPrettyView ? 'edit' : 'visibility' }}</mat-icon>
+    <div class="toolbar" style="display: flex; align-items: center; justify-content: flex-start;">
+      <button mat-mini-fab color="primary" aria-label="Toggle Sidebar" (click)="toggleSidebar()" class="mini-mat-fab">
+        <mat-icon class="vibrant-red">menu</mat-icon>
       </button>
       <div class="font-selection">
-        <label for="font-select">Font:</label>
-        <select id="font-select" (change)="changeFont($event)" [selectedIndex]="availableFonts.indexOf(selectedFont)">
+        <select id="font-select" (change)="changeFont($event)" matTooltip="Select Font" [selectedIndex]="availableFonts.indexOf(selectedFont)">
           <option *ngFor="let font of availableFonts" [value]="font">{{ font }}</option>
         </select>
-        <label for="font-size-select">Font Size:</label>
-        <select id="font-size-select" (change)="changeFontSize($event)" [selectedIndex]="availableFontSizes.indexOf(selectedFontSize)">
+        <select id="font-size-select" (change)="changeFontSize($event)" matTooltip="Select Font Size" [selectedIndex]="availableFontSizes.indexOf(selectedFontSize)">
           <option *ngFor="let fontSize of availableFontSizes" [value]="fontSize">{{ fontSize }}</option>
         </select>
       </div>
+      <button mat-mini-fab color="accent" aria-label="Toggle Read-Only" (click)="toggleMarkdownPrettyView()" class="mini-mat-fab">
+        <mat-icon class="vibrant-orange">{{ isMarkdownPrettyView ? 'edit' : 'visibility' }}</mat-icon>
+      </button>
       <div *ngIf="isReadOnly" class="readonly-banner">Read-Only Mode</div>
     </div>
     <div class="tinymce-container" [ngStyle]="{'font-family': selectedFont, 'font-size': selectedFontSize}">
