@@ -375,4 +375,8 @@ export class BookComponent implements OnInit, AfterViewInit {
     }
     this.cdr.detectChanges();
   }
+
+  onSave(): void {
+    console.log('Saving content');
+  }
 }
