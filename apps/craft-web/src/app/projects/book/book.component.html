@@ -27,23 +27,25 @@
     </div>
   </mat-sidenav>
   <mat-sidenav-content>
-    <button mat-fab color="primary" aria-label="Toggle Sidebar" (click)="toggleSidebar()">
-      <mat-icon>menu</mat-icon>
-    </button>
-    <button mat-fab color="accent" aria-label="Toggle Read-Only" (click)="toggleMarkdownPrettyView()">
-      <mat-icon>{{ isMarkdownPrettyView ? 'edit' : 'visibility' }}</mat-icon>
-    </button>
-    <div class="font-selection">
-      <label for="font-select">Font:</label>
-      <select id="font-select" (change)="changeFont($event)" [selectedIndex]="availableFonts.indexOf(selectedFont)">
-        <option *ngFor="let font of availableFonts" [value]="font">{{ font }}</option>
-      </select>
-      <label for="font-size-select">Font Size:</label>
-      <select id="font-size-select" (change)="changeFontSize($event)" [selectedIndex]="availableFontSizes.indexOf(selectedFontSize)">
-        <option *ngFor="let fontSize of availableFontSizes" [value]="fontSize">{{ fontSize }}</option>
-      </select>
+    <div class="toolbar">
+      <button mat-fab color="primary" aria-label="Toggle Sidebar" (click)="toggleSidebar()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <button mat-fab color="accent" aria-label="Toggle Read-Only" (click)="toggleMarkdownPrettyView()">
+        <mat-icon>{{ isMarkdownPrettyView ? 'edit' : 'visibility' }}</mat-icon>
+      </button>
+      <div class="font-selection">
+        <label for="font-select">Font:</label>
+        <select id="font-select" (change)="changeFont($event)" [selectedIndex]="availableFonts.indexOf(selectedFont)">
+          <option *ngFor="let font of availableFonts" [value]="font">{{ font }}</option>
+        </select>
+        <label for="font-size-select">Font Size:</label>
+        <select id="font-size-select" (change)="changeFontSize($event)" [selectedIndex]="availableFontSizes.indexOf(selectedFontSize)">
+          <option *ngFor="let fontSize of availableFontSizes" [value]="fontSize">{{ fontSize }}</option>
+        </select>
+      </div>
+      <div *ngIf="isReadOnly" class="readonly-banner">Read-Only Mode</div>
     </div>
-    <div *ngIf="isReadOnly" class="readonly-banner">Read-Only Mode</div>
     <div class="tinymce-container book-content" [ngStyle]="{'font-family': selectedFont, 'font-size': selectedFontSize}">
       <div *ngIf="isMarkdownPrettyView" #markdownPreview class="markdown-preview book-content" [innerHTML]="editorData | safeHtml"></div>
       <editor *ngIf="!isMarkdownPrettyView"

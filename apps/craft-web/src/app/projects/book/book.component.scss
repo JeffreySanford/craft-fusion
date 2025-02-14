@@ -265,20 +265,24 @@
     margin: 1em 0;
     color: green;
   }
+}
 
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1em;
 }
 
 .font-selection {
   display: flex;
   align-items: center;
-  margin: 1em 0;
+  gap: 0.5em;
 
   label {
     margin-right: 0.5em;
   }
 
   select {
-    margin-right: 1em;
     padding: 0.5em;
     border: 1px solid #ccc;
     border-radius: 4px;
