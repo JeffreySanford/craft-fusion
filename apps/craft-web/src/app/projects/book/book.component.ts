@@ -12,6 +12,7 @@ import * as marked from 'marked';
 import * as hljs from 'highlight.js';
 import { catchError, map } from 'rxjs/operators';
 import { of, from } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 export interface Document {
   name: string;
@@ -28,7 +29,7 @@ export class BookComponent implements OnInit, AfterViewInit {
   @ViewChild('sidebar', { static: true }) sidebar!: ElementRef;
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild(EditorComponent) editorComponent!: EditorComponent;
-  @ViewChild('markdownPreview') markdownPreview!: ElementRef;
+  @ViewChild('markdownPreview', { static: false }) markdownPreview!: ElementRef;
 
   editorData = '<p>Initial content</p>';
   selectedDocument?: Document;
@@ -55,6 +56,8 @@ export class BookComponent implements OnInit, AfterViewInit {
     '1.75em',
     '2em'
   ];
+
+  isDarkTheme = false; // Set light theme as default
 
   init: Partial<EditorOptions> = {
     license_key: 'gpl',
@@ -100,9 +103,18 @@ export class BookComponent implements OnInit, AfterViewInit {
   };
   openedDocuments: { name: string, color: string }[] = [];
   documentColors: string[] = ['#FFCDD2', '#C8E6C9', '#BBDEFB', '#FFF9C4', '#D1C4E9', '#FFECB3', '#B2EBF2', '#FFCCBC'];
-  fileUploadService: FileUploadService;
   isWinking: boolean = false;
   currentTitle: string = '';
+
+  isRSVPMode = false;
+  isRSVPPlaying = false;
+  rsvpWord = '';
+  rsvpSpeed = 300; // Default 300ms per word
+  words: string[] = [];
+  wordIndex = 0;
+  rsvpInterval: any;
+
+  areImagesVisible = true;
 
   constructor(
     private docParseService: DocParseService,
@@ -110,18 +122,42 @@ export class BookComponent implements OnInit, AfterViewInit {
     private userStateService: UserStateService,
     private ref: ElementRef,
     private renderer2: Renderer2,
-    fileUploadService: FileUploadService,
-    private cdr: ChangeDetectorRef
-  ) {
-    this.fileUploadService = fileUploadService;
-  }
+    private fileUploadService: FileUploadService,
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient
+  ) { }
 
   ngOnInit(): void {
     this.init.readonly = this.isReadOnly;
+    this.loadFilesFromAssets();
+    this.applyTheme(); // Apply the default theme
   }
 
   ngAfterViewInit(): void {
     this.addHeaderIds();
+  }
+
+  loadFilesFromAssets(): void {
+    this.http.get<{ name: string, type: string }[]>('/api/files/list').subscribe(files => {
+      files.forEach((file, index) => {
+        this.http.get(`/assets/documents/book/${file.name}`, { responseType: 'blob' }).subscribe(blob => {
+          const fileObj = new File([blob], file.name, { type: file.type, lastModified: Date.now() });
+
+          this.fileUploadService.uploadFile(fileObj).pipe(
+            catchError(err => {
+              console.error('Failed to upload file', err);
+              return of(null);
+            })
+          ).subscribe(() => {
+            this.userStateService.setOpenedDocument(file.name);
+            this.openedDocuments = this.userStateService.getOpenedDocuments();
+            if (index === files.length - 1) {
+              this.onDocumentSelected(file.name);
+            }
+          });
+        });
+      });
+    });
   }
 
   getFullHeight(): number {
@@ -348,35 +384,110 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   changeFont(event: Event): void {
     const font = (event.target as HTMLSelectElement).value;
-    console.log('Selected font:', font);
     this.selectedFont = font;
     if (this.editorComponent && this.editorComponent.editor) {
-      console.log('Setting font in editor:', font);
-      this.editorComponent.editor.getBody().style.fontFamily = font;
+      this.renderer2.setStyle(this.editorComponent.editor.getBody(), 'fontFamily', font);
     }
     if (this.markdownPreview) {
-      console.log('Setting font in markdown preview:', font);
-      this.markdownPreview.nativeElement.style.fontFamily = font;
+      this.renderer2.setStyle(this.markdownPreview.nativeElement, 'fontFamily', font);
     }
     this.cdr.detectChanges();
   }
 
   changeFontSize(event: Event): void {
     const fontSize = (event.target as HTMLSelectElement).value;
-    console.log('Selected font size:', fontSize);
     this.selectedFontSize = fontSize;
     if (this.editorComponent && this.editorComponent.editor) {
-      console.log('Setting font size in editor:', fontSize);
-      this.editorComponent.editor.getBody().style.fontSize = fontSize;
+      this.renderer2.setStyle(this.editorComponent.editor.getBody(), 'fontSize', fontSize);
     }
     if (this.markdownPreview) {
-      console.log('Setting font size in markdown preview:', fontSize);
-      this.markdownPreview.nativeElement.style.fontSize = fontSize;
+      this.renderer2.setStyle(this.markdownPreview.nativeElement, 'fontSize', fontSize);
     }
     this.cdr.detectChanges();
   }
 
   onSave(): void {
     console.log('Saving content');
+  }
+
+  toggleRSVP() {
+    this.isRSVPMode = !this.isRSVPMode;
+    if (this.isRSVPMode) {
+      this.startRSVP();
+    } else {
+      clearInterval(this.rsvpInterval);
+      this.isRSVPPlaying = false;
+    }
+  }
+
+  startRSVP() {
+    const textContent = this.markdownPreview?.nativeElement?.innerText || '';
+    this.words = textContent.split(/\s+/); // Splitting into words
+    this.wordIndex = 0;
+    this.isRSVPPlaying = true;
+    this.runRSVP();
+  }
+
+  runRSVP() {
+    clearInterval(this.rsvpInterval);
+    console.log(`RSVP Speed: ${this.rsvpSpeed} WPM`); // Log the current speed
+    const interval = 600000 / Math.pow(this.rsvpSpeed, 1.5); // Exponential function for interval calculation
+    this.rsvpInterval = setInterval(() => {
+      if (this.wordIndex < this.words.length) {
+        this.rsvpWord = this.words[this.wordIndex++];
+      } else {
+        this.toggleRSVP(); // Auto-exit on completion
+      }
+    }, interval); // Use the calculated interval
+  }
+
+  togglePlayPause() {
+    this.isRSVPPlaying = !this.isRSVPPlaying;
+    if (this.isRSVPPlaying) {
+      this.runRSVP();
+    } else {
+      clearInterval(this.rsvpInterval);
+    }
+  }
+
+  toggleImages(): void {
+    this.areImagesVisible = !this.areImagesVisible;
+    this.updateImageVisibility();
+  }
+
+  updateImageVisibility(): void {
+    if (this.editorComponent && this.editorComponent.editor) {
+      const editor = this.editorComponent.editor;
+      const content = editor.getContent();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(content, 'text/html');
+      const images = doc.querySelectorAll('img');
+      images.forEach((img: HTMLImageElement) => {
+        img.style.display = this.areImagesVisible ? 'inline' : 'none';
+      });
+      editor.setContent(doc.body.innerHTML);
+    }
+
+    if (this.markdownPreview) {
+      const images = this.markdownPreview.nativeElement.querySelectorAll('img');
+      images.forEach((img: HTMLElement) => {
+        img.style.display = this.areImagesVisible ? 'inline' : 'none';
+      });
+    }
+  }
+
+  toggleTheme(): void {
+    this.isDarkTheme = !this.isDarkTheme;
+    this.applyTheme();
+  }
+
+  applyTheme(): void {
+    const themeClass = this.isDarkTheme ? 'dark-theme' : 'light-theme';
+    const removeClass = this.isDarkTheme ? 'light-theme' : 'dark-theme';
+    const container = this.ref.nativeElement.querySelector('.page-container');
+    if (container) {
+      this.renderer2.addClass(container, themeClass);
+      this.renderer2.removeClass(container, removeClass);
+    }
   }
 }

@@ -1,58 +1,80 @@
+@use 'book-theme';
+
 @font-face {
   font-family: 'Lora';
   src: url('/assets/fonts/Lora-Regular.ttf') format('truetype');
+  font-weight: 200;
 }
 
 @font-face {
   font-family: 'IBM Plex Serif';
   src: url('/assets/fonts/IBMPlexSerif-Regular.ttf') format('truetype');
+  font-weight: 200;
 }
 
 @font-face {
   font-family: 'Libre Baskerville';
   src: url('/assets/fonts/LibreBaskerville-Regular.ttf') format('truetype');
+  font-weight: 200;
 }
 
 @font-face {
   font-family: 'EB Garamond';
   src: url('/assets/fonts/EBGaramond-Regular.ttf') format('truetype');
+  font-weight: 200;
 }
 
 @font-face {
   font-family: 'Crimson Pro';
   src: url('/assets/fonts/CrimsonPro-Regular.ttf') format('truetype');
+  font-weight: 200;
+}
+
+body {
+  font-weight: 200; // Set default font weight
 }
 
 .outline-box {
   margin-top: 1em;
   padding: 0.5em;
-  background-color: rgba(orange, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #fff;
   height: 60vh;
   overflow-y: auto;
 }
 
+.mat-drawer {
+  width: 14%;
+  border-radius: 0.25em;
+  margin: 0.25em;
+}
+
 .mat-drawer-content {
   height: 80vh;
-  width: 100%;
   margin: 0 auto;
+  background-color: rgba(139, 0, 0, 0.6);
+  border: 1px solid #fff;
 }
 
 .tox-tinymce {
   height: 78vh !important;
+  background-color: rgba(139, 0, 0, 0.6);
+  border: 1px solid #fff;
 }
 
 .outline-box p {
   text-align: center;
   padding: 10px;
+  color: #fff;
 }
 
 .markdown-preview {
   padding: 20px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 81%;
+  color: #fff;
 
   ::ng-deep img {
     width: 100%;
@@ -60,118 +82,17 @@
 }
 
 .markdown-preview pre {
-  background-color: #f5f5f5;
+  background-color: rgba(255, 255, 255, 0.1);
   padding: 10px;
   border-radius: 4px;
   overflow-x: auto;
-}
-
-@keyframes fadeInOut {
-  0% {
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-.sun-container {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 120px;
-  height: 120px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation-delay: 2s; /* Add delay before animation starts */
-  animation: fadeInOut 4s forwards;
-}
-
-.sun {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  background: radial-gradient(circle, #ffd93b, #ffa800);
-  border-radius: 50%;
-  box-shadow: 0 0 15px rgba(255, 200, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.face {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.eye {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: black;
-  border-radius: 50%;
-  top: 25px;
-}
-
-.left-eye {
-  left: 20px;
-}
-
-.right-eye {
-  right: 20px;
-  animation: wink 2s forwards;
-}
-
-.blush {
-  position: absolute;
-  width: 12px;
-  height: 8px;
-  background: #ffadad;
-  border-radius: 50%;
-  top: 40px;
-}
-
-.left-blush {
-  left: 12px;
-}
-
-.right-blush {
-  right: 12px;
-}
-
-.nose {
-  position: absolute;
-  width: 6px;
-  height: 20px;
-  background: orange;
-  border-radius: 50%;
-  top: 32px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.smile {
-  position: absolute;
-  width: 40px;
-  height: 20px;
-  border: 2px solid black;
-  border-top: none;
-  border-radius: 0 0 40px 40px;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%);
+  color: #fff;
 }
 
 .sidenav-custom-width {
   width: 200px;
+  background-color: rgba(0, 0, 139, 0.6);
+  border: 1px solid #fff;
 }
 
 .mat-mdc-list-item {
@@ -182,6 +103,7 @@
   justify-content: center;
   align-items: center;
   font-size: 0.8em;
+  color: #fff;
 }
 
 .mdc-list {
@@ -191,23 +113,13 @@
 .document {
   font-size: 0.8em;
   color: white;
-
-  p {
-    margin: auto;
-    color: white;
-    font-size: 0.9em;
-    font-weight: 200;
-  }
 }
 
-@keyframes wink {
-  0%,
-  100% {
-    height: 10px;
-  }
-  50% {
-    height: 1px;
-  }
+p {
+  margin: auto;
+  color: white;
+  font-size: 0.9em;
+  font-weight: 200;
 }
 
 .chapter-link {
@@ -225,48 +137,22 @@
   align-items: center;
   padding: 0.5em 0.5em;
   text-align: center;
+  color: #fff;
 }
 
 .book-content {
   font-family: 'IBM Plex Serif', serif;
   font-size: 1.25em;
   line-height: 1.5em;
-  margin: 1em 0;
-  padding: 1em;
-  background-color: #f5f5f5;
-  border-radius: 4px;
+  margin: 1em 0.25em;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #fff;
+  color: #fff;
+  width: 80%;
+}
 
-  img {
-    width: 100%;
-  }
-
-  h1 {
-    font-size: 2em;
-    font-weight: 700;
-    margin: 1em 0;
-    color: purple;
-  }
-
-  h2 {
-    font-size: 1.5em;
-    font-weight: 700;
-    margin: 1em 0;
-    color: blue;
-  }
-
-  h3 {
-    font-size: 1.2em;
-    font-weight: 700;
-    margin: 1em 0;
-    color: red;
-  }
-
-  h4 {
-    font-size: 1em;
-    font-weight: 700;
-    margin: 1em 0;
-    color: green;
-  }
+.book-content img {
+  width: 100%;
 }
 
 .toolbar {
@@ -276,6 +162,8 @@
   gap: 1em;
   margin: 0.5em 0 0 0.5em;
   width: 98.5%;
+  background-color: rgba(139, 0, 0, 0.6);
+  border: 1px solid #fff;
 }
 
 .font-selection {
@@ -285,12 +173,20 @@
 
   label {
     margin-right: 0.5em;
+    color: #fff;
   }
 
   select {
     padding: 0.5em;
     border: 1px solid #ccc;
     border-radius: 4px;
+    background-color: white;
+    color: black;
+  }
+
+  option {
+    background-color: white;
+    color: black;
   }
 }
 
@@ -303,6 +199,9 @@
 
 .file-actions button {
   position: relative;
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #fff;
 }
 
 .file-actions input[type="file"] {
@@ -318,7 +217,7 @@
 .readonly-banner {
   background-color: #ffcc00;
   color: #333;
-  padding: 0.25em; /* Make the banner thinner vertically */
+  padding: 0.25em;
   text-align: center;
   font-weight: bold;
   border-radius: 4px;
@@ -344,3 +243,131 @@
   color: #ff6600;
 }
 
+.rsvp-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  padding: 2em;
+  border-radius: 10px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+}
+
+.rsvp-reticle {
+  font-size: 2em;
+  font-weight: bold;
+  padding: 10px;
+  border-bottom: 2px solid white;
+  text-align: center;
+  min-width: 200px;
+}
+
+.rsvp-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  width: 100%;
+}
+
+input[type="range"] {
+  width: 100%;
+  margin: 10px 0;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+  background: #ddd;
+  border: none;
+  border-radius: 3px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  background: #333;
+  border-radius: 50%;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -4px;
+}
+
+input[type="range"]::-moz-range-track {
+  height: 8px;
+  background: #ddd;
+  border: none;
+  border-radius: 3px;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #333;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="range"]::-ms-track {
+  height: 8px;
+  background: #ddd;
+  border: none;
+  border-radius: 3px;
+}
+
+input[type="range"]::-ms-thumb {
+  width: 16px;
+  height: 16px;
+  background: #333;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="range"]::-ms-fill-lower {
+  background: #ddd;
+  border-radius: 3px;
+}
+
+input[type="range"]::-ms-fill-upper {
+  background: #ddd;
+  border-radius: 3px;
+}
+
+datalist {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 10px;
+}
+
+datalist option {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8em;
+  color: #fff;
+}
+
+.mini-mat-fab {
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s, box-shadow 0.3s;
+
+  &:hover {
+    background-color: #333;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  mat-icon {
+    font-size: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
