@@ -1,3 +1,9 @@
+$vibrant-red: #f00;
+$vibrant-blue: #00f;
+$vibrant-green: #0f0;
+$vibrant-orange: #f60;
+$vibrant-yellow: #fc0;
+
 @font-face {
   font-family: 'Lora';
   src: url('/assets/fonts/Lora-Regular.ttf') format('truetype');
@@ -28,186 +34,225 @@
   font-weight: 200;
 }
 
-@mixin book-theme {
-  // General body styles to ensure they are applied
-  body {
-    font-family: 'Roboto', sans-serif;
-    &.light-theme {
-      background-color: #f5f5f5;
-      color: #1e1e1e;
-    }
-    &.dark-theme {
-      background-color: #1e1e1e;
-      color: #e0e0e0;
-    }
+:host {
+  font-family: Roboto, sans-serif;
+  display: block;
+
+  &.light-theme {
+    background-color: #f5f5f5;
+    color: #1e1e1e;
   }
 
-  // General page container styles
-  .page-container {
-    &.light-theme {
-      background-color: #f5f5f5;
-      color: #1e1e1e;
-    }
-
-    &.dark-theme {
-      background-color: #1e1e1e;
-      color: #e0e0e0;
-    }
-
-    // Book Content Styles
-    .book-content {
-      font-family: 'IBM Plex Serif', serif;
-      font-size: 1.25em;
-      line-height: 1.5em;
-      margin: 1em;
-      padding: 1em;
-      color: #fff;
-      width: 80%;
-      box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
-      animation: fadeIn 1s ease-in-out;
-
-      h1, h2, h3, h4, h5, h6 {
-        font-family: 'IBM Plex Serif', serif;
-      }
-
-      h1 {
-        font-size: 2em;
-        color: #ff0000;
-      }
-
-      h2 {
-        font-size: 1.75em;
-        color: #ff6600;
-      }
-
-      h3 {
-        font-size: 1.5em;
-        color: #ffcc00;
-      }
-
-      h4 {
-        font-size: 1.25em;
-        color: #00ff00;
-      }
-
-      h5 {
-        font-size: 1em;
-        color: #0000ff;
-      }
-
-      h6 {
-        font-size: 0.8em;
-        color: #6600cc;
-      }
-    }
-
-    // Sidebar Theme
-    .sidenav-custom-width {
-      width: 15.5%;
-      overflow: hidden;
-      background-color: rgba(0, 0, 139, 0.6);
-    }
-
-    // Toolbar Theme
-    .toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 1em;
-      margin: 0.5em 0 0 0.5em;
-      width: 97.5%;
-      background-color: rgba(139, 0, 0, 0.6);
-      padding: 0.5em;
-    }
-
-    // Editor Theme
-    .tox-tinymce {
-      height: 78vh !important;
-      background-color: rgba(139, 0, 0, 0.6);
-    }
-
-    // Markdown Preview Theme
-    .markdown-preview {
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      width: 99%;
-      margin: 0.5em auto;
-      color: #fff;
-    }
+  &.dark-theme {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
   }
 
-  // Apply light theme
-  .page-container.light-theme {
-    .book-content {
-      background-color: rgba(255, 255, 255, 0.9);
-      border: 1px solid #000;
-      color: #000;
+  .button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 0.25em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: darken(#007bff, 10%);
     }
 
-    .sidenav-custom-width {
-      background-color: rgba(0, 0, 255, 0.1);
-      border: 1px solid #000;
+    &:active {
+      background-color: darken(#007bff, 15%);
     }
 
-    .toolbar {
-      background-color: rgba(255, 255, 255, 0.9);
-      border: 1px solid #000;
-    }
-
-    .tox-tinymce {
-      background-color: rgba(255, 255, 255, 0.9);
-      border: 1px solid #000;
-    }
-
-    .markdown-preview {
-      background-color: rgba(255, 255, 255, 0.9);
-      border: 1px solid #000;
-      color: #000;
-    }
-  }
-
-  // Apply dark theme
-  .page-container.dark-theme {
-    .book-content {
-      background-color: rgba(30, 30, 30, 0.9);
-      border: 1px solid #e0e0e0;
-      color: #e0e0e0;
-    }
-
-    .sidenav-custom-width {
-      background-color: rgba(0, 0, 139, 0.9);
-      border: 1px solid #e0e0e0;
-    }
-
-    .toolbar {
-      background-color: rgba(30, 30, 30, 0.9);
-      border: 1px solid #e0e0e0;
-    }
-
-    .tox-tinymce {
-      background-color: rgba(30, 30, 30, 0.9);
-      border: 1px solid #e0e0e0;
-    }
-
-    .markdown-preview {
-      background-color: rgba(30, 30, 30, 0.9);
-      border: 1px solid #e0e0e0;
-      color: #e0e0e0;
-    }
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    &:disabled {
+      background-color: lighten(#007bff, 20%);
+      cursor: not-allowed;
     }
   }
 }
 
-@include book-theme;
+.page-container {
+  font-family: Roboto, sans-serif;
+  display: block;
+
+  .book-content {
+    font-family: 'IBM Plex Serif', serif;
+    font-size: 1.25em;
+    line-height: 1.5em;
+    margin: 1em;
+    padding: 1em;
+    width: 80%;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 50%);
+    animation: fade-in 1s ease-in-out;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: 'IBM Plex Serif', serif;
+    }
+
+    h1 {
+      font-size: 2em;
+      color: #f00;
+    }
+
+    h2 {
+      font-size: 1.75em;
+      color: #f60;
+    }
+
+    h3 {
+      font-size: 1.5em;
+      color: #fc0;
+    }
+
+    h4 {
+      font-size: 1.25em;
+      color: #0f0;
+    }
+
+    h5 {
+      font-size: 1em;
+      color: #00f;
+    }
+
+    h6 {
+      font-size: 0.8em;
+      color: #60c;
+    }
+  }
+
+  .sidenav-custom-width {
+    width: 15.5%;
+    overflow: hidden;
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1em;
+    margin: 0.5em 0 0 0.5em;
+    width: 97.5%;
+    background-color: rgb(139 0 0 / 60%);
+    padding: 0.5em;
+  }
+
+  .tox-tinymce {
+    height: 78vh !important;
+    background-color: rgb(139 0 0 / 60%);
+    border: 1px solid #fff;
+    color: #fff;
+
+    &.tox-tinymce--toolbar-bottom {
+      background-color: rgb(139 0 0 / 60%);
+    }
+
+    & > .tox-editor-container {
+      background-color: inherit;
+      color: inherit;
+    }
+
+    & > .tox-toolbar {
+      background-color: inherit;
+      border: none;
+    }
+
+    & > .tox-menubar {
+      background-color: inherit;
+      border: none;
+    }
+  }
+
+  .markdown-preview {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 10%);
+    width: 99%;
+    margin: 0.5em auto;
+    color: #fff;
+
+    code {
+      background-color: rgba(0, 0, 0, 80%);
+      color: #fff;
+      padding: 2px 5px;
+      border-radius: 5px;
+    }
+
+    blockquote {
+      margin-left: 2em;
+      padding-left: 1em;
+      border-left: 0.25em solid rgba(0, 123, 255, 50%);
+      font-style: italic;
+      font-size: 0.9em;
+
+      p {
+        color: #add8e6;
+      }
+
+      strong {
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 0.25em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: darken(#007bff, 10%);
+  }
+
+  &:active {
+    background-color: darken(#007bff, 15%);
+  }
+
+  &:disabled {
+    background-color: lighten(#007bff, 20%);
+    cursor: not-allowed;
+  }
+}
+
+.mini-mat-fab {
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s, box-shadow 0.3s;
+
+  &:hover {
+    background-color: #333;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  mat-icon {
+    font-size: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
 
 .outline-box {
   margin-top: 1em;
@@ -539,7 +584,7 @@ datalist option {
 }
 
 .mini-mat-fab {
-  background-color: #000;
+  background-color: #007bff;
   color: #fff;
   border-radius: 50%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);

@@ -1,97 +1,80 @@
-@mixin book-theme {
-  .book-content {
-    font-family: 'IBM Plex Serif', serif;
-    font-size: 1.25em;
-    line-height: 1.5em;
-    margin: 1em;
-    padding: 1em;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid #fff;
-    color: #fff;
-    width: 80%;
+:host {
+  $book-content-font-family: 'IBM Plex Serif', serif;
+  $book-content-font-size: 1.25em;
+  $book-content-line-height: 1.5em;
+
+  font-family: Roboto, sans-serif;
+  display: block;
+
+  &.light-theme {
+    background-color: #f5f5f5;
+    color: #1e1e1e;
   }
 
-  .page-container.light-theme .book-content {
-    background-color: rgba(255, 255, 255, 0.9);
-    border: 1px solid #000;
-    color: #000;
-  }
-
-  .page-container.dark-theme .book-content {
-    background-color: rgba(30, 30, 30, 0.9);
-    border: 1px solid #e0e0e0;
+  &.dark-theme {
+    background-color: #1e1e1e;
     color: #e0e0e0;
   }
 
-  // General page container styles
   .page-container {
-    &.light-theme {
-      background-color: #f5f5f5;
-      color: #1e1e1e;
-    }
+    font-family: Roboto, sans-serif;
+    display: block;
 
-    &.dark-theme {
-      background-color: #1e1e1e;
-      color: #e0e0e0;
-    }
-
-    // Book Content Styles
     .book-content {
-      font-family: 'IBM Plex Serif', serif;
-      font-size: 1.25em;
-      line-height: 1.5em;
+      font-family: $book-content-font-family;
+      font-size: $book-content-font-size;
+      line-height: $book-content-line-height;
       margin: 1em;
       padding: 1em;
-      background-color: rgba(255, 255, 255, 0.1);
-      color: #fff;
       width: 80%;
-      box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
-      animation: fadeIn 1s ease-in-out;
+      box-shadow: 10px 10px 20px rgba(0, 0, 0, 50%);
+      animation: fade-in 1s ease-in-out;
 
-      h1, h2, h3, h4, h5, h6 {
-        font-family: inherit !important;
-        font-size: inherit !important;
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: 'IBM Plex Serif', serif;
       }
 
       h1 {
         font-size: 2em;
-        color: #ff0000;
+        color: #f00;
       }
 
       h2 {
         font-size: 1.75em;
-        color: #ff6600;
+        color: #f60;
       }
 
       h3 {
         font-size: 1.5em;
-        color: #ffcc00;
+        color: #fc0;
       }
 
       h4 {
         font-size: 1.25em;
-        color: #00ff00;
+        color: #0f0;
       }
 
       h5 {
         font-size: 1em;
-        color: #0000ff;
+        color: #00f;
       }
 
       h6 {
         font-size: 0.8em;
-        color: #6600cc;
+        color: #60c;
       }
     }
 
-    // Sidebar Theme
     .sidenav-custom-width {
-      width: 14%;
+      width: 15.5%;
       overflow: hidden;
-      background-color: rgba(0, 0, 139, 0.6);
     }
 
-    // Toolbar Theme
     .toolbar {
       display: flex;
       align-items: center;
@@ -99,67 +82,60 @@
       gap: 1em;
       margin: 0.5em 0 0 0.5em;
       width: 97.5%;
-      background-color: rgba(139, 0, 0, 0.6);
+      background-color: rgb(139 0 0 / 60%);
       padding: 0.5em;
     }
 
-    // Editor Theme
     .tox-tinymce {
       height: 78vh !important;
-      background-color: rgba(139, 0, 0, 0.6);
+      background-color: rgb(139 0 0 / 60%);
+      border: 1px solid #fff;
+      color: #fff;
+
+      &.tox-tinymce--toolbar-bottom {
+        background-color: rgb(139 0 0 / 60%);
+      }
+
+      & > .tox-editor-container {
+        background-color: inherit;
+        color: inherit;
+      }
+
+      & > .tox-toolbar {
+        background-color: inherit;
+        border: none;
+      }
+
+      & > .tox-menubar {
+        background-color: inherit;
+        border: none;
+      }
     }
 
-    // Markdown Preview Theme
     .markdown-preview {
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 10%);
       width: 99%;
       margin: 0.5em auto;
       color: #fff;
-    }
 
-    // Mini FAB Theme
-    .mini-mat-fab {
-      background-color: #000;
-      color: #fff;
-    }
-
-    // Outline Box Theme
-    .outline-box {
-      p {
+      code {
+        background-color: rgba(0, 0, 0, 80%);
         color: #fff;
-      }
-    }
-
-    // Myth Section Theme
-    .markdown-preview .myth-section blockquote {
-      margin-left: 2em;
-      padding: 1em;
-      border-left: 0.25em solid rgba(0, 123, 255, 0.5);
-      font-style: italic;
-      font-size: 0.9em;
-      background-color: rgba(0, 0, 0, 0.1); /* Light background */
-
-      p {
-        color: #add8e6; /* Light blue color */
+        padding: 2px 5px;
+        border-radius: 5px;
       }
 
-      strong {
-        font-weight: bold;
-        color: #add8e6; /* Light blue color */
-      }
-    }
-
-    // Markdown Section Theme
-    .markdown-section {
       blockquote {
-        margin-left: 2em; /* Add indentation */
+        margin-left: 2em;
         padding-left: 1em;
-        border-left: 0.25em solid rgba(0, 123, 255, 0.5);
+        border-left: 0.25em solid rgba(0, 123, 255, 50%);
         font-style: italic;
-        font-size: 0.9em; /* Smaller font size */
+        font-size: 0.9em;
+
         p {
-          color: #add8e6; /* Light blue color */
+          color: #add8e6;
         }
+
         strong {
           font-weight: bold;
         }
@@ -167,272 +143,169 @@
     }
   }
 
-  // Apply light theme
-  .page-container.light-theme {
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  &.light-theme {
     .book-content {
-      background-color: rgba(255, 255, 255, 0.9);
+      background-color: rgb(255 255 255 / 90%);
       border: 1px solid #000;
       color: #000;
     }
 
     .sidenav-custom-width {
-      background-color: rgba(0, 0, 255, 0.1);
+      background-color: rgb(0 0 255 / 10%);
       border: 1px solid #000;
     }
 
     .toolbar {
-      background-color: rgba(255, 255, 255, 0.9);
+      background-color: rgb(255 255 255 / 90%);
       border: 1px solid #000;
+      color: #000;
     }
 
     .tox-tinymce {
-      background-color: rgba(255, 255, 255, 0.9);
+      background-color: rgb(255 255 255 / 90%);
       border: 1px solid #000;
+      color: #000;
     }
 
     .markdown-preview {
-      background-color: rgba(255, 255, 255, 0.9);
+      background-color: rgb(255 255 255 / 90%);
       border: 1px solid #000;
       color: #000;
-    }
-
-    .mini-mat-fab {
-      background-color: #fff;
-      color: #000;
-      border: 1px solid #000;
-    }
-
-    .outline-box p {
-      color: #000;
-    }
-
-    .myth-section {
-      blockquote {
-        border-left-color: rgba(0, 123, 255, 0.8);
-        p {
-          color: blue;
-        }
-        strong {
-          color: blue;
-        }
-      }
-    }
-
-    .markdown-section {
-      blockquote {
-        border-left-color: rgba(0, 123, 255, 0.8);
-        p {
-          color: blue;
-        }
-        strong {
-          color: blue;
-        }
-      }
     }
   }
 
-  // Apply dark theme
-  .page-container.dark-theme {
+  &.dark-theme {
     .book-content {
-      background-color: rgba(30, 30, 30, 0.9);
+      background-color: rgb(30 30 30 / 90%);
       border: 1px solid #e0e0e0;
       color: #e0e0e0;
     }
 
     .sidenav-custom-width {
-      background-color: rgba(0, 0, 139, 0.9);
+      background-color: rgb(0 0 139 / 90%);
       border: 1px solid #e0e0e0;
     }
 
     .toolbar {
-      background-color: rgba(30, 30, 30, 0.9);
+      background-color: rgb(30 30 30 / 90%);
       border: 1px solid #e0e0e0;
+      color: #e0e0e0;
     }
 
     .tox-tinymce {
-      background-color: rgba(30, 30, 30, 0.9);
+      background-color: rgb(30 30 30 / 90%);
       border: 1px solid #e0e0e0;
+      color: #e0e0e0;
     }
 
     .markdown-preview {
-      background-color: rgba(30, 30, 30, 0.9);
+      background-color: rgb(30 30 30 / 90%);
       border: 1px solid #e0e0e0;
       color: #e0e0e0;
     }
-
-    .mini-mat-fab {
-      background-color: #1e1e1e;
-      color: #e0e0e0;
-      border: 1px solid #e0e0e0;
-    }
-
-    .outline-box p {
-      color: #e0e0e0;
-    }
-
-    .myth-section {
-      blockquote {
-        border-left-color: rgba(173, 216, 230, 0.8);
-        p {
-          color: lightblue;
-        }
-        strong {
-          color: lightblue;
-        }
-      }
-    }
-
-    .markdown-section {
-      blockquote {
-        border-left-color: rgba(173, 216, 230, 0.8);
-        p {
-          color: lightblue;
-        }
-        strong {
-          color: lightblue;
-        }
-      }
-    }
   }
 
-  .page-container.dark-theme .markdown-preview {
-    background-color: rgba(30, 30, 30, 0.9);
-    border: 1px solid #e0e0e0;
-    color: #e0e0e0;
-  }
-
-  .markdown-preview pre {
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 10px;
-    border-radius: 4px;
-    overflow-x: auto;
+  .button {
+    background-color: #007bff;
     color: #fff;
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 0.25em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: darken(#007bff, 10%);
+    }
+
+    &:active {
+      background-color: darken(#007bff, 15%);
+    }
+
+    &:disabled {
+      background-color: lighten(#007bff, 20%);
+      cursor: not-allowed;
+    }
   }
 
-  .page-container.light-theme .markdown-preview pre {
-    background-color: rgba(255, 255, 255, 0.9);
-    color: #000;
-  }
-
-  .page-container.dark-theme .markdown-preview pre {
-    background-color: rgba(30, 30, 30, 0.9);
-    color: #e0e0e0;
-  }
-
-  .sidenav-custom-width {
-    width: 200px;
-    background-color: rgba(0, 0, 139, 0.6);
-    border: 1px solid #fff;
-  }
-
-  .page-container.light-theme .sidenav-custom-width {
-    background-color: rgba(0, 0, 255, 0.1);
-    border: 1px solid #000;
-  }
-
-  .page-container.dark-theme .sidenav-custom-width {
-    background-color: rgba(0, 0, 139, 0.9);
-    border: 1px solid #e0e0e0;
-  }
-
-  .mat-mdc-list-item {
-    height: 2em;
-    width: 90%;
-    margin: 0.5em auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 0.8em;
+  &.light-theme .button {
+    background-color: #007bff;
     color: #fff;
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 0.25em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: darken(#007bff, 10%);
+    }
+
+    &:active {
+      background-color: darken(#007bff, 15%);
+    }
+
+    &:disabled {
+      background-color: lighten(#007bff, 20%);
+      cursor: not-allowed;
+    }
   }
 
-  .page-container.light-theme .mat-mdc-list-item {
-    color: #000;
-  }
-
-  .page-container.dark-theme .mat-mdc-list-item {
-    color: #e0e0e0;
-  }
-
-  .file-actions {
-    display: flex;
-    align-items: center;
-    gap: 1em;
-    margin-left: 1em;
-  }
-
-  .file-actions button {
-    position: relative;
-    background-color: #000;
+  &.dark-theme .button {
+    background-color: #007bff;
     color: #fff;
-    border: 1px solid #fff;
-  }
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 0.25em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 
-  .page-container.light-theme .file-actions button {
-    background-color: #fff;
-    color: #000;
-    border: 1px solid #000;
-  }
+    &:hover {
+      background-color: darken(#007bff, 10%);
+    }
 
-  .page-container.dark-theme .file-actions button {
-    background-color: #1e1e1e;
-    color: #e0e0e0;
-    border: 1px solid #e0e0e0;
-  }
+    &:active {
+      background-color: darken(#007bff, 15%);
+    }
 
-  .readonly-banner {
-    background-color: #ffcc00;
-    color: #333;
-    padding: 0.25em;
-    text-align: center;
-    font-weight: bold;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+    &:disabled {
+      background-color: lighten(#007bff, 20%);
+      cursor: not-allowed;
+    }
   }
 
   .mini-mat-fab {
-    background-color: #000;
+    background-color: #007bff;
     color: #fff;
-    border: 1px solid #fff;
-    border-radius: 50%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s, box-shadow 0.3s;
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 0.25em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 
     &:hover {
-      background-color: #333;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+      background-color: darken(#007bff, 10%);
     }
 
-    mat-icon {
-      font-size: 1.5em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    &:active {
+      background-color: darken(#007bff, 15%);
     }
-  }
 
-  .page-container.light-theme .mini-mat-fab {
-    background-color: #fff;
-    color: #000;
-    border: 1px solid #000;
-
-    &:hover {
-      background-color: #ccc;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    }
-  }
-
-  .page-container.dark-theme .mini-mat-fab {
-    background-color: #1e1e1e;
-    color: #e0e0e0;
-    border: 1px solid #e0e0e0;
-
-    &:hover {
-      background-color: #333;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    &:disabled {
+      background-color: lighten(#007bff, 20%);
+      cursor: not-allowed;
     }
   }
 }

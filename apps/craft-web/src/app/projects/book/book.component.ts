@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer2, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Renderer2, AfterViewInit, ChangeDetectorRef, HostBinding } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { EditorComponent } from '@tinymce/tinymce-angular';
 import { EventObj } from '@tinymce/tinymce-angular/editor/Events';
@@ -31,6 +31,10 @@ export class BookComponent implements OnInit, AfterViewInit {
   @ViewChild(EditorComponent) editorComponent!: EditorComponent;
   @ViewChild('markdownPreview', { static: false }) markdownPreview!: ElementRef;
 
+  isDarkTheme = false; // Set light theme as default
+  @HostBinding('class.light-theme') isLightTheme: boolean = !this.isDarkTheme;
+  @HostBinding('class.dark-theme') get isDark() { return this.isDarkTheme; }
+
   editorData = '<p>Initial content</p>';
   selectedDocument?: Document;
   selectedDocuments: string[] = [];
@@ -56,8 +60,6 @@ export class BookComponent implements OnInit, AfterViewInit {
     '1.75em',
     '2em'
   ];
-
-  isDarkTheme = false; // Set light theme as default
 
   init: Partial<EditorOptions> = {
     license_key: 'gpl',
@@ -486,19 +488,6 @@ export class BookComponent implements OnInit, AfterViewInit {
   }
 
   applyTheme(): void {
-    const themeClass = this.isDarkTheme ? 'dark-theme' : 'light-theme';
-    const removeClass = this.isDarkTheme ? 'light-theme' : 'dark-theme';
-    const container = this.ref.nativeElement.querySelector('.page-container');
-    if (container) {
-      this.renderer2.addClass(container, themeClass);
-      this.renderer2.removeClass(container, removeClass);
-    }
-
-    // Remove font and font size to h1-h6 tags
-    // const hTags = this.ref.nativeElement.querySelectorAll('h1, h2, h3, h4, h5, h6');
-    // hTags.forEach((tag: HTMLElement) => {
-    //   this.renderer2.setStyle(tag, 'fontFamily', this.selectedFont);
-    //   this.renderer2.setStyle(tag, 'fontSize', this.selectedFontSize);
-    // });
+    this.isLightTheme = !this.isDarkTheme;
   }
 }

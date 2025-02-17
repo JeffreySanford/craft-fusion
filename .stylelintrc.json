@@ -7,5 +7,10 @@
       "rules": {}
     }
   ],
-  "rules": {}
+  "rules": {
+    "@angular-eslint/stylelint-plugin/use-component-selector": [true, "kebab-case"]
+  },
+  "plugins": [
+    "@angular-eslint/stylelint-plugin"
+  ]
 }
