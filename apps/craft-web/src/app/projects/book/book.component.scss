@@ -328,15 +328,19 @@ p {
   color: #fff;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.book-content {
+  font-family: 'IBM Plex Serif', serif;
+  font-size: 1.25em;
+  line-height: 1.5em;
+  margin: 1em 0.25em;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #fff;
+  color: #fff;
+  max-width: 95.5%;
+}
+
+.book-content img {
+  width: 100%;
 }
 
 .toolbar {
@@ -345,7 +349,8 @@ p {
   justify-content: flex-start;
   gap: 1em;
   margin: 0.5em 0 0 0.5em;
-  width: 97.5%;
+  max-width: 98.5%;
+  width: 100%;
   background-color: rgba(139, 0, 0, 0.6);
   padding: 0.5em;
 }
