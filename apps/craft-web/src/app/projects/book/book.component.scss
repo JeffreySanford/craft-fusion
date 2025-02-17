@@ -1,5 +1,9 @@
 @use 'book-theme';
 
+@import './book-theme.scss';
+
+@include book-theme;
+
 @font-face {
   font-family: 'Lora';
   src: url('/assets/fonts/Lora-Regular.ttf') format('truetype');
