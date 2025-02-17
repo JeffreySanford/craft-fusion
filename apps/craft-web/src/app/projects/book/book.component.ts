@@ -114,7 +114,7 @@ export class BookComponent implements OnInit, AfterViewInit {
   wordIndex = 0;
   rsvpInterval: any;
 
-  areImagesVisible = true;
+  areImagesVisible = false;
 
   constructor(
     private docParseService: DocParseService,
@@ -187,6 +187,8 @@ export class BookComponent implements OnInit, AfterViewInit {
     this.openedDocuments = this.userStateService.getOpenedDocuments();
     this.userStateService.getLoginDateTime();
     this.addHeaderIds();
+    debugger
+    this.updateImageVisibility();
   }
 
   onChange({ editor }: { editor: Editor }) {
@@ -279,6 +281,7 @@ export class BookComponent implements OnInit, AfterViewInit {
         content$ = this.pdfParseService.parsePdf(file);
       } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
         content$ = from(this.docParseService.parseDoc(file));
+
       } else if (file.type === 'text/plain') {
         content$ = from(file.text()).pipe(
           map(text => {
@@ -292,6 +295,7 @@ export class BookComponent implements OnInit, AfterViewInit {
         if (content$ instanceof Promise) {
           content$.then(content => {
             this.renderMarkdown(content);
+
             this.fileUploadService.uploadFile(file).pipe(
               catchError(err => {
                 console.error('Failed to upload file', err);
@@ -489,5 +493,12 @@ export class BookComponent implements OnInit, AfterViewInit {
       this.renderer2.addClass(container, themeClass);
       this.renderer2.removeClass(container, removeClass);
     }
+
+    // Remove font and font size to h1-h6 tags
+    // const hTags = this.ref.nativeElement.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    // hTags.forEach((tag: HTMLElement) => {
+    //   this.renderer2.setStyle(tag, 'fontFamily', this.selectedFont);
+    //   this.renderer2.setStyle(tag, 'fontSize', this.selectedFontSize);
+    // });
   }
 }
