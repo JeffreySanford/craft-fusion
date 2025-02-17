@@ -2,9 +2,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
-// Plus imports for other components in your app.
-
-// Disable legacy API compatibility, since dev-app is fully migrated to theme inspection API.
 $theme-legacy-inspection-api-compatibility: false;
 
 $primary: mat.$azure-palette;

@@ -36,7 +36,7 @@
       </div>
     </mat-sidenav>
     <mat-sidenav-content>
-      <div class="toolbar" style="display: flex; align-items: center; justify-content: flex-start;">
+      <div class="toolbar">
         <button mat-mini-fab color="primary" aria-label="Toggle Sidebar" (click)="toggleSidebar()" class="mini-mat-fab" matTooltip="Toggle Sidebar">
           <mat-icon class="vibrant-red">menu</mat-icon>
         </button>
@@ -55,7 +55,7 @@
           <mat-icon class="vibrant-blue">{{ areImagesVisible ? 'image' : 'image_not_supported' }}</mat-icon>
         </button>
         <button mat-mini-fab color="primary" aria-label="Toggle Theme" (click)="toggleTheme()" class="mini-mat-fab" matTooltip="Toggle Theme">
-          <mat-icon class="vibrant-yellow">{{ isDarkTheme ? 'brightness_7' : 'brightness_4' }}</mat-icon>
+          <mat-icon class="vibrant-yellow">{{ isDarkTheme ? 'brightness_4' : 'brightness_7' }}</mat-icon>
         </button>
         <div *ngIf="isReadOnly" class="readonly-banner">Read-Only Mode</div>
         <button mat-mini-fab color="primary" (click)="toggleRSVP()" matTooltip="RSVP Proofread Mode" aria-label="RSVP Proofread Mode" class="mini-mat-fab">
@@ -69,13 +69,7 @@
         </div>
         <div class="rsvp-controls">
           <button mat-mini-fab color="warn" (click)="toggleRSVP()" matTooltip="Exit RSVP Mode" aria-label="Exit RSVP Mode">Exit</button>
-          <input type="range" min="300" max="10000" step="50" [(ngModel)]="rsvpSpeed" list="tickmarks" style="width: 100%;">
-          <datalist id="tickmarks">
-            <option value="300" label="300"></option>
-            <option value="1000" label="1K"></option>
-            <option value="5000" label="5K"></option>
-            <option value="10000" label="10K"></option>
-          </datalist>
+          <input type="range" min="300" max="3000" step="250" [(ngModel)]="rsvpSpeed" list="tickmarks">
           <label>{{ rsvpSpeed }} WPM</label>
           <button mat-mini-fab color="accent" (click)="togglePlayPause()" matTooltip="Play/Pause RSVP" aria-label="Play/Pause RSVP">
             <mat-icon>{{ isRSVPPlaying ? 'pause' : 'play_arrow' }}</mat-icon>
