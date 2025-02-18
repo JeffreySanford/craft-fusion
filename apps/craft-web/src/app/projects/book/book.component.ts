@@ -33,7 +33,9 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   isDarkTheme = false; // Set light theme as default
   @HostBinding('class.light-theme') isLightTheme: boolean = !this.isDarkTheme;
-  @HostBinding('class.dark-theme') get isDark() { return this.isDarkTheme; }
+  @HostBinding('class.dark-theme') get isDarkThemeClass() { return this.isDarkTheme; }
+  @HostBinding('style.--book-font-family') fontFamily: string = "'IBM Plex Serif', serif";
+  @HostBinding('style.--book-font-size') fontSize: string = "1.25em";
 
   editorData = '<p>Initial content</p>';
   selectedDocument?: Document;
@@ -391,6 +393,7 @@ export class BookComponent implements OnInit, AfterViewInit {
   changeFont(event: Event): void {
     const font = (event.target as HTMLSelectElement).value;
     this.selectedFont = font;
+    this.setFontFamily(font);
     if (this.editorComponent && this.editorComponent.editor) {
       this.renderer2.setStyle(this.editorComponent.editor.getBody(), 'fontFamily', font);
     }
@@ -484,10 +487,13 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   toggleTheme(): void {
     this.isDarkTheme = !this.isDarkTheme;
-    this.applyTheme();
   }
 
   applyTheme(): void {
     this.isLightTheme = !this.isDarkTheme;
+  }
+
+  setFontFamily(font: string) {
+    this.fontFamily = font;
   }
 }

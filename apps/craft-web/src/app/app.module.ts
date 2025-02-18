@@ -21,6 +21,7 @@ import { BusyService } from './common/services/busy.service';
 import { ResumeComponent } from './pages/resume/resume.component';
 import { BookModule } from './projects/book/book.module';
 import { UserStateInterceptor } from './common/interceptors/user-state.interceptor';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { UserStateInterceptor } from './common/interceptors/user-state.intercept
       provide: HTTP_INTERCEPTORS,
       useClass: UserStateInterceptor,
       multi: true
-    }
+    },
+    provideAnimationsAsync()
   ],
   bootstrap: [AppComponent],
 })
