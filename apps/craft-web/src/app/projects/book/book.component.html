@@ -20,12 +20,12 @@
         </mat-list-item>
       </mat-nav-list>
       <div class="file-actions">
-        <button mat-mini-fab color="primary" aria-label="Choose Files" matTooltip="Choose Files" class="mini-mat-fab" [class.light-theme]="!isDarkTheme" [class.dark-theme]="isDarkTheme">
+        <button mat-mini-fab class="mini-mat-fab button">
           <input type="file" (change)="onFileSelected($event)" accept=".pdf,.docx,.txt" multiple />
-          <mat-icon class="vibrant-blue">attach_file</mat-icon>
+          <mat-icon class="tag-icon">attach_file</mat-icon>
         </button>
-        <button mat-mini-fab color="primary" aria-label="Save" (click)="onSave()" matTooltip="Save" class="mini-mat-fab" [class.light-theme]="!isDarkTheme" [class.dark-theme]="isDarkTheme">
-          <mat-icon class="vibrant-green">save</mat-icon>
+        <button mat-mini-fab class="mini-mat-fab button" (click)="onSave()">
+          <mat-icon class="tag-icon">save</mat-icon>
         </button>
       </div>
       <div *ngIf="selectedDocument" class="outline-box">
@@ -37,8 +37,8 @@
     </mat-sidenav>
     <mat-sidenav-content>
       <div class="toolbar">
-        <button mat-mini-fab color="primary" aria-label="Toggle Sidebar" (click)="toggleSidebar()" class="mini-mat-fab" matTooltip="Toggle Sidebar" [class.light-theme]="!isDarkTheme" [class.dark-theme]="isDarkTheme">
-          <mat-icon class="vibrant-red">menu</mat-icon>
+        <button mat-mini-fab class="mini-mat-fab button" (click)="toggleSidebar()">
+          <mat-icon class="tag-icon">menu</mat-icon>
         </button>
         <div class="font-selection">
           <select id="font-select" (change)="changeFont($event)" matTooltip="Select Font">
@@ -48,18 +48,18 @@
             <option *ngFor="let fontSize of availableFontSizes" [value]="fontSize" [selected]="fontSize === selectedFontSize">{{ fontSize }}</option>
           </select>
         </div>
-        <button mat-mini-fab color="accent" aria-label="Toggle Read-Only" (click)="toggleMarkdownPrettyView()" class="mini-mat-fab" matTooltip="Toggle Read-Only" [class.light-theme]="!isDarkTheme" [class.dark-theme]="isDarkTheme">
-          <mat-icon class="vibrant-orange">{{ isMarkdownPrettyView ? 'edit' : 'visibility' }}</mat-icon>
+        <button mat-mini-fab class="mini-mat-fab button" (click)="toggleMarkdownPrettyView()">
+          <mat-icon class="tag-icon">{{ isMarkdownPrettyView ? 'edit' : 'visibility' }}</mat-icon>
         </button>
-        <button mat-mini-fab color="primary" aria-label="Toggle Images" (click)="toggleImages()" class="mini-mat-fab" matTooltip="Toggle Images" [class.light-theme]="!isDarkTheme" [class.dark-theme]="isDarkTheme">
-          <mat-icon class="vibrant-blue">{{ areImagesVisible ? 'image' : 'image_not_supported' }}</mat-icon>
+        <button mat-mini-fab class="mini-mat-fab button" (click)="toggleImages()">
+          <mat-icon class="tag-icon">{{ areImagesVisible ? 'image' : 'image_not_supported' }}</mat-icon>
         </button>
-        <button mat-mini-fab color="primary" aria-label="Toggle Theme" (click)="toggleTheme()" class="mini-mat-fab" matTooltip="Toggle Theme" [class.light-theme]="!isDarkTheme" [class.dark-theme]="isDarkTheme">
-          <mat-icon class="vibrant-yellow">{{ isDarkTheme ? 'brightness_4' : 'brightness_7' }}</mat-icon>
+        <button mat-mini-fab class="mini-mat-fab button" (click)="toggleTheme()">
+          <mat-icon class="tag-icon">{{ isDarkTheme ? 'brightness_4' : 'brightness_7' }}</mat-icon>
         </button>
         <div *ngIf="isReadOnly" class="readonly-banner">Read-Only Mode</div>
-        <button mat-mini-fab color="primary" (click)="toggleRSVP()" matTooltip="RSVP Proofread Mode" aria-label="RSVP Proofread Mode" class="mini-mat-fab" [class.light-theme]="!isDarkTheme" [class.dark-theme]="isDarkTheme">
-          <mat-icon>speed</mat-icon>
+        <button mat-mini-fab class="mini-mat-fab button" (click)="toggleRSVP()">
+          <mat-icon class="tag-icon">speed</mat-icon>
         </button>
       </div>
       <!-- RSVP Speed-Reading Overlay -->
@@ -68,11 +68,11 @@
           <p class="rsvp-word">{{ rsvpWord }}</p>
         </div>
         <div class="rsvp-controls">
-          <button mat-mini-fab color="warn" (click)="toggleRSVP()" matTooltip="Exit RSVP Mode" aria-label="Exit RSVP Mode" [class.light-theme]="!isDarkTheme" [class.dark-theme]="isDarkTheme">Exit</button>
+          <button mat-mini-fab class="mini-mat-fab button" (click)="toggleRSVP()">Exit</button>
           <input type="range" min="300" max="3000" step="250" [(ngModel)]="rsvpSpeed" list="tickmarks">
           <label>{{ rsvpSpeed }} WPM</label>
-          <button mat-mini-fab color="accent" (click)="togglePlayPause()" matTooltip="Play/Pause RSVP" aria-label="Play/Pause RSVP" [class.light-theme]="!isDarkTheme" [class.dark-theme]="isDarkTheme">
-            <mat-icon>{{ isRSVPPlaying ? 'pause' : 'play_arrow' }}</mat-icon>
+          <button mat-mini-fab class="mini-mat-fab button" (click)="togglePlayPause()">
+            <mat-icon class="tag-icon">{{ isRSVPPlaying ? 'pause' : 'play_arrow' }}</mat-icon>
           </button>
         </div>
       </div>

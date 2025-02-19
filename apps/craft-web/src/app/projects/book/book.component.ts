@@ -145,6 +145,8 @@ export class BookComponent implements OnInit, AfterViewInit {
     this.http.get<{ name: string, type: string }[]>('/api/files/list').subscribe(files => {
       files.forEach((file, index) => {
         this.http.get(`/assets/documents/book/${file.name}`, { responseType: 'blob' }).subscribe(blob => {
+          
+          debugger
           const fileObj = new File([blob], file.name, { type: file.type, lastModified: Date.now() });
 
           this.fileUploadService.uploadFile(fileObj).pipe(
