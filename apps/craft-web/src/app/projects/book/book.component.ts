@@ -528,16 +528,49 @@ export class BookComponent implements OnInit, AfterViewInit {
   }
 
   private processMythContent(content: string): string {
+    console.log('\n=== Processing Content for Myths ===');
+    
     const lines = content.split('\n');
-    const processedLines = lines.map(line => {
-      // Match both single numbers and ranges (e.g., "1." or "5-10.")
-      const mythMatch = line.match(/^(\d+(?:-\d+)?\.) (.+)$/);
+    let mythCount = 0;
+    
+    const processedLines = lines.map((line, index) => {
+      // Match both markdown-style and standard verse formats
+      const mythRegex = /^\[(\d+(?:-\d+)?)\](?:\(([^\)]+)\))(.*)$|^(\d+(?:-\d+)?)\.\s*(.+)$/;
+      const mythMatch = line.match(mythRegex);
+      
       if (mythMatch) {
-        return `<p data-myth-line="${mythMatch[1]}">${mythMatch[2]}</p>`;
+        mythCount++;
+        console.log(`Line ${index + 1}: Found myth:`, mythMatch[0]);
+        
+        const verse = mythMatch[1] || mythMatch[4]; // Bracketed or standard verse
+        const link = mythMatch[2];
+        const content = (mythMatch[3] || mythMatch[5] || '').trim();
+        
+        if (link) {
+          return `<p class="myth-line" data-verse="${verse}"><a href="${link}">${verse}</a> ${content}</p>`;
+        } else {
+          return `<p class="myth-line" data-verse="${verse}">${content}</p>`;
+        }
       }
       return line;
     });
-    return processedLines.join('\n');
+  
+    const result = processedLines.join('\n');
+    console.log(`\nProcessed ${mythCount} myths`);
+    
+    // Update display
+    if (this.markdownPreview) {
+      const myths = this.markdownPreview.nativeElement.querySelectorAll('.myth-line');
+      console.log('Found myth sections:', myths.length);
+      myths.forEach((myth: HTMLElement, index: number) => {
+        console.log(`Myth ${index + 1}:`, {
+          verse: myth.getAttribute('data-verse'),
+          content: myth.textContent?.trim()
+        });
+      });
+    }
+    
+    return result;
   }
 
   toggleTheme(): void {

@@ -98,17 +98,20 @@ $vibrant-yellow: #fc0;
 
       h1 {
         font-size: 2.5em;
-        color: $vibrant-red !important;
+        color: #FF4081 !important; // Pink
+        text-shadow: 1px 1px 2px rgba(255, 64, 129, 0.3);
       }
 
       h2 {
         font-size: 2em;
-        color: $vibrant-orange !important;
+        color: #7C4DFF !important; // Deep Purple
+        text-shadow: 1px 1px 2px rgba(124, 77, 255, 0.3);
       }
 
       h3 {
         font-size: 1.75em;
-        color: $vibrant-yellow !important;
+        color: #00BCD4 !important; // Cyan
+        text-shadow: 1px 1px 2px rgba(0, 188, 212, 0.3);
         letter-spacing: 0.009375em;
         font-weight: 400;
 
@@ -121,17 +124,20 @@ $vibrant-yellow: #fc0;
 
       h4 {
         font-size: 1.5em;
-        color: $vibrant-green !important;
+        color: #FFC107 !important; // Amber
+        text-shadow: 1px 1px 2px rgba(255, 193, 7, 0.3);
       }
 
       h5 {
         font-size: 1em;
-        color: $vibrant-blue !important;
+        color: #64FFDA !important; // Teal Accent
+        text-shadow: 1px 1px 2px rgba(100, 255, 218, 0.3);
       }
 
       h6 {
         font-size: 0.8em;
-        color: #60c !important;
+        color: #FF5722 !important; // Deep Orange
+        text-shadow: 1px 1px 2px rgba(255, 87, 34, 0.3);
       }
 
       p {
@@ -189,7 +195,7 @@ $vibrant-yellow: #fc0;
           content: attr(data-myth-line);
           position: absolute;
           left: 0;
-          color: darken($vibrant-green, 20%);
+          color: color.adjust($vibrant-green, $lightness: -20%);
           font-weight: bold;
           font-style: normal;
           width: 2.5em;
@@ -213,7 +219,7 @@ $vibrant-yellow: #fc0;
             content: attr(data-myth-line);
             position: absolute;
             left: 1em;
-            color: darken($vibrant-green, 20%);
+            color: color.adjust($vibrant-green, $lightness: -20%);
             font-weight: bold;
             font-style: normal;
           }
@@ -221,45 +227,67 @@ $vibrant-yellow: #fc0;
       }
 
       .myth-section {
-        margin: 1em 0;
-        display: block;
-        
-        .myth-content {
-          color: $vibrant-green !important;
-          padding-left: 3em;
+        margin: 1.5em 0;
+        padding: 1em 2em;
+        border-left: 4px solid $vibrant-green;
+        background: rgba(0, 255, 0, 0.05);
+
+        .myth-line {
+          color: $vibrant-green;
           position: relative;
+          padding-left: 3em;
+          margin: 0.5em 0;
           font-style: italic;
-          margin: 0;
-          
-          &[data-myth-line]::before {
-            content: attr(data-myth-line);
+
+          &[data-verse]::before {
+            content: attr(data-verse);
             position: absolute;
             left: 0;
-            color: darken($vibrant-green, 20%);
+            color: color.adjust($vibrant-green, $lightness: -20%);
             font-weight: bold;
             font-style: normal;
             width: 2.5em;
             text-align: right;
           }
+
+          a {
+            color: inherit;
+            text-decoration: none;
+            border-bottom: 1px dashed $vibrant-green;
+            
+            &:hover {
+              border-bottom-style: solid;
+            }
+          }
+
+          .myth-link {
+            color: inherit;
+            text-decoration: none;
+            font-weight: bold;
+            padding-right: 0.5em;
+            border-bottom: 1px dashed $vibrant-green;
+            transition: all 0.2s ease;
+            
+            &:hover {
+              border-bottom-style: solid;
+              color: color.adjust($vibrant-green, $lightness: 20%);
+            }
+          }
         }
       }
 
-      .myth-line {
-        color: $vibrant-green !important;
+      p.myth-line {
+        color: #B2FF59 !important; // Light Green Accent
         font-style: italic;
         position: relative;
-        padding-left: 3em;
+        padding-left: 2em;
         margin: 1em 0;
         line-height: 1.6;
 
-        .myth-number {
-          position: absolute;
-          left: 0;
-          color: darken($vibrant-green, 20%);
+        &::first-line {
+          color: #69F0AE !important; // Green Accent
           font-weight: bold;
           font-style: normal;
-          width: 2.5em;
-          text-align: right;
         }
       }
     }
@@ -743,5 +771,51 @@ datalist option {
 }
 
 .myth-section {
-  color: blue;
+  margin: 1.5em 0;
+  padding: 1em 2em;
+  border-left: 4px solid $vibrant-green;
+  background: rgba(0, 255, 0, 0.05);
+
+  .myth-line {
+    color: $vibrant-green;
+    position: relative;
+    padding-left: 3em;
+    margin: 0.5em 0;
+    font-style: italic;
+
+    &[data-verse]::before {
+      content: attr(data-verse);
+      position: absolute;
+      left: 0;
+      color: color.adjust($vibrant-green, $lightness: -20%);
+      font-weight: bold;
+      font-style: normal;
+      width: 2.5em;
+      text-align: right;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px dashed $vibrant-green;
+      
+      &:hover {
+        border-bottom-style: solid;
+      }
+    }
+
+    .myth-link {
+      color: inherit;
+      text-decoration: none;
+      font-weight: bold;
+      padding-right: 0.5em;
+      border-bottom: 1px dashed $vibrant-green;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        border-bottom-style: solid;
+        color: color.adjust($vibrant-green, $lightness: 20%);
+      }
+    }
+  }
 }
