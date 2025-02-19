@@ -1,11 +1,34 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { Observable, of, throwError } from 'rxjs';
-import { Multer } from 'multer';
+import * as fs from 'fs';
+import * as path from 'path';
+import { Multer} from 'multer';
 
 @Injectable()
 export class FileService {
+  private readonly STORAGE_PATH: string;
   private files: Map<string, Buffer> = new Map();
-  private openedDocuments: string[] = [""];
+  private userState: Map<string, string> = new Map();
+
+  private allowedExtensions = new Set(['.docx', '.pdf', '.txt']);
+
+  constructor() {
+    // Ensure proper path resolution
+    this.STORAGE_PATH = path.resolve(process.cwd(), 'apps/craft-nest/storage');
+    
+    // Create all required directories
+    const documentsPath = path.join(this.STORAGE_PATH, 'documents', 'book');
+    if (!fs.existsSync(documentsPath)) {
+      console.log('Creating storage directory:', documentsPath);
+      fs.mkdirSync(documentsPath, { recursive: true });
+    }
+
+    // List files for debugging
+    const files = fs.readdirSync(documentsPath);
+    console.log('Files in storage/documents/book:', files);
+    
+    console.log('Storage path initialized:', this.STORAGE_PATH);
+  }
 
   saveFile(file: Express.Multer.File): Observable<void> {
     console.log('STATE: Saving file:', file.originalname);
@@ -15,24 +38,61 @@ export class FileService {
 
   getFile(filename: string): Observable<Buffer> {
     console.log('STATE: Getting file:', filename);
-    const file = this.files.get(filename);
-    if (!file) {
-      return throwError(new HttpException('File not found', HttpStatus.NOT_FOUND));
+    try {
+      const normalizedPath = path.normalize(filename).replace(/^(\.\.(\/|\\|$))+/, '');
+      const fullPath = path.resolve(this.STORAGE_PATH, 'documents', normalizedPath);
+      
+      // Additional debugging
+      console.log('Full resolved path:', fullPath);
+      console.log('Parent directory:', path.dirname(fullPath));
+      console.log('File name:', path.basename(fullPath));
+      
+      console.log('Attempting to access:', fullPath);
+      console.log('Directory exists:', fs.existsSync(path.dirname(fullPath)));
+      console.log('File exists:', fs.existsSync(fullPath));
+      
+      if (!fs.existsSync(fullPath)) {
+        console.error('File not found:', fullPath);
+        return throwError(() => new HttpException(
+          `File not found: ${filename}`, 
+          HttpStatus.NOT_FOUND
+        ));
+      }
+
+      const ext = path.extname(fullPath).toLowerCase();
+      if (!this.allowedExtensions.has(ext)) {
+        console.error('Invalid file type:', ext);
+        return throwError(() => new HttpException(
+          `Invalid file type: ${ext}`, 
+          HttpStatus.BAD_REQUEST
+        ));
+      }
+
+      const buffer = fs.readFileSync(fullPath);
+      console.log('Successfully read file:', filename, 'size:', buffer.length);
+      return of(buffer);
+    } catch (err) {
+      const error = err as Error;
+      console.error('File read error:', error);
+      return throwError(() => new HttpException(
+        `Error reading file: ${error.message}`, 
+        HttpStatus.INTERNAL_SERVER_ERROR
+      ));
     }
-    return of(file);
   }
 
-  saveOpenedDocuments(documents: string[]): Observable<void> {
-    console.log('STATE: Saving opened documents:', documents);
-    if (!Array.isArray(documents)) {
-      return throwError(new HttpException('Invalid documents format', HttpStatus.BAD_REQUEST));
+  saveOpenedDocuments(keyValue: [string, string]): Observable<void> {
+    console.log('STATE: Saving state data:', keyValue);
+    if (!Array.isArray(keyValue) || keyValue.length !== 2) {
+      return throwError(new HttpException('Invalid data format', HttpStatus.BAD_REQUEST));
     }
-    this.openedDocuments = documents;
+    const [key, value] = keyValue;
+    this.userState.set(key, value);
     return of(undefined);
   }
 
   getOpenedDocuments(): Observable<string[]> {
-    console.log('STATE: Getting opened documents');
-    return of(this.openedDocuments.length ? this.openedDocuments : []);
+    console.log('STATE: Getting state data');
+    return of(Array.from(this.userState.entries()).map(([key, value]) => `${key}:${value}`));
   }
 }

@@ -80,7 +80,7 @@ $vibrant-yellow: #fc0;
   display: block;
 
   .book-content {
-    font-family: 'IBM Plex Serif', serif;
+    font-family: var(--book-font-family);
     font-size: 1.25em;
     line-height: 1.5em;
     margin: 1em;
@@ -89,43 +89,179 @@ $vibrant-yellow: #fc0;
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 50%);
     animation: fade-in 1s ease-in-out;
 
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-      font-family: 'IBM Plex Serif', serif;
-    }
+    ::ng-deep {
+      h1, h2, h3, h4, h5, h6 {
+        font-family: var(--book-font-family) !important;
+        margin: 1.5em 0 0.5em;
+        line-height: 1.4;
+      }
 
-    h1 {
-      font-size: 2em;
-      color: #f00;
-    }
+      h1 {
+        font-size: 2.5em;
+        color: $vibrant-red !important;
+      }
 
-    h2 {
-      font-size: 1.75em;
-      color: #f60;
-    }
+      h2 {
+        font-size: 2em;
+        color: $vibrant-orange !important;
+      }
 
-    h3 {
-      font-size: 1.5em;
-      color: #fc0;
-    }
+      h3 {
+        font-size: 1.75em;
+        color: $vibrant-yellow !important;
+        letter-spacing: 0.009375em;
+        font-weight: 400;
 
-    h4 {
-      font-size: 1.25em;
-      color: #0f0;
-    }
+        &:first-of-type {
+          margin-bottom: 2em;
+          padding-bottom: 0.5em;
+          border-bottom: 1px solid $vibrant-yellow;
+        }
+      }
 
-    h5 {
-      font-size: 1em;
-      color: #00f;
-    }
+      h4 {
+        font-size: 1.5em;
+        color: $vibrant-green !important;
+      }
 
-    h6 {
-      font-size: 0.8em;
-      color: #60c;
+      h5 {
+        font-size: 1em;
+        color: $vibrant-blue !important;
+      }
+
+      h6 {
+        font-size: 0.8em;
+        color: #60c !important;
+      }
+
+      p {
+        font-family: var(--book-font-family) !important;
+        margin: 0 0 1em;
+        line-height: 1.6;
+        font-weight: 400;
+      }
+
+      .etcsl-myth {
+        margin: 2em 4em;
+        padding: 2em;
+        border: 1px solid $vibrant-green;
+        border-radius: 8px;
+        position: relative;
+        background-color: rgba(0, 255, 0, 0.05);
+        
+        &::before {
+          content: 'ETCSL Myth';
+          position: absolute;
+          top: -0.8em;
+          left: 2em;
+          background-color: inherit;
+          padding: 0 1em;
+          color: $vibrant-green;
+          font-style: italic;
+          font-size: 0.9em;
+        }
+
+        p {
+          color: #90EE90 !important; // Light green
+          font-family: var(--book-font-family) !important;
+          margin-left: 2em;
+          position: relative;
+          
+          // Target paragraphs that start with numbers
+          &[data-myth-line]::before {
+            content: attr(data-myth-line);
+            position: absolute;
+            left: -2em;
+            color: $vibrant-green;
+            font-weight: bold;
+          }
+        }
+      }
+
+      // Simple myth styling
+      [data-myth-line] {
+        color: $vibrant-green !important;
+        padding-left: 3em;
+        position: relative;
+        font-style: italic;
+        
+        &::before {
+          content: attr(data-myth-line);
+          position: absolute;
+          left: 0;
+          color: darken($vibrant-green, 20%);
+          font-weight: bold;
+          font-style: normal;
+          width: 2.5em;
+          text-align: right;
+        }
+      }
+
+      .myth-text {
+        display: block;
+        color: $vibrant-green !important;
+        padding-left: 3em;
+        position: relative;
+        margin: 1em 0;
+
+        p {
+          color: inherit !important;
+          font-style: italic;
+          margin: 0;
+          
+          &[data-myth-line]::before {
+            content: attr(data-myth-line);
+            position: absolute;
+            left: 1em;
+            color: darken($vibrant-green, 20%);
+            font-weight: bold;
+            font-style: normal;
+          }
+        }
+      }
+
+      .myth-section {
+        margin: 1em 0;
+        display: block;
+        
+        .myth-content {
+          color: $vibrant-green !important;
+          padding-left: 3em;
+          position: relative;
+          font-style: italic;
+          margin: 0;
+          
+          &[data-myth-line]::before {
+            content: attr(data-myth-line);
+            position: absolute;
+            left: 0;
+            color: darken($vibrant-green, 20%);
+            font-weight: bold;
+            font-style: normal;
+            width: 2.5em;
+            text-align: right;
+          }
+        }
+      }
+
+      .myth-line {
+        color: $vibrant-green !important;
+        font-style: italic;
+        position: relative;
+        padding-left: 3em;
+        margin: 1em 0;
+        line-height: 1.6;
+
+        .myth-number {
+          position: absolute;
+          left: 0;
+          color: darken($vibrant-green, 20%);
+          font-weight: bold;
+          font-style: normal;
+          width: 2.5em;
+          text-align: right;
+        }
+      }
     }
   }
 

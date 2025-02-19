@@ -33,7 +33,12 @@
         "tsConfig": "apps/craft-web/tsconfig.app.json",
         "assets": [
           "apps/craft-web/src/assets",
-          { "glob": "**/*", "input": "node_modules/tinymce", "output": "/tinymce/" }
+          { "glob": "**/*", "input": "node_modules/tinymce", "output": "/tinymce/" },
+          {
+            "glob": "**/*",
+            "input": "apps/craft-web/src/assets/documents",
+            "output": "/assets/documents"
+          }
         ],
         "styles": [
           "@angular/material/prebuilt-themes/indigo-pink.css",

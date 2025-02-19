@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
 import { UserStateService } from '../services/user-state.service';
 
 @Injectable()
 export class UserStateInterceptor implements HttpInterceptor {
-  private loginLogged = false;
+  private loginTime: Date | null = null;
   private pageNameMapping: { [key: string]: string } = {
     '/home': 'Home',
     '/table': 'Table',
@@ -22,41 +21,33 @@ export class UserStateInterceptor implements HttpInterceptor {
     '/404': 'Not Found',
   };
 
-  constructor(private userStateService: UserStateService) {
-    console.log('UserStateInterceptor initialized');
+  constructor(private userStateService: UserStateService) {}
+
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // Set login time on first request
+    if (!this.loginTime) {
+      this.loginTime = new Date();
+      this.userStateService.setLoginDateTime(this.loginTime).subscribe();
+    }
+
+    // Track page visits
+    const pageName = this.getPageNameFromUrl(request.url);
+    if (pageName) {
+      this.userStateService.setVisitedPage(pageName).subscribe();
+    }
+
+    // Update visit length periodically
+    const now = Date.now();
+    const elapsedTime = now - this.loginTime.getTime();
+    this.userStateService.setVisitLength(elapsedTime);
+
+    console.log('UserStateInterceptor: ', request.url, pageName, elapsedTime);
+
+    return next.handle(request);
   }
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    console.log('Intercepting request:', req.url);
-    const userStateEndpoints = ['/api/user/saveLoginDateTime', '/api/user/saveVisitLength', '/api/user/saveVisitedPages'];
-    console.log('User state endpoints:', userStateEndpoints);
-
-    if (!userStateEndpoints.some(endpoint => req.url.includes(endpoint))) {
-      const startTime = Date.now();
-      console.log('STATE: Request started:', req.url);
-
-      if (!this.loginLogged) {
-        console.log('Logging login date and time');
-        this.userStateService.setLoginDateTime(new Date());
-        this.loginLogged = true;
-      }
-
-      const pageName = this.pageNameMapping[req.url.split('?')[0]] || 'Unknown';
-      console.log('Page name determined:', pageName);
-      this.userStateService.setVisitedPage(pageName);
-      console.log('STATE: Visited page added:', pageName);
-
-      return next.handle(req).pipe(
-        tap(event => {
-          const elapsedTime = Date.now() - startTime;
-          console.log(`STATE: Request completed: ${req.url}, Elapsed time: ${elapsedTime}`);
-          this.userStateService.setVisitLength(elapsedTime);
-          console.log(`STATE: Visit length set: ${elapsedTime}`);
-        })
-      );
-    } else {
-      console.log('Request URL is in user state endpoints, passing through');
-      return next.handle(req);
-    }
+  private getPageNameFromUrl(url: string): string | null {
+    const path = url.split('?')[0];
+    return this.pageNameMapping[path] || null;
   }
 }

@@ -10,16 +10,32 @@ export class DocParseService {
 
   async parseDoc(file: File): Promise<string> {
     const fileArrayBuffer = await file.arrayBuffer();
-    const conversionResult = await mammoth.convertToHtml({ arrayBuffer: fileArrayBuffer });
-    const turndown = new TurndownService();
-
-    let markdown = turndown.turndown(conversionResult.value);
-
-    // Detect numbered text and wrap it in a blockquote with a custom class
-    markdown = markdown.replace(/(\d+[-]\d+)\s(.+?)(?=(\n\n)|(\n\d+[-]\d+)|$)/gs, (match, p1, p2) => {
-      return `> **${p1}**\n> ${p2}\n{:.myth-section}`;
+    console.log('Converting DOCX to HTML...');
+    
+    // Convert DOCX to HTML with custom handler for myths
+    const result = await mammoth.convertToHtml({ arrayBuffer: fileArrayBuffer }, {
+      transformDocument: (element: any) => {
+        if (element.type === 'paragraph') {
+          const text = element.children?.[0]?.value || '';
+          const mythMatch = text.match(/^(\d+(?:-\d+)?)\.\s+(.+)$/);
+          
+          if (mythMatch) {
+            console.log('Found myth line:', mythMatch[1], mythMatch[2]);
+            // Create a custom HTML structure for myths
+            return {
+              type: 'paragraph',
+              children: [{
+                type: 'html',
+                value: `<div class="myth-line"><span class="myth-number">${mythMatch[1]}.</span>${mythMatch[2]}</div>`
+              }]
+            };
+          }
+        }
+        return element;
+      }
     });
-
-    return markdown;
+    
+    console.log('HTML conversion result:', result.value);
+    return result.value;
   }
 }

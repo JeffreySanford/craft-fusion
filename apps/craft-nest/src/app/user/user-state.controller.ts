@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, HttpException, HttpStatus } from '@nestjs/common';
 import { UserStateService } from './user-state.service';
 import { Observable } from 'rxjs';
 
@@ -23,13 +23,9 @@ export class UserStateController {
   }
 
   @Post('saveVisitLength')
-  saveVisitLength(@Body() body: { length: number }): Observable<void> {
-    const length = body.length;
-    console.log('STATE: Saving visit length:', length);
-    if (length === null || length === undefined || isNaN(length)) {
-      throw new HttpException('Invalid visit length', HttpStatus.BAD_REQUEST);
-    }
-    return this.userStateService.setVisitLength(length);
+  saveVisitLength(): Observable<void> {
+    console.log('STATE: Saving visit length');
+    return this.userStateService.setVisitLength();
   }
 
   @Get('getVisitLength')
@@ -38,13 +34,13 @@ export class UserStateController {
     return this.userStateService.getVisitLength();
   }
 
-  @Post('saveVisitedPages')
-  saveVisitedPages(@Body() pages: string[]): Observable<void> {
-    console.log('STATE: Saving visited pages:', pages);
-    if (!Array.isArray(pages)) {
-      throw new HttpException('Invalid pages format', HttpStatus.BAD_REQUEST);
+  @Post('saveVisitedPage/:page')
+  saveVisitedPage(@Param('page') page: string): Observable<void> {
+    console.log('STATE: Saving visited page:', page);
+    if (!page) {
+      throw new HttpException('Page name is required', HttpStatus.BAD_REQUEST);
     }
-    return this.userStateService.setVisitedPages(pages);
+    return this.userStateService.setVisitedPage(page);
   }
 
   @Get('getVisitedPages')

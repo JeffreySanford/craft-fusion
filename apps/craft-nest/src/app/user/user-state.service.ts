@@ -20,9 +20,9 @@ export class UserStateService {
     console.log('STATE: Getting login date/time');
     return new Observable(observer => {
       this.fileService.getOpenedDocuments().subscribe(docs => {
-        const loginDateTime = docs.find(doc => doc.startsWith('loginDateTime'));
+        const loginDateTime = docs.find(doc => doc.startsWith('loginDateTime:'));
         if (loginDateTime) {
-          this.loginDateTime = new Date(loginDateTime.split(',')[1]);
+          this.loginDateTime = new Date(loginDateTime.split(':')[1]);
           observer.next(this.loginDateTime);
         } else {
           observer.next(null);
@@ -32,7 +32,8 @@ export class UserStateService {
     });
   }
 
-  setVisitLength(length: number): Observable<void> {
+  setVisitLength(): Observable<void> {
+    const length = Date.now() - (this.loginDateTime?.getTime() || Date.now());
     console.log('STATE: Setting visit length:', length);
     this.visitLength = length;
     return this.fileService.saveOpenedDocuments(['visitLength', length.toString()]);
@@ -42,9 +43,9 @@ export class UserStateService {
     console.log('STATE: Getting visit length');
     return new Observable(observer => {
       this.fileService.getOpenedDocuments().subscribe(docs => {
-        const visitLength = docs.find(doc => doc.startsWith('visitLength'));
+        const visitLength = docs.find(doc => doc.startsWith('visitLength:'));
         if (visitLength) {
-          this.visitLength = parseInt(visitLength.split(',')[1], 10);
+          this.visitLength = parseInt(visitLength.split(':')[1], 10);
           observer.next(this.visitLength);
         } else {
           observer.next(null);
@@ -60,13 +61,34 @@ export class UserStateService {
     return this.fileService.saveOpenedDocuments(['visitedPages', JSON.stringify(pages)]);
   }
 
+  setVisitedPage(page: string): Observable<void> {
+    console.log('STATE: Adding visited page:', page);
+    return new Observable(observer => {
+      this.getVisitedPages().subscribe({
+        next: (pages) => {
+          if (!pages.includes(page)) {
+            this.visitedPages = [...pages, page];
+            this.fileService.saveOpenedDocuments(['visitedPages', JSON.stringify(this.visitedPages)])
+              .subscribe({
+                next: () => observer.complete(),
+                error: (error) => observer.error(error)
+              });
+          } else {
+            observer.complete();
+          }
+        },
+        error: (error) => observer.error(error)
+      });
+    });
+  }
+
   getVisitedPages(): Observable<string[]> {
     console.log('STATE: Getting visited pages');
     return new Observable(observer => {
       this.fileService.getOpenedDocuments().subscribe(docs => {
-        const visitedPages = docs.find(doc => doc.startsWith('visitedPages'));
+        const visitedPages = docs.find(doc => doc.startsWith('visitedPages:'));
         if (visitedPages) {
-          this.visitedPages = JSON.parse(visitedPages.split(',')[1]);
+          this.visitedPages = JSON.parse(visitedPages.split(':')[1]);
           observer.next(this.visitedPages);
         } else {
           observer.next([]);

@@ -11,7 +11,7 @@ import TurndownService from 'turndown';
 import * as marked from 'marked';
 import * as hljs from 'highlight.js';
 import { catchError, map } from 'rxjs/operators';
-import { of, from } from 'rxjs';
+import { of, from, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 export interface Document {
@@ -117,7 +117,6 @@ export class BookComponent implements OnInit, AfterViewInit {
   words: string[] = [];
   wordIndex = 0;
   rsvpInterval: any;
-
   areImagesVisible = false;
 
   constructor(
@@ -135,6 +134,10 @@ export class BookComponent implements OnInit, AfterViewInit {
     this.init.readonly = this.isReadOnly;
     this.loadFilesFromAssets();
     this.applyTheme(); // Apply the default theme
+    // Open sidebar by default
+    setTimeout(() => {
+      this.sidenav?.open();
+    }, 0);
   }
 
   ngAfterViewInit(): void {
@@ -142,27 +145,30 @@ export class BookComponent implements OnInit, AfterViewInit {
   }
 
   loadFilesFromAssets(): void {
-    this.http.get<{ name: string, type: string }[]>('/api/files/list').subscribe(files => {
-      files.forEach((file, index) => {
-        this.http.get(`/assets/documents/book/${file.name}`, { responseType: 'blob' }).subscribe(blob => {
-          
-          debugger
-          const fileObj = new File([blob], file.name, { type: file.type, lastModified: Date.now() });
-
-          this.fileUploadService.uploadFile(fileObj).pipe(
-            catchError(err => {
-              console.error('Failed to upload file', err);
-              return of(null);
-            })
-          ).subscribe(() => {
-            this.userStateService.setOpenedDocument(file.name);
-            this.openedDocuments = this.userStateService.getOpenedDocuments();
-            if (index === files.length - 1) {
-              this.onDocumentSelected(file.name);
-            }
-          });
-        });
-      });
+    console.log('Loading document from API storage...');
+    this.http.get('/api/files/document/book/Chapter 1 - Enki.docx', { 
+      responseType: 'arraybuffer',
+      headers: { 
+        'Accept': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'Cache-Control': 'no-cache'
+      }
+    }).pipe(
+      catchError(error => {
+        console.error('Error loading document:', error);
+        return throwError(() => error);
+      })
+    ).subscribe({
+      next: (data: ArrayBuffer) => {
+        if (!data || data.byteLength === 0) {
+          console.error('Received empty document data');
+          return;
+        }
+        console.log('Document loaded successfully, size:', data.byteLength);
+        this.processDocument(data);
+      },
+      error: (error) => {
+        console.error('Failed to load document:', error);
+      }
     });
   }
 
@@ -353,14 +359,27 @@ export class BookComponent implements OnInit, AfterViewInit {
   }
 
   setEditorContent(content: string): void {
+    console.log('Setting editor content:', content);
     this.editorData = content;
+    
     if (this.editorComponent && this.editorComponent.editor) {
+      console.log('Updating TinyMCE editor');
       this.editorComponent.editor.setContent(content);
     }
+    
     if (this.markdownPreview) {
+      console.log('Updating markdown preview');
       this.markdownPreview.nativeElement.innerHTML = content;
+      
+      const myths = this.markdownPreview.nativeElement.querySelectorAll('.myth-section');
+      console.log('Found myth sections:', myths.length);
+      myths.forEach((myth: HTMLElement, index: number) => {
+        console.log(`Myth ${index + 1}:`, myth.textContent);
+      });
     }
+    
     this.updateChapters(content);
+    this.cdr.detectChanges();
   }
 
   toggleMarkdownView(): void {
@@ -485,6 +504,40 @@ export class BookComponent implements OnInit, AfterViewInit {
         img.style.display = this.areImagesVisible ? 'inline' : 'none';
       });
     }
+  }
+
+  processDocument(data: ArrayBuffer): void {
+    const file = new File([data], 'Chapter 1 - Enki.docx', {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    });
+
+    // Use the existing docParseService to parse the DOCX file
+    this.docParseService.parseDoc(file).then(content => {
+      // Process myths before rendering
+      const processedContent = this.processMythContent(content);
+      this.renderMarkdown(processedContent);
+      this.selectedDocument = {
+        name: file.name,
+        color: this.documentColors[this.openedDocuments.length % this.documentColors.length]
+      };
+      this.openedDocuments.push(this.selectedDocument);
+      this.cdr.detectChanges();
+    }).catch(error => {
+      console.error('Error processing document:', error);
+    });
+  }
+
+  private processMythContent(content: string): string {
+    const lines = content.split('\n');
+    const processedLines = lines.map(line => {
+      // Match both single numbers and ranges (e.g., "1." or "5-10.")
+      const mythMatch = line.match(/^(\d+(?:-\d+)?\.) (.+)$/);
+      if (mythMatch) {
+        return `<p data-myth-line="${mythMatch[1]}">${mythMatch[2]}</p>`;
+      }
+      return line;
+    });
+    return processedLines.join('\n');
   }
 
   toggleTheme(): void {

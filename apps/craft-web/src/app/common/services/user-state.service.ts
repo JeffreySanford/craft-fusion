@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
+import { Observable, throwError, of, Subject, debounceTime } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ApiService } from './api.service';
+import { UserState, LoginDateTimeDTO } from '../interfaces/user-state.interface';
 
 interface Document {
   name: string;
@@ -18,6 +19,7 @@ export class UserStateService {
   private visitLength: number | null = null;
   private visitedPages: string[] = [];
   private documentColors: string[] = ['red', 'green', 'blue', 'yellow', 'purple'];
+  private apiUrl = '/api/user';
 
   private pageNameMapping: { [key: string]: string } = {
     '/api/files/getOpenedDocuments': 'Opened Documents',
@@ -34,7 +36,18 @@ export class UserStateService {
     // Add more mappings as needed
   };
 
-  constructor(private api: ApiService) { }
+  private visitLengthSubject = new Subject<number>();
+  private lastSavedTime = 0;
+  private readonly DEBOUNCE_TIME = 1000; // 1 second debounce
+
+  constructor(private api: ApiService, private http: HttpClient) {
+    // Setup debounced visit length updates
+    // this.visitLengthSubject.pipe(
+    //   debounceTime(this.DEBOUNCE_TIME)
+    // ).subscribe(length => {
+    //   this.saveStateData('visitLength', length.toString());
+    // });
+  }
 
   setOpenedDocument(document: string): Observable<Document[]> {
     if (!this.openedDocuments.some(doc => doc.name === document)) {
@@ -74,11 +87,9 @@ export class UserStateService {
     return this.openedDocuments;
   }
 
-  setLoginDateTime(dateTime: Date): void {
-    this.loginDateTime = dateTime;
-    this.saveLoginDateTime().subscribe(() => {
-      console.log('STATE: Login date/time saved:', this.loginDateTime);
-    });
+  setLoginDateTime(dateTime: Date): Observable<void> {
+    const dto: LoginDateTimeDTO = { dateTime: dateTime.toISOString() };
+    return this.http.post<void>(`${this.apiUrl}/saveLoginDateTime`, dto);
   }
 
   getLoginDateTime(): Date | null {
@@ -90,10 +101,11 @@ export class UserStateService {
   }
 
   setVisitLength(length: number): void {
-    this.visitLength = length;
-    this.saveVisitLength().subscribe(() => {
-      console.log('STATE: Visit length saved:', this.visitLength);
-    });
+    // Only update if the difference is significant (e.g., more than 1 second)
+    if (Math.abs(length - this.lastSavedTime) >= 1) {
+      this.lastSavedTime = length;
+      this.visitLengthSubject.next(length);
+    }
   }
 
   getVisitLength(): number | null {
@@ -104,15 +116,8 @@ export class UserStateService {
     return this.visitLength;
   }
 
-  setVisitedPage(page: string): void {
-    const pageName = this.pageNameMapping[page] || page;
-    if (!this.visitedPages.includes(pageName)) {
-      this.visitedPages.push(pageName);
-      this.saveVisitedPages().subscribe(() => {
-        console.log('STATE: Visited pages saved:', this.visitedPages);
-      });
-      console.log('STATE: Visited pages:', this.visitedPages);
-    }
+  setVisitedPage(pageName: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/saveVisitedPage/${pageName}`, null);
   }
 
   getVisitedPages(): string[] {
