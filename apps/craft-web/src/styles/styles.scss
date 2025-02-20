@@ -53,6 +53,24 @@
   --md-sys-elevation-level3: 0px 1px 3px rgba(0,0,0,0.3), 0px 4px 8px 3px rgba(0,0,0,0.15);
   --md-sys-elevation-level4: 0px 2px 3px rgba(0,0,0,0.3), 0px 6px 10px 4px rgba(0,0,0,0.15);
   --md-sys-elevation-level5: 0px 4px 4px rgba(0,0,0,0.3), 0px 8px 12px 6px rgba(0,0,0,0.15);
+
+  // MD3 Typography
+  --font-source: 'Playfair Display', serif;
+  --font-merriweather: 'Merriweather', serif; 
+  --font-lora: 'Lora', serif;
+  --font-source-sans-pro: 'Source Sans Pro', sans-serif;
+  --font-open-sans: 'Open Sans', sans-serif;
+  --font-roboto: 'Roboto', sans-serif;
+  --font-roboto-flex: 'Roboto Flex', sans-serif;
+  
+  // Highlight colors
+  --color-primary: #002868;
+  --color-primary-lighter: #D6E2FF;
+  --color-accent: #BF0A30;
+  --color-accent-lighter: #FFD9D9;
+  --color-gold: #FFD700;
+  --color-white: #FFFFFF;
+  --color-gray-50: #F9FAFB;
 }
 
 // MD3 Typography
@@ -751,4 +769,8 @@ body {
 
 .table-data {
   font-family: 'Roboto', sans-serif;
+}
+
+::ng-deep .mat-expansion-indicator {
+  color: var(--color-gold);
 }

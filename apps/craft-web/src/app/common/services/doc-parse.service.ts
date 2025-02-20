@@ -44,7 +44,6 @@ export class DocParseService {
   async parseDoc(file: File): Promise<string> {
     console.log('\n=== Starting Document Parse ===');
     console.log(`Processing ${file.name} (${file.size} bytes)`);
-    debugger; // Debug Point 1: Initial file check
     
     const fileArrayBuffer = await file.arrayBuffer();
 
@@ -73,9 +72,7 @@ export class DocParseService {
             type: 'html',
             value: `
               <div class="myth-section">
-                <p class="myth-line" data-verse="${verse}">
-                  ${content}
-                </p>
+                ${verse} ${content}
               </div>
             `
           };
@@ -88,7 +85,6 @@ export class DocParseService {
     try {
       console.log('Converting to HTML...');
       const result = await mammoth.convertToHtml({ arrayBuffer: fileArrayBuffer }, options);
-      debugger; // Debug Point 4: After HTML conversion
       console.log('HTML conversion complete. Length:', result.value.length);
 
       const turndownService = new TurndownService({
@@ -104,7 +100,6 @@ export class DocParseService {
       });
 
       const markdown = turndownService.turndown(result.value);
-      debugger; // Debug Point 5: Final output
       console.log('=== Parse Complete ===');
       console.log('Output length:', markdown.length);
       return markdown;
@@ -194,14 +189,10 @@ export class DocParseService {
       this.log('Found myth:', {verse, content});
       
       return {
-        type: 'html', 
-        value: `
-          <div class="myth-section">
-            <p class="myth-line" data-verse="${verse}">
-              ${content}
-            </p>
-          </div>
-        `.trim()
+        type: 'html',
+        value: `<div class="myth-section">
+          ${verse} ${content}
+        </div>`
       };
     }
 
@@ -260,27 +251,44 @@ export class DocParseService {
     const link = match.groups?.link;
 
     if (verse) {
-      const formattedLink = link ? 
-        `<a href="${link}" title="View source" class="myth-link">${verse}</a>` : 
-        verse;
-
-      const formattedContent = content.replace(/^[\s.]+/, '').trim();
-
-      console.log(`Processing myth [${verse}]:`, {
-        content: formattedContent.substring(0, 50) + '...',
-        hasLink: !!link
-      });
+      // Move URL link to verse label only
+      const labelPart = link
+        ? `<span class="verse-label darkgreen-label">${verse}<a href="${link}" title="View source">†</a></span>`
+        : `<span class="verse-label">${verse}</span>`;
 
       return {
         type: 'html',
         value: `<div class="myth-section">
-          <p class="myth-line" data-verse="${verse}">
-            ${formattedLink} ${formattedContent}
-          </p>
+          ${labelPart}
+          <div class="myth-content">${content}</div>
         </div>`
       };
     }
 
     return null;
+  }
+
+  private processMythContent(text: string): string {
+    const verses = text.split(/(?=\[\d+(?:-\d+)?\]|\d+(?:-\d+)?\.)/);
+    
+    return verses.map(verse => {
+      // Match verse numbers and content
+      const verseMatch = verse.match(/(?:\[(\d+(?:-\d+)?)\]|\b(\d+(?:-\d+)?)\.)(?:\((.*?)\))?\s*(.+)/s);
+      
+      if (verseMatch) {
+        const verseNum = verseMatch[1] || verseMatch[2];
+        const link = verseMatch[3];
+        const content = verseMatch[4].trim();
+        const labelPart = link
+          ? `<span class="verse-label darkgreen-label">${verseNum}<a href="${link}" title="View source">†</a></span>`
+          : `<span class="verse-label">${verseNum}</span>`;
+
+        return `<div class="myth-section">
+          ${labelPart}
+          <div class="myth-content">${content}</div>
+        </div>`;
+      }
+      return verse;
+    }).join('\n');
   }
 }
