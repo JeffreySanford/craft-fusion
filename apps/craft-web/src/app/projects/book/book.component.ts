@@ -180,6 +180,7 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.addHeaderIds();
+    this.updateImageVisibility(false)
   }
 
   loadFilesFromAssets(): void {
@@ -248,7 +249,7 @@ export class BookComponent implements OnInit, AfterViewInit {
     }));
     this.userStateService.getLoginDateTime();
     this.addHeaderIds();
-    this.updateImageVisibility();
+    this.updateImageVisibility(false);
   }
 
   onChange({ editor }: { editor: Editor }) {
@@ -551,12 +552,12 @@ export class BookComponent implements OnInit, AfterViewInit {
     }
   }
 
-  toggleImages(): void {
-    this.areImagesVisible = !this.areImagesVisible;
-    this.updateImageVisibility();
+  toggleImages(visible: boolean): void {
+    this.areImagesVisible = visible;
+    this.updateImageVisibility(this.areImagesVisible);
   }
 
-  updateImageVisibility(): void {
+  updateImageVisibility(visible: boolean): void {
     if (this.editorComponent && this.editorComponent.editor) {
       const editor = this.editorComponent.editor;
       const content = editor.getContent();

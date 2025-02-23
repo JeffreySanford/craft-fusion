@@ -71,11 +71,18 @@ $vibrant-yellow: #fc0;
     .toolbar {
       background: var(--book-light-toolbar);
       border-bottom: 1px solid var(--book-light-border);
+      color: var(--book-light-text); /* Add text color */
     }
 
-    .markdown-preview, .tox-edit-area__iframe {
+    .markdown-preview {
       background: var(--book-light-bg);
       color: var(--book-light-text);
+    }
+
+    .tox-tinymce {
+      background: var(--book-light-bg);
+      color: var(--book-light-text);
+      border: 1px solid var(--book-light-border);
     }
 
     .myth-section {
@@ -84,7 +91,7 @@ $vibrant-yellow: #fc0;
 
       .myth-line {
         color: var(--book-light-myth-text);
-        
+
         &::before {
           color: var(--book-light-myth-verse);
         }
@@ -100,6 +107,11 @@ $vibrant-yellow: #fc0;
         color: var(--book-light-text);
       }
     }
+
+    .book-content {
+       background-color: var(--book-light-bg);
+       color: var(--book-light-text);
+    }
   }
 
   &.dark-theme {
@@ -113,11 +125,18 @@ $vibrant-yellow: #fc0;
     .toolbar {
       background: var(--book-dark-toolbar);
       border-bottom: 1px solid var(--book-dark-border);
+      color: var(--book-dark-text); /* Add text color */
     }
 
-    .markdown-preview, .tox-edit-area__iframe {
+    .markdown-preview {
       background: var(--book-dark-bg);
       color: var(--book-dark-text);
+    }
+
+    .tox-tinymce {
+      background: var(--book-dark-bg);
+      color: var(--book-dark-text);
+      border: 1px solid var(--book-dark-border);
     }
 
     .myth-section {
@@ -126,7 +145,7 @@ $vibrant-yellow: #fc0;
 
       .myth-line {
         color: var(--book-dark-myth-text);
-        
+
         &::before {
           color: var(--book-dark-myth-verse);
         }
@@ -141,6 +160,11 @@ $vibrant-yellow: #fc0;
       .chapter-link {
         color: var(--book-dark-text);
       }
+    }
+
+    .book-content {
+       background-color: var(--book-dark-bg);
+       color: var(--book-dark-text);
     }
   }
 
@@ -975,13 +999,4 @@ datalist option {
       }
     }
   }
-}
-
-.document-button {
-  border-radius: 0.25em;
-  border: 0.0625em solid #ccc;
-  padding: 0.5em;
-  margin: 0.25em;
-  cursor: pointer;
-  background-color: #f8f8f8;
 }

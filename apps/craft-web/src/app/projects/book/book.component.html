@@ -51,7 +51,7 @@
         <button mat-mini-fab class="mini-mat-fab button" (click)="toggleMarkdownPrettyView()">
           <mat-icon class="tag-icon">{{ isMarkdownPrettyView ? 'edit' : 'visibility' }}</mat-icon>
         </button>
-        <button mat-mini-fab class="mini-mat-fab button" (click)="toggleImages()">
+        <button mat-mini-fab class="mini-mat-fab button" (click)="toggleImages(!areImagesVisible)">
           <mat-icon class="tag-icon">{{ areImagesVisible ? 'image' : 'image_not_supported' }}</mat-icon>
         </button>
         <button mat-mini-fab class="mini-mat-fab button" (click)="toggleTheme()">

@@ -14,6 +14,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { ModelSelectorComponent } from './model-selector/model-selector.component';
+import { MatSelectModule } from '@angular/material/select';
 
 const routes: Routes = [
   { path: '', component: ChatComponent }
@@ -22,7 +26,8 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     ChatComponent,
-    MarkdownPipe
+    MarkdownPipe,
+    ModelSelectorComponent
   ],
   imports: [
     CommonModule,
@@ -36,7 +41,10 @@ const routes: Routes = [
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatMenuModule,
+    MatIconModule,
+    MatSelectModule
   ],
   providers: [ChatService, SplitTextPipe],
   exports: [

@@ -11,26 +11,29 @@ export class DocParseService {
   // Enhanced myth patterns with named capturing groups
   private mythPatterns = {
     // Match bracketed verse ranges with optional hyperlinks
-    bracketedRange: /^\[(?<start>\d+)-(?<end>\d+)\](?:\((?<link>[^\)]+)\))?(?<content>.*)$/,
+    bracketedRange: /^\[(?<start>\w+)-(?<end>\w+)\](?:\((?<link>[^\)]+)\))?(?<content>.*)$/,
     
     // Match markdown-style links with verse ranges
-    bracketedRangeLink: /^\[(?<verse>\d+(?:-\d+)?)\](?:\((?<link>[^\)]+)\))(?<content>.*)$/,
+    bracketedRangeLink: /^\[(?<verse>\w+(?:-\w+)?)\](?:\((?<link>[^\)]+)\))(?<content>.*)$/,
     
     // Match standard verse ranges 123-456.
-    verseRange: /^(?<start>\d+)-(?<end>\d+)\.\s*(?<content>.+)$/,
+    verseRange: /^(?<start>\w+)-(?<end>\w+)\.\s*(?<content>.+)$/,
     
     // Match single verse with brackets and optional hyperlink
-    bracketedVerse: /^\[(?<verse>\d+)\](?:\((?<link>[^\)]+)\))?(?<content>.*)$/,
+    bracketedVerse: /^\[(?<verse>\w+)\](?:\((?<link>[^\)]+)\))?(?<content>.*)$/,
     
     // Match standard verse format "123. Text"
-    singleVerse: /^(?<verse>\d+)\.\s*(?<content>.+)$/,
+    singleVerse: /^(?<verse>\w+)\.\s*(?<content>.+)$/,
     
     // Match ETCSL reference
     etcslRef: /^ETCSL\s+(?<ref>\d+\.\d+)\s*(?:\((?<link>[^\)]+)\))?\s*(?<content>.+)?$/,
     
     // Match continuation lines
     continuation: /^\s{2,}(?<content>.+)$/,
-    mythSection: /^(?:\d+(?:-\d+)?\.\s+[\s\S]+?)(?=\n\n|\n(?:\d+(?:-\d+)?\.|$))/gm
+    // Updated mythSection pattern to handle A-Z ranges
+    mythSection: /^(?<verse>\d{1,3}[A-Za-z]+)-(?<endVerse>\d{1,3}[A-Za-z]+)\s*(?<content>[\s\S]*)$/gm,
+    // New mythKeywordSection pattern to detect myths based on keywords
+    mythKeywordSection: /^(?<content>.*(?:Enki|Enlil|Anu|Ninhursag|netherworld|shrines|Land|heavens|earth).*)$/smi
   };
 
   private log(...args: any[]) {
@@ -170,10 +173,14 @@ export class DocParseService {
   private extractText(element: any): string {
     if (!element) return '';
     if (typeof element === 'string') return element;
-    
-    const text = element.value || '';
-    const childTexts = element.children?.map((c: any) => this.extractText(c)) || [];
-    return [text, ...childTexts].filter(t => t).join(' ').trim();
+
+    let text = element.value || '';
+    if (element.children) {
+      element.children.forEach((child: any) => {
+        text += this.extractText(child);
+      });
+    }
+    return text.trim();
   }
 
   private transformMythSection(element: any) {
@@ -203,17 +210,25 @@ export class DocParseService {
     // Remove extra whitespace and normalize quotes
     const normalizedText = text.trim().replace(/[""]/g, '"');
 
+    this.log('detectMythSection - text:', normalizedText); // Log the normalized text
+
     for (const [patternName, pattern] of Object.entries(this.mythPatterns)) {
-      const match = normalizedText.match(pattern);
-      if (match?.groups) {
-        console.log(`Matched myth pattern: ${patternName}`);
-        return {
-          verse: match.groups.verse || 
-                `${match.groups.start}-${match.groups.end}` ||
-                match.groups.ref || '',
-          content: match.groups.content?.trim() || '',
-          link: match.groups.link
-        };
+      debugger
+      if (patternName === 'mythSection' || patternName === 'mythKeywordSection') {
+        const match = normalizedText.match(pattern);
+        this.log(`Trying ${patternName} pattern: ${pattern}`);
+        if (match?.groups) {
+          this.log(`Matched myth pattern: ${patternName}`, match.groups);
+          return {
+            verse: match.groups.verse || 
+                  `${match.groups.start}-${match.groups.end}` ||
+                  match.groups.ref || '',
+            content: match.groups.content?.trim() || '',
+            link: match.groups.link
+          };
+        } else {
+          this.log(`${patternName} pattern did not match.`);
+        }
       }
     }
     return null;
