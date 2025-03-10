@@ -9,6 +9,22 @@
       "standalone": false
     }
   },
+  "implicitDependencies": ["craft-nest"],
+  "generators": {
+    "@nx/angular:component": {
+      "style": "scss",
+      "changeDetection": "OnPush",
+      "skipTests": true,
+      "export": false
+    },
+    "@nx/angular:application": {
+      "style": "scss",
+      "routing": true,
+      "linter": "eslint",
+      "unitTestRunner": "jest",
+      "e2eTestRunner": "playwright"
+    }
+  },
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",

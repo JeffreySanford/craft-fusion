@@ -1,0 +1,326 @@
+<div class="qfi-container" [ngClass]="{ 'dialog-mode': dialogMode }">
+  <h2 class="qfi-header">Quantum Sensor Network Information Matrix</h2>
+
+  <p class="qfi-description">
+    The Quantum Fisher Information Matrix quantifies how precisely multiple physical parameters can be estimated using a network of quantum sensors, potentially reaching
+    Heisenberg-limited precision through entanglement.
+  </p>
+
+  <!-- Interactive tabs for different aspects of QFI understanding -->
+  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center" class="concept-tabs">
+    <mat-tab label="Visualization">
+      <!-- QFI visualization content -->
+      <div class="visualization-section">
+        <div class="controls-container">
+          <div class="state-selector">
+            <h3>Measurement Precision Regime</h3>
+            <mat-button-toggle-group [value]="currentState" aria-label="Precision Regime">
+              <mat-button-toggle *ngFor="let state of states" [value]="state" (click)="changeState(state)">
+                {{ state }}
+              </mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+
+          <div class="parameter-slider" *ngIf="currentState === 'Standard Quantum Limit'">
+            <h3>Entanglement Strength</h3>
+            <mat-slider min="0" max="100" step="1" color="primary">
+              <input matSliderThumb [value]="parameterValue" (valueChange)="updateParameter($event)" />
+            </mat-slider>
+            <div class="slider-value">{{ parameterValue }}%</div>
+          </div>
+
+          <!-- Add slider for Heisenberg-Limited regime -->
+          <div class="parameter-slider" *ngIf="currentState === 'Heisenberg-Limited'">
+            <h3>Entanglement Strength</h3>
+            <mat-slider min="0" max="100" step="1" color="accent">
+              <input matSliderThumb [value]="heisenbergValue" (valueChange)="updateHeisenbergParameter($event)" />
+            </mat-slider>
+            <div class="slider-value">{{ heisenbergValue }}%</div>
+          </div>
+        </div>
+
+        <div class="visualization-wrapper">
+          <!-- Use case summary overlay -->
+          <div *ngIf="showUseCaseSummary" class="use-case-overlay" (click)="toggleUseCaseSummary()">
+            <div class="use-case-content" (click)="$event.stopPropagation()">
+              <div class="use-case-header">
+                <h3>Distributed Quantum Sensor Network</h3>
+                <button mat-icon-button class="close-button" (click)="toggleUseCaseSummary()">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+              <div class="use-case-body">
+                <p [innerHTML]="useCaseSummary"></p>
+
+                <h4>Sensor Types:</h4>
+                <ul class="sensor-list">
+                  <li *ngFor="let sensor of sensorLabels; let i = index">
+                    <strong>{{ sensor }}:</strong> {{ getSensorDescription(sensor) }}
+                  </li>
+                </ul>
+
+                <h4>Measured Parameters:</h4>
+                <ul class="param-list">
+                  <li *ngFor="let param of paramLabels; let i = index">
+                    <strong>{{ param }}:</strong> {{ getParamDescription(param) }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Full-width visualization container -->
+          <div class="visualization-container">
+            <div #qfiVisualization class="qfi-visualization"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="state-info" *ngIf="!selectedCell">
+        <h3>Current Precision Regime: {{ currentState }}</h3>
+        <p *ngIf="currentState === 'Classical Correlation'">
+          Classical correlation represents conventional sensors working independently. Each sensor measures its parameter with precision scaling as 
+          <app-katex [equation]="'1/\\sqrt{N}'" [displayMode]="false"></app-katex>, without quantum advantage.
+        </p>
+        <p *ngIf="currentState === 'Standard Quantum Limit'">
+          The Standard Quantum Limit represents the best possible precision with separable (non-entangled) quantum sensors, still achieving 
+          <app-katex [equation]="'1/\\sqrt{N}'" [displayMode]="false"></app-katex> scaling.
+        </p>
+        <p *ngIf="currentState === 'Heisenberg-Limited'">
+          Heisenberg-limited precision demonstrates quantum advantage through strong entanglement, achieving optimal 
+          <app-katex [equation]="'1/N'" [displayMode]="false"></app-katex> precision scaling - the fundamental quantum metrology limit.
+        </p>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Key Concepts">
+      <div class="concepts-container">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>What is Quantum Fisher Information?</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>
+              Quantum Fisher Information (QFI) quantifies how much information a quantum state carries about unknown parameters. It's fundamental to quantum metrology and sets the
+              ultimate precision bounds for parameter estimation.
+            </p>
+
+            <div class="key-equation" appPop>
+              <div class="equation-container" appSparkle>
+                <app-katex [equation]="cramerRaoEquation" [displayMode]="true"></app-katex>
+              </div>
+              <p class="equation-caption">Quantum Cramér-Rao Bound: The parameter estimation uncertainty (Δθ) is limited by the inverse of QFI</p>
+            </div>
+
+            <p>The QFIM we visualize here shows:</p>
+            <ul>
+              <li><strong>Diagonal elements:</strong> Direct sensitivity to parameters</li>
+              <li><strong>Off-diagonal elements:</strong> Correlations between parameters</li>
+            </ul>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Precision Scaling</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="precision-comparison">
+              <div class="precision-item" appHighlight>
+                <h4>Classical</h4>
+                <div class="precision-formula" appSparkle>
+                  <app-katex [equation]="classicalScalingEquation" [displayMode]="true"></app-katex>
+                </div>
+                <p>Standard limit for independent sensors</p>
+              </div>
+              <div class="precision-item" appHighlight [highlightColor]="'rgba(191, 10, 48, 0.1)'">
+                <h4>Heisenberg</h4>
+                <div class="precision-formula" appSparkle>
+                  <app-katex [equation]="heisenbergScalingEquation" [displayMode]="true"></app-katex>
+                </div>
+                <p>Ultimate quantum limit with entangled sensors</p>
+              </div>
+            </div>
+            <p class="math-explanation">For N sensors, quantum entanglement enables quadratic improvement in measurement precision</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>The Mathematics of QFI</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="math-section">
+              <p>The QFI for a quantum state ρ with parameter θ is defined as:</p>
+              <div class="equation-container beautiful-equation" appPop appSparkle>
+                <div class="katex-equation">
+                  <app-katex [equation]="qfiDefinitionEquation" [displayMode]="true" [options]="{ fontSize: '120%' }"></app-katex>
+                </div>
+              </div>
+
+              <p>For multiple parameters, the QFI becomes a matrix:</p>
+              <div class="equation-container beautiful-equation" appPop>
+                <div class="katex-equation">
+                  <app-katex [equation]="qfiMatrixEquation" [displayMode]="true" [options]="{ fontSize: '120%' }"></app-katex>
+                </div>
+              </div>
+
+              <p>The inverse of this matrix bounds the covariance matrix of estimators:</p>
+              <div class="equation-container beautiful-equation" appPop>
+                <div class="katex-equation">
+                  <app-katex [equation]="covarianceEquation" [displayMode]="true" [options]="{ fontSize: '120%' }"></app-katex>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Applications">
+      <div class="applications-container">
+        <div class="application-cards">
+          <mat-card>
+            <img mat-card-image src="assets/quantum-sensing-network.svg" alt="Quantum Sensor Network" />
+            <mat-card-content>
+              <h3>Quantum Sensor Networks</h3>
+              <p>
+                Distributed quantum sensors using entanglement to achieve enhanced measurement precision for applications like gravitational field mapping and advanced navigation.
+              </p>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card>
+            <img mat-card-image src="assets/atomic-clock.svg" alt="Atomic Clock" />
+            <mat-card-content>
+              <h3>Atomic Clocks</h3>
+              <p>Entangled atoms in optical lattices achieve better frequency stability for ultra-precise timekeeping beyond classical limits.</p>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card>
+            <img mat-card-image src="assets/quantum-imaging.svg" alt="Quantum Imaging" />
+            <mat-card-content>
+              <h3>Quantum Imaging</h3>
+              <p>Entangled photons enable sub-wavelength resolution and high sensitivity in biological tissue imaging and microscopy.</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <!-- Information Overlay -->
+  <div class="explanation-overlay" *ngIf="showOverlay">
+    <div class="overlay-content">
+      <button mat-icon-button class="close-button" (click)="closeOverlay()">
+        <mat-icon>close</mat-icon>
+      </button>
+
+      <h3 *ngIf="!selectedCell">Quantum Fisher Information Matrix Explained</h3>
+      <div *ngIf="!selectedCell" class="explanation-text">
+        <p>The Quantum Fisher Information Matrix (QFIM) represents the maximum information extractable from quantum measurements about unknown parameters.</p>
+        <p>The inverse of QFIM gives the Quantum Cramér-Rao Bound, setting the ultimate precision limit for any quantum measurement strategy.</p>
+        <p>Diagonal elements (i=j) represent self-information about individual parameters, while off-diagonal elements (i≠j) quantify information coupling between parameters.</p>
+        <p>Entanglement between quantum sensors enhances the QFIM values, enabling precision beyond classical limits (1/√N) and approaching the Heisenberg limit (1/N).</p>
+
+        <div class="qfi-equations">
+          <p class="equation-title">Mathematical Definition:</p>
+          <div class="beautiful-equation" appSparkle>
+            <div class="katex-equation">
+              <app-katex [equation]="qfiDefinitionEquation" [displayMode]="true"></app-katex>
+            </div>
+          </div>
+          <p class="equation-note">where L<sub>i</sub> is the symmetric logarithmic derivative for parameter i</p>
+        </div>
+        
+        <div class="regime-scaling">
+          <p>The current regime (<strong>{{ currentState }}</strong>) has the following precision scaling:</p>
+          <app-katex [equation]="regimeScalingEquation(currentState)" [displayMode]="true"></app-katex>
+        </div>
+      </div>
+
+      <!-- Cell detail view -->
+      <h3 *ngIf="selectedCell">Cell Detail: Sensor-Parameter Analysis</h3>
+      <div *ngIf="selectedCell" class="cell-detail">
+        <div class="cell-detail-grid">
+          <div class="cell-metrics">
+            <p><strong>Sensors:</strong> Sensor {{ selectedCell.row + 1 }} - Parameter {{ selectedCell.col + 1 }}</p>
+            <p><strong>QFI Value:</strong> {{ selectedCell.value.toFixed(3) }}</p>
+            <p>
+              <strong>Relative Sensitivity:</strong> {{ selectedCell.value > 0.85 ? 'Very High' : selectedCell.value > 0.7 ? 'High' : selectedCell.value > 0.5 ? 'Medium' : 'Low' }}
+            </p>
+
+            <div class="interpretation" *ngIf="selectedCell.row === selectedCell.col">
+              <h4>Diagonal Element Interpretation</h4>
+              <p>This diagonal element represents the direct sensitivity of measurements to Parameter {{ selectedCell.col + 1 }}.</p>
+              <p>The inverse of this value <app-katex [equation]="'(' + (1 / selectedCell.value).toFixed(3) + ')'" [displayMode]="false"></app-katex> bounds the minimum variance in estimating this parameter.</p>
+            </div>
+
+            <div class="interpretation" *ngIf="selectedCell.row !== selectedCell.col">
+              <h4>Off-Diagonal Element Interpretation</h4>
+              <p>This off-diagonal element represents quantum correlations between Parameters {{ selectedCell.row + 1 }} and {{ selectedCell.col + 1 }}.</p>
+              <p>Strong correlations (values near 1.0) are characteristic of highly entangled states and enable measurements to reach the Heisenberg limit.</p>
+            </div>
+          </div>
+
+          <div class="detail-chart">
+            <div class="detail-bar" [style.height.%]="selectedCell.value * 100"></div>
+            <div class="chart-baseline"></div>
+            <div class="value-marker">{{ selectedCell.value.toFixed(2) }}</div>
+          </div>
+        </div>
+
+        <div class="precision-implications">
+          <h4>Measurement Precision Implications:</h4>
+          <p *ngIf="selectedCell.value > 0.8">
+            <mat-icon color="accent">trending_up</mat-icon>
+            <strong>High QFI Value:</strong> Approaching Heisenberg-limited precision 
+            (<app-katex [equation]="'1/N'" [displayMode]="false"></app-katex> scaling).
+          </p>
+          <p *ngIf="selectedCell.value <= 0.8 && selectedCell.value > 0.5">
+            <mat-icon>trending_flat</mat-icon>
+            <strong>Medium QFI Value:</strong> Better than classical but not yet reaching full quantum advantage.
+          </p>
+          <p *ngIf="selectedCell.value <= 0.5">
+            <mat-icon color="warn">trending_down</mat-icon>
+            <strong>Low QFI Value:</strong> Limited parameter sensitivity, closer to classical precision limits 
+            (<app-katex [equation]="'1/\\sqrt{N}'" [displayMode]="false"></app-katex>).
+          </p>
+          
+          <!-- Add new mathematical representation -->
+          <div class="precision-bound-equation" *ngIf="selectedCell">
+            <app-katex 
+              [equation]="selectedCell.row === selectedCell.col ? 
+                minVarianceEquation(selectedCell.value) : 
+                parameterPrecisionEquation(selectedCell.value)" 
+              [displayMode]="true">
+            </app-katex>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="precision-scaling-container">
+    <h3>Precision Scaling Comparison</h3>
+    <div class="scaling-comparison">
+      <div class="scaling-item">
+        <div class="scaling-bar classical"></div>
+        <div class="scaling-label">Classical: <app-katex [equation]="'1/\\sqrt{N}'" [displayMode]="false"></app-katex></div>
+      </div>
+      <div class="scaling-item">
+        <div class="scaling-bar sql"></div>
+        <div class="scaling-label">SQL: <app-katex [equation]="'1/\\sqrt{N}'" [displayMode]="false"></app-katex></div>
+      </div>
+      <div class="scaling-item">
+        <div class="scaling-bar heisenberg"></div>
+        <div class="scaling-label">Heisenberg: <app-katex [equation]="'1/N'" [displayMode]="false"></app-katex></div>
+      </div>
+    </div>
+    <p class="scaling-explanation">
+      The Heisenberg limit (<app-katex [equation]="'1/N'" [displayMode]="false"></app-katex> precision scaling) represents a quadratic improvement over 
+      classical or Standard Quantum Limit (<app-katex [equation]="'1/\\sqrt{N}'" [displayMode]="false"></app-katex>) for N sensors.
+    </p>
+  </div>
+</div>

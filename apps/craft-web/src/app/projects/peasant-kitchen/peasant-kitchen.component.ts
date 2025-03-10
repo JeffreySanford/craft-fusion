@@ -1,15 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { Recipe } from './recipe.class';
-import { PeasantKitchenService } from './peasant-kitchen.service';
-import { Router } from '@angular/router';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-peasant-kitchen',
-  standalone: false,
   templateUrl: './peasant-kitchen.component.html',
   styleUrls: ['./peasant-kitchen.component.scss'],
+  standalone: false,
 })
-export class PeasantKitchenComponent {
-
-}
+export class PeasantKitchenComponent {}

@@ -1,0 +1,1166 @@
+// Patriotic color palette
+$color-blue: #002868;
+$color-red: #BF0A30;
+$color-white: #FFFFFF;
+$color-light-blue: #8BAAF7;
+$color-light-red: #F78B8B;
+
+.qfi-container {
+  padding: 1.5rem;
+  font-family: Roboto, Arial, sans-serif;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  
+  &.dialog-mode {
+    padding: 1rem;
+    box-shadow: none;
+  }
+}
+
+.qfi-header {
+  color: $color-red;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.qfi-description {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.controls-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+  
+  .state-selector {
+    flex: 1;
+    min-width: 200px;
+    
+    h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+      color: $color-blue;
+    }
+    
+    mat-button-toggle-group {
+      width: 100%;
+    }
+    
+    ::ng-deep .mat-button-toggle-checked {
+      background-color: $color-blue;
+      color: white;
+    }
+  }
+  
+  .parameter-slider {
+    flex: 1;
+    min-width: 200px;
+    
+    h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+      color: $color-blue;
+    }
+    
+    mat-slider {
+      width: 100%;
+    }
+    
+    .slider-value {
+      margin-top: 0.5rem;
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    ::ng-deep .mat-slider-thumb {
+      background-color: $color-red;
+    }
+    
+    ::ng-deep .mat-slider-track-fill {
+      background-color: $color-red;
+    }
+  }
+  
+  .info-button {
+    align-self: center;
+    
+    button {
+      background-color: $color-light-blue;
+      color: white;
+    }
+  }
+}
+
+.visualization-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  
+  .qfi-visualization {
+    width: 100%;
+    max-width: 500px;
+    height: 320px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .row-label, .col-label {
+      fill: $color-blue;
+      font-size: 10px;
+      font-weight: 500;
+    }
+  }
+}
+
+.state-info {
+  background-color: rgba(0, 40, 104, 0.05);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  
+  h3 {
+    color: $color-blue;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+// Overlay styles
+.explanation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  
+  .overlay-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    
+    .close-button {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      color: $color-red;
+    }
+    
+    h3 {
+      color: $color-blue;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    
+    .explanation-text p {
+      margin-bottom: 1rem;
+    }
+    
+    // Detailed cell view styling
+    .cell-detail {
+      .detail-chart {
+        height: 120px;
+        background-color: rgba(0, 40, 104, 0.1);
+        border-radius: 4px;
+        margin: 1rem 0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        padding: 10px;
+        
+        .detail-bar {
+          width: 60px;
+          background: linear-gradient($color-blue, $color-red);
+          border-radius: 4px;
+        }
+      }
+      
+      .detail-explanation {
+        font-size: 0.9rem;
+        font-style: italic;
+        color: rgba(0, 0, 0, 0.6);
+      }
+      
+      .precision-note {
+        margin-top: 0.75rem;
+        font-size: 0.9rem;
+        background-color: rgba(191, 10, 48, 0.1);
+        padding: 0.5rem;
+        border-radius: 4px;
+        border-left: 3px solid $color-red;
+      }
+    }
+  }
+}
+
+.dialog-content {
+  padding: 1.5em;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 0.5em;
+  box-shadow: 0 0.25em 0.5em rgba(0, 0, 0, 0.3);
+  font-family: Roboto, Arial, sans-serif;
+
+  .description {
+    font-size: 1em;
+    margin-bottom: 1em;
+  }
+
+  .infographic {
+    width: 100%;
+    margin: 1em 0;
+    border-radius: 0.5em;
+    box-shadow: 0 0.125em 0.5em rgba(0, 0, 0, 0.25);
+  }
+
+  .divider {
+    margin: 0.75em 0;
+  }
+
+  .section-title {
+    color: #d32f2f; // patriotic vibrant red
+    margin-bottom: 0.75em;
+    font-weight: bold;
+  }
+
+  .description {
+    font-size: 1em;
+    margin-bottom: 1em;
+  }
+
+  .section-title {
+    color: #d32f2f; // Patriotic red for section headers
+    font-size: 1.25em;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+  }
+
+  ul {
+    padding-left: 1.5em;
+    margin-bottom: 1em;
+    li {
+      margin-bottom: 0.5em;
+    }
+  }
+
+  .divider {
+    margin: 0.75em 0;
+  }
+
+  .mat-divider {
+    background-color: #3f51b5; // Blue divider for patriotic color scheme
+  }
+
+  // Updated styles for mat-chip-set (formerly mat-chip-list)
+  .state-chip-container {
+    display: flex;
+    justify-content: center;
+    margin: 1em 0;
+    
+    mat-chip-set {
+      justify-content: center;
+    }
+    
+    .mdc-evolution-chip, // For newer Material versions
+    .mat-chip {          // For older Material versions
+      margin: 0 0.25em;
+      font-size: 0.875em;
+    }
+  }
+}
+
+mat-dialog-content {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+mat-dialog-actions {
+  justify-content: center;
+  margin-top: 1em;
+}
+
+// Tooltip styles
+:host ::ng-deep .qfi-tooltip {
+  z-index: 1001;
+  font-family: Roboto, Arial, sans-serif;
+  border: 1px solid $color-blue;
+  
+  small {
+    display: block;
+    margin-top: 0.25rem;
+    color: rgba(0, 0, 0, 0.6);
+    font-style: italic;
+    font-size: 0.8rem;
+  }
+}
+
+// Add diagonal pattern for diagonal elements
+.diagonal-pattern {
+  stroke-dasharray: 4 4;
+  stroke: rgba(0, 40, 104, 0.5);
+  stroke-width: 1px;
+  fill: none;
+}
+
+.precision-scaling-container {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: rgba(0, 40, 104, 0.05);
+  border-radius: 8px;
+  
+  h3 {
+    color: $color-blue;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+  }
+  
+  .scaling-comparison {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1rem;
+    
+    .scaling-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      
+      .scaling-bar {
+        width: 20px;
+        margin-bottom: 0.5rem;
+        border-radius: 4px 4px 0 0;
+        
+        &.classical {
+          height: 40px;
+          background-color: #AAAAAA;
+        }
+        
+        &.sql {
+          height: 40px;
+          background-color: $color-blue;
+        }
+        
+        &.heisenberg {
+          height: 80px;
+          background-color: $color-red;
+        }
+      }
+      
+      .scaling-label {
+        font-size: 0.8rem;
+        text-align: center;
+      }
+    }
+  }
+  
+  .scaling-explanation {
+    font-size: 0.85rem;
+    text-align: center;
+    font-style: italic;
+    margin: 0;
+  }
+}
+
+// Scientific styling elements
+.key-equation {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: rgba(0, 40, 104, 0.08);
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid $color-blue;
+  
+  .equation-container {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
+    display: inline-block;
+    width: 100%;
+    max-width: 500px;
+    border: 2px solid rgba(191, 10, 48, 0.7);
+  }
+  
+  .katex-equation {
+    font-size: 1.8rem;
+  }
+  
+  .equation-caption {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: rgba(0, 0, 0, 0.7);
+    margin-top: 0.75rem;
+  }
+}
+
+// Enhanced math equation styling
+.key-equation {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: rgba(0, 40, 104, 0.08);
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid $color-blue;
+  
+  .equation-container {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
+    display: inline-block;
+    width: 100%;
+    max-width: 500px;
+    border: 2px solid rgba(191, 10, 48, 0.7);
+  }
+  
+  .katex-equation {
+    font-size: 1.8rem;
+  }
+  
+  .equation-caption {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: rgba(0, 0, 0, 0.7);
+    margin-top: 0.75rem;
+  }
+}
+
+// Beautiful equations with enhanced styling
+.beautiful-equation {
+  margin: 1.8rem auto;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(0, 128, 128, 0.1) 0%, rgba(0, 128, 128, 0.05) 100%); // Teal background
+  border-radius: 10px;
+  display: inline-block;
+  width: 100%;
+  max-width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 40, 104, 0.15);
+  position: relative;
+  text-align: center;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, $color-blue, $color-red);
+    border-radius: 10px 10px 0 0;
+  }
+  
+  .katex-equation {
+    font-size: 1.8rem;
+    width: 100%;
+    
+    ::ng-deep .katex-display {
+      border: 2px solid $color-red;
+      padding: 12px 16px;
+      border-radius: 8px;
+      background-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 2px 10px rgba(191, 10, 48, 0.15);
+      overflow-x: auto;
+    }
+  }
+}
+
+.math-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  background-color: rgba(0, 128, 128, 0.08); // Teal background for math section
+  border-radius: 12px;
+  
+  p {
+    margin: 0.75rem 0;
+    text-align: center;
+    font-size: 1.05rem;
+    color: rgba(0, 0, 0, 0.8);
+  }
+  
+  .equation-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 1rem 0;
+  }
+}
+
+// Improve the precision item styling
+.precision-item {
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  margin: 0.5rem;
+  
+  h4 {
+    margin-top: 0;
+    color: $color-blue;
+    font-size: 1.2rem;
+  }
+  
+  .precision-formula {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    display: inline-block;
+    width: 100%;
+    border: 2px solid $color-red;
+    
+    .katex-equation {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+  }
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:first-child {
+    background-color: rgba(0, 40, 104, 0.12);
+  }
+  
+  &:last-child {
+    background-color: rgba(191, 10, 48, 0.12);
+  }
+}
+
+// QFI equations styling in the overlay
+.qfi-equations {
+  margin-top: 2rem;
+  padding: 2rem;
+  background-color: rgba(0, 128, 128, 0.1);
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  border-left: 5px solid $color-blue;
+  
+  .equation-title {
+    margin-top: 0;
+    font-weight: bold;
+    color: $color-blue;
+    font-size: 1.2rem;
+  }
+  
+  .beautiful-equation {
+    margin: 1.5rem auto;
+    padding: 1.5rem;
+    max-width: 100%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8));
+  }
+  
+  .equation-note {
+    font-size: 1rem;
+    font-style: italic;
+    margin-top: 0.75rem;
+    color: rgba(0, 0, 0, 0.7);
+  }
+}
+
+// Enhanced math equation styling
+.key-equation {
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background-color: rgba(0, 40, 104, 0.05);
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid $color-blue;
+  
+  .equation-container {
+    margin: 1.25rem 0;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 5px;
+    display: inline-block;
+    min-width: 200px;
+  }
+  
+  .katex-equation {
+    font-size: 1.5rem;
+  }
+  
+  .equation-caption {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: rgba(0, 0, 0, 0.6);
+    margin-top: 0.5rem;
+  }
+}
+
+// Beautiful equations with enhanced styling
+.beautiful-equation {
+  margin: 1.5rem auto;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(0, 40, 104, 0.05) 0%, rgba(191, 10, 48, 0.05) 100%);
+  border-radius: 8px;
+  display: inline-block;
+  min-width: 250px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 40, 104, 0.1);
+  position: relative;
+  text-align: center;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, $color-blue, $color-red);
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .katex-equation {
+    font-size: 1.6rem;
+  }
+}
+
+.math-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0;
+  
+  p {
+    margin: 0.5rem 0;
+    text-align: center;
+  }
+  
+  .equation-container {
+    width: 100%;
+    max-width: 450px;
+  }
+}
+
+.precision-item {
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  
+  h4 {
+    margin-top: 0;
+    color: $color-blue;
+  }
+  
+  .precision-formula {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 5px;
+    display: inline-block;
+    
+    .katex-equation {
+      font-size: 1.7rem;
+      font-weight: bold;
+    }
+  }
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:first-child {
+    background-color: rgba(0, 40, 104, 0.1);
+  }
+  
+  &:last-child {
+    background-color: rgba(191, 10, 48, 0.1);
+  }
+}
+
+// QFI equations styling
+.qfi-equations {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+  border-left: 5px solid $color-blue;
+  
+  .equation-title {
+    margin-top: 0;
+    font-weight: bold;
+    color: $color-blue;
+    font-size: 1.1rem;
+  }
+  
+  .beautiful-equation {
+    margin: 1rem auto;
+    padding: 1.25rem;
+    max-width: 90%;
+    background: linear-gradient(to right, rgba(0, 40, 104, 0.03), rgba(191, 10, 48, 0.03));
+  }
+  
+  .equation-note {
+    font-size: 0.9rem;
+    font-style: italic;
+    margin-top: 0.5rem;
+  }
+}
+
+.concept-tabs {
+  margin-bottom: 1.5rem;
+  
+  ::ng-deep .mat-tab-label {
+    color: $color-blue;
+    
+    &.mat-tab-label-active {
+      color: $color-red;
+      font-weight: 500;
+    }
+  }
+  
+  ::ng-deep .mat-tab-header {
+    border-bottom-color: rgba(0, 40, 104, 0.2);
+  }
+  
+  ::ng-deep .mat-ink-bar {
+    background-color: $color-red !important;
+  }
+}
+
+.concepts-container {
+  padding: 1rem 0;
+  
+  mat-card {
+    margin-bottom: 1rem;
+    
+    mat-card-title {
+      color: $color-blue;
+      font-size: 1.1rem;
+    }
+  }
+  
+  .precision-comparison {
+    display: flex;
+    justify-content: space-around;
+    margin: 1rem 0;
+    
+    .precision-item {
+      text-align: center;
+      padding: 1rem;
+      border-radius: 4px;
+      
+      h4 {
+        margin-top: 0;
+        color: $color-blue;
+      }
+      
+      .precision-formula {
+        font-family: 'Times New Roman', serif;
+        font-size: 1.5rem;
+        margin: 0.5rem 0;
+        font-weight: bold;
+      }
+      
+      &:first-child {
+        background-color: rgba(0, 40, 104, 0.1);
+      }
+      
+      &:last-child {
+        background-color: rgba(191, 10, 48, 0.1);
+      }
+    }
+  }
+}
+
+.applications-container {
+  padding: 1rem 0;
+  
+  .application-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    
+    mat-card {
+      height: 100%;
+      
+      h3 {
+        color: $color-blue;
+        font-size: 1rem;
+        margin-top: 0;
+      }
+    }
+  }
+}
+
+// Enhanced cell detail view
+.cell-detail-grid {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 1rem;
+  
+  .cell-metrics {
+    p {
+      margin: 0.5rem 0;
+    }
+  }
+  
+  .detail-chart {
+    position: relative;
+    height: 150px;
+    background-color: rgba(0, 40, 104, 0.05);
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 10px;
+    
+    .detail-bar {
+      width: 60px;
+      background: linear-gradient($color-blue, $color-red);
+      border-radius: 4px 4px 0 0;
+    }
+    
+    .chart-baseline {
+      position: absolute;
+      bottom: 10px;
+      width: 80%;
+      height: 1px;
+      background-color: #333;
+    }
+    
+    .value-marker {
+      position: absolute;
+      right: 5px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+  }
+}
+
+.interpretation {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 4px;
+  
+  h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: $color-blue;
+    font-size: 0.9rem;
+  }
+  
+  p {
+    font-size: 0.85rem;
+    margin: 0.25rem 0;
+  }
+}
+
+.precision-implications {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+  
+  h4 {
+    margin-top: 0;
+    color: $color-blue;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    display: flex;
+    align-items: center;
+    margin: 0.25rem 0;
+    
+    mat-icon {
+      margin-right: 0.5rem;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+    }
+  }
+}
+
+// QFI equations styling
+.qfi-equations {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+  text-align: center;
+  
+  .equation-title {
+    margin-top: 0;
+    font-weight: bold;
+    color: $color-blue;
+  }
+  
+  .equation {
+    font-family: 'Times New Roman', serif;
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+  }
+}
+
+// Visualization enhancements
+.viz-title {
+  font-size: 14px;
+  font-weight: bold;
+  fill: $color-blue;
+}
+
+.equation-label {
+  font-family: 'Times New Roman', serif;
+  fill: $color-blue;
+}
+
+// Add enhanced styling for KaTeX equations
+::ng-deep .katex-equation {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  overflow: visible;
+  padding: 1em; 
+  margin: 0 auto;
+  font-size: 1.2em; // Adjust size if needed for readability
+  text-align: center;
+  
+  .katex-display {
+    margin: 0.75rem 0;
+    padding: 1rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 2px solid $color-red !important;
+    border-radius: 8px;
+    
+    // Add a glowing effect to equations
+    &:hover {
+      box-shadow: 0 0 15px rgba(191, 10, 48, 0.4) !important;
+      transition: box-shadow 0.3s ease;
+    }
+  }
+  
+  // Make equations stand out more
+  .katex {
+    font-size: 1.7em;
+    
+    .mord.mathdefault {
+      color: #002868;
+      font-weight: bold;
+    }
+    
+    .mord.text {
+      color: #BF0A30;
+    }
+  }
+}
+
+// Make equation containers more appealing
+.beautiful-equation {
+  padding: 1em;
+  overflow: visible;
+  background: linear-gradient(135deg, rgba(0, 40, 104, 0.05) 0%, rgba(191, 10, 48, 0.05) 100%);
+  border-radius: 12px !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #002868, #BF0A30);
+    border-radius: 4px 4px 0 0;
+  }
+  
+  &::after {
+    content: '✦';
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    font-size: 14px;
+    color: rgba(191, 10, 48, 0.5);
+  }
+}
+
+.equation-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1em;
+  margin: 0.5em 0;
+  border-radius: 0.5em;
+  box-shadow: 0 0.1em 0.3em rgba(0,0,0,0.2);
+}
+
+// Enhance use-case overlay
+.use-case-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 40, 104, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  
+  .use-case-content {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius: 12px;
+    max-width: 750px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(191, 10, 48, 0.3);
+    
+    .use-case-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid rgba(0, 40, 104, 0.2);
+      padding-bottom: 0.75rem;
+      
+      h3 {
+        color: $color-blue;
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+      
+      .close-button {
+        color: $color-red;
+        background-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 1);
+          box-shadow: 0 3px 8px rgba(191, 10, 48, 0.2);
+        }
+      }
+    }
+    
+    .use-case-body {
+      p {
+        margin-bottom: 1.25rem;
+        line-height: 1.6;
+        font-size: 1.05rem;
+        color: rgba(0, 0, 0, 0.8);
+      }
+      
+      h4 {
+        color: $color-red;
+        margin: 1.75rem 0 1rem 0;
+        font-size: 1.2rem;
+      }
+      
+      ul {
+        padding-left: 1.75rem;
+        
+        li {
+          margin-bottom: 0.75rem;
+          line-height: 1.5;
+          
+          strong {
+            color: $color-blue;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Improve popup overlay with transparency and better text
+.explanation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 40, 104, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  
+  .overlay-content {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius: 12px;
+    max-width: 650px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(191, 10, 48, 0.3);
+    
+    .close-button {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      color: $color-red;
+      background-color: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 1);
+        box-shadow: 0 3px 8px rgba(191, 10, 48, 0.2);
+      }
+    }
+    
+    h3 {
+      color: $color-blue;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 500;
+      border-bottom: 2px solid rgba(0, 40, 104, 0.2);
+      padding-bottom: 0.75rem;
+    }
+    
+    .explanation-text p {
+      margin-bottom: 1.25rem;
+      line-height: 1.6;
+      font-size: 1.05rem;
+      color: rgba(0, 0, 0, 0.8);
+    }
+  }
+}

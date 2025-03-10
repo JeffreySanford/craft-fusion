@@ -189,7 +189,7 @@ $vibrant-yellow: #fc0;
           content: attr(data-myth-line);
           position: absolute;
           left: 0;
-          color: darken($vibrant-green, 20%);
+          color: color.adjust($vibrant-green, $lightness: -20%); // Line 191: Fixed
           font-weight: bold;
           font-style: normal;
           width: 2.5em;
@@ -213,7 +213,7 @@ $vibrant-yellow: #fc0;
             content: attr(data-myth-line);
             position: absolute;
             left: 1em;
-            color: darken($vibrant-green, 20%);
+            color: color.adjust($vibrant-green, $lightness: -20%); // Line 216: Fixed - removed extra parameters
             font-weight: bold;
             font-style: normal;
           }
@@ -235,7 +235,7 @@ $vibrant-yellow: #fc0;
             content: attr(data-myth-line);
             position: absolute;
             left: 0;
-            color: darken($vibrant-green, 20%);
+            color: color.adjust($vibrant-green, $lightness: -20%); // Line 237: Fixed - removed extra parameters
             font-weight: bold;
             font-style: normal;
             width: 2.5em;
@@ -255,7 +255,7 @@ $vibrant-yellow: #fc0;
         .myth-number {
           position: absolute;
           left: 0;
-          color: darken($vibrant-green, 20%);
+          color: color.adjust($vibrant-green, $lightness: -20%); // Line 257: Fixed - removed extra parameters
           font-weight: bold;
           font-style: normal;
           width: 2.5em;
@@ -335,6 +335,22 @@ $vibrant-yellow: #fc0;
         font-weight: bold;
       }
     }
+  }
+
+  .some-selector {
+    color: color.adjust($vibrant-green, $lightness: -20%);
+  }
+
+  .another-selector {
+    color: color.adjust($vibrant-green, $lightness: -20%);
+  }
+
+  .third-selector {
+    color: color.adjust($vibrant-green, $lightness: -20%);
+  }
+
+  .fourth-selector {
+    color: color.adjust($vibrant-green, $lightness: -20%);
   }
 }
 

@@ -5,7 +5,7 @@
   "plugins": [
     "@angular-eslint/stylelint-plugin"
   ],
-  "configBasedir": "/C:/repos/craft-fusion/apps/craft-web",
+  "configBasedir": "../../",
   "rules": {
     "at-rule-no-unknown": [
       true,

@@ -11,12 +11,14 @@ import { RecipeComponent } from './projects/peasant-kitchen/recipe/recipe.compon
 import { RecipesComponent } from './projects/peasant-kitchen/recipes/recipes.component';
 import { ResumeComponent } from './pages/resume/resume.component';
 import { BookComponent } from './projects/book/book.component';
+import { QuantumFisherInformationComponent } from './projects/data-visualizations/quantum-fisher-information/quantum-fisher-information.component';
 
 export const appRoutes: Routes = [
   { path: 'home', component: LandingComponent },
   { path: 'table', component: RecordListComponent },
   { path: 'table/:id', component: RecordDetailComponent },
   { path: 'data-visualizations', component: DataVisualizationsComponent },
+  { path: 'quantum-fisher', component: QuantumFisherInformationComponent },
   { path: 'book', component: BookComponent },
   { path: 'chat', loadChildren: () => import('./projects/chat/chat.module').then(m => m.ChatModule) },
   {

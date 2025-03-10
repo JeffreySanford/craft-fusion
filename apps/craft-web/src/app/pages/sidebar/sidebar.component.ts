@@ -9,7 +9,6 @@ import { Router } from '@angular/router';
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
-  standalone: false,
   animations: [
     trigger('flyInOut', [
       state('in', style({ transform: 'translateX(0)' })),
@@ -20,7 +19,8 @@ import { Router } from '@angular/router';
   ],
   host: {
     '[class.collapsed]': 'isCollapsed'
-  }
+  },
+  standalone: false
 })
 
 export class SidebarComponent implements OnInit {
@@ -41,12 +41,14 @@ export class SidebarComponent implements OnInit {
         { icon: 'restaurant', label: 'Peasant Kitchen', routerLink: '/peasant-kitchen', active: false },
         { icon: 'movie', label: 'HTML Video', routerLink: '/space-video', active: false },
         { icon: 'chat', label: 'Chat', routerLink: '/chat', active: false },
-        { icon: 'book', label: 'Book', routerLink: '/book', active: false }
+        { icon: 'book', label: 'Book', routerLink: '/book', active: false },
+        { icon: 'science', label: 'Quantum Fisher', routerLink: '/quantum-fisher', active: false },
+
+
       ],
     }
   ];
   menuItems: MenuItem[] = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
-  
   constructor(private breakpointObserver: BreakpointObserver, private router: Router) {}
 
   ngOnInit() {

@@ -1,0 +1,62 @@
+.katex-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto; 
+  overflow: auto;
+  padding: 1em;
+  font-size: 1.2em; 
+  line-height: 1.5em;
+
+  & > .katex {
+    display: inline-block;
+    margin: 0 auto;
+  }
+
+  ::ng-deep {
+    .katex {
+      font-size: 2em;
+      width: 10em;
+      height: 10em;
+    }
+
+    .katex-display {
+      margin: 0;
+      border: 2px solid rgba(191, 10, 48, 0.7);
+      border-radius: 6px;
+      padding: 8px;
+      background-color: rgba(255, 255, 255, 0.9);
+      overflow-x: auto; // Allow horizontal scrolling if needed
+      overflow-y: hidden; // Prevent vertical scrolling
+      display: flex; // Use flexbox for centering
+      justify-content: center; // Center formula horizontally
+      white-space: nowrap; // Prevent line breaks
+
+      // Ensure the display formula is contained in a single line
+      .katex-html {
+        white-space: nowrap;
+        display: inline-block;
+      }
+    }
+
+    // Style inline math differently from display math
+    .katex:not(.katex-display .katex) {
+      border-bottom: 1px solid rgba(191, 10, 48, 0.5);
+      padding: 2px 4px;
+      vertical-align: middle; // Align with text
+      white-space: nowrap; // Prevent line breaks
+      display: inline-block; // Keep inline
+    }
+  }
+
+  &:hover {
+    transition: all 0.3s ease-in-out;
+    background-color: rgba(0, 0, 0, 0.03);
+
+    ::ng-deep .katex-display {
+      box-shadow: 0 0 8px rgba(191, 10, 48, 0.3);
+      border-color: rgba(191, 10, 48, 0.9);
+    }
+  }
+}
