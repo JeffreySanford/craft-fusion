@@ -17,6 +17,7 @@ import { HttpClient } from '@angular/common/http';
 export interface Document {
   name: string;
   color: string;
+  contrast: string;
 }
 
 @Component({
@@ -71,6 +72,30 @@ export class BookComponent implements OnInit, AfterViewInit {
     height: 636,
     menubar: false,
     toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor | removeformat | link image media | table | code | toggleMarkdown | aiAssistant',
+    content_style: `
+      :root {
+        color-scheme: light dark;
+      }
+      body { 
+        background-color: var(--book-light-bg); 
+        color: var(--book-light-text);
+      }
+      body.dark-theme { 
+        background-color: var(--book-dark-bg); 
+        color: var(--book-dark-text);
+      }
+      // Referencing styles from SCSS
+      .myth-section {
+        margin: 1.5em 0;
+        padding: 1em 2em;
+        border-left: 4px solid var(--book-light-myth-border);
+        background: var(--book-light-myth-bg);
+      }
+      body.dark-theme .myth-section {
+        border-left-color: var(--book-dark-myth-border);
+        background: var(--book-dark-myth-bg);
+      }
+    `,
     setup: (editor: Editor) => {
       editor.ui.registry.addButton('toggleMarkdown', {
         icon: 'code',
@@ -103,10 +128,23 @@ export class BookComponent implements OnInit, AfterViewInit {
           console.log('Hide panel', api.element());
         }
       });
+      editor.on('init', () => {
+        // Apply font family to editor body
+        editor.getBody().style.fontFamily = this.fontFamily;
+      });
     }
   };
-  openedDocuments: { name: string, color: string }[] = [];
-  documentColors: string[] = ['#FFCDD2', '#C8E6C9', '#BBDEFB', '#FFF9C4', '#D1C4E9', '#FFECB3', '#B2EBF2', '#FFCCBC'];
+  openedDocuments: Document[] = [];
+  documentColors = [
+    { name: 'Patriotic Red', color: '#FF0000', contrast: '#FFFFFF' },
+    { name: 'Brilliant White', color: '#FFFFFF', contrast: '#000000' },
+    { name: 'True Blue', color: '#0000FF', contrast: '#FFFFFF' },
+    { name: 'Banana Cream', color: '#FFF9C4', contrast: '#000000' },
+    { name: 'Lilac Love', color: '#D1C4E9', contrast: '#000000' },
+    { name: 'Peach Punch', color: '#FFECB3', contrast: '#000000' },
+    { name: 'Sky Wave', color: '#B2EBF2', contrast: '#000000' },
+    { name: 'Orange Zest', color: '#FFCCBC', contrast: '#000000' }
+  ];
   isWinking: boolean = false;
   currentTitle: string = '';
 
@@ -142,33 +180,42 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.addHeaderIds();
+    this.updateImageVisibility(false)
   }
 
   loadFilesFromAssets(): void {
     console.log('Loading document from API storage...');
-    this.http.get('/api/files/document/book/Chapter 1 - Enki.docx', { 
+    const files = [
+      '/api/files/document/book/Chapter 1 - Enki.docx',
+      '/api/files/document/book/Chapter 2 - Enlil.docx',
+      '/api/files/document/book/Chapter 3 - The Cities.docx'
+    ];
+
+    files.forEach(fileUrl => {
+      this.http.get(fileUrl, {
       responseType: 'arraybuffer',
-      headers: { 
+      headers: {
         'Accept': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'Cache-Control': 'no-cache'
       }
-    }).pipe(
+      }).pipe(
       catchError(error => {
-        console.error('Error loading document:', error);
+        console.error(`Error loading document ${fileUrl}:`, error);
         return throwError(() => error);
       })
-    ).subscribe({
+      ).subscribe({
       next: (data: ArrayBuffer) => {
         if (!data || data.byteLength === 0) {
-          console.error('Received empty document data');
-          return;
+        console.error(`Received empty document data for ${fileUrl}`);
+        return;
         }
-        console.log('Document loaded successfully, size:', data.byteLength);
-        this.processDocument(data);
+        console.log(`Document ${fileUrl} loaded successfully, size:`, data.byteLength);
+        this.processDocument(data, fileUrl); // Pass the fileUrl
       },
       error: (error) => {
-        console.error('Failed to load document:', error);
+        console.error(`Failed to load document ${fileUrl}:`, error);
       }
+      });
     });
   }
 
@@ -196,11 +243,13 @@ export class BookComponent implements OnInit, AfterViewInit {
       this.isWinking = !this.isWinking;
     }, 2000);
 
-    this.openedDocuments = this.userStateService.getOpenedDocuments();
+    this.openedDocuments = this.userStateService.getOpenedDocuments().map(doc => ({
+      ...doc,
+      contrast: this.documentColors.find(color => color.name === doc.color)?.contrast || '#000000'
+    }));
     this.userStateService.getLoginDateTime();
     this.addHeaderIds();
-    debugger
-    this.updateImageVisibility();
+    this.updateImageVisibility(false);
   }
 
   onChange({ editor }: { editor: Editor }) {
@@ -210,21 +259,26 @@ export class BookComponent implements OnInit, AfterViewInit {
     this.addHeaderIds();
   }
 
-  onDocumentSelected(document: string): void {
-    this.userStateService.setOpenedDocument(document).subscribe(openedDocuments => {
-      this.selectedDocument = this.openedDocuments.find(doc => doc.name === document);
-      this.editorData += '<p>Content from ' + document + '</p>';
+  onDocumentSelected(documentName: string): void {
+    this.selectedDocument = this.openedDocuments.find(doc => doc.name === documentName) || undefined;
+    this.userStateService.setOpenedDocument(documentName).subscribe(openedDocuments => {
+      this.selectedDocument = this.openedDocuments.find(doc => doc.name === documentName);
+      this.loadDocumentContent(documentName);
       this.chapters = this.updateChapters(this.editorData);
-      this.openedDocuments = openedDocuments;
+      this.openedDocuments = openedDocuments.map(doc => ({
+        ...doc,
+        contrast: this.documentColors.find(color => color.name === doc.color)?.contrast || '#000000'
+      }));
       this.addHeaderIds();
-      this.assignDocumentColor(document);
+      this.assignDocumentColor(documentName);
     });
   }
 
   assignDocumentColor(document: string): void {
     if (!this.openedDocuments.some(doc => doc.name === document)) {
-      const color = this.documentColors[this.openedDocuments.length % this.documentColors.length];
-      this.openedDocuments.push({ name: document, color });
+      const color = this.documentColors[this.openedDocuments.length % this.documentColors.length].color;
+      const contrast = this.documentColors.find(colorObj => colorObj.color === color)?.contrast || '#000000';
+      this.openedDocuments.push({ name: document, color, contrast });
     }
   }
 
@@ -315,7 +369,10 @@ export class BookComponent implements OnInit, AfterViewInit {
               })
             ).subscribe(() => {
               this.userStateService.setOpenedDocument(file.name);
-              this.openedDocuments = this.userStateService.getOpenedDocuments();
+              this.openedDocuments = this.userStateService.getOpenedDocuments().map(doc => ({
+                ...doc,
+                contrast: this.documentColors.find(color => color.name === doc.color)?.contrast || '#000000'
+              }));
               this.onDocumentSelected(this.openedDocuments[this.openedDocuments.length - 1].name);
             });
           });
@@ -329,7 +386,10 @@ export class BookComponent implements OnInit, AfterViewInit {
               })
             ).subscribe(() => {
               this.userStateService.setOpenedDocument(file.name);
-              this.openedDocuments = this.userStateService.getOpenedDocuments();
+              this.openedDocuments = this.userStateService.getOpenedDocuments().map(doc => ({
+                ...doc,
+                contrast: this.documentColors.find(color => color.name === doc.color)?.contrast || '#000000'
+              }));
             });
           });
         }
@@ -361,23 +421,35 @@ export class BookComponent implements OnInit, AfterViewInit {
   setEditorContent(content: string): void {
     console.log('Setting editor content:', content);
     this.editorData = content;
-    
+
     if (this.editorComponent && this.editorComponent.editor) {
       console.log('Updating TinyMCE editor');
       this.editorComponent.editor.setContent(content);
+
+      // Re-apply styles to editor content
+      const myths = this.editorComponent.editor.getBody().querySelectorAll('.myth-line');
+      myths.forEach((myth) => {
+        const mythElement = myth as HTMLElement;
+        mythElement.style.color = '#0f0';
+        mythElement.style.fontStyle = 'italic';
+        const verse = mythElement.getAttribute('data-verse');
+        if (verse) {
+          mythElement.dataset.verse = verse;
+        }
+      });
     }
-    
+
     if (this.markdownPreview) {
       console.log('Updating markdown preview');
       this.markdownPreview.nativeElement.innerHTML = content;
-      
+
       const myths = this.markdownPreview.nativeElement.querySelectorAll('.myth-section');
       console.log('Found myth sections:', myths.length);
       myths.forEach((myth: HTMLElement, index: number) => {
         console.log(`Myth ${index + 1}:`, myth.textContent);
       });
     }
-    
+
     this.updateChapters(content);
     this.cdr.detectChanges();
   }
@@ -480,12 +552,12 @@ export class BookComponent implements OnInit, AfterViewInit {
     }
   }
 
-  toggleImages(): void {
-    this.areImagesVisible = !this.areImagesVisible;
-    this.updateImageVisibility();
+  toggleImages(visible: boolean): void {
+    this.areImagesVisible = visible;
+    this.updateImageVisibility(this.areImagesVisible);
   }
 
-  updateImageVisibility(): void {
+  updateImageVisibility(visible: boolean): void {
     if (this.editorComponent && this.editorComponent.editor) {
       const editor = this.editorComponent.editor;
       const content = editor.getContent();
@@ -506,8 +578,11 @@ export class BookComponent implements OnInit, AfterViewInit {
     }
   }
 
-  processDocument(data: ArrayBuffer): void {
-    const file = new File([data], 'Chapter 1 - Enki.docx', {
+  processDocument(data: ArrayBuffer, fileUrl: string): void {
+    // Extract file name from the URL
+    const fileName = this.extractFileNameFromUrl(fileUrl);
+
+    const file = new File([data], fileName, {
       type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     });
 
@@ -516,32 +591,95 @@ export class BookComponent implements OnInit, AfterViewInit {
       // Process myths before rendering
       const processedContent = this.processMythContent(content);
       this.renderMarkdown(processedContent);
-      this.selectedDocument = {
+      const newDocument = {
         name: file.name,
-        color: this.documentColors[this.openedDocuments.length % this.documentColors.length]
+        color: this.documentColors[this.openedDocuments.length % this.documentColors.length].color,
+        contrast: this.documentColors[this.openedDocuments.length % this.documentColors.length].contrast
       };
-      this.openedDocuments.push(this.selectedDocument);
-      this.cdr.detectChanges();
+
+      // Check if the document already exists in openedDocuments
+      if (!this.openedDocuments.some(doc => doc.name === file.name)) {
+        this.openedDocuments.push(newDocument);
+      }
     }).catch(error => {
       console.error('Error processing document:', error);
     });
+
+    this.cdr.detectChanges();
+  }
+
+  extractFileNameFromUrl(url: string): string {
+    const parts = url.split('/');
+    let filename = parts[parts.length - 1];
+    // Remove file extension
+    filename = filename.split('.').slice(0, -1).join('.');
+    return filename;
   }
 
   private processMythContent(content: string): string {
+    console.log('\n=== Processing Content for Myths ===');
+
     const lines = content.split('\n');
-    const processedLines = lines.map(line => {
-      // Match both single numbers and ranges (e.g., "1." or "5-10.")
-      const mythMatch = line.match(/^(\d+(?:-\d+)?\.) (.+)$/);
+    let mythCount = 0;
+
+    const processedLines = lines.map((line, index) => {
+      // Match both markdown-style and standard verse formats
+      const mythRegex = /^\[(\d+(?:-\d+)?)\](?:\(([^\)]+)\))(.*)$|^(\d+(?:-\d+)?)\.\s*(.+)$/;
+      const mythMatch = line.match(mythRegex);
+
       if (mythMatch) {
-        return `<p data-myth-line="${mythMatch[1]}">${mythMatch[2]}</p>`;
+        mythCount++;
+        console.log(`Line ${index + 1}: Found myth:`, mythMatch[0]);
+
+        const verse = mythMatch[1] || mythMatch[4]; // Bracketed or standard verse
+        const link = mythMatch[2];
+        const content = (mythMatch[3] || mythMatch[5] || '').trim();
+
+        if (link) {
+          return `<div class="myth-section">
+            <p class="myth-line" data-verse="${verse}"><a href="${link}">${verse}</a> ${content}</p>
+          </div>`;
+        } else {
+          return `<div class="myth-section">
+            <p class="myth-line" data-verse="${verse}">${content}</p>
+          </div>`;
+        }
       }
       return line;
     });
-    return processedLines.join('\n');
+
+    const result = processedLines.join('\n');
+    console.log(`\nProcessed ${mythCount} myths`);
+
+    // Update display
+    if (this.markdownPreview) {
+      const myths = this.markdownPreview.nativeElement.querySelectorAll('.myth-line');
+      console.log('Found myth sections:', myths.length);
+      myths.forEach((myth: HTMLElement, index: number) => {
+        console.log(`Myth ${index + 1}:`, {
+          verse: myth.getAttribute('data-verse'),
+          content: myth.textContent?.trim()
+        });
+      });
+    }
+
+    return result;
   }
 
   toggleTheme(): void {
     this.isDarkTheme = !this.isDarkTheme;
+    document.body.classList.toggle('dark-theme', this.isDarkTheme);
+
+    if (this.editorComponent?.editor) {
+      const body = this.editorComponent.editor.getBody();
+      body.classList.toggle('dark-theme', this.isDarkTheme);
+    } else if (this.markdownPreview) {
+      const markdownPreviewElement = this.renderer2.selectRootElement(this.markdownPreview.nativeElement, true);
+      this.renderer2.addClass(markdownPreviewElement, 'dark-theme');
+      this.markdownPreview.nativeElement.classList.toggle('dark-theme', this.isDarkTheme);
+    } else {
+      this.applyTheme();
+    }
   }
 
   applyTheme(): void {
@@ -550,5 +688,38 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   setFontFamily(font: string) {
     this.fontFamily = font;
+  }
+
+  loadDocumentContent(documentName: string): void {
+    const fileUrl = `/api/files/document/book/${documentName}.docx`;
+    this.http.get(fileUrl, {
+      responseType: 'arraybuffer',
+      headers: {
+        'Accept': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'Cache-Control': 'no-cache'
+      }
+    }).pipe(
+      catchError(error => {
+        console.error(`Error loading document ${fileUrl}:`, error);
+        return throwError(() => error);
+      })
+    ).subscribe({
+      next: (data: ArrayBuffer) => {
+        if (!data || data.byteLength === 0) {
+          console.error(`Received empty document data for ${fileUrl}`);
+          return;
+        }
+        console.log(`Document ${fileUrl} loaded successfully, size:`, data.byteLength);
+        this.docParseService.parseDoc(new File([data], documentName + '.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })).then(content => {
+          this.editorData = content;
+          this.renderMarkdown(content);
+          this.updateChapters(content);
+          this.cdr.detectChanges();
+        });
+      },
+      error: (error) => {
+        console.error(`Failed to load document ${fileUrl}:`, error);
+      }
+    });
   }
 }

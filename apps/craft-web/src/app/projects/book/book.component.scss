@@ -1,5 +1,6 @@
 @use '@angular/material' as mat;
 @use 'sass:color';
+@import './styles/theme.scss';
 
 $vibrant-red: #f00;
 $vibrant-blue: #00f;
@@ -37,18 +38,134 @@ $vibrant-yellow: #fc0;
   font-weight: 200;
 }
 
+:root {
+  // Light theme colors
+  --light-background: #f5f5f5;
+  --light-text: #1e1e1e;
+  --light-myth-bg: rgba(0, 255, 0, 0.02);
+  --light-myth-border: #0f0;
+  --light-myth-text: #0c0;
+  --light-myth-hover: #2f2;
+  
+  // Dark theme colors
+  --dark-background: #1e1e1e;
+  --dark-text: #e0e0e0;
+  --dark-myth-bg: rgba(0, 255, 0, 0.05);
+  --dark-myth-border: #0f0;
+  --dark-myth-text: #0f0;
+  --dark-myth-hover: #2f2;
+}
+
 :host {
   font-family: Roboto, sans-serif;
   display: block;
 
   &.light-theme {
-    background-color: #f5f5f5;
-    color: #1e1e1e;
+    background-color: var(--book-light-bg);
+    color: var(--book-light-text);
+
+    .sidenav-container {
+      background: var(--book-light-bg);
+    }
+
+    .toolbar {
+      background: var(--book-light-toolbar);
+      border-bottom: 1px solid var(--book-light-border);
+      color: var(--book-light-text); /* Add text color */
+    }
+
+    .markdown-preview {
+      background: var(--book-light-bg);
+      color: var(--book-light-text);
+    }
+
+    .tox-tinymce {
+      background: var(--book-light-bg);
+      color: var(--book-light-text);
+      border: 1px solid var(--book-light-border);
+    }
+
+    .myth-section {
+      background: var(--book-light-myth-bg);
+      border-left-color: var(--book-light-myth-border);
+
+      .myth-line {
+        color: var(--book-light-myth-text);
+
+        &::before {
+          color: var(--book-light-myth-verse);
+        }
+      }
+    }
+
+    .outline-box {
+      background-color: var(--book-light-outline-bg);
+      color: var(--book-light-outline-text);
+      border: 1px solid var(--book-light-outline-border);
+
+      .chapter-link {
+        color: var(--book-light-text);
+      }
+    }
+
+    .book-content {
+       background-color: var(--book-light-bg);
+       color: var(--book-light-text);
+    }
   }
 
   &.dark-theme {
-    background-color: #1e1e1e;
-    color: #e0e0e0;
+    background-color: var(--book-dark-bg);
+    color: var(--book-dark-text);
+
+    .sidenav-container {
+      background: var(--book-dark-bg);
+    }
+
+    .toolbar {
+      background: var(--book-dark-toolbar);
+      border-bottom: 1px solid var(--book-dark-border);
+      color: var(--book-dark-text); /* Add text color */
+    }
+
+    .markdown-preview {
+      background: var(--book-dark-bg);
+      color: var(--book-dark-text);
+    }
+
+    .tox-tinymce {
+      background: var(--book-dark-bg);
+      color: var(--book-dark-text);
+      border: 1px solid var(--book-dark-border);
+    }
+
+    .myth-section {
+      background: var(--book-dark-myth-bg);
+      border-left-color: var(--book-dark-myth-border);
+
+      .myth-line {
+        color: var(--book-dark-myth-text);
+
+        &::before {
+          color: var(--book-dark-myth-verse);
+        }
+      }
+    }
+
+    .outline-box {
+      background-color: var(--book-dark-outline-bg);
+      color: var(--book-dark-outline-text);
+      border: 1px solid var(--book-dark-outline-border);
+
+      .chapter-link {
+        color: var(--book-dark-text);
+      }
+    }
+
+    .book-content {
+       background-color: var(--book-dark-bg);
+       color: var(--book-dark-text);
+    }
   }
 
   .button {
@@ -98,17 +215,20 @@ $vibrant-yellow: #fc0;
 
       h1 {
         font-size: 2.5em;
-        color: $vibrant-red !important;
+        color: #FF4081 !important; // Pink
+        text-shadow: 1px 1px 2px rgba(255, 64, 129, 0.3);
       }
 
       h2 {
         font-size: 2em;
-        color: $vibrant-orange !important;
+        color: #7C4DFF !important; // Deep Purple
+        text-shadow: 1px 1px 2px rgba(124, 77, 255, 0.3);
       }
 
       h3 {
         font-size: 1.75em;
-        color: $vibrant-yellow !important;
+        color: #00BCD4 !important; // Cyan
+        text-shadow: 1px 1px 2px rgba(0, 188, 212, 0.3);
         letter-spacing: 0.009375em;
         font-weight: 400;
 
@@ -121,17 +241,20 @@ $vibrant-yellow: #fc0;
 
       h4 {
         font-size: 1.5em;
-        color: $vibrant-green !important;
+        color: #FFC107 !important; // Amber
+        text-shadow: 1px 1px 2px rgba(255, 193, 7, 0.3);
       }
 
       h5 {
         font-size: 1em;
-        color: $vibrant-blue !important;
+        color: #64FFDA !important; // Teal Accent
+        text-shadow: 1px 1px 2px rgba(100, 255, 218, 0.3);
       }
 
       h6 {
         font-size: 0.8em;
-        color: #60c !important;
+        color: #FF5722 !important; // Deep Orange
+        text-shadow: 1px 1px 2px rgba(255, 87, 34, 0.3);
       }
 
       p {
@@ -221,18 +344,24 @@ $vibrant-yellow: #fc0;
       }
 
       .myth-section {
-        margin: 1em 0;
-        display: block;
-        
-        .myth-content {
-          color: $vibrant-green !important;
-          padding-left: 3em;
+        margin: 0.5em 0;
+        padding: 0.5em 0 0.5em 2em;
+        border-left: 4px solid $vibrant-green;
+        background: rgba(0, 255, 0, 0.05);
+
+        .myth-line {
+          color: $vibrant-green;
           position: relative;
+          padding-left: 3em;
+          margin: 0.5em 0;
           font-style: italic;
-          margin: 0;
-          
-          &[data-myth-line]::before {
-            content: attr(data-myth-line);
+          font-size: 1em !important;
+          font-family: 'Consolas', 'Monaco', 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace !important;
+          letter-spacing: -0.05em;
+          line-height: 1.4;
+
+          &[data-verse]::before {
+            content: attr(data-verse);
             position: absolute;
             left: 0;
             color: color.adjust($vibrant-green, $lightness: -20%); // Line 237: Fixed - removed extra parameters
@@ -241,14 +370,38 @@ $vibrant-yellow: #fc0;
             width: 2.5em;
             text-align: right;
           }
+
+          a {
+            color: inherit;
+            text-decoration: none;
+            border-bottom: 1px dashed $vibrant-green;
+            
+            &:hover {
+              border-bottom-style: solid;
+            }
+          }
+
+          .myth-link {
+            color: inherit;
+            text-decoration: none;
+            font-weight: bold;
+            padding-right: 0.5em;
+            border-bottom: 1px dashed $vibrant-green;
+            transition: all 0.2s ease;
+            
+            &:hover {
+              border-bottom-style: solid;
+              color: color.adjust($vibrant-green, $lightness: 20%);
+            }
+          }
         }
       }
 
-      .myth-line {
-        color: $vibrant-green !important;
+      p.myth-line {
+        color: #B2FF59 !important; // Light Green Accent
         font-style: italic;
         position: relative;
-        padding-left: 3em;
+        padding-left: 2em;
         margin: 1em 0;
         line-height: 1.6;
 
@@ -258,8 +411,6 @@ $vibrant-yellow: #fc0;
           color: color.adjust($vibrant-green, $lightness: -20%); // Line 257: Fixed - removed extra parameters
           font-weight: bold;
           font-style: normal;
-          width: 2.5em;
-          text-align: right;
         }
       }
     }
@@ -304,6 +455,59 @@ $vibrant-yellow: #fc0;
     & > .tox-menubar {
       background-color: inherit;
       border: none;
+    }
+
+    .tox-edit-area__iframe {
+      background: transparent;
+    }
+
+    .mce-content-body {
+      font-family: var(--book-font-family);
+      font-size: var(--book-font-size);
+      
+      .myth-section {
+        margin: 1.5em 0;
+        padding: 1em 2em;
+        border-left: 4px solid $vibrant-green;
+        background: rgba(0, 255, 0, 0.05);
+
+        .myth-line {
+          color: $vibrant-green;
+          position: relative;
+          padding-left: 3em;
+          margin: 0.5em 0;
+          font-style: italic;
+          font-size: 1em !important;
+          font-family: 'Consolas', 'Monaco', 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace !important;
+          letter-spacing: -0.05em;
+          line-height: 1.4;
+
+          &[data-verse]::before {
+            content: attr(data-verse);
+            position: absolute;
+            left: 0;
+            color: color.adjust($vibrant-green, $lightness: -20%);
+            font-weight: bold;
+            font-style: normal;
+            width: 2.5em;
+            text-align: right;
+          }
+
+          a {
+            color: inherit;
+            text-decoration: none;
+            font-weight: bold;
+            padding-right: 0.5em;
+            border-bottom: 1px dashed $vibrant-green;
+            transition: all 0.2s ease;
+            
+            &:hover {
+              border-bottom-style: solid;
+              color: color.adjust($vibrant-green, $lightness: 20%);
+            }
+          }
+        }
+      }
     }
   }
 
@@ -417,6 +621,9 @@ $vibrant-yellow: #fc0;
   overflow-y: auto;
   width: 89%;
   margin: 0 auto;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .tinymce-container {
@@ -759,5 +966,55 @@ datalist option {
 }
 
 .myth-section {
-  color: blue;
+  margin: 1.5em 0;
+  padding: 1em 2em;
+  border-left: 4px solid $vibrant-green;
+  background: rgba(0, 255, 0, 0.05);
+
+  .myth-line {
+    color: $vibrant-green;
+    position: relative;
+    padding-left: 3em;
+    margin: 0.5em 0;
+    font-style: italic;
+    font-size: 1em !important;
+    font-family: 'Consolas', 'Monaco', 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace !important;
+    letter-spacing: -0.05em;
+    line-height: 1.4;
+
+    &[data-verse]::before {
+      content: attr(data-verse);
+      position: absolute;
+      left: 0;
+      color: color.adjust($vibrant-green, $lightness: -20%);
+      font-weight: bold;
+      font-style: normal;
+      width: 2.5em;
+      text-align: right;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px dashed $vibrant-green;
+      
+      &:hover {
+        border-bottom-style: solid;
+      }
+    }
+
+    .myth-link {
+      color: inherit;
+      text-decoration: none;
+      font-weight: bold;
+      padding-right: 0.5em;
+      border-bottom: 1px dashed $vibrant-green;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        border-bottom-style: solid;
+        color: color.adjust($vibrant-green, $lightness: 20%);
+      }
+    }
+  }
 }

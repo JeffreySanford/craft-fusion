@@ -1,33 +1,55 @@
-<mat-card id="chatbox">
-  <mat-card-header>
-    <mat-card-title>Chat</mat-card-title>
-  </mat-card-header>
-  <mat-card-content id="messages">
-    <mat-list>
-      <mat-list-item *ngFor="let msg of messages" [ngClass]="msg.sender === 'user' ? 'reply' : 'response'">
-        <div class="message-content" style="flex-grow: 1;" *ngFor="let paragraph of msg.text | splitTextPipe">
-          <mat-icon class="message-icon">{{ msg.sender === 'user' ? 'person' : 'smart_toy' }}</mat-icon>
-          <div class="message-text">
-            <ng-container>
-                <p (onload)="adjustTextareaHeight($event)">{{ paragraph }}</p>
-                <mat-icon class="response-count">{{ msg.text.length }}</mat-icon>
-            </ng-container>
-          </div>
-          <div class="future-icons">
-            <mat-icon>more_vert</mat-icon>
-          </div>
-        </div>
-      </mat-list-item>
-    </mat-list>
-    <div *ngIf="isThinking" class="thinking progress">
-      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-      <span>Thinking...</span>
+<div id="chatbox">
+  <div class="header">
+    <mat-icon>chat</mat-icon>
+    <div class="model-status">
+      <app-model-selector></app-model-selector>
     </div>
-  </mat-card-content>
-  <mat-card-actions id="input">
-    <mat-form-field class="full-width" appearance="outline">
-      <input matInput [(ngModel)]="userInput" (keyup.enter)="sendMessage()" placeholder="Type a message..." #userInputElement>
-    </mat-form-field>
+  </div>
+  <div id="messages">
+    <div *ngFor="let msg of messages; let i = index"
+         class="message-container"
+         [ngClass]="msg.sender === 'user' ? 'user' : 'bot'">
+      <div class="message">
+        <mat-icon class="message-icon">
+          {{ msg.sender === 'user' ? 'person' : 'smart_toy' }}
+        </mat-icon>
+        <div class="message-content">
+          <div class="message-text" [innerHTML]="msg.text | markdown"></div>
+        </div>
+        <div class="operations">
+          <mat-icon (click)="copyMessage(msg)">content_copy</mat-icon>
+          <mat-icon (click)="editMessage(msg)">edit</mat-icon>
+          <mat-icon (click)="deleteMessage(i)">delete</mat-icon>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="isThinking" class="message-container bot">
+      <div class="message">
+        <mat-progress-spinner mode="indeterminate" diameter="20"></mat-progress-spinner>
+        <span>Thinking...</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="input">
+    <div class="font-controls">
+      <button mat-icon-button (click)="decreaseFontSize()">
+        <div class="font-icon-container">
+          <mat-icon>remove</mat-icon>
+        </div>
+      </button>
+      <button mat-icon-button (click)="increaseFontSize()">
+        <div class="font-icon-container">
+          <mat-icon>add</mat-icon>
+        </div>
+      </button>
+    </div>
+    <textarea matInput
+              [(ngModel)]="userInput"
+              (keyup.enter)="sendMessage()"
+              placeholder="Type a message..."
+              #userInputElement
+              (input)="adjustTextareaHeight($event)"></textarea>
     <button mat-raised-button color="primary" (click)="sendMessage()">Send</button>
-  </mat-card-actions>
-</mat-card>
+  </div>
+</div>

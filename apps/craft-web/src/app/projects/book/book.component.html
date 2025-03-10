@@ -15,8 +15,8 @@
   <mat-sidenav-container #container class="sidenav-container">
     <mat-sidenav #sidenav mode="side" closed class="sidenav-custom-width">
       <mat-nav-list>
-        <mat-list-item class="document" *ngFor="let document of openedDocuments" (click)="onDocumentSelected(document.name)" [ngStyle]="{'background-color': document.color}">
-          <p>{{ document.name.split('.').slice(0, -1).join('.') }}</p>
+        <mat-list-item class="document" *ngFor="let document of openedDocuments" (click)="onDocumentSelected(document.name)" [ngStyle]="{'background-color': document.color, 'color': document.contrast}">
+          <p>{{ document.name }}</p>
         </mat-list-item>
       </mat-nav-list>
       <div class="file-actions">
@@ -51,7 +51,7 @@
         <button mat-mini-fab class="mini-mat-fab button" (click)="toggleMarkdownPrettyView()">
           <mat-icon class="tag-icon">{{ isMarkdownPrettyView ? 'edit' : 'visibility' }}</mat-icon>
         </button>
-        <button mat-mini-fab class="mini-mat-fab button" (click)="toggleImages()">
+        <button mat-mini-fab class="mini-mat-fab button" (click)="toggleImages(!areImagesVisible)">
           <mat-icon class="tag-icon">{{ areImagesVisible ? 'image' : 'image_not_supported' }}</mat-icon>
         </button>
         <button mat-mini-fab class="mini-mat-fab button" (click)="toggleTheme()">
@@ -84,6 +84,13 @@
           (onChange)="onChange($event)"
           (onInit)="onInit($event)"
         ></editor>
+      </div>
+      <div class="opened-documents">
+        <button *ngFor="let doc of openedDocuments"
+                (click)="onDocumentSelected(doc.name)"
+                class="document-button">
+          {{ doc.name }}
+        </button>
       </div>
     </mat-sidenav-content>
   </mat-sidenav-container>

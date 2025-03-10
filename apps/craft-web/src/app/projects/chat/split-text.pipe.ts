@@ -1,10 +1,14 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'splitTextPipe'
+  name: 'splitTextPipe',
+  standalone: true
 })
 export class SplitTextPipe implements PipeTransform {
   transform(value: string): string[] {
-    return value.split('\n').filter(paragraph => paragraph.trim() !== '');
+    if (!value) return [];
+    
+    // Don't split markdown content, return as single block
+    return [value];
   }
 }

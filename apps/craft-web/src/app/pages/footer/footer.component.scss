@@ -185,3 +185,18 @@ mat-expansion-panel[expanded] {
     vertical-align: top;
   }
 }
+
+::ng-deep .mat-expansion-indicator {
+  transform: scale(1.5);
+  transition: transform 0.3s ease-in-out;
+}
+
+::ng-deep .mat-expansion-indicator::after {
+
+  color: gold !important;
+  // background-color: white !important;
+  
+  svg {
+    fill: gold !important;
+  }
+}
