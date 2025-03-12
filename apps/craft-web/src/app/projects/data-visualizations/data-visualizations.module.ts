@@ -22,6 +22,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { AnimatedDirectivesModule } from '../../animated-directives.module';
 import { KatexModule } from "./quantum-fisher-information/katex/katex.module";
+
 // Define routes for the data visualizations module
 const dataVisualizationsRoutes: Routes = [
   { 
@@ -48,8 +49,12 @@ const dataVisualizationsRoutes: Routes = [
 
 @NgModule({
   declarations: [
-    DataVisualizationsComponent, BarComponent, LineComponent, 
-    FinanceComponent, FireAlertComponent, QuantumFisherInformationComponent
+    DataVisualizationsComponent, 
+    BarComponent, 
+    LineComponent, 
+    FinanceComponent, 
+    FireAlertComponent, 
+    QuantumFisherInformationComponent
   ],
   imports: [
     CommonModule,
@@ -67,9 +72,10 @@ const dataVisualizationsRoutes: Routes = [
     MatCardModule,
     AnimatedDirectivesModule,
     KatexModule
-],
+  ],
   exports: [
     DataVisualizationsComponent,
+    QuantumFisherInformationComponent, // Export the component so it can be used outside this module
     RouterModule // Export RouterModule
   ],
   providers: [AlphaVantageService, FlightRadarService],

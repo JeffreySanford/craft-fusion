@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, Input } from '@angular/core';
 import { MapboxService } from '../../../common/services/mapbox.service';
-import { FlightRadarService } from '../../../common/services/flightradar.service';
+import { Flight, FlightRadarService } from '../../../common/services/flightradar.service';
 import { interval, Subscription } from 'rxjs';
 import moment from 'moment-timezone';
 
@@ -123,64 +123,30 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     this.flightRadarService.getFlightsByBoundingBox(lat1, lon1, lat2, lon2).subscribe(
       data => {
         console.log('STEP 7: Flight data fetched', data);
+
         // Process and display flight data on the map
-        this.fr24Flights = data.data;
+        this.fr24Flights = data;
 
-        this.fr24Flights.forEach((flight: any) => {
+        this.fr24Flights.forEach((flight: Flight) => {
           // for each flight, look up the information for the flight and include it on the addMarker report
-          const coordinates: [number, number] = [flight.lon, flight.lat];
+          const coordinates: [number, number] = [flight.status.currentLocation.longitude, flight.status.currentLocation.latitude];
 
-          this.flightRadarService.getFlightById(flight.fr24_id).subscribe(
+          this.flightRadarService.getFlightById(flight.aircraft.registration).subscribe(
             next => {
               console.log('STEP 7.1: Flight data fetched', next);
               // Process and display flight data on the map
-              const flightData = next[0];
+                const flight: Flight = next.flight;
+                this.flights.push(flight);
 
-              const flight = {
-                flight: flightData.flight,
-                aircraft: { type: '', registration: '' },
-                origin: '',
-                destination: '',
-                altitude: 0,
-                speed: 0,
-                identity: flightData.ident,
-                r24_id: flightData.r24_id,
-                tracks: flightData.tracks,
-              };
-
-              flight.aircraft.type = flightData.aircraft.type;
-              flight.aircraft.registration = flightData.aircraft.registration;
-              flight.origin = flightData.origin;
-              flight.destination = flightData.destination;
-              flight.altitude = flightData.altitude;
-              flight.speed = flightData.speed;
-
-              // Add marker for the flight
-              this.mapboxService.addMarker(coordinates, `Flight: ${flight.flight} - ${flight.origin} to ${flight.destination} - ${flight.aircraft.type}`);
-
-              // Draw lines for the tracks points
-              if (flight.tracks && flight.tracks.length > 1) {
-                const trackCoordinates = flight.tracks.map((track: any) => [track.lon, track.lat]);
-                this.mapboxService.addPolyline(trackCoordinates);
-              }
-              this.mapboxService.addMarker(coordinates, `Flight: ${flight.flight} - ${flight.origin} to ${flight.destination} - ${flight.aircraft.type}`);
-            },
-            error => {
-              if (error.status === 404) {
-                console.warn('STEP 7.2: Flight not found', flight.flight);
-              } else {
-                console.error('STEP 7.2: Error fetching flight data', error);
-              }
-            },
-            () => {
-              console.log('STEP 7.3: Flight data fetched', flight);
-            },
-          );
-        });
-      },
-      error => {
-        console.error('STEP 9: Error fetching flight data', error);
-        alert('Failed to fetch flight data. Please check your API key and network connection.');
+                this.mapboxService.addMarker(coordinates, `Flight: ${flight} - ${flight.origin} to ${flight.destination} - ${flight.aircraft.model}`);
+              },
+              error => {
+                console.error('Error fetching flight by ID', error);
+              },
+              () => {
+                console.log('Flight data fetch completed');
+              });
+        }); 
       },
     );
   }

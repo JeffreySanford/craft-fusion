@@ -62,6 +62,7 @@ export class DataVisualizationsComponent implements OnInit {
   public charts: ChartData[] = [
     { name: 'Line Chart', component: 'app-line-chart', color: 'blue', data: this.lineChartData },
     { name: 'Bar Chart', component: 'app-bar-chart', color: 'green', data: this.barChartData },
+    { name: 'Quantum Fisher Information', component: 'app-quantum-fisher-tile', color: 'purple', data: [] },
     { name: 'FinTech Chart', component: 'app-finance-chart', color: 'red', data: [] },
     { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [] },
   ];
@@ -73,9 +74,8 @@ export class DataVisualizationsComponent implements OnInit {
     this.loadFintechChartData()
       .pipe()
       .subscribe(data => {
-
         this.fintechChartData = data;
-        this.charts[2].data = this.fintechChartData;
+        this.charts[3].data = this.fintechChartData;
         this.cdr.detectChanges();
       });
   }
@@ -87,7 +87,15 @@ export class DataVisualizationsComponent implements OnInit {
   }
 
   openTile(index: number) {
+    // Make sure the quantum visualization reinitializes when its tile is opened
     this.expandedTileIndex = this.expandedTileIndex === index ? null : index;
+
+    // If opening the quantum tile, trigger window resize event to ensure D3 visualization renders properly
+    if (this.expandedTileIndex !== null && this.charts[this.expandedTileIndex].component === 'app-quantum-fisher-tile') {
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+      }, 100);
+    }
   }
 
   drop(event: CdkDragDrop<ChartData[]>) {

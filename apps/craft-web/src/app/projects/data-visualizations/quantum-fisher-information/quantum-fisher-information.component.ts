@@ -11,7 +11,7 @@ interface QFICell {
 }
 
 @Component({
-  selector: 'app-quantum-fisher-tile',
+  selector: 'app-quantum-fisher-tile',  // Make sure this matches what's used in the data-visualizations.component.html
   templateUrl: './quantum-fisher-information.component.html',
   styleUrls: ['./quantum-fisher-information.component.scss'],
   standalone: false
@@ -89,7 +89,7 @@ export class QuantumFisherInformationComponent implements OnInit, AfterViewInit 
   // Mathematical equations in KaTeX format with enhanced display
   cramerRaoEquation = '\\Delta \\theta \\geq \\frac{1}{\\sqrt{F_Q}}';
   classicalScalingEquation = '\\Delta \\theta_{\\text{cl}} \\propto \\frac{1}{\\sqrt{N}}';
-  heisenbergScalingEquation = '\\Delta \\theta_{\\text{HL}} \\propto \\frac{1}{N}';
+  heisenbergScalingEquation = '\\Delta \\theta_{\\text{HL}} \\propto 1/N';
   qfiDefinitionEquation = 'F_Q = \\tr[\\rho L^2], \\quad \\frac{\\partial \\rho}{\\partial \\theta} = \\frac{1}{2}(\\rho L + L \\rho)';
   qfiMatrixEquation = 'F_{ij} = \\tr[\\rho \\frac{L_i L_j + L_j L_i}{2}]';
   covarianceEquation = '\\text{Cov}(\\hat{\\theta}) \\geq F^{-1}';
@@ -124,6 +124,9 @@ export class QuantumFisherInformationComponent implements OnInit, AfterViewInit 
     }
   }
 
+  // Add the rendered equation property
+  renderedEquation: string = '';
+
   constructor() {}
 
   ngOnInit(): void {
@@ -134,6 +137,9 @@ export class QuantumFisherInformationComponent implements OnInit, AfterViewInit 
     } else {
       console.log('QFI Component initialized in dialog mode');
     }
+    
+    // Render the equation using KaTeX
+    this.renderEquation();
   }
   
   ngAfterViewInit(): void {
@@ -801,6 +807,25 @@ export class QuantumFisherInformationComponent implements OnInit, AfterViewInit 
   // Type-safe getter for parameter descriptions
   getParamDescription(param: string): string {
     return this.paramDescriptions[param as keyof typeof this.paramDescriptions] || '';
+  }
+
+  // Add method to render the equation
+  private renderEquation(): void {
+    try {
+      // Use KaTeX to render the equation
+      const katexOptions = {
+        displayMode: true,
+        throwOnError: false,
+        errorColor: '#cc0000',
+        macros: this.katexMacros,
+        trust: true
+      };
+      
+      this.renderedEquation = katex.renderToString(this.qfiDefinitionEquation, katexOptions);
+    } catch (error) {
+      console.error('KaTeX rendering error:', error);
+      this.renderedEquation = `<span style="color: #cc0000">Error rendering equation</span>`;
+    }
   }
 }
 

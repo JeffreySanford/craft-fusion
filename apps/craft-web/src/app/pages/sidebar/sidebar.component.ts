@@ -42,9 +42,6 @@ export class SidebarComponent implements OnInit {
         { icon: 'movie', label: 'HTML Video', routerLink: '/space-video', active: false },
         { icon: 'chat', label: 'Chat', routerLink: '/chat', active: false },
         { icon: 'book', label: 'Book', routerLink: '/book', active: false },
-        { icon: 'science', label: 'Quantum Fisher', routerLink: '/quantum-fisher', active: false },
-
-
       ],
     }
   ];

@@ -16,6 +16,7 @@
   transition: transform 0.3s ease;
   cursor: pointer;
   border: 1px solid darkred;
+  min-height: 25em; // Ensure enough height for the QFI visualization
 }
 
 .chart-name {
