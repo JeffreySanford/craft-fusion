@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list'; // Add this for mat-list-item
 import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
@@ -67,6 +68,7 @@ const dataVisualizationsRoutes: Routes = [
     MatButtonToggleModule,
     MatSliderModule,
     MatIconModule,
+    MatListModule, // Add this for mat-list components
     FormsModule,
     MatTabsModule,
     MatCardModule,

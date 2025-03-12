@@ -10,23 +10,152 @@
   box-sizing: border-box;
 }
 
-// Container styles for the visualization grid layout
+// Dashboard layout with sidebar
+.dashboard-layout {
+  display: flex;
+  height: calc(100vh - 64px); // Adjust based on your header height
+  overflow: hidden;
+}
+
+// Main visualization container
 .visualization-container {
+  flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-auto-rows: minmax(250px, auto);
   gap: 16px;
   padding: 16px;
-  box-sizing: border-box;
-  max-width: 100%;
   overflow-y: auto;
-  height: calc(100vh - 64px); // Adjust based on your app's header height
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+// Empty state styling
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  grid-column: 1 / -1;
+  min-height: 300px;
+  color: rgba(255, 255, 255, 0.5);
+  
+  mat-icon {
+    font-size: 4rem;
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: 1rem;
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    font-size: 1rem;
+  }
+}
+
+// Sidebar styling
+.visualization-sidebar {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  transition: width 0.3s ease;
+  position: relative;
+  
+  &.collapsed {
+    width: 60px;
+
+    .sidebar-header h2 {
+      display: none;
+    }
+
+    .sidebar-content {
+      mat-list-item {
+        padding: 4px;
+
+        [matListItemTitle] {
+          display: none;
+        }
+      }
+    }
+
+    .sidebar-toggle {
+      position: absolute;
+      right: 0;
+    }
+  }
+  
+  .sidebar-header {
+    padding: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    h2 {
+      margin: 0;
+      color: gold;
+      font-size: 1.2rem;
+    }
+
+    .sidebar-toggle {
+      color: gold;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: rgba(255, 215, 0, 0.1);
+      }
+    }
+  }
+  
+  .sidebar-content {
+    overflow-y: auto;
+    flex: 1;
+    
+    mat-list-item {
+      cursor: pointer;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+      
+      &.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-left-width: 3px;
+        border-left-style: solid;
+        // Border color will be dynamically set based on the chart's color
+      }
+      
+      // Make icons more visible
+      mat-icon {
+        font-size: 20px;
+        height: 20px;
+        width: 20px;
+        
+        // Add specific styling for action icons
+        &[matListItemMeta] {
+          color: rgba(255, 255, 255, 0.6);
+        }
+      }
+      
+      &.active mat-icon[matListItemMeta] {
+        color: gold;
+      }
+      
+      &:hover mat-icon[matListItemMeta] {
+        color: white;
+      }
+    }
+  }
 }
 
 // Individual visualization item styling
 .visualization-item {
   position: relative;
-  width: 100%;
-  min-height: 250px;
   transition: all 0.3s ease;
   
   // Different sizes for visualization items
@@ -85,12 +214,47 @@
   mat-card-header {
     background-color: rgba(0, 0, 0, 0.3);
     padding: 12px;
+    display: flex;
+    align-items: center;
     cursor: move; // Indicate draggable
     
     .chart-title {
-      color: gold;
+      color: white;
       margin: 0;
       font-size: 1.2rem;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      
+      mat-icon {
+        margin-right: 8px;
+        font-size: 20px;
+        height: 20px;
+        width: 20px;
+      }
+    }
+    
+    .remove-button {
+      color: rgba(255, 255, 255, 0.7);
+      
+      &:hover {
+        color: white;
+        background-color: rgba(255, 0, 0, 0.3);
+      }
+      
+      min-width: 36px;
+      min-height: 36px;
+      line-height: 36px;
+      
+      mat-icon {
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+      }
+      
+      &:hover mat-icon {
+        color: white !important;
+      }
     }
   }
   
@@ -115,8 +279,26 @@
 
 // Responsive styling for different screen sizes
 @media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+    height: auto;
+  }
+  
   .visualization-container {
     grid-template-columns: 1fr;
+    order: 2;
+  }
+  
+  .visualization-sidebar {
+    width: 100%;
+    order: 1;
+    border-left: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
+    &.collapsed {
+      width: 100%;
+      height: 60px;
+    }
   }
   
   .visualization-item {
@@ -138,4 +320,21 @@
 .chart-card:focus-within {
   background-color: rgba(0, 0, 0, 0.3);
   border-color: gold;
+}
+
+// Fix any stray Material icon issues
+::ng-deep {
+  .mat-icon {
+    font-family: 'Material Icons', sans-serif;
+    display: inline-block;
+  }
+  
+  // Ensure Material Design Icons are properly sized in lists
+  .mat-list-item-content {
+    .mat-list-icon {
+      font-size: 24px;
+      height: 24px;
+      width: 24px;
+    }
+  }
 }

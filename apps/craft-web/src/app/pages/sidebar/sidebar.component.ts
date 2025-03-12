@@ -4,6 +4,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer } from '@angular/material/sidenav';
 import { MenuItem, MenuGroup } from './sidebar.types'
 import { Router } from '@angular/router';
+import { SidebarStateService } from '../../common/services/sidebar-state.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -46,7 +47,11 @@ export class SidebarComponent implements OnInit {
     }
   ];
   menuItems: MenuItem[] = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
-  constructor(private breakpointObserver: BreakpointObserver, private router: Router) {}
+  constructor(
+    private breakpointObserver: BreakpointObserver, 
+    private router: Router,
+    private sidebarStateService: SidebarStateService
+  ) {}
 
   ngOnInit() {
     this.breakpointObserver.observe([Breakpoints.Handset])
@@ -69,11 +74,13 @@ export class SidebarComponent implements OnInit {
     this.isSmallScreen = true;
   
     this.sidebarToggle.emit(!this.isCollapsed);
+    this.sidebarStateService.toggleSidebar(this.isCollapsed);
   }
 
   toggleCollapse() {
     this.isCollapsed = !this.isCollapsed;
     this.sidebarToggle.emit(!this.isCollapsed);
+    this.sidebarStateService.toggleSidebar(this.isCollapsed);
   }
 
   setActive(item: MenuItem) {
@@ -86,9 +93,9 @@ export class SidebarComponent implements OnInit {
     return activeItem ? activeItem.label : '';
   }
 
-
   toggleMenu() {
     this.isCollapsed = !this.isCollapsed;
+    this.sidebarStateService.toggleSidebar(this.isCollapsed);
     if (this.isSmallScreen) {
       this.drawer.toggle();
     }

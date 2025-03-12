@@ -1,27 +1,70 @@
-<div class="visualization-container" cdkDropList (cdkDropListDropped)="drop($event)">
-  <div *ngFor="let chart of charts; let i = index" 
-       class="visualization-item"
-       [ngClass]="'size-' + (chart.size || 'medium')"
-       cdkDrag>
-    <mat-card class="chart-card" 
-              [class.expanded]="expandedTileIndex === i"
-              (click)="openTile(i)">
-      <mat-card-header cdkDragHandle>
-        <mat-card-title class="chart-title">{{ chart.name }}</mat-card-title>
-      </mat-card-header>
-      
-      <mat-card-content>
-        <div class="chart-content">
-          <ng-container [ngSwitch]="chart.component">
-            <app-line-chart *ngSwitchCase="'app-line-chart'" [data]="chart.data"></app-line-chart>
-            <app-bar-chart *ngSwitchCase="'app-bar-chart'" [data]="chart.data"></app-bar-chart>
-            <app-finance-chart *ngSwitchCase="'app-finance-chart'" [data]="chart.data"></app-finance-chart>
-            <app-fire-alert *ngSwitchCase="'app-fire-alert'"></app-fire-alert>
-            <app-quantum-fisher-tile *ngSwitchCase="'app-quantum-fisher-tile'"></app-quantum-fisher-tile>
-            <div *ngSwitchDefault>Unknown chart type</div>
-          </ng-container>
-        </div>
-      </mat-card-content>
-    </mat-card>
+<div class="dashboard-layout">
+  <!-- Main visualization container -->
+  <div class="visualization-container" cdkDropList (cdkDropListDropped)="drop($event)">
+    <div *ngFor="let chart of displayedCharts; let i = index" 
+         class="visualization-item"
+         [ngClass]="'size-' + (chart.size || 'medium')"
+         cdkDrag>
+      <mat-card class="chart-card" 
+                [class.expanded]="expandedTileIndex === i"
+                (click)="openTile(i)">
+        <mat-card-header cdkDragHandle>
+          <mat-card-title class="chart-title">
+            <mat-icon [style.color]="chart.color">{{getIconForChart(chart)}}</mat-icon>
+            {{ chart.name }}
+          </mat-card-title>
+          <button mat-icon-button class="remove-button" (click)="removeTile(chart, $event)" aria-label="Remove tile">
+            <mat-icon [style.color]="chart.color">close</mat-icon>
+          </button>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="chart-content">
+            <ng-container [ngSwitch]="chart.component">
+              <app-line-chart *ngSwitchCase="'app-line-chart'" [data]="chart.data"></app-line-chart>
+              <app-bar-chart *ngSwitchCase="'app-bar-chart'" [data]="chart.data"></app-bar-chart>
+              <app-finance-chart *ngSwitchCase="'app-finance-chart'" [data]="chart.data"></app-finance-chart>
+              <app-fire-alert *ngSwitchCase="'app-fire-alert'"></app-fire-alert>
+              <app-quantum-fisher-tile *ngSwitchCase="'app-quantum-fisher-tile'"></app-quantum-fisher-tile>
+              <div *ngSwitchDefault>Unknown chart type</div>
+            </ng-container>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Empty state when no tiles are displayed -->
+    <div *ngIf="displayedCharts.length === 0" class="empty-state">
+      <mat-icon>dashboard</mat-icon>
+      <h3>No visualizations selected</h3>
+      <p>Select tiles from the sidebar to add them to your dashboard</p>
+    </div>
+  </div>
+
+  <!-- Sidebar with available tiles -->
+  <div class="visualization-sidebar" [class.collapsed]="isSidebarCollapsed">
+    <div class="sidebar-header">
+      <h2>Available Visualizations</h2>
+      <button mat-icon-button class="sidebar-toggle" (click)="toggleVisualizationSidebar()">
+        <mat-icon>{{isSidebarCollapsed ? 'chevron_left' : 'chevron_right'}}</mat-icon>
+      </button>
+    </div>
+    <div class="sidebar-content">
+      <mat-list>
+        <mat-list-item *ngFor="let chart of availableCharts" 
+                       [class.active]="isChartActive(chart)" 
+                       (click)="toggleChart(chart)">
+          <span matListItemIcon>
+            <mat-icon [style.color]="chart.color">{{getIconForChart(chart)}}</mat-icon>
+          </span>
+          <span matListItemTitle *ngIf="!isSidebarCollapsed">{{chart.name}}</span>
+          <span matListItemMeta>
+            <mat-icon [style.color]="chart.color">
+              {{isChartActive(chart) ? 'check_circle' : 'add_circle_outline'}}
+            </mat-icon>
+          </span>
+        </mat-list-item>
+      </mat-list>
+    </div>
   </div>
 </div>

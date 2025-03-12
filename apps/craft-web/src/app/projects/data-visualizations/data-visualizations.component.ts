@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { BarChartData, LineChartData, MapChartData, ChartData } from './data-visualizations.interfaces';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -6,6 +6,9 @@ import { Observable, Subscription, forkJoin, of } from 'rxjs';
 import { YahooService } from '../../common/services/yahoo.service';
 import moment from 'moment';
 import { catchError } from 'rxjs/operators';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
+import { SidebarStateService } from '../../common/services/sidebar-state.service';
 
 @Component({
   selector: 'app-data-visualizations',
@@ -13,9 +16,15 @@ import { catchError } from 'rxjs/operators';
   styleUrls: ['./data-visualizations.component.scss'],
   standalone: false,
 })
-export class DataVisualizationsComponent implements OnInit {
+export class DataVisualizationsComponent implements OnInit, OnDestroy {
   isMobile = false;
+  isSidebarCollapsed = false;
   expandedTileIndex: number | null = null;
+  
+  // Track displayed and available charts
+  displayedCharts: ChartData[] = [];
+  availableCharts: ChartData[] = [];
+  private sidebarSubscription: Subscription;
 
   public barChartData: BarChartData[] = [
     {
@@ -59,25 +68,64 @@ export class DataVisualizationsComponent implements OnInit {
     { date: new Date('2024-12-01'), series1: 7600, series2: 8200, series3: 9000 },
   ];
 
-  public charts: ChartData[] = [
-    { name: 'Line Chart', component: 'app-line-chart', color: 'blue', data: this.lineChartData, size: 'small' },
-    { name: 'Bar Chart', component: 'app-bar-chart', color: 'green', data: this.barChartData, size: 'small' },
-    { name: 'Quantum Fisher Information', component: 'app-quantum-fisher-tile', color: 'purple', data: [], size: 'medium' },
-    { name: 'FinTech Chart', component: 'app-finance-chart', color: 'red', data: [], size: 'medium' },
+  // Master list of all chart data
+  public allCharts: ChartData[] = [
+    { name: 'Line Chart', component: 'app-line-chart', color: 'dodgerblue', data: this.lineChartData, size: 'small' },
+    { name: 'Bar Chart', component: 'app-bar-chart', color: 'limegreen', data: this.barChartData, size: 'small' },
+    { name: 'Quantum Fisher Information', component: 'app-quantum-fisher-tile', color: 'mediumpurple', data: [], size: 'medium' },
+    { name: 'FinTech Chart', component: 'app-finance-chart', color: 'tomato', data: [], size: 'medium' },
     { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [], size: 'small' },
   ];
 
   public fintechChartData: any[] = [];
   financeData: any;
 
-  constructor(private breakpointObserver: BreakpointObserver, private cdr: ChangeDetectorRef, private yahooService: YahooService) {
+  constructor(
+    private breakpointObserver: BreakpointObserver, 
+    private cdr: ChangeDetectorRef, 
+    private yahooService: YahooService,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
+    private sidebarStateService: SidebarStateService
+  ) {
+    // Register icons - this ensures Material icons are available
+    this.registerIcons();
+    
+    // Initialize available and displayed charts
+    this.availableCharts = [...this.allCharts];
+    
+    // By default, only show the Fire Alert tile
+    const fireAlertIndex = this.availableCharts.findIndex(chart => chart.component === 'app-fire-alert');
+    if (fireAlertIndex !== -1) {
+      this.displayedCharts = [this.availableCharts[fireAlertIndex]];
+    }
+    
     this.loadFintechChartData()
       .pipe()
       .subscribe(data => {
         this.fintechChartData = data;
-        this.charts[3].data = this.fintechChartData;
+        
+        // Update finance chart data in both arrays
+        const financeChartIndex = this.availableCharts.findIndex(c => c.component === 'app-finance-chart');
+        if (financeChartIndex !== -1) {
+          this.availableCharts[financeChartIndex].data = this.fintechChartData;
+        }
+        
+        const displayedFinanceIndex = this.displayedCharts.findIndex(c => c.component === 'app-finance-chart');
+        if (displayedFinanceIndex !== -1) {
+          this.displayedCharts[displayedFinanceIndex].data = this.fintechChartData;
+        }
+        
         this.cdr.detectChanges();
       });
+
+    // Subscribe to sidebar state changes
+    this.sidebarSubscription = this.sidebarStateService.isCollapsed$.subscribe(
+      isCollapsed => {
+        this.isSidebarCollapsed = isCollapsed;
+        this.cdr.detectChanges();
+      }
+    );
   }
 
   ngOnInit() {
@@ -92,12 +140,68 @@ export class DataVisualizationsComponent implements OnInit {
     }, 100);
   }
 
+  ngOnDestroy() {
+    if (this.sidebarSubscription) {
+      this.sidebarSubscription.unsubscribe();
+    }
+  }
+
+  // Check if a chart is currently displayed
+  isChartActive(chart: ChartData): boolean {
+    return this.displayedCharts.some(c => c.component === chart.component);
+  }
+
+  // Toggle a chart between displayed and not displayed
+  toggleChart(chart: ChartData, event?: MouseEvent): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    
+    if (this.isChartActive(chart)) {
+      this.removeTile(chart);
+    } else {
+      this.addTile(chart);
+    }
+    
+    // Update all list items to have proper styling
+    setTimeout(() => {
+      this.updateListItemStyles();
+    });
+  }
+
+  // Add a tile to the main display
+  addTile(chart: ChartData): void {
+    // Clone the chart to avoid reference issues
+    const chartCopy = { ...chart };
+    this.displayedCharts.push(chartCopy);
+    this.cdr.detectChanges();
+    
+    // Ensure proper rendering
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
+  }
+
+  // Remove a tile from the main display
+  removeTile(chart: ChartData, event?: MouseEvent): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    
+    const index = this.displayedCharts.findIndex(c => c.component === chart.component);
+    if (index !== -1) {
+      this.displayedCharts.splice(index, 1);
+      this.cdr.detectChanges();
+    }
+  }
+
   openTile(index: number) {
-    // Make sure the quantum visualization reinitializes when its tile is opened
+    // Toggle expanded state
     this.expandedTileIndex = this.expandedTileIndex === index ? null : index;
 
-    // If opening the quantum tile, trigger window resize event to ensure D3 visualization renders properly
-    if (this.expandedTileIndex !== null && this.charts[this.expandedTileIndex].component === 'app-quantum-fisher-tile') {
+    // Ensure visualization renders properly when expanded
+    if (this.expandedTileIndex !== null && 
+        this.displayedCharts[this.expandedTileIndex].component === 'app-quantum-fisher-tile') {
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'));
       }, 100);
@@ -105,8 +209,20 @@ export class DataVisualizationsComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<ChartData[]>) {
-    moveItemInArray(this.charts, event.previousIndex, event.currentIndex);
-    // Save the new order to the state if needed
+    moveItemInArray(this.displayedCharts, event.previousIndex, event.currentIndex);
+    this.cdr.detectChanges();
+  }
+
+  // Get an appropriate icon for each chart type
+  getIconForChart(chart: ChartData): string {
+    switch (chart.component) {
+      case 'app-line-chart': return 'show_chart';
+      case 'app-bar-chart': return 'bar_chart';
+      case 'app-finance-chart': return 'trending_up';
+      case 'app-fire-alert': return 'warning';
+      case 'app-quantum-fisher-tile': return 'science';
+      default: return 'widgets';
+    }
   }
 
   private loadFintechChartData(): Observable<any> {
@@ -125,5 +241,45 @@ export class DataVisualizationsComponent implements OnInit {
   // Add method to handle tile size classes
   getTileSize(size: string): string {
     return `size-${size || 'medium'}`;
+  }
+
+  // Register Material Icons
+  private registerIcons(): void {
+    // This ensures that Material icons are properly loaded
+    this.iconRegistry.setDefaultFontSetClass('material-icons');
+  }
+
+  // Add method to update list item styles
+  updateListItemStyles(): void {
+    // Use setTimeout to ensure DOM is updated
+    setTimeout(() => {
+      const listItems = document.querySelectorAll('.visualization-sidebar mat-list-item');
+      
+      listItems.forEach((item, index) => {
+        const chart = this.availableCharts[index];
+        if (this.isChartActive(chart)) {
+          (item as HTMLElement).style.borderLeftColor = chart.color;
+        } else {
+          (item as HTMLElement).style.borderLeftColor = '';
+        }
+      });
+    });
+  }
+  
+  ngAfterViewInit() {
+    // Initialize list item styles after view is initialized
+    this.updateListItemStyles();
+    
+    // ...existing code...
+  }
+
+  toggleVisualizationSidebar() {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+    this.cdr.detectChanges();
+    
+    // Ensure proper rendering
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
   }
 }

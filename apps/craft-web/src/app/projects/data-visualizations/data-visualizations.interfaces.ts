@@ -3,7 +3,8 @@ export interface ChartData {
   component: string;
   data: any;
   color: string;
-  size?: 'small' | 'medium' | 'large'; // Add optional size property
+  size?: 'small' | 'medium' | 'large';
+  active?: boolean; // Track if chart is active
 }
 
 export interface BarChartData {
