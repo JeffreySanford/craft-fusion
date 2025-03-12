@@ -3,6 +3,7 @@ export interface ChartData {
   component: string;
   data: any;
   color: string;
+  size?: 'small' | 'medium' | 'large'; // Add optional size property
 }
 
 export interface BarChartData {

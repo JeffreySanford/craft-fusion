@@ -1,25 +1,26 @@
-<div class="dashboard" cdkDropList (cdkDropListDropped)="drop($event)">
-  <div class="dashboard-tile" *ngFor="let chart of charts; let i = index" cdkDrag [cdkDragData]="chart">
-    <mat-card (click)="openTile(i)" (keydown.enter)="openTile(i)" (keydown.space)="openTile(i)" tabindex="0" class="chart-card" [class.expanded]="expandedTileIndex === i">
-      <mat-card-header>
-        <mat-card-title class="chart-name">{{ chart.name }}</mat-card-title>
+<div class="visualization-container" cdkDropList (cdkDropListDropped)="drop($event)">
+  <div *ngFor="let chart of charts; let i = index" 
+       class="visualization-item"
+       [ngClass]="'size-' + (chart.size || 'medium')"
+       cdkDrag>
+    <mat-card class="chart-card" 
+              [class.expanded]="expandedTileIndex === i"
+              (click)="openTile(i)">
+      <mat-card-header cdkDragHandle>
+        <mat-card-title class="chart-title">{{ chart.name }}</mat-card-title>
       </mat-card-header>
+      
       <mat-card-content>
-        <ng-container *ngIf="chart.component === 'app-line-chart'">
-          <app-line-chart [data]="chart.data"></app-line-chart>
-        </ng-container>
-        <ng-container *ngIf="chart.component === 'app-bar-chart'">
-          <app-bar-chart [data]="chart.data"></app-bar-chart>
-        </ng-container>
-        <ng-container *ngIf="chart.component === 'app-finance-chart'">
-          <app-finance-chart [data]="chart.data"></app-finance-chart>
-        </ng-container>
-        <ng-container *ngIf="chart.component === 'app-fire-alert'">
-          <app-fire-alert></app-fire-alert>
-        </ng-container>
-        <ng-container *ngIf="chart.component === 'app-quantum-fisher-tile'">
-          <app-quantum-fisher-tile></app-quantum-fisher-tile>
-        </ng-container>
+        <div class="chart-content">
+          <ng-container [ngSwitch]="chart.component">
+            <app-line-chart *ngSwitchCase="'app-line-chart'" [data]="chart.data"></app-line-chart>
+            <app-bar-chart *ngSwitchCase="'app-bar-chart'" [data]="chart.data"></app-bar-chart>
+            <app-finance-chart *ngSwitchCase="'app-finance-chart'" [data]="chart.data"></app-finance-chart>
+            <app-fire-alert *ngSwitchCase="'app-fire-alert'"></app-fire-alert>
+            <app-quantum-fisher-tile *ngSwitchCase="'app-quantum-fisher-tile'"></app-quantum-fisher-tile>
+            <div *ngSwitchDefault>Unknown chart type</div>
+          </ng-container>
+        </div>
       </mat-card-content>
     </mat-card>
   </div>

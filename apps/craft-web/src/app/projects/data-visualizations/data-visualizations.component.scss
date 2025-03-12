@@ -10,13 +10,118 @@
   box-sizing: border-box;
 }
 
+// Container styles for the visualization grid layout
+.visualization-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-y: auto;
+  height: calc(100vh - 64px); // Adjust based on your app's header height
+}
+
+// Individual visualization item styling
+.visualization-item {
+  position: relative;
+  width: 100%;
+  min-height: 250px;
+  transition: all 0.3s ease;
+  
+  // Different sizes for visualization items
+  &.size-small {
+    min-height: 200px;
+  }
+  
+  &.size-medium {
+    min-height: 300px;
+  }
+  
+  &.size-large {
+    min-height: 400px;
+  }
+  
+  // Make drag handle visible
+  &.cdk-drag-preview {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  }
+  
+  &.cdk-drag-placeholder {
+    opacity: 0.3;
+  }
+  
+  &.cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0,0,0.2,1);
+  }
+}
+
+// Card styling for each visualization
 .chart-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
   background-color: rgba(0, 0, 0, 0.2);
   color: white;
-  transition: transform 0.3s ease;
-  cursor: pointer;
-  border: 1px solid darkred;
-  min-height: 25em; // Ensure enough height for the QFI visualization
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  border-radius: 8px;
+  overflow: hidden;
+  
+  &:hover {
+    border-color: gold;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+  }
+  
+  &.expanded {
+    z-index: 10;
+    transform: scale(1.02);
+    border-color: gold;
+    box-shadow: 0 8px 24px rgba(255, 215, 0, 0.5);
+  }
+  
+  // Card header styling
+  mat-card-header {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 12px;
+    cursor: move; // Indicate draggable
+    
+    .chart-title {
+      color: gold;
+      margin: 0;
+      font-size: 1.2rem;
+    }
+  }
+  
+  // Card content styling
+  mat-card-content {
+    flex: 1;
+    padding: 0;
+    overflow: auto;
+    
+    .chart-content {
+      height: 100%;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+  }
+}
+
+// Force proper Angular Material styling
+::ng-deep .mat-card-content {
+  display: block !important;
+}
+
+// Responsive styling for different screen sizes
+@media (max-width: 768px) {
+  .visualization-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .visualization-item {
+    min-height: 300px;
+  }
 }
 
 .chart-name {

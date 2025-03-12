@@ -60,11 +60,11 @@ export class DataVisualizationsComponent implements OnInit {
   ];
 
   public charts: ChartData[] = [
-    { name: 'Line Chart', component: 'app-line-chart', color: 'blue', data: this.lineChartData },
-    { name: 'Bar Chart', component: 'app-bar-chart', color: 'green', data: this.barChartData },
-    { name: 'Quantum Fisher Information', component: 'app-quantum-fisher-tile', color: 'purple', data: [] },
-    { name: 'FinTech Chart', component: 'app-finance-chart', color: 'red', data: [] },
-    { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [] },
+    { name: 'Line Chart', component: 'app-line-chart', color: 'blue', data: this.lineChartData, size: 'small' },
+    { name: 'Bar Chart', component: 'app-bar-chart', color: 'green', data: this.barChartData, size: 'small' },
+    { name: 'Quantum Fisher Information', component: 'app-quantum-fisher-tile', color: 'purple', data: [], size: 'medium' },
+    { name: 'FinTech Chart', component: 'app-finance-chart', color: 'red', data: [], size: 'medium' },
+    { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [], size: 'small' },
   ];
 
   public fintechChartData: any[] = [];
@@ -83,7 +83,13 @@ export class DataVisualizationsComponent implements OnInit {
   ngOnInit() {
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       this.isMobile = result.matches;
+      this.cdr.detectChanges();
     });
+
+    // Ensure charts render properly by triggering resize after init
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
   }
 
   openTile(index: number) {
@@ -114,5 +120,10 @@ export class DataVisualizationsComponent implements OnInit {
         return of([]);
       }),
     );
+  }
+
+  // Add method to handle tile size classes
+  getTileSize(size: string): string {
+    return `size-${size || 'medium'}`;
   }
 }
