@@ -5,6 +5,9 @@ $table-theme: (
   primary-white: #ffffff,
   teal: #008080,
   blue: #0000ff,
+  red: #ff0000,
+  patriotic-blue: #002868,
+  patriotic-red: #bf0a30,
 );
 
 .no-data,
@@ -17,65 +20,66 @@ $table-theme: (
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.3); /* Optional: to add a semi-transparent background */
+  background-color: rgba(0, 0, 0, 0.3);
   z-index: 1000;
 }
 
 .table-wrapper {
   display: block;
-  max-height: 25em; /* Set a max height to enable scrolling */
+  max-height: 25em;
   overflow-y: auto;
   overflow-x: auto;
   white-space: nowrap;
   flex-grow: 1;
 
-  /* Scrollbar styling */
-  scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: linear-gradient(to bottom, red, white, blue) transparent; /* For Firefox */
+  /* Enhanced Scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: linear-gradient(to bottom, map.get($table-theme, patriotic-red), 
+    map.get($table-theme, primary-white), map.get($table-theme, patriotic-blue)) transparent;
 
   &::-webkit-scrollbar {
-    width: 8px; /* Thin scrollbar width */
+    width: 8px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, red, white, blue);
+    background: linear-gradient(to bottom, map.get($table-theme, patriotic-red), 
+      map.get($table-theme, primary-white), map.get($table-theme, patriotic-blue));
     border-radius: 10px;
-    border: 2px solid transparent; /* Transparent border to create padding effect */
+    border: 1px solid transparent;
   }
 
   &::-webkit-scrollbar-track {
-    background: transparent; /* Transparent background */
+    background: transparent;
   }
 
   &::-webkit-scrollbar-button {
-    background-color: blue; /* Blue controls */
+    background-color: map.get($table-theme, patriotic-blue);
     display: block;
-    height: 16px;
-    width: 16px;
+    height: 12px;
+    width: 12px;
   }
 }
 
 .record-collection {
   height: 100%;
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
   border-radius: 0.25em;
 
   .report {
     display: flex;
-    flex-wrap: wrap; /* Allow the text to wrap around the button */
+    flex-wrap: wrap;
     width: 100%;
     font-size: 1.25em;
-    margin-bottom: 1em;
-
+    margin-bottom: 0.5em;
 
     .report-text {
       min-height: 3em;
-      flex: 1; /* Allow the report text to take available space */
-      border: 1px solid map.get($table-theme, blue); /* 1px solid blue border */
+      flex: 1;
+      border: 1px solid map.get($table-theme, patriotic-blue);
       border-radius: 0.25em;
       color: map.get($table-theme, dark-blue);
-      margin-right: 1em;
-      padding: 0.25em 0.5em;
+      margin-right: 0.5em;
+      padding: 0.25em;
     }
 
     .swagger-button,
@@ -85,17 +89,20 @@ $table-theme: (
     }
 
     .swagger-button {
-      border: 1px solid blue;
+      border: 1px solid map.get($table-theme, patriotic-blue);
       background-color: map.get($table-theme, primary-white);
-      color: map.get($table-theme, teal);
-      padding: 0.5em 1em;
+      color: map.get($table-theme, patriotic-blue);
+      padding: 0.35em 0.75em;
       border-radius: 0.25em;
       cursor: pointer;
       transition: background-color 0.3s ease, color 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
       &:hover {
-        background-color: map.get($table-theme, dark-blue);
+        background-color: map.get($table-theme, patriotic-blue);
         color: map.get($table-theme, primary-white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       }
     }
   }
@@ -105,12 +112,23 @@ $table-theme: (
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0.25em;
+    padding: 0.15em;
+    gap: 1rem; /* Add gap between selector items */
+
+    mat-form-field {
+      flex: 1;
+      margin-right: 1rem; /* Add right margin to each form field */
+      min-width: 150px;
+      
+      &:last-child {
+        margin-right: 0; /* Remove margin from last item */
+      }
+    }
   }
 
   .table-container,
   .mat-paginator {
-    padding: 0.55em;
+    padding: 0.25em;
     width: 99%;
     height: 78vh;
     display: flex;
@@ -121,15 +139,46 @@ $table-theme: (
 
   .table-wrapper {
     display: block;
-    max-height: 29em;
+    max-height: 30em;
     overflow-x: auto;
     white-space: nowrap;
     flex-grow: 1;
 
     table {
       display: block;
-      max-height: 20em; /* Adjust this value to ensure the scrollbar appears */
-      overflow-y: auto; /* Ensure scrollbar appears when rows exceed screen height */
+      max-height: 22em;
+      overflow-y: auto;
+      width: 100%;
+      border-collapse: collapse; /* Ensure no spacing between cells */
+      
+      // Remove excessive cell padding
+      .mat-cell, .mat-header-cell {
+        padding: 0.4em 0.5em;
+        margin: 0; /* Remove any margin */
+      }
+
+      // Fix row spacing issues
+      tr.mat-row, tr.mat-header-row {
+        height: auto; /* Control height based on content */
+        min-height: 40px; /* Set minimum height */
+        margin: 0; /* Remove any margin */
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12); /* Add subtle borders */
+      }
+
+      // Zebra striping with patriotic colors
+      tr.mat-row:nth-child(odd) {
+        background-color: rgba(map.get($table-theme, patriotic-blue), 0.05);
+      }
+      
+      tr.mat-row:nth-child(even) {
+        background-color: rgba(map.get($table-theme, patriotic-red), 0.05);
+      }
+      
+      // Row hover effect
+      tr.mat-row:hover {
+        background-color: rgba(map.get($table-theme, patriotic-blue), 0.15);
+        transition: background-color 0.3s ease;
+      }
     }
 
     thead,
@@ -137,53 +186,151 @@ $table-theme: (
       display: table;
       width: 100%;
       table-layout: fixed;
+      margin: 0; /* Remove any margin */
     }
   }
 }
 
 .fade-to-red {
-  animation: fade-to-red 2s ease-in-out;
+  animation: fade-to-red 1.5s ease-in-out;
 }
 
+// Enhanced header styling
 .table-wrapper th {
   position: sticky;
   top: 0;
-  background-color: #3f51b5; /* Blue background */
-  color: #fff; /* White text */
-  font-size: 1em; /* Font size */
+  background: linear-gradient(180deg, map.get($table-theme, patriotic-blue), darken(map.get($table-theme, patriotic-blue), 10%));
+  color: map.get($table-theme, primary-white);
+  font-size: 1em;
   text-align: left;
-  z-index: 1; /* Ensure it stays on top */
+  z-index: 1;
+  padding: 0.5em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+// Enhanced paginator styling
 .mat-paginator {
-  background-color: #3f51b5; /* Blue background */
-  color: #fff; /* White text */
-  font-size: 1em; /* Font size */
+  background: linear-gradient(90deg, map.get($table-theme, patriotic-red), map.get($table-theme, patriotic-blue));
+  color: map.get($table-theme, primary-white);
+  font-size: 1em;
   text-align: left;
-  z-index: 1; /* Ensure it stays on top */
+  z-index: 1;
+  padding: 0.25em;
+  margin-top: 0.25em;
 }
 
 @keyframes fly-in {
   from {
     transform: translateX(-100%);
+    opacity: 0;
   }
 
   to {
     transform: translateX(0);
+    opacity: 1;
   }
 }
 
+// Enhanced fly-in animation
 .fly-in {
-  animation: fly-in 1s ease-in-out;
+  animation: fly-in 0.8s cubic-bezier(0.215, 0.610, 0.355, 1.000);
 }
 
 @keyframes fade-to-red {
-  0%,
-  100% {
+  0% {
     color: inherit;
+    text-shadow: none;
   }
   
   50% {
-    color: red;
+    color: map.get($table-theme, patriotic-red);
+    text-shadow: 0 0 5px rgba(map.get($table-theme, patriotic-red), 0.5);
+  }
+  
+  100% {
+    color: inherit;
+    text-shadow: none;
+  }
+}
+
+// Add styling for expanded row content
+.expand-element-detail {
+  overflow: hidden;
+  display: flex;
+  background: linear-gradient(to right, rgba(map.get($table-theme, patriotic-red), 0.05), rgba(map.get($table-theme, patriotic-blue), 0.05));
+  border-left: 4px solid map.get($table-theme, patriotic-blue);
+  padding: 0.5em;
+  
+  .expand-element-description {
+    padding: 0.5em;
+    width: 100%;
+    
+    strong {
+      color: map.get($table-theme, patriotic-blue);
+    }
+    
+    ul {
+      padding-left: 1em;
+    }
+  }
+}
+
+// Animation for row selection
+tr.normal-row {
+  transition: background-color 0.3s ease;
+  
+  &:hover {
+    cursor: pointer;
+    background-color: rgba(map.get($table-theme, patriotic-blue), 0.1);
+  }
+  
+  &.selected {
+    background-color: rgba(map.get($table-theme, patriotic-blue), 0.2);
+    border-left: 3px solid map.get($table-theme, patriotic-blue);
+  }
+}
+
+// Fix expandable row spacing and hide collapsed rows completely
+tr.mat-row {
+  &.expanded-row {
+    height: 0 !important; /* Remove excess height */
+    
+    & + tr {
+      margin-top: 0; /* Remove top margin from rows after expanded rows */
+    }
+  }
+}
+
+// Completely hide the collapsed rows
+tr[mat-row] {
+  &[class*="expandedDetail"] {
+    height: 0;
+    overflow: hidden;
+    
+    &:not(.expanded) {
+      display: none !important;
+    }
+    
+    td {
+      border-bottom-width: 0;
+    }
+  }
+}
+
+// Style specifically for the hidden income information row
+tr.detail-row {
+  height: 0;
+  
+  &.expanded {
+    height: auto;
+    border-bottom: 1px solid map.get($table-theme, patriotic-blue);
+  }
+  
+  td.mat-cell {
+    padding: 0;
+  }
+  
+  &:not(.expanded) {
+    display: none;
   }
 }
