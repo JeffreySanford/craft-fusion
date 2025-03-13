@@ -139,11 +139,16 @@
         // Add specific styling for action icons
         &[matListItemMeta] {
           color: rgba(255, 255, 255, 0.6);
+          
+          // When active, use the chart's color (will be set in JS)
+          &.active-icon {
+            color: inherit; // Will inherit from the parent which gets dynamically set
+          }
         }
       }
       
       &.active mat-icon[matListItemMeta] {
-        color: gold;
+        color: inherit; // Will inherit from the parent
       }
       
       &:hover mat-icon[matListItemMeta] {
@@ -158,17 +163,23 @@
   position: relative;
   transition: all 0.3s ease;
   
-  // Different sizes for visualization items
+  // Different sizes for visualization items - adjust to content
   &.size-small {
-    min-height: 200px;
+    min-height: auto;
+    height: auto;
+    margin-bottom: 16px;
   }
   
   &.size-medium {
-    min-height: 300px;
+    min-height: auto;
+    height: auto;
+    margin-bottom: 16px;
   }
   
   &.size-large {
-    min-height: 400px;
+    min-height: auto;
+    height: auto;
+    margin-bottom: 16px;
   }
   
   // Make drag handle visible
@@ -183,13 +194,61 @@
   &.cdk-drag-animating {
     transition: transform 250ms cubic-bezier(0,0,0.2,1);
   }
+
+  // New styles for full-size expanded view
+  &.full-expanded {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    margin: 0;
+    box-sizing: border-box;
+    overflow: auto;
+    
+    .chart-card {
+      width: 95%;
+      height: 95%;
+      max-width: 1600px;
+      max-height: 900px;
+      transform: none;
+      
+      mat-card-content {
+        height: calc(100% - 60px); // Adjust based on header height
+        
+        .chart-content {
+          height: 100%;
+          
+          &.line-chart-content,
+          &.bar-chart-content,
+          &.finance-chart-content {
+            height: 100%;
+            max-height: none;
+          }
+        }
+      }
+    }
+    
+    // Hide drag handle cursor in full-screen mode
+    mat-card-header {
+      cursor: default;
+    }
+  }
 }
 
 // Card styling for each visualization
 .chart-card {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: auto;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.2);
   color: white;
@@ -265,17 +324,70 @@
         color: white !important;
       }
     }
+    
+    // Add restore button styling
+    .restore-button {
+      color: inherit;
+      opacity: 0.8;
+      position: absolute;
+      right: 48px; // Position next to close button
+      top: 50%;
+      transform: translateY(-50%);
+      margin-left: auto;
+      
+      &:hover {
+        opacity: 1;
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+      
+      min-width: 36px;
+      min-height: 36px;
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+      
+      mat-icon {
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+      }
+    }
+    
+    // Use chart color for header background
+    &.custom-colored {
+      background-color: rgba(0, 0, 0, 0.3);
+      
+      // Title text and icon color inherit from chart color
+      .chart-title {
+        color: inherit;
+        
+        mat-icon {
+          color: inherit;
+        }
+      }
+      
+      // Close button matches title color
+      .remove-button {
+        color: inherit;
+        opacity: 0.8;
+        
+        &:hover {
+          opacity: 1;
+          background-color: rgba(255, 255, 255, 0.2);
+        }
+      }
+    }
   }
   
   // Card content styling
   mat-card-content {
-    flex: 1;
+    flex: 0 auto; // Changed from flex: 1 to avoid stretching
     padding: 0;
-    overflow: auto;
+    overflow: visible; // Changed from auto to visible
     position: relative; // For proper sizing of charts
     
     .chart-content {
-      height: 100%;
+      height: auto; // Allow content to determine height
       padding: 16px;
       box-sizing: border-box;
       display: flex;
@@ -284,9 +396,89 @@
   }
 }
 
+// Chart content container styles
+.chart-content {
+  height: auto; // Let content determine height
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  
+  // Fixed heights for simple charts
+  &.line-chart-content {
+    height: 250px;
+    max-height: 250px;
+  }
+  
+  &.bar-chart-content {
+    height: 250px;
+    max-height: 250px;
+  }
+  
+  &.finance-chart-content {
+    height: 280px;
+    max-height: 280px;
+  }
+  
+  // Scrollable content for complex charts
+  &.scrollable-chart-content {
+    overflow-y: auto;
+    max-height: 500px; // Add a max-height for very large content
+  }
+  
+  // Base styling for all charts
+  &.fixed-chart-content {
+    overflow: visible; // Changed from hidden to visible
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+}
+
+// Make sure mat-card-content adjusts height properly
+mat-card-content {
+  flex: 1;
+  overflow: visible; // Changed from hidden to visible
+  display: flex;
+  flex-direction: column;
+}
+
+// Ensure expanded tiles show content properly
+.chart-card.expanded {
+  .chart-content.scrollable-chart-content {
+    // Remove fixed max-height
+    height: auto;
+  }
+  
+  .chart-content.fixed-chart-content {
+    height: auto;
+    min-height: auto; // Let content determine height
+  }
+}
+
+// Add specific sizing for each chart type using class-based approach
+.visualization-item.chart-type-line .chart-card,
+.visualization-item.chart-type-bar .chart-card {
+  max-height: 320px;
+}
+
+.visualization-item.chart-type-finance .chart-card {
+  max-height: 350px;
+}
+
 // Force proper Angular Material styling
 ::ng-deep .mat-card-content {
   display: block !important;
+}
+
+// Full screen backdrop
+.fullscreen-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background-color: transparent;
 }
 
 // Responsive styling for different screen sizes

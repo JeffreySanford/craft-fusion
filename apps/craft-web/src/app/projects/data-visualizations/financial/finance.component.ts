@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ViewChild, Renderer2, OnInit, OnChanges } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild, Renderer2, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import * as d3 from 'd3';
 
 interface Stock {
@@ -15,6 +15,8 @@ interface Stock {
 
 export class FinanceComponent implements OnInit, OnChanges {
   @Input() data: any[] = [];
+  @Input() width: number = 0;
+  @Input() height: number = 0;
   @ViewChild('chart', { static: true }) chartContainer!: ElementRef;
   stocks: any[] = [];
   resolved: boolean = false;
@@ -25,11 +27,10 @@ export class FinanceComponent implements OnInit, OnChanges {
     // Initial setup if needed
   }
 
-  ngOnChanges(): void {
-    if (this.data) {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.data && (changes['data'] || changes['width'])) {
       this.stocks = this.data.map((stock: any) => stock.symbol);
       if(this.stocks.length > 0) {
-
         this.renderChart(this.data);
       }
     }
@@ -45,9 +46,13 @@ export class FinanceComponent implements OnInit, OnChanges {
         return;
       }
 
+      // Use container width from input but get height from CSS-defined container
+      const containerWidth = this.width || element.offsetWidth;
+      const containerHeight = element.offsetHeight;
+
       const margin = { top: 10, right: 10, bottom: 60, left: 30 };
-      const width = element.offsetWidth - margin.left - margin.right;
-      const height = element.offsetHeight - margin.top - margin.bottom;
+      const width = containerWidth - margin.left - margin.right;
+      const height = containerHeight - margin.top - margin.bottom;
 
       const svg = d3
         .select(element)
@@ -89,7 +94,6 @@ export class FinanceComponent implements OnInit, OnChanges {
 
         const line = d3
           .line<{ date: Date; close: number }>()
-
           .x(d => x(d.date))
           .y(d => y(d.close));
 
@@ -112,16 +116,29 @@ export class FinanceComponent implements OnInit, OnChanges {
           .attr('cy', d => y(d.close))
           .attr('r', 1)
           .attr('fill', color(index.toString()))
-          .on('mouseover', function (event, d) {
+          .each(function(d: any) {
+            // Store data with each point for easy access
+            d3.select(this).datum({
+              ...d,
+              stockSymbol: stock.symbol
+            });
+          })
+          .on('mouseover', (event: MouseEvent) => {
+            const target = event.target as SVGCircleElement;
+            const d = d3.select(target).datum() as any;
+            
             tooltip.transition().duration(200).style('opacity', 0.9);
             tooltip
-              .html(`Date: ${d.date.toLocaleDateString()}<br>Close: ${d.close}`)
+              .html(`Date: ${d.date.toLocaleDateString()}<br>Close: ${d.close}<br>Symbol: ${d.stockSymbol}`)
               .style('left', '50%')
               .style('top', '0.5em')
               .style('transform', 'translateX(-50%)');
-            d3.select(this).attr('r', 3); // Highlight the circle
-            svg
-              .append('line')
+            
+            // Highlight the circle using renderer
+            this.renderer.setStyle(target, 'r', '3px');
+            
+            // Add hover line
+            const hoverLine = svg.append('line')
               .attr('class', 'hover-line')
               .attr('x1', x(d.date))
               .attr('x2', x(d.date))
@@ -131,27 +148,36 @@ export class FinanceComponent implements OnInit, OnChanges {
               .attr('stroke-width', 1)
               .attr('stroke-dasharray', '4');
           })
-          .on('mouseout', function () {
+          .on('mouseout', (event: MouseEvent) => {
             tooltip.transition().duration(500).style('opacity', 0);
-            d3.select(this).attr('r', 1); // Remove highlight from the circle
-            svg.selectAll('.hover-line').remove(); // Remove the hover line
+            
+            // Restore circle size
+            const target = event.target as SVGCircleElement;
+            this.renderer.setStyle(target, 'r', '1px');
+            
+            // Remove hover line
+            svg.selectAll('.hover-line').remove();
           });
 
       });
 
-      // Add legend
+      // Add legend with adjusted position based on available space
+      const legendWidth = Math.min(100, width * 0.25);
+      const legendX = width - legendWidth - 10;
+      const legendY = Math.min(height - 100, 20);
+      
       const legend = svg
         .selectAll('.legend')
         .data(stocks)
         .enter()
         .append('g')
         .attr('class', 'legend')
-        .attr('transform', (d, i) => `translate(0,${i * 25})`);
+        .attr('transform', (d, i) => `translate(0,${i * 25 + legendY})`);
 
       legend
         .append('rect')
         .attr('x', width - 18)
-        .attr('y', -30)
+        .attr('y', 0)
         .attr('width', 18)
         .attr('height', 18)
         .style('fill', (d, i) => color(i.toString()));

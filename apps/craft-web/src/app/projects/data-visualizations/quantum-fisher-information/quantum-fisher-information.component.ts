@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, HostListener, OnChanges, SimpleChanges } from '@angular/core';
 import * as d3 from 'd3';
 import katex from 'katex';
 // Removed import for KatexOptions as it does not exist
@@ -16,8 +16,10 @@ interface QFICell {
   styleUrls: ['./quantum-fisher-information.component.scss'],
   standalone: false
 })
-export class QuantumFisherInformationComponent implements OnInit, AfterViewInit {
+export class QuantumFisherInformationComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() dialogMode = false;
+  @Input() width: number = 0;
+  @Input() height: number = 0;
   @ViewChild('qfiVisualization') qfiVisualizationRef!: ElementRef;
   
   // Updated state names to better reflect quantum metrology terminology
@@ -147,6 +149,15 @@ export class QuantumFisherInformationComponent implements OnInit, AfterViewInit 
     this.initializeVisualization();
   }
   
+  ngOnChanges(changes: SimpleChanges): void {
+    // Re-initialize visualization if dimensions change
+    if ((changes['width'] || changes['height']) && this.qfiVisualizationRef) {
+      setTimeout(() => {
+        this.initializeVisualization();
+      }, 100);
+    }
+  }
+
   // Helper method to flatten the 2D array for D3 compatibility
   private flattenData(data: number[][]): QFICell[] {
     const result: QFICell[] = [];
@@ -225,8 +236,9 @@ export class QuantumFisherInformationComponent implements OnInit, AfterViewInit 
       this.qfiData = this.currentStateData;
       
       // Get container dimensions for responsive sizing
-      const containerWidth = element.clientWidth || 400;
-      const containerHeight = Math.min(containerWidth * 0.75, element.clientHeight || 300);
+      // Use input dimensions if provided, otherwise use container dimensions
+      const containerWidth = this.width || element.clientWidth || 400;
+      const containerHeight = this.height || Math.min(containerWidth * 0.75, element.clientHeight || 300);
       
       // Setup SVG container for heatmap with responsive dimensions
       const svgWidth = containerWidth;

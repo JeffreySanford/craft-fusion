@@ -6,7 +6,7 @@
 
 .fintech-chart-container {
   width: 100%;
-  height: 25vh;
+  height: 220px; // Fixed height instead of 25vh
   display: flex;
   justify-content: flex-end; /* Align chart to the bottom */
   align-items: flex-end; /* Align chart to the bottom */

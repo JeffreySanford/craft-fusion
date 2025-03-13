@@ -1,9 +1,9 @@
 export interface ChartData {
   name: string;
   component: string;
-  data: any;
   color: string;
-  size?: 'small' | 'medium' | 'large';
+  data: any[];
+  size?: string; // Make size optional with '?' to accommodate undefined values
   active?: boolean; // Track if chart is active
 }
 

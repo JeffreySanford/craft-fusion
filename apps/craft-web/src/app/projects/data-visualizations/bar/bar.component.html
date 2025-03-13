@@ -1,5 +1,7 @@
 <ng-container *ngIf="data">
-  <div class="bar-chart-container"></div>
+  <div class="bar-chart-container">
+    <!-- Chart will be rendered here by D3 -->
+  </div>
   <div class="bar-chart-legend">
     <div *ngFor="let item of data; let i = index" class="bar-chart-legend-item" [style.backgroundColor]="colors[i]">
       {{ item.month }}

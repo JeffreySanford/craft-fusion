@@ -20,10 +20,11 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   isMobile = false;
   isSidebarCollapsed = false;
   expandedTileIndex: number | null = null;
+  fullExpandedTileIndex: number | null = null; // New property for full-screen expansion
   
   // Track displayed and available charts
-  displayedCharts: ChartData[] = [];
-  availableCharts: ChartData[] = [];
+  displayedCharts: ExtendedChartData[] = [];
+  availableCharts: ExtendedChartData[] = [];
   private sidebarSubscription: Subscription;
 
   public barChartData: BarChartData[] = [
@@ -69,7 +70,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   ];
 
   // Master list of all chart data
-  public allCharts: ChartData[] = [
+  public allCharts: ExtendedChartData[] = [
     { name: 'Line Chart', component: 'app-line-chart', color: 'dodgerblue', data: this.lineChartData, size: 'small' },
     { name: 'Bar Chart', component: 'app-bar-chart', color: 'limegreen', data: this.barChartData, size: 'small' },
     { name: 'Quantum Fisher Information', component: 'app-quantum-fisher-tile', color: 'mediumpurple', data: [], size: 'medium' },
@@ -79,6 +80,11 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
 
   public fintechChartData: any[] = [];
   financeData: any;
+
+  // New properties to track dimensions
+  tileWidth: number = 0;
+  tileHeight: number = 0;
+  resizeObserver: ResizeObserver | null = null;
 
   constructor(
     private breakpointObserver: BreakpointObserver, 
@@ -134,6 +140,9 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     });
 
+    // Setup resize observer to track container dimensions
+    this.setupResizeObserver();
+
     // Ensure charts render properly by triggering resize after init
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
@@ -144,6 +153,57 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     if (this.sidebarSubscription) {
       this.sidebarSubscription.unsubscribe();
     }
+    
+    // Clean up resize observer
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
+    
+    // Ensure body overflow is restored
+    document.body.style.overflow = '';
+  }
+
+  // Setup resize observer to track tile dimensions
+  private setupResizeObserver(): void {
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(entries => {
+        for (const entry of entries) {
+          if (entry.contentBoxSize) {
+            // Handle modern browsers
+            const contentBoxSize = Array.isArray(entry.contentBoxSize) ? 
+              entry.contentBoxSize[0] : entry.contentBoxSize;
+            
+            this.tileWidth = contentBoxSize.inlineSize;
+            this.tileHeight = contentBoxSize.blockSize;
+          } else {
+            // Fallback for older browsers
+            this.tileWidth = entry.contentRect.width;
+            this.tileHeight = entry.contentRect.height;
+          }
+          this.cdr.detectChanges();
+        }
+      });
+
+      // Start observing after a short delay to ensure DOM is ready
+      setTimeout(() => {
+        const container = document.querySelector('.visualization-container');
+        if (container) {
+          this.resizeObserver!.observe(container);
+        }
+      }, 200);
+    }
+  }
+
+  // Calculate dimensions for each tile based on its size property and container size
+  getTileDimensions(chart: ChartData): { width: number, height: number } {
+    const baseHeight = chart.size === 'small' ? 250 : 
+                       chart.size === 'large' ? 450 : 350;
+    
+    return {
+      width: 0, // Will be determined by container
+      height: baseHeight
+    };
   }
 
   // Check if a chart is currently displayed
@@ -172,7 +232,11 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   // Add a tile to the main display
   addTile(chart: ChartData): void {
     // Clone the chart to avoid reference issues
-    const chartCopy = { ...chart };
+    const chartCopy = { ...chart } as ExtendedChartData;
+    
+    // Pre-calculate the chart class
+    chartCopy.chartClass = this.calculateChartClass(chartCopy.component);
+    
     this.displayedCharts.push(chartCopy);
     this.cdr.detectChanges();
     
@@ -212,7 +276,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  drop(event: CdkDragDrop<ChartData[]>) {
+  drop(event: CdkDragDrop<ExtendedChartData[]>) {
     moveItemInArray(this.displayedCharts, event.previousIndex, event.currentIndex);
     this.cdr.detectChanges();
     
@@ -248,7 +312,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   }
 
   // Add method to handle tile size classes
-  getTileSize(size: string): string {
+  getTileSize(size: string | undefined): string {
     return `size-${size || 'medium'}`;
   }
 
@@ -267,9 +331,24 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       listItems.forEach((item, index) => {
         const chart = this.availableCharts[index];
         if (this.isChartActive(chart)) {
+          // Apply chart color to the border, text, and icons
           (item as HTMLElement).style.borderLeftColor = chart.color;
+          (item as HTMLElement).style.color = chart.color;
+          
+          // Ensure checkbox icon gets the color as well
+          const checkboxIcon = item.querySelector('mat-icon[matListItemMeta]');
+          if (checkboxIcon) {
+            (checkboxIcon as HTMLElement).style.color = chart.color;
+          }
         } else {
+          // Reset styles for inactive items
           (item as HTMLElement).style.borderLeftColor = '';
+          (item as HTMLElement).style.color = '';
+          
+          const checkboxIcon = item.querySelector('mat-icon[matListItemMeta]');
+          if (checkboxIcon) {
+            (checkboxIcon as HTMLElement).style.color = '';
+          }
         }
       });
     });
@@ -295,5 +374,106 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   // New method to trigger resize on all charts
   resizeCharts(): void {
     window.dispatchEvent(new Event('resize'));
+    this.cdr.detectChanges();
   }
+
+  // Replace the old getChartContentClass method with this improved version
+  getChartClass(chart: ExtendedChartData): string {
+    if (!chart.chartClass) {
+      // If not pre-calculated, calculate it now and cache it
+      chart.chartClass = this.calculateChartClass(chart.component);
+    }
+    
+    return chart.chartClass;
+  }
+
+  // Calculate chart class based on component type - only called when needed
+  private calculateChartClass(componentType: string): string {
+    // Base classes that apply to all charts
+    const baseClass = 'fixed-chart-content';
+    
+    // Map component types to specific CSS classes
+    switch (componentType) {
+      case 'app-line-chart':
+        return `${baseClass} line-chart-content`;
+      case 'app-bar-chart':
+        return `${baseClass} bar-chart-content`;
+      case 'app-finance-chart':
+        return `${baseClass} finance-chart-content`;
+      case 'app-quantum-fisher-tile':
+      case 'app-fire-alert':
+        return `${baseClass} scrollable-chart-content`;
+      default:
+        return baseClass;
+    }
+  }
+
+  // Handle tile click for expansion or collapse
+  handleTileClick(index: number, event: MouseEvent): void {
+    // Ignore if clicking on buttons or interactive elements
+    if (
+      (event.target as HTMLElement).closest('button') || 
+      (event.target as HTMLElement).closest('mat-slider') ||
+      (event.target as HTMLElement).closest('mat-checkbox') ||
+      (event.target as HTMLElement).closest('mat-select')
+    ) {
+      return;
+    }
+    
+    // If already in full-screen, do nothing (use restore button to exit)
+    if (this.fullExpandedTileIndex !== null) {
+      return;
+    }
+    
+    // If already partially expanded, go to full-screen
+    if (this.expandedTileIndex === index) {
+      this.fullExpandedTile(index);
+    } else {
+      // Otherwise just expand partially
+      this.openTile(index);
+    }
+  }
+  
+  // Expand tile to full-screen
+  fullExpandedTile(index: number): void {
+    this.fullExpandedTileIndex = index;
+    
+    // Apply body styles to prevent scrolling of background
+    document.body.style.overflow = 'hidden';
+    
+    // Ensure proper rendering in full-screen mode
+    setTimeout(() => {
+      this.resizeCharts();
+    }, 250);
+  }
+  
+  // Restore tile from full-screen
+  restoreTile(index: number, event?: MouseEvent): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    
+    this.fullExpandedTileIndex = null;
+    
+    // Restore body overflow
+    document.body.style.overflow = '';
+    
+    // Ensure proper rendering after restore
+    setTimeout(() => {
+      this.resizeCharts();
+    }, 250);
+  }
+  
+  // Handle clicks on the backdrop to restore from full-screen
+  handleBackdropClick(event: MouseEvent): void {
+    // Only respond if clicking directly on the backdrop
+    if ((event.target as HTMLElement).classList.contains('fullscreen-backdrop')) {
+      this.restoreTile(this.fullExpandedTileIndex!);
+    }
+  }
+}
+
+// Update the ChartData interface to include a chartClass property
+export interface ExtendedChartData extends ChartData {
+  chartClass?: string; // Store the pre-calculated chart class
 }

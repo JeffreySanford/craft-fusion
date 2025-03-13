@@ -39,8 +39,7 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: calc(100% - 50px); /* Reserve space for legend */
-  min-height: 150px;
+  height: 100%; // Use full height of container
   position: relative;
 }
 
@@ -62,7 +61,44 @@
     fill: rgba(255, 255, 255, 0.8);
   }
   
-  rect:hover {
-    filter: brightness(1.2);
+  .bar-interactive {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      filter: brightness(1.2);
+    }
   }
+  
+  // Add grid lines for better readability
+  .grid line {
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-dasharray: 2, 2;
+  }
+  
+  // Improve text labels
+  .chart-title {
+    font-weight: bold;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .chart-subtitle {
+    font-style: italic;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .x-axis-label, .y-axis-label {
+    font-family: 'Arial', sans-serif;
+    font-weight: 500;
+  }
+}
+
+// Add custom tooltip styling
+.bar-tooltip {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  border-radius: 4px;
+  padding: 10px;
+  font-family: 'Arial', sans-serif;
+  line-height: 1.4;
+  letter-spacing: 0.2px;
 }

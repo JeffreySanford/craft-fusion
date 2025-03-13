@@ -21,6 +21,8 @@ interface City {
 })
 export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() alerts: any[] = [];
+  @Input() width: number = 0;
+  @Input() height: number = 0;
 
   fr24Flights: any[] = [];
   legendItems: string[] = ['High Priority', 'Medium Priority', 'Low Priority'];
@@ -29,6 +31,10 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   currentTime!: string;
   utcTime!: string;
   timeSubscription?: Subscription;
+  
+  // Track if dimensions have changed
+  private lastWidth: number = 0;
+  private lastHeight: number = 0;
 
   cities = [
     {
@@ -86,15 +92,43 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     this.fetchFlightData();
   }
 
+  // Add ngOnChanges to handle dimension changes
+  ngOnChanges(changes: any): void {
+    // Check if width or height has changed
+    if ((changes.width && this.lastWidth !== changes.width.currentValue) || 
+        (changes.height && this.lastHeight !== changes.height.currentValue)) {
+      
+      this.lastWidth = this.width;
+      this.lastHeight = this.height;
+      
+      // Re-initialize map with new dimensions if already initialized
+      if (this.selectedCity) {
+        setTimeout(() => {
+          this.initializeMap(this.selectedCity.name, this.selectedCity.alerts[0].id);
+        }, 100);
+      }
+    }
+  }
+
   initializeMap(city: string, alertId: number): void {
     console.log('STEP 4: Initializing map for city', city);
     const cityObj = this.cities.find(c => c.name === city);
     const coordinates = cityObj ? cityObj.coords : { lat: 34.0522, lng: -118.2437 }; // Default to Los Angeles if city not found
+    
+    // Use container heights/widths from inputs if provided
+    const mapContainer = document.getElementById(`map-${alertId}`);
+    if (mapContainer && this.width && this.height) {
+      mapContainer.style.width = `${this.width}px`;
+      mapContainer.style.height = `${this.height}px`;
+    }
+    
     const map = this.mapboxService.initializeMap(`map-${alertId}`, [coordinates.lng, coordinates.lat], 12);
     this.startCurrentTimeStream(this.selectedCity);
 
     map.on('load', () => {
       console.log(`Map for alert ${alertId} in ${city} loaded`);
+      // Force map resize to fit container
+      map.resize();
     });
 
     map.on('click', event => {
