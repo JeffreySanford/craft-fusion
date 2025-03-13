@@ -226,12 +226,20 @@
         
         .chart-content {
           height: 100%;
+          padding: 24px; // Increase padding for better spacing in fullscreen
           
           &.line-chart-content,
           &.bar-chart-content,
-          &.finance-chart-content {
-            height: 100%;
-            max-height: none;
+          &.finance-chart-content,
+          &.scrollable-chart-content {
+            height: 100%; // Use full height in fullscreen
+            max-height: none; // No max height in fullscreen
+            overflow: visible; // Keep overflow visible for chart elements
+          }
+          
+          // Add special handling for charts that need scrolling
+          &.scrollable-chart-content {
+            overflow-y: auto;
           }
         }
       }
@@ -404,20 +412,25 @@
   display: flex;
   flex-direction: column;
   
-  // Fixed heights for simple charts
+  // Fixed heights for simple charts - adjusted to ensure content isn't cut off
   &.line-chart-content {
     height: 250px;
+    min-height: 250px; // Add min-height to ensure enough space
     max-height: 250px;
+    overflow: visible; // Allow chart elements to overflow their container
   }
   
   &.bar-chart-content {
-    height: 250px;
+    height: 250px; 
+    min-height: 250px; // Add min-height to ensure enough space
     max-height: 250px;
+    overflow: visible; // Allow chart elements to overflow their container
   }
   
   &.finance-chart-content {
     height: 280px;
     max-height: 280px;
+    overflow: visible; // Allow chart elements to overflow their container
   }
   
   // Scrollable content for complex charts
@@ -539,6 +552,43 @@ mat-card-content {
       font-size: 24px;
       height: 24px;
       width: 24px;
+    }
+  }
+}
+
+// Add specific chart sizing for better visibility when multiple charts are displayed
+.visualization-container:not(.single-chart) {
+  .visualization-item .chart-content {
+    min-height: 250px; // Ensure minimum height in grid layout
+  }
+}
+
+// Ensure proper sizing in fullscreen mode
+.visualization-item.full-expanded {
+  .chart-card {
+    width: 95%;
+    height: 95%;
+    max-width: 1600px;
+    max-height: 900px;
+    transform: none;
+    
+    mat-card-content {
+      height: calc(100% - 60px);
+      overflow: visible;
+      
+      .chart-content {
+        height: 100%;
+        padding: 24px;
+        min-height: auto; // Reset min-height in fullscreen
+        
+        &.bar-chart-content,
+        &.line-chart-content,
+        &.finance-chart-content {
+          height: 100%;
+          max-height: none;
+          overflow: visible;
+        }
+      }
     }
   }
 }

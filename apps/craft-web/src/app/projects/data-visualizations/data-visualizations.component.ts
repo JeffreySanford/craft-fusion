@@ -373,8 +373,20 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
 
   // New method to trigger resize on all charts
   resizeCharts(): void {
-    window.dispatchEvent(new Event('resize'));
+    // Force re-layout first
     this.cdr.detectChanges();
+    
+    // Then dispatch resize event
+    window.dispatchEvent(new Event('resize'));
+    
+    // Then run another change detection cycle
+    this.cdr.detectChanges();
+    
+    // For components that might need a second resize after initial layout
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+      this.cdr.detectChanges();
+    }, 100);
   }
 
   // Replace the old getChartContentClass method with this improved version
@@ -441,10 +453,11 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     // Apply body styles to prevent scrolling of background
     document.body.style.overflow = 'hidden';
     
-    // Ensure proper rendering in full-screen mode
+    // Ensure proper rendering in full-screen mode with more time
+    // to allow the transitions to complete before resizing charts
     setTimeout(() => {
       this.resizeCharts();
-    }, 250);
+    }, 300);
   }
   
   // Restore tile from full-screen
@@ -458,10 +471,10 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     // Restore body overflow
     document.body.style.overflow = '';
     
-    // Ensure proper rendering after restore
+    // Ensure proper rendering after restore with more time
     setTimeout(() => {
       this.resizeCharts();
-    }, 250);
+    }, 300);
   }
   
   // Handle clicks on the backdrop to restore from full-screen

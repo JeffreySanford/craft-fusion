@@ -58,6 +58,9 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
     const element = this.chartContainer.nativeElement;
     d3.select(element).select('svg').remove();
     
+    // Check if we're in fullscreen mode
+    const isFullscreen = !!element.closest('.full-expanded');
+    
     // Initialize tooltip
     this.tooltip = d3.select(element)
       .append('div')
@@ -75,27 +78,44 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
       .style('max-width', '250px');
 
     // Let container size be controlled by CSS
-    const svg = d3.select(element).append('svg').attr('width', '100%').attr('height', '100%');
+    const svg = d3.select(element).append('svg')
+      .attr('width', '100%')
+      .attr('height', '100%')
+      .attr('preserveAspectRatio', 'xMinYMin meet'); // Ensure chart scales properly
 
     // Use container dimensions
     const containerWidth = this.width || element.offsetWidth;
     const containerHeight = element.offsetHeight;
 
-    // Adjust margins to provide space for labels and legends
-    const margin = { top: 40, right: 80, bottom: 50, left: 60 };
+    // Set SVG viewBox for responsive scaling
+    svg.attr('viewBox', `0 0 ${containerWidth} ${containerHeight}`);
+
+    // Adjust margins based on available space
+    const margin = { 
+      top: isFullscreen ? 50 : 40, 
+      right: isFullscreen ? 90 : 80, 
+      bottom: isFullscreen ? 60 : 50, 
+      left: isFullscreen ? 70 : 60 
+    };
+    
     const width = containerWidth - margin.left - margin.right;
     const height = containerHeight - margin.top - margin.bottom;
 
     const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
-    // Add chart title
+    // Adjust font sizes based on fullscreen state
+    const titleFontSize = isFullscreen ? '20px' : '14px';
+    const subtitleFontSize = isFullscreen ? '16px' : '12px';
+    const axisFontSize = isFullscreen ? '14px' : '11px';
+
+    // Add chart title with adjusted position
     svg.append('text')
       .attr('class', 'chart-title')
       .attr('x', containerWidth / 2)
-      .attr('y', 15)
+      .attr('y', isFullscreen ? 25 : 15)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'central')
-      .style('font-size', '14px')
+      .style('font-size', titleFontSize)
       .style('font-weight', 'bold')
       .style('fill', '#fff')
       .text(this.chartTitle);
@@ -107,7 +127,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
       .attr('y', 32)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'central')
-      .style('font-size', '12px')
+      .style('font-size', subtitleFontSize)
       .style('fill', '#ccc')
       .text(this.chartSubtitle);
 
@@ -141,7 +161,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
     y.domain([0, yMax * 1.1]).nice(); // Add 10% padding and round to nice values
 
     // Create a more user-friendly x-axis with fewer tick marks for smaller screens
-    const tickCount = width < 400 ? 6 : 12;
+    const tickCount = isFullscreen ? 12 : (width < 400 ? 6 : 12);
     const xAxis = d3.axisBottom(x)
       .ticks(tickCount)
       .tickFormat((d: Date | NumberValue, i: number) => {
@@ -162,16 +182,16 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
       .attr('dx', '-.8em')
       .attr('dy', '.15em')
       .attr('transform', 'rotate(-45)')
-      .style('font-size', '11px')
+      .style('font-size', axisFontSize)
       .style('fill', '#ddd');
 
     // Create a better y-axis with fewer ticks and formatted values
-    const yTickCount = height < 150 ? 4 : 8;
+    const yTickCount = isFullscreen ? 10 : (height < 150 ? 4 : 8);
     g.append('g')
       .attr('class', 'y axis')
       .call(d3.axisLeft(y).ticks(yTickCount).tickFormat(this.formatYValue))
       .selectAll('text')
-      .style('font-size', '11px')
+      .style('font-size', axisFontSize)
       .style('fill', '#ddd');
 
     // Add X axis label
@@ -238,7 +258,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
         .attr('class', `dot-series${index + 1}`)
         .attr('cx', (d: any) => x(d.date))
         .attr('cy', (d: any) => y(d[seriesKey]))
-        .attr('r', 4)
+        .attr('r', isFullscreen ? 6 : 4)
         .attr('fill', color)
         .attr('stroke', '#fff')
         .attr('stroke-width', 1)
@@ -284,7 +304,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
           .style('top', (event.pageY - 28) + 'px');
           
         // Highlight the point using Renderer2
-        this.renderer.setStyle(target, 'r', '6px');
+        this.renderer.setStyle(target, 'r', isFullscreen ? '8px' : '6px');
         this.renderer.setStyle(target, 'opacity', '1');
       })
       .on('mouseout', (event: MouseEvent) => {
@@ -294,7 +314,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
           
         // Restore point appearance using Renderer2
         const target = event.target as SVGCircleElement;
-        this.renderer.setStyle(target, 'r', '4px');
+        this.renderer.setStyle(target, 'r', isFullscreen ? '6px' : '4px');
         this.renderer.setStyle(target, 'opacity', '0.7');
       });
     };
@@ -305,9 +325,12 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
     drawLine(line3, this.data, this.colors[2], 2);
     
     // Add a legend
+    const legendX = isFullscreen ? width - 150 : width + 20;
+    const legendY = isFullscreen ? 0 : 0;
+    
     const legend = g.append('g')
       .attr('class', 'legend')
-      .attr('transform', `translate(${width + 20}, 0)`);
+      .attr('transform', `translate(${legendX}, ${legendY})`);
       
     Object.entries(this.seriesNames).forEach(([key, name], i) => {
       const legendRow = legend.append('g')

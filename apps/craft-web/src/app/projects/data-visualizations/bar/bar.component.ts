@@ -40,20 +40,22 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
 
   ngAfterViewInit(): void {
     // Initialize the chart after the view has been initialized
-    this.initChart();
-    
-    // Setup resize observer for container element
-    this.setupResizeObserver();
-    
-    // Also listen for window resize events
-    fromEvent(window, 'resize')
-      .pipe(
-        debounceTime(250),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(() => {
-        this.updateChart();
-      });
+    setTimeout(() => {
+      this.initChart();
+      
+      // Setup resize observer for container element
+      this.setupResizeObserver();
+      
+      // Also listen for window resize events
+      fromEvent(window, 'resize')
+        .pipe(
+          debounceTime(250),
+          takeUntil(this.destroy$)
+        )
+        .subscribe(() => {
+          this.updateChart();
+        });
+    }, 100); // Short delay to ensure container is ready
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -66,7 +68,7 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
     if ((changes['width'] || changes['height']) && this.container) {
       setTimeout(() => {
         this.updateChart();
-      });
+      }, 150); // Add a delay to ensure container has adjusted
     }
   }
 
@@ -95,9 +97,23 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
   }
 
   private initChart(): void {
-    this.container = d3.select(this.el.nativeElement.querySelector('.bar-chart-container'));
+    const containerElement = this.el.nativeElement.querySelector('.bar-chart-container');
+    if (!containerElement) {
+      console.error('Bar chart container element not found');
+      return;
+    }
+    
+    // Ensure container is cleared before initializing
+    while (containerElement.firstChild) {
+      containerElement.removeChild(containerElement.firstChild);
+    }
+    
+    this.container = d3.select(containerElement);
     
     // Create tooltip once
+    // Remove existing tooltip if it exists
+    d3.select(this.el.nativeElement).selectAll('.bar-tooltip').remove();
+    
     this.tooltip = d3.select(this.el.nativeElement)
       .append('div')
       .attr('class', 'bar-tooltip')
@@ -114,15 +130,35 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
       .style('max-width', '200px')
       .style('text-align', 'left');
     
+    // Log dimension info for debugging
+    console.log('Bar chart container dimensions:', {
+      width: containerElement.clientWidth,
+      height: containerElement.clientHeight,
+      offsetWidth: containerElement.offsetWidth,
+      offsetHeight: containerElement.offsetHeight
+    });
+    
+    // Create chart with logged dimensions
     this.createChart();
   }
 
   private updateChart(): void {
     // Remove existing chart
-    this.container.select('svg').remove();
-    
-    // Create new chart with updated dimensions
-    this.createChart();
+    if (this.container) {
+      this.container.select('svg').remove();
+      
+      // Log updated dimensions
+      const containerElement = this.container.node();
+      if (containerElement) {
+        console.log('Updating bar chart with dimensions:', {
+          width: containerElement.clientWidth,
+          height: containerElement.clientHeight
+        });
+      }
+      
+      // Create new chart with updated dimensions
+      this.createChart();
+    }
   }
 
   private createChart(): void {
@@ -132,29 +168,49 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
     const containerNode = this.container.node();
     if (!containerNode) return;
     
+    // Check if we're in fullscreen mode by checking for parent element with full-expanded class
+    const isFullscreen = !!containerNode.closest('.full-expanded');
+    
     const containerWidth = this.width || containerNode.getBoundingClientRect().width;
     const containerHeight = containerNode.getBoundingClientRect().height;
     
-    // Setup margins with more space for legends and labels
-    const margin = { top: 40, right: 30, bottom: 60, left: 60 };
+    // Adjust margins based on screen size
+    // Use smaller margins when space is constrained, larger when in fullscreen
+    const margin = {
+      top: isFullscreen ? 50 : 40,
+      right: isFullscreen ? 40 : 30,
+      bottom: isFullscreen ? 70 : 60,
+      left: isFullscreen ? 70 : 60
+    };
+    
     const width = Math.max(containerWidth - margin.left - margin.right, 100);
-    const height = Math.max(containerHeight - margin.top - margin.bottom - 40, 100); // Adjust for legend
+    const height = Math.max(containerHeight - margin.top - margin.bottom - 40, 100);
+    
+    // Remove existing SVG before creating a new one to avoid duplication
+    this.container.selectAll('svg').remove();
 
     // Create SVG element with calculated dimensions
     this.svg = this.container
       .append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
+      .attr('width', containerWidth) // Use full container width
+      .attr('height', containerHeight) // Use full container height
+      .attr('viewBox', `0 0 ${containerWidth} ${containerHeight}`) // Set viewBox for proper scaling
+      .attr('preserveAspectRatio', 'xMinYMin meet') // Preserve aspect ratio but ensure chart fills space
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
+    // Adjust font sizes based on screen size
+    const titleFontSize = isFullscreen ? '20px' : '14px';
+    const subtitleFontSize = isFullscreen ? '16px' : '12px';
+    const axisFontSize = isFullscreen ? '14px' : '12px';
+    
     // Add chart title
     this.svg.append('text')
       .attr('class', 'chart-title')
       .attr('x', width / 2)
       .attr('y', -20)
       .attr('text-anchor', 'middle')
-      .style('font-size', '14px')
+      .style('font-size', titleFontSize)
       .style('font-weight', 'bold')
       .style('fill', '#fff')
       .text(this.title);
@@ -165,7 +221,7 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
       .attr('x', width / 2)
       .attr('y', -5)
       .attr('text-anchor', 'middle')
-      .style('font-size', '12px')
+      .style('font-size', subtitleFontSize)
       .style('fill', '#ccc')
       .text(this.subtitle);
 
@@ -187,7 +243,7 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
       .selectAll('text')
       .attr('transform', 'translate(-10,0)rotate(-35)')
       .style('text-anchor', 'end')
-      .style('font-size', '12px')
+      .style('font-size', axisFontSize)
       .style('fill', '#ddd');
 
     // Find max value for Y scale
@@ -207,7 +263,7 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
     this.svg.append('g')
       .call(d3.axisLeft(y).ticks(yTickCount).tickFormat((d) => this.formatYLabel(d as number)))
       .selectAll('text')
-      .style('font-size', '12px')
+      .style('font-size', axisFontSize)
       .style('fill', '#ddd');
 
     // Add X axis label
@@ -216,7 +272,7 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
       .attr('x', width / 2)
       .attr('y', height + margin.bottom - 10)
       .attr('text-anchor', 'middle')
-      .style('font-size', '12px')
+      .style('font-size', axisFontSize)
       .style('fill', '#ddd')
       .text('Month');
 
@@ -227,7 +283,7 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
       .attr('x', -height / 2)
       .attr('y', -margin.left + 15)
       .attr('text-anchor', 'middle')
-      .style('font-size', '12px')
+      .style('font-size', axisFontSize)
       .style('fill', '#ddd')
       .text('Amount ($)');
 
