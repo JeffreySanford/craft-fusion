@@ -291,7 +291,9 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('Event: Show detail view requested for record:', record);
     this.recordService.setSelectedUID(record.UID);
 
-    this.router.navigate(['table/:', record.UID]); //route with a preface colon
+    // Fix: Update navigation route to match defined routes in app.routes.ts
+    // The route is defined as 'table/:id' so we should use the proper format
+    this.router.navigate([`table/${record.UID}`]);
 
     console.log('Navigation: Navigated to record detail view');
   }
