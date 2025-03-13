@@ -176,10 +176,10 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     this.displayedCharts.push(chartCopy);
     this.cdr.detectChanges();
     
-    // Ensure proper rendering
+    // Ensure proper rendering with slight delay to allow DOM updates
     setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 100);
+      this.resizeCharts();
+    }, 150);
   }
 
   // Remove a tile from the main display
@@ -192,6 +192,11 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     if (index !== -1) {
       this.displayedCharts.splice(index, 1);
       this.cdr.detectChanges();
+      
+      // Trigger resize for remaining charts
+      setTimeout(() => {
+        this.resizeCharts();
+      }, 150);
     }
   }
 
@@ -200,17 +205,21 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     this.expandedTileIndex = this.expandedTileIndex === index ? null : index;
 
     // Ensure visualization renders properly when expanded
-    if (this.expandedTileIndex !== null && 
-        this.displayedCharts[this.expandedTileIndex].component === 'app-quantum-fisher-tile') {
+    if (this.expandedTileIndex !== null) {
       setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));
-      }, 100);
+        this.resizeCharts();
+      }, 150);
     }
   }
 
   drop(event: CdkDragDrop<ChartData[]>) {
     moveItemInArray(this.displayedCharts, event.previousIndex, event.currentIndex);
     this.cdr.detectChanges();
+    
+    // Resize charts after reordering
+    setTimeout(() => {
+      this.resizeCharts();
+    }, 150);
   }
 
   // Get an appropriate icon for each chart type
@@ -281,5 +290,10 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 100);
+  }
+
+  // New method to trigger resize on all charts
+  resizeCharts(): void {
+    window.dispatchEvent(new Event('resize'));
   }
 }

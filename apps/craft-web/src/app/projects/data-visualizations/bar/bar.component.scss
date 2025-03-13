@@ -1,16 +1,25 @@
 .bar-chart-legend {
   display: flex;
-  justify-content: flex-end;
-  gap: 0.5em;
-  padding: 0.5em;
-  margin-right: 1.5em;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75em;
+  padding: 0.75em;
+  margin-top: 0.5em;
 }
 
 .bar-chart-legend-item {
-  padding: 0.2em 0.5em;
+  padding: 0.25em 0.75em;
   border-radius: 3px;
   font-size: 0.8em;
   color: white;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
 }
 
 .bar-chart-legend-item-color {
@@ -30,5 +39,30 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  margin-top: -1.75em;
+  height: calc(100% - 50px); /* Reserve space for legend */
+  min-height: 150px;
+  position: relative;
+}
+
+/* Make sure SVG fills the container properly */
+:host ::ng-deep svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Style the axis */
+:host ::ng-deep {
+  .domain,
+  .tick line {
+    stroke: rgba(255, 255, 255, 0.3);
+  }
+  
+  .tick text {
+    fill: rgba(255, 255, 255, 0.8);
+  }
+  
+  rect:hover {
+    filter: brightness(1.2);
+  }
 }

@@ -3,7 +3,10 @@
   <div class="visualization-container" cdkDropList (cdkDropListDropped)="drop($event)">
     <div *ngFor="let chart of displayedCharts; let i = index" 
          class="visualization-item"
-         [ngClass]="'size-' + (chart.size || 'medium')"
+         [ngClass]="[
+           'size-' + (chart.size || 'medium'),
+           displayedCharts.length === 1 ? 'single-visualization' : ''
+         ]"
          cdkDrag>
       <mat-card class="chart-card" 
                 [class.expanded]="expandedTileIndex === i"

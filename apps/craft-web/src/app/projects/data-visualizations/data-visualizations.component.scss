@@ -213,10 +213,11 @@
   // Card header styling
   mat-card-header {
     background-color: rgba(0, 0, 0, 0.3);
-    padding: 12px;
+    padding: 12px 16px;
     display: flex;
     align-items: center;
     cursor: move; // Indicate draggable
+    position: relative; // For positioning the close button
     
     .chart-title {
       color: white;
@@ -225,6 +226,7 @@
       flex: 1;
       display: flex;
       align-items: center;
+      padding-right: 40px; // Make space for the close button
       
       mat-icon {
         margin-right: 8px;
@@ -236,6 +238,11 @@
     
     .remove-button {
       color: rgba(255, 255, 255, 0.7);
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-left: auto;
       
       &:hover {
         color: white;
@@ -244,6 +251,8 @@
       
       min-width: 36px;
       min-height: 36px;
+      width: 36px;
+      height: 36px;
       line-height: 36px;
       
       mat-icon {
@@ -263,11 +272,14 @@
     flex: 1;
     padding: 0;
     overflow: auto;
+    position: relative; // For proper sizing of charts
     
     .chart-content {
       height: 100%;
       padding: 16px;
       box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
     }
   }
 }
