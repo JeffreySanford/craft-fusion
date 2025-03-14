@@ -57,100 +57,76 @@
   <!-- Table and other elements -->
   <div class="scrollable-container" [hidden]="!resolved">
     <div class="table-wrapper">
-      <table
-        mat-table
-        [dataSource]="dataSource"
-        matSort
-        matSortActive="userID"
-        matSortDirection="asc"
-        (matSortChange)="sortData($event)"
-        multiTemplateDataRows
-        class="mat-elevation-z8 stripped"
-        [@fly-in]
-      >
-        <!-- Existing columns -->
-        <ng-container matColumnDef="userID">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>User ID</th>
-          <td mat-cell *matCellDef="let record">{{ record.UID }}</td>
+      <div class="flex-table mat-elevation-z8" [@fly-in]>
+        <!-- Header Row -->
+        <div class="flex-header-row">
+          <div class="flex-header-cell" (click)="sortData({active: 'userID', direction: sort.direction === 'asc' ? 'desc' : 'asc'})">User ID</div>
+          <div class="flex-header-cell" (click)="sortData({active: 'name', direction: sort.direction === 'asc' ? 'desc' : 'asc'})">Name</div>
+          <div class="flex-header-cell" (click)="sortData({active: 'address', direction: sort.direction === 'asc' ? 'desc' : 'asc'})">Address</div>
+          <div class="flex-header-cell" (click)="sortData({active: 'city', direction: sort.direction === 'asc' ? 'desc' : 'asc'})">City</div>
+          <div class="flex-header-cell" (click)="sortData({active: 'state', direction: sort.direction === 'asc' ? 'desc' : 'asc'})">State</div>
+          <div class="flex-header-cell" (click)="sortData({active: 'zip', direction: sort.direction === 'asc' ? 'desc' : 'asc'})">Zip</div>
+          <div class="flex-header-cell" (click)="sortData({active: 'phone', direction: sort.direction === 'asc' ? 'desc' : 'asc'})">Phone</div>
+          <div class="flex-header-cell flex-right">Actions</div>
+        </div>
+        
+        <!-- Data Rows -->
+        <ng-container *ngFor="let record of dataSource.filteredData | slice:paginator.pageIndex * paginator.pageSize:(paginator.pageIndex + 1) * paginator.pageSize">
+          <div class="flex-row" [class.selected]="expandedElement === record" (click)="expandRow(record)">
+            <div class="flex-cell">{{ record.UID }}</div>
+            <div class="flex-cell">{{ record.firstName }}&nbsp;{{ record.lastName }}</div>
+            <div class="flex-cell">{{ record.address.street }}</div>
+            <div class="flex-cell">{{ record.address.city }}</div>
+            <div class="flex-cell">{{ record.address.state }}</div>
+            <div class="flex-cell">{{ record.address.zipcode }}</div>
+            <div class="flex-cell">{{ record.phone.number }}</div>
+            <div class="flex-cell flex-right">
+              <button mat-icon-button (click)="showDetailView(record); $event.stopPropagation();" title="view record">
+                <mat-icon>person</mat-icon>
+              </button>
+            </div>
+          </div>
         </ng-container>
 
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-          <td mat-cell *matCellDef="let record">{{ record.firstName }}&nbsp;{{ record.lastName }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="address">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Address</th>
-          <td mat-cell *matCellDef="let record">{{ record.address.street }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="city">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>City</th>
-          <td mat-cell *matCellDef="let record">{{ record.address.city }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="state">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>State</th>
-          <td mat-cell *matCellDef="let record">{{ record.address.state }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="zip">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Zip</th>
-          <td mat-cell *matCellDef="let record">{{ record.address.zipcode }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="phone">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone</th>
-          <td mat-cell *matCellDef="let record">{{ record.phone.number }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="icons">
-          <th mat-header-cell *matHeaderCellDef>Actions</th>
-          <td mat-cell *matCellDef="let record">
-            <button mat-icon-button (click)="showDetailView(record)" title="view record">
-              <mat-icon>person</mat-icon>
+        <!-- Create a separate container for the modal overlay with fixed positioning -->
+        <div class="modal-container" *ngIf="expandedElement">
+          <!-- Backdrop with pointer events to close on click -->
+          <div class="expanded-backdrop" (click)="expandRow(expandedElement); $event.stopPropagation();"></div>
+          
+          <!-- Modal content with absolute fixed positioning -->
+          <div class="expand-element-detail">
+            <button class="close-overlay-btn" (click)="expandRow(expandedElement); $event.stopPropagation();">
+              <mat-icon>close</mat-icon>
             </button>
-          </td>
-        </ng-container>
-
-        <!-- Expanded Content Column -->
-        <ng-container matColumnDef="expandedDetail">
-          <td mat-cell *matCellDef="let record" [attr.colspan]="displayedColumns.length">
-            <div class="expand-element-detail" [@detailExpand]="record === expandedElement ? 'expanded' : 'collapsed'">
-              <div class="expand-element-description" [@fly-in]>
-                <strong>Employment Income Information:</strong>
-                <ul>
-                  <li *ngFor="let company of record.salary">
-                    <p>Company: {{ company.companyName }} ({{ company.annualSalary | currency }})</p>
-                  </li>
-                </ul>
-                <strong>Total Annual Salary: {{ record.salary | employmentIncome | currency }}</strong>
+            <div class="expand-element-description">
+              <h2 class="expand-header">Employment Income Information</h2>
+              
+              <div class="income-grid">
+                <div *ngFor="let company of expandedElement.salary" class="income-item">
+                  <div class="company-info">
+                    <span class="company-name">{{ company.companyName }}</span>
+                    <span class="company-salary">{{ company.annualSalary | currency }}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="income-summary" *ngIf="expandedElement.salary && expandedElement.salary.length > 10">
+                <p><strong>Note:</strong> This user has {{ expandedElement.salary.length }} sources of income.</p>
+              </div>
+              
+              <div class="income-total">
+                <span class="total-label">Total Annual Salary:</span>
+                <span class="total-amount">{{ expandedElement.salary | employmentIncome | currency }}</span>
               </div>
             </div>
-          </td>
-        </ng-container>
+          </div>
+        </div>
 
-        <!-- Rows -->
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr 
-          mat-row 
-          class="normal-row" 
-          [class.selected]="expandedElement === record"
-          *matRowDef="let record; columns: displayedColumns" 
-          (click)="expandRow(record)">
-        </tr>
-        <tr 
-          mat-row 
-          class="detail-row"
-          [class.expanded]="expandedElement === record"
-          [@detailExpand]="expandedElement === record ? 'expanded' : 'collapsed'" 
-          *matRowDef="let record; columns: ['expandedDetail']">
-        </tr>
-      </table>
+      </div>
+
+      <mat-paginator class="mat-elevation-z8" [length]="totalRecords" [pageSize]="5" [pageSizeOptions]="[5, 25, 100]" showFirstLastButtons (page)="onTableChange($event)">
+      </mat-paginator>
     </div>
-
-    <mat-paginator class="mat-elevation-z8" [length]="totalRecords" [pageSize]="5" [pageSizeOptions]="[5, 25, 100]" showFirstLastButtons (page)="onTableChange($event)">
-    </mat-paginator>
   </div>
 </div>
 

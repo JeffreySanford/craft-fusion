@@ -96,6 +96,25 @@ export class RecordListComponent implements OnInit, OnDestroy {
     this.updateDisplayedColumns();
   }
 
+  @HostListener('document:mousemove', ['$event'])
+  onDocumentMouseMove(event: MouseEvent): void {
+    // If an element is expanded, track mouse position
+    if (this.expandedElement) {
+      // Log mouse position to debug overlay following cursor
+      console.log('Mouse position:', event.clientX, event.clientY);
+      
+      // Only prevent default if we're over the overlay elements
+      const target = event.target as HTMLElement;
+      const isOverlay = target.closest('.modal-container') !== null;
+      
+      if (isOverlay) {
+        console.log('Mouse over overlay element');
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }
+  }
+
   ngOnInit(): void {
     console.log('Lifecycle: ngOnInit called');
     this.resolved = false;
@@ -282,9 +301,27 @@ export class RecordListComponent implements OnInit, OnDestroy {
   }
 
   expandRow(record: Record): void {
-    console.log('Event: Row expand requested for record:', record);
-    this.expandedElement = this.expandedElement?.UID === record.UID ? null : record;
-    console.log('Row: Expanded state updated');
+    console.log('expandRow method called with record:', record);
+    console.log('Previous expandedElement state:', this.expandedElement ? this.expandedElement.UID : 'null');
+    
+    debugger; // Debugger statement for browser inspection
+    
+    // Toggle expandedElement
+    if (this.expandedElement?.UID === record.UID) {
+      console.log('Collapsing row - same record clicked');
+      this.expandedElement = null;
+    } else {
+      console.log('Expanding row with new record');
+      this.expandedElement = record;
+    }
+    
+    console.log('New expandedElement state:', this.expandedElement ? this.expandedElement.UID : 'null');
+    
+    // Force a detection cycle to ensure UI updates
+    this.changeDetectorRef.markForCheck();
+    this.changeDetectorRef.detectChanges();
+    
+    console.log('Change detection completed');
   }
 
   showDetailView(record: Record): void {
@@ -354,6 +391,15 @@ export class RecordListComponent implements OnInit, OnDestroy {
       this.dataSource.filter = filterValue.trim().toLowerCase();
       console.log('Filter: Applied with value:', filterValue);
     }
+  }
+
+  applyFlexSort(columnName: string): void {
+    const newDirection = this.sort.active === columnName && this.sort.direction === 'asc' ? 'desc' : 'asc';
+    
+    this.sortData({
+      active: columnName,
+      direction: newDirection
+    });
   }
 
   private updateCreationTime(): void {

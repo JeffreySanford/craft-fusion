@@ -1,51 +1,125 @@
-<mat-progress-spinner *ngIf="!user" mode="indeterminate" [diameter]="100" [style.color]="'lightblue'"></mat-progress-spinner>
+<div class="loading-container" *ngIf="loading">
+  <mat-progress-spinner mode="indeterminate" [diameter]="100"></mat-progress-spinner>
+</div>
 
-<div *ngIf="user" else #loading>
-  <div class="personal-info">
-    <mat-card class="address-card">
+<div class="detail-container" *ngIf="user && !loading" @fadeIn>
+  <!-- Move back button to a header row -->
+  <div class="back-button-container">
+    <button class="back-button" (click)="navigateBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Return to Records
+    </button>
+    <h1 class="page-title">User Detail Record</h1>
+    <div></div> <!-- Empty div for spacing in flexbox -->
+  </div>
+
+  <div class="horizontal-layout">
+    <!-- Left Column - Personal Info -->
+    <div class="left-column">
+      <mat-card class="address-card" @fadeIn>
         <mat-card-header>
-          <p><strong>Name:</strong> {{ user.firstName }} {{ user.lastName }}</p>
+          <div class="header-content">
+            <mat-icon>person</mat-icon>
+            <h2 class="user-name">{{ user.firstName }} {{ user.lastName }}</h2>
+          </div>
         </mat-card-header>
+        
         <mat-card-content>
-          <mat-card-title>User Address</mat-card-title>
-          <p><strong>Address:</strong> {{ user.address.street }}</p>
-          <p><strong>City:</strong> {{ user.address.city }}</p>
-          <p><strong>State:</strong> {{ user.address.state }}</p>
-          <p><strong>Zipcode:</strong> {{ user.address.zipcode }}</p>
-          <p><strong>Telephone:</strong> ({{ user.phone.number }})</p>
+          <mat-card-title>Personal Information</mat-card-title>
+          
+          <div class="detail-item">
+            <mat-icon>badge</mat-icon>
+            <p><strong>User ID:</strong> {{ user.UID }}</p>
+          </div>
+          
+          <div class="detail-divider"></div>
+          
+          <div class="detail-item">
+            <mat-icon>home</mat-icon>
+            <p><strong>Street:</strong> {{ user.address.street }}</p>
+          </div>
+          
+          <div class="detail-item">
+            <mat-icon>location_city</mat-icon>
+            <p><strong>City:</strong> {{ user.address.city }}</p>
+          </div>
+          
+          <div class="detail-item">
+            <mat-icon>flag</mat-icon>
+            <p><strong>State:</strong> {{ user.address.state }}</p>
+          </div>
+          
+          <div class="detail-item">
+            <mat-icon>markunread_mailbox</mat-icon>
+            <p><strong>Zipcode:</strong> {{ user.address.zipcode }}</p>
+          </div>
+          
+          <div class="detail-divider"></div>
+          
+          <div class="detail-item">
+            <mat-icon>phone</mat-icon>
+            <p><strong>Telephone:</strong> {{ formatPhoneNumber(user.phone.number) }}</p>
+          </div>
         </mat-card-content>
       </mat-card>
+    </div>
+
+    <!-- Right Column - Employment & Income -->
+    <div class="right-column">
+      <mat-card class="company-card" @fadeIn>
+        <mat-card-header>
+          <div class="header-content">
+            <mat-icon>work</mat-icon>
+            <mat-card-title>Employment & Income</mat-card-title>
+          </div>
+          
+          <div class="wealth-indicator" *ngIf="wealthIndicator.length">
+            <mat-icon *ngFor="let star of wealthIndicator" 
+                    [style.color]="'gold'"
+                    @listAnimation>
+              stars
+            </mat-icon>
+          </div>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <table mat-table [dataSource]="user.salary" class="mat-elevation-z8" @fadeIn>
+            <!-- Company Name Column -->
+            <ng-container matColumnDef="company">
+              <th mat-header-cell *matHeaderCellDef>Company</th>
+              <td mat-cell *matCellDef="let element">
+                <div style="display: flex; align-items: center;">
+                  <mat-icon style="margin-right: 8px;">business</mat-icon>
+                  {{element.companyName}}
+                </div>
+              </td>
+            </ng-container>
+      
+            <!-- Salary Column -->
+            <ng-container matColumnDef="salary">
+              <th mat-header-cell *matHeaderCellDef>Annual Salary</th>
+              <td mat-cell *matCellDef="let element">
+                <div style="display: flex; align-items: center;">
+                  <mat-icon style="margin-right: 8px; color: green;">attach_money</mat-icon>
+                  {{element.annualSalary | currency}}
+                </div>
+              </td>
+            </ng-container>
+      
+            <!-- Total Annual Salary Footer -->
+            <tr mat-header-row *matHeaderRowDef="salaryDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: salaryDisplayedColumns;" @listAnimation></tr>
+            <tr mat-footer-row>
+              <td colspan="2">
+                <div style="display: flex; align-items: center; justify-content: flex-end;">
+                  <mat-icon style="margin-right: 8px; color: #002868; font-size: 24px;">account_balance</mat-icon>
+                  <strong>Total Annual Income: {{ getTotalSalary() | currency }}</strong>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    </div>
   </div>
-  <br />
-  <div class="companies">
-    <mat-card class="company-card">
-      <mat-card-header>
-        <mat-card-title>Company Group</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <table mat-table [dataSource]="user.salary" class="mat-elevation-z8">
-          <!-- Company Name Column -->
-          <ng-container matColumnDef="company">
-            <th mat-header-cell *matHeaderCellDef> Company </th>
-            <td mat-cell *matCellDef="let element"> {{element.companyName}} </td>
-          </ng-container>
-    
-          <!-- Salary Column -->
-          <ng-container matColumnDef="salary">
-            <th mat-header-cell *matHeaderCellDef> Salary </th>
-            <td mat-cell *matCellDef="let element"> {{element.annualSalary | currency}} </td>
-          </ng-container>
-    
-          <!-- Total Annual Salary Footer -->
-          <ng-container matColumnDef="totalSalary">
-            <!-- <td mat-footer-cell *matFooterCellDef colspan="2"> Total Annual Salary: </td> -->
-            <td mat-footer-cell *matFooterCellDef> <p>Total Annual Income: {{ getTotalSalary() | currency }}</p> </td>
-          </ng-container>
-    
-          <tr mat-header-row *matHeaderRowDef="salaryDisplayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: salaryDisplayedColumns;"></tr>
-          <tr mat-footer-row *matFooterRowDef="['totalSalary']"></tr>
-        </table>
-      </mat-card-content>
-    </mat-card>
 </div>

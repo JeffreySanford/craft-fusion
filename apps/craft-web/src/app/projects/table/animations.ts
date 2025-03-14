@@ -1,19 +1,19 @@
 // animations.ts
 import { trigger, state, style, transition, animate, keyframes } from '@angular/animations';
 
+// Fix detailExpand animation to ensure proper display
 export const detailExpand = trigger('detailExpand', [
   state('collapsed', style({ 
-    height: '0px', 
+    height: '0',
     minHeight: '0', 
     visibility: 'hidden', 
     opacity: '0',
-    display: 'none' // Completely hide when collapsed
+    overflow: 'hidden'
   })),
   state('expanded', style({ 
     height: '*', 
     visibility: 'visible', 
-    opacity: '1',
-    display: 'flex' // Show when expanded
+    opacity: '1'
   })),
   transition('expanded <=> collapsed', animate('300ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
 ]);

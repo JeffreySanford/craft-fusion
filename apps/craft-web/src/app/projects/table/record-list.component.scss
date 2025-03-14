@@ -8,6 +8,12 @@ $table-theme: (
   red: #ff0000,
   patriotic-blue: #002868,
   patriotic-red: #bf0a30,
+  patriotic-blue-light: rgba(0, 40, 104, 0.08),
+  patriotic-red-light: rgba(191, 10, 48, 0.08),
+  gold: #FFD700,
+  stars-blue: #3C3B6E,
+  silver: #C0C0C0,
+  light-blue: #e1f5fe, // Added missing light-blue color definition
 );
 
 .no-data,
@@ -24,51 +30,394 @@ $table-theme: (
   z-index: 1000;
 }
 
+// Improve table wrapper for scrolling
 .table-wrapper {
-  display: block;
-  max-height: 25em;
-  overflow-y: auto;
-  overflow-x: auto;
-  white-space: nowrap;
-  flex-grow: 1;
-
-  /* Enhanced Scrollbar styling */
-  scrollbar-width: thin;
-  scrollbar-color: linear-gradient(to bottom, map.get($table-theme, patriotic-red), 
-    map.get($table-theme, primary-white), map.get($table-theme, patriotic-blue)) transparent;
-
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  height: 100% !important; // Take full height of container
+  margin: 0 !important;
+  padding: 0 !important;
+  
+  // Use the patriotic scrollbar from styles.scss
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 12px; // Match styles.scss scrollbar width
+    height: 12px;
   }
-
+  
   &::-webkit-scrollbar-thumb {
     background: linear-gradient(to bottom, map.get($table-theme, patriotic-red), 
       map.get($table-theme, primary-white), map.get($table-theme, patriotic-blue));
-    border-radius: 10px;
-    border: 1px solid transparent;
+    border-radius: 16px; // Larger circle radius like in styles.scss
+    border: 3px solid rgba(0, 40, 104, 0.5);
+    background-clip: content-box;
   }
-
+  
   &::-webkit-scrollbar-track {
-    background: transparent;
+    background: linear-gradient(to bottom, 
+      rgba(map.get($table-theme, patriotic-red), 0.1), 
+      rgba(map.get($table-theme, primary-white), 0.1), 
+      rgba(map.get($table-theme, patriotic-blue), 0.1));
+  }
+  
+  &::-webkit-scrollbar-button:vertical:start:decrement {
+    background-color: transparent;
+    height: 24px;
+    width: 100%;
+    position: relative;
+    
+    &::after {
+      content: '★'; // Add a star from styles.scss
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: map.get($table-theme, gold); // Gold star
+      font-size: 1.2em;
+    }
+  }
+  
+  &::-webkit-scrollbar-button:vertical:end:increment {
+    background-color: transparent;
+    height: 24px;
+    width: 100%;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70%;
+      height: 70%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 10%,
+        map.get($table-theme, patriotic-red) 10%,
+        map.get($table-theme, patriotic-red) 20%
+      );
+    }
   }
 
-  &::-webkit-scrollbar-button {
-    background-color: map.get($table-theme, patriotic-blue);
-    display: block;
-    height: 12px;
-    width: 12px;
+  table {
+    width: 100%;
+    // Keep display as table for proper header behavior
+    display: table !important;
+    
+    // Fix for headers
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 10; // Ensure header is on top
+      display: table-header-group !important; // Use proper display mode
+    }
+    
+    tbody {
+      display: table-row-group !important; // Use proper display mode
+    }
+    
+    tr {
+      display: table-row !important; // Use proper display mode
+      width: 100%;
+    }
+    
+    th.mat-header-cell {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(180deg, map.get($table-theme, patriotic-blue), darken(map.get($table-theme, patriotic-blue), 10%));
+      z-index: 9;
+      // Keep existing styles but ensure position is sticky
+    }
+
+    max-height: calc(100% - 2em); // Better percentage-based height
+    overflow-y: auto;
+    border-collapse: collapse; /* Ensure no spacing between cells */
+    width: 100% !important; // Force table to use full width
+    
+    // Remove excessive cell padding
+    // .mat-cell, .mat-header-cell {
+    //   padding: 0.2em 0.3em; // Reduced from 0.3em 0.4em
+    //   margin: 0; /* Remove any margin */
+    //   height: 20px !important; // Fixed cell height
+    //   padding-top: 0 !important;
+    //   padding-bottom: 0 !important;
+    //   line-height: 20px !important; // Match line-height to row height
+    // }
+
+    // Fix row spacing issues
+    // tr.mat-row, tr.mat-header-row {
+    //   height: 30px !important; // Fixed smaller height
+    //   min-height: 30px !important; // Ensure consistent height
+    //   max-height: 30px !important; // Enforce max height
+    //   margin: 0; /* Remove any margin */
+    //   border-bottom: 0.0625em solid rgba(0, 0, 0, 0.12); // Changed from 1px
+    // }
+
+    // Make icons smaller in table cells
+    td.mat-cell mat-icon {
+      font-size: 1.1rem;
+      width: 1.1rem;
+      height: 1.1rem;
+      line-height: 1.1rem;
+    }
+
+    // Enhanced zebra striping for patriotic colors
+    tr.mat-row:nth-child(odd) {
+      background: linear-gradient(to right, 
+        rgba(map.get($table-theme, patriotic-blue), 0.03) 0%, 
+        rgba(map.get($table-theme, patriotic-blue), 0.05) 50%,
+        rgba(map.get($table-theme, patriotic-blue), 0.03) 100%
+      );
+    }
+    
+    tr.mat-row:nth-child(even) {
+      background: linear-gradient(to right, 
+        rgba(map.get($table-theme, patriotic-red), 0.03) 0%, 
+        rgba(map.get($table-theme, patriotic-red), 0.05) 50%,
+        rgba(map.get($table-theme, patriotic-red), 0.03) 100%
+      );
+    }
+    
+    // Enhanced row hover effect with flag-inspired border
+    tr.mat-row:hover {
+      background-color: rgba(map.get($table-theme, stars-blue), 0.05);
+      box-shadow: inset 0 0 0 1px rgba(map.get($table-theme, gold), 0.5);
+      transition: all 0.3s ease;
+      
+      td:first-child {
+        border-left: 3px solid map.get($table-theme, patriotic-red);
+      }
+      
+      td:last-child {
+        border-right: 3px solid map.get($table-theme, patriotic-blue);
+      }
+    }
+    
+    // Cell styling
+    td.mat-cell {
+      border-bottom: 0.0625em solid rgba(map.get($table-theme, silver), 0.3); // Changed from 1px
+      transition: all 0.2s ease-in-out;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      
+      &:first-child {
+        font-weight: 500;
+        color: map.get($table-theme, patriotic-blue);
+      }
+    }
+  }
+
+  thead,
+  tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    margin: 0; /* Remove any margin */
+  }
+
+  // Make all cells more evenly sized
+  th, td {
+    width: auto;
+    box-sizing: border-box;
+  }
+
+  table.mat-table {
+    min-width: 100% !important; // Force minimum width
+    width: 100% !important; // Force full width
+    table-layout: fixed; // Fixed layout for better column control
+  
+    // Make all cells take their proportional space
+    .mat-header-cell, .mat-cell {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      box-sizing: border-box;
+      text-align: left !important;
+      justify-content: flex-start !important;
+    }
+  }
+  
+  // Fix for table display mode
+  table.stripped {
+    display: table !important; // Override block display
+    overflow-x: hidden;
+  }
+
+  // Convert table to use flexbox layout
+  .flex-table {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+    background-color: transparent !important;
+    position: relative !important;
+    height: 100% !important; // Take up full available height
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: calc(100% - 48px) !important; // Leave space for paginator
+    scrollbar-width: thin;
+    scrollbar-color: linear-gradient(to bottom, map.get($table-theme, patriotic-red), 
+      map.get($table-theme, primary-white), map.get($table-theme, patriotic-blue)) transparent;
+    
+    .flex-header-row, .flex-row {
+      display: flex !important;
+      width: 100% !important;
+      min-height: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      align-items: center !important;
+    }
+    
+    .flex-header-row {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 10 !important;
+      background: rgba(map.get($table-theme, patriotic-blue), 0.85) !important; // Semi-transparent blue
+      border-bottom: 2px solid map.get($table-theme, patriotic-red) !important;
+      box-shadow: 0 0.1875em 0.375em rgba(0, 0, 0, 0.2) !important;
+      min-height: 56px !important; // Ensure header is tall enough
+    }
+    
+    .flex-header-cell, .flex-cell {
+      flex: 1 !important;
+      padding: 0.4em 0.5em !important; // Increased padding to fit larger text
+      box-sizing: border-box !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+      display: flex !important;
+      align-items: center !important;
+      min-height: 2.5em !important; // Increased from 2.2em
+      max-height: 2.5em !important; // Increased from 2.2em
+    }
+    
+    .flex-header-cell {
+      color: map.get($table-theme, primary-white) !important; // White text for contrast
+      font-weight: 400 !important; // Lighter font weight (changed from 600)
+      text-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.3) !important;
+      font-size: 1.4em !important;
+      letter-spacing: 0.02em !important;
+    }
+    
+    .flex-row {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+      transition: background-color 0.2s !important;
+      min-height: 48px !important; // Ensure consistent row height
+      height: auto !important;
+      margin: 2px 0 !important; // Add small gap between rows
+      
+      &:hover {
+        background-color: rgba(map.get($table-theme, stars-blue), 0.15) !important; // More visible hover
+        box-shadow: inset 0 0 0 1px rgba(map.get($table-theme, gold), 0.6) !important; // More visible border
+        transform: translateY(-1px) !important;
+      }
+      
+      &:nth-child(odd) {
+        background: rgba(map.get($table-theme, patriotic-blue), 0.07) !important; // Slightly more visible
+      }
+      
+      &:nth-child(even) {
+        background: rgba(map.get($table-theme, patriotic-red), 0.05) !important; // Slightly more visible
+      }
+
+      transition: all 0.2s ease !important;
+    
+      // Alternate zebra striping with patriotic colors
+      &:nth-child(odd) {
+        background: linear-gradient(to right,
+          rgba(map.get($table-theme, patriotic-blue), 0.25) 0%,
+          rgba(map.get($table-theme, patriotic-blue), 0.3) 50%,
+          rgba(map.get($table-theme, patriotic-blue), 0.25) 100%
+        ) !important; // More opaque background for better contrast with larger white text
+      }
+      
+      &:nth-child(even) {
+        background: linear-gradient(to right,
+          rgba(map.get($table-theme, patriotic-red), 0.2) 0%,
+          rgba(map.get($table-theme, patriotic-red), 0.25) 50%,
+          rgba(map.get($table-theme, patriotic-red), 0.2) 100%
+        ) !important; // More opaque background for better contrast with larger white text
+      }
+      
+      // Enhanced hover effect
+      &:hover {
+        background-color: rgba(map.get($table-theme, stars-blue), 0.1) !important;
+        box-shadow: inset 0 0 0 1px rgba(map.get($table-theme, gold), 0.5) !important;
+        transform: translateY(-1px) !important;
+      }
+      
+      &.selected {
+        background-color: rgba(map.get($table-theme, patriotic-blue), 0.2) !important; // More visible selection
+        border-left: 3px solid map.get($table-theme, patriotic-blue) !important;
+        font-weight: 400 !important; // Keep selected rows slightly more visible but not bold
+      }
+      
+      // Add subtle border
+      border-bottom: 0.5px solid rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    .flex-right {
+      justify-content: flex-end !important;
+      text-align: right !important;
+    }
+    
+    // Ensure text has good contrast
+    .flex-cell {
+      color: white !important; // White text color
+      font-weight: 300 !important; // Lighter font weight (changed from 500)
+      font-size: 1.25em !important; // Reduced back to 1.25em from 1.35em
+      text-shadow: 0 0.0625em 0.0625em rgba(0, 0, 0, 0.4) !important; // Text shadow for better contrast
+      letter-spacing: 0.01em !important; // Added letter spacing
+    }
+  }
+
+  // Create custom styles for the expanded detail row
+  .flex-row.expand-element-detail {
+    background: linear-gradient(to right, 
+      rgba(map.get($table-theme, patriotic-red), 0.03), 
+      rgba(map.get($table-theme, patriotic-blue), 0.05)
+    ) !important;
+    padding: 0.5em 0.25em !important;
+    display: flex !important;
+    justify-content: flex-start !important;
   }
 }
 
+// Add class for right-aligned header cells and data cells
+.right-aligned-header {
+  text-align: right !important;
+  justify-content: flex-end;
+  padding-right: 1em !important;
+  border-bottom-color: transparent !important;
+  
+  &::after {
+    display: none !important;
+  }
+}
+
+.right-aligned-cell {
+  text-align: right !important;
+  justify-content: flex-end !important;
+}
+
 .record-collection {
-  height: 100%;
+  height: auto !important; // Adjust height to content
+  max-height: 170px; // Limit the height for the top section
+  overflow: visible;
   margin-bottom: 0.5em;
   border-radius: 0.25em;
+  width: 100%; // Ensure the collection takes full width
+  padding: 0 !important;
+  margin: 0 0 0.2em 0 !important;
+  background-color: transparent !important;
 
   .report {
     display: flex;
     flex-wrap: wrap;
-    width: 100%;
+    width: 100%; // Fixed: Changed from 48% to 100% for full width
     font-size: 1.25em;
     margin-bottom: 0.5em;
 
@@ -80,29 +429,88 @@ $table-theme: (
       color: map.get($table-theme, dark-blue);
       margin-right: 0.5em;
       padding: 0.25em;
+      position: relative;
+      overflow: hidden;
+      background-color: rgba(255, 255, 255, 0.7) !important; // Semi-transparent white background
+      
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -50%;
+        width: 20px;
+        height: 100%;
+        background: linear-gradient(
+          to right, 
+          transparent, 
+          rgba(map.get($table-theme, patriotic-red), 0.1), 
+          transparent
+        );
+        animation: shine 3s infinite;
+      }
+      
+      span.highlight {
+        color: map.get($table-theme, patriotic-blue);
+        font-weight: bold;
+        text-shadow: 0 0 1px rgba(0,0,0,0.2);
+        position: relative;
+        
+        &::after {
+          content: "";
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background: linear-gradient(to right, map.get($table-theme, patriotic-red), map.get($table-theme, patriotic-blue));
+        }
+      }
     }
 
     .swagger-button,
     .button-container {
       display: flex;
       justify-content: flex-end;
+      background-color: transparent !important; // Make background transparent
     }
 
     .swagger-button {
-      border: 1px solid map.get($table-theme, patriotic-blue);
-      background-color: map.get($table-theme, primary-white);
+      border: 0.0625em solid map.get($table-theme, patriotic-blue); // Changed from 1px
+      background-color: rgba(255, 255, 255, 0.7) !important; // Make button background semi-transparent
       color: map.get($table-theme, patriotic-blue);
       padding: 0.35em 0.75em;
       border-radius: 0.25em;
       cursor: pointer;
       transition: background-color 0.3s ease, color 0.3s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 0.125em 0.25em rgba(0, 0, 0, 0.2); // Changed from 0 2px 4px
+      position: relative;
+      overflow: hidden;
+      
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          to right, 
+          transparent, 
+          rgba(255, 255, 255, 0.2), 
+          transparent
+        );
+        transition: all 0.6s;
+      }
+      
+      &:hover::before {
+        animation: shimmer 1s forwards;
+      }
 
       &:hover {
-        background-color: map.get($table-theme, patriotic-blue);
+        background-color: map.get($table-theme, patriotic-blue) !important;
         color: map.get($table-theme, primary-white);
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 0.25em 0.5em rgba(0, 0, 0, 0.3); // Changed from 0 4px 8px
       }
     }
   }
@@ -114,14 +522,109 @@ $table-theme: (
     align-items: center;
     padding: 0.15em;
     gap: 1rem; /* Add gap between selector items */
+    background: rgba(255, 255, 255, 0.7) !important; // Semi-transparent white
+    border-radius: 0.5em; // Changed from 8px
+    padding: 1rem;
+    box-shadow: 0 0.25em 0.5em rgba(0, 0, 0, 0.1); // Changed from 0 4px 8px
+    margin-bottom: 0.2em !important;
+    padding: 0.5rem !important; // Reduced padding
 
     mat-form-field {
       flex: 1;
       margin-right: 1rem; /* Add right margin to each form field */
-      min-width: 150px;
+      min-width: 9.375em; // Changed from 150px
       
       &:last-child {
         margin-right: 0; /* Remove margin from last item */
+      }
+      
+      ::ng-deep {
+        .mat-mdc-form-field-focus-overlay {
+          background-color: rgba(map.get($table-theme, patriotic-blue), 0.05);
+        }
+        
+        .mat-mdc-text-field-wrapper {
+          background: rgba(255, 255, 255, 0.8) !important; // Semi-transparent white
+          border-radius: 0.25em; // Changed from 4px
+          border: 0.0625em solid rgba(map.get($table-theme, patriotic-blue), 0.3); // Changed from 1px
+          transition: all 0.3s ease;
+          
+          &:hover {
+            border-color: rgba(map.get($table-theme, patriotic-blue), 0.6);
+            box-shadow: 0 0 0.5em rgba(map.get($table-theme, patriotic-blue), 0.2); // Changed from 0 0 8px
+          }
+        }
+        
+        .mdc-floating-label {
+          color: map.get($table-theme, patriotic-blue);
+          font-weight: 500;
+        }
+        
+        .mat-mdc-select-arrow {
+          color: map.get($table-theme, patriotic-red);
+        }
+        
+        .mat-mdc-select-value-text {
+          color: map.get($table-theme, patriotic-blue);
+          font-weight: 500;
+        }
+
+        // Fix for the box around the filter input
+        .mat-mdc-form-field-subscript-wrapper,
+        .mat-mdc-form-field-bottom-align,
+        .mat-mdc-form-field-hint-wrapper,
+        .mdc-text-field__resizer,
+        .mat-mdc-form-field-hint-spacer {
+          background-color: transparent !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          height: 0 !important; // Minimize height
+          min-height: 0 !important;
+          max-height: 0 !important;
+          border: none !important;
+          box-shadow: none !important;
+          overflow: hidden !important;
+          opacity: 0 !important;
+          visibility: hidden !important;
+          display: none !important; // Hide completely
+        }
+        
+        // Fix any potential parent element issues
+        .mdc-text-field {
+          padding-bottom: 0 !important;
+          margin-bottom: 0 !important;
+        }
+        
+        // Target the input container directly
+        .mat-mdc-form-field-infix {
+          padding-bottom: 0 !important;
+          min-height: 32px !important;
+        }
+        
+        // Ensure notch outline doesn't add height
+        .mdc-notched-outline {
+          padding-bottom: 0 !important;
+        }
+      }
+    }
+
+    // Additional styling for the filter specifically
+    .filter {
+      ::ng-deep {
+        .mat-icon {
+          color: map.get($table-theme, patriotic-red);
+          transition: all 0.3s ease;
+          
+          &:hover {
+            color: darken(map.get($table-theme, patriotic-red), 15%);
+            transform: rotate(90deg);
+          }
+        }
+        
+        // Additional fixes for filter input
+        .mat-mdc-form-field-subscript-wrapper {
+          display: none !important; // Hide completely if needed
+        }
       }
     }
   }
@@ -130,93 +633,145 @@ $table-theme: (
   .mat-paginator {
     padding: 0.25em;
     width: 99%;
-    height: 78vh;
+    height: 90%; // Use percentage instead of vh for container-relative sizing
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     overflow: hidden;
-  }
-
-  .table-wrapper {
-    display: block;
-    max-height: 30em;
-    overflow-x: auto;
-    white-space: nowrap;
-    flex-grow: 1;
-
-    table {
-      display: block;
-      max-height: 22em;
-      overflow-y: auto;
-      width: 100%;
-      border-collapse: collapse; /* Ensure no spacing between cells */
-      
-      // Remove excessive cell padding
-      .mat-cell, .mat-header-cell {
-        padding: 0.4em 0.5em;
-        margin: 0; /* Remove any margin */
-      }
-
-      // Fix row spacing issues
-      tr.mat-row, tr.mat-header-row {
-        height: auto; /* Control height based on content */
-        min-height: 40px; /* Set minimum height */
-        margin: 0; /* Remove any margin */
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12); /* Add subtle borders */
-      }
-
-      // Zebra striping with patriotic colors
-      tr.mat-row:nth-child(odd) {
-        background-color: rgba(map.get($table-theme, patriotic-blue), 0.05);
-      }
-      
-      tr.mat-row:nth-child(even) {
-        background-color: rgba(map.get($table-theme, patriotic-red), 0.05);
-      }
-      
-      // Row hover effect
-      tr.mat-row:hover {
-        background-color: rgba(map.get($table-theme, patriotic-blue), 0.15);
-        transition: background-color 0.3s ease;
-      }
-    }
-
-    thead,
-    tbody tr {
-      display: table;
-      width: 100%;
-      table-layout: fixed;
-      margin: 0; /* Remove any margin */
-    }
+    padding: 0 !important;
+    margin: 0 !important;
   }
 }
 
-.fade-to-red {
-  animation: fade-to-red 1.5s ease-in-out;
+mat-card-content {
+  width: 100%; // Ensure card content takes full width
+  padding: 0.75rem;
+  padding: 0.3em !important;
 }
 
 // Enhanced header styling
 .table-wrapper th {
   position: sticky;
   top: 0;
-  background: linear-gradient(180deg, map.get($table-theme, patriotic-blue), darken(map.get($table-theme, patriotic-blue), 10%));
+  background: rgba(map.get($table-theme, patriotic-blue), 0.85) !important; // Semi-transparent
   color: map.get($table-theme, primary-white);
-  font-size: 1em;
+  font-size: 1.1em;
+  font-weight: 500;
+  text-shadow: 0.0625em 0.0625em 0.0625em rgba(0,0,0,0.2); // Changed from 1px 1px 1px
   text-align: left;
   z-index: 1;
-  padding: 0.5em;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 0.5em 0.4em; // Reduced from 0.75em 0.5em
+  box-shadow: 0 0.1875em 0.375em rgba(0, 0, 0, 0.3); // Changed from 0 3px 6px
+  border-bottom: 2px solid map.get($table-theme, patriotic-red);
+  position: relative;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important; // Better text contrast
+  
+  &::before {
+    display: none;
+  }
+  
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0.125em; // Changed from 2px
+    background: map.get($table-theme, patriotic-blue); // Solid blue instead of gradient
+  }
 }
 
 // Enhanced paginator styling
 .mat-paginator {
-  background: linear-gradient(90deg, map.get($table-theme, patriotic-red), map.get($table-theme, patriotic-blue));
+  background: linear-gradient(90deg, 
+    map.get($table-theme, patriotic-red), 
+    darken(map.get($table-theme, patriotic-red), 5%),
+    map.get($table-theme, patriotic-blue)
+  );
   color: map.get($table-theme, primary-white);
   font-size: 1em;
   text-align: left;
   z-index: 1;
-  padding: 0.25em;
-  margin-top: 0.25em;
+  padding: 0.15em; // Reduced from 0.25em
+  margin-top: 0.15em; // Reduced from 0.25em
+  border-top: 2px solid map.get($table-theme, primary-white);
+  position: sticky !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 100 !important; // Higher z-index to stay above content
+  margin-top: auto !important; // Push it to the bottom
+  margin-bottom: 0 !important;
+  width: 100% !important;
+  height: 3em !important; // Changed from 48px
+  
+  // Enhanced paginator styling with transparent background
+  background: linear-gradient(90deg, 
+    rgba(map.get($table-theme, patriotic-red), 0.7), 
+    rgba(map.get($table-theme, patriotic-red), 0.5),
+    rgba(map.get($table-theme, patriotic-blue), 0.7)
+  ) !important;
+  
+  // Add a semi-transparent backdrop
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  
+  // Add subtle border to visually separate from table
+  border-top: 0.0625em solid rgba(255, 255, 255, 0.5) !important; // Changed from 1px
+  box-shadow: 0 -0.25em 0.5em -0.125em rgba(0, 0, 0, 0.1) !important; // Changed from 0 -4px 8px -2px
+  
+  // Apply translucent background to paginator
+  background: rgba(0, 0, 0, 0.5) !important; // Simple translucent black background
+  backdrop-filter: blur(10px) !important; // Increase blur effect
+  -webkit-backdrop-filter: blur(10px) !important;
+  position: sticky !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 1000 !important; // Higher z-index to stay above content
+  margin-top: 0 !important; // Remove top margin
+  box-shadow: 0 -0.25em 0.5em 0 rgba(0, 0, 0, 0.3) !important; // Strong shadow for visual separation
+  
+  ::ng-deep {
+    .mat-mdc-paginator-container {
+      padding: 0.3em; // Reduced from 0.5em
+      background-color: transparent !important;
+    }
+    
+    .mat-mdc-paginator-range-label, 
+    .mat-mdc-paginator-page-size-label {
+      color: map.get($table-theme, primary-white);
+      font-weight: 400 !important; // Lighter font weight (changed from 500)
+      font-size: 1.2em !important; // Increased from 1em
+    }
+    
+    .mat-mdc-icon-button {
+      color: map.get($table-theme, primary-white);
+      background-color: rgba(255, 255, 255, 0.2) !important;
+      margin: 0 0.25em; // Changed from 0 4px
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.3) !important;
+        transform: scale(1.05);
+      }
+      
+      &:disabled {
+        opacity: 0.5;
+      }
+    }
+    
+    .mat-mdc-select-value {
+      color: map.get($table-theme, primary-white);
+    }
+
+    // Improve paginator dropdown styling
+    .mat-mdc-select {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+      border-radius: 0.25em !important; // Changed from 4px
+      padding: 0 0.25em !important; // Changed from 0 4px
+    }
+  }
 }
 
 @keyframes fly-in {
@@ -255,23 +810,391 @@ $table-theme: (
 
 // Add styling for expanded row content
 .expand-element-detail {
-  overflow: hidden;
+  overflow: visible !important;
   display: flex;
-  background: linear-gradient(to right, rgba(map.get($table-theme, patriotic-red), 0.05), rgba(map.get($table-theme, patriotic-blue), 0.05));
-  border-left: 4px solid map.get($table-theme, patriotic-blue);
-  padding: 0.5em;
+  background: rgba(0, 0, 0, 0.6) !important;
+  border-left: 0.25em solid map.get($table-theme, gold) !important;
+  padding: 1rem !important; // Increased padding
+  position: relative;
+  box-shadow: inset 0 0 1em rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  padding-left: 0.5em !important;
+  min-height: 200px !important; // Set larger minimum height
+  
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23FFFFFF' fill-opacity='0.05' d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z'%3E%3C/path%3E%3C/svg%3E");
+    opacity: 0.2;
+    z-index: -1;
+  }
   
   .expand-element-description {
-    padding: 0.5em;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    
+    .expand-header {
+      color: map.get($table-theme, gold) !important;
+      font-weight: 400 !important;
+      font-size: 1.3em !important; // Larger header
+      display: block;
+      margin-bottom: 0.75em;
+      text-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.8) !important;
+      border-bottom: 0.0625em dashed rgba(map.get($table-theme, primary-white), 0.4) !important;
+      padding-bottom: 0.75em;
+      letter-spacing: 0.03em;
+      text-align: center;
+    }
+    
+    .income-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 0.5em 1em; // Vertical and horizontal gap
+      width: 100%;
+      padding: 0.5em !important;
+      margin-bottom: 1em !important; // Add space before the total
+      
+      .income-item {
+        background: rgba(255, 255, 255, 0.15) !important;
+        border-radius: 0.25em;
+        padding: 0.5em 0.75em !important;
+        margin-bottom: 0.3em !important;
+        box-shadow: 0 0.125em 0.25em rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        position: relative;
+        padding-left: 2em !important; // Space for star
+        min-height: 2.5em !important; // Minimum height for item
+        display: flex;
+        align-items: center;
+        
+        &:hover {
+          background: rgba(255, 255, 255, 0.25) !important;
+          transform: translateX(0.25em);
+        }
+        
+        &::before {
+          content: "★";
+          color: map.get($table-theme, gold);
+          position: absolute;
+          left: 0.5em;
+          top: 50%;
+          transform: translateY(-50%); // Ensure perfect vertical centering
+          font-size: 0.9em;
+          text-shadow: 0 0 0.5em rgba(map.get($table-theme, gold), 0.6);
+          animation: twinkle 1.5s infinite alternate ease-in-out;
+          display: flex; // Add flex display
+          align-items: center; // Center vertically with flex
+          justify-content: center; // Center horizontally with flex
+          width: 1em; // Give it a defined width
+          height: 1em; // Give it a defined height
+          line-height: 1; // Ensure proper text alignment
+        }
+        
+        // Adjust padding to accommodate the star
+        padding-left: 2.2em !important; // Slightly increased to give star more room
+        
+        .company-info {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          font-size: 0.95em !important;
+          color: white !important;
+          
+          .company-name {
+            font-weight: 400;
+          }
+          
+          .company-salary {
+            font-weight: 600;
+            color: map.get($table-theme, gold) !important;
+          }
+        }
+      }
+    }
+    
+    .income-summary {
+      margin-top: 0.5em;
+      margin-bottom: 1em;
+      padding: 0.75em;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 0.5em;
+      text-align: center;
+      
+      p {
+        color: white !important;
+        margin: 0;
+        padding: 0;
+        font-size: 1em;
+        
+        strong {
+          color: map.get($table-theme, gold);
+          font-weight: 400;
+        }
+      }
+    }
+    
+    .income-total {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 0.5em;
+      padding: 0.75em 1em;
+      background: rgba(map.get($table-theme, patriotic-blue), 0.3);
+      border-radius: 0.5em;
+      box-shadow: 0 0.125em 0.25em rgba(0, 0, 0, 0.2);
+      text-align: center;
+      border: 1px solid rgba(map.get($table-theme, gold), 0.3);
+      
+      .total-label {
+        color: map.get($table-theme, primary-white) !important;
+        font-size: 1.2em !important;
+        font-weight: 500 !important;
+        margin: 0 0.5em 0 0;
+        letter-spacing: 0.02em;
+      }
+      
+      .total-amount {
+        color: map.get($table-theme, gold) !important;
+        font-size: 1.3em !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.02em;
+      }
+    }
+  }
+}
+
+// Define minimum height for the entire row when expanded
+.flex-row.expand-element-detail {
+  min-height: auto !important;
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+// Add styling for expanded row content
+.expand-element-detail {
+  overflow: hidden;
+  display: flex;
+  background: linear-gradient(to right, rgba(map.get($table-theme, patriotic-red), 0.03), rgba(map.get($table-theme, patriotic-blue), 0.05)) !important;
+  padding: 1.25em !important; // Increased vertical padding
+  min-height: auto !important; // Allow height to grow with content
+  max-height: none !important; // Remove max height restriction
+  display: flex !important;
+  justify-content: flex-start !important;
+  background: rgba(0, 0, 0, 0.6) !important; // Darker, translucent background for better contrast
+  border-left: 0.25em solid map.get($table-theme, gold) !important; // Golden border for emphasis
+  padding: 0.75em !important; // Increased padding for better spacing
+  position: relative;
+  box-shadow: inset 0 0 1em rgba(0, 0, 0, 0.3) !important; // Inner shadow for depth
+  backdrop-filter: blur(5px) !important; // Slight blur effect
+  -webkit-backdrop-filter: blur(5px) !important;
+  padding-left: 0.5em !important; // Added left padding
+  
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23FFFFFF' fill-opacity='0.05' d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z'%3E%3C/path%3E%3C/svg%3E");
+    opacity: 0.2;
+    z-index: -1;
+  }
+  
+  .expand-element-description {
+    padding: 0.75em !important; // Increased padding
     width: 100%;
     
     strong {
-      color: map.get($table-theme, patriotic-blue);
+      color: map.get($table-theme, gold) !important; // Gold color for heading
+      font-weight: 400 !important; // Lighter weight as requested
+      font-size: 1.2em !important; // Slightly larger font
+      display: block;
+      margin-bottom: 1em; // Increased margin
+      text-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.8) !important; // Dark shadow for readability
+      border-bottom: 0.0625em dashed rgba(map.get($table-theme, primary-white), 0.4) !important; // White border
+      padding-bottom: 0.75em; // Increased padding
+      letter-spacing: 0.03em;
     }
     
     ul {
       padding-left: 1em;
+      margin: 1em 0 !important; // Add vertical margin
+      list-style-type: none; // Remove default bullets
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); // Reduced width from 300px to 250px
+      gap: 0.75em 1.5em; // Add more horizontal gap between columns (0.75em vertical, 1.5em horizontal)
+      width: 100%;
+      padding-left: 0.5em !important;
+      margin: 0.5em 0 !important; // Reduced vertical margins
+      
+      li {
+        margin-bottom: 0.2em !important; // Reduced bottom margin
+        padding: 0.3em 0.5em !important; // Keep padding compact
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        position: relative;
+        background: rgba(255, 255, 255, 0.15) !important; // Slight white background
+        border-radius: 0.25em;
+        box-shadow: 0 0.125em 0.25em rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        padding-left: 1.75em !important; // Increase left padding to make room for star
+        
+        &:hover {
+          background: rgba(255, 255, 255, 0.25) !important;
+          transform: translateX(0.25em);
+        }
+        
+        // Fix star positioning to be center-aligned with text
+        &::before {
+          content: "★";
+          color: map.get($table-theme, gold);
+          position: absolute;
+          left: 0.5em; // Position further to the right (was -1em)
+          top: 50%; // Center vertically
+          transform: translateY(-50%); // Ensure vertical centering
+          font-size: 0.9em; // Slightly smaller star
+          text-shadow: 0 0 0.5em rgba(map.get($table-theme, gold), 0.6);
+          animation: twinkle 1.5s infinite alternate ease-in-out;
+        }
+        
+        // Add counter for multiple income sources
+        &:nth-child(n+10) {
+          // Add special styling for double-digit numbered items
+          padding-left: 1.1em !important; // More room for two-digit numbers
+          
+          &::before {
+            content: counter(item) " ★"; // Use CSS counter
+            counter-increment: item;
+          }
+        }
+        
+        p {
+          color: white !important;
+          margin: 0 !important; // No margin for paragraphs
+          font-size: 0.9em !important; // Slightly smaller font
+          font-weight: 300;
+          letter-spacing: 0.01em;
+          line-height: 1.2 !important; // Tighter line height for compactness
+          overflow: hidden; // Prevent text overflow
+          text-overflow: ellipsis; // Add ellipsis for overflowing text
+          white-space: nowrap; // Keep text on one line
+          
+          // Style for "Company:" text
+          &:first-child {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            
+            // Split company name and salary with different styles
+            &::after {
+              content: "";
+              flex: 1;
+              height: 1px;
+              background: linear-gradient(to right, 
+                rgba(map.get($table-theme, patriotic-blue), 0.3),
+                rgba(map.get($table-theme, patriotic-red), 0.3)
+              );
+              margin: 0 0.5em;
+            }
+          }
+        }
+      }
     }
+    
+    // Style for total section when there are many income sources
+    .income-summary {
+      margin-top: 1em;
+      padding: 0.75em;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 0.5em;
+      
+      p {
+        color: white !important;
+        margin: 0;
+        padding: 0;
+        font-size: 0.9em;
+        
+        strong {
+          color: map.get($table-theme, gold);
+        }
+      }
+    }
+    
+    // Style for the total annual salary line
+    > strong {
+      display: inline-block;
+      margin-top: 1em !important; // Increased margin
+      padding: 1em !important;
+      background: rgba(map.get($table-theme, patriotic-blue), 0.3);
+      border-radius: 0.5em;
+      box-shadow: 0 0.125em 0.25em rgba(0, 0, 0, 0.2);
+      color: map.get($table-theme, primary-white) !important;
+      font-size: 1.1em !important;
+      font-weight: 400 !important;
+      border: 1px solid rgba(map.get($table-theme, gold), 0.3);
+      letter-spacing: 0.02em;
+    }
+  }
+}
+
+// Define minimum height for the entire row when expanded
+.flex-row.expand-element-detail {
+  min-height: auto !important; // Allow to grow based on content
+  max-height: none !important; // Remove height restriction
+  padding: 0.5em !important; // Reduced overall padding
+  overflow: visible !important; // Ensure content doesn't get cut off
+}
+
+// Create a distinctive style for selected row
+.flex-row.selected {
+  position: relative;
+  background: linear-gradient(to right,
+    rgba(map.get($table-theme, stars-blue), 0.4) 0%,
+    rgba(map.get($table-theme, stars-blue), 0.5) 50%,
+    rgba(map.get($table-theme, stars-blue), 0.4) 100%
+  ) !important;
+  border-left: 0.25em solid map.get($table-theme, gold) !important;
+  border-right: 0.25em solid map.get($table-theme, gold) !important;
+  
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right,
+      map.get($table-theme, gold),
+      map.get($table-theme, patriotic-red),
+      map.get($table-theme, patriotic-blue),
+      map.get($table-theme, gold)
+    );
+  }
+  
+  .flex-cell {
+    font-weight: 400 !important;
+    color: map.get($table-theme, primary-white) !important;
+    text-shadow: 0 0.0625em 0.25em rgba(0, 0, 0, 0.7) !important;
+  }
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.9) rotate(-8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.1) rotate(8deg);
   }
 }
 
@@ -286,7 +1209,7 @@ tr.normal-row {
   
   &.selected {
     background-color: rgba(map.get($table-theme, patriotic-blue), 0.2);
-    border-left: 3px solid map.get($table-theme, patriotic-blue);
+    border-left: 0.1875em solid map.get($table-theme, patriotic-blue); // Changed from 3px
   }
 }
 
@@ -333,4 +1256,652 @@ tr.detail-row {
   &:not(.expanded) {
     display: none;
   }
+}
+
+@keyframes shine {
+   0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  50%, 100% {
+    transform: translateX(300%) skewX(-15deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes flag-wave {
+  0% {
+    transform: rotate(-1deg);
+  }
+  50% {
+    transform: rotate(1deg);
+  }
+  100% {
+    transform: rotate(-1deg);
+  }
+}
+
+// Apply flag wave animation to icons
+mat-icon {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    animation: flag-wave 1.5s infinite ease-in-out;
+    color: map.get($table-theme, patriotic-red);
+  }
+}
+
+.table-container {
+  width: 100% !important; // Force full width
+  height: calc(100vh - 200px) !important; // Adjusted container height
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background-color: transparent !important;
+}
+
+// Container to ensure proper scrolling within window
+.scrollable-container {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  flex: 1 1 auto !important; // Allow container to grow and fill space
+  position: relative !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+// Apply the scrollbar styles from styles.scss
+::-webkit-scrollbar {
+  width: 0.5em; // Changed from 8px
+  height: 0.5em; // Changed from 8px
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, map.get($table-theme, patriotic-red), 
+    map.get($table-theme, primary-white), map.get($table-theme, patriotic-blue));
+  border-radius: 0.25em; // Changed from 4px
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, darken(map.get($table-theme, patriotic-red), 10%),
+    map.get($table-theme, primary-white),
+    darken(map.get($table-theme, patriotic-blue), 10%));
+}
+
+mat-card {
+  background-color: transparent !important;
+}
+
+:host {
+  background-color: rgba(255, 0, 0, 0.05) !important; // Very light red background
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+// Fix overlay position and display issues
+.flex-row.expand-element-detail {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 80% !important;
+  max-width: 1200px !important;
+  min-height: 300px !important;
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+  z-index: 1050 !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+  border-radius: 0.75em !important;
+  border: 0.25em solid map.get($table-theme, gold) !important;
+  box-shadow: 0 0 1.5em rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  padding: 1.5rem !important;
+  margin: 0 !important;
+  user-select: none !important;
+  cursor: default !important;
+  
+  // Simplify to fix display issues
+  animation: fade-in 0.3s ease-out !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  
+  // Remove problematic properties that might be causing issues
+  will-change: auto !important;
+  pointer-events: auto !important;
+  touch-action: none !important;
+  -webkit-user-drag: none !important;
+  -webkit-touch-callout: none !important;
+  
+  // Re-enable display properly
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+// Fix backdrop to ensure it's working properly
+.expanded-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(2px) !important;
+  -webkit-backdrop-filter: blur(2px) !important;
+  z-index: 1000 !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  pointer-events: auto !important;
+  
+  // Make sure it's visible
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+// Update expanded overlay styling
+.flex-row.expand-element-detail {
+  position: fixed !important; // Changed from relative to fixed
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 80% !important;
+  max-width: 1200px !important;
+  min-height: 300px !important;
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+  z-index: 1050 !important;
+  background: rgba(0, 0, 0, 0.85) !important; // Darker background
+  border-radius: 0.75em !important;
+  border: 0.25em solid map.get($table-theme, gold) !important;
+  box-shadow: 0 0 1.5em rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  padding: 1.5rem !important;
+  margin: 0 !important;
+  animation: fade-in 0.3s ease-out !important;
+  user-select: none !important; // Prevent text selection
+  cursor: default !important; // Use default cursor
+  touch-action: none !important; // Disable touch actions that could cause drag
+  -webkit-user-drag: none !important; // Prevent dragging in webkit browsers
+  -webkit-touch-callout: none !important; // Disable touch callout
+  pointer-events: all !important; // Ensure clicks work in overlay
+  will-change: auto !important; // Remove will-change
+  transform-origin: initial !important; // Reset transform-origin
+  transform-style: initial !important; // Reset transform-style
+  backface-visibility: initial !important; // Reset backface-visibility
+  -webkit-backface-visibility: initial !important; // Reset webkit backface-visibility
+  transition: none !important; // Remove any transitions
+  animation: none !important; // Remove animations that might cause movement
+  transform-origin: center center !important; // Fix dragging issue - make it more specific
+  
+  // This is critical to prevent dragging
+  position: fixed !important; // Reinforce fixed position
+  z-index: 1050 !important;
+  
+  // Prevent mousemove from affecting the element
+  &:active {
+    pointer-events: none !important;
+  }
+  
+  // Add pointer-events none to children except for interactive elements
+  & > *:not(button, .expand-element-description) {
+    pointer-events: none !important;
+  }
+  
+  // Add an invisible shield to prevent mouse interactions with the background
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    pointer-events: none !important;
+  }
+}
+
+// Overlay backdrop
+.expanded-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(2px) !important;
+  -webkit-backdrop-filter: blur(2px) !important;
+  z-index: 1000 !important;
+  animation: fade-in 0.2s ease-out !important;
+  cursor: pointer !important; // Show pointer cursor to indicate clickable area
+  user-select: none !important; // Prevent text selection
+  pointer-events: auto !important; // Ensure it captures mouse events
+  touch-action: none !important;
+}
+
+// Add close button styling
+.close-overlay-btn {
+  position: absolute !important;
+  top: 1rem !important;
+  right: 1rem !important;
+  color: map.get($table-theme, gold) !important;
+  background-color: transparent !important;
+  border: 2px solid map.get($table-theme, gold) !important;
+  border-radius: 50% !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  z-index: 1060 !important;
+  pointer-events: auto !important; // Ensure button receives click events
+  user-select: none !important; // Prevent text selection
+  -webkit-user-drag: none !important; // Prevent dragging in webkit browsers
+  touch-action: manipulation !important; // Improve touch behavior
+  -webkit-tap-highlight-color: transparent !important; // Remove tap highlight
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    transform: scale(1.1) !important;
+  }
+}
+
+// Modify the expand-element-description to work within the overlay
+.expand-element-detail .expand-element-description {
+  width: 100% !important;
+  padding: 0 !important; // Remove padding as overlay already has padding
+  pointer-events: auto !important; // Allow interaction with content
+  user-select: none !important; // Prevent text selection
+  -webkit-user-drag: none !important; // Prevent dragging in webkit browsers
+  touch-action: pan-y !important; // Allow only vertical panning for scrolling
+  
+  .expand-header {
+    color: map.get($table-theme, gold) !important;
+    font-size: 1.5em !important; // Larger header
+    text-align: center !important;
+    margin-bottom: 1.5em !important; // More space below header
+    text-shadow: 0 0.125em 0.25em rgba(0, 0, 0, 0.8) !important;
+  }
+  
+  .income-grid, .income-summary, .income-total {
+    pointer-events: auto !important; // Ensure these elements receive click events
+  }
+  
+  * {
+    user-select: none !important;
+    -webkit-user-drag: none !important;
+    touch-action: none !important;
+  }
+}
+
+// Add fade-in animation for overlay
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Add a specific rule to prevent content from dragging
+.expand-element-description, 
+.income-grid,
+.income-item,
+.income-summary,
+.income-total,
+.expand-header {
+  pointer-events: auto !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+  touch-action: none !important;
+}
+
+// Override the detailExpand animation to ensure proper display
+:host ::ng-deep {
+  .expanded {
+    height: auto !important;
+    visibility: visible !important; 
+    opacity: 1 !important;
+    overflow: visible !important;
+    display: flex !important; // Ensure it's displayed as flex
+  }
+  
+  .collapsed {
+    height: 0 !important;
+    visibility: hidden !important; 
+    opacity: 0 !important;
+    overflow: hidden !important;
+    display: none !important; // Ensure it's properly hidden
+  }
+}
+
+// Fixed overlay styling
+.expanded-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  animation: fade-in 0.2s ease-out;
+  cursor: pointer;
+}
+
+// Simplified expand-element-detail styling
+.flex-row.expand-element-detail {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 1200px;
+  min-height: 300px;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 1050;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 0.75em;
+  border: 0.25em solid map.get($table-theme, gold);
+  box-shadow: 0 0 1.5em rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  padding: 1.5rem;
+  margin: 0;
+  animation: fade-in 0.3s ease-out;
+  display: flex !important;
+  flex-direction: column;
+}
+
+// Close button styling
+.close-overlay-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  color: map.get($table-theme, gold);
+  background-color: transparent;
+  border: 2px solid map.get($table-theme, gold);
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1060;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+  }
+}
+
+// Content styling for the expanded element
+.expand-element-description {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
+  .expand-header {
+    color: map.get($table-theme, gold);
+    font-size: 1.5em;
+    text-align: center;
+    margin-bottom: 1.5em;
+    text-shadow: 0 0.125em 0.25em rgba(0, 0, 0, 0.8);
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
+    padding-bottom: 0.5em;
+  }
+  
+  .income-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 0.5em 1em;
+    width: 100%;
+    padding: 0.5em;
+    margin-bottom: 1em;
+    
+    .income-item {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 0.25em;
+      padding: 0.5em 0.75em;
+      margin-bottom: 0.3em;
+      box-shadow: 0 0.125em 0.25em rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      position: relative;
+      padding-left: 2em;
+      min-height: 2.5em;
+      display: flex;
+      align-items: center;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateX(0.25em);
+      }
+      
+      &::before {
+        content: "★";
+        color: map.get($table-theme, gold);
+        position: absolute;
+        left: 0.5em;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.9em;
+        text-shadow: 0 0 0.5em rgba(map.get($table-theme, gold), 0.6);
+        animation: twinkle 1.5s infinite alternate ease-in-out;
+        display: flex; // Add flex display
+        align-items: center; // Center vertically with flex
+        justify-content: center; // Center horizontally with flex
+        width: 1em; // Give it a defined width
+        height: 1em; // Give it a defined height
+        line-height: 1; // Ensure proper text alignment
+      }
+      
+      // Adjust padding to accommodate the star
+      padding-left: 2.2em !important; // Slightly increased to give star more room
+      
+      .company-info {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        font-size: 0.95em;
+        color: white;
+        
+        .company-name {
+          font-weight: 400;
+        }
+        
+        .company-salary {
+          font-weight: 600;
+          color: map.get($table-theme, gold);
+        }
+      }
+    }
+  }
+  
+  .income-summary {
+    margin-top: 0.5em;
+    margin-bottom: 1em;
+    padding: 0.75em;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 0.5em;
+    text-align: center;
+    
+    p {
+      color: white;
+      margin: 0;
+      padding: 0;
+      font-size: 1em;
+      
+      strong {
+        color: map.get($table-theme, gold);
+        font-weight: 400;
+      }
+    }
+  }
+  
+  .income-total {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.5em;
+    padding: 0.75em 1em;
+    background: rgba(map.get($table-theme, patriotic-blue), 0.3);
+    border-radius: 0.5em;
+    box-shadow: 0 0.125em 0.25em rgba(0, 0, 0, 0.2);
+    text-align: center;
+    border: 1px solid rgba(map.get($table-theme, gold), 0.3);
+    
+    .total-label {
+      color: map.get($table-theme, primary-white);
+      font-size: 1.2em;
+      font-weight: 500;
+      margin: 0 0.5em 0 0;
+      letter-spacing: 0.02em;
+    }
+    
+    .total-amount {
+      color: map.get($table-theme, gold);
+      font-size: 1.3em;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+  }
+}
+
+// Add needed animation
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+// Add new modal container styles that won't conflict with existing styles
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+// Overlay backdrop styles
+.expanded-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  pointer-events: auto;
+  animation: fade-in 0.3s ease;
+}
+
+// Modal content styles
+.expand-element-detail {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 80% !important;
+  max-width: 1000px !important;
+  min-height: 300px !important;
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+  border-radius: 12px !important;
+  border: 4px solid map.get($table-theme, gold) !important;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  padding: 24px !important;
+  z-index: 1050 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  pointer-events: auto !important;
+  animation: fade-in 0.3s ease;
+}
+
+// Close button styles
+.close-overlay-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: map.get($table-theme, gold);
+  background-color: transparent;
+  border: 2px solid map.get($table-theme, gold);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1060;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+  }
+}
+
+// Income summary styles
+.expand-element-description {
+  width: 100%;
+  color: white;
+  
+  .expand-header {
+    color: map.get($table-theme, gold);
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 24px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
+    padding-bottom: 8px;
+  }
+  
+  .income-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 8px 16px;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+  }
+  
+  // ...existing styles for income items, summary, and totals...
+}
+
+// Base fade-in animation
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
