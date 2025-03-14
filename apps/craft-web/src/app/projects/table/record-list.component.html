@@ -58,28 +58,50 @@
   <div class="scrollable-container" [hidden]="!resolved">
     <div class="table-wrapper">
       <div class="flex-table mat-elevation-z8" [@fly-in]>
-        <!-- Header Row -->
+        <!-- Header Row with responsive columns -->
         <div class="flex-header-row">
+          <!-- Always shown -->
           <div class="flex-header-cell" (click)="sortData({active: 'userID', direction: sort.direction === 'asc' ? 'desc' : 'asc'})">User ID</div>
-          <div class="flex-header-cell" (click)="sortData({active: 'name', direction: sort.direction === 'asc' ? 'desc' : 'asc'})">Name</div>
-          <div class="flex-header-cell" (click)="sortData({active: 'address', direction: sort.direction === 'asc' ? 'desc' : 'asc'})">Address</div>
-          <div class="flex-header-cell" (click)="sortData({active: 'city', direction: sort.direction === 'asc' ? 'desc' : 'asc'})">City</div>
-          <div class="flex-header-cell" (click)="sortData({active: 'state', direction: sort.direction === 'asc' ? 'desc' : 'asc'})">State</div>
-          <div class="flex-header-cell" (click)="sortData({active: 'zip', direction: sort.direction === 'asc' ? 'desc' : 'asc'})">Zip</div>
-          <div class="flex-header-cell" (click)="sortData({active: 'phone', direction: sort.direction === 'asc' ? 'desc' : 'asc'})">Phone</div>
+          
+          <!-- Only hidden on smallest screens -->
+          <div class="flex-header-cell" (click)="sortData({active: 'name', direction: sort.direction === 'asc' ? 'desc' : 'asc'})" *ngIf="!showMinimalColumns">Name</div>
+          
+          <!-- Only shown on large screens -->
+          <div class="flex-header-cell address-column" (click)="sortData({active: 'address', direction: sort.direction === 'asc' ? 'desc' : 'asc'})" *ngIf="showAddressColumns">Address</div>
+          
+          <!-- Shown on medium and large screens -->
+          <div class="flex-header-cell" (click)="sortData({active: 'city', direction: sort.direction === 'asc' ? 'desc' : 'asc'})" *ngIf="showMediumColumns || showAddressColumns">City</div>
+          <div class="flex-header-cell" (click)="sortData({active: 'state', direction: sort.direction === 'asc' ? 'desc' : 'asc'})" *ngIf="showMediumColumns || showAddressColumns">State</div>
+          <div class="flex-header-cell" (click)="sortData({active: 'zip', direction: sort.direction === 'asc' ? 'desc' : 'asc'})" *ngIf="showMediumColumns || showAddressColumns">Zip</div>
+          
+          <!-- Only shown on largest screens -->
+          <div class="flex-header-cell" (click)="sortData({active: 'phone', direction: sort.direction === 'asc' ? 'desc' : 'asc'})" *ngIf="showAddressColumns">Phone</div>
+          
+          <!-- Always shown -->
           <div class="flex-header-cell flex-right">Actions</div>
         </div>
         
-        <!-- Data Rows -->
+        <!-- Data Rows with responsive columns -->
         <ng-container *ngFor="let record of dataSource.filteredData | slice:paginator.pageIndex * paginator.pageSize:(paginator.pageIndex + 1) * paginator.pageSize">
           <div class="flex-row" [class.selected]="expandedElement === record" (click)="expandRow(record)">
+            <!-- Always shown -->
             <div class="flex-cell">{{ record.UID }}</div>
-            <div class="flex-cell">{{ record.firstName }}&nbsp;{{ record.lastName }}</div>
-            <div class="flex-cell">{{ record.address.street }}</div>
-            <div class="flex-cell">{{ record.address.city }}</div>
-            <div class="flex-cell">{{ record.address.state }}</div>
-            <div class="flex-cell">{{ record.address.zipcode }}</div>
-            <div class="flex-cell">{{ record.phone.number }}</div>
+            
+            <!-- Only hidden on smallest screens -->
+            <div class="flex-cell" *ngIf="!showMinimalColumns">{{ record.firstName }}&nbsp;{{ record.lastName }}</div>
+            
+            <!-- Only shown on large screens -->
+            <div class="flex-cell address-column" *ngIf="showAddressColumns" title="{{ record.address.street }}">{{ record.address.street }}</div>
+            
+            <!-- Shown on medium and large screens -->
+            <div class="flex-cell" *ngIf="showMediumColumns || showAddressColumns">{{ record.address.city }}</div>
+            <div class="flex-cell" *ngIf="showMediumColumns || showAddressColumns">{{ record.address.state }}</div>
+            <div class="flex-cell" *ngIf="showMediumColumns || showAddressColumns">{{ record.address.zipcode }}</div>
+            
+            <!-- Only shown on largest screens -->
+            <div class="flex-cell" *ngIf="showAddressColumns">{{ record.phone.number }}</div>
+            
+            <!-- Always shown -->
             <div class="flex-cell flex-right">
               <button mat-icon-button (click)="showDetailView(record); $event.stopPropagation();" title="view record">
                 <mat-icon>person</mat-icon>

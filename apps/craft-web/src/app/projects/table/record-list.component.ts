@@ -132,6 +132,9 @@ export class RecordListComponent implements OnInit, OnDestroy {
     // Set focus on the filter input field
     this.filterInput.nativeElement.focus();
 
+    // Update displayed columns based on current window width
+    this.updateDisplayedColumns();
+
     // Subscribe to the data$ observable to update the dataSource
     this.data$.pipe(takeUntil(this.destroy$)).subscribe(data => {
       this.dataSource.data = data;
@@ -185,25 +188,46 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('Method: updateDisplayedColumns called');
     const width = window.innerWidth;
 
-    if (width < 800) {
+    // Recalculate column sets based on screen width with adjusted breakpoints
+    if (width < 480) {
+      // Very small screens - only ID and actions
       this.displayedColumns = ['userID', 'icons'];
-      console.log('Displayed Columns: Width < 800, updated to:', this.displayedColumns);
-    } else if (width < 900) {
+      this.showMinimalColumns = true;
+      this.showMediumColumns = false;
+      this.showAddressColumns = false;
+      console.log('Displayed Columns: Width < 480, updated to:', this.displayedColumns);
+    } else if (width < 768) {
+      // Small screens - ID, name and actions
       this.displayedColumns = ['userID', 'name', 'icons'];
-      console.log('Displayed Columns: Width < 900, updated to:', this.displayedColumns);
-    } else if (width < 1000) {
-      this.displayedColumns = ['userID', 'name', 'icons'];
-      console.log('Displayed Columns: Width < 1000, updated to:', this.displayedColumns);
+      this.showMinimalColumns = false;
+      this.showMediumColumns = false;
+      this.showAddressColumns = false;
+      console.log('Displayed Columns: Width < 768, updated to:', this.displayedColumns);
+    } else if (width < 992) {
+      // Medium screens - add city, state instead of full address
+      this.displayedColumns = ['userID', 'name', 'city', 'state', 'icons'];
+      this.showMinimalColumns = false;
+      this.showMediumColumns = true;
+      this.showAddressColumns = false;
+      console.log('Displayed Columns: Width < 992, updated to:', this.displayedColumns);
     } else if (width < 1200) {
-      this.displayedColumns = ['userID', 'name', 'state', 'zip', 'icons'];
-      console.log('Displayed Columns: Width < 1200, updated to:', this.displayedColumns);
-    } else if (width < 1400) {
+      // Medium-large screens - add zip
       this.displayedColumns = ['userID', 'name', 'city', 'state', 'zip', 'icons'];
-      console.log('Displayed Columns: Width < 1400, updated to:', this.displayedColumns);
+      this.showMinimalColumns = false;
+      this.showMediumColumns = true;
+      this.showAddressColumns = false;
+      console.log('Displayed Columns: Width < 1200, updated to:', this.displayedColumns);
     } else {
+      // Large screens - show full address column as well
       this.displayedColumns = ['userID', 'name', 'address', 'city', 'state', 'zip', 'phone', 'icons'];
-      console.log('Displayed Columns: Width >= 1400, updated to:', this.displayedColumns);
+      this.showMinimalColumns = false;
+      this.showMediumColumns = false;
+      this.showAddressColumns = true;
+      console.log('Displayed Columns: Width >= 1200, updated to:', this.displayedColumns);
     }
+
+    // Notify Angular that the display has changed
+    this.changeDetectorRef.detectChanges();
   }
 
   onDatasetChange(count: number): void {

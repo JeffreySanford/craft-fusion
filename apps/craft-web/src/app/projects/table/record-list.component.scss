@@ -1905,3 +1905,181 @@ mat-card {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+// Additional responsive styling for flex table
+.flex-table {
+  // Responsive adjustments for different screen sizes
+  @media screen and (max-width: 500px) {
+    .flex-header-cell, .flex-cell {
+      padding: 0.3em 0.4em !important; // Smaller padding on very small screens
+      font-size: 0.9em !important;
+    }
+    
+    .flex-header-cell:first-child,
+    .flex-cell:first-child {
+      flex: 3 !important; // Give more space to the user ID on small screens
+    }
+    
+    .flex-header-cell:last-child,
+    .flex-cell:last-child {
+      flex: 1 !important; // Less space for action buttons
+    }
+  }
+  
+  @media screen and (max-width: 700px) {
+    .flex-header-cell, .flex-cell {
+      padding: 0.3em 0.4em !important;
+    }
+    
+    .flex-header-cell:first-child,
+    .flex-cell:first-child {
+      flex: 2 !important; // Give more space to the user ID
+    }
+    
+    .flex-header-cell:nth-child(2),
+    .flex-cell:nth-child(2) {
+      flex: 3 !important; // More space for the name
+    }
+  }
+  
+  @media screen and (max-width: 900px) {
+    .flex-cell {
+      font-size: 1em !important; // Slightly smaller font on medium screens
+    }
+  }
+}
+
+// Make the overlay responsive too
+@media screen and (max-width: 768px) {
+  .expand-element-detail {
+    width: 95% !important;
+    padding: 1rem !important;
+  }
+  
+  .income-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important; // Smaller grid items
+  }
+}
+
+// Add additional styles for the address column
+.address-column {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px; // Set a max width
+  
+  &:hover {
+    position: relative;
+    overflow: visible;
+    z-index: 10;
+    
+    // Show full text on hover with a tooltip-like effect
+    &::after {
+      content: attr(title);
+      position: absolute;
+      left: 0;
+      top: 100%;
+      white-space: nowrap;
+      background: map.get($table-theme, patriotic-blue);
+      color: white;
+      padding: 0.25em 0.5em;
+      border-radius: 0.25em;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      z-index: 100;
+    }
+  }
+}
+
+// At larger breakpoints, give the address column more space
+@media screen and (min-width: 1200px) {
+  .flex-table {
+    .flex-header-cell.address-column,
+    .flex-cell.address-column {
+      flex: 3 !important; // Make address column wider
+    }
+  }
+}
+
+// Adjust specific column widths
+.flex-table {
+  .flex-header-cell, 
+  .flex-cell {
+    // User ID
+    &:nth-child(1) {
+      flex: 1 !important;
+      min-width: 80px !important;
+    }
+    
+    // Name
+    &:nth-child(2) { 
+      flex: 2 !important;
+      min-width: 120px !important;
+    }
+    
+    // Address - make it wider
+    &:nth-child(3) { 
+      flex: 3 !important; // Increased from default 1 to 3
+      min-width: 180px !important;
+    }
+    
+    // City and State
+    &:nth-child(4),
+    &:nth-child(5) {
+      flex: 1.5 !important;
+      min-width: 100px !important;
+    }
+    
+    // Zip and Phone
+    &:nth-child(6),
+    &:nth-child(7) {
+      flex: 1.2 !important;
+      min-width: 90px !important;
+    }
+    
+    // Actions
+    &:last-child {
+      flex: 0.8 !important; // Make actions column smaller
+      min-width: 60px !important;
+      justify-content: center !important;
+    }
+  }
+
+  // Responsive adjustments improved
+  @media screen and (max-width: 500px) {
+    .flex-header-cell:first-child,
+    .flex-cell:first-child {
+      flex: 2 !important; // Give more space to the user ID on small screens
+      min-width: 100px !important;
+    }
+    
+    .flex-header-cell:last-child,
+    .flex-cell:last-child {
+      flex: 1 !important; // Less space for action buttons
+      min-width: 60px !important;
+    }
+  }
+
+  @media screen and (max-width: 700px) {
+    // When showing name and ID
+    .flex-header-cell:first-child,
+    .flex-cell:first-child {
+      flex: 1.5 !important;
+      min-width: 90px !important;
+    }
+    
+    .flex-header-cell:nth-child(2),
+    .flex-cell:nth-child(2) {
+      flex: 2.5 !important; // More space for the name
+      min-width: 140px !important;
+    }
+  }
+
+  @media screen and (max-width: 1000px) {
+    // Adjusted for medium size
+    .flex-header-cell:nth-child(3),
+    .flex-cell:nth-child(3) {
+      flex: 1.5 !important; // City gets priority in medium view
+      min-width: 120px !important;
+    }
+  }
+}
