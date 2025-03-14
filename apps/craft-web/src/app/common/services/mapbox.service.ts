@@ -1,54 +1,45 @@
 import { Injectable } from '@angular/core';
+import { environment } from 'apps/craft-web/src/environments/environment';
 import mapboxgl from 'mapbox-gl';
-import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class MapboxService {
-  private map: mapboxgl.Map | null = null;
+  private map: mapboxgl.Map | undefined;
 
   constructor() {
     mapboxgl.accessToken = environment.mapbox.accessToken;
   }
 
-  /**
-   * Initialize a Mapbox map
-   * @param containerId - ID of the HTML container for the map
-   * @param center - [lng, lat] coordinates to center the map
-   * @param zoom - Initial zoom level
-   */
-  initializeMap(containerId: string, center: [number, number] = [-118.2437, 34.0522], zoom: number = 10): mapboxgl.Map {
-    if (this.map) {
-      this.map.remove(); // Clean up any existing map instance
-    }
-
+  initializeMap(container: string, center: [number, number], zoom: number): mapboxgl.Map {
     this.map = new mapboxgl.Map({
-      container: containerId,
-      style: 'mapbox://styles/mapbox/streets-v11', // Default style
-      center: center,
-      zoom: zoom,
+      container,
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center,
+      zoom
     });
-
     return this.map;
   }
 
-  /**
-   * Add a marker to the map
-   * @param lngLat - [lng, lat] coordinates for the marker
-   * @param popupText - Optional text for a popup
-   */
-  addMarker(lngLat: [number, number], popupText?: string): void {
+  addMarker(coordinates: [number, number], message: string): void {
     if (!this.map) {
       console.error('Map is not initialized. Call initializeMap() first.');
       return;
     }
+    
+    new mapboxgl.Marker()
+      .setLngLat(coordinates)
+      .setPopup(new mapboxgl.Popup().setHTML(`<h3>${message}</h3>`))
+      .addTo(this.map);
+  }
 
-    const marker = new mapboxgl.Marker().setLngLat(lngLat).addTo(this.map);
-
-    if (popupText) {
-      const popup = new mapboxgl.Popup().setText(popupText);
-      marker.setPopup(popup).togglePopup();
+  // Add resizeMap method (was missing from this service)
+  resizeMap(): void {
+    if (this.map) {
+      this.map.resize();
+    } else {
+      console.warn('Cannot resize map: Map is not initialized');
     }
   }
 
@@ -56,6 +47,15 @@ export class MapboxService {
     if (!this.map) {
       console.error('Map is not initialized. Call initializeMap() first.');
       return;
+    }
+
+    // Check if layer already exists, remove it first to prevent duplicates
+    if (this.map.getLayer('route')) {
+      this.map.removeLayer('route');
+    }
+    
+    if (this.map.getSource('route')) {
+      this.map.removeSource('route');
     }
 
     this.map.addLayer({
@@ -82,13 +82,11 @@ export class MapboxService {
       },
     });
   }
-  /**
-   * Clean up the map instance
-   */
+
   destroyMap(): void {
     if (this.map) {
       this.map.remove();
-      this.map = null;
+      this.map = undefined; // Clear reference after removing
     }
   }
 }

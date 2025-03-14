@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, Input, HostBinding } from '@angular/core';
 import { MapboxService } from '../../../common/services/mapbox.service';
 import { Flight, FlightRadarService } from '../../../common/services/flightradar.service';
 import { interval, Subscription } from 'rxjs';
 import moment from 'moment-timezone';
+import { FormsModule } from '@angular/forms';
 
 interface City {
   name: string;
@@ -18,14 +19,18 @@ interface City {
   templateUrl: './fire-alert.component.html',
   styleUrls: ['./fire-alert.component.scss'],
   standalone: false,
+  host: {
+    class: 'grid-tile large-tile' // Add grid-specific classes
+  }
 })
 export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() alerts: any[] = [];
   @Input() width: number = 0;
   @Input() height: number = 0;
 
+  @HostBinding('class.full-height') fullHeight = true;
+
   fr24Flights: any[] = [];
-  legendItems: string[] = ['High Priority', 'Medium Priority', 'Low Priority'];
 
   flights: any[] = [];
   currentTime!: string;
@@ -72,6 +77,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   ];
   selectedCity: City = this.cities[0]; // Default to the first city
+  selectedPriorityLevel: string = 'All';
 
   constructor(
     private mapboxService: MapboxService,
@@ -90,6 +96,9 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('STEP 3: ngAfterViewInit called');
     this.initializeMap(this.selectedCity.name, this.selectedCity.alerts[0].id); // Initialize the first tab by default
     this.fetchFlightData();
+    
+    // Add resize listener
+    window.addEventListener('resize', this.handleResize.bind(this));
   }
 
   // Add ngOnChanges to handle dimension changes
@@ -110,40 +119,76 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  // Improve map initialization to handle resize better
   initializeMap(city: string, alertId: number): void {
     console.log('STEP 4: Initializing map for city', city);
     const cityObj = this.cities.find(c => c.name === city);
-    const coordinates = cityObj ? cityObj.coords : { lat: 34.0522, lng: -118.2437 }; // Default to Los Angeles if city not found
+    const coordinates = cityObj ? cityObj.coords : { lat: 34.0522, lng: -118.2437 };
     
-    // Use container heights/widths from inputs if provided
+    // Use container heights/widths from inputs if provided, otherwise let CSS handle it
     const mapContainer = document.getElementById(`map-${alertId}`);
-    if (mapContainer && this.width && this.height) {
-      mapContainer.style.width = `${this.width}px`;
-      mapContainer.style.height = `${this.height}px`;
+    if (!mapContainer) {
+      console.error(`Map container for alert ${alertId} not found`);
+      return;
     }
     
-    const map = this.mapboxService.initializeMap(`map-${alertId}`, [coordinates.lng, coordinates.lat], 12);
-    this.startCurrentTimeStream(this.selectedCity);
+    // Calculate available height for the map based on container size
+    const containerHeight = mapContainer.parentElement?.clientHeight || 400;
+    const statusHeight = 180;
+    const mapHeight = Math.max(200, containerHeight - statusHeight);
+    
+    if (this.width && this.height) {
+      mapContainer.style.width = `${this.width}px`;
+      mapContainer.style.height = `${this.height}px`;
+    } else {
+      // Set a reasonable height based on container size
+      mapContainer.style.height = `${mapHeight}px`;
+      // Ensure width is 100% for responsive behavior
+      mapContainer.style.width = '100%';
+    }
+    
+    try {
+      const map = this.mapboxService.initializeMap(`map-${alertId}`, [coordinates.lng, coordinates.lat], 12);
+      this.startCurrentTimeStream(this.selectedCity);
 
-    map.on('load', () => {
-      console.log(`Map for alert ${alertId} in ${city} loaded`);
-      // Force map resize to fit container
-      map.resize();
-    });
+      map.on('load', () => {
+        console.log(`Map for alert ${alertId} in ${city} loaded`);
+        // Force map resize with a longer delay to ensure container is fully rendered
+        setTimeout(() => {
+          try {
+            if (typeof this.mapboxService.resizeMap === 'function') {
+              this.mapboxService.resizeMap();
+            } else {
+              // Fallback - trigger native resize if service method is unavailable
+              map.resize();
+            }
+          } catch (e) {
+            console.error('Error resizing map after load:', e);
+          }
+        }, 300);
+      });
 
-    map.on('click', event => {
-      const coords = event.lngLat;
-      const alertMessage = `Alert triggered at [${coords.lng}, ${coords.lat}]`;
-      this.alerts.push(alertMessage);
-      this.mapboxService.addMarker([coords.lng, coords.lat], alertMessage);
-      console.log('STEP 5: Map clicked, alert triggered', alertMessage);
-    });
+      map.on('click', event => {
+        const coords = event.lngLat;
+        const alertMessage = `Alert triggered at [${coords.lng}, ${coords.lat}]`;
+        this.alerts.push(alertMessage);
+        this.mapboxService.addMarker([coords.lng, coords.lat], alertMessage);
+        console.log('STEP 5: Map clicked, alert triggered', alertMessage);
+      });
+    } catch (e) {
+      console.error('Error initializing map:', e);
+    }
   }
 
   onTabChange(event: any): void {
     this.selectedCity = this.cities[event.index];
     this.initializeMap(this.selectedCity.name, this.selectedCity.alerts[0].id);
     this.startCurrentTimeStream(this.selectedCity);
+    
+    // Add additional resize call after tab animation completes
+    setTimeout(() => {
+      this.handleResize();
+    }, 350);
   }
 
   fetchFlightData(): void {
@@ -206,7 +251,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       case 'Low Priority':
         return 'low';
       default:
-        return 'none';
+        return '';
     }
   }
 
@@ -221,11 +266,64 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     // Add logic for focusing/handling the alert
   }
 
+  handleResize(): void {
+    // Resize map if already initialized
+    if (this.selectedCity && this.selectedCity.alerts && this.selectedCity.alerts.length > 0) {
+      const alertId = this.selectedCity.alerts[0].id;
+      const mapContainer = document.getElementById(`map-${alertId}`);
+      
+      if (mapContainer) {
+        // Adjust map size based on current container dimensions
+        const containerHeight = mapContainer.parentElement?.clientHeight || 400;
+        const statusHeight = 180; // Approximate height of status container
+        const mapHeight = Math.max(200, containerHeight - statusHeight);
+        
+        if (!this.width && !this.height) {
+          // Only adjust height if not explicitly set by inputs
+          mapContainer.style.height = `${mapHeight}px`;
+        }
+      }
+      
+      // Important: Use a short delay to ensure DOM is updated before resizing map
+      setTimeout(() => {
+        try {
+          // Make sure we're using the correct service instance
+          if (this.mapboxService && typeof this.mapboxService.resizeMap === 'function') {
+            this.mapboxService.resizeMap();
+            console.log('Map resized successfully');
+          } else {
+            console.error('MapboxService resizeMap method not available', this.mapboxService);
+            // Fallback option if possible
+            const mapElement = document.querySelector('.mapboxgl-map');
+            if (mapElement && (mapElement as any)._map) {
+              (mapElement as any)._map.resize();
+              console.log('Map resized using fallback method');
+            }
+          }
+        } catch (e) {
+          console.error('Error resizing map:', e);
+        }
+      }, 200);
+    }
+  }
+
   ngOnDestroy(): void {
     console.log('STEP 11: ngOnDestroy called');
     if (this.timeSubscription) {
       this.timeSubscription.unsubscribe();
     }
     this.mapboxService.destroyMap();
+    window.removeEventListener('resize', this.handleResize.bind(this));
+  }
+
+  // Filter alerts based on selected priority level
+  filteredAlerts(city: City): any[] {
+    if (!city.alerts) return [];
+    
+    if (this.selectedPriorityLevel === 'All') {
+      return city.alerts;
+    }
+    
+    return city.alerts.filter(alert => alert.level === this.selectedPriorityLevel);
   }
 }

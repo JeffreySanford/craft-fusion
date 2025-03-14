@@ -23,6 +23,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { AnimatedDirectivesModule } from '../../animated-directives.module';
 import { KatexModule } from "./quantum-fisher-information/katex/katex.module";
+import { MapboxService } from '../../common/services/mapbox.service'; // Update import path
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 // Define routes for the data visualizations module
 const dataVisualizationsRoutes: Routes = [
@@ -73,13 +75,14 @@ const dataVisualizationsRoutes: Routes = [
     MatTabsModule,
     MatCardModule,
     AnimatedDirectivesModule,
-    KatexModule
+    KatexModule,
+    MatTooltipModule
   ],
   exports: [
     DataVisualizationsComponent,
     QuantumFisherInformationComponent, // Export the component so it can be used outside this module
     RouterModule // Export RouterModule
   ],
-  providers: [AlphaVantageService, FlightRadarService],
+  providers: [AlphaVantageService, FlightRadarService, MapboxService],
 })
 export class DataVisualizationsModule {}
