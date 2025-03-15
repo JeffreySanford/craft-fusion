@@ -93,7 +93,7 @@ export class TileLimitDialogComponent implements OnInit {
    */
   getSpaceNeededText(): string {
     let text = 'You need to free up space to add this ';
-    text += this.getTileSizeLabel(this.newTile.size ?? 'standard').toLowerCase();
+    text += this.getTileSizeLabel(this.newTile.size || 'standard').toLowerCase();
     text += ' tile. Select tiles to remove:';
     return text;
   }

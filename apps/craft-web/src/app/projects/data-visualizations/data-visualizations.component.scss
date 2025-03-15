@@ -22,9 +22,8 @@
   flex: 1;
   display: grid;
   grid-template-columns: repeat(12, 1fr); // 12-column layout
-  grid-auto-rows: minmax(100px, auto);
-  grid-auto-flow: row dense; // Use dense packing to fill gaps
-  gap: 20px;
+  grid-auto-rows: min-content; // Use min-content to size rows based on their content
+  gap: 20px; // Consistent gap in both directions
   padding: 20px;
   overflow-y: auto;
   background-color: rgba(0, 0, 0, 0.1);
@@ -163,29 +162,29 @@
 .visualization-item {
   position: relative;
   transition: all 0.3s ease;
+  display: block; // Changed from flex
+  height: auto; // Let content determine height instead of 100%
   
   // Standard sizes
   &.size-small {
     grid-column: span 4; // 3 per row (4+4+4=12)
     grid-row: span 1;
-    min-height: 280px;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 16px;
+    min-height: 250px; // Reduce minimum height
+    margin-bottom: 0; // Remove extra margin to let grid gap control spacing
   }
   
   &.size-medium {
     grid-column: span 6; // 2 per row (6+6=12)
     grid-row: span 1;
-    min-height: 320px; 
-    margin-bottom: 16px;
+    min-height: 280px; // Adjust for consistency
+    margin-bottom: 0; // Remove extra margin
   }
   
   &.size-large {
     grid-column: span 8; // Large standard size
     grid-row: span 2;
-    min-height: 400px;
-    margin-bottom: 16px;
+    min-height: 380px; // Adjust for consistency
+    margin-bottom: 0; // Remove extra margin
   }
   
   // Adaptive small tile layouts based on count
@@ -346,6 +345,15 @@
 .small-tile-half {
   grid-column: span 6 !important; // Half width (6 columns)
   min-height: 280px;
+  
+  // When 2 or 4 small tiles are present, ensure they form proper rows
+  &.first-row {
+    grid-row: 1;
+  }
+  
+  &.second-row {
+    grid-row: 2;
+  }
 }
 
 .small-tile-third {
@@ -382,7 +390,7 @@
 .chart-card {
   display: flex;
   flex-direction: column;
-  height: auto;
+  height: 100%; // Fill the entire grid cell
   width: 100%;
   background-color: rgba(0, 0, 0, 0.2);
   color: white;
@@ -540,22 +548,22 @@
   
   // Fixed heights for simple charts - adjusted to ensure content isn't cut off
   &.line-chart-content {
-    height: 250px;
-    min-height: 250px; // Add min-height to ensure enough space
-    max-height: 250px;
+    height: 220px; // Reduced fixed height
+    min-height: 220px; // Add min-height to ensure enough space
+    max-height: 220px;
     overflow: visible; // Allow chart elements to overflow their container
   }
   
   &.bar-chart-content {
-    height: 250px; 
-    min-height: 250px; // Add min-height to ensure enough space
-    max-height: 250px;
+    height: 220px; // Reduced fixed height
+    min-height: 220px; // Add min-height to ensure enough space
+    max-height: 220px;
     overflow: visible; // Allow chart elements to overflow their container
   }
   
   &.finance-chart-content {
-    height: 280px;
-    max-height: 280px;
+    height: 250px; // Reduced fixed height
+    max-height: 250px;
     overflow: visible; // Allow chart elements to overflow their container
   }
   
@@ -757,6 +765,30 @@ mat-card-content {
   grid-row: span 2;
 }
 
+// Enhanced large tile variations
+.size-large-single {
+  grid-column: span 12 !important; // Full width when alone
+  grid-row: span 2;
+  min-height: 500px;
+  margin-bottom: 0; // Remove extra margin
+  
+  .chart-card {
+    height: 100%;
+  }
+}
+
+.size-large-half {
+  grid-column: span 6 !important; // Half width when paired
+  grid-row: span 2;
+  min-height: 500px;
+  margin-bottom: 0; // Remove extra margin
+  height: 100%;
+  
+  .chart-card {
+    height: 100%;
+  }
+}
+
 .size-large-half {
   grid-column: span 6; // Exactly half of the 12-column grid
   grid-row: span 2;    // Same height as single large tile
@@ -784,4 +816,25 @@ mat-card-content {
     border-radius: 8px;
     overflow: hidden;
   }
+}
+
+.size-large-single {
+  margin-bottom: 0 !important;
+}
+
+.size-large-half {
+  margin-bottom: 0 !important;
+}
+
+.size-large-standard {
+  margin-bottom: 0 !important;
+}
+
+.medium-tile-full, 
+.medium-tile-standard, 
+.small-tile-full, 
+.small-tile-half, 
+.small-tile-third, 
+.small-tile-fourth {
+  margin-bottom: 0 !important;
 }

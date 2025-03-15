@@ -39,7 +39,7 @@ export class ChartLayoutService {
     // If there are large charts, process them differently based on count
     if (largeCharts.length === 0) return;
     
-    console.log(`Processing ${largeCharts.length} large charts`);
+    console.log(`Processing ${largeCharts.length} large charts with special layouts`);
     
     largeCharts.forEach((chart, index) => {
       chart.position = index;
@@ -47,12 +47,15 @@ export class ChartLayoutService {
       if (largeCharts.length === 1) {
         // Single large chart should be full-width
         chart.specialLayout = 'size-large-single';
+        console.log(`Setting ${chart.name} to full width (size-large-single)`);
       } else if (largeCharts.length === 2) {
         // With exactly two large charts, make them half-width each with full height
         chart.specialLayout = 'size-large-half';
+        console.log(`Setting ${chart.name} to half width with full height (size-large-half)`);
       } else {
         // With 3+ large charts, use standard large size
         chart.specialLayout = 'size-large-standard';
+        console.log(`Setting ${chart.name} to standard large size (size-large-standard)`);
       }
       
       sortedCharts.push(chart);
@@ -114,22 +117,35 @@ export class ChartLayoutService {
     const smallCount = smallCharts.length;
     console.log(`Processing ${smallCount} remaining small charts`);
     
-    // Assign size class based on count
+    // Get layout class based on count (small-tile-half for 2 or 4 tiles)
     const layoutClass = this.getSmallTileLayout(smallCount);
     
-    smallCharts.forEach((chart) => {
-      chart.position = sortedCharts.length;
-      chart.specialLayout = layoutClass;
-      sortedCharts.push(chart);
-    });
+    // For 2×2 grid layout with 4 small tiles, assign row positions
+    if (smallCount === 4) {
+      smallCharts.forEach((chart, index) => {
+        chart.position = sortedCharts.length;
+        chart.specialLayout = layoutClass;
+        
+        // Mark which row this tile belongs to (first or second)
+        chart.specialRow = index < 2 ? 'first-row' : 'second-row';
+        
+        sortedCharts.push(chart);
+      });
+    } else {
+      smallCharts.forEach((chart) => {
+        chart.position = sortedCharts.length;
+        chart.specialLayout = layoutClass;
+        sortedCharts.push(chart);
+      });
+    }
   }
   
   // Determine appropriate layout class based on small tile count
   private getSmallTileLayout(count: number): string {
     if (count === 1) return 'small-tile-full';
-    if (count === 2) return 'small-tile-half';
+    if (count === 2 || count === 4) return 'small-tile-half'; // Use half width for both 2 and 4 tiles
     if (count === 3) return 'small-tile-third';
-    return 'small-tile-fourth'; // Default for 4+ tiles
+    return 'small-tile-fourth'; // Default for 5+ tiles
   }
 
   calculateChartClass(componentType: string): string {

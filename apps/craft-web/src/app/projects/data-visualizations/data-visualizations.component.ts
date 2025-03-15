@@ -244,12 +244,17 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
 
   // Check if there's still room to add more tiles
   hasRoomForMoreTiles(newTile: ChartData): boolean {
-    // Count existing tiles by size
+    if (!newTile || !newTile.size) {
+      console.warn('Invalid tile data provided to hasRoomForMoreTiles');
+      return false;
+    }
+
+    // Count existing tiles by size - ensure we have the latest state
     const largeCount = this.displayedCharts.filter(c => c.size === 'large').length;
     const mediumCount = this.displayedCharts.filter(c => c.size === 'medium').length;
     const smallCount = this.displayedCharts.filter(c => c.size === 'small').length;
     
-    console.log(`Current tile counts: ${largeCount} large, ${mediumCount} medium, ${smallCount} small`);
+    console.log(`Checking space - Current tile counts: ${largeCount} large, ${mediumCount} medium, ${smallCount} small`);
     
     // Rule 1: Two large tiles maximum and they can't be mixed with other sizes
     if (largeCount > 0) {
@@ -370,17 +375,73 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.action === 'remove' && result.tiles && result.tiles.length > 0) {
-        // Remove the selected tiles
+        // Store reference to removed tiles for debugging
+        const removedTileNames = result.tiles.map((t: ExtendedChartData) => t.name);
+        console.log(`Removing tiles: ${removedTileNames.join(', ')}`);
+        
+        // Remove the selected tiles one by one
         result.tiles.forEach((tile: ExtendedChartData) => {
-          this.removeTile(tile);
+          this.removeTile(tile, undefined, false); // Don't trigger resize yet
         });
         
-        // Add the new tile after a short delay
+        // Force a complete refresh of the layout
+        this.optimizeChartLayout();
+        this.cdr.detectChanges();
+        
+        console.log('After removal - checking space again');
+        // Log current state for debugging
+        const currentState = {
+          largeCount: this.displayedCharts.filter(c => c.size === 'large').length,
+          mediumCount: this.displayedCharts.filter(c => c.size === 'medium').length,
+          smallCount: this.displayedCharts.filter(c => c.size === 'small').length
+        };
+        console.log(`Current state: ${JSON.stringify(currentState)}`);
+        
+        // Use a longer timeout to ensure state is fully updated
         setTimeout(() => {
-          this.addTile(newTile);
-        }, 300);
+          // Verify there is now enough space before adding
+          const hasRoom = this.hasRoomForMoreTiles(newTile);
+          console.log(`Has room for new tile? ${hasRoom}`);
+          
+          if (hasRoom) {
+            this.addTile(newTile);
+          } else {
+            console.warn('Still not enough space after removals. Adding anyway as user explicitly made space.');
+            // Force add since user has explicitly made room by removing tiles
+            this.forceAddTile(newTile);
+          }
+        }, 150); // Longer delay to ensure complete update
       }
     });
+  }
+
+  // Force add a tile even if space check fails
+  private forceAddTile(chart: ExtendedChartData): void {
+    console.log('Force adding tile:', chart.name);
+    
+    // Clone the chart to avoid reference issues
+    const chartCopy = { ...chart } as ExtendedChartData;
+    
+    // Pre-calculate the chart class
+    chartCopy.chartClass = this.chartLayoutService.calculateChartClass(chartCopy.component);
+    
+    // Insert large tiles at the beginning for optimal grid layout
+    if (chartCopy.size === 'large') {
+      this.displayedCharts.unshift(chartCopy);
+      console.log('Added large tile to the beginning of the array');
+    } else {
+      this.displayedCharts.push(chartCopy);
+      console.log('Added non-large tile to the end of the array');
+    }
+    
+    // Optimize layout after adding
+    this.optimizeChartLayout();
+    this.cdr.detectChanges();
+    
+    // Resize charts
+    setTimeout(() => {
+      this.resizeCharts();
+    }, 150);
   }
 
   // Optimize the chart layout by size for better grid arrangement
@@ -389,20 +450,23 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   }
 
   // Remove a tile from the main display
-  removeTile(chart: ChartData, event?: MouseEvent): void {
+  removeTile(chart: ChartData, event?: MouseEvent, triggerResize: boolean = true): void {
     if (event) {
       event.stopPropagation();
     }
     
     const index = this.displayedCharts.findIndex(c => c.component === chart.component);
     if (index !== -1) {
+      console.log(`Removing tile: ${chart.name}, index: ${index}`);
       this.displayedCharts.splice(index, 1);
       this.cdr.detectChanges();
       
-      // Trigger resize for remaining charts
-      setTimeout(() => {
-        this.resizeCharts();
-      }, 150);
+      // Optionally skip resize for bulk operations
+      if (triggerResize) {
+        setTimeout(() => {
+          this.resizeCharts();
+        }, 150);
+      }
     }
   }
 
@@ -639,14 +703,20 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       classes.push('special-position');
     }
     
+    // Add special row class if present
+    if (chart.specialRow) {
+      classes.push(chart.specialRow);
+    }
+    
     return classes.join(' ');
   }
 }
 
 // Update the ChartData interface to include a chartClass property
 export interface ExtendedChartData extends ChartData {
-  chartClass?: string; // Store the pre-calculated chart class
-  position?: number; // Track position in the grid
-  specialPosition?: boolean; // Flag for special positioning
-  specialLayout?: string; // Store special layout class names
+  chartClass?: string;        // Store the pre-calculated chart class
+  position?: number;          // Track position in the grid
+  specialPosition?: boolean;  // Flag for special positioning
+  specialLayout?: string;     // Store special layout class names
+  specialRow?: string;        // Track which row the tile belongs to for grid layouts
 }
