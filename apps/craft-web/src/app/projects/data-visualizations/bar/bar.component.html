@@ -1,14 +1,55 @@
-<ng-container *ngIf="data">
-  <div class="bar-chart-container">
-    <!-- Optional status message container above the chart -->
-    <div class="status-message" *ngIf="showStatus">{{ statusMessage }}</div>
-    <!-- Chart is rendered here by D3 -->
+<div class="bar-chart-container">
+  <h2 class="chart-title">United States Progress Over Time</h2>
+  
+  <!-- Toggle buttons for different metrics with patriotic design -->
+  <div class="metric-toggle">
+    <button class="toggle-btn" 
+            [class.active]="currentMetric === 'gdp'" 
+            (click)="toggleMetric('gdp', $event)">
+      <span class="toggle-icon">$</span>
+      GDP
+    </button>
+    <button class="toggle-btn" 
+            [class.active]="currentMetric === 'lifeExpectancy'" 
+            (click)="toggleMetric('lifeExpectancy', $event)">
+      <span class="toggle-icon">♥</span>
+      Life Expectancy
+    </button>
+    <button class="toggle-btn" 
+            [class.active]="currentMetric === 'internet'" 
+            (click)="toggleMetric('internet', $event)">
+      <span class="toggle-icon">🌐</span>
+      Internet Usage
+    </button>
   </div>
-  <div class="bar-chart-legend" *ngIf="showLegend">
-    <div *ngFor="let item of legendItems; let i = index" 
-         class="bar-chart-legend-item" 
-         [style.backgroundColor]="colors[i % colors.length]">
-      <span class="bar-chart-legend-item-label">{{ item }}</span>
+  
+  <div class="bar-chart" id="barChart"></div>
+  
+  <!-- Patriotic themed infographics -->
+  <div class="patriotic-container">
+    <div class="star-bg"></div>
+    <div class="patriotic-infographics">
+      <div class="info-card">
+        <div class="info-icon">$</div>
+        <div class="info-content">
+          <h3>GDP Growth</h3>
+          <p><strong>1776:</strong> $0.4M → <strong>2024:</strong> $27.5 Trillion</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">♥</div>
+        <div class="info-content">
+          <h3>Life Expectancy</h3>
+          <p><strong>1776:</strong> 35 yrs → <strong>2024:</strong> 79 yrs</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🌐</div>
+        <div class="info-content">
+          <h3>Internet Users</h3>
+          <p><strong>1950:</strong> 0 → <strong>2024:</strong> 330M</p>
+        </div>
+      </div>
     </div>
   </div>
-</ng-container>
+</div>

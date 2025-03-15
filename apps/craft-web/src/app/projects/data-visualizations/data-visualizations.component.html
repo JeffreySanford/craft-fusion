@@ -82,12 +82,12 @@
                        (click)="toggleChart(chart)" 
                        [class.active]="isChartActive(chart)"
                        [style.color]="isChartActive(chart) ? chart.color : 'inherit'">
-          <mat-icon matListItemIcon [style.color]="isChartActive(chart) ? chart.color : 'inherit'">{{getIconForChart(chart)}}</mat-icon>
+          <mat-icon matListItemIcon class="visualization-icon" [style.color]="isChartActive(chart) ? chart.color : 'inherit'">{{getIconForChart(chart)}}</mat-icon>
           <span matListItemTitle>{{chart.name}}</span>
-          <mat-icon matListItemMeta
+          <mat-icon matListItemMeta class="selection-indicator"
                    [class.active-icon]="isChartActive(chart)"
                    [style.color]="isChartActive(chart) ? chart.color : 'inherit'">
-            {{isChartActive(chart) ? 'check_box' : 'check_box_outline_blank'}}
+            {{isChartActive(chart) ? 'check_circle' : 'radio_button_unchecked'}}
           </mat-icon>
         </mat-list-item>
       </mat-list>

@@ -27,6 +27,8 @@ import { MapboxService } from '../../common/services/mapbox.service'; // Update 
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChartLayoutService } from './services/chart-layout.service';
 import { TileLimitDialogComponent } from './dialogs/tile-limit-dialog.component';
+import { FinanceModule } from './financial/finance.module';
+import { MatGridListModule } from '@angular/material/grid-list'; // Add MatGridListModule for grid layouts
 
 // Define routes for the data visualizations module
 const dataVisualizationsRoutes: Routes = [
@@ -56,8 +58,7 @@ const dataVisualizationsRoutes: Routes = [
   declarations: [
     DataVisualizationsComponent, 
     BarComponent, 
-    LineComponent, 
-    FinanceComponent, 
+    LineComponent,
     FireAlertComponent, 
     QuantumFisherInformationComponent,
     TileLimitDialogComponent
@@ -77,9 +78,11 @@ const dataVisualizationsRoutes: Routes = [
     FormsModule,
     MatTabsModule,
     MatCardModule,
+    MatGridListModule, // Add MatGridListModule for grid layouts
     AnimatedDirectivesModule,
     KatexModule,
-    MatTooltipModule
+    MatTooltipModule,
+    FinanceModule
   ],
   exports: [
     DataVisualizationsComponent,

@@ -41,6 +41,17 @@ export class ChartLayoutService {
     
     console.log(`Processing ${largeCharts.length} large charts with special layouts`);
     
+    // Special handling for quantum fisher information component
+    const quantumIndex = largeCharts.findIndex(chart => 
+      chart.component === 'app-quantum-fisher-tile');
+    
+    // If quantum tile exists, prioritize it to be placed first
+    if (quantumIndex > -1) {
+      const quantumChart = largeCharts.splice(quantumIndex, 1)[0];
+      largeCharts.unshift(quantumChart);
+      console.log('Prioritizing Quantum Fisher tile to be placed first');
+    }
+    
     largeCharts.forEach((chart, index) => {
       chart.position = index;
       
@@ -56,6 +67,11 @@ export class ChartLayoutService {
         // With 3+ large charts, use standard large size
         chart.specialLayout = 'size-large-standard';
         console.log(`Setting ${chart.name} to standard large size (size-large-standard)`);
+      }
+      
+      // Ensure all large tiles have chart class pre-calculated
+      if (!chart.chartClass) {
+        chart.chartClass = this.calculateChartClass(chart.component);
       }
       
       sortedCharts.push(chart);
@@ -161,6 +177,7 @@ export class ChartLayoutService {
       case 'app-finance-chart':
         return `${baseClass} finance-chart-content`;
       case 'app-quantum-fisher-tile':
+        return `${baseClass} scrollable-chart-content`;
       case 'app-fire-alert':
         return `${baseClass} scrollable-chart-content`;
       default:

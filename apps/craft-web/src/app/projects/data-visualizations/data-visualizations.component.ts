@@ -255,6 +255,17 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     const smallCount = this.displayedCharts.filter(c => c.size === 'small').length;
     
     console.log(`Checking space - Current tile counts: ${largeCount} large, ${mediumCount} medium, ${smallCount} small`);
+    console.log(`Attempting to add: ${newTile.name} (${newTile.size})`);
+    
+    // Handle special case for Quantum Fisher Information
+    if (newTile.component === 'app-quantum-fisher-tile') {
+      // Always allow adding the quantum fisher tile, but clear other tiles if needed
+      if (largeCount > 0 || mediumCount > 0 || smallCount > 0) {
+        console.log('Other tiles exist, will prompt user to clear them');
+        return false; // Will trigger the dialog to remove other tiles
+      }
+      return true;
+    }
     
     // Rule 1: Two large tiles maximum and they can't be mixed with other sizes
     if (largeCount > 0) {
@@ -327,6 +338,39 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   // Add tile to the main display with improved grid positioning
   addTile(chart: ChartData): void {
     console.log('Adding tile:', chart.name, chart.size);
+    
+    // Special handling for Quantum Fisher tile
+    if (chart.component === 'app-quantum-fisher-tile') {
+      console.log('Adding Quantum Fisher tile with special handling');
+      
+      // If other tiles exist, show dialog to confirm clearing them
+      if (this.displayedCharts.length > 0) {
+        this.showNoSpaceNotification(chart as ExtendedChartData);
+        return;
+      }
+      
+      // Clone the chart to avoid reference issues
+      const chartCopy = { ...chart } as ExtendedChartData;
+      
+      // Pre-calculate the chart class
+      chartCopy.chartClass = this.chartLayoutService.calculateChartClass(chartCopy.component);
+      
+      // Apply special layout for quantum fisher tile
+      chartCopy.specialLayout = 'size-large-single';
+      
+      // Clear existing charts and add only the quantum fisher tile
+      this.displayedCharts = [chartCopy];
+      
+      this.optimizeChartLayout();
+      this.cdr.detectChanges();
+      
+      // Ensure proper rendering
+      setTimeout(() => {
+        this.resizeCharts();
+      }, 150);
+      
+      return;
+    }
     
     // Check if there's room for more tiles
     if (!this.hasRoomForMoreTiles(chart)) {
@@ -526,9 +570,21 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   private registerIcons(): void {
     // This ensures that Material icons are properly loaded
     this.iconRegistry.setDefaultFontSetClass('material-icons');
+    
+    // Make sure icons are loaded properly
+    const matIconsUrl = 'https://fonts.googleapis.com/icon?family=Material+Icons';
+    
+    // Register the Material Icons font
+    const linkEl = document.createElement('link');
+    linkEl.rel = 'stylesheet';
+    linkEl.href = matIconsUrl;
+    document.head.appendChild(linkEl);
+    
+    // Ensure the registry knows about the material icons font set
+    this.iconRegistry.registerFontClassAlias('material-icons');
   }
 
-  // Add method to update list item styles
+  // Update method to enhance list item styles
   updateListItemStyles(): void {
     // Use setTimeout to ensure DOM is updated
     setTimeout(() => {
@@ -541,19 +597,36 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
           (item as HTMLElement).style.borderLeftColor = chart.color;
           (item as HTMLElement).style.color = chart.color;
           
-          // Ensure checkbox icon gets the color as well
-          const checkboxIcon = item.querySelector('mat-icon[matListItemMeta]');
-          if (checkboxIcon) {
-            (checkboxIcon as HTMLElement).style.color = chart.color;
+          // Add active class
+          item.classList.add('active');
+          
+          // Find and style all icons in the active item
+          const icons = item.querySelectorAll('mat-icon');
+          icons.forEach(icon => {
+            (icon as HTMLElement).style.color = chart.color;
+          });
+          
+          // Style the title text
+          const titleText = item.querySelector('[matListItemTitle]');
+          if (titleText) {
+            (titleText as HTMLElement).style.color = chart.color;
           }
         } else {
           // Reset styles for inactive items
-          (item as HTMLElement).style.borderLeftColor = '';
+          item.classList.remove('active');
+          (item as HTMLElement).style.borderLeftColor = 'transparent';
           (item as HTMLElement).style.color = '';
           
-          const checkboxIcon = item.querySelector('mat-icon[matListItemMeta]');
-          if (checkboxIcon) {
-            (checkboxIcon as HTMLElement).style.color = '';
+          // Reset all icon colors
+          const icons = item.querySelectorAll('mat-icon');
+          icons.forEach(icon => {
+            (icon as HTMLElement).style.color = '';
+          });
+          
+          // Reset title text color
+          const titleText = item.querySelector('[matListItemTitle]');
+          if (titleText) {
+            (titleText as HTMLElement).style.color = '';
           }
         }
       });
@@ -564,7 +637,13 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     // Initialize list item styles after view is initialized
     this.updateListItemStyles();
     
-    // ...existing code...
+    // Add this to make sure icons render correctly
+    setTimeout(() => {
+      // Force re-render of icons
+      document.querySelectorAll('mat-icon').forEach(icon => {
+        icon.classList.add('material-icons');
+      });
+    }, 100);
   }
 
   toggleVisualizationSidebar() {

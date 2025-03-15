@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FinanceComponent } from './finance.component';
 import { FinanceChartData } from '../data-visualizations.interfaces';
+import { FinanceModule } from './finance.module';
 
 describe('FinanceComponent', () => {
   let component: FinanceComponent;
@@ -8,7 +9,8 @@ describe('FinanceComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FinanceComponent]
+      // Import the module instead of the component directly since it's no longer standalone
+      imports: [FinanceModule]
     })
     .compileComponents();
 

@@ -2,13 +2,15 @@
   width: 100%;
   height: 100%; 
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  min-height: 300px; /* Ensure minimum height for chart visibility */
   position: relative; /* To allow absolute positioning of status messages */
-  border: 1px solid #ccc;
-  flex-grow: 1; /* Ensures vertical expansion in a flex layout */
+  border: none; /* Remove border to use full space */
+  background-color: #000b1d; /* Dark blue background resembling night sky */
+  padding: 0; /* Remove padding to use full space */
+  margin: 0; /* Remove margin to use full space */
 }
 
 .line-chart {
@@ -17,12 +19,37 @@
   position: relative;
 }
 
+/* Make chart div take all available space */
+.chart-fullsize {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Hide any overflow that might cause scrollbars */
+:host ::ng-deep svg {
+  overflow: visible;
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Chart div should take up all available space */
+:host ::ng-deep div[id="chart"] {
+  width: 100%;
+  height: 100%;
+}
+
 .status-message {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 1em;
   border-radius: 4px;
@@ -36,7 +63,8 @@
 
 /* Tooltip enhancements */
 :host ::ng-deep .line-tooltip {
-  background-color: rgba(0, 0, 0, 0.8) !important;
+  background-color: rgba(28, 40, 65, 0.9) !important; /* Darker blue for patriotic theme */
+  border: 1px solid #B22234; /* Red border from American flag */
   border-radius: 4px;
   padding: 10px;
   font-family: 'Arial', sans-serif;
@@ -46,7 +74,7 @@
   z-index: 100; /* Ensure tooltip appears above other elements */
 }
 
-/* Improve axis styling */
+/* Improve axis styling with patriotic theme */
 :host ::ng-deep {
   .domain,
   .tick line {
@@ -54,12 +82,12 @@
   }
   
   .tick text {
-    fill: rgba(255, 255, 255, 0.8);
+    fill: rgba(255, 255, 255, 0.9); /* Brighter white for better readability */
   }
   
   /* Enhanced line styling */
   .line {
-    filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(0px 2px 3px rgba(255, 255, 255, 0.2)); /* Light glow effect */
   }
   
   /* Grid line improvements */
@@ -68,10 +96,11 @@
     stroke-dasharray: 2, 2;
   }
   
-  /* Title and label improvements */
+  /* Title and label improvements with patriotic theme */
   .chart-title {
     font-weight: bold;
     font-family: 'Arial', sans-serif;
+    letter-spacing: 0.5px;
   }
   
   .chart-subtitle {
@@ -82,6 +111,7 @@
   .x-axis-label, .y-axis-label {
     font-family: 'Arial', sans-serif;
     font-weight: 500;
+    letter-spacing: 0.3px;
   }
   
   /* Legend styling */
@@ -92,17 +122,26 @@
   
   .legend rect {
     stroke-width: 1px;
-    stroke: rgba(255, 255, 255, 0.3);
+    stroke: rgba(255, 255, 255, 0.5);
   }
   
   .legend text {
     font-weight: 500;
+    fill: #FFFFFF; /* White text for better visibility */
+  }
+
+  /* Add subtle stars in the background for patriotic theme */
+  .star {
+    fill: white;
+    opacity: 0.3;
   }
 }
 
-/* Force the chart to be visible even when container is small */
+/* Force the chart to be visible and use full tile space */
 :host {
   display: block;
-  min-height: 300px; /* Increased minimum height */
+  min-height: 300px;
   height: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }

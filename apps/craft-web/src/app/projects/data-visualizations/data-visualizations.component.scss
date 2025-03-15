@@ -56,7 +56,7 @@
   }
 }
 
-// Sidebar styling
+// Sidebar styling with material elevation
 .visualization-sidebar {
   width: 280px;
   display: flex;
@@ -65,6 +65,8 @@
   border-left: 1px solid rgba(255, 255, 255, 0.1);
   transition: width 0.3s ease;
   position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); // Material elevation
+  z-index: 2; // Ensure sidebar appears above content
   
   &.collapsed {
     width: 60px;
@@ -95,6 +97,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: rgba(0, 0, 0, 0.3); // Slightly darker for emphasis
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); // Subtle shadow for depth
     
     h2 {
       margin: 0;
@@ -115,44 +119,73 @@
   .sidebar-content {
     overflow-y: auto;
     flex: 1;
+    padding: 0.25em 0; // Add vertical padding
     
-    mat-list-item {
-      cursor: pointer;
+    mat-list {
+      padding: 0; // Remove default padding
       
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.05);
-      }
-      
-      &.active {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-left-width: 3px;
-        border-left-style: solid;
-        // Border color will be dynamically set based on the chart's color
-      }
-      
-      // Make icons more visible
-      mat-icon {
-        font-size: 20px;
-        height: 20px;
-        width: 20px;
+      mat-list-item {
+        cursor: pointer;
+        margin: 0.25em 0; // Add vertical separation between items
+        border-radius: 4px; // Rounded corners for items
+        transition: all 0.2s ease;
+        border-left: 3px solid transparent; // Transparent border by default
+        margin-left: 0.25em; // Add horizontal separation
+        margin-right: 0.25em; // Add horizontal separation
         
-        // Add specific styling for action icons
-        &[matListItemMeta] {
-          color: rgba(255, 255, 255, 0.6);
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        &.active {
+          background-color: rgba(255, 255, 255, 0.1);
+          border-left-width: 3px;
+          border-left-style: solid;
+          // Border color dynamically set based on chart color
+        }
+        
+        // Make icons more visible
+        mat-icon {
+          font-size: 20px;
+          height: 20px;
+          width: 20px;
           
-          // When active, use the chart's color (will be set in JS)
-          &.active-icon {
-            color: inherit; // Will inherit from the parent which gets dynamically set
+          // Add specific styling for selection indicator icons
+          &.selection-indicator {
+            color: rgba(255, 255, 255, 0.6);
+            margin-right: 12px; // Add padding from the right edge
+            
+            // When active, use the chart's color
+            &.active-icon {
+              color: inherit; // Will inherit from the parent
+            }
+          }
+          
+          // Add specific styling for action icons
+          &[matListItemMeta] {
+            color: rgba(255, 255, 255, 0.6);
+            margin-right: 12px; // Add padding from the right edge
+            
+            // When active, use the chart's color
+            &.active-icon {
+              color: inherit; // Will inherit from the parent
+            }
           }
         }
-      }
-      
-      &.active mat-icon[matListItemMeta] {
-        color: inherit; // Will inherit from the parent
-      }
-      
-      &:hover mat-icon[matListItemMeta] {
-        color: white;
+        
+        // Style for active items
+        &.active {
+          mat-icon[matListItemIcon],
+          [matListItemTitle],
+          mat-icon[matListItemMeta] {
+            color: inherit; // Will inherit from the parent (set via the style.color attribute)
+            font-weight: 500; // Slightly bolder text for selected items
+          }
+        }
+        
+        &:hover mat-icon[matListItemMeta] {
+          color: white;
+        }
       }
     }
   }
@@ -164,6 +197,7 @@
   transition: all 0.3s ease;
   display: block; // Changed from flex
   height: auto; // Let content determine height instead of 100%
+  margin: 0; // Remove any margin
   
   // Standard sizes
   &.size-small {
@@ -398,6 +432,8 @@
   border: 1px solid rgba(255, 0, 0, 0.5);
   border-radius: 8px;
   overflow: hidden;
+  padding: 0; // Remove any default padding
+  margin: 0; // Remove any default margin
   
   &:hover {
     border-color: gold;
@@ -414,7 +450,7 @@
   // Card header styling
   mat-card-header {
     background-color: rgba(0, 0, 0, 0.3);
-    padding: 12px 16px;
+    padding: 8px 12px; // Reduce header padding
     display: flex;
     align-items: center;
     cursor: move; // Indicate draggable
@@ -523,14 +559,16 @@
   
   // Card content styling
   mat-card-content {
-    flex: 0 auto; // Changed from flex: 1 to avoid stretching
-    padding: 0;
+    flex: 1; // Use all available space
+    padding: 0; // Remove default padding
     overflow: visible; // Changed from auto to visible
     position: relative; // For proper sizing of charts
+    display: flex; // Ensure content fills space
+    flex-direction: column;
     
     .chart-content {
-      height: auto; // Allow content to determine height
-      padding: 16px;
+      height: 100%; // Use full available height
+      padding: 8px; // Reduce padding to maximize chart area
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
@@ -540,37 +578,39 @@
 
 // Chart content container styles
 .chart-content {
-  height: auto; // Let content determine height
-  padding: 16px;
+  height: 100%; // Use all available height
+  padding: 8px; // Reduced padding
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   
   // Fixed heights for simple charts - adjusted to ensure content isn't cut off
   &.line-chart-content {
-    height: 220px; // Reduced fixed height
-    min-height: 220px; // Add min-height to ensure enough space
-    max-height: 220px;
+    height: 100%; // Use full available height
+    min-height: 220px; // Maintain minimum height
+    max-height: none; // Remove max height restriction
     overflow: visible; // Allow chart elements to overflow their container
   }
   
   &.bar-chart-content {
-    height: 220px; // Reduced fixed height
-    min-height: 220px; // Add min-height to ensure enough space
-    max-height: 220px;
+    height: 100%; // Use full available height
+    min-height: 220px; // Maintain minimum height
+    max-height: none; // Remove max height restriction
     overflow: visible; // Allow chart elements to overflow their container
   }
   
   &.finance-chart-content {
-    height: 250px; // Reduced fixed height
-    max-height: 250px;
+    height: 100%; // Use full available height
+    min-height: 250px; // Maintain minimum height
+    max-height: none; // Remove max height restriction
     overflow: visible; // Allow chart elements to overflow their container
   }
   
   // Scrollable content for complex charts
   &.scrollable-chart-content {
     overflow-y: auto;
-    max-height: 500px; // Add a max-height for very large content
+    max-height: none; // Remove arbitrary height limit
+    height: 100%; // Use all available space
   }
   
   // Base styling for all charts
@@ -578,6 +618,7 @@
     overflow: visible; // Changed from hidden to visible
     justify-content: flex-start;
     align-items: stretch;
+    height: 100%; // Use full available height
   }
 }
 
@@ -587,29 +628,28 @@ mat-card-content {
   overflow: visible; // Changed from hidden to visible
   display: flex;
   flex-direction: column;
+  padding: 0; // Ensure no padding
 }
 
 // Ensure expanded tiles show content properly
 .chart-card.expanded {
-  .chart-content.scrollable-chart-content {
-    // Remove fixed max-height
-    height: auto;
-  }
-  
-  .chart-content.fixed-chart-content {
-    height: auto;
-    min-height: auto; // Let content determine height
+  .chart-content.scrollable-chart-content,
+  .chart-content.fixed-chart-content,
+  .chart-content.line-chart-content,
+  .chart-content.bar-chart-content,
+  .chart-content.finance-chart-content {
+    height: 100%; // Use all available height
+    min-height: auto; // Let content determine minimum height
+    max-height: none; // No maximum height
+    padding: 8px; // Consistent padding
   }
 }
 
 // Add specific sizing for each chart type using class-based approach
 .visualization-item.chart-type-line .chart-card,
-.visualization-item.chart-type-bar .chart-card {
-  max-height: 320px;
-}
-
+.visualization-item.chart-type-bar .chart-card,
 .visualization-item.chart-type-finance .chart-card {
-  max-height: 350px;
+  max-height: none; // Remove height restrictions to use full available space
 }
 
 // Force proper Angular Material styling
@@ -721,6 +761,12 @@ mat-card-content {
       width: 24px;
     }
   }
+  
+  // Add right padding to the selection indicator icons
+  .selection-indicator,
+  [matListItemMeta] {
+    margin-right: 12px !important; // Force right margin for selection icons
+  }
 }
 
 // Add specific chart sizing for better visibility when multiple charts are displayed
@@ -733,19 +779,19 @@ mat-card-content {
 // Ensure proper sizing in fullscreen mode
 .visualization-item.full-expanded {
   .chart-card {
-    width: 95%;
-    height: 95%;
-    max-width: 1600px;
-    max-height: 900px;
+    width: 98%; // Increase from 95% to 98%
+    height: 98%; // Increase from 95% to 98%
+    max-width: 1800px; // Increase from 1600px
+    max-height: 950px; // Increase from 900px
     transform: none;
     
     mat-card-content {
-      height: calc(100% - 60px);
+      height: calc(100% - 50px); // Adjust for reduced header height
       overflow: visible;
       
       .chart-content {
         height: 100%;
-        padding: 24px;
+        padding: 12px; // Reduce padding in fullscreen mode
         min-height: auto; // Reset min-height in fullscreen
         
         &.bar-chart-content,
@@ -837,4 +883,148 @@ mat-card-content {
 .small-tile-third, 
 .small-tile-fourth {
   margin-bottom: 0 !important;
+}
+
+// Zero out all margin-bottom to avoid any spacing issues
+.size-large-single,
+.size-large-half,
+.size-large-standard,
+.medium-tile-full, 
+.medium-tile-standard, 
+.small-tile-full, 
+.small-tile-half, 
+.small-tile-third, 
+.small-tile-fourth {
+  margin: 0 !important; // Remove all margins, not just bottom
+}
+
+// Override any Angular Material default spacing that might be interfering
+::ng-deep {
+  // Override Material Card padding
+  .mat-mdc-card {
+    padding: 0 !important;
+    
+    .mat-mdc-card-content {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+  }
+  
+  // Remove default padding in list items
+  .mat-mdc-list-item {
+    padding: 0 !important;
+  }
+}
+
+// Fix Material icon issues
+::ng-deep {
+  // Fix icon display
+  .mat-icon {
+    font-family: 'Material Icons' !important;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    vertical-align: middle;
+  }
+  
+  .visualization-icon {
+    height: 24px !important;
+    width: 24px !important;
+    font-size: 24px !important;
+    line-height: 24px !important;
+  }
+  
+  .visualization-sidebar {
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+      overflow: hidden;
+      text-rendering: optimizeLegibility;
+    }
+    
+    .selection-indicator {
+      margin-right: 12px !important;
+    }
+  }
+  
+  // Ensure Material Design Icons are properly sized and positioned in lists
+  .mat-list-item-content {
+    .mat-list-icon {
+      font-size: 24px;
+      height: 24px;
+      width: 24px;
+    }
+  }
+  
+  // Add right padding to the selection indicator icons
+  .selection-indicator,
+  [matListItemMeta] {
+    margin-right: 12px !important; // Force right margin for selection icons
+    font-size: 24px !important;
+    height: 24px !important;
+    width: 24px !important;
+  }
+}
+
+// Enhance list item styling and Material Design
+::ng-deep {
+  // Enhance list item styling
+  .mat-mdc-list-item {
+    height: auto !important; // Override fixed height
+    min-height: 48px; // Minimum height
+    padding: 0.5em 0 !important; // Add vertical padding
+    
+    // Add subtle hover effect
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+    
+    // Enhance active state
+    &.active {
+      position: relative;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); // Add subtle elevation for active items
+      
+      // Add subtle highlight effect
+      &:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.05);
+        pointer-events: none;
+      }
+    }
+    
+    // Style for the list item text
+    .mdc-list-item__primary-text {
+      font-weight: normal;
+      transition: font-weight 0.2s ease;
+    }
+  }
+  
+  // Proper spacing for list item content
+  .mat-mdc-list-base .mat-mdc-list-item .mat-mdc-list-item-content {
+    padding: 0 16px;
+  }
+  
+  .visualization-sidebar {
+    .mat-mdc-list-item {
+      margin-left: 0.25em;
+      margin-right: 0.25em;
+      border-radius: 4px;
+    }
+  }
 }

@@ -18,19 +18,19 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
 
   @ViewChild('chart') private chartContainer: ElementRef | undefined;
   
-  // Add titles and series information
-  chartTitle: string = 'Annual Performance Trends';
-  chartSubtitle: string = '12-month comparison of key metrics';
+  // Patriotic space-themed titles
+  chartTitle: string = 'American Space Achievements';
+  chartSubtitle: string = 'Advancing the Final Frontier';
   
-  // Define series names for better readability
+  // Space-themed series names
   seriesNames = {
-    'series1': 'New Users',
-    'series2': 'Active Sessions',
-    'series3': 'Revenue'
+    'series1': 'NASA Missions',
+    'series2': 'Astronaut Hours in Space',
+    'series3': 'Space Innovations'
   };
   
-  // Color scheme for the lines
-  colors = ['steelblue', 'green', 'red'];
+  // Patriotic color scheme - red, white, blue theme
+  colors = ['#B22234', '#FFFFFF', '#3C3B6E']; // American flag colors
   
   // Create tooltip
   private tooltip: any;
@@ -58,8 +58,20 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
   }
 
   ngAfterViewInit(): void {
-    this.createChart();
-    this.setupResizeObserver();
+    // Force tick to ensure container is properly sized
+    setTimeout(() => {
+      this.createChart();
+      this.setupResizeObserver();
+      
+      // Force resize detection after a short delay to catch any layout adjustments
+      setTimeout(() => {
+        if (this.chartContainer && 
+            (this.chartContainer.nativeElement.offsetWidth < 100 || 
+             this.chartContainer.nativeElement.offsetHeight < 100)) {
+          this.createChart();
+        }
+      }, 300);
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -103,41 +115,57 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
     // Initialize tooltip
     d3.select(element).selectAll('.line-tooltip').remove();
     
-    this.tooltip = d3.select(element)
+    this.tooltip = d3.select('body')  // Attach to body instead of element for better positioning
       .append('div')
       .attr('class', 'line-tooltip')
       .style('opacity', 0)
       .style('position', 'absolute')
-      .style('background-color', 'rgba(0, 0, 0, 0.7)')
+      .style('background-color', 'rgba(28, 40, 65, 0.9)')
+      .style('border', '1px solid #B22234')
       .style('color', 'white')
       .style('border-radius', '4px')
       .style('padding', '8px')
       .style('pointer-events', 'none')
-      .style('z-index', '10')
+      .style('z-index', '9999')
       .style('font-size', '12px')
       .style('box-shadow', '0 2px 10px rgba(0,0,0,0.2)')
       .style('max-width', '250px');
 
-    // Use container size controlled by CSS
+    // Force parent container to full size
+    d3.select(element.parentNode)
+      .style('width', '100%')
+      .style('height', '100%');
+      
+    // Force chart container to full size
+    d3.select(element)
+      .style('width', '100%')
+      .style('height', '100%');
+
+    // Use container size controlled by CSS - ensure full tile usage
     const svg = d3.select(element).append('svg')
       .attr('width', '100%')
       .attr('height', '100%')
-      .attr('preserveAspectRatio', 'xMinYMin meet'); // Ensure chart scales properly
+      .style('display', 'block')
+      .attr('preserveAspectRatio', 'xMinYMin meet');
 
-    // Get the actual dimensions of the container
-    const containerWidth = this.width || element.offsetWidth;
-    const containerHeight = this.height || element.offsetHeight;
-
+    // Get the actual dimensions of the container - use full available space
+    // Get parent dimensions if element dimensions are zero
+    let containerWidth = element.offsetWidth || element.parentNode.offsetWidth;
+    let containerHeight = element.offsetHeight || element.parentNode.offsetHeight;
+    
+    // If we still don't have valid dimensions, use defaults that can be overridden by viewBox
+    if (!containerWidth || containerWidth < 100) containerWidth = 800;
+    if (!containerHeight || containerHeight < 100) containerHeight = 400;
+    
     // Set SVG viewBox for responsive scaling
     svg.attr('viewBox', `0 0 ${containerWidth} ${containerHeight}`);
 
-    // Adjust margins based on available space and container height
-    // Use percentage-based margins for better vertical scaling
-    const margin = { 
-      top: Math.max(containerHeight * 0.1, isFullscreen ? 50 : 40), 
-      right: Math.max(containerWidth * 0.1, isFullscreen ? 90 : 80), 
-      bottom: Math.max(containerHeight * 0.15, isFullscreen ? 60 : 50), 
-      left: Math.max(containerWidth * 0.12, isFullscreen ? 70 : 60)
+    // Adjust margins to maximize chart space - use smaller margins for small containers
+    const margin = {
+      top: Math.min(containerHeight * 0.08, 40),
+      right: Math.min(containerWidth * 0.08, 50),
+      bottom: Math.min(containerHeight * 0.12, 50),
+      left: Math.min(containerWidth * 0.1, 50)
     };
     
     const width = containerWidth - margin.left - margin.right;
@@ -146,9 +174,9 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
     const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
     // Dynamically adjust font sizes based on container dimensions
-    const titleFontSize = Math.max(containerWidth * 0.02, isFullscreen ? 20 : 14);
-    const subtitleFontSize = Math.max(containerWidth * 0.015, isFullscreen ? 16 : 12);
-    const axisFontSize = Math.max(containerWidth * 0.01, isFullscreen ? 14 : 11);
+    const titleFontSize = Math.max(containerWidth * 0.022, isFullscreen ? 22 : 16);
+    const subtitleFontSize = Math.max(containerWidth * 0.016, isFullscreen ? 18 : 14);
+    const axisFontSize = Math.max(containerWidth * 0.011, isFullscreen ? 14 : 11);
 
     // Add chart title with adjusted position
     svg.append('text')
@@ -159,7 +187,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       .attr('dominant-baseline', 'central')
       .style('font-size', `${titleFontSize}px`)
       .style('font-weight', 'bold')
-      .style('fill', '#fff')
+      .style('fill', '#B22234') // Patriotic red color
       .text(this.chartTitle);
 
     // Add chart subtitle
@@ -170,7 +198,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'central')
       .style('font-size', `${subtitleFontSize}px`)
-      .style('fill', '#ccc')
+      .style('fill', '#FFFFFF') // White color
       .text(this.chartSubtitle);
 
     const x = d3.scaleTime().range([0, width]);
@@ -243,8 +271,8 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       .attr('y', height + margin.bottom * 0.6) // Position relative to chart height
       .attr('text-anchor', 'middle')
       .style('font-size', `${axisFontSize * 1.1}px`)
-      .style('fill', '#ddd')
-      .text('Month');
+      .style('fill', '#FFFFFF') // White color
+      .text('Timeline');
 
     // Add Y axis label with position adjusted to chart height
     g.append('text')
@@ -254,8 +282,8 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       .attr('x', -height / 2)
       .attr('text-anchor', 'middle')
       .style('font-size', `${axisFontSize * 1.1}px`)
-      .style('fill', '#ddd')
-      .text('Value');
+      .style('fill', '#FFFFFF') // White color
+      .text('Achievement Metrics');
 
     // Add horizontal grid lines for better readability
     g.append('g')
@@ -468,12 +496,12 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
   // Format series values with appropriate units
   private formatSeriesValue(series: string, value: number): string {
     switch (series) {
-      case 'series1': // New Users
-        return value.toLocaleString();
-      case 'series2': // Active Sessions
-        return value.toLocaleString();
-      case 'series3': // Revenue
-        return `$${value.toLocaleString()}`;
+      case 'series1': // NASA Missions
+        return `${value.toLocaleString()} missions`;
+      case 'series2': // Astronaut Hours
+        return `${value.toLocaleString()} hours`;
+      case 'series3': // Space Innovations
+        return `${value.toLocaleString()} innovations`;
       default:
         return value.toString();
     }

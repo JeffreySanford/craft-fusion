@@ -1,8 +1,12 @@
 import { Component, OnInit, Input, ElementRef, OnDestroy, OnChanges, SimpleChanges, AfterViewInit, Renderer2 } from '@angular/core';
 import * as d3 from 'd3';
-import { BarChartData } from '../data-visualizations.interfaces';
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
+
+interface MetricData {
+  year: number;
+  value: number;
+}
 
 @Component({
   selector: 'app-bar-chart',
@@ -10,56 +14,87 @@ import { debounceTime, takeUntil } from 'rxjs/operators';
   styleUrls: ['./bar.component.scss'],
   standalone: false
 })
-
-export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
-  @Input() data: BarChartData[] | undefined;
+export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
+  @Input() data: any; // Keep for compatibility
   @Input() width: number = 0;
   @Input() height: number = 0;
-  @Input() showLegend: boolean = true;
+  @Input() showLegend: boolean = false; // Set default to false
   
-  title = 'Quarterly Performance Comparison';
-  subtitle = 'Comparing three key metrics across months';
-  colors: string[] = ['#69b3a2', '#404080', '#ff4d4d'];
+  // Colors for charts
+  colors: string[] = ['#2196F3', '#FF5722', '#4CAF50'];
+  
+  // Legend items
+  legendItems: string[] = ['GDP Growth', 'Population', 'Industrial Output'];
+  
+  // Track current metric
+  currentMetric: string = 'gdp';
+  
   private destroy$ = new Subject<void>();
-  private svg: any;
-  private container: any;
-  private tooltip: any;
   private resizeObserver: ResizeObserver | null = null;
+  private tooltip: any;
   
-  // Legend items array for displaying in the template
-  legendItems: string[] = [];
+  // Multiple datasets for different metrics - updated to start from inception of USA (1776)
+  private gdpData: MetricData[] = [
+    { year: 1776, value: 0.0004 },
+    { year: 1800, value: 0.002 },
+    { year: 1850, value: 0.01 },
+    { year: 1900, value: 0.3 },
+    { year: 1950, value: 2.3 },
+    { year: 2000, value: 10 },
+    { year: 2024, value: 27.5 }
+  ];
   
-  // Define value labels to make the chart more meaningful
-  private valueLabels: { [key: string]: string } = {
-    'value1': 'Revenue',
-    'value2': 'Expenses',
-    'value3': 'Profit'
+  private lifeExpectancyData: MetricData[] = [
+    { year: 1776, value: 35 },
+    { year: 1800, value: 39 },
+    { year: 1850, value: 43 },
+    { year: 1900, value: 48 },
+    { year: 1950, value: 68 },
+    { year: 2000, value: 76 },
+    { year: 2024, value: 79 }
+  ];
+  
+  private internetData: MetricData[] = [
+    { year: 1950, value: 0 },
+    { year: 1980, value: 0.01 },
+    { year: 1990, value: 0.5 },
+    { year: 2000, value: 120 },
+    { year: 2010, value: 220 },
+    { year: 2024, value: 330 }
+  ];
+  
+  // Labels for different metrics
+  private metricLabels: { [key: string]: string } = {
+    'gdp': 'GDP (Trillions)',
+    'lifeExpectancy': 'Life Expectancy (Years)',
+    'internet': 'Internet Users (Millions)'
   };
   
-  constructor(private el: ElementRef, private renderer: Renderer2) { }
+  // Colors for different metrics - updated with patriotic theme
+  private metricColors: { [key: string]: string } = {
+    'gdp': '#3C3B6E', // Navy blue from US flag
+    'lifeExpectancy': '#B22234', // Red from US flag
+    'internet': '#3498db' // Bright blue (modern tech feel)
+  };
+  
+  constructor(private el: ElementRef, private renderer: Renderer2) {}
 
   ngOnInit(): void {
-    // Initialize legend items based on value labels
-    this.initializeLegendItems();
-  }
-
-  /**
-   * Initializes the legend items array based on the valueLabels property
-   */
-  private initializeLegendItems(): void {
-    // Use the value labels to populate the legend items
-    this.legendItems = Object.values(this.valueLabels);
+    // Make sure legendItems is initialized
+    if (!this.legendItems || this.legendItems.length === 0) {
+      this.legendItems = ['GDP Growth', 'Life Expectancy', 'Internet Usage'];
+    }
   }
 
   ngAfterViewInit(): void {
-    // Initialize the chart after the view has been initialized
+    // Create chart after view is initialized
     setTimeout(() => {
       this.initChart();
       
-      // Setup resize observer for container element
+      // Setup resize handler
       this.setupResizeObserver();
       
-      // Also listen for window resize events
+      // Listen for window resize events
       fromEvent(window, 'resize')
         .pipe(
           debounceTime(250),
@@ -68,56 +103,13 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
         .subscribe(() => {
           this.updateChart();
         });
-    }, 100); // Short delay to ensure container is ready
+    }, 100);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Update chart if data changes
-    if (changes['data'] && !changes['data'].firstChange) {
-      // Update legend items when data changes
-      if (this.data && this.data.length > 0) {
-        this.updateLegendItems();
-      }
-      
-      this.updateChart();
-    }
-    
-    // Update chart if width or height inputs change - force immediate update
-    if ((changes['width'] || changes['height']) && this.container) {
-      setTimeout(() => {
-        this.updateChart();
-      }, 150); // Add a delay to ensure container has adjusted
-    }
-    
-    // Handle showLegend changes
-    if (changes['showLegend']) {
-      // No need to update chart, just update the template binding
-      console.log('Legend visibility updated:', this.showLegend);
-    }
-  }
-
-  /**
-   * Updates the legend items based on current data
-   */
-  private updateLegendItems(): void {
-    if (!this.data || this.data.length === 0) return;
-    
-    // If the data structure provides value labels, use those
-    // Otherwise fallback to our predefined labels
-    const firstItem = this.data[0];
-    if (firstItem && firstItem.values && firstItem.values.length > 0) {
-      // Check if the data contains custom labels
-      const hasCustomLabels = firstItem.values.some(v => v.label && v.label.trim() !== '');
-      
-      if (hasCustomLabels) {
-        // Use labels from the data
-        this.legendItems = firstItem.values.map(v => 
-          this.valueLabels[v.label] || v.label
-        );
-      } else {
-        // Fallback to predefined labels
-        this.legendItems = Object.values(this.valueLabels).slice(0, firstItem.values.length);
-      }
+    // Update chart if container dimensions change
+    if ((changes['width'] || changes['height']) && this.el.nativeElement.querySelector('#barChart')) {
+      setTimeout(() => this.updateChart(), 150);
     }
   }
 
@@ -125,7 +117,6 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
     this.destroy$.next();
     this.destroy$.complete();
     
-    // Cleanup resize observer
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;
@@ -133,11 +124,10 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
   }
 
   private setupResizeObserver(): void {
-    // Use ResizeObserver API to watch for container size changes
     if (typeof ResizeObserver !== 'undefined') {
-      const container = this.el.nativeElement.querySelector('.bar-chart-container');
+      const container = this.el.nativeElement.querySelector('.bar-chart');
       if (container) {
-        this.resizeObserver = new ResizeObserver(entries => {
+        this.resizeObserver = new ResizeObserver(() => {
           this.updateChart();
         });
         this.resizeObserver.observe(container);
@@ -146,329 +136,221 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
   }
 
   private initChart(): void {
-    const containerElement = this.el.nativeElement.querySelector('.bar-chart-container');
-    if (!containerElement) {
-      console.error('Bar chart container element not found');
-      return;
-    }
+    // Clear existing chart if any
+    const chartElement = this.el.nativeElement.querySelector('#barChart');
+    if (!chartElement) return;
     
-    // Ensure container is cleared before initializing
-    while (containerElement.firstChild) {
-      containerElement.removeChild(containerElement.firstChild);
-    }
+    chartElement.innerHTML = '';
     
-    this.container = d3.select(containerElement);
-    
-    // Create tooltip once
-    // Remove existing tooltip if it exists
+    // Create tooltip
     d3.select(this.el.nativeElement).selectAll('.bar-tooltip').remove();
-    
     this.tooltip = d3.select(this.el.nativeElement)
       .append('div')
       .attr('class', 'bar-tooltip')
       .style('opacity', 0)
       .style('position', 'absolute')
-      .style('background-color', 'rgba(0, 0, 0, 0.7)')
-      .style('color', 'white')
-      .style('border-radius', '4px')
-      .style('padding', '8px')
       .style('pointer-events', 'none')
-      .style('z-index', '10')
-      .style('font-size', '12px')
-      .style('box-shadow', '0 2px 10px rgba(0,0,0,0.2)')
-      .style('max-width', '200px')
-      .style('text-align', 'left');
+      .style('z-index', '10');
     
-    // Log dimension info for debugging
-    console.log('Bar chart container dimensions:', {
-      width: containerElement.clientWidth,
-      height: containerElement.clientHeight,
-      offsetWidth: containerElement.offsetWidth,
-      offsetHeight: containerElement.offsetHeight
-    });
-    
-    // Ensure legend items are updated when chart is initialized
-    if (this.data && this.data.length > 0) {
-      this.updateLegendItems();
-    }
-    
-    // Create chart with logged dimensions
     this.createChart();
   }
 
   private updateChart(): void {
+    const chartElement = this.el.nativeElement.querySelector('#barChart');
+    if (!chartElement) return;
+    
     // Remove existing chart
-    if (this.container) {
-      this.container.select('svg').remove();
-      
-      // Log updated dimensions
-      const containerElement = this.container.node();
-      if (containerElement) {
-        console.log('Updating bar chart with dimensions:', {
-          width: containerElement.clientWidth,
-          height: containerElement.clientHeight
-        });
-      }
-      
-      // Create new chart with updated dimensions
-      this.createChart();
-    }
+    chartElement.innerHTML = '';
+    
+    // Recreate chart
+    this.createChart();
   }
 
   private createChart(): void {
-    if (!this.data || !this.container || this.data.length === 0) return;
-
+    const chartElement = this.el.nativeElement.querySelector('#barChart');
+    if (!chartElement) return;
+    
     // Get container dimensions
-    const containerNode = this.container.node();
-    if (!containerNode) return;
+    const containerRect = chartElement.getBoundingClientRect();
+    const containerWidth = containerRect.width;
+    const containerHeight = containerRect.height || 400; // Fallback height
     
-    // Check if we're in fullscreen mode by checking for parent element with full-expanded class
-    const isFullscreen = !!containerNode.closest('.full-expanded');
+    // Check if in fullscreen mode
+    const isFullscreen = !!chartElement.closest('.full-expanded');
     
-    const containerWidth = this.width || containerNode.getBoundingClientRect().width;
-    const containerHeight = containerNode.getBoundingClientRect().height;
-    
-    // Adjust margins based on screen size
-    // Use smaller margins when space is constrained, larger when in fullscreen
+    // Define margins - adjust based on container size
     const margin = {
       top: isFullscreen ? 50 : 40,
-      right: isFullscreen ? 40 : 30,
-      bottom: isFullscreen ? 70 : 60,
-      left: isFullscreen ? 70 : 60
+      right: isFullscreen ? 40 : 20,
+      bottom: isFullscreen ? 80 : 60,
+      left: isFullscreen ? 80 : 60
     };
     
     const width = Math.max(containerWidth - margin.left - margin.right, 100);
-    const height = Math.max(containerHeight - margin.top - margin.bottom - 40, 100);
+    const height = Math.max(containerHeight - margin.top - margin.bottom - 100, 200); // Reserve space for infographics
     
-    // Remove existing SVG before creating a new one to avoid duplication
-    this.container.selectAll('svg').remove();
-
-    // Create SVG element with calculated dimensions
-    this.svg = this.container
+    // Create SVG
+    const svg = d3.select(chartElement)
       .append('svg')
-      .attr('width', containerWidth) // Use full container width
-      .attr('height', containerHeight) // Use full container height
-      .attr('viewBox', `0 0 ${containerWidth} ${containerHeight}`) // Set viewBox for proper scaling
-      .attr('preserveAspectRatio', 'xMinYMin meet') // Preserve aspect ratio but ensure chart fills space
+      .attr('width', containerWidth)
+      .attr('height', height + margin.top + margin.bottom)
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
-
-    // Adjust font sizes based on screen size
-    const titleFontSize = isFullscreen ? '20px' : '14px';
-    const subtitleFontSize = isFullscreen ? '16px' : '12px';
-    const axisFontSize = isFullscreen ? '14px' : '12px';
     
-    // Add chart title
-    this.svg.append('text')
-      .attr('class', 'chart-title')
-      .attr('x', width / 2)
-      .attr('y', -20)
-      .attr('text-anchor', 'middle')
-      .style('font-size', titleFontSize)
-      .style('font-weight', 'bold')
-      .style('fill', '#fff')
-      .text(this.title);
-
-    // Add chart subtitle
-    this.svg.append('text')
-      .attr('class', 'chart-subtitle')
-      .attr('x', width / 2)
-      .attr('y', -5)
-      .attr('text-anchor', 'middle')
-      .style('font-size', subtitleFontSize)
-      .style('fill', '#ccc')
-      .text(this.subtitle);
-
-    // X axis - use fewer tick marks if width is small
-    const x = d3.scaleBand()
-      .domain(this.data.map(d => d.month))
+    // Get the correct data based on selected metric
+    const currentData = this.getCurrentData();
+    
+    // Define scales
+    const xScale = d3.scaleBand()
+      .domain(currentData.map(d => d.year.toString()))
       .range([0, width])
       .padding(0.2);
-
-    // Reduce tick marks if container is narrow
-    const xAxis = d3.axisBottom(x);
-    if (width < 300) {
-      xAxis.tickValues(this.data.filter((_, i) => i % 2 === 0).map(d => d.month));
-    }
-
-    this.svg.append('g')
-      .attr('transform', `translate(0,${height})`)
-      .call(xAxis)
-      .selectAll('text')
-      .attr('transform', 'translate(-10,0)rotate(-35)')
-      .style('text-anchor', 'end')
-      .style('font-size', axisFontSize)
-      .style('fill', '#ddd');
-
-    // Find max value for Y scale
-    const yMax = d3.max(this.data, d => 
-      Math.max(...d.values.map(v => v.amount))
-    ) as number;
     
-    // Y axis with fewer tick marks and more readable labels
-    const y = d3.scaleLinear()
-      .domain([0, yMax * 1.1]) // Add 10% padding at top
+    const yScale = d3.scaleLinear()
+      .domain([0, d3.max(currentData, d => d.value) as number])
       .nice()
       .range([height, 0]);
-
-    // Limit the number of y-axis ticks based on height
-    const yTickCount = height < 150 ? 3 : 5;
     
-    this.svg.append('g')
-      .call(d3.axisLeft(y).ticks(yTickCount).tickFormat((d) => this.formatYLabel(d as number)))
+    // Create axes
+    svg.append('g')
+      .attr('transform', `translate(0, ${height})`)
+      .call(d3.axisBottom(xScale).tickSize(0))
       .selectAll('text')
-      .style('font-size', axisFontSize)
-      .style('fill', '#ddd');
+      .style('font-size', isFullscreen ? '16px' : '14px')
+      .style('fill', '#fff');
+    
+    svg.append('g')
+      .call(d3.axisLeft(yScale).ticks(6))
+      .selectAll('text')
+      .style('font-size', isFullscreen ? '16px' : '14px')
+      .style('fill', '#fff');
+    
+    // Get the color for the current metric - with enhanced appearance
+    const barColor = this.metricColors[this.currentMetric] || '#3C3B6E';
+    
+    // Create bars with transitions and better styling
+    svg.selectAll('rect')
+      .data(currentData)
+      .enter()
+      .append('rect')
+      .attr('x', d => xScale(d.year.toString()) as number)
+      .attr('width', xScale.bandwidth())
+      .attr('y', height) // Start at bottom for animation
+      .attr('height', 0) // Start with 0 height for animation
+      .attr('fill', barColor)
+      .attr('rx', 5)
+      .style('filter', 'drop-shadow(0 2px 3px rgba(0,0,0,0.3))') // Add subtle shadow for depth
+      .transition()
+      .duration(1000)
+      .delay((d, i) => i * 100)
+      .attr('y', d => yScale(d.value))
+      .attr('height', d => height - yScale(d.value));
+    
+    // Add hover effects after transition with more patriotic highlight color
+    setTimeout(() => {
+      svg.selectAll('rect')
+        .on('mouseover', (event, d) => {
+          const data = d as MetricData;
+          d3.select(event.currentTarget)
+            .transition()
+            .duration(200)
+            .attr('fill', this.currentMetric === 'gdp' ? '#5C6BC0' : 
+                          this.currentMetric === 'lifeExpectancy' ? '#E57373' : '#64B5F6')
+            .style('filter', 'drop-shadow(0 3px 5px rgba(0,0,0,0.4))');
 
-    // Add X axis label
-    this.svg.append('text')
-      .attr('class', 'x-axis-label')
+          // Customize tooltip based on metric
+          let tooltipContent = '';
+          if (this.currentMetric === 'gdp') {
+            tooltipContent = `<strong>${data.year}</strong><br>GDP: $${data.value} Trillion`;
+          } else if (this.currentMetric === 'lifeExpectancy') {
+            tooltipContent = `<strong>${data.year}</strong><br>Life Expectancy: ${data.value} years`;
+          } else if (this.currentMetric === 'internet') {
+            tooltipContent = `<strong>${data.year}</strong><br>Internet Users: ${data.value} Million`;
+          }
+          
+          this.tooltip
+            .html(tooltipContent)
+            .style('opacity', 0.9)
+            .style('left', `${event.pageX + 10}px`)
+            .style('top', `${event.pageY - 28}px`);
+        })
+        .on('mouseout', (event) => {
+          d3.select(event.currentTarget)
+            .transition()
+            .duration(200)
+            .attr('fill', barColor)
+            .style('filter', 'drop-shadow(0 2px 3px rgba(0,0,0,0.3))');
+          
+          this.tooltip.style('opacity', 0);
+        });
+    }, 1100); // Wait for initial animation to complete
+    
+    // Add axis labels
+    svg.append('text')
       .attr('x', width / 2)
-      .attr('y', height + margin.bottom - 10)
-      .attr('text-anchor', 'middle')
-      .style('font-size', axisFontSize)
-      .style('fill', '#ddd')
-      .text('Month');
-
-    // Add Y axis label
-    this.svg.append('text')
-      .attr('class', 'y-axis-label')
+      .attr('y', height + (isFullscreen ? 50 : 40))
+      .style('text-anchor', 'middle')
+      .style('fill', '#fff')
+      .style('font-size', isFullscreen ? '18px' : '14px')
+      .text('Year');
+    
+    // Y-axis label based on selected metric
+    svg.append('text')
       .attr('transform', 'rotate(-90)')
       .attr('x', -height / 2)
-      .attr('y', -margin.left + 15)
-      .attr('text-anchor', 'middle')
-      .style('font-size', axisFontSize)
-      .style('fill', '#ddd')
-      .text('Amount ($)');
-
-    // Draw bars with improved interaction using Renderer2
-    this.data.forEach((d, i) => {
-      const barWidth = x.bandwidth() / d.values.length;
-      
-      d.values.forEach((v, j) => {
-        // Get the label for this value
-        const valueLabel = this.valueLabels[v.label] || v.label;
-        
-        const rect = this.svg.append('rect')
-          .attr('class', `bar${j + 1} bar-interactive`)
-          .attr('x', x(d.month)! + barWidth * j)
-          .attr('y', y(v.amount))
-          .attr('width', barWidth)
-          .attr('height', height - y(v.amount))
-          .attr('fill', this.colors[j % this.colors.length])
-          .attr('rx', 3) // Rounded corners
-          .attr('ry', 3);
-          
-        // Store the bar's data as properties for easy access during events
-        rect.datum({
-          month: d.month,
-          valueLabel: valueLabel,
-          amount: v.amount,
-          colorIndex: j % this.colors.length
-        });
-        
-        rect.on('mouseover', (event: MouseEvent) => {
-          // Get the element and its data safely
-          const target = event.target as SVGRectElement;
-          const data = d3.select(target).datum() as any;
-          
-          // Enhanced tooltip
-          this.tooltip.transition()
-            .duration(200)
-            .style('opacity', 0.9);
-            
-          this.tooltip.html(`
-            <div style="font-weight:bold; margin-bottom:5px; color:${this.colors[data.colorIndex]}">
-              ${data.valueLabel}
-            </div>
-            <div>Month: <strong>${data.month}</strong></div>
-            <div>Amount: <strong>$${data.amount.toLocaleString()}</strong></div>
-            <div style="font-size:10px; margin-top:5px; opacity:0.7">
-              Click for detailed analysis
-            </div>
-          `)
-            .style('left', (event.pageX + 10) + 'px')
-            .style('top', (event.pageY - 28) + 'px');
-            
-          // Highlight bar on hover using Renderer2 approach
-          this.renderer.setStyle(target, 'opacity', 0.8);
-          this.renderer.setStyle(target, 'stroke', '#fff');
-          this.renderer.setStyle(target, 'stroke-width', 2);
-        })
-        .on('mouseout', (event: MouseEvent) => {
-          this.tooltip.transition()
-            .duration(500)
-            .style('opacity', 0);
-            
-          // Restore bar appearance using Renderer2
-          const target = event.target as SVGRectElement;
-          this.renderer.setStyle(target, 'opacity', 1);
-          this.renderer.setStyle(target, 'stroke', 'none');
-          this.renderer.removeStyle(target, 'stroke-width');
-        })
-        .on('click', (event: MouseEvent) => {
-          const target = event.target as SVGRectElement;
-          const data = d3.select(target).datum() as any;
-          console.log(`Bar clicked: ${data.month} - ${data.valueLabel}: $${data.amount}`);
-          // Future functionality could include detailed view/analytics
-        });
-      });
-    });
+      .attr('y', -margin.left + (isFullscreen ? 30 : 20))
+      .style('text-anchor', 'middle')
+      .style('fill', '#fff')
+      .style('font-size', isFullscreen ? '18px' : '14px')
+      .text(this.metricLabels[this.currentMetric] || 'Value');
     
-    // Ensure legend items are populated with the same values used in the chart
-    const legendValues = this.data[0].values.map(v => this.valueLabels[v.label] || v.label);
-    this.legendItems = legendValues;
-    
-    // Add a more descriptive legend with value labels
-    const legendX = width - 100;
-    const legendY = 20;
-    
-    const legend = this.svg.append('g')
-      .attr('class', 'legend')
-      .attr('transform', `translate(${legendX},${legendY})`);
-      
-    legendValues.forEach((value, i) => {
-      const legendRow = legend.append('g')
-        .attr('transform', `translate(0, ${i * 20})`);
-        
-      legendRow.append('rect')
-        .attr('width', 10)
-        .attr('height', 10)
-        .attr('fill', this.colors[i % this.colors.length]);
-        
-      legendRow.append('text')
-        .attr('x', 15)
-        .attr('y', 9)
-        .attr('font-size', '11px')
-        .attr('fill', '#ddd')
-        .text(value);
-    });
-  }
-  
-  // Helper method to format Y axis labels
-  private formatYLabel(value: number): string {
-    if (value >= 1000) {
-      return `$${(value / 1000).toFixed(1)}K`;
+    // Add chart title based on selected metric
+    let title = 'US Progress (1776-2024)';
+    if (this.currentMetric === 'gdp') {
+      title = 'US GDP Growth (1776-2024)';
+    } else if (this.currentMetric === 'lifeExpectancy') {
+      title = 'US Life Expectancy (1776-2024)';
+    } else if (this.currentMetric === 'internet') {
+      title = 'US Internet Usage (1950-2024)';
     }
-    return `$${value}`;
+    
+    svg.append('text')
+      .attr('x', width / 2)
+      .attr('y', -margin.top / 2)
+      .attr('text-anchor', 'middle')
+      .style('font-size', isFullscreen ? '24px' : '18px')
+      .style('font-weight', 'bold')
+      .style('fill', '#fff')
+      .text(title);
   }
   
-  /**
-   * Public method to toggle legend visibility
-   * @returns Current visibility state after toggle
-   */
+  // Helper method to get the data for the current metric
+  private getCurrentData(): MetricData[] {
+    switch (this.currentMetric) {
+      case 'lifeExpectancy':
+        return this.lifeExpectancyData;
+      case 'internet':
+        return this.internetData;
+      case 'gdp':
+      default:
+        return this.gdpData;
+    }
+  }
+  
+  // Toggle between different metrics
+  toggleMetric(metric: string, event: MouseEvent): void {
+    // Stop event propagation to prevent parent overlay from triggering
+    event.stopPropagation();
+    
+    if (this.currentMetric !== metric) {
+      this.currentMetric = metric;
+      this.updateChart();
+    }
+  }
+  
+  // Toggle legend visibility - keep for compatibility with tests
   public toggleLegend(): boolean {
     this.showLegend = !this.showLegend;
     return this.showLegend;
-  }
-
-  // Add properties and optional helper to manage status messages if needed
-  statusMessage: string = '';
-  showStatus: boolean = false;
-
-  showStatusMessage(message: string, durationMs: number = 3000): void {
-    this.statusMessage = message;
-    this.showStatus = true;
-    setTimeout(() => { this.showStatus = false; }, durationMs);
   }
 }
