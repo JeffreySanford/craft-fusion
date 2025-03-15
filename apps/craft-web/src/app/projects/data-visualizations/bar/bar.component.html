@@ -1,10 +1,14 @@
 <ng-container *ngIf="data">
   <div class="bar-chart-container">
-    <!-- Chart will be rendered here by D3 -->
+    <!-- Optional status message container above the chart -->
+    <div class="status-message" *ngIf="showStatus">{{ statusMessage }}</div>
+    <!-- Chart is rendered here by D3 -->
   </div>
-  <div class="bar-chart-legend">
-    <div *ngFor="let item of data; let i = index" class="bar-chart-legend-item" [style.backgroundColor]="colors[i]">
-      {{ item.month }}
+  <div class="bar-chart-legend" *ngIf="showLegend">
+    <div *ngFor="let item of legendItems; let i = index" 
+         class="bar-chart-legend-item" 
+         [style.backgroundColor]="colors[i % colors.length]">
+      <span class="bar-chart-legend-item-label">{{ item }}</span>
     </div>
   </div>
 </ng-container>

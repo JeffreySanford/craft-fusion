@@ -8,15 +8,10 @@
       <p>Select visualizations from the sidebar to get started</p>
     </div>
 
-    <!-- Rendered Charts -->
+    <!-- Rendered Charts with proper grid sizing based on chart size -->
     <div *ngFor="let chart of displayedCharts; let i = index"
          class="visualization-item"
-         [class]="getTileSize(chart.size)"
-         [class.expanded]="expandedTileIndex === i"
-         [class.full-expanded]="fullExpandedTileIndex === i"
-         [class.chart-type-line]="chart.component === 'app-line-chart'"
-         [class.chart-type-bar]="chart.component === 'app-bar-chart'"
-         [class.chart-type-finance]="chart.component === 'app-finance-chart'"
+         [ngClass]="getTileClasses(chart, i)"
          cdkDrag [cdkDragDisabled]="fullExpandedTileIndex !== null">
       <mat-card class="chart-card" [class.expanded]="expandedTileIndex === i">
         <mat-card-header cdkDragHandle class="custom-colored" [style.color]="chart.color">

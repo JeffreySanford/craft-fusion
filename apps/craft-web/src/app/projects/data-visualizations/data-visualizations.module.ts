@@ -25,6 +25,8 @@ import { AnimatedDirectivesModule } from '../../animated-directives.module';
 import { KatexModule } from "./quantum-fisher-information/katex/katex.module";
 import { MapboxService } from '../../common/services/mapbox.service'; // Update import path
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ChartLayoutService } from './services/chart-layout.service';
+import { TileLimitDialogComponent } from './dialogs/tile-limit-dialog.component';
 
 // Define routes for the data visualizations module
 const dataVisualizationsRoutes: Routes = [
@@ -57,7 +59,8 @@ const dataVisualizationsRoutes: Routes = [
     LineComponent, 
     FinanceComponent, 
     FireAlertComponent, 
-    QuantumFisherInformationComponent
+    QuantumFisherInformationComponent,
+    TileLimitDialogComponent
   ],
   imports: [
     CommonModule,
@@ -83,6 +86,11 @@ const dataVisualizationsRoutes: Routes = [
     QuantumFisherInformationComponent, // Export the component so it can be used outside this module
     RouterModule // Export RouterModule
   ],
-  providers: [AlphaVantageService, FlightRadarService, MapboxService],
+  providers: [
+    AlphaVantageService, 
+    FlightRadarService, 
+    MapboxService,
+    ChartLayoutService // Now provided from the local module
+  ],
 })
 export class DataVisualizationsModule {}

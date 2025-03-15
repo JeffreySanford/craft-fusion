@@ -1,13 +1,108 @@
 .line-chart-container {
   width: 100%;
-  height: 100%; // Use full height of container
+  height: 100%; 
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  min-height: 300px; /* Ensure minimum height for chart visibility */
+  position: relative; /* To allow absolute positioning of status messages */
+  border: 1px solid #ccc;
+  flex-grow: 1; /* Ensures vertical expansion in a flex layout */
 }
 
 .line-chart {
   width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.status-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 1em;
+  border-radius: 4px;
+  font-size: 14px;
+  max-width: 80%;
+  text-align: center;
+  z-index: 10;
+  pointer-events: none; /* Allow clicking through the status message */
+  margin-bottom: 1rem; /* Reserve space above the chart for messages */
+}
+
+/* Tooltip enhancements */
+:host ::ng-deep .line-tooltip {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  border-radius: 4px;
+  padding: 10px;
+  font-family: 'Arial', sans-serif;
+  line-height: 1.4;
+  letter-spacing: 0.2px;
+  max-width: 250px;
+  z-index: 100; /* Ensure tooltip appears above other elements */
+}
+
+/* Improve axis styling */
+:host ::ng-deep {
+  .domain,
+  .tick line {
+    stroke: rgba(255, 255, 255, 0.3);
+  }
+  
+  .tick text {
+    fill: rgba(255, 255, 255, 0.8);
+  }
+  
+  /* Enhanced line styling */
+  .line {
+    filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.3));
+  }
+  
+  /* Grid line improvements */
+  .grid line {
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-dasharray: 2, 2;
+  }
+  
+  /* Title and label improvements */
+  .chart-title {
+    font-weight: bold;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .chart-subtitle {
+    font-style: italic;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .x-axis-label, .y-axis-label {
+    font-family: 'Arial', sans-serif;
+    font-weight: 500;
+  }
+  
+  /* Legend styling */
+  .legend-container {
+    font-family: 'Arial', sans-serif;
+    pointer-events: all;
+  }
+  
+  .legend rect {
+    stroke-width: 1px;
+    stroke: rgba(255, 255, 255, 0.3);
+  }
+  
+  .legend text {
+    font-weight: 500;
+  }
+}
+
+/* Force the chart to be visible even when container is small */
+:host {
+  display: block;
+  min-height: 300px; /* Increased minimum height */
   height: 100%;
 }

@@ -9,6 +9,9 @@ import { catchError } from 'rxjs/operators';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { SidebarStateService } from '../../common/services/sidebar-state.service';
+import { ChartLayoutService } from './services/chart-layout.service';
+import { MatDialog } from '@angular/material/dialog';
+import { TileLimitDialogComponent } from './dialogs/tile-limit-dialog.component';
 
 @Component({
   selector: 'app-data-visualizations',
@@ -73,9 +76,9 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   public allCharts: ExtendedChartData[] = [
     { name: 'Line Chart', component: 'app-line-chart', color: 'dodgerblue', data: this.lineChartData, size: 'small' },
     { name: 'Bar Chart', component: 'app-bar-chart', color: 'limegreen', data: this.barChartData, size: 'small' },
-    { name: 'Quantum Fisher Information', component: 'app-quantum-fisher-tile', color: 'mediumpurple', data: [], size: 'medium' },
+    { name: 'Quantum Fisher Information', component: 'app-quantum-fisher-tile', color: 'mediumpurple', data: [], size: 'large' },
     { name: 'FinTech Chart', component: 'app-finance-chart', color: 'tomato', data: [], size: 'medium' },
-    { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [], size: 'small' },
+    { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [], size: 'large' }, // Changed from 'small' to 'large'
   ];
 
   public fintechChartData: any[] = [];
@@ -86,13 +89,18 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   tileHeight: number = 0;
   resizeObserver: ResizeObserver | null = null;
 
+  // Add new property to track the maximum number of tiles allowed
+  readonly MAX_TILES = 5;
+
   constructor(
     private breakpointObserver: BreakpointObserver, 
     private cdr: ChangeDetectorRef, 
     private yahooService: YahooService,
     private iconRegistry: MatIconRegistry,
     private sanitizer: DomSanitizer,
-    private sidebarStateService: SidebarStateService
+    private sidebarStateService: SidebarStateService,
+    private chartLayoutService: ChartLayoutService,
+    private dialog: MatDialog
   ) {
     // Register icons - this ensures Material icons are available
     this.registerIcons();
@@ -103,7 +111,12 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     // By default, only show the Fire Alert tile
     const fireAlertIndex = this.availableCharts.findIndex(chart => chart.component === 'app-fire-alert');
     if (fireAlertIndex !== -1) {
-      this.displayedCharts = [this.availableCharts[fireAlertIndex]];
+      // Create a copy to avoid reference issues
+      const fireAlertChart = { ...this.availableCharts[fireAlertIndex] };
+      // Set special layout to ensure it's full width as the default
+      fireAlertChart.specialLayout = 'large-tile-full-width';
+      this.displayedCharts = [fireAlertChart];
+      this.optimizeChartLayout(); // Apply layout optimization
     }
     
     this.loadFintechChartData()
@@ -229,21 +242,150 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Add a tile to the main display
+  // Check if there's still room to add more tiles
+  hasRoomForMoreTiles(newTile: ChartData): boolean {
+    // Count existing tiles by size
+    const largeCount = this.displayedCharts.filter(c => c.size === 'large').length;
+    const mediumCount = this.displayedCharts.filter(c => c.size === 'medium').length;
+    const smallCount = this.displayedCharts.filter(c => c.size === 'small').length;
+    
+    console.log(`Current tile counts: ${largeCount} large, ${mediumCount} medium, ${smallCount} small`);
+    
+    // Rule 1: Two large tiles maximum and they can't be mixed with other sizes
+    if (largeCount > 0) {
+      // If we already have large tiles
+      if (largeCount >= 2) {
+        // Already at max of 2 large tiles
+        return false;
+      }
+      if (newTile.size !== 'large') {
+        // Can't mix large with other sizes
+        return false;
+      }
+      return true; // Can add a second large tile
+    }
+    
+    // Rule 2: If adding a large tile when other sizes exist
+    if (newTile.size === 'large' && (mediumCount > 0 || smallCount > 0)) {
+      return false; // Can't add large when medium/small exist
+    }
+    
+    // Rule 3: Medium tile scenarios
+    if (newTile.size === 'medium') {
+      // Up to 4 medium tiles in a 2x2 grid
+      if (mediumCount >= 4) {
+        return false;
+      }
+      
+      // Medium + Small combinations
+      // Maximum would be 2 medium + 1 small (2*6 + 1*4 = 16 columns across 2 rows)
+      if (mediumCount >= 2 && smallCount >= 1) {
+        return false;
+      }
+      
+      // Up to 2 medium tiles with 2 small tiles (2*6 + 2*4 = 20 columns < 24 in 2 rows)
+      if (smallCount >= 3) {
+        return false;
+      }
+      
+      return true;
+    }
+    
+    // Rule 4: Small tile scenarios
+    if (newTile.size === 'small') {
+      // 6 small tiles max in two rows of 3 (6*4 = 24 columns total)
+      if (smallCount >= 6) {
+        return false;
+      }
+      
+      // With 2 medium tiles, only allow up to 2 small tiles (2*6 + 2*4 = 20 columns < 24)
+      if (mediumCount === 2 && smallCount >= 2) {
+        return false;
+      }
+      
+      // With 3 medium tiles, allow 0 small tiles (3*6 = 18 columns, no room for small in 2 rows)
+      if (mediumCount >= 3) {
+        return false;
+      }
+      
+      return true;
+    }
+    
+    return false; // Default case for unknown sizes
+  }
+
+  getChartClasses(chart: ChartData): string {
+    // Return the pre-calculated chart class if available
+    return this.calculateChartClass(chart.component);
+  }
+
+  // Add tile to the main display with improved grid positioning
   addTile(chart: ChartData): void {
+    console.log('Adding tile:', chart.name, chart.size);
+    
+    // Check if there's room for more tiles
+    if (!this.hasRoomForMoreTiles(chart)) {
+      // Show dialog that allows for removing tiles
+      this.showNoSpaceNotification(chart as ExtendedChartData);
+      return;
+    }
+    
     // Clone the chart to avoid reference issues
     const chartCopy = { ...chart } as ExtendedChartData;
     
     // Pre-calculate the chart class
-    chartCopy.chartClass = this.calculateChartClass(chartCopy.component);
+    chartCopy.chartClass = this.chartLayoutService.calculateChartClass(chartCopy.component);
     
-    this.displayedCharts.push(chartCopy);
+    // Insert large tiles at the beginning for optimal grid layout
+    if (chartCopy.size === 'large') {
+      this.displayedCharts.unshift(chartCopy);
+    } else {
+      this.displayedCharts.push(chartCopy);
+    }
+    
+    // Sort charts by size to optimize layout (large first, then medium, then small)
+    this.optimizeChartLayout();
+    
     this.cdr.detectChanges();
+    
+    console.log('Current layout:', this.displayedCharts.map(c => `${c.name} (${c.size})`));
     
     // Ensure proper rendering with slight delay to allow DOM updates
     setTimeout(() => {
       this.resizeCharts();
     }, 150);
+  }
+
+  // Show notification that there's no more room for tiles
+  private showNoSpaceNotification(newTile: ExtendedChartData): void {
+    const dialogRef = this.dialog.open(TileLimitDialogComponent, {
+      width: '500px',
+      panelClass: 'patriotic-dialog',
+      disableClose: true,
+      data: {
+        currentTiles: this.displayedCharts,
+        newTile: newTile
+      }
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.action === 'remove' && result.tiles && result.tiles.length > 0) {
+        // Remove the selected tiles
+        result.tiles.forEach((tile: ExtendedChartData) => {
+          this.removeTile(tile);
+        });
+        
+        // Add the new tile after a short delay
+        setTimeout(() => {
+          this.addTile(newTile);
+        }, 300);
+      }
+    });
+  }
+
+  // Optimize the chart layout by size for better grid arrangement
+  private optimizeChartLayout(): void {
+    this.displayedCharts = this.chartLayoutService.optimizeChartLayout(this.displayedCharts);
   }
 
   // Remove a tile from the main display
@@ -393,7 +535,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   getChartClass(chart: ExtendedChartData): string {
     if (!chart.chartClass) {
       // If not pre-calculated, calculate it now and cache it
-      chart.chartClass = this.calculateChartClass(chart.component);
+      chart.chartClass = this.chartLayoutService.calculateChartClass(chart.component);
     }
     
     return chart.chartClass;
@@ -401,23 +543,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
 
   // Calculate chart class based on component type - only called when needed
   private calculateChartClass(componentType: string): string {
-    // Base classes that apply to all charts
-    const baseClass = 'fixed-chart-content';
-    
-    // Map component types to specific CSS classes
-    switch (componentType) {
-      case 'app-line-chart':
-        return `${baseClass} line-chart-content`;
-      case 'app-bar-chart':
-        return `${baseClass} bar-chart-content`;
-      case 'app-finance-chart':
-        return `${baseClass} finance-chart-content`;
-      case 'app-quantum-fisher-tile':
-      case 'app-fire-alert':
-        return `${baseClass} scrollable-chart-content`;
-      default:
-        return baseClass;
-    }
+    return this.chartLayoutService.calculateChartClass(componentType);
   }
 
   // Handle tile click for expansion or collapse
@@ -484,9 +610,43 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       this.restoreTile(this.fullExpandedTileIndex!);
     }
   }
+
+  // Get CSS classes for each tile based on its properties
+  getTileClasses(chart: ExtendedChartData, index: number): string {
+    const classes = [this.getTileSize(chart.size)];
+    
+    if (chart.component === 'app-line-chart') classes.push('chart-type-line');
+    if (chart.component === 'app-bar-chart') classes.push('chart-type-bar');
+    if (chart.component === 'app-finance-chart') classes.push('chart-type-finance');
+    
+    if (this.expandedTileIndex === index) classes.push('expanded');
+    if (this.fullExpandedTileIndex === index) classes.push('full-expanded');
+    
+    // Add special positioning classes based on size and position
+    if (chart.size === 'small') {
+      if (chart.position === 0) classes.push('small-tile-first-row');
+      if (chart.position === 1) classes.push('small-tile-first-row');
+      if (chart.position === 2) classes.push('small-tile-third');
+      if (chart.position && chart.position > 2) classes.push('small-tile-other');
+    }
+    
+    // Add special layout classes for large tiles
+    if (chart.specialLayout) {
+      classes.push(chart.specialLayout);
+    }
+    
+    if (chart.specialPosition) {
+      classes.push('special-position');
+    }
+    
+    return classes.join(' ');
+  }
 }
 
 // Update the ChartData interface to include a chartClass property
 export interface ExtendedChartData extends ChartData {
   chartClass?: string; // Store the pre-calculated chart class
+  position?: number; // Track position in the grid
+  specialPosition?: boolean; // Flag for special positioning
+  specialLayout?: string; // Store special layout class names
 }

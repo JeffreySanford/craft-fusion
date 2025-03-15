@@ -1,3 +1,5 @@
 <div class="line-chart-container">
-  <div #chart class="line-chart"></div>
+  <!-- Optional status message container above the chart -->
+  <div class="status-message" *ngIf="showStatus">{{ statusMessage }}</div>
+  <div #chart></div>
 </div>

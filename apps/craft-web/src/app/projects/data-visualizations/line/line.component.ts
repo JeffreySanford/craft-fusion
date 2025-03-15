@@ -1,7 +1,9 @@
-import { Component, Input, OnInit, ElementRef, ViewChild, AfterViewInit, OnChanges, SimpleChanges, Renderer2 } from '@angular/core';
+import { Component, Input, OnInit, ElementRef, ViewChild, AfterViewInit, OnChanges, SimpleChanges, Renderer2, OnDestroy } from '@angular/core';
 import * as d3 from 'd3';
 import { NumberValue } from 'd3-scale';
 import { LineChartData } from '../data-visualizations.interfaces';
+import { fromEvent, Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-line-chart',
@@ -9,7 +11,7 @@ import { LineChartData } from '../data-visualizations.interfaces';
   styleUrls: ['./line.component.scss'],
   standalone: false,
 })
-export class LineComponent implements OnInit, AfterViewInit, OnChanges {
+export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() data: LineChartData[] = [];
   @Input() width: number = 0;
   @Input() height: number = 0;
@@ -32,23 +34,60 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
   
   // Create tooltip
   private tooltip: any;
+  
+  // Add resize observer and subject for component cleanup
+  private resizeObserver: ResizeObserver | null = null;
+  private destroy$ = new Subject<void>();
+
+  // Add properties for status messages in the class if not present
+  statusMessage: string = '';
+  showStatus: boolean = false;
 
   constructor(private renderer: Renderer2) {}
   
   ngOnInit(): void {
     // Initialization logic if needed
+    fromEvent(window, 'resize')
+      .pipe(
+        debounceTime(250),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.createChart();
+      });
   }
 
   ngAfterViewInit(): void {
     this.createChart();
+    this.setupResizeObserver();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((changes['width'] || changes['data']) && 
+    if ((changes['width'] || changes['data'] || changes['height']) && 
         this.chartContainer && this.chartContainer.nativeElement) {
       setTimeout(() => {
         this.createChart();
       });
+    }
+  }
+  
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
+  }
+  
+  private setupResizeObserver(): void {
+    if (typeof ResizeObserver !== 'undefined' && this.chartContainer) {
+      const container = this.chartContainer.nativeElement;
+      this.resizeObserver = new ResizeObserver(entries => {
+        this.createChart();
+      });
+      this.resizeObserver.observe(container);
     }
   }
 
@@ -62,6 +101,8 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
     const isFullscreen = !!element.closest('.full-expanded');
     
     // Initialize tooltip
+    d3.select(element).selectAll('.line-tooltip').remove();
+    
     this.tooltip = d3.select(element)
       .append('div')
       .attr('class', 'line-tooltip')
@@ -77,25 +118,26 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
       .style('box-shadow', '0 2px 10px rgba(0,0,0,0.2)')
       .style('max-width', '250px');
 
-    // Let container size be controlled by CSS
+    // Use container size controlled by CSS
     const svg = d3.select(element).append('svg')
       .attr('width', '100%')
       .attr('height', '100%')
       .attr('preserveAspectRatio', 'xMinYMin meet'); // Ensure chart scales properly
 
-    // Use container dimensions
+    // Get the actual dimensions of the container
     const containerWidth = this.width || element.offsetWidth;
-    const containerHeight = element.offsetHeight;
+    const containerHeight = this.height || element.offsetHeight;
 
     // Set SVG viewBox for responsive scaling
     svg.attr('viewBox', `0 0 ${containerWidth} ${containerHeight}`);
 
-    // Adjust margins based on available space
+    // Adjust margins based on available space and container height
+    // Use percentage-based margins for better vertical scaling
     const margin = { 
-      top: isFullscreen ? 50 : 40, 
-      right: isFullscreen ? 90 : 80, 
-      bottom: isFullscreen ? 60 : 50, 
-      left: isFullscreen ? 70 : 60 
+      top: Math.max(containerHeight * 0.1, isFullscreen ? 50 : 40), 
+      right: Math.max(containerWidth * 0.1, isFullscreen ? 90 : 80), 
+      bottom: Math.max(containerHeight * 0.15, isFullscreen ? 60 : 50), 
+      left: Math.max(containerWidth * 0.12, isFullscreen ? 70 : 60)
     };
     
     const width = containerWidth - margin.left - margin.right;
@@ -103,19 +145,19 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
 
     const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
-    // Adjust font sizes based on fullscreen state
-    const titleFontSize = isFullscreen ? '20px' : '14px';
-    const subtitleFontSize = isFullscreen ? '16px' : '12px';
-    const axisFontSize = isFullscreen ? '14px' : '11px';
+    // Dynamically adjust font sizes based on container dimensions
+    const titleFontSize = Math.max(containerWidth * 0.02, isFullscreen ? 20 : 14);
+    const subtitleFontSize = Math.max(containerWidth * 0.015, isFullscreen ? 16 : 12);
+    const axisFontSize = Math.max(containerWidth * 0.01, isFullscreen ? 14 : 11);
 
     // Add chart title with adjusted position
     svg.append('text')
       .attr('class', 'chart-title')
       .attr('x', containerWidth / 2)
-      .attr('y', isFullscreen ? 25 : 15)
+      .attr('y', margin.top / 2)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'central')
-      .style('font-size', titleFontSize)
+      .style('font-size', `${titleFontSize}px`)
       .style('font-weight', 'bold')
       .style('fill', '#fff')
       .text(this.chartTitle);
@@ -124,10 +166,10 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
     svg.append('text')
       .attr('class', 'chart-subtitle')
       .attr('x', containerWidth / 2)
-      .attr('y', 32)
+      .attr('y', margin.top * 0.8)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'central')
-      .style('font-size', subtitleFontSize)
+      .style('font-size', `${subtitleFontSize}px`)
       .style('fill', '#ccc')
       .text(this.chartSubtitle);
 
@@ -160,8 +202,8 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
     const yMax = d3.max(this.data.map(d => Math.max(d.series1, d.series2, d.series3))) as number;
     y.domain([0, yMax * 1.1]).nice(); // Add 10% padding and round to nice values
 
-    // Create a more user-friendly x-axis with fewer tick marks for smaller screens
-    const tickCount = isFullscreen ? 12 : (width < 400 ? 6 : 12);
+    // Create a more user-friendly x-axis with appropriate tick marks based on chart width
+    const tickCount = Math.max(Math.floor(width / 80), 4); // At least 4 ticks, more for wider charts
     const xAxis = d3.axisBottom(x)
       .ticks(tickCount)
       .tickFormat((d: Date | NumberValue, i: number) => {
@@ -182,36 +224,36 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
       .attr('dx', '-.8em')
       .attr('dy', '.15em')
       .attr('transform', 'rotate(-45)')
-      .style('font-size', axisFontSize)
+      .style('font-size', `${axisFontSize}px`)
       .style('fill', '#ddd');
 
-    // Create a better y-axis with fewer ticks and formatted values
-    const yTickCount = isFullscreen ? 10 : (height < 150 ? 4 : 8);
+    // Create a better y-axis with appropriate ticks based on chart height
+    const yTickCount = Math.max(Math.floor(height / 50), 3); // At least 3 ticks, more for taller charts
     g.append('g')
       .attr('class', 'y axis')
       .call(d3.axisLeft(y).ticks(yTickCount).tickFormat(this.formatYValue))
       .selectAll('text')
-      .style('font-size', axisFontSize)
+      .style('font-size', `${axisFontSize}px`)
       .style('fill', '#ddd');
 
-    // Add X axis label
+    // Add X axis label with vertical position adjusted to chart height
     g.append('text')
       .attr('class', 'x-axis-label')
       .attr('x', width / 2)
-      .attr('y', height + 40) // Position below the axis
+      .attr('y', height + margin.bottom * 0.6) // Position relative to chart height
       .attr('text-anchor', 'middle')
-      .style('font-size', '12px')
+      .style('font-size', `${axisFontSize * 1.1}px`)
       .style('fill', '#ddd')
       .text('Month');
 
-    // Add Y axis label
+    // Add Y axis label with position adjusted to chart height
     g.append('text')
       .attr('class', 'y-axis-label')
       .attr('transform', 'rotate(-90)')
-      .attr('y', -40) // Position to the left of the axis
+      .attr('y', -margin.left * 0.6) // Position relative to margin
       .attr('x', -height / 2)
       .attr('text-anchor', 'middle')
-      .style('font-size', '12px')
+      .style('font-size', `${axisFontSize * 1.1}px`)
       .style('fill', '#ddd')
       .text('Value');
 
@@ -226,18 +268,34 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
       .selectAll('line')
       .style('stroke', 'rgba(255, 255, 255, 0.1)')
       .style('stroke-dasharray', '2,2');
+      
+    // Add vertical grid lines for better readability in taller charts
+    g.append('g')
+      .attr('class', 'grid vertical-grid')
+      .attr('transform', `translate(0,${height})`)
+      .call(d3.axisBottom(x)
+        .ticks(tickCount)
+        .tickSize(-height)
+        .tickFormat(() => '')
+      )
+      .selectAll('line')
+      .style('stroke', 'rgba(255, 255, 255, 0.05)')
+      .style('stroke-dasharray', '2,2');
 
-    // Draw the lines with enhanced styling
+    // Draw the lines with enhanced styling and animation durations based on chart size
     const drawLine = (lineFunc: any, data: any, color: string, index: number) => {
       const seriesKey = `series${index + 1}`;
       const seriesName = this.seriesNames[seriesKey as keyof typeof this.seriesNames] || seriesKey;
+      
+      // Calculate animation duration based on chart width - longer animations for larger charts
+      const animDuration = Math.min(Math.max(width / 3, 500), 1500);
       
       // Create path with animation
       const path = g.append('path')
         .datum(data)
         .attr('fill', 'none')
         .attr('stroke', color)
-        .attr('stroke-width', 2)
+        .attr('stroke-width', isFullscreen ? 3 : 2)
         .attr('stroke-linejoin', 'round')
         .attr('stroke-linecap', 'round')
         .attr('class', 'line')
@@ -248,8 +306,33 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
       path.attr('stroke-dasharray', pathLength)
         .attr('stroke-dashoffset', pathLength)
         .transition()
-        .duration(1000)
+        .duration(animDuration)
         .attr('stroke-dashoffset', 0);
+      
+      // Add area beneath the line for emphasis (only if chart is tall enough)
+      if (height > 150) {
+        const areaGenerator = d3.area<LineChartData>()
+          .x(d => x(d.date))
+          .y0(height)
+          .y1(d => y(d[seriesKey as keyof LineChartData] as number))
+          .curve(d3.curveMonotoneX);
+        
+        g.append('path')
+          .datum(data)
+          .attr('class', 'area')
+          .attr('fill', color)
+          .attr('fill-opacity', 0.1)
+          .attr('d', areaGenerator)
+          .attr('clip-path', 'url(#clip)')
+          .style('opacity', 0)
+          .transition()
+          .delay(animDuration * 0.5) // Start after line is partially drawn
+          .duration(animDuration * 0.8)
+          .style('opacity', 1);
+      }
+      
+      // Calculate point size based on chart dimensions
+      const pointSize = Math.max(Math.min((width + height) / 300, 7), 3); 
       
       // Add data points with tooltips using Renderer2
       const circles = g.selectAll(`.dot-series${index + 1}`)
@@ -258,7 +341,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
         .attr('class', `dot-series${index + 1}`)
         .attr('cx', (d: any) => x(d.date))
         .attr('cy', (d: any) => y(d[seriesKey]))
-        .attr('r', isFullscreen ? 6 : 4)
+        .attr('r', 0) // Start with radius 0 for animation
         .attr('fill', color)
         .attr('stroke', '#fff')
         .attr('stroke-width', 1)
@@ -274,6 +357,12 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
           color: color
         });
       });
+      
+      // Animate the points appearing
+      circles.transition()
+        .delay((d, i) => animDuration * 0.5 + (i * (animDuration / data.length)))
+        .duration(300)
+        .attr('r', pointSize);
       
       // Handle events with Renderer2
       circles.on('mouseover', (event: MouseEvent, d: any) => {
@@ -304,8 +393,13 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
           .style('top', (event.pageY - 28) + 'px');
           
         // Highlight the point using Renderer2
-        this.renderer.setStyle(target, 'r', isFullscreen ? '8px' : '6px');
+        this.renderer.setStyle(target, 'r', pointSize * 1.5 + 'px');
         this.renderer.setStyle(target, 'opacity', '1');
+        
+        // Highlight the corresponding line
+        g.selectAll(`.line`).filter((lineData: any, i: number) => i === index)
+          .attr('stroke-width', isFullscreen ? 5 : 3)
+          .attr('stroke-opacity', 1);
       })
       .on('mouseout', (event: MouseEvent) => {
         this.tooltip.transition()
@@ -314,8 +408,13 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
           
         // Restore point appearance using Renderer2
         const target = event.target as SVGCircleElement;
-        this.renderer.setStyle(target, 'r', isFullscreen ? '6px' : '4px');
+        this.renderer.setStyle(target, 'r', pointSize + 'px');
         this.renderer.setStyle(target, 'opacity', '0.7');
+        
+        // Restore line appearance
+        g.selectAll(`.line`)
+          .attr('stroke-width', isFullscreen ? 3 : 2)
+          .attr('stroke-opacity', 0.9);
       });
     };
 
@@ -324,27 +423,32 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
     drawLine(line2, this.data, this.colors[1], 1);
     drawLine(line3, this.data, this.colors[2], 2);
     
-    // Add a legend
-    const legendX = isFullscreen ? width - 150 : width + 20;
-    const legendY = isFullscreen ? 0 : 0;
-    
+    // Remove conditional logic for placing legend; always use top-right
+    const legendX = width - 150;
+    const legendY = 10; 
     const legend = g.append('g')
       .attr('class', 'legend')
-      .attr('transform', `translate(${legendX}, ${legendY})`);
+      .attr('transform', `translate(${legendX},${legendY})`);
       
+    // Calculate legend item size based on available space
+    const legendItemHeight = Math.min(Math.max(height / 15, 15), 25);
+    const legendFontSize = Math.max(axisFontSize * 0.9, 10);
+    
     Object.entries(this.seriesNames).forEach(([key, name], i) => {
       const legendRow = legend.append('g')
-        .attr('transform', `translate(0, ${i * 20})`);
+        .attr('transform', `translate(0, ${i * legendItemHeight})`);
         
+      // Add rect with size based on available space
       legendRow.append('rect')
-        .attr('width', 12)
-        .attr('height', 12)
+        .attr('width', legendFontSize)
+        .attr('height', legendFontSize * 0.8)
         .attr('fill', this.colors[i]);
         
+      // Add text with size based on available space
       legendRow.append('text')
-        .attr('x', 20)
-        .attr('y', 9)
-        .attr('font-size', '11px')
+        .attr('x', legendFontSize * 1.5)
+        .attr('y', legendFontSize * 0.8)
+        .attr('font-size', `${legendFontSize}px`)
         .attr('fill', '#ddd')
         .text(name);
     });
@@ -373,5 +477,12 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges {
       default:
         return value.toString();
     }
+  }
+
+  // A small helper to show messages temporarily (if desired):
+  showStatusMessage(message: string, durationMs: number = 3000): void {
+    this.statusMessage = message;
+    this.showStatus = true;
+    setTimeout(() => { this.showStatus = false; }, durationMs);
   }
 }

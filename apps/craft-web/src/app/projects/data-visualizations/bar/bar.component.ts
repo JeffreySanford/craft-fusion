@@ -15,6 +15,7 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
   @Input() data: BarChartData[] | undefined;
   @Input() width: number = 0;
   @Input() height: number = 0;
+  @Input() showLegend: boolean = true;
   
   title = 'Quarterly Performance Comparison';
   subtitle = 'Comparing three key metrics across months';
@@ -24,6 +25,9 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
   private container: any;
   private tooltip: any;
   private resizeObserver: ResizeObserver | null = null;
+  
+  // Legend items array for displaying in the template
+  legendItems: string[] = [];
   
   // Define value labels to make the chart more meaningful
   private valueLabels: { [key: string]: string } = {
@@ -35,7 +39,16 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
   constructor(private el: ElementRef, private renderer: Renderer2) { }
 
   ngOnInit(): void {
-    // Colors are initialized here
+    // Initialize legend items based on value labels
+    this.initializeLegendItems();
+  }
+
+  /**
+   * Initializes the legend items array based on the valueLabels property
+   */
+  private initializeLegendItems(): void {
+    // Use the value labels to populate the legend items
+    this.legendItems = Object.values(this.valueLabels);
   }
 
   ngAfterViewInit(): void {
@@ -61,6 +74,11 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
   ngOnChanges(changes: SimpleChanges): void {
     // Update chart if data changes
     if (changes['data'] && !changes['data'].firstChange) {
+      // Update legend items when data changes
+      if (this.data && this.data.length > 0) {
+        this.updateLegendItems();
+      }
+      
       this.updateChart();
     }
     
@@ -69,6 +87,37 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
       setTimeout(() => {
         this.updateChart();
       }, 150); // Add a delay to ensure container has adjusted
+    }
+    
+    // Handle showLegend changes
+    if (changes['showLegend']) {
+      // No need to update chart, just update the template binding
+      console.log('Legend visibility updated:', this.showLegend);
+    }
+  }
+
+  /**
+   * Updates the legend items based on current data
+   */
+  private updateLegendItems(): void {
+    if (!this.data || this.data.length === 0) return;
+    
+    // If the data structure provides value labels, use those
+    // Otherwise fallback to our predefined labels
+    const firstItem = this.data[0];
+    if (firstItem && firstItem.values && firstItem.values.length > 0) {
+      // Check if the data contains custom labels
+      const hasCustomLabels = firstItem.values.some(v => v.label && v.label.trim() !== '');
+      
+      if (hasCustomLabels) {
+        // Use labels from the data
+        this.legendItems = firstItem.values.map(v => 
+          this.valueLabels[v.label] || v.label
+        );
+      } else {
+        // Fallback to predefined labels
+        this.legendItems = Object.values(this.valueLabels).slice(0, firstItem.values.length);
+      }
     }
   }
 
@@ -137,6 +186,11 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
       offsetWidth: containerElement.offsetWidth,
       offsetHeight: containerElement.offsetHeight
     });
+    
+    // Ensure legend items are updated when chart is initialized
+    if (this.data && this.data.length > 0) {
+      this.updateLegendItems();
+    }
     
     // Create chart with logged dimensions
     this.createChart();
@@ -361,10 +415,13 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
       });
     });
     
-    // Add a more descriptive legend with value labels
+    // Ensure legend items are populated with the same values used in the chart
     const legendValues = this.data[0].values.map(v => this.valueLabels[v.label] || v.label);
-    const legendX = width - 150;
-    const legendY = 0;
+    this.legendItems = legendValues;
+    
+    // Add a more descriptive legend with value labels
+    const legendX = width - 100;
+    const legendY = 20;
     
     const legend = this.svg.append('g')
       .attr('class', 'legend')
@@ -394,5 +451,24 @@ export class BarComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit
       return `$${(value / 1000).toFixed(1)}K`;
     }
     return `$${value}`;
+  }
+  
+  /**
+   * Public method to toggle legend visibility
+   * @returns Current visibility state after toggle
+   */
+  public toggleLegend(): boolean {
+    this.showLegend = !this.showLegend;
+    return this.showLegend;
+  }
+
+  // Add properties and optional helper to manage status messages if needed
+  statusMessage: string = '';
+  showStatus: boolean = false;
+
+  showStatusMessage(message: string, durationMs: number = 3000): void {
+    this.statusMessage = message;
+    this.showStatus = true;
+    setTimeout(() => { this.showStatus = false; }, durationMs);
   }
 }
