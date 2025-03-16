@@ -1,11 +1,20 @@
 <!-- recipes.component.html -->
-<mat-card class="content">
+<div class="recipes-container content">
+  <!-- Debug message to verify the component is being rendered and recipes are loaded -->
+  <div *ngIf="loaded" class="debug-info">
+    {{ recipes.length }} recipes loaded
+  </div>
+
   <ng-container *ngIf="loaded && recipes.length > 0; else noRecipesOrLoading">
-    <ng-container *ngFor="let recipe of recipes">
+    <ng-container *ngFor="let recipe of paginatedRecipes">
       <mat-card class="recipe-card" (click)="navigateToRecipe(recipe)">
         <mat-icon class="recipe-icon">restaurant</mat-icon>
         <mat-card-title class="recipe-title">{{ recipe.name }}</mat-card-title>
-        <button mat-mini-fab color="primary" class="recipe-button" (click)="navigateToRecipe(recipe)">
+        <div *ngIf="recipe.description" class="recipe-description">{{ recipe.description }}</div>
+        <div *ngIf="recipe.countryOfOrigin" class="recipe-origin">
+          <small>{{ recipe.countryOfOrigin }}</small>
+        </div>
+        <button mat-mini-fab color="primary" class="recipe-button" (click)="navigateToRecipe(recipe); $event.stopPropagation()">
           <mat-icon>arrow_forward</mat-icon>
         </button>
       </mat-card>
@@ -13,10 +22,21 @@
   </ng-container>
   <ng-template #noRecipesOrLoading>
     <ng-container *ngIf="loaded; else loading">
-      <p>No recipes available.</p>
+      <p class="no-recipes">No recipes available. Check back soon for delicious peasant cuisine!</p>
     </ng-container>
   </ng-template>
   <ng-template #loading>
-    <p>Loading recipes...</p>
+    <div class="loading-container">
+      <mat-spinner color="accent" diameter="40"></mat-spinner>
+      <p class="loading-text">Loading recipes...</p>
+    </div>
   </ng-template>
-</mat-card>
+</div>
+
+<!-- Pagination controls -->
+<div class="pagination-container">
+  <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }}</span>
+  <button class="pagination-button" (click)="previousPage()" [disabled]="currentPage === 1">&lt;</button>
+  <span>{{ currentPage }}</span>
+  <button class="pagination-button" (click)="nextPage()" [disabled]="currentPage === totalPages">&gt;</button>
+</div>

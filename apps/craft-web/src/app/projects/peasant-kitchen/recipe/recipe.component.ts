@@ -11,13 +11,32 @@ import { PeasantKitchenService } from '../peasant-kitchen.service';
 })
 export class RecipeComponent implements OnInit {
   recipe!: Recipe;
+  error: string = '';
+  loading: boolean = true;
 
   constructor(private recipeService: PeasantKitchenService, private router: Router) { }
 
   ngOnInit(): void {
-    this.recipe = this.recipeService.getRecipe();
-    if (!this.recipe) {
-      this.router.navigate(['/peasant-kitchen']);
+    try {
+      this.recipe = this.recipeService.getRecipe();
+      this.loading = false;
+    } catch (err) {
+      console.error('Error loading recipe:', err);
+      this.error = 'Recipe not found. Please select a recipe from the list.';
+      this.loading = false;
+      
+      // Create a placeholder recipe after a short delay, then redirect
+      setTimeout(() => {
+        this.router.navigate(['/peasant-kitchen']);
+      }, 3000);
     }
+  }
+
+  /**
+   * Navigate back to the recipes list
+   */
+  goBackToRecipes(): void {
+    console.log('Back button pressed, returning to parent container.');
+    this.router.navigate(['peasant-kitchen']);
   }
 }

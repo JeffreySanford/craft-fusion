@@ -1,6 +1,171 @@
 {
   "recipes": [
     {
+      "url": "bobotie",
+      "name": "Bobotie",
+      "countryOfOrigin": "South Africa",
+      "description": "Spiced minced meat baked with an egg-based topping.",
+      "ingredients": [
+        "1 lb ground beef",
+        "1 onion, chopped",
+        "1 clove garlic",
+        "1 tbsp curry powder",
+        "1 slice bread, soaked in milk",
+        "2 eggs"
+      ],
+      "directions": [
+        "Brown onion, garlic, then mince. Add curry.",
+        "Combine soaked bread. Spread in dish.",
+        "Beat eggs with remaining milk, pour on top.",
+        "Bake until set."
+      ],
+      "servingSize": "4 servings"
+    },
+    {
+      "url": "borscht",
+      "name": "Borscht",
+      "countryOfOrigin": "Ukraine",
+      "description": "Beet-based soup with root vegetables, often inexpensive to make.",
+      "ingredients": [
+        "3 beets, peeled and grated",
+        "2 carrots, chopped",
+        "2 potatoes, diced",
+        "1 onion, chopped",
+        "4 cups broth",
+        "Salt and pepper"
+      ],
+      "directions": [
+        "Sauté onion, add carrots and beets.",
+        "Add potatoes, broth, and simmer until tender.",
+        "Season and serve with sour cream if available."
+      ],
+      "servingSize": "6 servings"
+    },
+    {
+      "url": "cassoulet",
+      "name": "Cassoulet",
+      "countryOfOrigin": "France",
+      "description": "A rustic bean stew with inexpensive cuts of meat or sausages.",
+      "ingredients": [
+        "1 lb white beans, soaked",
+        "1 onion, chopped",
+        "2 carrots, chopped",
+        "1 lb sausage or leftover meat",
+        "4 cups broth",
+        "2 cloves garlic"
+      ],
+      "directions": [
+        "Sauté onions and carrots. Add beans and broth.",
+        "Simmer until beans soften.",
+        "Add sliced sausage or meat. Season to taste.",
+        "Bake in an oven-safe dish until bubbly."
+      ],
+      "servingSize": "6 servings"
+    },
+    {
+      "url": "colcannon",
+      "name": "Colcannon",
+      "countryOfOrigin": "Ireland",
+      "description": "Mashed potatoes mixed with kale or cabbage and butter.",
+      "ingredients": [
+        "2 lbs potatoes, peeled",
+        "2 cups chopped kale or cabbage",
+        "1/2 cup milk",
+        "4 tbsp butter",
+        "1 tsp salt",
+        "1/2 tsp pepper"
+      ],
+      "directions": [
+        "Boil potatoes until soft. Drain and mash.",
+        "In a separate pan, cook kale with a bit of butter.",
+        "Add kale and milk to mashed potatoes, mix well.",
+        "Season with salt, pepper, and extra butter on top."
+      ],
+      "servingSize": "4 servings"
+    },
+    {
+      "url": "congee",
+      "name": "Congee",
+      "countryOfOrigin": "China",
+      "description": "Rice porridge often eaten for breakfast or when feeling unwell.",
+      "ingredients": [
+        "1 cup rice",
+        "8 cups water or stock",
+        "1 tsp salt",
+        "Optional toppings: green onion, soy sauce, shredded chicken"
+      ],
+      "directions": [
+        "Rinse rice and place in a pot with water or stock.",
+        "Bring to a boil, then reduce heat and simmer.",
+        "Cook, stirring occasionally, until it reaches porridge consistency, about 1 hour.",
+        "Season and top as desired."
+      ],
+      "servingSize": "4 servings"
+    },
+    {
+      "url": "cornbread",
+      "name": "Cornbread",
+      "countryOfOrigin": "United States",
+      "description": "Simple cornmeal bread often served with beans or soups.",
+      "ingredients": [
+        "1 cup cornmeal",
+        "1 cup all-purpose flour",
+        "1 tbsp baking powder",
+        "1 tsp salt",
+        "1 cup milk",
+        "1 egg",
+        "2 tbsp melted butter"
+      ],
+      "directions": [
+        "Preheat oven to 400°F (200°C).",
+        "Combine dry ingredients. Beat egg with milk, then stir in melted butter.",
+        "Mix wet and dry together. Pour into greased pan.",
+        "Bake for 20-25 minutes."
+      ],
+      "servingSize": "6 servings"
+    },
+    {
+      "url": "dal-tadka",
+      "name": "Dal Tadka",
+      "countryOfOrigin": "India",
+      "description": "A simple lentil stew flavored with spices and a ghee tempering.",
+      "ingredients": [
+        "1 cup split lentils (toor dal)",
+        "4 cups water",
+        "1 onion, chopped",
+        "1 tomato, chopped",
+        "1 tsp turmeric",
+        "Hot oil/ghee with cumin, garlic"
+      ],
+      "directions": [
+        "Boil lentils with water, onion, tomato, turmeric until soft.",
+        "Mash gently. Fry cumin and garlic in hot oil or ghee.",
+        "Pour tempering into dal. Serve hot."
+      ],
+      "servingSize": "4 servings"
+    },
+    {
+      "url": "feijoada",
+      "name": "Feijoada",
+      "countryOfOrigin": "Brazil",
+      "description": "Black bean stew with inexpensive cuts of pork or beef.",
+      "ingredients": [
+        "1 lb black beans, soaked",
+        "1 lb mixed pork cuts (some smoked)",
+        "1 onion, chopped",
+        "2 cloves garlic, minced",
+        "Bay leaf, salt, and pepper",
+        "6 cups water or broth"
+      ],
+      "directions": [
+        "Brown the pork. Remove excess fat.",
+        "Sauté onion, garlic, then add beans.",
+        "Throw pork back in, add water, bay leaf.",
+        "Simmer 2-3 hours until beans are tender."
+      ],
+      "servingSize": "6 servings"
+    },
+    {
       "url": "fresh-tomato-soup",
       "name": "Fresh Tomato Soup",
       "countryOfOrigin": "United States of America",
@@ -22,6 +187,25 @@
         "Place half of the tomato mixture in a blender or food processor. Cover and blend or process until smooth. Repeat with the remaining mixture. Return all to the saucepan; heat through. If desired, garnish with additional cilantro."
       ],
       "servingSize": "4 servings (4 cups)"
+    },
+    {
+      "url": "gallo-pinto",
+      "name": "Gallo Pinto",
+      "countryOfOrigin": "Costa Rica",
+      "description": "Rice and beans staple often eaten for breakfast.",
+      "ingredients": [
+        "2 cups cooked rice",
+        "1 cup cooked black beans",
+        "1 onion, diced",
+        "1 red bell pepper, diced",
+        "Cilantro (optional)"
+      ],
+      "directions": [
+        "Sauté onion and pepper.",
+        "Add beans, then stir in cooked rice.",
+        "Season. Garnish with cilantro."
+      ],
+      "servingSize": "4 servings"
     },
     {
       "url": "kartoffelsalat",
@@ -68,6 +252,25 @@
       ]
     },
     {
+      "url": "injera",
+      "name": "Injera",
+      "countryOfOrigin": "Ethiopia",
+      "description": "Sourdough flatbread made from teff flour.",
+      "ingredients": [
+        "2 cups teff flour",
+        "3 cups water",
+        "Pinch of salt",
+        "Starter (optional)"
+      ],
+      "directions": [
+        "Mix flour and water to form batter. Let ferment 2-3 days.",
+        "Stir in salt. Pour thin layer on a hot griddle.",
+        "Cook until holes form on top, do not flip.",
+        "Remove once edges lift easily."
+      ],
+      "servingSize": "6 servings"
+    },
+    {
       "url": "jamaican-jerk",
       "name": "Jamaican Jerk",
       "countryOfOrigin": "Jamaica",
@@ -96,6 +299,101 @@
       ]
     },
     {
+      "url": "minestrone",
+      "name": "Minestrone",
+      "countryOfOrigin": "Italy",
+      "description": "Hearty vegetable soup with beans and pasta.",
+      "ingredients": [
+        "1 onion, chopped",
+        "2 carrots, sliced",
+        "1 can beans, drained",
+        "1 cup diced tomatoes",
+        "1/2 cup small pasta"
+      ],
+      "directions": [
+        "Sauté onion, carrots. Add tomatoes, beans, water or stock.",
+        "Simmer, add pasta. Cook until pasta is tender.",
+        "Season with salt and pepper."
+      ],
+      "servingSize": "6 servings"
+    },
+    {
+      "url": "miso-soup",
+      "name": "Miso Soup",
+      "countryOfOrigin": "Japan",
+      "description": "Simple broth made from miso paste and dashi with tofu or seaweed.",
+      "ingredients": [
+        "4 cups dashi broth",
+        "3 tbsp miso paste",
+        "1/2 cup tofu, cubed",
+        "2 tbsp chopped green onions"
+      ],
+      "directions": [
+        "Warm dashi. Do not boil.",
+        "Dissolve miso paste in a small bowl with some warm broth.",
+        "Return mixture to pot, add tofu.",
+        "Garnish with green onions."
+      ],
+      "servingSize": "4 servings"
+    },
+    {
+      "url": "ratatouille",
+      "name": "Ratatouille",
+      "countryOfOrigin": "France",
+      "description": "Stewed vegetable dish using affordable produce.",
+      "ingredients": [
+        "1 eggplant, diced",
+        "2 zucchinis, sliced",
+        "1 onion, chopped",
+        "2 bell peppers, chopped",
+        "2 tomatoes, chopped"
+      ],
+      "directions": [
+        "Sauté onion, peppers, and eggplant. Add tomatoes, zucchini.",
+        "Simmer until tender. Season to taste."
+      ],
+      "servingSize": "6 servings"
+    },
+    {
+      "url": "shepherds-pie",
+      "name": "Shepherd's Pie",
+      "countryOfOrigin": "United Kingdom",
+      "description": "Minced meat and vegetables topped with mashed potatoes.",
+      "ingredients": [
+        "1 lb ground lamb or beef",
+        "1 onion, chopped",
+        "Mixed vegetables",
+        "Mashed potatoes for topping",
+        "Salt, pepper"
+      ],
+      "directions": [
+        "Brown meat with onion. Add vegetables.",
+        "Transfer to baking dish, top with mashed potatoes.",
+        "Bake at 375°F (190°C) until golden."
+      ],
+      "servingSize": "6 servings"
+    },
+    {
+      "url": "tabbouleh",
+      "name": "Tabbouleh",
+      "countryOfOrigin": "Middle East",
+      "description": "Bulgur wheat salad with tomatoes, parsley, and mint.",
+      "ingredients": [
+        "1 cup bulgur wheat",
+        "2 tomatoes, diced",
+        "1 bunch parsley, chopped",
+        "Fresh mint, chopped",
+        "2 tbsp olive oil",
+        "Juice of 1 lemon"
+      ],
+      "directions": [
+        "Soak bulgur in hot water until soft. Drain.",
+        "Mix with diced tomatoes, parsley, mint.",
+        "Add olive oil and lemon juice. Season to taste."
+      ],
+      "servingSize": "4 servings"
+    },
+    {
       "url": "torsk",
       "name": "Torsk",
       "countryOfOrigin": "Scandahovia",
@@ -113,6 +411,24 @@
         "Remove fillets from water, and blot on paper towels to remove excess water. Brush with 6 tablespoons melted butter, and sprinkle with paprika.",
         "Broil for 8 to 10 minutes per inch of thickness, or until the fillets are golden brown. Serve with the remaining melted butter"
       ]
+    },
+    {
+      "url": "tortillas-de-maiz",
+      "name": "Tortillas de Maíz",
+      "countryOfOrigin": "Mexico",
+      "description": "Corn tortillas made simply with masa harina and salt.",
+      "ingredients": [
+        "2 cups masa harina",
+        "1/2 tsp salt",
+        "1 1/2 cups warm water"
+      ],
+      "directions": [
+        "Mix masa harina and salt in a bowl.",
+        "Gradually add water, kneading until dough is soft.",
+        "Divide into balls. Press into tortillas.",
+        "Cook on a hot griddle for about 30 seconds each side."
+      ],
+      "servingSize": "12 tortillas"
     }
   ]
 }

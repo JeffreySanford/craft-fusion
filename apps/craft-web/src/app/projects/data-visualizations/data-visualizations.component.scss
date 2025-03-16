@@ -10,14 +10,15 @@
   box-sizing: border-box;
 }
 
-// Dashboard layout with sidebar
+// Dashboard layout with sidebar - remove border, add gradient background
 .dashboard-layout {
   display: flex;
   height: calc(100vh - 3em); // Adjust based on your header height
   overflow: hidden;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); // Rich dark gradient background
 }
 
-// Main visualization container with enhanced grid
+// Main visualization container with enhanced grid - remove border
 .visualization-container {
   flex: 1;
   display: grid;
@@ -26,10 +27,11 @@
   gap: 20px; // Consistent gap in both directions
   padding: 20px;
   overflow-y: auto;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.2); // Darker transparent background
+  position: relative; // For positioning the grape vine
 }
 
-// Empty state styling
+// Empty state styling - more vibrant
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -37,35 +39,39 @@
   justify-content: center;
   grid-column: 1 / -1; // Span all columns
   min-height: 300px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.7); // Brighter text
   
   mat-icon {
-    font-size: 4rem;
-    width: 4rem;
-    height: 4rem;
+    font-size: 5rem;
+    width: 5rem;
+    height: 5rem;
     margin-bottom: 1rem;
+    color: #FF9E00; // Vibrant orange for icon
   }
   
   h3 {
-    font-size: 1.5rem;
+    font-size: 2rem;
     margin-bottom: 0.5rem;
+    color: #00D9FF; // Vibrant cyan for heading
+    text-shadow: 0 0 10px rgba(0, 217, 255, 0.5); // Glow effect
   }
   
   p {
-    font-size: 1rem;
+    font-size: 1.2rem;
+    color: #FF61D8; // Vibrant pink for subheading
   }
 }
 
-// Sidebar styling with material elevation
+// Sidebar styling with vibrant material elevation
 .visualization-sidebar {
   width: 280px;
   display: flex;
   flex-direction: column;
-  background-color: rgba(0, 0, 0, 0.2);
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(22, 33, 62, 0.8); // Darker rich blue
+  border-left: none; // Remove border
   transition: width 0.3s ease;
   position: relative;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); // Material elevation
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.3); // Cyan glow
   z-index: 2; // Ensure sidebar appears above content
   
   &.collapsed {
@@ -93,25 +99,30 @@
   
   .sidebar-header {
     padding: 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(0, 217, 255, 0.3); // Cyan border
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.3); // Slightly darker for emphasis
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); // Subtle shadow for depth
+    background-color: rgba(0, 0, 0, 0.4); // Darker background
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); // Enhanced shadow
     
     h2 {
       margin: 0;
-      color: gold;
-      font-size: 1.2rem;
+      color: #00D9FF; // Vibrant cyan
+      font-size: 1.3rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 0 10px rgba(0, 217, 255, 0.5); // Glow effect
     }
 
     .sidebar-toggle {
-      color: gold;
+      color: #00D9FF; // Vibrant cyan
       transition: all 0.3s ease;
       
       &:hover {
-        background-color: rgba(255, 215, 0, 0.1);
+        background-color: rgba(0, 217, 255, 0.2);
+        transform: scale(1.1); // Slight grow effect on hover
       }
     }
   }
@@ -362,6 +373,17 @@
     mat-card-header {
       cursor: default;
     }
+    
+    &::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at center, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.95) 100%);
+      z-index: -1;
+    }
   }
   
   // Special layout handling for small items when preceded by larger ones
@@ -420,41 +442,41 @@
   height: 280px; // Match height with the medium tile
 }
 
-// Card styling for each visualization
+// Card styling for each visualization - more vibrant
 .chart-card {
   display: flex;
   flex-direction: column;
   height: 100%; // Fill the entire grid cell
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.5); // Darker background for contrast
   color: white;
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 0, 0, 0.5);
-  border-radius: 8px;
+  border: none; // Remove border
+  border-radius: 12px; // More rounded corners
   overflow: hidden;
-  padding: 0; // Remove any default padding
-  margin: 0; // Remove any default margin
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05); // Subtle glow
   
   &:hover {
-    border-color: gold;
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    transform: translateY(-5px); // Lift effect on hover
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
   }
   
   &.expanded {
     z-index: 10;
-    transform: scale(1.02);
-    border-color: gold;
-    box-shadow: 0 8px 24px rgba(255, 215, 0, 0.5);
+    transform: scale(1.03);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1), 0 0 30px rgba(255, 255, 255, 0.15);
   }
   
-  // Card header styling
+  // Card header styling - more vibrant
   mat-card-header {
-    background-color: rgba(0, 0, 0, 0.3);
-    padding: 8px 12px; // Reduce header padding
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, rgba(20, 20, 20, 0.7) 100%);
+    padding: 12px 16px;
     display: flex;
     align-items: center;
-    cursor: move; // Indicate draggable
-    position: relative; // For positioning the close button
+    cursor: move;
+    position: relative;
     
     .chart-title {
       color: white;
@@ -463,13 +485,15 @@
       flex: 1;
       display: flex;
       align-items: center;
-      padding-right: 40px; // Make space for the close button
+      padding-right: 40px;
+      font-weight: 600;
       
       mat-icon {
-        margin-right: 8px;
-        font-size: 20px;
-        height: 20px;
-        width: 20px;
+        margin-right: 12px;
+        font-size: 24px;
+        height: 24px;
+        width: 24px;
+        // Vibrant icon styling added below
       }
     }
     
@@ -531,16 +555,23 @@
       }
     }
     
-    // Use chart color for header background
+    // Use chart color for header background with gradient
     &.custom-colored {
-      background-color: rgba(0, 0, 0, 0.3);
+      background: linear-gradient(90deg, 
+        rgba(0, 0, 0, 0.6) 0%, 
+        rgba(0, 0, 0, 0.4) 100%);
       
-      // Title text and icon color inherit from chart color
+      // Add bottom border with chart color
+      border-bottom: 3px solid; // Color will be inherited
+      
+      // Title text and icon color inherit from chart color with glow
       .chart-title {
         color: inherit;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
         
         mat-icon {
           color: inherit;
+          filter: drop-shadow(0 0 4px currentColor);
         }
       }
       
@@ -576,72 +607,100 @@
   }
 }
 
-// Chart content container styles
-.chart-content {
-  height: 100%; // Use all available height
-  padding: 8px; // Reduced padding
+// Vibrant chart tile styling by type
+.visualization-item {
+  // ...existing code...
+  
+  // Special styling for different chart types
+  &.chart-type-line .chart-card mat-card-header {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, rgba(30, 100, 200, 0.2) 100%);
+    .chart-title mat-icon {
+      color: #00D9FF; // Vibrant cyan for line charts
+      filter: drop-shadow(0 0 5px rgba(0, 217, 255, 0.8));
+    }
+  }
+  
+  &.chart-type-bar .chart-card mat-card-header {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, rgba(50, 200, 100, 0.2) 100%);
+    .chart-title mat-icon {
+      color: #5CFF5C; // Vibrant green for bar charts
+      filter: drop-shadow(0 0 5px rgba(92, 255, 92, 0.8));
+    }
+  }
+  
+  &.chart-type-finance .chart-card mat-card-header {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, rgba(200, 50, 50, 0.2) 100%);
+    .chart-title mat-icon {
+      color: #FF5C5C; // Vibrant red for finance charts
+      filter: drop-shadow(0 0 5px rgba(255, 92, 92, 0.8));
+    }
+  }
+}
+
+// Enhance fullscreen view with vibrant colors
+.visualization-item.full-expanded {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  margin: 0;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
+  overflow: auto;
   
-  // Fixed heights for simple charts - adjusted to ensure content isn't cut off
-  &.line-chart-content {
-    height: 100%; // Use full available height
-    min-height: 220px; // Maintain minimum height
-    max-height: none; // Remove max height restriction
-    overflow: visible; // Allow chart elements to overflow their container
+  .chart-card {
+    width: 95%;
+    height: 95%;
+    max-width: 1600px;
+    max-height: 900px;
+    transform: none;
+    
+    mat-card-content {
+      height: calc(100% - 60px); // Adjust based on header height
+      
+      .chart-content {
+        height: 100%;
+        padding: 24px; // Increase padding for better spacing in fullscreen
+        
+        &.line-chart-content,
+        &.bar-chart-content,
+        &.finance-chart-content,
+        &.scrollable-chart-content {
+          height: 100%; // Use full height in fullscreen
+          max-height: none; // No max height in fullscreen
+          overflow: visible; // Keep overflow visible for chart elements
+        }
+        
+        // Add special handling for charts that need scrolling
+        &.scrollable-chart-content {
+          overflow-y: auto;
+        }
+      }
+    }
+    
+    // Hide drag handle cursor in full-screen mode
+    mat-card-header {
+      cursor: default;
+    }
   }
   
-  &.bar-chart-content {
-    height: 100%; // Use full available height
-    min-height: 220px; // Maintain minimum height
-    max-height: none; // Remove max height restriction
-    overflow: visible; // Allow chart elements to overflow their container
-  }
-  
-  &.finance-chart-content {
-    height: 100%; // Use full available height
-    min-height: 250px; // Maintain minimum height
-    max-height: none; // Remove max height restriction
-    overflow: visible; // Allow chart elements to overflow their container
-  }
-  
-  // Scrollable content for complex charts
-  &.scrollable-chart-content {
-    overflow-y: auto;
-    max-height: none; // Remove arbitrary height limit
-    height: 100%; // Use all available space
-  }
-  
-  // Base styling for all charts
-  &.fixed-chart-content {
-    overflow: visible; // Changed from hidden to visible
-    justify-content: flex-start;
-    align-items: stretch;
-    height: 100%; // Use full available height
-  }
-}
-
-// Make sure mat-card-content adjusts height properly
-mat-card-content {
-  flex: 1;
-  overflow: visible; // Changed from hidden to visible
-  display: flex;
-  flex-direction: column;
-  padding: 0; // Ensure no padding
-}
-
-// Ensure expanded tiles show content properly
-.chart-card.expanded {
-  .chart-content.scrollable-chart-content,
-  .chart-content.fixed-chart-content,
-  .chart-content.line-chart-content,
-  .chart-content.bar-chart-content,
-  .chart-content.finance-chart-content {
-    height: 100%; // Use all available height
-    min-height: auto; // Let content determine minimum height
-    max-height: none; // No maximum height
-    padding: 8px; // Consistent padding
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.95) 100%);
+    z-index: -1;
   }
 }
 
@@ -1026,5 +1085,56 @@ mat-card-content {
       margin-right: 0.25em;
       border-radius: 4px;
     }
+  }
+}
+
+// Add vibrant styling to Mat-Icon in sidebar
+.visualization-sidebar .sidebar-content mat-list-item {
+  mat-icon[matListItemIcon] {
+    transition: all 0.3s ease;
+    
+    // Default vibrant colors for each icon type
+    &[ng-reflect-font-icon="show_chart"],
+    &[textContent="show_chart"] {
+      color: #00D9FF; // Vibrant cyan
+    }
+    
+    &[ng-reflect-font-icon="bar_chart"],
+    &[textContent="bar_chart"] {
+      color: #5CFF5C; // Vibrant green
+    }
+    
+    &[ng-reflect-font-icon="trending_up"],
+    &[textContent="trending_up"] {
+      color: #FF5C5C; // Vibrant red
+    }
+    
+    &[ng-reflect-font-icon="warning"],
+    &[textContent="warning"] {
+      color: #FFBB00; // Vibrant amber
+    }
+    
+    &[ng-reflect-font-icon="science"],
+    &[textContent="science"] {
+      color: #C17AFF; // Vibrant purple
+    }
+  }
+  
+  // Add pulsing animation for active icons
+  &.active mat-icon[matListItemIcon] {
+    animation: pulse 2s infinite;
+  }
+}
+
+// Add pulsing animation
+@keyframes pulse {
+  0% {
+    filter: drop-shadow(0 0 2px currentColor);
+  }
+  50% {
+    filter: drop-shadow(0 0 10px currentColor);
+  }
+  100% {
+    filter: drop-shadow(0 0 2px currentColor);
   }
 }

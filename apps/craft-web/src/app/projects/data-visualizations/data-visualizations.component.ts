@@ -584,7 +584,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     this.iconRegistry.registerFontClassAlias('material-icons');
   }
 
-  // Update method to enhance list item styles
+  // Update method to enhance list item styles with more vibrant colors
   updateListItemStyles(): void {
     // Use setTimeout to ensure DOM is updated
     setTimeout(() => {
@@ -593,9 +593,12 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       listItems.forEach((item, index) => {
         const chart = this.availableCharts[index];
         if (this.isChartActive(chart)) {
-          // Apply chart color to the border, text, and icons
+          // Apply vibrant chart color to the border, text, and icons
           (item as HTMLElement).style.borderLeftColor = chart.color;
           (item as HTMLElement).style.color = chart.color;
+          
+          // Add glow effect with the chart color
+          (item as HTMLElement).style.boxShadow = `0 0 10px rgba(${this.hexToRgb(chart.color)}, 0.3)`;
           
           // Add active class
           item.classList.add('active');
@@ -604,33 +607,56 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
           const icons = item.querySelectorAll('mat-icon');
           icons.forEach(icon => {
             (icon as HTMLElement).style.color = chart.color;
+            (icon as HTMLElement).style.filter = `drop-shadow(0 0 5px ${chart.color})`;
           });
           
-          // Style the title text
+          // Style the title text with glow
           const titleText = item.querySelector('[matListItemTitle]');
           if (titleText) {
             (titleText as HTMLElement).style.color = chart.color;
+            (titleText as HTMLElement).style.textShadow = `0 0 5px rgba(${this.hexToRgb(chart.color)}, 0.5)`;
           }
         } else {
           // Reset styles for inactive items
           item.classList.remove('active');
           (item as HTMLElement).style.borderLeftColor = 'transparent';
           (item as HTMLElement).style.color = '';
+          (item as HTMLElement).style.boxShadow = '';
           
-          // Reset all icon colors
+          // Reset all icon colors and effects
           const icons = item.querySelectorAll('mat-icon');
           icons.forEach(icon => {
             (icon as HTMLElement).style.color = '';
+            (icon as HTMLElement).style.filter = '';
           });
           
-          // Reset title text color
+          // Reset title text color and glow
           const titleText = item.querySelector('[matListItemTitle]');
           if (titleText) {
             (titleText as HTMLElement).style.color = '';
+            (titleText as HTMLElement).style.textShadow = '';
           }
         }
       });
     });
+  }
+  
+  // Helper function to convert hex color to RGB
+  private hexToRgb(hex: string): string {
+    // Remove # if present
+    hex = hex.replace('#', '');
+    
+    // Handle shorthand hex
+    if (hex.length === 3) {
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    
+    // Parse the hex values
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    
+    return `${r}, ${g}, ${b}`;
   }
   
   ngAfterViewInit() {

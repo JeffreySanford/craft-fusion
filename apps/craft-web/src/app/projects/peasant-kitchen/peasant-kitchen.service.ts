@@ -7,6 +7,16 @@ import { ApiService } from '../../common/services/api.service';
 export class PeasantKitchenService {
   private recipe!: Recipe;
   private readonly endpoint = 'recipes';
+  private readonly defaultRecipe: Recipe = {
+    id: 0,
+    name: 'Sample Recipe',
+    description: 'This is a sample recipe to show when none is selected.',
+    countryOfOrigin: 'United States',
+    servingSize: '4 servings',
+    ingredients: ['1 cup of flour', '2 eggs', '1/2 cup milk', '1 tsp salt'],
+    directions: ['Mix all ingredients together', 'Cook until done', 'Enjoy!'],
+    url: 'sample-recipe'
+  };
 
   constructor(private apiService: ApiService) {}
 
@@ -41,10 +51,19 @@ export class PeasantKitchenService {
    */
   getRecipe(): Recipe {
     if (!this.recipe) {
-      throw new Error('No recipe currently selected');
+      console.warn('No recipe currently selected - returning default recipe');
+      return this.defaultRecipe;
     }
     console.log('Getting current recipe:', this.recipe.id);
     return this.recipe;
+  }
+
+  /**
+   * Checks if a recipe is currently selected
+   * @returns boolean
+   */
+  hasRecipe(): boolean {
+    return !!this.recipe;
   }
 
   /**
