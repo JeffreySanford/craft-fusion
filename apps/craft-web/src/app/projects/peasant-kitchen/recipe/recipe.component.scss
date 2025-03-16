@@ -16,23 +16,38 @@
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
   font-family: var(--recipe-body-font, 'Crimson Text', 'Georgia', serif);
   animation: fadeInAndExpand 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
-  
+
   /* Fix height constraints */
   height: auto;
   max-height: none; /* Remove max-height constraint */
   display: flex;
   flex-direction: column;
+  max-width: 100%; /* Ensure the card doesn't overflow horizontally */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
 .recipe-content-wrapper {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  overflow: hidden; 
+  overflow: hidden;
+
   .card {
     height: 100%;
     overflow-y: auto;
   }
+}
+
+mat-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.25em 0.5em; /* Reduced padding */
+  position: relative;
+  background: rgba(255, 255, 255, 0.95);
+  z-index: 50;
+  position: sticky;
+  top: 0;
 }
 
 mat-card-title-group {
@@ -40,6 +55,7 @@ mat-card-title-group {
   top: 0;
   z-index: 50;
   background: rgba(255, 255, 255, 0.95);
+  padding: 0.5em 1em;
 }
 
 .card-background {
@@ -62,7 +78,8 @@ mat-card-title-group {
 }
 
 /* Remove the individual knot elements since we're using the corners */
-.card-knot-top, .card-knot-bottom {
+.card-knot-top,
+.card-knot-bottom {
   display: none;
 }
 
@@ -74,11 +91,48 @@ mat-card-title-group {
   display: flex;
   flex-direction: column;
   max-height: none; /* Remove max-height constraint */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  position: relative;
+
+  .description,
+  .country-of-origin,
+  .serving-size,
+  .ingredients,
+  .directions {
+    flex: 1 1 250px;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 6px;
+    padding: 1em;
+  }
+
+  .details-box {
+    width: 40%;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 6px;
+    padding: 1em;
+  }
+
+  .ingredients {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    width: 40%;
+    max-height: 60%;
+    overflow-y: auto;
+  }
 }
 
 .recipe-icon {
   color: #b22234; /* Red */
-  font-size: 2em !important;
+  font-size: 1.4em !important; /* reduced from 2em */
   margin-right: 0.5em;
   animation: floatAndRotate 3s infinite ease-in-out;
 }
@@ -112,8 +166,6 @@ mat-card-title {
 }
 
 .country-of-origin {
-  background-color: #3c3b6e; /* Blue */
-  color: white;
   padding: 0.8em;
   border-radius: 6px;
   margin-top: 15px;
@@ -124,7 +176,7 @@ mat-card-title {
   position: relative;
   overflow: hidden;
   animation: fadeSlideRight 0.8s ease-out 0.4s both;
-  
+
   &:hover {
     transform: translateY(-2px);
   }
@@ -140,6 +192,12 @@ mat-card-title {
     transform: skewX(-30deg);
     animation: shimmer 3s infinite;
   }
+
+  .country-origin-value {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
 }
 
 .serving-size {
@@ -151,7 +209,7 @@ mat-card-title {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
   animation: fadeSlideRight 0.8s ease-out 0.6s both;
-  
+
   &:hover {
     background-color: rgba(178, 34, 52, 0.15);
   }
@@ -165,17 +223,17 @@ mat-card-title {
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   animation: fadeSlideRight 0.8s ease-out 0.8s both;
-  
+
   ul {
     padding-left: 1.5em;
-    
+
     li {
       margin: 0.5em 0;
       position: relative;
       list-style-type: none;
       animation: fadeIn 0.5s ease-out forwards;
       opacity: 0;
-      
+
       &:before {
         content: '•';
         color: #b22234; /* Red */
@@ -203,7 +261,7 @@ mat-card-title {
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   animation: fadeSlideRight 0.8s ease-out 1s both;
-  
+
   &:before {
     content: '';
     position: absolute;
@@ -225,7 +283,7 @@ mat-card-title {
     animation: fadeIn 0.5s ease-out forwards;
     opacity: 0;
     transform: translateX(20px);
-    
+
     &:last-child {
       border-bottom: none;
     }
@@ -235,7 +293,7 @@ mat-card-title {
         animation-delay: 1s + $i * 0.15s;
       }
     }
-    
+
     .step-number {
       display: inline-block;
       width: 25px;
@@ -249,6 +307,25 @@ mat-card-title {
       font-size: 0.9em;
       font-weight: bold;
     }
+  }
+}
+
+.recipe-detail {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.5em;
+
+  label {
+    font-weight: bold;
+    margin-bottom: 0.1em;
+    color: #3c3b6e; /* Blue */
+    font-size: 0.9em;
+  }
+
+  .recipe-value {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
   }
 }
 
@@ -277,7 +354,7 @@ mat-card-title {
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
   text-align: center;
   animation: fadeIn 0.5s ease-out;
-  
+
   .error-icon {
     font-size: 3em;
     height: 3em;
@@ -285,7 +362,7 @@ mat-card-title {
     color: #b22234;
     margin-bottom: 0.5em;
   }
-  
+
   .error-text {
     font-size: 1.2em;
     margin-bottom: 1.5em;
@@ -300,7 +377,7 @@ mat-card-title {
   align-items: center;
   justify-content: center;
   height: 200px;
-  
+
   .loading-text {
     margin-top: 1em;
     color: #3c3b6e;
@@ -312,7 +389,7 @@ mat-card-actions button {
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
-  
+
   &:after {
     content: '';
     position: absolute;
@@ -323,15 +400,15 @@ mat-card-actions button {
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
     transition: all 0.6s ease;
   }
-  
+
   &:hover {
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    
+
     &:after {
       left: 100%;
     }
-    
+
     .mat-icon {
       animation: bounceLeft 0.6s infinite;
     }
@@ -348,94 +425,164 @@ mat-card-content {
 
 /* Animations */
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes pulseGlow {
-  0% { box-shadow: 0 0 5px rgba(178, 34, 52, 0.3); }
-  50% { box-shadow: 0 0 15px rgba(178, 34, 52, 0.5); }
-  100% { box-shadow: 0 0 5px rgba(178, 34, 52, 0.3); }
+  0% {
+    box-shadow: 0 0 5px rgba(178, 34, 52, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 15px rgba(178, 34, 52, 0.5);
+  }
+
+  100% {
+    box-shadow: 0 0 5px rgba(178, 34, 52, 0.3);
+  }
 }
 
 @keyframes fadeInAndExpand {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes fadeSlideRight {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes floatAndRotate {
-  0% { transform: translateY(0) rotate(0); }
-  50% { transform: translateY(-5px) rotate(5deg); }
-  100% { transform: translateY(0) rotate(0); }
+  0% {
+    transform: translateY(0) rotate(0);
+  }
+
+  50% {
+    transform: translateY(-5px) rotate(5deg);
+  }
+
+  100% {
+    transform: translateY(0) rotate(0);
+  }
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%) skewX(-30deg); }
-  100% { transform: translateX(200%) skewX(-30deg); }
+  0% {
+    transform: translateX(-100%) skewX(-30deg);
+  }
+
+  100% {
+    transform: translateX(200%) skewX(-30deg);
+  }
 }
 
 @keyframes shimmerText {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 100% 50%;
+  }
 }
 
 @keyframes bounceLeft {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(-5px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(-5px);
+  }
 }
 
 @keyframes rotateSlow {
-  from { transform: rotate(90deg); }
-  to { transform: rotate(450deg); } /* Full 360° rotation */
+  from {
+    transform: rotate(90deg);
+  }
+
+  to {
+    transform: rotate(450deg);
+  }
+
+  /* Full 360° rotation */
 }
 
 @keyframes rotateLeft {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(-360deg);
+  }
 }
 
 @keyframes rotateRight {
-  from { transform: rotate(180deg); }
-  to { transform: rotate(540deg); }
-}
+  from {
+    transform: rotate(180deg);
+  }
 
-@keyframes pulseTopRight {
-  0% { transform: rotate(90deg) scale(1); filter: drop-shadow(0 0 3px rgba(60, 59, 110, 0.5)); }
-  100% { transform: rotate(95deg) scale(1.1); filter: drop-shadow(0 0 8px rgba(60, 59, 110, 0.8)); }
-}
-
-@keyframes pulseBottomLeft {
-  0% { transform: rotate(-90deg) scale(1); filter: drop-shadow(0 0 3px rgba(178, 34, 52, 0.5)); }
-  100% { transform: rotate(-95deg) scale(1.1); filter: drop-shadow(0 0 8px rgba(178, 34, 52, 0.8)); }
-}
-
-@keyframes rotateLeftEnhanced {
-  0% { transform: rotate(0deg) scale(1); filter: drop-shadow(0 0 4px rgba(60, 59, 110, 0.5)); }
-  50% { transform: rotate(-180deg) scale(1.05); filter: drop-shadow(0 0 8px rgba(60, 59, 110, 0.7)); }
-  100% { transform: rotate(-360deg) scale(1); filter: drop-shadow(0 0 4px rgba(60, 59, 110, 0.5)); }
-}
-
-@keyframes rotateRightEnhanced {
-  0% { transform: rotate(180deg) scale(1); filter: drop-shadow(0 0 4px rgba(178, 34, 52, 0.5)); }
-  50% { transform: rotate(360deg) scale(1.05); filter: drop-shadow(0 0 8px rgba(178, 34, 52, 0.7)); }
-  100% { transform: rotate(540deg) scale(1); filter: drop-shadow(0 0 4px rgba(178, 34, 52, 0.5)); }
+  to {
+    transform: rotate(540deg);
+  }
 }
 
 @keyframes pulseTopRightEnhanced {
-  0% { transform: rotate(90deg) scale(1); filter: drop-shadow(0 0 4px rgba(60, 59, 110, 0.5)); }
-  50% { transform: rotate(94deg) scale(1.05); filter: drop-shadow(0 0 10px rgba(60, 59, 110, 0.8)); }
-  100% { transform: rotate(90deg) scale(1.02); filter: drop-shadow(0 0 6px rgba(60, 59, 110, 0.6)); }
+  0% {
+    transform: rotate(90deg) scale(1);
+    filter: drop-shadow(0 0 4px rgba(60, 59, 110, 0.5));
+  }
+
+  50% {
+    transform: rotate(94deg) scale(1.05);
+    filter: drop-shadow(0 0 10px rgba(60, 59, 110, 0.8));
+  }
+
+  100% {
+    transform: rotate(90deg) scale(1.02);
+    filter: drop-shadow(0 0 6px rgba(60, 59, 110, 0.6));
+  }
 }
 
 @keyframes pulseBottomLeftEnhanced {
-  0% { transform: rotate(-90deg) scale(1); filter: drop-shadow(0 0 4px rgba(178, 34, 52, 0.5)); }
-  50% { transform: rotate(-94deg) scale(1.05); filter: drop-shadow(0 0 10px rgba(178, 34, 52, 0.8)); }
-  100% { transform: rotate(-90deg) scale(1.02); filter: drop-shadow(0 0 6px rgba(178, 34, 52, 0.6)); }
+  0% {
+    transform: rotate(-90deg) scale(1);
+    filter: drop-shadow(0 0 4px rgba(178, 34, 52, 0.5));
+  }
+
+  50% {
+    transform: rotate(-94deg) scale(1.05);
+    filter: drop-shadow(0 0 10px rgba(178, 34, 52, 0.8));
+  }
+
+  100% {
+    transform: rotate(-90deg) scale(1.02);
+    filter: drop-shadow(0 0 6px rgba(178, 34, 52, 0.6));
+  }
 }
 
 strong {
@@ -451,7 +598,24 @@ strong {
   color: #fff !important;
   z-index: 60;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+
   &:hover {
     background-color: #a11f2f !important;
   }
+}
+
+.recipe-details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 1em;
+  margin-top: 0.5em;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }

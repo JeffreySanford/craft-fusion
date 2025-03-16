@@ -7,14 +7,15 @@
 
   <ng-container *ngIf="loaded && recipes.length > 0; else noRecipesOrLoading">
     <ng-container *ngFor="let recipe of paginatedRecipes">
-      <mat-card class="recipe-card" (click)="navigateToRecipe(recipe)">
+      <mat-card class="recipe-card" (click)="selectRecipe(recipe)">
         <mat-icon class="recipe-icon">restaurant</mat-icon>
         <mat-card-title class="recipe-title">{{ recipe.name }}</mat-card-title>
         <div *ngIf="recipe.description" class="recipe-description">{{ recipe.description }}</div>
-        <div *ngIf="recipe.countryOfOrigin" class="recipe-origin">
-          <small>{{ recipe.countryOfOrigin }}</small>
+        <div *ngIf="recipe.countryCode" class="recipe-origin">
+          <span class="flag-icon flag-icon-{{ recipe.countryCode | lowercase }}"></span>&nbsp;
+          <small>{{ recipe.countryName }}</small>
         </div>
-        <button mat-mini-fab color="primary" class="recipe-button" (click)="navigateToRecipe(recipe); $event.stopPropagation()">
+        <button mat-mini-fab color="primary" class="recipe-button" (click)="selectRecipe(recipe); $event.stopPropagation()">
           <mat-icon>arrow_forward</mat-icon>
         </button>
       </mat-card>
@@ -35,8 +36,7 @@
 
 <!-- Pagination controls -->
 <div class="pagination-container">
-  <span class="pagination-info">Page {{ currentPage }} of {{ totalPages }}</span>
   <button class="pagination-button" (click)="previousPage()" [disabled]="currentPage === 1">&lt;</button>
-  <span>{{ currentPage }}</span>
+  <span class="pagination-info">{{ currentPage }} of {{ totalPages }}</span>
   <button class="pagination-button" (click)="nextPage()" [disabled]="currentPage === totalPages">&gt;</button>
 </div>

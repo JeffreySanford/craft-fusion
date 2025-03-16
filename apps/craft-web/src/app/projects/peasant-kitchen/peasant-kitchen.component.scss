@@ -46,11 +46,12 @@
   .masthead {
     position: relative;
     display: flex;
+    flex-direction: row;
     align-items: center;
     border-bottom: 3px solid #b22234; /* Red stripe */
     padding: 0.5em 1em;
     margin-bottom: 0.5em;
-    min-height: 50px;
+    min-height: 4em;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     overflow: visible; /* Allow grape masthead to extend outside */
     animation: fadeIn 0.6s ease-out;
@@ -68,7 +69,7 @@
     }
 
     .site-logo {
-      height: 10em;
+      height: 6em;
       width: auto;
       margin-right: 1em;
       transition: transform 0.3s ease;
@@ -105,11 +106,11 @@
     /* Adjust grape masthead styling */
     .grape-masthead-container {
       position: absolute;
-      top: 1em; /* Adjust top position */
-      right: 1em; /* Adjust right position */
-      width: 25em;
+      top: -2em; /* Adjust top position */
+      right: -5em; /* Adjust right position */
+      width: 40em; /* Make it larger */
       height: auto;
-      z-index: 20;
+      z-index: 50; /* Ensure it overlays everything */
       transform: rotate(-5deg);
     }
 
@@ -118,8 +119,46 @@
       height: auto;
     }
 
-    &:hover {
-      animation: pulseGlow 0.8s alternate infinite;
+    .top-back-button {
+      position: relative; 
+      margin-left: auto;
+      top: auto; 
+      right: auto; 
+      background-color: #b22234 !important; /* Red background */
+      color: #fff !important;
+      z-index: 60;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      padding: 0.4em 0.8em;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      width: 8em; /* Set a fixed width */
+
+      &:hover {
+        background-color: #a11f2f !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      }
+
+      .mat-icon {
+        margin-right: 0.3em;
+        animation: bounceLeft 0.6s infinite;
+      }
+
+      &:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        transition: all 0.6s ease;
+      }
+
+      &:hover:after {
+        left: 100%;
+      }
     }
   }
 
@@ -322,4 +361,13 @@
 @keyframes pulseGlow {
   0% { filter: brightness(1); }
   100% { filter: brightness(1.2); }
+}
+
+@keyframes bounceLeft {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-5px);
+  }
 }

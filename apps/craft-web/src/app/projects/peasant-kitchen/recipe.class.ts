@@ -1,10 +1,11 @@
-export class Recipe {
-  name!: string;
-  description?: string;
-  ingredients?: string[];
-  directions?: string[];
-  url?: string;
-  countryOfOrigin?: string;
-  servingSize?: string;
-  id?: number;
+export interface Recipe {
+  id: number;
+  name: string;
+  description: string;
+  countryCode: string;
+  countryName: string;
+  servingSize: string;
+  ingredients: string[];
+  directions: string[];
+  url: string;
 }

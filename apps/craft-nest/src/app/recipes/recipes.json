@@ -3,7 +3,8 @@
     {
       "url": "bobotie",
       "name": "Bobotie",
-      "countryOfOrigin": "South Africa",
+      "countryCode": "ZA",
+      "countryName": "South Africa",
       "description": "Spiced minced meat baked with an egg-based topping.",
       "ingredients": [
         "1 lb ground beef",
@@ -24,7 +25,8 @@
     {
       "url": "borscht",
       "name": "Borscht",
-      "countryOfOrigin": "Ukraine",
+      "countryCode": "UA",
+      "countryName": "Ukraine",
       "description": "Beet-based soup with root vegetables, often inexpensive to make.",
       "ingredients": [
         "3 beets, peeled and grated",
@@ -44,7 +46,8 @@
     {
       "url": "cassoulet",
       "name": "Cassoulet",
-      "countryOfOrigin": "France",
+      "countryCode": "FR",
+      "countryName": "France",
       "description": "A rustic bean stew with inexpensive cuts of meat or sausages.",
       "ingredients": [
         "1 lb white beans, soaked",
@@ -65,7 +68,8 @@
     {
       "url": "colcannon",
       "name": "Colcannon",
-      "countryOfOrigin": "Ireland",
+      "countryCode": "IE",
+      "countryName": "Ireland",
       "description": "Mashed potatoes mixed with kale or cabbage and butter.",
       "ingredients": [
         "2 lbs potatoes, peeled",
@@ -86,7 +90,8 @@
     {
       "url": "congee",
       "name": "Congee",
-      "countryOfOrigin": "China",
+      "countryCode": "CN",
+      "countryName": "China",
       "description": "Rice porridge often eaten for breakfast or when feeling unwell.",
       "ingredients": [
         "1 cup rice",
@@ -105,7 +110,8 @@
     {
       "url": "cornbread",
       "name": "Cornbread",
-      "countryOfOrigin": "United States",
+      "countryCode": "US",
+      "countryName": "United States of America",
       "description": "Simple cornmeal bread often served with beans or soups.",
       "ingredients": [
         "1 cup cornmeal",
@@ -127,7 +133,8 @@
     {
       "url": "dal-tadka",
       "name": "Dal Tadka",
-      "countryOfOrigin": "India",
+      "countryCode": "IN",
+      "countryName": "India",
       "description": "A simple lentil stew flavored with spices and a ghee tempering.",
       "ingredients": [
         "1 cup split lentils (toor dal)",
@@ -147,7 +154,8 @@
     {
       "url": "feijoada",
       "name": "Feijoada",
-      "countryOfOrigin": "Brazil",
+      "countryCode": "BR",
+      "countryName": "Brazil",
       "description": "Black bean stew with inexpensive cuts of pork or beef.",
       "ingredients": [
         "1 lb black beans, soaked",
@@ -168,7 +176,8 @@
     {
       "url": "fresh-tomato-soup",
       "name": "Fresh Tomato Soup",
-      "countryOfOrigin": "United States of America",
+      "countryCode": "US",
+      "countryName": "United States of America",
       "description": "Bright and fresh tomato soup with a hint of spice.",
       "ingredients": [
         "3 medium tomatoes, peeled and quartered",
@@ -191,7 +200,8 @@
     {
       "url": "gallo-pinto",
       "name": "Gallo Pinto",
-      "countryOfOrigin": "Costa Rica",
+      "countryCode": "CR",
+      "countryName": "Costa Rica",
       "description": "Rice and beans staple often eaten for breakfast.",
       "ingredients": [
         "2 cups cooked rice",
@@ -210,7 +220,8 @@
     {
       "url": "kartoffelsalat",
       "name": "German Potato Salad",
-      "countryOfOrigin": "Germany",
+      "countryCode": "DE",
+      "countryName": "Germany",
       "description": "Authentic german potato sales, warm a savory.",
       "ingredients": [
         "3 cups diced peeled potatoes",
@@ -231,7 +242,8 @@
     {
       "url": "german-speatzle-dumplings",
       "name": "German Spätzle Dumplings",
-      "countryOfOrigin": "Germany",
+      "countryCode": "DE",
+      "countryName": "Germany",
       "description": "These are traditional German dumplings that are super tasty. They are different than the dumplings we see in American or Chinese cooking. They make a wonder quick side-dish to a German meal or anytime. For an extra tasty treat, skip the butter and use few pieces of bacon and the bacon grease that it produces! Mahlzeit!",
       "ingredients": [
         "1 cup all-purpose flour",
@@ -254,7 +266,8 @@
     {
       "url": "injera",
       "name": "Injera",
-      "countryOfOrigin": "Ethiopia",
+      "countryCode": "ET",
+      "countryName": "Ethiopia",
       "description": "Sourdough flatbread made from teff flour.",
       "ingredients": [
         "2 cups teff flour",
@@ -273,7 +286,8 @@
     {
       "url": "jamaican-jerk",
       "name": "Jamaican Jerk",
-      "countryOfOrigin": "Jamaica",
+      "countryCode": "JM",
+      "countryName": "Jamaica",
       "description": "Jerk is a style of cooking native to Jamaica in which meats are dry-rubbed or wet marinated with a very hot spice mixture called Jamaican jerk spice. Jerk seasoning is traditionally applied to pork and chicken. Modern recipes also apply jerk spice mixes to fish, shrimp, shellfish, beef, sausage, and tofu.",
       "ingredients": [
         "1 big bunch of green onions or a couple smaller bunches",
@@ -301,7 +315,8 @@
     {
       "url": "minestrone",
       "name": "Minestrone",
-      "countryOfOrigin": "Italy",
+      "countryCode": "IT",
+      "countryName": "Italy",
       "description": "Hearty vegetable soup with beans and pasta.",
       "ingredients": [
         "1 onion, chopped",
@@ -320,7 +335,8 @@
     {
       "url": "miso-soup",
       "name": "Miso Soup",
-      "countryOfOrigin": "Japan",
+      "countryCode": "JP",
+      "countryName": "Japan",
       "description": "Simple broth made from miso paste and dashi with tofu or seaweed.",
       "ingredients": [
         "4 cups dashi broth",
@@ -339,7 +355,8 @@
     {
       "url": "ratatouille",
       "name": "Ratatouille",
-      "countryOfOrigin": "France",
+      "countryCode": "FR",
+      "countryName": "France",
       "description": "Stewed vegetable dish using affordable produce.",
       "ingredients": [
         "1 eggplant, diced",
@@ -357,7 +374,8 @@
     {
       "url": "shepherds-pie",
       "name": "Shepherd's Pie",
-      "countryOfOrigin": "United Kingdom",
+      "countryCode": "GB",
+      "countryName": "United Kingdom",
       "description": "Minced meat and vegetables topped with mashed potatoes.",
       "ingredients": [
         "1 lb ground lamb or beef",
@@ -376,7 +394,8 @@
     {
       "url": "tabbouleh",
       "name": "Tabbouleh",
-      "countryOfOrigin": "Middle East",
+      "countryCode": "LB",
+      "countryName": "Lebanon",
       "description": "Bulgur wheat salad with tomatoes, parsley, and mint.",
       "ingredients": [
         "1 cup bulgur wheat",
@@ -396,7 +415,8 @@
     {
       "url": "torsk",
       "name": "Torsk",
-      "countryOfOrigin": "Scandahovia",
+      "countryCode": "NO",
+      "countryName": "Norway",
       "description": "Known as poor man's lobster, dipped in butter this is super tasty!",
       "ingredients": [
         "6 (6 ounce) fillets cod",
@@ -415,7 +435,8 @@
     {
       "url": "tortillas-de-maiz",
       "name": "Tortillas de Maíz",
-      "countryOfOrigin": "Mexico",
+      "countryCode": "MX",
+      "countryName": "Mexico",
       "description": "Corn tortillas made simply with masa harina and salt.",
       "ingredients": [
         "2 cups masa harina",

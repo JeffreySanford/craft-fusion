@@ -25,7 +25,7 @@ export class RecipesController {
    * Response: [
    *   {
    *     "name": "Pasta Carbonara",
-   *     "countryOfOrigin": "Italy",
+   *     "countryCode": "Italy",
    *     "ingredients": ["pasta", "eggs", "cheese"]
    *   }
    * ]
@@ -44,7 +44,7 @@ export class RecipesController {
    * GET /recipes/pasta-carbonara
    * Response: {
    *   "name": "Pasta Carbonara",
-   *   "countryOfOrigin": "Italy",
+   *   "countryCode": "Italy",
    *   "ingredients": ["pasta", "eggs", "cheese"]
    * }
    */

@@ -60,7 +60,8 @@
           "@angular/material/prebuilt-themes/indigo-pink.css",
           "apps/craft-web/src/styles/styles.scss",
           "node_modules/ngx-toastr/toastr.css",
-          "node_modules/mapbox-gl/dist/mapbox-gl.css"
+          "node_modules/mapbox-gl/dist/mapbox-gl.css",
+          "node_modules/flag-icon-css/css/flag-icons.min.css"
         ],
         "stylePreprocessorOptions": {
           "includePaths": ["apps/craft-web/src/styles"]

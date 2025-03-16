@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { RecipeComponent } from './recipe.component';
-import { PeasantKitchenService } from '../peasant-kitchen.service';
+import { PeasantKitchenService } from '../recipe.service';
 import { Recipe } from '../recipe.class';
 
 describe('RecipeComponent', () => {

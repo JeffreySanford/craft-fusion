@@ -10,6 +10,10 @@
       <div class="grape-masthead-container">
         <img class="grape-masthead" src="../../../assets/images/compressed/grape-masthead.png" alt="Grape Masthead" />
       </div>
+      <button *ngIf="showBackButton" class="top-back-button" mat-raised-button color="warn" (click)="goBackToRecipes()">
+        <mat-icon>arrow_back</mat-icon>
+        Back
+      </button>
     </div>
     <div class="content patriotic-theme">
       <div class="router-outlet-wrapper">

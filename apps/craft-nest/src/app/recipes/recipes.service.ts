@@ -3,7 +3,7 @@ import recipes from './recipes.json';
 
 export interface Recipe {
   name: string;
-  countryOfOrigin: string;
+  countryCode: string;
   description: string;
   ingredients: string[];
   directions: string[];

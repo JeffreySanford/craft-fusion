@@ -7,6 +7,8 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { MaterialModule } from './material.module';
 import { appRoutes } from './app.routes';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 import { AppComponent } from './app.component';
 import { LandingModule } from './pages/landing/landing.module';

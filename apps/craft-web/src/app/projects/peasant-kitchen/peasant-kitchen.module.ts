@@ -6,22 +6,27 @@ import { RecipesComponent } from './recipes/recipes.component';
 import { MaterialModule } from '../../material.module';
 import { AnimatedDirectivesModule } from '../../animated-directives.module';
 
-import { PeasantKitchenService } from './peasant-kitchen.service';
+import { RecipeService } from './recipe.service';
 import { RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [
     PeasantKitchenComponent,
-    RecipeComponent,
     RecipesComponent,
   ],
   imports: [
     CommonModule,
     MaterialModule,
     AnimatedDirectivesModule,
-    RouterModule
+    RouterModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatCardModule
   ],
-  providers: [PeasantKitchenService],
+  providers: [RecipeService],
   exports: [
     PeasantKitchenComponent
   ]
