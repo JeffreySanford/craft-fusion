@@ -6,7 +6,7 @@
 </div>
 
 <!-- Error state -->
-<div *ngIf="error && !loading" class="error-container">
+<div *ngIf="!this.recipe.name" class="error-container">
   <mat-icon color="warn" class="error-icon">error</mat-icon>
   <p class="error-text">{{ error }}</p>
   <button mat-raised-button color="primary">

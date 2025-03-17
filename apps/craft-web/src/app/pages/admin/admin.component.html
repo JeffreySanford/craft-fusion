@@ -1,0 +1,340 @@
+<div class="admin-container usa-theme">
+  <!-- Patriotic header with American theme -->
+  <div class="admin-header">
+    <div class="header-content">
+      <div class="title-section">
+        <!-- Replace SVG flag structure with a simple image -->
+        <div class="usa-flag-container">
+          <img src="assets/images/usa-flag-transparent.png" alt="USA Flag" class="usa-flag-image">
+        </div>
+        <div class="title-and-subtitle">
+          <h1>System Administration</h1>
+          <p class="subtitle">Performance Monitoring & Infrastructure Management</p>
+        </div>
+      </div>
+      <div class="actions-section">
+        <mat-slide-toggle [checked]="isSimulatingData" (change)="toggleDataSimulation()" color="warn">
+          <span class="toggle-label">Simulation Mode</span>
+        </mat-slide-toggle>
+        <button mat-raised-button color="warn" (click)="clearMetrics()" class="action-button">
+          <mat-icon>delete_sweep</mat-icon>
+          Clear Metrics
+        </button>
+      </div>
+    </div>
+    
+    <!-- Performance summary tiles -->
+    <div class="metrics-summary">
+      <div class="metric-card memory" [class.pulse-animation]="parseFloat(performanceMetrics.memoryUsage) > 75">
+        <div class="metric-icon">
+          <mat-icon>memory</mat-icon>
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Memory</span>
+          <span class="metric-value">{{performanceMetrics.memoryUsage}}</span>
+        </div>
+      </div>
+      
+      <div class="metric-card cpu" [class.pulse-animation]="parseFloat(performanceMetrics.cpuLoad) > 75">
+        <div class="metric-icon">
+          <mat-icon>speed</mat-icon>
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">CPU Load</span>
+          <span class="metric-value">{{performanceMetrics.cpuLoad}}</span>
+        </div>
+      </div>
+      
+      <div class="metric-card uptime">
+        <div class="metric-icon">
+          <mat-icon>schedule</mat-icon>
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Uptime</span>
+          <span class="metric-value">{{performanceMetrics.appUptime}}</span>
+        </div>
+      </div>
+      
+      <div class="metric-card network" [class.pulse-animation]="parseFloat(performanceMetrics.networkLatency) > 200">
+        <div class="metric-icon">
+          <mat-icon>network_check</mat-icon>
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Network</span>
+          <span class="metric-value">{{performanceMetrics.networkLatency}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main content with tabs -->
+  <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="500ms" class="admin-tabs">
+    <!-- System Performance Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">dashboard</mat-icon>
+        System Performance
+      </ng-template>
+      
+      <div class="tab-content">
+        <div class="chart-container system-metrics-chart">
+          <h2>Real-time System Metrics</h2>
+          <canvas #systemMetricsChart></canvas>
+        </div>
+        
+        <div class="system-info">
+          <mat-card>
+            <mat-card-header>
+              <div mat-card-avatar class="system-header-image">
+                <mat-icon>computer</mat-icon>
+              </div>
+              <mat-card-title>System Information</mat-card-title>
+              <mat-card-subtitle>Hardware & Software Details</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-row">
+                <span class="info-label">OS Platform:</span>
+                <span class="info-value">{{navigator.platform}}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Browser:</span>
+                <span class="info-value">{{navigator.userAgent}}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">CPU Cores:</span>
+                <span class="info-value">{{navigator.hardwareConcurrency}}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Language:</span>
+                <span class="info-value">{{navigator.language}}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Online Status:</span>
+                <span class="info-value" [ngClass]="navigator.onLine ? 'status-online' : 'status-offline'">
+                  {{navigator.onLine ? 'Connected' : 'Disconnected'}}
+                </span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+    
+    <!-- Service Performance Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">settings_applications</mat-icon>
+        Service Monitoring
+      </ng-template>
+      
+      <div class="tab-content">
+        <div class="chart-container service-metrics-chart">
+          <h2>Service Performance Metrics</h2>
+          <canvas #serviceMetricsChart></canvas>
+        </div>
+        
+        <div class="services-list">
+          <h3>Registered Services</h3>
+          <mat-list>
+            <mat-list-item *ngFor="let service of registeredServices" 
+                           class="service-item" 
+                           [class.active-service]="service.active">
+              <mat-icon matListItemIcon class="service-icon">
+                {{serviceIconMap[service.name.toLowerCase()] || 'settings'}}
+              </mat-icon>
+              <span matListItemTitle>{{service.name}}</span>
+              <span matListItemLine>{{service.description}}</span>
+              <span matListItemMeta>
+                <mat-slide-toggle 
+                  [checked]="service.active"
+                  (change)="toggleServiceStatus(service)"
+                  color="primary">
+                </mat-slide-toggle>
+              </span>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </div>
+    </mat-tab>
+    
+    <!-- API Activity Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">swap_calls</mat-icon>
+        API Activity
+      </ng-template>
+      
+      <div class="tab-content">
+        <div class="api-calls-container">
+          <h2>Recent API Calls</h2>
+          <table mat-table [dataSource]="serviceMetrics" class="api-table">
+            <!-- Service Name Column -->
+            <ng-container matColumnDef="service">
+              <th mat-header-cell *matHeaderCellDef>Service</th>
+              <td mat-cell *matCellDef="let call">
+                <div class="service-cell">
+                  <mat-icon>{{serviceIconMap[call.serviceName.toLowerCase()] || 'api'}}</mat-icon>
+                  <span>{{call.serviceName}}</span>
+                </div>
+              </td>
+            </ng-container>
+            
+            <!-- Method Column -->
+            <ng-container matColumnDef="method">
+              <th mat-header-cell *matHeaderCellDef>Method</th>
+              <td mat-cell *matCellDef="let call">
+                <span class="method-badge method-{{call.method.toLowerCase()}}">{{call.method}}</span>
+              </td>
+            </ng-container>
+            
+            <!-- URL Column -->
+            <ng-container matColumnDef="url">
+              <th mat-header-cell *matHeaderCellDef>URL</th>
+              <td mat-cell *matCellDef="let call" class="url-cell">{{call.url}}</td>
+            </ng-container>
+            
+            <!-- Duration Column -->
+            <ng-container matColumnDef="duration">
+              <th mat-header-cell *matHeaderCellDef>Duration</th>
+              <td mat-cell *matCellDef="let call">
+                <div class="duration-cell">
+                  <div class="duration-bar" [style.width.%]="getPercentage(call.duration)" 
+                       [ngClass]="getDurationClass(call.duration)"></div>
+                  <span>{{call.duration?.toFixed(1)}} ms</span>
+                </div>
+              </td>
+            </ng-container>
+            
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let call">
+                <div class="status-badge" [ngClass]="getStatusClass(call.status)">
+                  {{call.status === 1 ? 'Processing' : call.status || 'N/A'}}
+                </div>
+              </td>
+            </ng-container>
+            
+            <tr mat-header-row *matHeaderRowDef="['service', 'method', 'url', 'duration', 'status']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['service', 'method', 'url', 'duration', 'status']"
+                class="api-row"></tr>
+          </table>
+          
+          <!-- API Signature block with eagle background -->
+          <div class="api-signature-block">
+            <div class="eagle-background">
+              <img src="assets/images/bald-eagle-transparent.png" alt="USA Eagle" class="usa-eagle">
+            </div>
+            <div class="signature-content">
+              <p>All API calls are monitored and logged for security purposes.</p>
+              <p class="signature-motto">Protected by CraftFusion API Security</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+    
+    <!-- Security & Access Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">security</mat-icon>
+        Security & Access
+      </ng-template>
+      
+      <div class="tab-content">
+        <div class="security-container">
+          <div class="security-stats">
+            <div class="stat-card">
+              <div class="stat-icon secure">
+                <mat-icon>verified_user</mat-icon>
+              </div>
+              <div class="stat-info">
+                <h3>Session Security</h3>
+                <div class="stat-value">Protected</div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon neutral">
+                <mat-icon>people</mat-icon>
+              </div>
+              <div class="stat-info">
+                <h3>Active Users</h3>
+                <div class="stat-value">1</div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon secure">
+                <mat-icon>https</mat-icon>
+              </div>
+              <div class="stat-info">
+                <h3>Connection</h3>
+                <div class="stat-value">Secure</div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-icon warning">
+                <mat-icon>gpp_maybe</mat-icon>
+              </div>
+              <div class="stat-info">
+                <h3>Permission Requests</h3>
+                <div class="stat-value">3 Pending</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="security-features">
+            <h3>Security Features</h3>
+            <div class="feature-grid">
+              <div class="feature-card">
+                <mat-icon>filter_list</mat-icon>
+                <h4>Request Filtering</h4>
+                <div class="feature-status active">Active</div>
+              </div>
+              
+              <div class="feature-card">
+                <mat-icon>lock_clock</mat-icon>
+                <h4>Session Timeout</h4>
+                <div class="feature-status active">30 min</div>
+              </div>
+              
+              <div class="feature-card">
+                <mat-icon>security</mat-icon>
+                <h4>SSL Protection</h4>
+                <div class="feature-status active">TLS 1.3</div>
+              </div>
+              
+              <div class="feature-card">
+                <mat-icon>fingerprint</mat-icon>
+                <h4>2FA</h4>
+                <div class="feature-status inactive">Not Configured</div>
+              </div>
+              
+              <div class="feature-card">
+                <mat-icon>vpn_lock</mat-icon>
+                <h4>IP Filtering</h4>
+                <div class="feature-status inactive">Disabled</div>
+              </div>
+              
+              <div class="feature-card">
+                <mat-icon>privacy_tip</mat-icon>
+                <h4>Data Encryption</h4>
+                <div class="feature-status active">AES-256</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+  
+  <!-- Footer with American-themed text only -->
+  <div class="admin-footer">
+    <div class="footer-text">
+      <p>Secured & Monitored by <strong>CraftFusion Admin</strong></p>
+      <p class="usa-motto">Liberty • Security • Innovation</p>
+    </div>
+  </div>
+</div>

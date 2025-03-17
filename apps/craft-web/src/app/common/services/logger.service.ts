@@ -1,18 +1,103 @@
 import { HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+
+export interface ServiceCallMetric {
+  serviceName: string;
+  method: string;
+  url: string;
+  timestamp: number;
+  duration?: number;
+  status?: number;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoggerService {
+  private readonly LOGGER_PREFIX = '%cLOGGER:';
+  private readonly LOGGER_STYLE = 'color: #8A2BE2; font-weight: bold;'; // Purple text
+  private readonly ERROR_STYLE = 'color: #FF3333; font-weight: bold;'; // Red text
+  private readonly WARN_STYLE = 'color: #FFAA33; font-weight: bold;';  // Orange text
+  private readonly INFO_STYLE = 'color: #33AAFF; font-weight: bold;';  // Blue text
 
-  constructor() { }
+  private serviceCallsSubject = new BehaviorSubject<ServiceCallMetric[]>([]);
+  serviceCalls$ = this.serviceCallsSubject.asObservable();
+  
+  // Store active service calls for timing
+  private activeServiceCalls = new Map<string, ServiceCallMetric>();
 
-  error(msg :string){
-    console.log(msg)
+  constructor() {
+    console.log(this.LOGGER_PREFIX + ' Logger service initialized', this.LOGGER_STYLE);
+  }
+
+  error(msg: string) {
+    console.log(this.LOGGER_PREFIX + ' %c' + msg, this.LOGGER_STYLE, this.ERROR_STYLE);
+  }
+
+  warn(msg: string) {
+    console.log(this.LOGGER_PREFIX + ' %c' + msg, this.LOGGER_STYLE, this.WARN_STYLE);
+  }
+
+  info(msg: string) {
+    console.log(this.LOGGER_PREFIX + ' %c' + msg, this.LOGGER_STYLE, this.INFO_STYLE);
   }
 
   log(request: HttpRequest<any>) {
-    console.log('Request holds: ' + request.method + ' - ' + request.urlWithParams)
+    console.log(this.LOGGER_PREFIX + ' Request: %c' + request.method + ' - ' + request.urlWithParams, this.LOGGER_STYLE, this.INFO_STYLE);
+  }
+
+  /**
+   * Start tracking a service call
+   */
+  startServiceCall(serviceName: string, method: string, url: string): string {
+    const callId = `${serviceName}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const metric: ServiceCallMetric = {
+      serviceName,
+      method,
+      url,
+      timestamp: performance.now()
+    };
+    
+    this.activeServiceCalls.set(callId, metric);
+    this.info(`Starting ${method} call to ${serviceName} (${url})`);
+    
+    return callId;
+  }
+
+  /**
+   * End tracking a service call
+   */
+  endServiceCall(callId: string, status?: number): void {
+    const call = this.activeServiceCalls.get(callId);
+    if (call) {
+      const endTime = performance.now();
+      call.duration = endTime - call.timestamp;
+      call.status = status;
+      
+      // Add to metrics
+      const currentCalls = this.serviceCallsSubject.getValue();
+      this.serviceCallsSubject.next([...currentCalls, call]);
+      
+      // Remove from active calls
+      this.activeServiceCalls.delete(callId);
+      
+      this.info(`Completed call to ${call.serviceName} (${call.duration.toFixed(2)}ms) with status ${status || 'unknown'}`);
+    }
+  }
+
+  /**
+   * Get the latest service call metrics
+   */
+  getServiceCallMetrics(limit: number = 10): ServiceCallMetric[] {
+    const currentCalls = this.serviceCallsSubject.getValue();
+    return currentCalls.slice(Math.max(0, currentCalls.length - limit));
+  }
+
+  /**
+   * Clear all metrics
+   */
+  clearMetrics(): void {
+    this.serviceCallsSubject.next([]);
   }
 }

@@ -24,6 +24,7 @@ import { ResumeComponent } from './pages/resume/resume.component';
 import { BookModule } from './projects/book/book.module';
 import { UserStateInterceptor } from './common/interceptors/user-state.interceptor';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
 
 @NgModule({
   declarations: [
@@ -64,7 +65,12 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
       useClass: UserStateInterceptor,
       multi: true
     },
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MetricsInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent],
 })

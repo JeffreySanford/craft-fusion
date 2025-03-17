@@ -25,23 +25,20 @@
         <div class="logo-row">
           <img *ngFor="let logo of logoLinks" [src]="logo.src" [alt]="logo.alt" [class]="logo.class" />
         </div>
-        <mat-card class="performance-card">
+        <mat-card class="performance-card" [ngStyle]="{'border': '2px solid ' + chartBorderColor}">
           <div class="performance-metrics">
-            <div class="metric" [ngClass]="getMemoryUsageClass()">
-              <label for="memoryUsage">Memory Usage:</label>
-              <span id="memoryUsage">{{ performanceMetrics.memoryUsage }}</span>
+            <div class="data-mode-toggle">
+              <mat-slide-toggle [checked]="isSimulatingData" (change)="toggleDataSimulation()">
+                {{isSimulatingData ? 'SIMULATED DATA' : 'LIVE DATA'}}
+              </mat-slide-toggle>
             </div>
-            <div class="metric" [ngClass]="getCpuLoadClass()">
-              <label for="cpuLoad">CPU Load:</label>
-              <span id="cpuLoad">{{ performanceMetrics.cpuLoad }}</span>
-            </div>
-            <div class="metric">
-              <label for="appUptime">App Uptime:</label>
-              <span id="appUptime">{{ performanceMetrics.appUptime }}</span>
-            </div>
-            <div class="metric" [ngClass]="getNetworkLatencyClass()">
-              <label for="networkLatency">Network Latency:</label>
-              <span id="networkLatency">{{ performanceMetrics.networkLatency }}</span>
+            <canvas #performanceChart height="400"></canvas>
+            <div *ngIf="!isSimulatingData && serviceMetrics.length > 0" class="service-metrics-overlay">
+              <div *ngFor="let metric of serviceMetrics.slice(-3)" class="service-metric">
+                <mat-icon>{{serviceIconMap[metric.serviceName] || 'api'}}</mat-icon>
+                <span class="service-name">{{metric.serviceName}}</span>
+                <span class="service-time">{{metric.duration?.toFixed(1)}}ms</span>
+              </div>
             </div>
           </div>
         </mat-card>

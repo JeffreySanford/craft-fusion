@@ -5,6 +5,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { MenuItem, MenuGroup } from './sidebar.types'
 import { Router } from '@angular/router';
 import { SidebarStateService } from '../../common/services/sidebar-state.service';
+import { AuthorizationService } from '../../common/services/authorization.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -30,6 +31,7 @@ export class SidebarComponent implements OnInit {
   @Input() isCollapsed = false;
   @ViewChild('drawer') drawer!: MatDrawer;
   isMobile = false;
+  isAdmin = false; // For demonstration, set or derive from user state
 
   menuGroups: MenuGroup[] = [
     {
@@ -50,7 +52,8 @@ export class SidebarComponent implements OnInit {
   constructor(
     private breakpointObserver: BreakpointObserver, 
     private router: Router,
-    private sidebarStateService: SidebarStateService
+    private sidebarStateService: SidebarStateService,
+    private authorizationService: AuthorizationService
   ) {}
 
   ngOnInit() {
@@ -58,6 +61,16 @@ export class SidebarComponent implements OnInit {
       .subscribe(result => {
         this.isMobile = result.matches;
       });
+
+    this.authorizationService.canAccessResource('admin').subscribe(isAdmin => {
+      if (isAdmin) {
+        this.isAdmin = true;
+        this.menuGroups[0].items.push({ icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false });
+        this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
+      } else {
+        debugger;
+      }
+    });
 
     this.router.events.subscribe(() => {
       const activeRoute = this.router.url;
@@ -99,5 +112,9 @@ export class SidebarComponent implements OnInit {
     if (this.isSmallScreen) {
       this.drawer.toggle();
     }
+  }
+
+  get toggleIcon(): string {
+    return this.isCollapsed ? 'arrow_forward_ios' : 'menu_open';
   }
 }

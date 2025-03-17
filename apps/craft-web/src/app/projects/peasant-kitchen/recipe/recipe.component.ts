@@ -7,6 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LowerCasePipe, CommonModule } from '@angular/common';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-recipe',
@@ -31,23 +33,32 @@ export class RecipeComponent implements OnInit {
   constructor(@Inject(RecipeService) private recipeService: RecipeService, private router: Router) { }
 
   ngOnInit(): void {
-    try {
-      this.recipe = this.recipeService.getRecipe();
-      this.loading = false;
-      debugger
-      console.log(this.recipe.countryCode);
-      console.log('Country Code:', this.recipe.countryCode);
-      console.log('Recipe in RecipeComponent:', this.recipe);
-    } catch (err) {
-      console.error('Error loading recipe:', err);
-      this.error = 'Recipe not found. Please select a recipe from the list.';
-      this.loading = false;
-      
-      // Create a placeholder recipe after a short delay, then redirect
-      setTimeout(() => {
-        this.router.navigate(['/peasant-kitchen']);
-      }, 3000);
-    }
+    this.recipeService.getRecipe().pipe(
+      catchError(err => {
+        console.error('Error loading recipe:', err);
+        this.error = 'Recipe not found. Please select a recipe from the list.';
+        this.loading = false;
+        // Create a placeholder recipe after a short delay, then redirect
+        setTimeout(() => {
+          this.router.navigate(['/peasant-kitchen']);
+        }, 3000);
+        return of(null);
+      })
+    ).subscribe({
+      next: (recipe: Recipe | null) => {
+        if (recipe) {
+          this.recipe = recipe;
+          this.loading = false;
+          console.log('Recipe in RecipeComponent:', this.recipe);
+        }
+      },
+      error: (err: any) => {
+        console.error('Error in subscription:', err);
+      },
+      complete: () => {
+        console.log('Recipe loading complete');
+      }
+    });
   }
 
   /**

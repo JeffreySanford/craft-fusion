@@ -9,6 +9,9 @@ import { OpenSkyModule } from './openskies/opensky.module';
 import { AlphaVantageModule } from './financial/alpha-vantage/alpha-vantage.module';
 import { FileModule } from './documents/file.module';
 import { UserModule } from './user/user.module';
+import { AuthenticationModule } from './authentication/authentication.module';
+import { AuthorizationModule } from './authorization/authorization.module';
+import { AuditingModule } from './auditing/auditing.module';
 
 @Module({
   imports: [
@@ -21,7 +24,10 @@ import { UserModule } from './user/user.module';
     OpenSkyModule,
     AlphaVantageModule,
     FileModule,
-    UserModule
+    UserModule,
+    AuthenticationModule,
+    AuthorizationModule,
+    AuditingModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -14,7 +14,11 @@ export class RecipeService {
     countryCode: 'US',
     countryName: 'United States of America',
     servingSize: '4 servings',
-    ingredients: ['1 cup of flour', '2 eggs', '1/2 cup milk', '1 tsp salt'],
+    ingredients: [
+      '1 cup of flour', '2 eggs', '1/2 cup milk', '1 tsp salt',
+      '1 tbsp sugar', '1/2 cup butter', '1 tsp vanilla extract',
+      '1/2 cup chocolate chips', '1/4 cup cocoa powder', '1/2 tsp baking powder'
+    ],
     directions: ['Mix all ingredients together', 'Cook until done', 'Enjoy!'],
     url: 'sample-recipe'
   };
@@ -47,20 +51,20 @@ export class RecipeService {
 
   /**
    * Gets the currently selected recipe
-   * @returns Recipe - Currently selected recipe
+   * @returns Observable<Recipe> - Currently selected recipe
    * @throws Error if no recipe is selected
    */
-  getRecipe(): Recipe {
+  getRecipe(): Observable<Recipe> {
     if (!this.recipe) {
       console.warn('No recipe currently selected - returning default recipe');
       console.log('Returning default recipe:', this.defaultRecipe);
-      return this.defaultRecipe;
+      return of(this.defaultRecipe);
     }
     if (!this.recipe.countryCode) {
       this.recipe.countryCode = 'Unknown';
     }
     console.log('Getting current recipe:', this.recipe.id);
-    return this.recipe;
+    return of(this.recipe);
   }
 
   /**

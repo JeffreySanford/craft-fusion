@@ -93,7 +93,7 @@ mat-card-title-group {
   max-height: none; /* Remove max-height constraint */
   display: flex;
   flex-wrap: wrap;
-  gap: 1em;
+  gap: 0.5em; /* Reduce gap between components */
   position: relative;
 
   .description,
@@ -102,7 +102,7 @@ mat-card-title-group {
   .ingredients,
   .directions {
     flex: 1 1 250px;
-    max-height: 300px;
+    max-height: 200px; /* Reduce max-height */
     overflow-y: auto;
     background-color: rgba(255,255,255,0.8);
     border: 1px solid rgba(0,0,0,0.1);
@@ -111,13 +111,14 @@ mat-card-title-group {
   }
 
   .details-box {
-    width: 40%;
-    max-height: 200px;
+    width: 50%; /* Increase width */
+    max-height: 250px; /* Increase max-height */
     overflow-y: auto;
     background-color: rgba(255,255,255,0.8);
     border: 1px solid rgba(0,0,0,0.1);
     border-radius: 6px;
     padding: 1em;
+    margin-top: 1em; /* Align with ingredients container */
   }
 
   .ingredients {
@@ -125,8 +126,15 @@ mat-card-title-group {
     top: 1em;
     right: 1em;
     width: 40%;
-    max-height: 60%;
+    max-height: 250px; /* Match max-height with details container */
     overflow-y: auto;
+    margin-top: 1em; /* Align with details container */
+  }
+
+  .directions {
+    flex: 1 1 100%;
+    margin-top: 1em;
+    max-height: 150px; /* Reduce max-height */
   }
 }
 

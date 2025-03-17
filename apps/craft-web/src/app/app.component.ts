@@ -4,6 +4,9 @@ import { Subscription, interval } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UserStateService } from './common/services/user-state.service';
+import { UserActivityService } from './common/services/user-activity.service';
+import { LoggerService } from './common/services/logger.service';
+import { AdminStateService } from './common/services/admin-state.service';
 
 @Component({
   selector: 'app-root',
@@ -32,10 +35,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private breakpointObserver: BreakpointObserver,
-    private userStateService: UserStateService
+    private userStateService: UserStateService,
+    private adminStateService: AdminStateService,
+    private userActivityService: UserActivityService,
+    private logger: LoggerService
   ) {}
 
   ngOnInit(): void {
+    // Temporarily set admin status here - will be replaced with auth later
+    this.adminStateService.setAdminStatus(true); // Set to true for development
+
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
       this.isSmallScreen = result.matches;
       this.isCollapsed = this.isSmallScreen;
@@ -50,6 +59,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isSmallScreen = this.breakpointObserver.isMatched('(max-width: 599px)');
 
     // Removed login event registration to avoid infinite loop
+
+    this.logger.info('App component initialized');
   }
 
   ngAfterViewInit() {
@@ -57,12 +68,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ensureVideoIsPlaying();
     this.addUserInteractionListener();
     this.startVideoCheckPolling();
+
+    this.logger.info('App component view initialized');
   }
 
   ngOnDestroy() {
     console.log('Step 4: ngOnDestroy called');
     this.removeUserInteractionListener();
     this.stopVideoCheckPolling();
+
+    this.logger.info('App component destroyed');
+    
+    // Log user activity summary on exit
+    const activitySummary = this.userActivityService.getActivitySummary();
+    this.logger.info(`Session summary: ${activitySummary.pageViews} page views, ${activitySummary.clicks} clicks, ${Math.round(activitySummary.sessionDuration / 1000)} seconds duration`);
   }
 
   setActive(item: any) {

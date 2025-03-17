@@ -33,6 +33,7 @@ export const appRoutes: Routes = [
   { path: 'material-icons', component: MaterialIconsComponent },
   { path: 'material-buttons', component: MaterialButtonsComponent },
   { path: 'resume', component: ResumeComponent },
+  { path: 'admin', loadChildren: () => import('./pages/admin/admin.module').then(m => m.AdminModule) },
   { path: '404', component: LandingComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/404' },

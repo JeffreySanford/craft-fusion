@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { RecipeService } from '../recipe.service';
 import { Recipe } from '../recipe.class';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-recipes',
@@ -63,22 +65,54 @@ export class RecipesComponent implements OnInit, OnDestroy {
       }
     }, 2000);
     
-    this.recipeSubscription = this.RecipeService.getRecipes().subscribe((recipes: Recipe[]) => {
-      console.log('Recipes received:', recipes);
-      this.recipes = recipes;
+    this.recipeSubscription = this.RecipeService.getRecipes().pipe(
+      catchError(err => {
+        console.error('Error loading recipes:', err);
+        return of([]);
+      })
+    ).subscribe({
+      next: (recipes: Recipe[]) => {
+        console.log('Recipes received:', recipes);
+        this.recipes = recipes;
 
-      this.updatePaginatedRecipes();
-      this.totalPages = Math.ceil(this.recipes.length / this.pageSize);
-      console.log('Paginated recipes:', this.paginatedRecipes);
-      
-      console.log('Setting current recipe:', this.recipe);
-      if (this.recipes.length > 0) {
-        this.recipe = this.RecipeService.getRecipe();
-      } else {
-        console.warn('No recipes available to set as current');
+        this.updatePaginatedRecipes();
+        this.totalPages = Math.ceil(this.recipes.length / this.pageSize);
+        console.log('Paginated recipes:', this.paginatedRecipes);
+        
+        console.log('Setting current recipe:', this.recipe);
+        if (this.recipes.length > 0) {
+          this.RecipeService.getRecipe().pipe(
+            catchError(err => {
+              console.warn('Error loading current recipe:', err);
+              return of(null);
+            })
+          ).subscribe({
+            next: recipe => {
+              if (recipe) {
+                this.recipe = recipe;
+              } else {
+                console.warn('No recipes available to set as current');
+              }
+            },
+            error: err => {
+              console.error('Error in subscription:', err);
+            },
+            complete: () => {
+              console.log('Current recipe loading complete');
+            }
+          });
+        } else {
+          console.warn('No recipes available to set as current');
+        }
+        
+        this.loaded = true;
+      },
+      error: err => {
+        console.error('Error in subscription:', err);
+      },
+      complete: () => {
+        console.log('Recipes loading complete');
       }
-      
-      this.loaded = true;
     });
   }
 
