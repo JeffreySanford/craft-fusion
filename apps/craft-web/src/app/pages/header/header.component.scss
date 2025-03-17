@@ -41,6 +41,11 @@ button {
   border: 2px solid #00f0ff;
   padding: 0.15em;
   border-radius: 0.25em;
+
+  &.logged-in {
+    color: rgba(255, 0, 0, 1); // Red color when logged in
+    border: 2px solid rgba(255, 0, 0, 1); // Red border when logged in
+  }
 }
 
 .cdk-overlay-pane {

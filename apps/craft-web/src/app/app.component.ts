@@ -7,6 +7,7 @@ import { UserStateService } from './common/services/user-state.service';
 import { UserActivityService } from './common/services/user-activity.service';
 import { LoggerService } from './common/services/logger.service';
 import { AdminStateService } from './common/services/admin-state.service';
+import { AuthenticationService } from './common/services/authentication.service';
 
 @Component({
   selector: 'app-root',
@@ -38,12 +39,17 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private userStateService: UserStateService,
     private adminStateService: AdminStateService,
     private userActivityService: UserActivityService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private authService: AuthenticationService // Inject AuthenticationService
   ) {}
 
   ngOnInit(): void {
     // Temporarily set admin status here - will be replaced with auth later
-    this.adminStateService.setAdminStatus(true); // Set to true for development
+    // this.adminStateService.setAdminStatus(true); // Set to true for development
+
+    this.authService.isAdmin$.subscribe(isAdmin => {
+      this.adminStateService.setAdminStatus(isAdmin);
+    });
 
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
       this.isSmallScreen = result.matches;

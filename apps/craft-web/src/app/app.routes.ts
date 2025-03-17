@@ -12,6 +12,7 @@ import { RecipesComponent } from './projects/peasant-kitchen/recipes/recipes.com
 import { ResumeComponent } from './pages/resume/resume.component';
 import { BookComponent } from './projects/book/book.component';
 import { QuantumFisherInformationComponent } from './projects/data-visualizations/quantum-fisher-information/quantum-fisher-information.component';
+import { AdminGuard } from './common/guards/admin.guard';
 
 export const appRoutes: Routes = [
   { path: 'home', component: LandingComponent },
@@ -33,7 +34,7 @@ export const appRoutes: Routes = [
   { path: 'material-icons', component: MaterialIconsComponent },
   { path: 'material-buttons', component: MaterialButtonsComponent },
   { path: 'resume', component: ResumeComponent },
-  { path: 'admin', loadChildren: () => import('./pages/admin/admin.module').then(m => m.AdminModule) },
+  { path: 'admin', loadChildren: () => import('./pages/admin/admin.module').then(m => m.AdminModule), canActivate: [AdminGuard] },
   { path: '404', component: LandingComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/404' },

@@ -4,6 +4,7 @@ import Chart from 'chart.js/auto';
 import { LoggerService, ServiceCallMetric } from '../../common/services/logger.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import { LoggerDisplayComponent } from '../../components/logger-display/logger-display.component';
 
 interface PerformanceMetrics {
   memoryUsage: string;
@@ -17,8 +18,9 @@ interface PerformanceMetrics {
   selector: 'app-admin',
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
-standalone: false
+  standalone: false,
 })
+
 export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('systemMetricsChart') systemMetricsChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('serviceMetricsChart') serviceMetricsChartRef!: ElementRef<HTMLCanvasElement>;
@@ -29,9 +31,9 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     cpuLoad: 'N/A',
     appUptime: 'N/A',
     networkLatency: 'N/A',
-    adminStatus: 'inactive'
+    adminStatus: 'inactive',
   };
-  
+
   private systemMetricsChart: any;
   private serviceMetricsChart: any;
   private metricsSubscription!: Subscription;
@@ -40,19 +42,27 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   private frameRateSamples: number[] = [];
   private lastFrameTime = 0;
   private frameRateUpdateInterval: any;
-  
+
   isSimulatingData = false;
   serviceMetrics: ServiceCallMetric[] = [
     {
-      serviceName: 'Authentication', method: 'POST', url: '/auth/login', duration: 10, status: 200,
-      timestamp: 0
+      serviceName: 'Authentication',
+      method: 'POST',
+      url: '/auth/login',
+      duration: 10,
+      status: 200,
+      timestamp: 0,
     },
     {
-      serviceName: 'Auditing', method: 'POST', url: '/audit/event', duration: 20, status: 201,
-      timestamp: 0
-    }
+      serviceName: 'Auditing',
+      method: 'POST',
+      url: '/audit/event',
+      duration: 20,
+      status: 201,
+      timestamp: 0,
+    },
   ];
-  
+
   registeredServices = [
     { name: 'ApiService', description: 'Core API communication', active: true },
     { name: 'AuthenticationService', description: 'User authentication', active: true },
@@ -63,22 +73,22 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     { name: 'LoggerService', description: 'Application logging', active: true },
     { name: 'ChatService', description: 'Chat functionality', active: false },
     { name: 'SettingsService', description: 'Application settings', active: true },
-    { name: 'AdminStateService', description: 'Admin state management', active: true }
+    { name: 'AdminStateService', description: 'Admin state management', active: true },
   ];
-  
-  serviceIconMap: {[key: string]: string} = {
-    'api': 'api',
-    'auth': 'security',
+
+  serviceIconMap: { [key: string]: string } = {
+    api: 'api',
+    auth: 'security',
     'user-state': 'person',
-    'session': 'watch_later',
-    'busy': 'hourglass_empty',
-    'notification': 'notifications',
-    'logger': 'receipt_long',
-    'chat': 'chat',
-    'settings': 'settings',
-    'admin': 'admin_panel_settings'
+    session: 'watch_later',
+    busy: 'hourglass_empty',
+    notification: 'notifications',
+    logger: 'receipt_long',
+    chat: 'chat',
+    settings: 'settings',
+    admin: 'admin_panel_settings',
   };
-  
+
   selectedTab = 0;
 
   // Add navigator property for template access
@@ -100,7 +110,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     this.startMetricsMonitoring();
     this.startFrameRateMonitoring();
     this.monitorServiceCalls();
-    
+
     // Add sample API calls data if none are showing
     if (this.serviceMetrics.length === 0) {
       this.generateSampleApiCalls();
@@ -148,16 +158,16 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     const now = performance.now();
     const delta = now - this.lastFrameTime;
     this.lastFrameTime = now;
-    
+
     // Calculate FPS (1000ms / delta between frames)
     const fps = 1000 / delta;
     this.frameRateSamples.push(fps);
-    
+
     // Keep only the most recent samples
     if (this.frameRateSamples.length > 30) {
       this.frameRateSamples.shift();
     }
-    
+
     // Continue monitoring
     this.frameRateUpdateInterval = requestAnimationFrame(this.updateFrameRate.bind(this));
   }
@@ -179,14 +189,14 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.updateSystemMetricsChart();
     });
-    
+
     // Uptime
     const currentTime = performance.now();
     const uptimeMs = currentTime - this.appStartTime;
     const uptimeSec = uptimeMs / 1000;
     const uptimeMin = uptimeSec / 60;
     const uptimeHours = uptimeMin / 60;
-    
+
     if (uptimeHours >= 1) {
       this.performanceMetrics.appUptime = `${uptimeHours.toFixed(2)} hours`;
     } else if (uptimeMin >= 1) {
@@ -203,42 +213,42 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isSimulatingData) {
       return of(Math.random() * 80 + 10); // Random between 10-90%
     }
-    
+
     // Calculate using FPS
     if (this.frameRateSamples.length === 0) {
       return of(0);
     }
-    
+
     const avgFps = this.frameRateSamples.reduce((sum, fps) => sum + fps, 0) / this.frameRateSamples.length;
     const maxFps = 60;
     const minFps = 10;
-    const load = Math.max(0, Math.min(100, 100 * (1 - ((avgFps - minFps) / (maxFps - minFps)))));
-    
+    const load = Math.max(0, Math.min(100, 100 * (1 - (avgFps - minFps) / (maxFps - minFps))));
+
     return of(load);
   }
 
   private measureNetworkLatency(): void {
     const startTime = performance.now();
-    
-    fetch('/assets/ping.txt?' + Date.now(), { 
+
+    fetch('/assets/ping.txt?' + Date.now(), {
       method: 'HEAD',
-      cache: 'no-store'
+      cache: 'no-store',
     })
-    .then(() => {
-      const latency = performance.now() - startTime;
-      this.performanceMetrics.networkLatency = `${latency.toFixed(2)} ms`;
-      this.updateSystemMetricsChart();
-    })
-    .catch(() => {
-      // Fallback or simulated data
-      if (this.isSimulatingData) {
-        const simulatedLatency = Math.random() * 100 + 20; // Random between 20-120ms
-        this.performanceMetrics.networkLatency = `${simulatedLatency.toFixed(2)} ms`;
-      } else {
-        this.performanceMetrics.networkLatency = 'N/A';
-      }
-      this.updateSystemMetricsChart();
-    });
+      .then(() => {
+        const latency = performance.now() - startTime;
+        this.performanceMetrics.networkLatency = `${latency.toFixed(2)} ms`;
+        this.updateSystemMetricsChart();
+      })
+      .catch(() => {
+        // Fallback or simulated data
+        if (this.isSimulatingData) {
+          const simulatedLatency = Math.random() * 100 + 20; // Random between 20-120ms
+          this.performanceMetrics.networkLatency = `${simulatedLatency.toFixed(2)} ms`;
+        } else {
+          this.performanceMetrics.networkLatency = 'N/A';
+        }
+        this.updateSystemMetricsChart();
+      });
   }
 
   private monitorServiceCalls(): void {
@@ -256,23 +266,23 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private initializeSystemMetricsChart(): void {
     if (!this.systemMetricsChartRef?.nativeElement) return;
-    
+
     const ctx = this.systemMetricsChartRef.nativeElement.getContext('2d');
     if (!ctx) return;
-    
+
     // Add gradient backgrounds for more visual appeal
     const memoryGradient = ctx.createLinearGradient(0, 0, 0, 400);
     memoryGradient.addColorStop(0, 'rgba(54, 162, 235, 0.3)');
     memoryGradient.addColorStop(1, 'rgba(54, 162, 235, 0)');
-    
+
     const cpuGradient = ctx.createLinearGradient(0, 0, 0, 400);
     cpuGradient.addColorStop(0, 'rgba(75, 192, 192, 0.3)');
     cpuGradient.addColorStop(1, 'rgba(75, 192, 192, 0)');
-    
+
     const latencyGradient = ctx.createLinearGradient(0, 0, 0, 400);
     latencyGradient.addColorStop(0, 'rgba(255, 99, 132, 0.3)');
     latencyGradient.addColorStop(1, 'rgba(255, 99, 132, 0)');
-    
+
     // Register custom animations to Chart.js if not already registered
     if (!Chart.defaults.animations.patrioticEasing) {
       Chart.defaults.animations.patrioticEasing = {
@@ -282,10 +292,10 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
         from: 0,
         to: 1,
         duration: 1200,
-        easing: 'easeOutQuart'
+        easing: 'easeOutQuart',
       };
     }
-    
+
     this.systemMetricsChart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -305,7 +315,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
             pointBorderColor: '#fff',
             pointBorderWidth: 2,
             pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: '#3b82f6'
+            pointHoverBorderColor: '#3b82f6',
           },
           {
             label: 'CPU Load',
@@ -321,7 +331,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
             pointBorderColor: '#fff',
             pointBorderWidth: 2,
             pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: '#10b981'
+            pointHoverBorderColor: '#10b981',
           },
           {
             label: 'Network Latency',
@@ -338,45 +348,45 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
             pointBorderColor: '#fff',
             pointBorderWidth: 2,
             pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: '#ef4444'
-          }
-        ]
+            pointHoverBorderColor: '#ef4444',
+          },
+        ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         elements: {
           line: {
-            tension: 0.4 // Smoother curves
-          }
+            tension: 0.4, // Smoother curves
+          },
         },
         interaction: {
           mode: 'index',
-          intersect: false
+          intersect: false,
         },
         animation: {
           duration: 800,
-          easing: 'easeOutQuart'
+          easing: 'easeOutQuart',
         },
         animations: {
           colors: {
             type: 'color',
             duration: 800,
-            easing: 'easeOutQuart'
+            easing: 'easeOutQuart',
           },
           numbers: {
             type: 'number',
             duration: 800,
             easing: 'easeOutCubic',
-            delay: (ctx) => ctx.dataIndex * 50 // Staggered animation
-          }
+            delay: ctx => ctx.dataIndex * 50, // Staggered animation
+          },
         },
         transitions: {
           active: {
             animation: {
-              duration: 400
-            }
-          }
+              duration: 400,
+            },
+          },
         },
         scales: {
           x: {
@@ -387,18 +397,18 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
               color: '#e5e7eb',
               font: {
                 size: 14,
-                weight: 'bold'
-              }
+                weight: 'bold',
+              },
             },
             grid: {
               display: true,
-              color: 'rgba(255, 255, 255, 0.1)'
+              color: 'rgba(255, 255, 255, 0.1)',
             },
             ticks: {
               color: '#e5e7eb',
-              callback: (value) => `${value}s`,
-              stepSize: 15
-            }
+              callback: value => `${value}s`,
+              stepSize: 15,
+            },
           },
           y: {
             beginAtZero: true,
@@ -409,19 +419,19 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
               color: '#e5e7eb',
               font: {
                 size: 14,
-                weight: 'bold'
-              }
+                weight: 'bold',
+              },
             },
             grid: {
               display: true,
-              color: 'rgba(255, 255, 255, 0.1)'
+              color: 'rgba(255, 255, 255, 0.1)',
             },
             ticks: {
               color: '#e5e7eb',
-              callback: function(value) {
+              callback: function (value) {
                 return value + '%';
-              }
-            }
+              },
+            },
           },
           y1: {
             position: 'right',
@@ -433,20 +443,20 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
               color: '#e5e7eb',
               font: {
                 size: 14,
-                weight: 'bold'
-              }
+                weight: 'bold',
+              },
             },
             grid: {
               drawOnChartArea: false,
-              color: 'rgba(255, 255, 255, 0.1)'
+              color: 'rgba(255, 255, 255, 0.1)',
             },
             ticks: {
               color: '#e5e7eb',
-              callback: function(value) {
+              callback: function (value) {
                 return value + ' ms';
-              }
-            }
-          }
+              },
+            },
+          },
         },
         plugins: {
           legend: {
@@ -454,11 +464,11 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
             labels: {
               color: '#e5e7eb',
               font: {
-                size: 12
+                size: 12,
               },
               usePointStyle: true,
-              pointStyle: 'circle'
-            }
+              pointStyle: 'circle',
+            },
           },
           tooltip: {
             enabled: true,
@@ -468,38 +478,38 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
             titleColor: '#fff',
             titleFont: {
               weight: 'bold',
-              size: 14
+              size: 14,
             },
             bodyColor: '#e5e7eb',
             bodyFont: {
-              size: 13
+              size: 13,
             },
             borderColor: 'rgba(255, 255, 255, 0.2)',
             borderWidth: 1,
             cornerRadius: 4,
             padding: 10,
             displayColors: true,
-            boxPadding: 4
-          }
-        }
-      }
+            boxPadding: 4,
+          },
+        },
+      },
     });
   }
 
   private updateSystemMetricsChart(): void {
     if (!this.systemMetricsChart) return;
-    
+
     const currentTime = new Date().toLocaleTimeString();
     const memoryValue = parseFloat(this.performanceMetrics.memoryUsage) || 0;
     const cpuValue = parseFloat(this.performanceMetrics.cpuLoad) || 0;
     const latencyValue = parseFloat(this.performanceMetrics.networkLatency) || 0;
-    
+
     // Add new data point
     this.systemMetricsChart.data.labels.push(currentTime);
     this.systemMetricsChart.data.datasets[0].data.push(memoryValue);
     this.systemMetricsChart.data.datasets[1].data.push(cpuValue);
     this.systemMetricsChart.data.datasets[2].data.push(latencyValue);
-    
+
     // Limit the number of visible data points with smooth transition
     const maxPoints = 30;
     if (this.systemMetricsChart.data.labels.length > maxPoints) {
@@ -508,30 +518,30 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
         dataset.data.shift();
       });
     }
-    
+
     // Update with smooth animation
     this.systemMetricsChart.update({
       duration: 300,
       easing: 'easeInOutCubic',
-      lazy: false
+      lazy: false,
     });
   }
 
   private initializeServiceMetricsChart(): void {
     if (!this.serviceMetricsChartRef?.nativeElement) return;
-    
+
     const ctx = this.serviceMetricsChartRef.nativeElement.getContext('2d');
     if (!ctx) return;
-    
+
     // Create beautiful gradients for the charts
     const responseTimeGradient = ctx.createLinearGradient(0, 0, 0, 250);
     responseTimeGradient.addColorStop(0, 'rgba(65, 105, 225, 0.8)');
     responseTimeGradient.addColorStop(1, 'rgba(65, 105, 225, 0.2)');
-    
+
     const callCountGradient = ctx.createLinearGradient(0, 0, 0, 250);
     callCountGradient.addColorStop(0, 'rgba(220, 20, 60, 0.8)');
     callCountGradient.addColorStop(1, 'rgba(220, 20, 60, 0.2)');
-    
+
     this.serviceMetricsChart = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -544,7 +554,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
             borderColor: 'rgba(65, 105, 225, 1)',
             borderWidth: 1,
             borderRadius: 4,
-            hoverBackgroundColor: 'rgba(65, 105, 225, 1)'
+            hoverBackgroundColor: 'rgba(65, 105, 225, 1)',
           },
           {
             label: 'Call Count',
@@ -554,44 +564,44 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
             borderWidth: 1,
             borderRadius: 4,
             yAxisID: 'y1',
-            hoverBackgroundColor: 'rgba(220, 20, 60, 1)'
-          }
-        ]
+            hoverBackgroundColor: 'rgba(220, 20, 60, 1)',
+          },
+        ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         animation: {
           duration: 1000,
-          easing: 'easeOutQuart'
+          easing: 'easeOutQuart',
         },
         animations: {
           colors: {
             type: 'color',
             duration: 1000,
-            easing: 'easeInOutQuad'
+            easing: 'easeInOutQuad',
           },
           numbers: {
             type: 'number',
             duration: 800,
-            delay: (context) => context.dataIndex * 100,
-            easing: 'easeOutCubic'
-          }
+            delay: context => context.dataIndex * 100,
+            easing: 'easeOutCubic',
+          },
         },
         scales: {
           x: {
             title: { display: true, text: 'Time (seconds)' },
             ticks: {
-              callback: (value) => `${value}s`,
+              callback: value => `${value}s`,
               stepSize: 15,
               color: '#e5e7eb',
               maxRotation: 45,
-              minRotation: 45
+              minRotation: 45,
             },
             grid: {
               display: false,
-              color: 'rgba(255, 255, 255, 0.1)'
-            }
+              color: 'rgba(255, 255, 255, 0.1)',
+            },
           },
           y: {
             beginAtZero: true,
@@ -601,25 +611,25 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
               color: '#e5e7eb',
               font: {
                 size: 14,
-                weight: 'bold'
-              }
+                weight: 'bold',
+              },
             },
             grid: {
-              color: 'rgba(255, 255, 255, 0.1)'
+              color: 'rgba(255, 255, 255, 0.1)',
             },
             ticks: {
               color: '#e5e7eb',
-              callback: function(value) {
+              callback: function (value) {
                 return value + ' ms';
-              }
-            }
+              },
+            },
           },
           y1: {
             position: 'right',
             beginAtZero: true,
             grid: {
               drawOnChartArea: false,
-              color: 'rgba(255, 255, 255, 0.1)'
+              color: 'rgba(255, 255, 255, 0.1)',
             },
             title: {
               display: true,
@@ -627,14 +637,14 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
               color: '#e5e7eb',
               font: {
                 size: 14,
-                weight: 'bold'
-              }
+                weight: 'bold',
+              },
             },
             ticks: {
               color: '#e5e7eb',
-              precision: 0
-            }
-          }
+              precision: 0,
+            },
+          },
         },
         plugins: {
           legend: {
@@ -642,11 +652,11 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
             labels: {
               color: '#e5e7eb',
               font: {
-                size: 12
+                size: 12,
               },
               usePointStyle: true,
-              pointStyle: 'rectRounded'
-            }
+              pointStyle: 'rectRounded',
+            },
           },
           tooltip: {
             backgroundColor: 'rgba(17, 25, 40, 0.9)',
@@ -657,7 +667,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
             cornerRadius: 4,
             displayColors: true,
             callbacks: {
-              label: function(tooltipItem) {
+              label: function (tooltipItem) {
                 let label = tooltipItem.dataset.label || '';
                 if (label) {
                   label += ': ';
@@ -668,47 +678,47 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
                   label += tooltipItem.formattedValue + ' calls';
                 }
                 return label;
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
   }
 
   private updateServiceMetricsChart(): void {
     if (!this.serviceMetricsChart) return;
-    
+
     // Aggregate service call metrics by service name
-    const serviceStats: {[serviceName: string]: {totalTime: number, count: number}} = {};
-    
+    const serviceStats: { [serviceName: string]: { totalTime: number; count: number } } = {};
+
     this.serviceMetrics.forEach(metric => {
       if (!serviceStats[metric.serviceName]) {
         serviceStats[metric.serviceName] = { totalTime: 0, count: 0 };
       }
-      
+
       if (metric.duration) {
         serviceStats[metric.serviceName].totalTime += metric.duration;
         serviceStats[metric.serviceName].count += 1;
       }
     });
-    
+
     // Update chart data
     this.registeredServices.forEach((service, index) => {
       const stats = serviceStats[service.name] || { totalTime: 0, count: 0 };
       const avgTime = stats.count > 0 ? stats.totalTime / stats.count : 0;
-      
+
       this.serviceMetricsChart.data.datasets[0].data[index] = avgTime;
       this.serviceMetricsChart.data.datasets[1].data[index] = stats.count;
     });
-    
+
     this.serviceMetricsChart.update();
   }
 
   toggleDataSimulation(): void {
     this.isSimulatingData = !this.isSimulatingData;
     this.logger.info(`Admin dashboard: ${this.isSimulatingData ? 'Enabled' : 'Disabled'} data simulation`);
-    
+
     if (this.isSimulatingData) {
       // Generate initial data if empty
       if (this.serviceMetrics.length === 0) {
@@ -717,7 +727,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
         // Start adding simulated calls
         this.addSimulatedApiCall();
       }
-      
+
       // When simulating, change some calls to "in process" status (code 1)
       const processingIndex = Math.floor(Math.random() * this.serviceMetrics.length);
       if (processingIndex < this.serviceMetrics.length) {
@@ -725,7 +735,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
         this.serviceMetrics[processingIndex].duration = 3000; // Long duration for visual effect
       }
     }
-    
+
     this.dataSource.data = this.serviceMetrics;
     // Force refresh the metrics display
     this.updateSystemMetricsChart();
@@ -749,7 +759,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   parseFloat(value: string): number {
     return parseFloat(value) || 0;
   }
-  
+
   // Methods needed for API activity table
   getPercentage(duration?: number): number {
     if (!duration) {
@@ -758,7 +768,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     // Scale to percentage (500ms = 100%)
     return Math.min(100, (duration / 500) * 100);
   }
-  
+
   getDurationClass(duration?: number): string {
     if (!duration) {
       return '';
@@ -770,17 +780,17 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return 'duration-slow';
   }
-  
+
   getStatusClass(status?: number): string {
     if (!status) {
       return 'status-unknown';
     }
-    
+
     // Add handling for "in process" status
     if (status === 1) {
       return 'status-in-process';
     }
-    
+
     if (status >= 200 && status < 300) {
       return 'status-success';
     } else if (status >= 300 && status < 400) {
@@ -831,74 +841,74 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     const now = Date.now();
     const sampleCalls: ServiceCallMetric[] = [
       {
-        serviceName: 'AuthenticationService', 
-        method: 'POST', 
-        url: '/api/auth/login', 
-        duration: 120.5, 
+        serviceName: 'AuthenticationService',
+        method: 'POST',
+        url: '/api/auth/login',
+        duration: 120.5,
         status: 200,
-        timestamp: now - 5000
+        timestamp: now - 5000,
       },
       {
-        serviceName: 'UserService', 
-        method: 'GET', 
-        url: '/api/users/profile', 
-        duration: 85.2, 
+        serviceName: 'UserService',
+        method: 'GET',
+        url: '/api/users/profile',
+        duration: 85.2,
         status: 200,
-        timestamp: now - 4000
+        timestamp: now - 4000,
       },
       {
-        serviceName: 'ProductService', 
-        method: 'GET', 
-        url: '/api/products?page=1&limit=10', 
-        duration: 320.7, 
+        serviceName: 'ProductService',
+        method: 'GET',
+        url: '/api/products?page=1&limit=10',
+        duration: 320.7,
         status: 200,
-        timestamp: now - 3000
+        timestamp: now - 3000,
       },
       {
-        serviceName: 'OrderService', 
-        method: 'POST', 
-        url: '/api/orders/create', 
-        duration: 450.1, 
+        serviceName: 'OrderService',
+        method: 'POST',
+        url: '/api/orders/create',
+        duration: 450.1,
         status: 201,
-        timestamp: now - 2000
+        timestamp: now - 2000,
       },
       {
-        serviceName: 'PaymentService', 
-        method: 'PUT', 
-        url: '/api/payments/process/12345', 
-        duration: 210.3, 
+        serviceName: 'PaymentService',
+        method: 'PUT',
+        url: '/api/payments/process/12345',
+        duration: 210.3,
         status: 200,
-        timestamp: now - 1000
+        timestamp: now - 1000,
       },
       {
-        serviceName: 'NotificationService', 
-        method: 'POST', 
-        url: '/api/notifications/send', 
-        duration: 75.8, 
+        serviceName: 'NotificationService',
+        method: 'POST',
+        url: '/api/notifications/send',
+        duration: 75.8,
         status: 204,
-        timestamp: now
+        timestamp: now,
       },
       {
-        serviceName: 'AdminService', 
-        method: 'DELETE', 
-        url: '/api/admin/cache', 
-        duration: 180.4, 
+        serviceName: 'AdminService',
+        method: 'DELETE',
+        url: '/api/admin/cache',
+        duration: 180.4,
         status: 200,
-        timestamp: now - 500
+        timestamp: now - 500,
       },
       {
-        serviceName: 'SearchService', 
-        method: 'GET', 
-        url: '/api/search?q=product&filter=new', 
-        duration: 520.6, 
+        serviceName: 'SearchService',
+        method: 'GET',
+        url: '/api/search?q=product&filter=new',
+        duration: 520.6,
         status: 200,
-        timestamp: now - 1500
-      }
+        timestamp: now - 1500,
+      },
     ];
-    
+
     this.serviceMetrics = sampleCalls;
     this.dataSource.data = this.serviceMetrics;
-    
+
     // If simulation is on, periodically add new calls
     if (this.isSimulatingData) {
       setTimeout(() => {
@@ -906,16 +916,15 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
       }, 3000);
     }
   }
-  
+
   // Method to add simulated API calls periodically
   private addSimulatedApiCall(): void {
     if (!this.isSimulatingData) return;
-    
-    const services = ['AuthenticationService', 'UserService', 'ProductService', 'OrderService', 
-                     'PaymentService', 'NotificationService', 'AdminService', 'SearchService'];
-                     
+
+    const services = ['AuthenticationService', 'UserService', 'ProductService', 'OrderService', 'PaymentService', 'NotificationService', 'AdminService', 'SearchService'];
+
     const methods = ['GET', 'POST', 'PUT', 'DELETE'];
-    
+
     const endpoints = [
       '/api/auth/validate',
       '/api/users/preferences',
@@ -924,11 +933,11 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
       '/api/payments/status',
       '/api/notifications/read',
       '/api/admin/status',
-      '/api/search/trending'
+      '/api/search/trending',
     ];
-    
+
     const statusCodes = [200, 201, 204, 400, 401, 403, 404, 500];
-    
+
     // Create a random API call
     const newCall: ServiceCallMetric = {
       serviceName: services[Math.floor(Math.random() * services.length)],
@@ -936,20 +945,20 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
       url: endpoints[Math.floor(Math.random() * endpoints.length)],
       duration: Math.random() * 500 + 50, // Between 50-550ms
       status: statusCodes[Math.floor(Math.random() * statusCodes.length)],
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
-    
+
     // Add to existing metrics
     this.serviceMetrics.push(newCall);
     if (this.serviceMetrics.length > 50) {
       this.serviceMetrics.shift(); // Remove oldest if we have more than 50
     }
-    
+
     this.dataSource.data = this.serviceMetrics;
-    
+
     // Update the chart
     this.updateServiceMetricsChart();
-    
+
     // Schedule next simulated call
     setTimeout(() => {
       this.addSimulatedApiCall();

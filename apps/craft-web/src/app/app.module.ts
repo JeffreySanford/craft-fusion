@@ -25,6 +25,7 @@ import { BookModule } from './projects/book/book.module';
 import { UserStateInterceptor } from './common/interceptors/user-state.interceptor';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
+import { AuthHttpInterceptor } from './common/interceptors/auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -70,7 +71,8 @@ import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
       provide: HTTP_INTERCEPTORS,
       useClass: MetricsInterceptor,
       multi: true
-    }
+    },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true } // Enable AuthHttpInterceptor
   ],
   bootstrap: [AppComponent],
 })

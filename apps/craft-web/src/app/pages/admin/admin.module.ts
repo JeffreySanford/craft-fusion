@@ -9,9 +9,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatListModule } from '@angular/material/list';
 import { AdminComponent } from './admin.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { LoggerDisplayComponent } from '../../components/logger-display/logger-display.component';
 
 @NgModule({
-  declarations: [AdminComponent], // Add AdminComponent to declarations
+  declarations: [AdminComponent, LoggerDisplayComponent], // Add AdminComponent to declarations
   imports: [
     CommonModule,
     RouterModule.forChild([

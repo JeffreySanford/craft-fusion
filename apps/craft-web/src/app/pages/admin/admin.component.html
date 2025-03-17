@@ -328,8 +328,19 @@
         </div>
       </div>
     </mat-tab>
+
+    <!-- Logger Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">receipt_long</mat-icon>
+        Logs
+      </ng-template>
+      <div class="tab-content">
+        <app-logger-display></app-logger-display>
+      </div>
+    </mat-tab>
   </mat-tab-group>
-  
+
   <!-- Footer with American-themed text only -->
   <div class="admin-footer">
     <div class="footer-text">

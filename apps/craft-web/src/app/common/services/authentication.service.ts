@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { NotificationService } from './notification.service';
 import { SessionService, User } from './session.service';
-import { switchMap, catchError, EMPTY, of } from 'rxjs';
+import { switchMap, catchError, EMPTY, of, map } from 'rxjs';
 
 /**
  * Interface representing the authentication response from the server
@@ -85,7 +85,34 @@ export class AuthenticationService {
   }
 
   login(username: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>('/api/auth/login', { username, password });
+    return this.http.post('/api/auth/login', { username, password }, { responseType: 'text' }).pipe(
+      switchMap(response => {
+        // Assuming the response is just the token
+        const authResponse: AuthResponse = {
+          token: response,
+          user: {
+            id: 1, // Dummy user data
+            username: username,
+            password: '',
+            firstName: 'Test',
+            lastName: 'User',
+            role: 'admin'
+          }
+        };
+
+        this.setAuthToken(authResponse.token);
+        this.sessionService.setUserSession(authResponse.user);
+        this.currentUserSubject.next(authResponse.user);
+        this.isLoggedIn.next(true);
+        this.isAuthenticated.next(true);
+        this.isAdminSubject.next(authResponse.user.role === 'admin');
+        return of(authResponse);
+      }),
+      catchError(error => {
+        console.error('Login error:', error);
+        return of({ token: '', user: { id: 0, username: '', password: '', firstName: '', lastName: '', role: '' } });
+      })
+    );
   }
 
   logout(): void {
@@ -114,7 +141,12 @@ export class AuthenticationService {
         .pipe(
           switchMap(isValid => {
             if (isValid) {
-              return this.http.get<User>('/api/auth/user');
+              return this.http.get<User>('/api/auth/user').pipe(
+                map(user => {
+                  this.isAdminSubject.next(user.role === 'admin'); // Set isAdmin on init
+                  return user;
+                })
+              );
             } else {
               return EMPTY;
             }
@@ -129,7 +161,6 @@ export class AuthenticationService {
             this.currentUserSubject.next(user);
             this.isLoggedIn.next(true);
             this.isAuthenticated.next(true);
-            this.isAdminSubject.next(user.role === 'admin');
             this.router.navigate(['/dashboard']);
           } else {
             this.logout();

@@ -23,6 +23,9 @@ export class LoggerService {
 
   private serviceCallsSubject = new BehaviorSubject<ServiceCallMetric[]>([]);
   serviceCalls$ = this.serviceCallsSubject.asObservable();
+
+  private logsSubject = new BehaviorSubject<string[]>([]);
+  logs$ = this.logsSubject.asObservable();
   
   // Store active service calls for timing
   private activeServiceCalls = new Map<string, ServiceCallMetric>();
@@ -31,20 +34,48 @@ export class LoggerService {
     console.log(this.LOGGER_PREFIX + ' Logger service initialized', this.LOGGER_STYLE);
   }
 
+  /**
+   * @description Logs an error message to the console with a red color.
+   * @param {string} msg - The error message to log.
+   * @returns {void}
+   */
   error(msg: string) {
-    console.log(this.LOGGER_PREFIX + ' %c' + msg, this.LOGGER_STYLE, this.ERROR_STYLE);
+    const logMessage = `${this.LOGGER_PREFIX} %c${msg}`;
+    console.log(logMessage, this.LOGGER_STYLE, this.ERROR_STYLE);
+    this.addLog(logMessage, 'error');
   }
 
+  /**
+   * @description Logs a warning message to the console with an orange color.
+   * @param {string} msg - The warning message to log.
+   * @returns {void}
+   */
   warn(msg: string) {
-    console.log(this.LOGGER_PREFIX + ' %c' + msg, this.LOGGER_STYLE, this.WARN_STYLE);
+    const logMessage = `${this.LOGGER_PREFIX} %c${msg}`;
+    console.log(logMessage, this.LOGGER_STYLE, this.WARN_STYLE);
+    this.addLog(logMessage, 'warn');
   }
 
+  /**
+   * @description Logs an informational message to the console with a blue color.
+   * @param {string} msg - The informational message to log.
+   * @returns {void}
+   */
   info(msg: string) {
-    console.log(this.LOGGER_PREFIX + ' %c' + msg, this.LOGGER_STYLE, this.INFO_STYLE);
+    const logMessage = `${this.LOGGER_PREFIX} %c${msg}`;
+    console.log(logMessage, this.LOGGER_STYLE, this.INFO_STYLE);
+    this.addLog(logMessage, 'info');
   }
 
+  /**
+   * @description Logs details about an HTTP request to the console.
+   * @param {HttpRequest<any>} request - The HTTP request object.
+   * @returns {void}
+   */
   log(request: HttpRequest<any>) {
-    console.log(this.LOGGER_PREFIX + ' Request: %c' + request.method + ' - ' + request.urlWithParams, this.LOGGER_STYLE, this.INFO_STYLE);
+    const logMessage = `${this.LOGGER_PREFIX} Request: %c${request.method} - ${request.urlWithParams}`;
+    console.log(logMessage, this.LOGGER_STYLE, this.INFO_STYLE);
+    this.addLog(logMessage, 'log');
   }
 
   /**
@@ -99,5 +130,16 @@ export class LoggerService {
    */
   clearMetrics(): void {
     this.serviceCallsSubject.next([]);
+  }
+
+  private addLog(message: string, level: string): void {
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry = `[${timestamp}] ${level.toUpperCase()}: ${message}`;
+    const currentLogs = this.logsSubject.getValue();
+    this.logsSubject.next([...currentLogs, logEntry]);
+  }
+
+  getLogs(): string[] {
+    return this.logsSubject.getValue();
   }
 }

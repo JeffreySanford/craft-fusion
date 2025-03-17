@@ -1,4 +1,4 @@
-import { Component, HostListener, EventEmitter, Output, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, EventEmitter, Output, Input, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer } from '@angular/material/sidenav';
@@ -6,6 +6,7 @@ import { MenuItem, MenuGroup } from './sidebar.types'
 import { Router } from '@angular/router';
 import { SidebarStateService } from '../../common/services/sidebar-state.service';
 import { AuthorizationService } from '../../common/services/authorization.service';
+import { AdminStateService } from '../../common/services/admin-state.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -53,23 +54,36 @@ export class SidebarComponent implements OnInit {
     private breakpointObserver: BreakpointObserver, 
     private router: Router,
     private sidebarStateService: SidebarStateService,
-    private authorizationService: AuthorizationService
+    private authorizationService: AuthorizationService,
+    private adminStateService: AdminStateService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
+    debugger;
     this.breakpointObserver.observe([Breakpoints.Handset])
       .subscribe(result => {
         this.isMobile = result.matches;
       });
 
-    this.authorizationService.canAccessResource('admin').subscribe(isAdmin => {
+    this.adminStateService.isAdmin$.subscribe(isAdmin => {
+      this.isAdmin = isAdmin;
       if (isAdmin) {
-        this.isAdmin = true;
-        this.menuGroups[0].items.push({ icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false });
-        this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
+        // Check if the admin item already exists to avoid duplicates
+        const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
+        if (adminItemIndex === -1) {
+          this.menuGroups[0].items.push({ icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false });
+          this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
+        }
       } else {
-        debugger;
+        // Remove the admin item if it exists
+        const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
+        if (adminItemIndex !== -1) {
+          this.menuGroups[0].items.splice(adminItemIndex, 1);
+          this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
+        }
       }
+      this.cdr.detectChanges();
     });
 
     this.router.events.subscribe(() => {

@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { AuthenticationService } from '../../common/services/authentication.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -6,7 +8,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./header.component.scss'],
   standalone: false
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   title = 'frontend';
   isExpanded = false;
   isSmallScreen = false;
@@ -17,15 +19,34 @@ export class HeaderComponent {
   ];
   polling = true;
 
-  userMenuItems = [
-    { label: 'Profile', icon: 'person', action: 'profile' },
-    { label: 'Settings', icon: 'settings', action: 'settings' },
-    { label: 'Theme', icon: 'palette', action: 'theme' },
-    { label: 'Reports', icon: 'bar_chart', action: 'reports' },
-    { label: 'Login', icon: 'login', action: 'login' }
-  ];
+  userMenuItems: any[] = []; // Initialize as empty array
+  isLoggedIn$: Observable<boolean>;
 
-  constructor() {}
+  constructor(public authService: AuthenticationService) { // Inject auth service
+    this.isLoggedIn$ = this.authService.isLoggedIn$;
+  }
+
+  ngOnInit(): void {
+    this.authService.isLoggedIn$.subscribe(() => {
+      this.updateUserMenuItems();
+    });
+    this.updateUserMenuItems(); // Initial call to set menu items
+  }
+
+  updateUserMenuItems() {
+    this.userMenuItems = [
+      { label: 'Profile', icon: 'person', action: 'profile' },
+      { label: 'Settings', icon: 'settings', action: 'settings' },
+      { label: 'Theme', icon: 'palette', action: 'theme' },
+      { label: 'Reports', icon: 'bar_chart', action: 'reports' }
+    ];
+
+    if (this.authService.getAuthToken()) {
+      this.userMenuItems.push({ label: 'Logout', icon: 'logout', action: 'logout' });
+    } else {
+      this.userMenuItems.push({ label: 'Login', icon: 'login', action: 'login' });
+    }
+  }
 
   setActive(item: any) {
     this.menuItems.forEach(menuItem => (menuItem.active = false));
@@ -33,9 +54,16 @@ export class HeaderComponent {
   }
 
   handleUserMenuAction(action: string) {
+    debugger;
     if (action === 'login') {
-      // Trigger login logic here
-      console.log('Login triggered');
+      this.authService.login('test', 'test').subscribe(() => {
+        debugger;
+        this.updateUserMenuItems();
+      });
+    } else if (action === 'logout') {
+      this.authService.logout();
+      debugger;
+      this.updateUserMenuItems();
     }
     // Handle other actions as needed
   }

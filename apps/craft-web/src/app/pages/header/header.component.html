@@ -1,14 +1,14 @@
 <mat-card class="header-card">
-    <div class="header-content">
-      <!-- Other header content can go here -->
-      <button mat-icon-button [matMenuTriggerFor]="userMenu">
-        <mat-icon class="profile-icon">person</mat-icon>
+  <div class="header-content">
+    <!-- Other header content can go here -->
+    <button mat-icon-button [matMenuTriggerFor]="userMenu">
+      <mat-icon class="profile-icon" [class.logged-in]="authService.getAuthToken()">person</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item *ngFor="let item of userMenuItems" (click)="handleUserMenuAction(item.action)">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
       </button>
-      <mat-menu #userMenu="matMenu">
-        <button mat-menu-item *ngFor="let item of userMenuItems" (click)="handleUserMenuAction(item.action)">
-          <mat-icon>{{ item.icon }}</mat-icon>
-          <span>{{ item.label }}</span>
-        </button>
-      </mat-menu>
-    </div>
-  </mat-card>
+    </mat-menu>
+  </div>
+</mat-card>
