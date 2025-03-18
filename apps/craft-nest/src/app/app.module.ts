@@ -12,6 +12,7 @@ import { UserModule } from './user/user.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { AuthorizationModule } from './authorization/authorization.module';
 import { AuditingModule } from './auditing/auditing.module';
+import { LoggingModule } from './logging/logging.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { AuditingModule } from './auditing/auditing.module';
     UserModule,
     AuthenticationModule,
     AuthorizationModule,
-    AuditingModule
+    AuditingModule,
+    LoggingModule
   ],
   controllers: [AppController],
   providers: [AppService],

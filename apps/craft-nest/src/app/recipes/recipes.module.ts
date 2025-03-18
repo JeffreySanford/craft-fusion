@@ -1,9 +1,19 @@
 import { Module } from '@nestjs/common';
-import { RecipesController } from './recipes.controller';
 import { RecipesService } from './recipes.service';
+import { RecipesController } from './recipes.controller';
+import { LoggingService } from '../logging/logging.service';
 
 @Module({
-  controllers: [RecipesController],
   providers: [RecipesService],
+  controllers: [RecipesController],
+  exports: [RecipesService]
 })
-export class RecipesModule {}
+export class RecipesModule {
+  constructor(private readonly loggingService: LoggingService) {
+    this.loggingService.info('RecipesModule initialized', {
+      timestamp: new Date().toISOString(),
+      user: 'system',
+      module: 'RecipesModule'
+    });
+  }
+}
