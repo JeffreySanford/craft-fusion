@@ -1,10 +1,10 @@
-<div class="page-container">
+<div class="page-container" [class.footer-expanded]="isFooterExpanded">
   <app-header></app-header>
-  <div class="layout-container">
+  <div class="layout-container" [class.footer-expanded]="isFooterExpanded">
     <aside class="sidebar">
       <app-sidebar [isSmallScreen]="isSmallScreen" [isCollapsed]="isCollapsed" [ngClass]="{ 'collapsed': !isCollapsed }"></app-sidebar>
     </aside>
-    <main class="main-stage">
+    <main class="main-stage" [class.footer-expanded]="isFooterExpanded">
       <router-outlet></router-outlet>
     </main>
   </div>

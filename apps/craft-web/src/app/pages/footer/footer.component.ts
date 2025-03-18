@@ -5,6 +5,7 @@ import { catchError } from 'rxjs/operators';
 import Chart from 'chart.js/auto';
 import { LoggerService, ServiceCallMetric } from '../../common/services/logger.service';
 import { AdminStateService } from '../../common/services/admin-state.service';
+import { FooterStateService } from '../../common/services/footer-state.service';
 
 @Component({
   selector: 'app-footer',
@@ -31,6 +32,7 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   lastFrameTime = 0;
   frameRateUpdateInterval: any;
   isAdmin = false;
+  expanded = false;
 
   logoLinks = [
     { src: 'assets/images/compressed/nodejs-new-pantone-white.png', alt: 'Node.js' },
@@ -72,7 +74,8 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private router: Router, 
     private logger: LoggerService,
-    private adminStateService: AdminStateService
+    private adminStateService: AdminStateService,
+    private footerStateService: FooterStateService
   ) {
     this.appStartTime = performance.now();
     this.logger.info('Footer component initialized');
@@ -571,5 +574,11 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
       this.performanceMetrics.networkLatency = '1 ms';
       this.chart.update('active');
     }
+  }
+
+  onPanelToggled(isExpanded: boolean): void {
+    this.expanded = isExpanded;
+    this.footerStateService.setExpanded(isExpanded);
+    this.logger.info(`Footer panel ${isExpanded ? 'expanded' : 'collapsed'}`);
   }
 }

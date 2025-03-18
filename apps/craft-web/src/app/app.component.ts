@@ -8,6 +8,7 @@ import { UserActivityService } from './common/services/user-activity.service';
 import { LoggerService } from './common/services/logger.service';
 import { AdminStateService } from './common/services/admin-state.service';
 import { AuthenticationService } from './common/services/authentication.service';
+import { FooterStateService } from './common/services/footer-state.service';
 
 @Component({
   selector: 'app-root',
@@ -19,10 +20,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   isCollapsed = false;
   isSmallScreen = false;
   isExpanded = false;
+  isFooterExpanded = false;
 
   title = 'frontend';
   private routerSubscription!: Subscription;
   private videoCheckSubscription!: Subscription;
+  private footerStateSubscription!: Subscription;
 
   menuItems = [
     { label: 'Home', icon: 'home', routerLink: '/home', active: false },
@@ -40,7 +43,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private adminStateService: AdminStateService,
     private userActivityService: UserActivityService,
     private logger: LoggerService,
-    private authService: AuthenticationService // Inject AuthenticationService
+    private authService: AuthenticationService, // Inject AuthenticationService
+    private footerStateService: FooterStateService
   ) {}
 
   ngOnInit(): void {
@@ -67,6 +71,19 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     // Removed login event registration to avoid infinite loop
 
     this.logger.info('App component initialized');
+
+    // Subscribe to footer state changes
+    this.footerStateSubscription = this.footerStateService.expanded$
+      .subscribe(expanded => {
+        this.isFooterExpanded = expanded;
+        console.log('Footer expanded state changed:', expanded);
+        // Apply the appropriate class to the body
+        if (expanded) {
+          document.body.classList.add('footer-expanded');
+        } else {
+          document.body.classList.remove('footer-expanded');
+        }
+      });
   }
 
   ngAfterViewInit() {
@@ -88,6 +105,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     // Log user activity summary on exit
     const activitySummary = this.userActivityService.getActivitySummary();
     this.logger.info(`Session summary: ${activitySummary.pageViews} page views, ${activitySummary.clicks} clicks, ${Math.round(activitySummary.sessionDuration / 1000)} seconds duration`);
+
+    if (this.footerStateSubscription) {
+      this.footerStateSubscription.unsubscribe();
+    }
   }
 
   setActive(item: any) {

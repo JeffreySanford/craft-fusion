@@ -7,6 +7,13 @@
   align-items: center;
   width: 99%;
   overflow: visible;
+  transition: height 0.3s ease;
+  z-index: 1000;
+  
+  &.expanded {
+    // When expanded, footer takes up more space
+    height: auto;
+  }
 
   .mat-expansion-panel {
     width: 100%;
@@ -269,6 +276,113 @@
       }
     }
   }
+
+  .panel-header {
+    padding: 0 16px;
+    
+    .title-content {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      
+      mat-icon {
+        color: gold;
+        margin-right: 8px;
+      }
+      
+      p {
+        font-size: 1.25em;
+        margin: 0 0 0 0.15em;
+        color: gold;
+      }
+      
+      .quick-metrics {
+        display: flex;
+        gap: 8px;
+        margin-left: auto;
+        
+        .metric-pill {
+          display: flex;
+          align-items: center;
+          padding: 2px 8px;
+          border-radius: 12px;
+          font-size: 0.85rem;
+          color: gold;
+          background: rgba(0, 0, 0, 0.4);
+          border: 1px solid rgba(255, 215, 0, 0.3);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          overflow: hidden;
+          
+          // Shimmer effect
+          &::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+              to right,
+              rgba(255, 215, 0, 0) 0%,
+              rgba(255, 215, 0, 0.3) 50%,
+              rgba(255, 215, 0, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shimmer 3s infinite;
+            pointer-events: none;
+            opacity: 0;
+          }
+          
+          mat-icon {
+            font-size: 14px;
+            height: 14px;
+            width: 14px;
+            margin-right: 4px;
+            color: inherit;
+          }
+          
+          &.green-text {
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
+          }
+          
+          &.yellow-text {
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.3);
+          }
+          
+          &.red-text {
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
+          }
+          
+          &:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.6);
+            
+            &::after {
+              opacity: 1;
+            }
+          }
+          
+          // Pulse animation for metrics
+          &.green-text {
+            animation: pulse-green 2s infinite;
+          }
+          
+          &.yellow-text {
+            animation: pulse-yellow 2s infinite;
+          }
+          
+          &.red-text {
+            animation: pulse-red 2s infinite;
+          }
+        }
+      }
+    }
+  }
 }
 
 .mat-panel-title {
@@ -332,4 +446,36 @@ button[color="warn"] {
   mat-icon {
     color: white;
   }
+}
+
+// Add animations for shimmer effect
+@keyframes shimmer {
+  0% { transform: rotate(30deg) translateX(-100%); }
+  100% { transform: rotate(30deg) translateX(100%); }
+}
+
+// Pulse animations for metrics
+@keyframes pulse-green {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+@keyframes pulse-yellow {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+// Add float animation for hover
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
 }
