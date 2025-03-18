@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { NotificationService } from './notification.service';
 import { SessionService, User } from './session.service';
 import { switchMap, catchError, EMPTY, of, map } from 'rxjs';
+import { LoggerService } from './logger.service';
 
 /**
  * Interface representing the authentication response from the server
@@ -68,7 +69,15 @@ export class AuthenticationService {
   private isAuthenticated = new BehaviorSubject<boolean>(false);
   private readonly isProduction = false;
 
-  constructor(private http: HttpClient, private router: Router, private notificationService: NotificationService, private sessionService: SessionService) {
+  constructor(
+    private http: HttpClient, 
+    private router: Router, 
+    private notificationService: NotificationService, 
+    private sessionService: SessionService,
+    private logger: LoggerService
+  ) {
+    this.logger.registerService('AuthenticationService');
+    this.logger.info('Authentication service initialized');
     this.initializeAuthentication();
   }
 
@@ -85,6 +94,9 @@ export class AuthenticationService {
   }
 
   login(username: string, password: string): Observable<AuthResponse> {
+    this.logger.info(`Login attempt for user: ${username}`);
+    const callId = this.logger.startServiceCall('AuthenticationService', 'POST', '/api/auth/login');
+    
     return this.http.post('/api/auth/login', { username, password }, { responseType: 'text' }).pipe(
       switchMap(response => {
         // Assuming the response is just the token
@@ -106,24 +118,28 @@ export class AuthenticationService {
         this.isLoggedIn.next(true);
         this.isAuthenticated.next(true);
         this.isAdminSubject.next(authResponse.user.role === 'admin');
+        
+        this.logger.endServiceCall(callId, 200);
+        this.logger.info(`User ${username} logged in successfully`, { role: authResponse.user.role });
+        
         return of(authResponse);
       }),
       catchError(error => {
-        console.error('Login error:', error);
-        return of({ token: '', user: { id: 0, username: '', password: '', firstName: '', lastName: '', role: '' } });
+        this.logger.endServiceCall(callId, error.status || 401);
+        this.logger.error(`Login failed for user ${username}`, { 
+          error: error.message || 'Unknown error'
+        });
+        return of({ 
+          token: '', 
+          user: { id: 0, username: '', password: '', firstName: '', lastName: '', role: '' } 
+        });
       })
     );
   }
 
   logout(): void {
-    const user: User = {
-      id: 0,
-      username: '',
-      password: '',
-      firstName: '',
-      lastName: '',
-      role: '',
-    };
+    const user = this.currentUserSubject.getValue();
+    this.logger.info(`User ${user.username || 'anonymous'} logged out`);
     
     localStorage.removeItem(this.TOKEN_KEY);
     this.currentUserSubject.next(user);

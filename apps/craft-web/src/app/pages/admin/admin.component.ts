@@ -1140,7 +1140,14 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   clearLogs() {
-    // Implementation for clearing logs
+    this.logger.clearLogs();
+    
+    // Reset log stats
+    this.logStats = [
+      { id: 1, icon: 'error', label: 'Errors', value: 0, color: 'red' },
+      { id: 2, icon: 'warning', label: 'Warnings', value: 0, color: 'orange' },
+      { id: 3, icon: 'info', label: 'Info', value: 0, color: 'blue' },
+    ];
   }
 
   getServiceMetrics(): DisplayMetric[] {

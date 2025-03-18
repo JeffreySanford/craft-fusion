@@ -1,6 +1,6 @@
-import { HttpRequest } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, Injector, Inject, forwardRef } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { ApiService } from './api.service'; // Adjust the path as necessary
 
 export interface BaseServiceCallMetric {
   serviceName: string;
@@ -21,152 +21,343 @@ export interface ServiceCallMetric extends BaseServiceCallMetric {
   lastIncident?: Date;
 }
 
+interface RegisteredService {
+  name: string;
+  status: 'active' | 'inactive' | 'error';
+  lastActivity: number;
+}
+
+export interface LogEntry {
+  message: string;
+  level: string;
+  timestamp: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class LoggerService {
-  private readonly LOGGER_PREFIX = '%cLOGGER:';
-  private readonly LOGGER_STYLE = 'color: #8A2BE2; font-weight: bold;'; // Purple text
-  private readonly ERROR_STYLE = 'color: #FF3333; font-weight: bold;'; // Red text
-  private readonly WARN_STYLE = 'color: #FFAA33; font-weight: bold;';  // Orange text
-  private readonly INFO_STYLE = 'color: #33AAFF; font-weight: bold;';  // Blue text
-
-  private serviceCallsSubject = new BehaviorSubject<ServiceCallMetric[]>([]);
-  serviceCalls$ = this.serviceCallsSubject.asObservable();
-
-  private logsSubject = new BehaviorSubject<string[]>([]);
-  logs$ = this.logsSubject.asObservable();
+  private apiService!: ApiService;
   
-  // Store active service calls for timing
-  private activeServiceCalls = new Map<string, BaseServiceCallMetric>();
+  constructor(private injector: Injector) {
+    // Lazy injection to break the circular dependency.
+    setTimeout(() => {
+      this.apiService = this.injector.get(forwardRef(() => ApiService));
+    });
+    this.system('LoggerService initialized');
+  }
+  // Colors for console output
+  private readonly COLORS = {
+    error: 'color: #ff3860; font-weight: bold; background-color: rgba(255, 56, 96, 0.1); padding: 2px 6px; border-radius: 4px;',
+    warn: 'color: #ffdd57; font-weight: bold; background-color: rgba(255, 221, 87, 0.1); padding: 2px 6px; border-radius: 4px;',
+    info: 'color: #3273dc; font-weight: bold; background-color: rgba(50, 115, 220, 0.1); padding: 2px 6px; border-radius: 4px;',
+    log: 'color: #23d160; font-weight: bold; background-color: rgba(35, 209, 96, 0.1); padding: 2px 6px; border-radius: 4px;',
+    debug: 'color: #9da5b4; font-weight: bold; background-color: rgba(157, 165, 180, 0.1); padding: 2px 6px; border-radius: 4px;',
+    highlight: 'color: #ff470f; font-weight: bold; text-decoration: underline; background-color: rgba(255, 71, 15, 0.1); padding: 2px 6px; border-radius: 4px;',
+    system: 'color: #8A2BE2; font-weight: bold; background-color: rgba(138, 43, 226, 0.1); padding: 2px 6px; border-radius: 4px;'
+  };
+  
+  // Maximum number of logs to keep in memory
+  private readonly MAX_LOGS = 1000;
+  
+  // Store logs in memory
+  private logHistory: string[] = [];
+  
+  // Observable for frontend components
+  private logsSubject = new BehaviorSubject<string[]>([]);
+  public logs$: Observable<string[]> = this.logsSubject.asObservable();
+  
+  // Store service call metrics
+  private serviceCallsHistory: ServiceCallMetric[] = [];
+  private serviceCallsSubject = new BehaviorSubject<ServiceCallMetric[]>([]);
+  public serviceCalls$: Observable<ServiceCallMetric[]> = this.serviceCallsSubject.asObservable();
 
-  constructor() {
-    console.log(this.LOGGER_PREFIX + ' Logger service initialized', this.LOGGER_STYLE);
+  // Track registered services
+  private registeredServices: Map<string, RegisteredService> = new Map();
+  private registeredServicesSubject = new BehaviorSubject<RegisteredService[]>([]);
+  public registeredServices$ = this.registeredServicesSubject.asObservable();
+  
+  // Track active service calls
+  private activeServiceCalls: Map<string, BaseServiceCallMetric> = new Map();
+
+  /**
+   * Format a message with timestamp and level
+   */
+  private formatMessage(level: string, message: string): string {
+    const timestamp = new Date().toISOString();
+    const source = level === 'SYSTEM' ? 'system' : 'user'; // Indicate source
+    return `[${timestamp}] ${level}: (${source}) ${message}`;
   }
 
   /**
-   * @description Logs an error message to the console with a red color.
-   * @param {string} msg - The error message to log.
-   * @returns {void}
+   * Add a log to history and notify subscribers
    */
-  error(msg: string) {
-    const logMessage = `${this.LOGGER_PREFIX} %c${msg}`;
-    console.log(logMessage, this.LOGGER_STYLE, this.ERROR_STYLE);
-    this.addLog(logMessage, 'error');
-  }
-
-  /**
-   * @description Logs a warning message to the console with an orange color.
-   * @param {string} msg - The warning message to log.
-   * @returns {void}
-   */
-  warn(msg: string) {
-    const logMessage = `${this.LOGGER_PREFIX} %c${msg}`;
-    console.log(logMessage, this.LOGGER_STYLE, this.WARN_STYLE);
-    this.addLog(logMessage, 'warn');
-  }
-
-  /**
-   * @description Logs an informational message to the console with a blue color.
-   * @param {string} msg - The informational message to log.
-   * @returns {void}
-   */
-  info(msg: string) {
-    const logMessage = `${this.LOGGER_PREFIX} %c${msg}`;
-    // Remove the console logging for CPU Load messages
-    if (!msg.includes('CPU Load')) {
-      console.log(logMessage, this.LOGGER_STYLE, this.INFO_STYLE);
+  private addLog(level: string, message: string): void {
+    const formattedMessage = this.formatMessage(level, message);
+    this.logHistory.push(formattedMessage);
+    
+    // Trim log history if it exceeds the maximum
+    if (this.logHistory.length > this.MAX_LOGS) {
+      this.logHistory = this.logHistory.slice(-this.MAX_LOGS);
     }
-    this.addLog(logMessage, 'info');
+    
+    // Notify subscribers
+    this.logsSubject.next([...this.logHistory]);
   }
 
   /**
-   * @description Logs details about an HTTP request to the console.
-   * @param {HttpRequest<any>} request - The HTTP request object.
-   * @returns {void}
+   * Log an error with vibrant red color
    */
-  log(request: HttpRequest<any>) {
-    const logMessage = `${this.LOGGER_PREFIX} Request: %c${request.method} - ${request.urlWithParams}`;
-    console.log(logMessage, this.LOGGER_STYLE, this.INFO_STYLE);
-    this.addLog(logMessage, 'log');
+  error(message: string, data?: any): void {
+    const dataStr = data ? ` - ${JSON.stringify(data)}` : '';
+    const fullMessage = `${message}${dataStr}`;
+    
+    console.error(`%cERROR: %c${fullMessage}`, this.COLORS.error, 'color: inherit');
+    this.addLog('ERROR', fullMessage);
   }
 
+  /**
+   * Log a warning with vibrant yellow color
+   */
+  warn(message: string, data?: any): void {
+    const dataStr = data ? ` - ${JSON.stringify(data)}` : '';
+    const fullMessage = `${message}${dataStr}`;
+    
+    console.warn(`%cWARN: %c${fullMessage}`, this.COLORS.warn, 'color: inherit');
+    this.addLog('WARN', fullMessage);
+  }
+
+  /**
+   * Log info with vibrant blue color
+   */
+  info(message: string, data?: any): void {
+    const dataStr = data ? ` - ${JSON.stringify(data)}` : '';
+    const fullMessage = `${message}${dataStr}`;
+    
+    console.info(`%cINFO: %c${fullMessage}`, this.COLORS.info, 'color: inherit');
+    this.addLog('INFO', fullMessage);
+  }
+
+  /**
+   * Log standard message with vibrant green color
+   */
+  log(message: string, data?: any): void {
+    const dataStr = data ? ` - ${JSON.stringify(data)}` : '';
+    const fullMessage = `${message}${dataStr}`;
+    
+    console.log(`%cLOG: %c${fullMessage}`, this.COLORS.log, 'color: inherit');
+    this.addLog('LOG', fullMessage);
+  }
+
+  /**
+   * Debug log with subtle gray color
+   */
+  debug(message: string, data?: any): void {
+    const dataStr = data ? ` - ${JSON.stringify(data)}` : '';
+    const fullMessage = `${message}${dataStr}`;
+    
+    console.debug(`%cDEBUG: %c${fullMessage}`, this.COLORS.debug, 'color: inherit');
+    this.addLog('DEBUG', fullMessage);
+  }
+
+  /**
+   * System log with vibrant purple color - for internal service messages
+   */
+  system(message: string): void {
+    console.log(`%cSYSTEM: %c${message}`, this.COLORS.system, 'color: inherit');
+    this.addLog('LOG', message);
+  }
+
+  /**
+   * Highlight log with vibrant orange color - for important messages
+   */
+  highlight(message: string, data?: any): void {
+    const dataStr = data ? ` - ${JSON.stringify(data)}` : '';
+    const fullMessage = `${message}${dataStr}`;
+    
+    console.log(`%cHIGHLIGHT: %c${fullMessage}`, this.COLORS.highlight, 'color: inherit');
+    this.addLog('HIGHLIGHT', fullMessage);
+  }
+
+  /**
+   * Log service call metrics for API tracking
+   */
+  logServiceCall(metric: ServiceCallMetric): void {
+    this.serviceCallsHistory.push(metric);
+    this.serviceCallsSubject.next([...this.serviceCallsHistory]);
+
+    // Log the service call to console with appropriate color
+    const status = metric.status || 0;
+    const method = metric.method || 'UNKNOWN';
+    const url = metric.url || 'unknown-url';
+    const duration = metric.duration ? `${metric.duration.toFixed(2)}ms` : 'N/A';
+    
+    if (status >= 400) {
+      this.error(`API ${method} ${url} - ${status}`, { duration, ...metric });
+    } else if (status >= 300) {
+      this.warn(`API ${method} ${url} - ${status}`, { duration, ...metric });
+    } else {
+      this.info(`API ${method} ${url} - ${status}`, { duration, serviceName: metric.serviceName });
+    }
+  }
+
+  /**
+   * Clear all logs
+   */
+  clearLogs(): void {
+    this.logHistory = [];
+    this.logsSubject.next([]);
+    this.system('All logs cleared');
+  }
+
+  /**
+   * Clear metrics
+   */
+  clearMetrics(): void {
+    this.serviceCallsHistory = [];
+    this.serviceCallsSubject.next([]);
+    this.system('All metrics cleared');
+  }
+
+  /**
+   * Get current logs
+   */
+  getLogs(): Observable<LogEntry[]> {
+    return this.apiService.get<LogEntry[]>('/logs');
+  }
+
+  /**
+   * Log user login activities
+   */
+  logUserLogin(username: string, loginDate: Date): void {
+    const loginTime = loginDate.toISOString();
+    this.highlight(`User login: ${username} at ${loginTime}`);
+    this.logServiceCall({
+      serviceName: 'AuthenticationService',
+      method: 'POST',
+      url: '/auth/login',
+      status: 200,
+      duration: 120,
+      timestamp: loginDate.getTime(),
+      securityEvents: 1,
+      authAttempts: 1,
+      failedAuths: 0,
+      activeUsers: 1,
+      averageLatency: 120,
+      errorRate: 0
+    });
+  }
+
+  /**
+   * Log record generation events 
+   */
+  logRecordGeneration(count: number): void {
+    this.info(`Generated ${count} records`, { timestamp: new Date().toISOString(), count });
+  }
+  
+  /**
+   * Log state changes
+   */
+  logStateChange(key: string, value: string): void {
+    this.debug(`State change: ${key} = ${value}`);
+  }
+
+  /**
+   * Register a service with the logger
+   */
+  registerService(serviceName: string): void {
+    const service: RegisteredService = {
+      name: serviceName,
+      status: 'active',
+      lastActivity: Date.now()
+    };
+    
+    this.registeredServices.set(serviceName, service);
+    this.system(`Service registered: ${serviceName}`);
+    this.updateRegisteredServices();
+  }
+
+  /**
+   * Update service status
+   */
+  updateServiceStatus(serviceName: string, status: 'active' | 'inactive' | 'error'): void {
+    const service = this.registeredServices.get(serviceName);
+    if (service) {
+      service.status = status;
+      service.lastActivity = Date.now();
+      this.updateRegisteredServices();
+      
+      if (status === 'error') {
+        this.error(`Service ${serviceName} reported error status`);
+      } else {
+        this.debug(`Service ${serviceName} status: ${status}`);
+      }
+    }
+  }
+  
   /**
    * Start tracking a service call
    */
   startServiceCall(serviceName: string, method: string, url: string): string {
-    const callId = `${serviceName}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const metric: BaseServiceCallMetric = {
+    const callId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    this.activeServiceCalls.set(callId, {
       serviceName,
       method,
       url,
-      timestamp: performance.now()
-    };
+      timestamp: Date.now()
+    });
     
-    this.activeServiceCalls.set(callId, metric);
-    this.info(`Starting ${method} call to ${serviceName} (${url})`);
+    this.debug(`${serviceName} API call started: ${method} ${url}`);
     
     return callId;
   }
 
   /**
-   * End tracking a service call
+   * End tracking a service call with status
    */
-  endServiceCall(callId: string, status?: number): void {
-    const call = this.activeServiceCalls.get(callId);
-    if (call) {
-      const endTime = performance.now();
-      const duration = endTime - call.timestamp;
-      
-      // Create full service metric with default values
-      const fullMetric: ServiceCallMetric = {
-        ...call,
-        duration,
-        status,
-        securityEvents: 0,
-        authAttempts: 0,
-        failedAuths: 0,
-        activeUsers: 0,
-        averageLatency: duration,
-        errorRate: status && status >= 400 ? 100 : 0,
-        lastIncident: status && status >= 400 ? new Date() : undefined
-      };
-      
-      // Add to metrics
-      const currentCalls = this.serviceCallsSubject.getValue();
-      this.serviceCallsSubject.next([...currentCalls, fullMetric]);
-      
-      // Remove from active calls
-      this.activeServiceCalls.delete(callId);
-      
-      this.info(`Completed call to ${call.serviceName} (${duration.toFixed(2)}ms) with status ${status || 'unknown'}`);
+  endServiceCall(callId: string, status: number): void {
+    const startData = this.activeServiceCalls.get(callId);
+    if (!startData) return;
+    
+    const endTime = Date.now();
+    const duration = endTime - startData.timestamp;
+    
+    // Create complete metric
+    const metric: ServiceCallMetric = {
+      ...startData,
+      status,
+      duration,
+      securityEvents: 0,
+      authAttempts: 0,
+      failedAuths: 0,
+      activeUsers: 0,
+      averageLatency: duration,
+      errorRate: status >= 400 ? 100 : 0
+    };
+    
+    // Update service last activity time
+    const service = this.registeredServices.get(startData.serviceName);
+    if (service) {
+      service.lastActivity = Date.now();
+      this.updateRegisteredServices();
     }
+    
+    // Log and store the complete service call
+    this.logServiceCall(metric);
+    
+    // Remove from active calls
+    this.activeServiceCalls.delete(callId);
+  }
+  
+  private updateRegisteredServices(): void {
+    this.registeredServicesSubject.next(Array.from(this.registeredServices.values()));
   }
 
   /**
-   * Get the latest service call metrics
+   * Get all registered services
    */
-  getServiceCallMetrics(limit: number = 10): ServiceCallMetric[] {
-    const currentCalls = this.serviceCallsSubject.getValue();
-    return currentCalls.slice(Math.max(0, currentCalls.length - limit));
-  }
-
-  /**
-   * Clear all metrics
-   */
-  clearMetrics(): void {
-    this.serviceCallsSubject.next([]);
-  }
-
-  private addLog(message: string, level: string): void {
-    // Use an ISO timestamp to ensure proper parsing later in LoggerDisplayComponent
-    const timestamp = new Date().toISOString();
-    const logEntry = `[${timestamp}] ${level.toUpperCase()}: ${message}`;
-    const currentLogs = this.logsSubject.getValue();
-    this.logsSubject.next([...currentLogs, logEntry]);
-  }
-
-  getLogs(): string[] {
-    return this.logsSubject.getValue();
+  getRegisteredServices(): RegisteredService[] {
+    return Array.from(this.registeredServices.values());
   }
 }

@@ -17,6 +17,18 @@ import { BusyHttpInterceptor } from '../../common/interceptors/busy.interceptor'
 import { UserStateInterceptor } from '../../common/interceptors/user-state.interceptor';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { FormsModule } from '@angular/forms';
+import { ApiLoggerService } from '../../common/services/api-logger.service';
+import { ChartLayoutService } from '../../common/services/chart-layout.service';
+import { FooterStateService } from '../../common/services/footer-state.service';
+import { DocParseService } from '../../common/services/doc-parse.service';
+import { DeepSeekService } from '../../common/services/deepseek-local.service';
+import { PdfParseService } from '../../common/services/pdf-parse.service';
+import { OpenSkiesService } from '../../common/services/openskies.service';
+import { OpenAIService } from '../../common/services/openai.service';
+import { NotificationService } from '../../common/services/notification.service';
+import { MapboxService } from '../../common/services/mapbox.service';
+import { YahooService } from '../../common/services/yahoo.service';
+import { ApiService } from '../../common/services/api.service';
 
 import { LoggerService } from '../../common/services/logger.service';
 import { UserStateService } from '../../common/services/user-state.service';
@@ -43,12 +55,24 @@ import { AdminStateService } from '../../common/services/admin-state.service';
     FormsModule
   ],
   providers: [
+    ApiService,
     LoggerService,
     UserStateService, 
     UserActivityService,
     BusyService,
     AuthorizationService,
     AdminStateService,
+    ApiLoggerService,
+    ChartLayoutService,
+    FooterStateService,
+    DocParseService,
+    DeepSeekService,
+    PdfParseService,
+    OpenSkiesService,
+    OpenAIService,
+    NotificationService,
+    MapboxService,
+    YahooService,
     { provide: HTTP_INTERCEPTORS, useClass: MetricsInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: LoggingHttpInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: BusyHttpInterceptor, multi: true },

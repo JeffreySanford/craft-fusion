@@ -3,12 +3,13 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { UserStateService } from './common/services/user-state.service';
+import { User, UserStateService } from './common/services/user-state.service';
 import { UserActivityService } from './common/services/user-activity.service';
 import { LoggerService } from './common/services/logger.service';
 import { AdminStateService } from './common/services/admin-state.service';
 import { AuthenticationService } from './common/services/authentication.service';
 import { FooterStateService } from './common/services/footer-state.service';
+import { UserTrackingService } from './common/services/user-tracking.service';
 
 @Component({
   selector: 'app-root',
@@ -34,17 +35,21 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   polling = true;
   editorForm: FormGroup = new FormGroup({});
 
+  userDisplayName = '🔒 Guest';
+  isLoggedIn = false;
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
     private breakpointObserver: BreakpointObserver,
-    private userStateService: UserStateService,
+    private userTrackingService: UserTrackingService,
     private adminStateService: AdminStateService,
     private userActivityService: UserActivityService,
     private logger: LoggerService,
     private authService: AuthenticationService, // Inject AuthenticationService
-    private footerStateService: FooterStateService
+    private footerStateService: FooterStateService,
+    private userStateService: UserStateService
   ) {}
 
   ngOnInit(): void {
@@ -53,6 +58,22 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.authService.isAdmin$.subscribe(isAdmin => {
       this.adminStateService.setAdminStatus(isAdmin);
+    });
+
+    this.userTrackingService.getCurrentUser().subscribe((user) => {
+      if (user?.username) {
+        this.isLoggedIn = true;
+        this.userDisplayName = '🔒 ' + user.username;
+      } else {
+        this.isLoggedIn = false;
+        this.userDisplayName = '🔓 Guest';
+      }
+    });
+
+    this.userStateService.getAllUsers().subscribe(allUsers => {
+      this.logger.info('All users:', allUsers);
+    }, error => {
+      this.logger.error('Error fetching users:', error);
     });
 
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {

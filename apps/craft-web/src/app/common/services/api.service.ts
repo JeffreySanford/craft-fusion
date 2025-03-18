@@ -1,8 +1,10 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Injectable, Inject, forwardRef } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Observable, tap, catchError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { environment as production } from '../../../environments/environment.prod';
+import { LoggerService } from './logger.service';
+import { User } from './user-state.service';
 
 export interface Server {
   name: string;
@@ -41,9 +43,16 @@ export class ApiService {
 
   private currentServer: Server = this.servers[0];
 
-  constructor(private http: HttpClient) {
-    console.log('API Service: Production mode is', this.isProduction ? 'ON' : 'OFF');
-    console.log(`API Service: Initial API URL is ${this.apiUrl}`);
+  constructor(
+    private http: HttpClient,
+    @Inject(forwardRef(() => LoggerService)) private logger: LoggerService
+  ) {
+    // Register service with logger
+    this.logger.registerService('ApiService');
+    this.logger.info('API Service initialized', {
+      production: this.isProduction,
+      apiUrl: this.apiUrl
+    });
   }
 
   private getHeaders(): HttpHeaders {
@@ -53,21 +62,91 @@ export class ApiService {
     });
   }
 
+  private getFullUrl(endpoint: string): string {
+    // Remove leading slash if present to avoid double slashes
+    endpoint = endpoint.replace(/^\/+/, '');
+    return `${this.apiUrl}/${endpoint}`;
+  }
+
   // 🛡️ API CRUD Operations
-  get<T>(endpoint: string): Observable<T> {
-    return this.http.get<T>(`${this.apiUrl}/${endpoint}`, { headers: this.getHeaders() });
+  get<T>(endpoint: string, options?: any): Observable<T> {
+    const url = this.getFullUrl(endpoint);
+    const callId = this.logger.startServiceCall('ApiService', 'GET', url);
+    
+    return this.http.get<T>(url, { headers: this.getHeaders() }).pipe(
+      tap(response => {
+        this.logger.endServiceCall(callId, 200);
+        this.logger.debug(`GET ${endpoint} succeeded`);
+      }),
+      catchError(error => {
+        this.logger.endServiceCall(callId, error.status || 500);
+        this.logger.error(`GET ${endpoint} failed`, { 
+          status: error.status,
+          message: error.message
+        });
+        throw error;
+      })
+    );
   }
 
   post<T, R>(endpoint: string, body: T): Observable<R> {
-    return this.http.post<R>(`${this.apiUrl}/${endpoint}`, body, { headers: this.getHeaders() });
+    const url = `${this.apiUrl}/${endpoint}`;
+    const callId = this.logger.startServiceCall('ApiService', 'POST', url);
+    
+    return this.http.post<R>(url, body, { headers: this.getHeaders() }).pipe(
+      tap(response => {
+        this.logger.endServiceCall(callId, 200);
+        this.logger.debug(`POST ${endpoint} succeeded`);
+      }),
+      catchError(error => {
+        this.logger.endServiceCall(callId, error.status || 500);
+        this.logger.error(`POST ${endpoint} failed`, { 
+          status: error.status,
+          message: error.message
+        });
+        throw error;
+      })
+    );
   }
 
   put<T>(endpoint: string, body: T): Observable<T> {
-    return this.http.put<T>(`${this.apiUrl}/${endpoint}`, body, { headers: this.getHeaders() });
+    const url = `${this.apiUrl}/${endpoint}`;
+    const callId = this.logger.startServiceCall('ApiService', 'PUT', url);
+    
+    return this.http.put<T>(url, body, { headers: this.getHeaders() }).pipe(
+      tap(response => {
+        this.logger.endServiceCall(callId, 200);
+        this.logger.debug(`PUT ${endpoint} succeeded`);
+      }),
+      catchError(error => {
+        this.logger.endServiceCall(callId, error.status || 500);
+        this.logger.error(`PUT ${endpoint} failed`, { 
+          status: error.status,
+          message: error.message
+        });
+        throw error;
+      })
+    );
   }
 
   delete<T>(endpoint: string): Observable<T> {
-    return this.http.delete<T>(`${this.apiUrl}/${endpoint}`, { headers: this.getHeaders() });
+    const url = `${this.apiUrl}/${endpoint}`;
+    const callId = this.logger.startServiceCall('ApiService', 'DELETE', url);
+    
+    return this.http.delete<T>(url, { headers: this.getHeaders() }).pipe(
+      tap(response => {
+        this.logger.endServiceCall(callId, 200);
+        this.logger.debug(`DELETE ${endpoint} succeeded`);
+      }),
+      catchError(error => {
+        this.logger.endServiceCall(callId, error.status || 500);
+        this.logger.error(`DELETE ${endpoint} failed`, { 
+          status: error.status,
+          message: error.message
+        });
+        throw error;
+      })
+    );
   }
 
   /**
@@ -75,7 +154,7 @@ export class ApiService {
    * @returns An observable of the user state.
    */
   getUserState(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/user-state`, { headers: this.getHeaders() });
+    return this.http.get<any>(`${this.apiUrl}/users`, { headers: this.getHeaders() });
   }
 
   /**
@@ -84,7 +163,7 @@ export class ApiService {
    * @returns An observable of the updated user state.
    */
   updateUserState(userState: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/user-state`, userState, { headers: this.getHeaders() });
+    return this.http.put<any>(`${this.apiUrl}/users`, userState, { headers: this.getHeaders() });
   }
 
   /**
@@ -92,7 +171,7 @@ export class ApiService {
    * @returns An observable of the deletion result.
    */
   deleteUserState(): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/user-state`, { headers: this.getHeaders() });
+    return this.http.delete<any>(`${this.apiUrl}/users`, { headers: this.getHeaders() });
   }
 
   /**
@@ -111,12 +190,12 @@ export class ApiService {
       const protocol = this.isProduction ? 'https' : 'http';
       const host = this.isProduction ? production.host : environment.host;
 
-      // Use the server's port instead of a hardcoded port
-      this.apiUrl = `${protocol}://${host}:${server.port}/${server.api}`;
-      console.log(`API Service: API URL set to ${this.apiUrl}`);
+      // Remove extra "/api" if Nest is already exposing "/api/logs"
+      this.apiUrl = `${protocol}://${host}:${server.port}`;
+      this.logger.info(`API URL set to ${this.apiUrl}`);
     } else {
       this.apiUrl = '';
-      console.error(`API Service: Server with name '${serverName}' not found`);
+      this.logger.error(`Server with name '${serverName}' not found`);
     }
 
     return this.apiUrl;
@@ -183,5 +262,25 @@ export class ApiService {
     console.log('Handling string array:', data);
     // Example: Return the length of each string
     return data.map(str => str.length);
+  }
+
+  getLogs(limit: number, level?: string): Observable<any> {
+    let params = new HttpParams().set('limit', limit.toString());
+    
+    // Only add level param if it has a value
+    if (level && level.trim()) {
+      params = params.set('level', level);
+    }
+
+    return this.http.get(`${this.apiUrl}/logs`, { params });
+  }
+
+  getAllUsers(): Observable<User[]> {
+    // Updated endpoint from '/api/user/getAllUsers' to '/api/users'
+    return this.http.get<User[]>('/api/users');
+  }
+
+  getUserById(id: string): Observable<User> {
+    return this.http.get<User>(`/api/users/${id}`);
   }
 }

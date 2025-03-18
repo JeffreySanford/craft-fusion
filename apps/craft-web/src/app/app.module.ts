@@ -26,6 +26,7 @@ import { UserStateInterceptor } from './common/interceptors/user-state.intercept
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
 import { AuthHttpInterceptor } from './common/interceptors/auth.interceptor';
+import { ApiService } from './common/services/api.service'; // Added import
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { AuthHttpInterceptor } from './common/interceptors/auth.interceptor';
   ],
   exports: [MaterialModule, ReactiveFormsModule],
   providers: [
+    ApiService,
     BusyService,
     ToastrService,
     provideAnimations(),
@@ -72,7 +74,8 @@ import { AuthHttpInterceptor } from './common/interceptors/auth.interceptor';
       useClass: MetricsInterceptor,
       multi: true
     },
-    { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true } // Enable AuthHttpInterceptor
+    { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true }, // Enable AuthHttpInterceptor
+    ApiService  // Added provider for ApiService
   ],
   bootstrap: [AppComponent],
 })

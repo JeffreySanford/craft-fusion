@@ -28,6 +28,7 @@ export class UserActivityService {
   ) {
     this.initRouterTracking();
     this.initUserInteractionTracking();
+    this.startTrackingNavigation(); // Start tracking immediately
     
     this.logger.info('User activity tracking initialized');
   }
@@ -157,5 +158,9 @@ export class UserActivityService {
       inputs: inputCount,
       pageViewDurations: this.getPageViewDurations()
     };
+  }
+
+  private startTrackingNavigation(): void {
+    // Remove any checks that require the user to be logged in
   }
 }

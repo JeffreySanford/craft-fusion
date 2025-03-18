@@ -1,7 +1,7 @@
 import { Controller, Get, Query, Delete } from '@nestjs/common';
 import { LoggingService, LogEntry } from './logging.service';
 
-@Controller('api/logs')
+@Controller('/logs')
 export class LoggingController {
   constructor(private readonly loggingService: LoggingService) {}
 

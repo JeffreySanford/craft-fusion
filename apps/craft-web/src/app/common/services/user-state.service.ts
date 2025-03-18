@@ -3,12 +3,27 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, of, Subject, debounceTime } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ApiService } from './api.service';
-import { UserState, LoginDateTimeDTO } from '../interfaces/user-state.interface';
+import { UserState as IUserState, LoginDateTimeDTO, UserState } from '../interfaces/user-state.interface';
+import { LoggerService } from './logger.service';
+import { environment } from '../../../environments/environment';
 
 interface Document {
   name: string;
   color: string;
 }
+
+export class User {
+  username = '';
+}
+
+export class UserStateModel extends User implements IUserState {
+  loginDateTime: Date | null = null;
+  visitLength: number | null = 0;
+  visitedPages: string[] = [];
+  username = '';
+}
+
+// Removed duplicate UserState class declaration
 
 @Injectable({
   providedIn: 'root'
@@ -40,22 +55,56 @@ export class UserStateService {
   private lastSavedTime = 0;
   private readonly DEBOUNCE_TIME = 1000; // 1 second debounce
 
-  constructor(private api: ApiService, private http: HttpClient) {
+  constructor(
+    private api: ApiService, 
+    private http: HttpClient,
+    private logger: LoggerService
+  ) {
+    this.logger.registerService('UserStateService');
+    this.logger.info('UserStateService initialized');
+    
     // Setup debounced visit length updates
-    // this.visitLengthSubject.pipe(
-    //   debounceTime(this.DEBOUNCE_TIME)
-    // ).subscribe(length => {
-    //   this.saveStateData('visitLength', length.toString());
-    // });
+    this.visitLengthSubject.pipe(
+      debounceTime(this.DEBOUNCE_TIME)
+    ).subscribe(length => {
+      this.saveStateData('visitLength', length.toString());
+    });
   }
 
+  saveStateData(key: string, value: string): Observable<void> {
+    this.logger.debug(`Saving state data - ${key}: ${value}`);
+    return this.http.post<void>(`${this.apiUrl}/saveStateData`, { key, value }).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  loadStateData(key: string): Observable<string> {
+    this.logger.debug(`Loading state data - ${key}`);
+    return this.http.get<string>(`${this.apiUrl}/loadStateData/${key}`).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+  loadUserState(): Observable<UserState> {
+    this.logger.debug('Loading user state');
+    return this.http.get<UserState>(`${this.apiUrl}/loadUserState`).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+  setUserState(state: UserState): Observable<void> {
+    this.logger.debug('Setting user state', { state });
+    return this.http.post<void>(`${this.apiUrl}/setUserState`, state).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+  
   setOpenedDocument(document: string): Observable<Document[]> {
+    this.logger.debug(`Setting opened document: ${document}`);
     if (!this.openedDocuments.some(doc => doc.name === document)) {
       const color = this.documentColors[this.openedDocuments.length % this.documentColors.length];
       this.openedDocuments.push({ name: document, color });
       return this.saveOpenedDocuments().pipe(
         map(() => this.openedDocuments),
-        catchError(this.handleError)
+        catchError(this.handleError.bind(this))
       );
     }
     return of(this.openedDocuments);
@@ -129,9 +178,18 @@ export class UserStateService {
   }
 
   private saveOpenedDocuments(): Observable<void> {
-    console.log('STATE: Saving opened documents:', this.openedDocuments);
+    this.logger.debug('Saving opened documents', { count: this.openedDocuments.length });
+    const callId = this.logger.startServiceCall('UserStateService', 'POST', '/api/files/saveOpenedDocuments');
+    
     return this.api.post<Document[], void>('/api/files/saveOpenedDocuments', this.openedDocuments).pipe(
-      catchError(this.handleError)
+      map(response => {
+        this.logger.endServiceCall(callId, 200);
+        return response;
+      }),
+      catchError(error => {
+        this.logger.endServiceCall(callId, error.status || 500);
+        return this.handleError(error);
+      })
     );
   }
 
@@ -195,7 +253,23 @@ export class UserStateService {
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {
-    console.error('An error occurred:', error.message);
+    this.logger.error('An error occurred:', {
+      status: error.status,
+      message: error.message,
+      url: error.url
+    });
     return throwError('Something bad happened; please try again later.');
+  }
+
+  getCurrentUser(): Observable<UserState> {
+    return this.api.get<UserState>('/users/getCurrentUser').pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  getAllUsers(): Observable<User[]> {
+    return this.api.get<User[]>('/users/getAllUsers').pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 }

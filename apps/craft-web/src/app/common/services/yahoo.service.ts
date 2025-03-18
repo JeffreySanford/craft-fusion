@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError, retry } from 'rxjs/operators';
 import { environment } from 'apps/craft-web/src/environments/environment';
+import { LoggerService } from './logger.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,24 +19,33 @@ export class YahooService {
     }),
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private logger: LoggerService
+  ) {
+    this.logger.registerService('YahooService');
+    this.logger.info('YahooService initialized');
+  }
 
   getStockQuote(symbol: string): Observable<any> {
     const url = `${this.apiUrl}/quoteSummary/${symbol}`;
     const params = new HttpParams().set('modules', 'defaultKeyStatistics,assetProfile');
 
+    this.logger.debug(`Fetching stock quote for ${symbol}`, { url });
+    const callId = this.logger.startServiceCall('YahooService', 'GET', url);
+
     return this.http.get(url, { ...this.options, params }).pipe(
-      map((response: any) => response.quoteSummary.result[0]),
+      map((response: any) => {
+        this.logger.endServiceCall(callId, 200);
+        return response.quoteSummary.result[0];
+      }),
       catchError(error => {
-        console.error(`Error fetching stock quote for ${symbol}:`, error);
-        console.error(`Error details:`, {
-          headers: error.headers,
+        this.logger.error(`Error fetching stock quote for ${symbol}:`, {
           status: error.status,
           statusText: error.statusText,
-          url: error.url,
-          message: error.message,
-          error: error.error,
+          message: error.message
         });
+        this.logger.endServiceCall(callId, error.status || 500);
         return of(null); // Return null as a fallback
       }),
     );
@@ -44,9 +54,13 @@ export class YahooService {
   getHistoricalData(symbols: string[], interval: string = '1d', range: string = '1y'): Observable<any> {
     const url = `${this.apiUrl}v8/finance/spark/?interval=${interval}&range=${range}&symbols=${symbols.join(',')}`;
   
+    this.logger.debug(`Fetching historical data for ${symbols}`, { url });
+    const callId = this.logger.startServiceCall('YahooService', 'GET', url);
+
     return this.http.get(url, this.options).pipe(
       retry(3), // Retry the request up to 3 times
       map((response: any) => {
+        this.logger.endServiceCall(callId, 200);
         const parsedData = symbols.map(symbol => {
           const data = response[symbol];
           return {
@@ -60,7 +74,12 @@ export class YahooService {
         return parsedData;
       }),
       catchError(error => {
-        console.error(`Error fetching historical data for ${symbols}:`, error);
+        this.logger.error(`Error fetching historical data for ${symbols}:`, {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message
+        });
+        this.logger.endServiceCall(callId, error.status || 500);
         return of([]); // Return an empty array as a fallback
       }),
     );
@@ -69,18 +88,21 @@ export class YahooService {
   getMarketSummary(): Observable<any> {
     const url = `${this.apiUrl}/market/get-summary`;
 
+    this.logger.debug(`Fetching market summary`, { url });
+    const callId = this.logger.startServiceCall('YahooService', 'GET', url);
+
     return this.http.get(url, this.options).pipe(
-      map((response: any) => response.marketSummaryResponse.result),
+      map((response: any) => {
+        this.logger.endServiceCall(callId, 200);
+        return response.marketSummaryResponse.result;
+      }),
       catchError(error => {
-        console.error(`Error fetching market summary:`, error);
-        console.error(`Error details:`, {
-          headers: error.headers,
+        this.logger.error(`Error fetching market summary:`, {
           status: error.status,
           statusText: error.statusText,
-          url: error.url,
-          message: error.message,
-          error: error.error,
+          message: error.message
         });
+        this.logger.endServiceCall(callId, error.status || 500);
         return of([]); // Return an empty array as a fallback
       }),
     );
@@ -90,18 +112,21 @@ export class YahooService {
     const url = `${this.apiUrl}/trending`;
     const params = new HttpParams().set('region', region);
 
+    this.logger.debug(`Fetching trending symbols for region ${region}`, { url });
+    const callId = this.logger.startServiceCall('YahooService', 'GET', url);
+
     return this.http.get(url, { ...this.options, params }).pipe(
-      map((response: any) => response.finance.result[0].quotes),
+      map((response: any) => {
+        this.logger.endServiceCall(callId, 200);
+        return response.finance.result[0].quotes;
+      }),
       catchError(error => {
-        console.error(`Error fetching trending symbols for region ${region}:`, error);
-        console.error(`Error details:`, {
-          headers: error.headers,
+        this.logger.error(`Error fetching trending symbols for region ${region}:`, {
           status: error.status,
           statusText: error.statusText,
-          url: error.url,
-          message: error.message,
-          error: error.error,
+          message: error.message
         });
+        this.logger.endServiceCall(callId, error.status || 500);
         return of([]); // Return an empty array as a fallback
       }),
     );
@@ -111,18 +136,21 @@ export class YahooService {
     const url = `${this.apiUrl}/quoteSummary/${symbol}`;
     const params = new HttpParams().set('modules', 'assetProfile,defaultKeyStatistics');
 
+    this.logger.debug(`Fetching company details for ${symbol}`, { url });
+    const callId = this.logger.startServiceCall('YahooService', 'GET', url);
+
     return this.http.get(url, { ...this.options, params }).pipe(
-      map((response: any) => response.quoteSummary.result[0]),
+      map((response: any) => {
+        this.logger.endServiceCall(callId, 200);
+        return response.quoteSummary.result[0];
+      }),
       catchError(error => {
-        console.error(`Error fetching company details for ${symbol}:`, error);
-        console.error(`Error details:`, {
-          headers: error.headers,
+        this.logger.error(`Error fetching company details for ${symbol}:`, {
           status: error.status,
           statusText: error.statusText,
-          url: error.url,
-          message: error.message,
-          error: error.error,
+          message: error.message
         });
+        this.logger.endServiceCall(callId, error.status || 500);
         return of(null); // Return null as a fallback
       }),
     );

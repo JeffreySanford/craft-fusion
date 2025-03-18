@@ -14,7 +14,10 @@ import { LoggerService } from '../services/logger.service';
 @Injectable()
 export class MetricsInterceptor implements HttpInterceptor {
 
-  constructor(@Inject(LoggerService) private logger: LoggerService) {}
+  constructor(@Inject(LoggerService) private logger: LoggerService) {
+    this.logger.registerService('MetricsInterceptor');
+    this.logger.info('MetricsInterceptor initialized');
+  }
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Generate service name from URL
@@ -22,7 +25,7 @@ export class MetricsInterceptor implements HttpInterceptor {
     const pathParts = url.pathname.split('/');
     const serviceName = pathParts.length > 1 ? pathParts[1] : 'api';
     
-    // Start tracking the call
+    // Start tracking the call - use the enhanced method
     const callId = this.logger.startServiceCall(serviceName, req.method, req.url);
 
     return next.handle(req).pipe(
@@ -32,7 +35,7 @@ export class MetricsInterceptor implements HttpInterceptor {
           this.logger.endServiceCall(callId, event.status);
         }
       }),
-      catchError((error: any) => { // Change type to 'any'
+      catchError((error: any) => {
         let status = 500; // Default server error
         if (error instanceof HttpErrorResponse) {
           status = error.status;

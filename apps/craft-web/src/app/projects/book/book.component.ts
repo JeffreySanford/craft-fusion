@@ -13,6 +13,7 @@ import * as hljs from 'highlight.js';
 import { catchError, map } from 'rxjs/operators';
 import { of, from, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { LoggerService } from '../../common/services/logger.service';
 
 export interface Document {
   name: string;
@@ -115,17 +116,13 @@ export class BookComponent implements OnInit, AfterViewInit {
         tooltip: 'My sidebar',
         icon: 'comment',
         onSetup: (api: any) => {
-          console.log('Render panel', api.element());
           return () => {
-            console.log('Removing sidebar');
           };
         },
         onShow: (api: any) => {
-          console.log('Show panel', api.element());
           api.element().appendChild(this.sidebar.nativeElement);
         },
         onHide: (api: any) => {
-          console.log('Hide panel', api.element());
         }
       });
       editor.on('init', () => {
@@ -165,7 +162,8 @@ export class BookComponent implements OnInit, AfterViewInit {
     private renderer2: Renderer2,
     private fileUploadService: FileUploadService,
     private cdr: ChangeDetectorRef,
-    private http: HttpClient
+    private http: HttpClient,
+    private logger: LoggerService
   ) { }
 
   ngOnInit(): void {
@@ -184,7 +182,7 @@ export class BookComponent implements OnInit, AfterViewInit {
   }
 
   loadFilesFromAssets(): void {
-    console.log('Loading document from API storage...');
+    this.logger.info('Loading document from API storage...');
     const files = [
       '/api/files/document/book/Chapter 1 - Enki.docx',
       '/api/files/document/book/Chapter 2 - Enlil.docx',
@@ -200,20 +198,20 @@ export class BookComponent implements OnInit, AfterViewInit {
       }
       }).pipe(
       catchError(error => {
-        console.error(`Error loading document ${fileUrl}:`, error);
+        this.logger.error(`Error loading document ${fileUrl}:`, error);
         return throwError(() => error);
       })
       ).subscribe({
       next: (data: ArrayBuffer) => {
         if (!data || data.byteLength === 0) {
-        console.error(`Received empty document data for ${fileUrl}`);
+        this.logger.error(`Received empty document data for ${fileUrl}`);
         return;
         }
-        console.log(`Document ${fileUrl} loaded successfully, size:`, data.byteLength);
+        this.logger.info(`Document ${fileUrl} loaded successfully, size:`, data.byteLength);
         this.processDocument(data, fileUrl); // Pass the fileUrl
       },
       error: (error) => {
-        console.error(`Failed to load document ${fileUrl}:`, error);
+        this.logger.error(`Failed to load document ${fileUrl}:`, error);
       }
       });
     });
@@ -228,7 +226,7 @@ export class BookComponent implements OnInit, AfterViewInit {
   }
 
   onInit(event: EventObj<any>): void {
-    console.log('EditorComponent initialized');
+    this.logger.info('EditorComponent initialized');
     tinymce.init({
       selector: 'textarea',
       plugins: 'code lists advlist link image imagetools media table',
@@ -254,7 +252,7 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   onChange({ editor }: { editor: Editor }) {
     const content = editor.getContent();
-    console.log(content);
+    this.logger.info(content);
     this.updateChapters(content);
     this.addHeaderIds();
   }
@@ -364,7 +362,7 @@ export class BookComponent implements OnInit, AfterViewInit {
 
             this.fileUploadService.uploadFile(file).pipe(
               catchError(err => {
-                console.error('Failed to upload file', err);
+                this.logger.error('Failed to upload file', err);
                 return of(null);
               })
             ).subscribe(() => {
@@ -381,7 +379,7 @@ export class BookComponent implements OnInit, AfterViewInit {
             this.renderMarkdown(content);
             this.fileUploadService.uploadFile(file).pipe(
               catchError(err => {
-                console.error('Failed to upload file', err);
+                this.logger.error('Failed to upload file', err);
                 return of(null);
               })
             ).subscribe(() => {
@@ -419,11 +417,11 @@ export class BookComponent implements OnInit, AfterViewInit {
   }
 
   setEditorContent(content: string): void {
-    console.log('Setting editor content:', content);
+    this.logger.info('Setting editor content:', content);
     this.editorData = content;
 
     if (this.editorComponent && this.editorComponent.editor) {
-      console.log('Updating TinyMCE editor');
+      this.logger.info('Updating TinyMCE editor');
       this.editorComponent.editor.setContent(content);
 
       // Re-apply styles to editor content
@@ -440,14 +438,11 @@ export class BookComponent implements OnInit, AfterViewInit {
     }
 
     if (this.markdownPreview) {
-      console.log('Updating markdown preview');
+      this.logger.info('Updating markdown preview');
       this.markdownPreview.nativeElement.innerHTML = content;
 
       const myths = this.markdownPreview.nativeElement.querySelectorAll('.myth-section');
-      console.log('Found myth sections:', myths.length);
-      myths.forEach((myth: HTMLElement, index: number) => {
-        console.log(`Myth ${index + 1}:`, myth.textContent);
-      });
+      this.logger.info('Found myth sections:', myths.length);
     }
 
     this.updateChapters(content);
@@ -480,7 +475,7 @@ export class BookComponent implements OnInit, AfterViewInit {
   }
 
   invokeAIAssistant(): void {
-    console.log('AI Assistant invoked');
+    this.logger.info('AI Assistant invoked');
   }
 
   changeFont(event: Event): void {
@@ -509,7 +504,7 @@ export class BookComponent implements OnInit, AfterViewInit {
   }
 
   onSave(): void {
-    console.log('Saving content');
+    this.logger.info('Saving content');
   }
 
   toggleRSVP() {
@@ -532,7 +527,7 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   runRSVP() {
     clearInterval(this.rsvpInterval);
-    console.log(`RSVP Speed: ${this.rsvpSpeed} WPM`); // Log the current speed
+    this.logger.info(`RSVP Speed: ${this.rsvpSpeed} WPM`); // Log the current speed
     const interval = 600000 / Math.pow(this.rsvpSpeed, 1.5); // Exponential function for interval calculation
     this.rsvpInterval = setInterval(() => {
       if (this.wordIndex < this.words.length) {
@@ -602,7 +597,7 @@ export class BookComponent implements OnInit, AfterViewInit {
         this.openedDocuments.push(newDocument);
       }
     }).catch(error => {
-      console.error('Error processing document:', error);
+      this.logger.error('Error processing document:', error);
     });
 
     this.cdr.detectChanges();
@@ -617,7 +612,7 @@ export class BookComponent implements OnInit, AfterViewInit {
   }
 
   private processMythContent(content: string): string {
-    console.log('\n=== Processing Content for Myths ===');
+    this.logger.info('\n=== Processing Content for Myths ===');
 
     const lines = content.split('\n');
     let mythCount = 0;
@@ -629,11 +624,12 @@ export class BookComponent implements OnInit, AfterViewInit {
 
       if (mythMatch) {
         mythCount++;
-        console.log(`Line ${index + 1}: Found myth:`, mythMatch[0]);
 
         const verse = mythMatch[1] || mythMatch[4]; // Bracketed or standard verse
         const link = mythMatch[2];
         const content = (mythMatch[3] || mythMatch[5] || '').trim();
+
+        this.logger.info(`Line ${index + 1}: Found myth #${verse} (Length: ${content.length} chars, Link: ${link || 'N/A'})`);
 
         if (link) {
           return `<div class="myth-section">
@@ -649,14 +645,14 @@ export class BookComponent implements OnInit, AfterViewInit {
     });
 
     const result = processedLines.join('\n');
-    console.log(`\nProcessed ${mythCount} myths`);
+    this.logger.info(`\nProcessed ${mythCount} myths`);
 
     // Update display
     if (this.markdownPreview) {
       const myths = this.markdownPreview.nativeElement.querySelectorAll('.myth-line');
-      console.log('Found myth sections:', myths.length);
+      this.logger.info('Found myth sections:', myths.length);
       myths.forEach((myth: HTMLElement, index: number) => {
-        console.log(`Myth ${index + 1}:`, {
+        this.logger.info(`Myth ${index + 1}:`, {
           verse: myth.getAttribute('data-verse'),
           content: myth.textContent?.trim()
         });
@@ -700,16 +696,16 @@ export class BookComponent implements OnInit, AfterViewInit {
       }
     }).pipe(
       catchError(error => {
-        console.error(`Error loading document ${fileUrl}:`, error);
+        this.logger.error(`Error loading document ${fileUrl}:`, error);
         return throwError(() => error);
       })
     ).subscribe({
       next: (data: ArrayBuffer) => {
         if (!data || data.byteLength === 0) {
-          console.error(`Received empty document data for ${fileUrl}`);
+          this.logger.error(`Received empty document data for ${fileUrl}`);
           return;
         }
-        console.log(`Document ${fileUrl} loaded successfully, size:`, data.byteLength);
+        this.logger.info(`Document ${fileUrl} loaded successfully, size:`, data.byteLength);
         this.docParseService.parseDoc(new File([data], documentName + '.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })).then(content => {
           this.editorData = content;
           this.renderMarkdown(content);
@@ -718,7 +714,7 @@ export class BookComponent implements OnInit, AfterViewInit {
         });
       },
       error: (error) => {
-        console.error(`Failed to load document ${fileUrl}:`, error);
+        this.logger.error(`Failed to load document ${fileUrl}:`, error);
       }
     });
   }

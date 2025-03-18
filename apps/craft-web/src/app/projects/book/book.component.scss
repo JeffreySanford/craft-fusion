@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
 @use 'sass:color';
-@import './styles/theme.scss';
+@use './styles/theme' as *;
 
 $vibrant-red: #f00;
 $vibrant-blue: #00f;
@@ -147,7 +147,7 @@ $vibrant-yellow: #fc0;
         color: var(--book-dark-myth-text);
 
         &::before {
-          color: var(--book-dark-myth-verse);
+          color: var (--book-dark-myth-verse);
         }
       }
     }
