@@ -60,7 +60,6 @@ export class SidebarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    debugger;
     this.breakpointObserver.observe([Breakpoints.Handset])
       .subscribe(result => {
         this.isMobile = result.matches;

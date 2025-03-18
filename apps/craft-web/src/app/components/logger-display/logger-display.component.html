@@ -1,8 +1,43 @@
 <div class="logger-display">
   <h2>Logs</h2>
-  <div class="log-entries">
-    <div *ngFor="let log of logs" class="log-entry">
-      {{ log }}
+
+  <div class="log-category" *ngIf="logs['error'].length">
+    <h3>Errors</h3>
+    <div class="log-entries">
+      <div *ngFor="let log of logs['error']" class="log-entry error">
+        <span class="timestamp">{{ log.timestamp }}</span>
+        {{ log.message }}
+      </div>
+    </div>
+  </div>
+
+  <div class="log-category" *ngIf="logs['warn'].length">
+    <h3>Warnings</h3>
+    <div class="log-entries">
+      <div *ngFor="let log of logs['warn']" class="log-entry warn">
+        <span class="timestamp">{{ log.timestamp }}</span>
+        {{ log.message }}
+      </div>
+    </div>
+  </div>
+
+  <div class="log-category" *ngIf="logs['info'].length">
+    <h3>Information</h3>
+    <div class="log-entries">
+      <div *ngFor="let log of logs['info']" class="log-entry info">
+        <span class="timestamp">{{ log.timestamp }}</span>
+        {{ log.message }}
+      </div>
+    </div>
+  </div>
+
+  <div class="log-category" *ngIf="logs['log'].length">
+    <h3>Logs</h3>
+    <div class="log-entries">
+      <div *ngFor="let log of logs['log']" class="log-entry log">
+        <span class="timestamp">{{ log.timestamp }}</span>
+        {{ log.message }}
+      </div>
     </div>
   </div>
 </div>

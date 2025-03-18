@@ -1,0 +1,27 @@
+// USA Patriotic Color Scheme
+
+// Core colors
+$usa-red: #BF0A30;
+$usa-blue: #002868;
+$usa-white: #FFFFFF;
+$usa-gold: #FFD700;
+
+// Secondary colors
+$silver-star: #C0C0C0;
+$dark-bg: #1A1A2E;
+
+// Functional colors
+$success-green: #10B981;
+$error-red: #EF4444;
+$warning-orange: #F59E0B;
+$info-blue: #3B82F6;
+
+// Additional semantic variables
+$patriot-red: $usa-red;     // Using $usa-red for consistency
+$patriot-blue: $usa-blue;   // Using $usa-blue for consistency
+$patriot-white: $usa-white; // Using $usa-white for consistency
+
+// Other app variables
+$card-bg: #27293d;
+$navy-blue: #001F3F;
+$liberty-blue: #002868;

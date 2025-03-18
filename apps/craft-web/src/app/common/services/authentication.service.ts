@@ -134,6 +134,12 @@ export class AuthenticationService {
   }
 
   private initializeAuthentication(): void {
+    // Clear any existing token on app initialization
+    localStorage.removeItem(this.TOKEN_KEY);
+    this.isLoggedIn.next(false);
+    this.isAuthenticated.next(false);
+    this.isAdminSubject.next(false);
+    
     const token = localStorage.getItem(this.TOKEN_KEY);
     if (token) {
       this.sessionService

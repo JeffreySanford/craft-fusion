@@ -32,9 +32,13 @@ export class MetricsInterceptor implements HttpInterceptor {
           this.logger.endServiceCall(callId, event.status);
         }
       }),
-      catchError((error: HttpErrorResponse) => {
+      catchError((error: any) => { // Change type to 'any'
+        let status = 500; // Default server error
+        if (error instanceof HttpErrorResponse) {
+          status = error.status;
+        }
         // End tracking with error status
-        this.logger.endServiceCall(callId, error.status);
+        this.logger.endServiceCall(callId, status);
         return throwError(() => error);
       })
     );

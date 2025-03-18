@@ -59,6 +59,7 @@
         "styles": [
           "@angular/material/prebuilt-themes/indigo-pink.css",
           "apps/craft-web/src/styles/styles.scss",
+          "apps/craft-web/src/styles/_variables.scss",
           "node_modules/ngx-toastr/toastr.css",
           "node_modules/mapbox-gl/dist/mapbox-gl.css",
           "node_modules/flag-icon-css/css/flag-icons.min.css"
@@ -66,16 +67,23 @@
         "stylePreprocessorOptions": {
           "includePaths": ["apps/craft-web/src/styles"]
         },
-        "scripts": [
-          "node_modules/tinymce/tinymce.min.js"
-        ],
+        "scripts": ["node_modules/tinymce/tinymce.min.js"],
         "allowedCommonJsDependencies": [
-          "jszip", "moment", "moment-timezone", "tinymce", "xlsx",
-          "mapbox-gl", "mapbox-gl-geocoder", "mapbox-gl-directions",
-          "mapbox-gl-draw", "mapbox-gl-geolocate-control",
-          "mapbox-gl-language", "mapbox-gl-traffic", "mapbox-gl-traffic",
-          "turndown", "turndown-plugin-gfm"
-
+          "jszip",
+          "moment",
+          "moment-timezone",
+          "tinymce",
+          "xlsx",
+          "mapbox-gl",
+          "mapbox-gl-geocoder",
+          "mapbox-gl-directions",
+          "mapbox-gl-draw",
+          "mapbox-gl-geolocate-control",
+          "mapbox-gl-language",
+          "mapbox-gl-traffic",
+          "mapbox-gl-traffic",
+          "turndown",
+          "turndown-plugin-gfm"
         ]
       },
       "configurations": {

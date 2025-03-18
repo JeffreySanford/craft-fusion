@@ -18,7 +18,6 @@ export class ReadOnlyInterceptor implements HttpInterceptor {
       return next.handle(request);
 
     } else {
-      debugger
       const msg = 'Error: cannot ${req.method} ${req/url} when read-only'
       this.logger.error(msg);
 

@@ -54,15 +54,12 @@ export class HeaderComponent implements OnInit {
   }
 
   handleUserMenuAction(action: string) {
-    debugger;
     if (action === 'login') {
       this.authService.login('test', 'test').subscribe(() => {
-        debugger;
         this.updateUserMenuItems();
       });
     } else if (action === 'logout') {
       this.authService.logout();
-      debugger;
       this.updateUserMenuItems();
     }
     // Handle other actions as needed

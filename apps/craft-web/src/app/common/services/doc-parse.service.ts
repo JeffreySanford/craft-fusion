@@ -213,7 +213,6 @@ export class DocParseService {
     this.log('detectMythSection - text:', normalizedText); // Log the normalized text
 
     for (const [patternName, pattern] of Object.entries(this.mythPatterns)) {
-      debugger
       if (patternName === 'mythSection' || patternName === 'mythKeywordSection') {
         const match = normalizedText.match(pattern);
         this.log(`Trying ${patternName} pattern: ${pattern}`);

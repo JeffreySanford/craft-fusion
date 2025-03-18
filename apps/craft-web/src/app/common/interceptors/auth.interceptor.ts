@@ -1,4 +1,3 @@
-
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
@@ -18,7 +17,6 @@ export class AuthHttpInterceptor implements HttpInterceptor {
             setHeaders: headers,
             withCredentials: true
         });
-        debugger
 
         return next.handle(request).pipe(this.handleErrors);
     }
@@ -27,7 +25,6 @@ export class AuthHttpInterceptor implements HttpInterceptor {
 
         return source.pipe(
             catchError((error: HttpErrorResponse) => {
-                debugger
                 console.error('Auth interceptor error: ' + error.message);
                 return error.status === 401 ? this.handle401(error) : throwError(error);
             })
@@ -38,10 +35,8 @@ export class AuthHttpInterceptor implements HttpInterceptor {
         const authResHeader = error.headers.get('WWW-Authenticate');
 
         if (authResHeader) {
-            debugger
             console.error('Auth interceptor error: ' + error.message);
             if (/is expired/.test(authResHeader)) {
-                debugger
                 this.router.navigate(['login']);  // Token expired, leave app amd sign-in again
             }
         }
@@ -50,7 +45,6 @@ export class AuthHttpInterceptor implements HttpInterceptor {
          * The error is handled.  Call should get non-response.  Empty completes without emitting
          */
 
-        debugger
         return EMPTY;
     }
 }

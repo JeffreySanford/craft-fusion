@@ -1,22 +1,6 @@
-// American-themed color palette
-$usa-red: #B22234;
-$usa-blue: #3C3B6E;
-$usa-white: #FFFFFF;
-$usa-gold: #FFD700;
-$navy-blue: #001F3F;
-$liberty-blue: #002868;
-$patriot-red: #BF0A30;
-$silver-star: #E6E6E6;
+@use 'sass:color';
+@use '../../../styles/variables' as vars;
 
-// Dashboard colors
-$success-green: #4CAF50;
-$warning-orange: #FF9800;
-$error-red: #F44336;
-$info-blue: #2196F3;
-$dark-bg: #1a2035;
-$card-bg: #27293d;
-
-// American flag animation timing
 $flag-wave-duration: 6s;
 $flag-stars-twinkle: 2s;
 
@@ -24,12 +8,12 @@ $flag-stars-twinkle: 2s;
   display: flex;
   flex-direction: column;
   height: 100%;
-  color: $usa-white;
-  background: linear-gradient(135deg, $dark-bg 0%, $usa-blue 100%);
+  color: vars.$patriot-white;
+  background: linear-gradient(135deg, vars.$dark-bg 0%, vars.$usa-blue 100%);
   padding: 20px;
   position: relative;
   overflow-y: auto;
-  
+
   &.usa-theme {
     &::before {
       content: '';
@@ -40,15 +24,15 @@ $flag-stars-twinkle: 2s;
       height: 10px;
       background: repeating-linear-gradient(
         90deg,
-        $usa-red,
-        $usa-red 50px,
-        $usa-white 50px,
-        $usa-white 100px
+        vars.$usa-red,
+        vars.$usa-red 50px,
+        vars.$usa-white 50px,
+        vars.$usa-white 100px
       );
       z-index: 10;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
-    
+
     &::after {
       content: '';
       position: absolute;
@@ -58,10 +42,10 @@ $flag-stars-twinkle: 2s;
       height: 10px;
       background: repeating-linear-gradient(
         90deg,
-        $usa-red,
-        $usa-red 50px,
-        $usa-white 50px,
-        $usa-white 100px
+        vars.$usa-red,
+        vars.$usa-red 50px,
+        vars.$usa-white 50px,
+        vars.$usa-white 100px
       );
       z-index: 10;
       box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
@@ -73,21 +57,21 @@ $flag-stars-twinkle: 2s;
 .admin-header {
   margin-bottom: 20px;
   padding: 15px 20px;
-  background: $usa-blue;
+  background: vars.$usa-blue;
   border-radius: 10px;
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
   animation: slide-in-top 0.5s ease-out forwards;
-  
+
   .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    
+
     .title-section {
       display: flex;
       align-items: center;
-      
+
       .usa-flag-container {
         width: 60px;
         height: 40px;
@@ -99,7 +83,7 @@ $flag-stars-twinkle: 2s;
         display: flex;
         align-items: center;
         justify-content: center;
-        
+
         &:before {
           content: '';
           position: absolute;
@@ -114,7 +98,7 @@ $flag-stars-twinkle: 2s;
           );
           z-index: 3;
         }
-        
+
         .usa-flag-image {
           width: 100%;
           height: auto;
@@ -123,57 +107,57 @@ $flag-stars-twinkle: 2s;
           animation: flag-wave $flag-wave-duration ease-in-out infinite;
         }
       }
-      
+
       .title-and-subtitle {
         display: flex;
         flex-direction: column;
         justify-content: center;
         height: 40px; // Match the flag container height
-        
+
         h1 {
           margin: 0;
           font-size: 1.6em; // Reduced font size
-          color: $usa-white;
+          color: vars.$usa-white;
           text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
           line-height: 1.2; // Adjust line height
         }
-        
+
         .subtitle {
           margin: 0;
           font-size: 0.9em; // Reduced font size
-          color: $usa-gold;
+          color: vars.$usa-gold;
           line-height: 1.2; // Adjust line height
         }
       }
     }
-    
+
     .actions-section {
       display: flex;
       align-items: center;
       gap: 15px;
-      
+
       .toggle-label {
         margin-left: 5px;
-        color: $usa-white;
+        color: vars.$patriot-white;
       }
-      
+
       .action-button {
-        background-color: $patriot-red;
-        color: $usa-white;
+        background-color: vars.$usa-red;
+        color: vars.$patriot-white;
         padding: 0 15px;
         border-radius: 5px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         transition: all 0.3s ease;
-        
+
         &:hover {
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
           transform: translateY(-2px);
-          background-color: darken($patriot-red, 5%);
+          background-color: color.adjust(vars.$usa-red, $lightness: -5%);
         }
       }
     }
   }
-  
+
   // USA Flag Animation
   .usa-flag-container {
     width: 60px;
@@ -186,7 +170,7 @@ $flag-stars-twinkle: 2s;
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     &:before {
       content: '';
       position: absolute;
@@ -201,7 +185,7 @@ $flag-stars-twinkle: 2s;
       );
       z-index: 3;
     }
-    
+
     .usa-flag-image {
       width: 100%;
       height: auto;
@@ -210,12 +194,12 @@ $flag-stars-twinkle: 2s;
       animation: flag-wave $flag-wave-duration ease-in-out infinite;
     }
   }
-  
+
   .metrics-summary {
     display: flex;
     justify-content: space-between;
     gap: 20px;
-    
+
     .metric-card {
       flex: 1;
       display: flex;
@@ -227,32 +211,32 @@ $flag-stars-twinkle: 2s;
       border-left: 5px solid;
       animation: slide-in-left 0.5s ease-out forwards;
       animation-delay: calc(var(--i, 0) * 0.1s);
-      
+
       &:hover {
         transform: translateY(-5px);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
       }
-      
+
       &.memory {
-        border-color: $info-blue;
+        border-color: vars.$info-blue;
         --i: 1;
       }
-      
+
       &.cpu {
-        border-color: $usa-gold;
+        border-color: vars.$usa-gold;
         --i: 2;
       }
-      
+
       &.uptime {
-        border-color: $success-green;
+        border-color: vars.$success-green;
         --i: 3;
       }
-      
+
       &.network {
-        border-color: $usa-red;
+        border-color: vars.$usa-red;
         --i: 4;
       }
-      
+
       .metric-icon {
         display: flex;
         justify-content: center;
@@ -261,44 +245,44 @@ $flag-stars-twinkle: 2s;
         height: 50px;
         border-radius: 50%;
         margin-right: 15px;
-        
+
         mat-icon {
           font-size: 28px;
           height: 28px;
           width: 28px;
         }
       }
-      
+
       .memory .metric-icon {
-        background: rgba($info-blue, 0.2);
-        color: $info-blue;
+        background: rgba(vars.$info-blue, 0.2);
+        color: vars.$info-blue;
       }
-      
+
       .cpu .metric-icon {
-        background: rgba($usa-gold, 0.2);
-        color: $usa-gold;
+        background: rgba(vars.$usa-gold, 0.2);
+        color: vars.$usa-gold;
       }
-      
+
       .uptime .metric-icon {
-        background: rgba($success-green, 0.2);
-        color: $success-green;
+        background: rgba(vars.$success-green, 0.2);
+        color: vars.$success-green;
       }
-      
+
       .network .metric-icon {
-        background: rgba($usa-red, 0.2);
-        color: $usa-red;
+        background: rgba(vars.$usa-red, 0.2);
+        color: vars.$usa-red;
       }
-      
+
       .metric-info {
         display: flex;
         flex-direction: column;
-        
+
         .metric-label {
           font-size: 14px;
-          color: $silver-star;
+          color: vars.$silver-star;
           margin-bottom: 5px;
         }
-        
+
         .metric-value {
           font-size: 22px;
           font-weight: 500;
@@ -311,42 +295,70 @@ $flag-stars-twinkle: 2s;
 // Additional styles for service metrics and tables
 .service-item {
   &.active-service {
-    border-left: 3px solid $success-green;
+    border-left: 3px solid vars.$success-green;
   }
-  
+
   &:not(.active-service) {
-    border-left: 3px solid $error-red;
+    border-left: 3px solid vars.$error-red;
     opacity: 0.7;
   }
 }
 
 .api-table {
   width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
+  border-radius: 0.5em;
+  overflow: hidden;
+  box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.api-table th,
+.api-table td {
+  padding: 0.75em;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.api-table th {
+  background-color: rgba(0, 0, 0, 0.2);
+  color: vars.$patriot-white;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.api-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.3s ease;
 }
 
 .method-badge {
   padding: 3px 8px;
   border-radius: 4px;
   font-size: 0.8em;
-  
+
   &.method-get {
-    background-color: rgba($info-blue, 0.2);
-    color: $info-blue;
+    background-color: rgba(vars.$info-blue, 0.2);
+    color: vars.$info-blue;
   }
-  
+
   &.method-post {
-    background-color: rgba($success-green, 0.2);
-    color: $success-green;
+    background-color: rgba(vars.$success-green, 0.2);
+    color: vars.$success-green;
   }
-  
+
   &.method-put {
-    background-color: rgba($warning-orange, 0.2);
-    color: $warning-orange;
+    background-color: rgba(vars.$warning-orange, 0.2);
+    color: vars.$warning-orange;
   }
-  
+
   &.method-delete {
-    background-color: rgba($error-red, 0.2);
-    color: $error-red;
+    background-color: rgba(vars.$error-red, 0.2);
+    color: vars.$error-red;
   }
 }
 
@@ -354,26 +366,26 @@ $flag-stars-twinkle: 2s;
   position: relative;
   display: flex;
   align-items: center;
-  
+
   .duration-bar {
     position: absolute;
     left: 0;
     height: 6px;
     border-radius: 3px;
-    
+
     &.duration-fast {
-      background-color: $success-green;
+      background-color: vars.$success-green;
     }
-    
+
     &.duration-medium {
-      background-color: $warning-orange;
+      background-color: vars.$warning-orange;
     }
-    
+
     &.duration-slow {
-      background-color: $error-red;
+      background-color: vars.$error-red;
     }
   }
-  
+
   span {
     margin-left: 5px;
   }
@@ -384,35 +396,35 @@ $flag-stars-twinkle: 2s;
   padding: 3px 8px;
   border-radius: 4px;
   font-size: 0.8em;
-  
+
   &.status-success {
-    background-color: rgba($success-green, 0.2);
-    color: $success-green;
+    background-color: rgba(vars.$success-green, 0.2);
+    color: vars.$success-green;
   }
-  
+
   &.status-redirect {
-    background-color: rgba($info-blue, 0.2);
-    color: $info-blue;
+    background-color: rgba(vars.$info-blue, 0.2);
+    color: vars.$info-blue;
   }
-  
+
   &.status-client-error {
-    background-color: rgba($warning-orange, 0.2);
-    color: $warning-orange;
+    background-color: rgba(vars.$warning-orange, 0.2);
+    color: vars.$warning-orange;
   }
-  
+
   &.status-server-error {
-    background-color: rgba($error-red, 0.2);
-    color: $error-red;
+    background-color: rgba(vars.$error-red, 0.2);
+    color: vars.$error-red;
   }
-  
+
   &.status-unknown {
-    background-color: rgba($silver-star, 0.2);
-    color: $silver-star;
+    background-color: rgba(vars.$silver-star, 0.2);
+    color: vars.$silver-star;
   }
-  
+
   &.status-in-process {
-    background-color: rgba($usa-gold, 0.2);
-    color: $usa-gold;
+    background-color: rgba(vars.$usa-gold, 0.2);
+    color: vars.$usa-gold;
     animation: pulse-yellow 1.5s infinite;
   }
 }
@@ -428,7 +440,7 @@ $flag-stars-twinkle: 2s;
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-  
+
   // Add subtle animated gradient overlay
   &::before {
     content: "";
@@ -437,36 +449,36 @@ $flag-stars-twinkle: 2s;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, 
-      rgba(255, 255, 255, 0) 25%, 
-      rgba(255, 255, 255, 0.02) 25%, 
-      rgba(255, 255, 255, 0.02) 50%, 
-      rgba(255, 255, 255, 0) 50%, 
-      rgba(255, 255, 255, 0) 75%, 
+    background: linear-gradient(45deg,
+      rgba(255, 255, 255, 0) 25%,
+      rgba(255, 255, 255, 0.02) 25%,
+      rgba(255, 255, 255, 0.02) 50%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(255, 255, 255, 0) 75%,
       rgba(255, 255, 255, 0.02) 75%);
     background-size: 8px 8px;
     animation: moveGradient 30s linear infinite;
     opacity: 0.5;
     pointer-events: none;
   }
-  
+
   &.system-metrics-chart {
     animation-delay: 0.1s;
   }
-  
+
   &.service-metrics-chart {
     animation-delay: 0.3s;
   }
-  
+
   h2 {
-    color: $usa-white;
+    color: vars.$patriot-white;
     margin-top: 0;
     margin-bottom: 20px;
     font-size: 1.5em;
     padding-bottom: 12px;
     position: relative;
     display: inline-block;
-    
+
     &::after {
       content: '';
       position: absolute;
@@ -474,11 +486,11 @@ $flag-stars-twinkle: 2s;
       left: 0;
       width: 100%;
       height: 3px;
-      background: linear-gradient(90deg, $usa-red, $usa-blue, $usa-white);
+      background: linear-gradient(90deg, vars.$usa-red, vars.$usa-blue, vars.$usa-white);
       border-radius: 2px;
     }
   }
-  
+
   canvas {
     width: 100% !important;
     max-height: 350px;
@@ -491,7 +503,7 @@ $flag-stars-twinkle: 2s;
 .security-container {
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -499,7 +511,7 @@ $flag-stars-twinkle: 2s;
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: 
+    background-image:
       radial-gradient(circle, rgba(255, 215, 0, 0.2) 1px, transparent 1px),
       radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
     background-size: 30px 30px, 15px 15px;
@@ -508,13 +520,13 @@ $flag-stars-twinkle: 2s;
     opacity: 0.3;
     animation: twinkleStars 8s infinite alternate;
   }
-  
+
   .security-stats {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
     margin-bottom: 30px;
-    
+
     .stat-card {
       background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(17, 24, 39, 0.9) 100%);
       border-radius: 10px;
@@ -525,12 +537,12 @@ $flag-stars-twinkle: 2s;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       animation: fadeIn 0.5s ease-out forwards;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      
+
       &:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
       }
-      
+
       .stat-icon {
         width: 60px;
         height: 60px;
@@ -539,46 +551,46 @@ $flag-stars-twinkle: 2s;
         align-items: center;
         justify-content: center;
         margin-right: 20px;
-        
+
         &.secure {
           background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
           color: #10b981;
         }
-        
+
         &.warning {
           background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
           color: #f59e0b;
         }
-        
+
         &.neutral {
           background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
           color: #3b82f6;
         }
-        
+
         mat-icon {
           font-size: 30px;
           height: 30px;
           width: 30px;
         }
       }
-      
+
       .stat-info {
         flex: 1;
-        
+
         h3 {
           margin: 0 0 8px;
           font-size: 16px;
-          color: $usa-white;
+          color: vars.$patriot-white;
         }
-        
+
         .stat-value {
           font-size: 22px;
           font-weight: 500;
-          
+
           &.secure {
             color: #10b981;
           }
-          
+
           &.warning {
             color: #f59e0b;
           }
@@ -586,16 +598,16 @@ $flag-stars-twinkle: 2s;
       }
     }
   }
-  
+
   .security-features {
     h3 {
       font-size: 18px;
       margin: 0 0 20px;
-      color: $usa-white;
+      color: vars.$patriot-white;
       padding-bottom: 10px;
       position: relative;
       display: inline-block;
-      
+
       &::after {
         content: '';
         position: absolute;
@@ -603,16 +615,16 @@ $flag-stars-twinkle: 2s;
         left: 0;
         width: 100%;
         height: 2px;
-        background: $usa-red;
+        background: vars.$usa-red;
         border-radius: 2px;
       }
     }
-    
+
     .feature-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 20px;
-      
+
       .feature-card {
         background: rgba(30, 41, 59, 0.5);
         border-radius: 8px;
@@ -625,155 +637,42 @@ $flag-stars-twinkle: 2s;
         transition: all 0.3s ease;
         animation: fadeIn 0.5s ease-out forwards;
         border: 1px solid rgba(255, 255, 255, 0.05);
-        
+
         &:hover {
           transform: translateY(-5px);
           box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
           background: rgba(30, 41, 59, 0.7);
         }
-        
+
         mat-icon {
           font-size: 30px;
           height: 30px;
           width: 30px;
           margin-bottom: 15px;
-          color: $usa-gold;
+          color: vars.$usa-gold;
         }
-        
+
         h4 {
           margin: 0 0 10px;
           font-size: 16px;
-          color: $usa-white;
+          color: vars.$patriot-white;
         }
-        
+
         .feature-status {
           font-size: 14px;
           padding: 4px 10px;
           border-radius: 20px;
-          
+
           &.active {
             background-color: rgba(16, 185, 129, 0.2);
             color: #10b981;
           }
-          
+
           &.inactive {
             background-color: rgba(239, 68, 68, 0.2);
             color: #ef4444;
           }
         }
-      }
-    }
-  }
-}
-
-// Improved table styling for API calls
-.api-calls-container {
-  .api-table {
-    background: rgba(30, 41, 59, 0.5);
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    margin-top: 20px;
-    
-    .mat-mdc-header-row {
-      background: linear-gradient(90deg, $usa-blue, darken($usa-blue, 10%));
-      height: 56px;
-    }
-    
-    .mat-mdc-header-cell {
-      color: $usa-white;
-      font-weight: 500;
-      font-size: 14px;
-      padding: 16px;
-    }
-    
-    .mat-mdc-cell {
-      color: $usa-white;
-      font-size: 14px;
-      padding: 12px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .mat-mdc-row {
-      transition: background-color 0.2s ease;
-      
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.05);
-      }
-      
-      &:nth-child(even) {
-        background-color: rgba(30, 41, 59, 0.3);
-        
-        &:hover {
-          background-color: rgba(30, 41, 59, 0.5);
-        }
-      }
-    }
-    
-    .service-cell {
-      display: flex;
-      align-items: center;
-      
-      mat-icon {
-        margin-right: 8px;
-        color: $usa-gold;
-      }
-    }
-    
-    .url-cell {
-      max-width: 250px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-  
-  // Enhance signature block with eagle background
-  .api-signature-block {
-    position: relative;
-    margin-top: 25px;
-    padding: 20px;
-    background: rgba(30, 41, 59, 0.7);
-    border-radius: 10px;
-    border-top: 2px solid $usa-red;
-    overflow: hidden;
-    min-height: 70px;
-    
-    .eagle-background {
-      position: absolute;
-      right: 20px;
-      bottom: 0;
-      z-index: 0;
-      opacity: 0.12;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      
-      .usa-eagle {
-        height: 100px;
-        width: auto;
-        object-fit: contain;
-        filter: drop-shadow(0px 0px 3px rgba(255, 215, 0, 0.3));
-      }
-    }
-    
-    .signature-content {
-      position: relative;
-      z-index: 1;
-      text-align: right;
-      padding-right: 100px;
-      
-      p {
-        margin: 0;
-        color: $silver-star;
-        font-size: 0.9em;
-      }
-      
-      .signature-motto {
-        color: $usa-gold;
-        font-weight: 500;
-        margin-top: 5px;
-        letter-spacing: 0.5px;
       }
     }
   }
@@ -787,15 +686,15 @@ $flag-stars-twinkle: 2s;
   justify-content: center;
   text-align: center;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  
+
   .footer-text {
     p {
       margin: 0;
-      color: $silver-star;
+      color: vars.$silver-star;
       font-size: 0.9em;
-      
+
       &.usa-motto {
-        color: $usa-gold;
+        color: vars.$usa-gold;
         font-weight: 500;
         margin-top: 5px;
         letter-spacing: 1px;
@@ -880,26 +779,26 @@ $flag-stars-twinkle: 2s;
     .header-content {
       flex-direction: column;
       align-items: flex-start;
-      
+
       .actions-section {
         margin-top: 15px;
         width: 100%;
       }
     }
-    
+
     .metrics-summary {
       flex-direction: column;
-      
+
       .metric-card {
         margin-bottom: 15px;
       }
     }
   }
-  
+
   .security-stats {
     grid-template-columns: 1fr !important;
   }
-  
+
   .feature-grid {
     grid-template-columns: repeat(2, 1fr) !important;
   }
@@ -951,4 +850,53 @@ $flag-stars-twinkle: 2s;
 table thead tr {
   background: linear-gradient(to right, #6a11cb, #2575fc);
   color: #fff;
+}
+
+/* Styles for the LoggerDisplayComponent */
+.logger-display {
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 10px;
+  padding: 1em;
+  margin-top: 1em;
+  box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+
+  h2 {
+    color: vars.$patriot-white;
+    margin-top: 0;
+    margin-bottom: 0.75em;
+    font-size: 1.25em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5em;
+  }
+
+  .log-entries {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 0.5em;
+    scrollbar-width: thin; /* "auto" or "thin" */
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent; /* thumb and track color */
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+  }
+
+  .log-entry {
+    font-size: 0.85em;
+    margin-bottom: 0.5em;
+    word-break: break-word;
+    color: vars.$silver-star;
+    line-height: 1.4;
+  }
 }
