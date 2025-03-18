@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { LoggerService } from '../../common/services/logger.service';
 import { Subscription } from 'rxjs';
 
@@ -19,6 +19,9 @@ interface LogEntry {
   standalone: false
 })
 export class LoggerDisplayComponent implements OnInit, OnDestroy {
+  @Input() autoScroll: boolean = true;
+  @Input() logFilter: string = 'all';
+
   logs: { [level: string]: LogEntry[] } = {
     error: [
       { timestamp: '', numericTimestamp: 0, level: 'error', message: 'No logs yet', description: '', data: '' }

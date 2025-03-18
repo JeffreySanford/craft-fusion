@@ -13,9 +13,12 @@
         </div>
       </div>
       <div class="actions-section">
-        <mat-slide-toggle [checked]="isSimulatingData" (change)="toggleDataSimulation()" color="warn">
-          <span class="toggle-label">Simulation Mode</span>
-        </mat-slide-toggle>
+        <div class="simulation-toggle" [class.active]="isSimulatingData">
+          <mat-slide-toggle [checked]="isSimulatingData" (change)="toggleDataSimulation()" color="warn">
+            <span class="toggle-label">Simulation Mode</span>
+          </mat-slide-toggle>
+          <span class="danger-zone">DANGER ZONE</span>
+        </div>
         <button mat-raised-button color="warn" (click)="clearMetrics()" class="action-button">
           <mat-icon>delete_sweep</mat-icon>
           Clear Metrics
@@ -68,7 +71,7 @@
   </div>
   
   <!-- Main content with tabs -->
-  <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="500ms" class="admin-tabs">
+  <mat-tab-group #tabGroup [(selectedIndex)]="selectedTab" animationDuration="500ms" class="admin-tabs">
     <!-- System Performance Tab -->
     <mat-tab>
       <ng-template mat-tab-label>
@@ -77,45 +80,55 @@
       </ng-template>
       
       <div class="tab-content">
-        <div class="chart-container system-metrics-chart">
-          <h2>Real-time System Metrics</h2>
-          <canvas #systemMetricsChart></canvas>
-        </div>
-        
-        <div class="system-info">
-          <mat-card>
-            <mat-card-header>
-              <div mat-card-avatar class="system-header-image">
-                <mat-icon>computer</mat-icon>
-              </div>
-              <mat-card-title>System Information</mat-card-title>
-              <mat-card-subtitle>Hardware & Software Details</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="info-row">
-                <span class="info-label">OS Platform:</span>
-                <span class="info-value">{{navigator.platform}}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Browser:</span>
-                <span class="info-value">{{navigator.userAgent}}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">CPU Cores:</span>
-                <span class="info-value">{{navigator.hardwareConcurrency}}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Language:</span>
-                <span class="info-value">{{navigator.language}}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Online Status:</span>
-                <span class="info-value" [ngClass]="navigator.onLine ? 'status-online' : 'status-offline'">
-                  {{navigator.onLine ? 'Connected' : 'Disconnected'}}
-                </span>
-              </div>
-            </mat-card-content>
-          </mat-card>
+        <!-- Use a wrapper div with 100% width -->
+        <div class="performance-wrapper" style="width: 100%;">
+          <div class="chart-container system-metrics-chart">
+            <h2>Real-time System Metrics</h2>
+            
+            <!-- Add instructions for chart use -->
+            <div class="chart-instructions" *ngIf="selectedMetrics.length === 0">
+              <mat-icon>info</mat-icon>
+              <span>Select one or more metrics from the legend below to display data</span>
+            </div>
+            
+            <canvas #systemMetricsChart></canvas>
+          </div>
+          
+          <div class="system-info">
+            <mat-card>
+              <mat-card-header>
+                <div mat-card-avatar class="system-header-image">
+                  <mat-icon>computer</mat-icon>
+                </div>
+                <mat-card-title>System Information</mat-card-title>
+                <mat-card-subtitle>Hardware & Software Details</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="info-row">
+                  <span class="info-label">OS Platform:</span>
+                  <span class="info-value">{{navigator.platform}}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Browser:</span>
+                  <span class="info-value">{{navigator.userAgent}}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">CPU Cores:</span>
+                  <span class="info-value">{{navigator.hardwareConcurrency}}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Language:</span>
+                  <span class="info-value">{{navigator.language}}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Online Status:</span>
+                  <span class="info-value" [ngClass]="navigator.onLine ? 'status-online' : 'status-offline'">
+                    {{navigator.onLine ? 'Connected' : 'Disconnected'}}
+                  </span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
         </div>
       </div>
     </mat-tab>
@@ -133,26 +146,66 @@
           <canvas #serviceMetricsChart></canvas>
         </div>
         
-        <div class="services-list">
-          <h3>Registered Services</h3>
-          <mat-list>
-            <mat-list-item *ngFor="let service of registeredServices" 
-                           class="service-item" 
-                           [class.active-service]="service.active">
-              <mat-icon matListItemIcon class="service-icon">
-                {{serviceIconMap[service.name.toLowerCase()] || 'settings'}}
-              </mat-icon>
-              <span matListItemTitle>{{service.name}}</span>
-              <span matListItemLine>{{service.description}}</span>
-              <span matListItemMeta>
-                <mat-slide-toggle 
-                  [checked]="service.active"
-                  (change)="toggleServiceStatus(service)"
-                  color="primary">
-                </mat-slide-toggle>
-              </span>
-            </mat-list-item>
-          </mat-list>
+        <div class="service-monitoring-grid">
+          <!-- Service Status Cards -->
+          <div class="service-status-cards">
+            <div class="status-card" *ngFor="let service of registeredServices"
+                 [class.active]="service.active"
+                 [class.pulse-animation]="getServiceHealth(service.name) === 'critical'">
+              <div class="status-icon" [ngClass]="getServiceHealth(service.name)">
+                <mat-icon>{{serviceIconMap[service.name.toLowerCase()] || 'settings'}}</mat-icon>
+              </div>
+              <div class="status-info">
+                <h3>{{service.name}}</h3>
+                <div class="status-metrics">
+                  <span class="metric">
+                    <mat-icon>speed</mat-icon>
+                    {{getServiceStatistics(service.name)?.avgResponseTime?.toFixed(1) || '0'}} ms
+                  </span>
+                  <span class="metric">
+                    <mat-icon>analytics</mat-icon>
+                    {{getServiceStatistics(service.name)?.successRate?.toFixed(1) || '0'}}%
+                  </span>
+                </div>
+              </div>
+              <div class="status-indicator" 
+                   [class]="getServiceHealth(service.name)">
+                {{getServiceHealth(service.name)}}
+              </div>
+            </div>
+          </div>
+
+          <!-- Service Metrics Cards -->
+          <div class="metrics-grid">
+            <div class="metric-tile" *ngFor="let metric of getServiceMetrics()">
+              <div class="metric-header" [style.background-color]="metric.color">
+                <mat-icon>{{metric.icon}}</mat-icon>
+                <span>{{metric.label}}</span>
+              </div>
+              <div class="metric-value">
+                {{metric.value}}
+                <small>{{metric.unit}}</small>
+              </div>
+              <div class="metric-trend" [class.positive]="metric.trend > 0" 
+                   [class.negative]="metric.trend < 0">
+                <mat-icon>{{metric.trend > 0 ? 'trending_up' : 'trending_down'}}</mat-icon>
+                {{metric.trend}}%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Legend -->
+        <div class="service-monitoring-legend">
+          <div class="legend-item" *ngFor="let service of registeredServices">
+            <div class="color-indicator" 
+                 [style.background-color]="'rgba(' + getSuccessRateColor(getServiceStatistics(service.name)?.successRate || 0) + ', 0.8)'">
+            </div>
+            <span class="service-name">{{service.name}}</span>
+            <span class="service-status" [class.active]="service.active" [class.inactive]="!service.active">
+              {{service.active ? 'Active' : 'Inactive'}}
+            </span>
+          </div>
         </div>
       </div>
     </mat-tab>
@@ -335,8 +388,52 @@
         <mat-icon class="tab-icon">receipt_long</mat-icon>
         Logs
       </ng-template>
-      <div class="tab-content">
-        <app-logger-display></app-logger-display>
+      <div class="tab-content logger-tab">
+        <div class="logger-controls">
+          <mat-button-toggle-group [(ngModel)]="selectedLogLevel">
+            <mat-button-toggle value="all">All Logs</mat-button-toggle>
+            <mat-button-toggle value="error">Errors</mat-button-toggle>
+            <mat-button-toggle value="warn">Warnings</mat-button-toggle>
+            <mat-button-toggle value="info">Info</mat-button-toggle>
+          </mat-button-toggle-group>
+          
+          <div class="logger-actions">
+            <div class="clear-logs-container">
+              <button class="clear-logs-btn" (click)="clearLogs()">
+                <mat-icon>delete_sweep</mat-icon>
+                Clear Logs
+              </button>
+              <span class="danger-text">CLEAR ALL</span>
+            </div>
+            <div class="autoscroll-toggle" [class.active]="autoScroll">
+              <mat-slide-toggle [(ngModel)]="autoScroll" color="primary">
+                <span class="toggle-label">Auto-scroll</span>
+              </mat-slide-toggle>
+            </div>
+          </div>
+        </div>
+
+        <app-logger-display 
+          [logFilter]="selectedLogLevel"
+          [autoScroll]="autoScroll"
+          class="animated-logger">
+        </app-logger-display>
+
+        <!-- Log Statistics -->
+        <div class="log-statistics">
+          <div class="stat-card" *ngFor="let stat of logStats">
+            <div class="stat-icon" [style.background-color]="stat.color">
+              <mat-icon>{{stat.icon}}</mat-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{stat.value}}</div>
+              <div class="stat-label">{{stat.label}}</div>
+            </div>
+            <div class="stat-chart">
+              <canvas [id]="'stat-chart-' + stat.id"></canvas>
+            </div>
+          </div>
+        </div>
       </div>
     </mat-tab>
   </mat-tab-group>

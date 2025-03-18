@@ -2,13 +2,23 @@ import { HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-export interface ServiceCallMetric {
+export interface BaseServiceCallMetric {
   serviceName: string;
   method: string;
   url: string;
   timestamp: number;
   duration?: number;
   status?: number;
+}
+
+export interface ServiceCallMetric extends BaseServiceCallMetric {
+  securityEvents: number;
+  authAttempts: number;
+  failedAuths: number;
+  activeUsers: number;
+  averageLatency: number;
+  errorRate: number;
+  lastIncident?: Date;
 }
 
 @Injectable({
@@ -28,7 +38,7 @@ export class LoggerService {
   logs$ = this.logsSubject.asObservable();
   
   // Store active service calls for timing
-  private activeServiceCalls = new Map<string, ServiceCallMetric>();
+  private activeServiceCalls = new Map<string, BaseServiceCallMetric>();
 
   constructor() {
     console.log(this.LOGGER_PREFIX + ' Logger service initialized', this.LOGGER_STYLE);
@@ -86,7 +96,7 @@ export class LoggerService {
    */
   startServiceCall(serviceName: string, method: string, url: string): string {
     const callId = `${serviceName}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const metric: ServiceCallMetric = {
+    const metric: BaseServiceCallMetric = {
       serviceName,
       method,
       url,
@@ -106,17 +116,30 @@ export class LoggerService {
     const call = this.activeServiceCalls.get(callId);
     if (call) {
       const endTime = performance.now();
-      call.duration = endTime - call.timestamp;
-      call.status = status;
+      const duration = endTime - call.timestamp;
+      
+      // Create full service metric with default values
+      const fullMetric: ServiceCallMetric = {
+        ...call,
+        duration,
+        status,
+        securityEvents: 0,
+        authAttempts: 0,
+        failedAuths: 0,
+        activeUsers: 0,
+        averageLatency: duration,
+        errorRate: status && status >= 400 ? 100 : 0,
+        lastIncident: status && status >= 400 ? new Date() : undefined
+      };
       
       // Add to metrics
       const currentCalls = this.serviceCallsSubject.getValue();
-      this.serviceCallsSubject.next([...currentCalls, call]);
+      this.serviceCallsSubject.next([...currentCalls, fullMetric]);
       
       // Remove from active calls
       this.activeServiceCalls.delete(callId);
       
-      this.info(`Completed call to ${call.serviceName} (${call.duration.toFixed(2)}ms) with status ${status || 'unknown'}`);
+      this.info(`Completed call to ${call.serviceName} (${duration.toFixed(2)}ms) with status ${status || 'unknown'}`);
     }
   }
 

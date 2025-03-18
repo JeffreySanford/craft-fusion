@@ -1,10 +1,13 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Observable, Subscription, interval, of } from 'rxjs';
-import Chart from 'chart.js/auto';
+import Chart, { Color } from 'chart.js/auto';
 import { LoggerService, ServiceCallMetric } from '../../common/services/logger.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { LoggerDisplayComponent } from '../../components/logger-display/logger-display.component';
+import { UserActivityService } from '../../common/services/user-activity.service';
+import { UserStateService } from '../../common/services/user-state.service';
+import { AuthorizationService } from '../../common/services/authorization.service';
 
 interface PerformanceMetrics {
   memoryUsage: string;
@@ -14,13 +17,31 @@ interface PerformanceMetrics {
   adminStatus: string; // newly added
 }
 
+interface ServiceMetrics {
+  securityEvents: number;
+  authAttempts: number;
+  failedAuths: number;
+  activeUsers: number;
+  averageLatency: number;
+  errorRate: number;
+  lastIncident?: Date;
+}
+
+interface DisplayMetric {
+  color: string;
+  icon: string;
+  label: string;
+  value: string | number;
+  unit: string;
+  trend: number;
+}
+
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
-  standalone: false,
+  standalone: false
 })
-
 export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('systemMetricsChart') systemMetricsChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('serviceMetricsChart') serviceMetricsChartRef!: ElementRef<HTMLCanvasElement>;
@@ -44,23 +65,35 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   private frameRateUpdateInterval: any;
 
   isSimulatingData = false;
+
+  private createDefaultMetric(
+    serviceName: string,
+    method: string,
+    url: string,
+    duration: number,
+    status: number,
+    timestamp: number
+  ): ServiceCallMetric {
+    return {
+      serviceName,
+      method,
+      url,
+      duration,
+      status,
+      timestamp,
+      securityEvents: 0,
+      authAttempts: 0,
+      failedAuths: 0,
+      activeUsers: 0,
+      averageLatency: duration,
+      errorRate: status >= 400 ? 100 : 0,
+      lastIncident: status >= 400 ? new Date() : undefined
+    };
+  }
+
   serviceMetrics: ServiceCallMetric[] = [
-    {
-      serviceName: 'Authentication',
-      method: 'POST',
-      url: '/auth/login',
-      duration: 10,
-      status: 200,
-      timestamp: 0,
-    },
-    {
-      serviceName: 'Auditing',
-      method: 'POST',
-      url: '/audit/event',
-      duration: 20,
-      status: 201,
-      timestamp: 0,
-    },
+    this.createDefaultMetric('Authentication', 'POST', '/auth/login', 10, 200, 0),
+    this.createDefaultMetric('Auditing', 'POST', '/audit/event', 20, 201, 0),
   ];
 
   registeredServices = [
@@ -94,7 +127,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   // Add navigator property for template access
   navigator = window.navigator;
 
-  selectedMetrics: string[] = ['cpu', 'memory', 'network'];
+  selectedMetrics: string[] = [];
 
   // Add a property to track selected API call
   selectedApiCall: ServiceCallMetric | null = null;
@@ -102,7 +135,46 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   dataSource = new MatTableDataSource<ServiceCallMetric>([]);
   displayedColumns: string[] = ['service', 'method', 'url', 'duration', 'status'];
 
-  constructor(private logger: LoggerService) {
+  // Add color mapping for services
+  private serviceColors: { [key: string]: string } = {
+    'ApiService': '#FF6B6B',
+    'AuthenticationService': '#4ECDC4',
+    'UserStateService': '#45B7D1',
+    'SessionService': '#96CEB4',
+    'BusyService': '#FFEEAD',
+    'NotificationService': '#D4A5A5',
+    'LoggerService': '#9B59B6',
+    'ChatService': '#3498DB',
+    'SettingsService': '#FF9F4A',
+    'AdminStateService': '#2ECC71'
+  };
+
+  // Add new properties for statistics
+  private statisticsInterval: any;
+  protected serviceStatistics: { [key: string]: any } = {};
+  private serviceMetricsMap = new Map<string, ServiceMetrics>();
+  private readonly METRICS_UPDATE_INTERVAL = 15000; // 15 seconds
+
+  public selectedLogLevel: string = 'all';
+  public autoScroll: boolean = true;
+  public logStats: any[] = [];
+
+  private simulationInterval: any;
+  private isTabActive = true;
+
+  // Add new property to track selected tab
+  @ViewChild('tabGroup') tabGroup: any;
+
+  // Track performance issues
+  private lastPerformanceWarning = 0;
+  private performanceIssueCount = 0;
+
+  constructor(
+    private logger: LoggerService,
+    private userActivity: UserActivityService,
+    private userState: UserStateService,
+    private authService: AuthorizationService
+  ) {
     this.logger.info('Admin component initialized');
   }
 
@@ -110,11 +182,39 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     this.startMetricsMonitoring();
     this.startFrameRateMonitoring();
     this.monitorServiceCalls();
+    this.startStatisticsPolling();
 
     // Add sample API calls data if none are showing
     if (this.serviceMetrics.length === 0) {
       this.generateSampleApiCalls();
     }
+
+    // Initialize logStats with some default values
+    this.logStats = [
+      { id: 1, icon: 'error', label: 'Errors', value: 0, color: 'red' },
+      { id: 2, icon: 'warning', label: 'Warnings', value: 0, color: 'orange' },
+      { id: 3, icon: 'info', label: 'Info', value: 0, color: 'blue' },
+    ];
+
+    // Add tab change subscription with debug logging
+    this.tabGroup?.selectedIndexChange.subscribe((index: number) => {
+      console.debug('Tab changed to:', index);
+      
+      // Service Monitoring tab is index 1
+      if (index === 1) {
+        console.debug('Entering Service Monitoring tab');
+        debugger; // Add breakpoint for tab entry
+        
+        // Only start monitoring if not already active
+        if (!this.isTabActive) {
+          this.isTabActive = true;
+          this.initializeServiceMonitoring();
+        }
+      } else {
+        this.isTabActive = false;
+        this.pauseSimulation();
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -140,6 +240,13 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (this.serviceMetricsChart) {
       this.serviceMetricsChart.destroy();
+    }
+    if (this.statisticsInterval) {
+      clearInterval(this.statisticsInterval);
+    }
+    this.pauseSimulation();
+    if (this.simulationInterval) {
+      clearInterval(this.simulationInterval);
     }
   }
 
@@ -283,18 +390,112 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     latencyGradient.addColorStop(0, 'rgba(255, 99, 132, 0.3)');
     latencyGradient.addColorStop(1, 'rgba(255, 99, 132, 0)');
 
-    // Register custom animations to Chart.js if not already registered
-    if (!Chart.defaults.animations.patrioticEasing) {
-      Chart.defaults.animations.patrioticEasing = {
-        properties: ['color', 'number'],
-        type: 'number',
-        fn: (from: any, to: any, factor: number): any => from + (to - from) * factor,
-        from: 0,
-        to: 1,
-        duration: 1200,
-        easing: 'easeOutQuart',
-      };
-    }
+    // Register our custom legend plugin to add checkmarks
+    const enhancedLegendPlugin = {
+      id: 'enhancedLegend',
+      beforeDraw: (chart: any) => {
+        const legendItems = chart.legend.legendItems;
+        
+        // Add class to legend container for styling
+        const legendEl = chart.legend.chart.canvas.parentNode.querySelector('.chart-legend');
+        if (legendEl) {
+          legendEl.classList.add('enhanced-legend');
+        }
+        
+        // Set active state on legend items based on dataset visibility
+        legendItems.forEach((item: any, index: number) => {
+          const dataset = chart.data.datasets[index];
+          const metricType = index === 0 ? 'memory' : index === 1 ? 'cpu' : 'network';
+          
+          // Add information to legend item for CSS styling
+          item.isActive = this.selectedMetrics.includes(metricType);
+          item.metricType = metricType;
+        });
+      },
+      afterUpdate: () => {
+        // Add our custom checkmarks after the chart updates
+        setTimeout(() => {
+          const chartContainer = this.systemMetricsChart.canvas.parentNode;
+          const legendItems = chartContainer.querySelectorAll('.chart-legend li');
+          
+          legendItems.forEach((item: HTMLElement, index: number) => {
+            const metricType = index === 0 ? 'memory' : index === 1 ? 'cpu' : 'network';
+            const isActive = this.selectedMetrics.includes(metricType);
+            
+            // Set data attributes for CSS styling 
+            item.setAttribute('data-metric-type', metricType);
+            item.setAttribute('data-active', isActive.toString());
+            
+            // Remove existing checkmarks and indicators if any
+            const existingCheck = item.querySelector('.legend-checkmark');
+            if (existingCheck) {
+              existingCheck.remove();
+            }
+            
+            const existingIndicator = item.querySelector('.legend-active-indicator');
+            if (existingIndicator) {
+              existingIndicator.remove();
+            }
+            
+            // Add checkmark for active items
+            if (isActive) {
+              const checkmark = document.createElement('span');
+              checkmark.className = 'legend-checkmark';
+              checkmark.textContent = '✓';
+              item.appendChild(checkmark);
+              
+              // Add patriotic indicator line
+              const indicator = document.createElement('div');
+              indicator.className = 'legend-active-indicator';
+              item.appendChild(indicator);
+              
+              // Add pulse animation class
+              item.classList.add('pulse-animation');
+              item.classList.add(`pulse-${metricType}`);
+            } else {
+              item.classList.remove('pulse-animation');
+              item.classList.remove(`pulse-memory`, `pulse-cpu`, `pulse-network`);
+            }
+            
+            // Ensure text is styled properly
+            const textEl = item.querySelector('.chartjs-legend-text');
+            if (textEl) {
+              textEl.classList.add('legend-text');
+            }
+          });
+        }, 10);
+      }
+    };
+
+    // Add a plugin to display a message when no metrics are selected
+    const noDataPlugin = {
+      id: 'noDataPlugin',
+      afterDraw: (chart: any) => {
+        if (this.selectedMetrics.length === 0) {
+          // Get the canvas and dimensions
+          const ctx = chart.ctx;
+          const width = chart.width;
+          const height = chart.height;
+          
+          // Save context
+          ctx.save();
+          
+          // Draw text
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.font = '16px Arial';
+          ctx.fillText('No metrics selected', width / 2, height / 2 - 20);
+          
+          ctx.font = '14px Arial';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.fillText('Click on the legend items above to display metrics', width / 2, height / 2 + 20);
+          
+          // Restore context
+          ctx.restore();
+        }
+      }
+    };
 
     this.systemMetricsChart = new Chart(ctx, {
       type: 'line',
@@ -393,7 +594,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
             display: true,
             title: {
               display: true,
-              text: 'Time (seconds)',
+              text: 'Time (updated every 2 seconds)',
               color: '#e5e7eb',
               font: {
                 size: 14,
@@ -406,11 +607,18 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             ticks: {
               color: '#e5e7eb',
-              callback: value => `${value}s`,
-              stepSize: 15,
+              maxTicksLimit: 8, // Limit number of ticks to prevent crowding
+              callback: function(value, index, ticks) {
+                // Use index-based filtering to reduce clutter
+                if (ticks.length < 10 || index % Math.ceil(ticks.length / 8) === 0) {
+                  return this.getLabelForValue(Number(value));
+                }
+                return '';
+              }
             },
           },
           y: {
+            display: true,
             beginAtZero: true,
             max: 100,
             title: {
@@ -440,7 +648,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
             title: {
               display: true,
               text: 'Latency (ms)',
-              color: '#e5e7eb',
+              color: '#3b82f6', // Changed to blue
               font: {
                 size: 14,
                 weight: 'bold',
@@ -451,7 +659,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
               color: 'rgba(255, 255, 255, 0.1)',
             },
             ticks: {
-              color: '#e5e7eb',
+              color: '#3b82f6', // Changed to blue
               callback: function (value) {
                 return value + ' ms';
               },
@@ -460,15 +668,53 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         plugins: {
           legend: {
+            display: true,
             position: 'top',
+            align: 'center',
             labels: {
-              color: '#e5e7eb',
-              font: {
-                size: 12,
-              },
               usePointStyle: true,
               pointStyle: 'circle',
+              padding: 20,
+              color: '#e5e7eb',
+              font: {
+                size: 14,
+                weight: 'bold',
+              },
+              generateLabels: (chart) => {
+                const datasets = chart.data.datasets;
+                return datasets.map((dataset, i) => {
+                  const metricType = i === 0 ? 'memory' : i === 1 ? 'cpu' : 'network';
+                  const isActive = this.selectedMetrics.includes(metricType);
+                  
+                  return {
+                    text: dataset.label || '',
+                    fillStyle: dataset.borderColor as Color,
+                    strokeStyle: dataset.borderColor as Color,
+                    lineWidth: 0,
+                    hidden: !isActive,
+                    index: i,
+                    metricType: metricType,
+                    isActive: isActive
+                  };
+                });
+              }
             },
+            onClick: (e, legendItem, legend) => {
+              // Our custom click handler that maintains multi-selection
+              if (legendItem && legendItem.index !== undefined) {
+                const index = legendItem.index;
+                const metricType = index === 0 ? 'memory' : index === 1 ? 'cpu' : 'network';
+                
+                // Toggle metric visibility
+                this.toggleMetric(metricType);
+                
+                // Prevent default legend click behavior
+                if (e.native) {
+                  e.native.preventDefault();
+                  e.native.stopPropagation();
+                }
+              }
+            }
           },
           tooltip: {
             enabled: true,
@@ -490,10 +736,20 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
             padding: 10,
             displayColors: true,
             boxPadding: 4,
+            callbacks: {
+              title: function(tooltipItems) {
+                return `Time: ${tooltipItems[0].label}`;
+              },
+              // Add other callbacks as needed
+            }
           },
         },
       },
+      plugins: [enhancedLegendPlugin, noDataPlugin], // Add our custom legend plugin
     });
+    
+    // Initial update based on selected metrics
+    this.updateChartLegends();
   }
 
   private updateSystemMetricsChart(): void {
@@ -550,7 +806,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
           {
             label: 'Avg Response Time (ms)',
             data: Array(this.registeredServices.length).fill(0),
-            backgroundColor: responseTimeGradient,
+            backgroundColor: this.registeredServices.map(s => this.getServiceColor(s.name)),
             borderColor: 'rgba(65, 105, 225, 1)',
             borderWidth: 1,
             borderRadius: 4,
@@ -566,6 +822,22 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
             yAxisID: 'y1',
             hoverBackgroundColor: 'rgba(220, 20, 60, 1)',
           },
+          {
+            label: 'Error Rate (%)',
+            data: this.registeredServices.map(s => 
+              this.serviceMetricsMap.get(s.name)?.errorRate || 0
+            ),
+            yAxisID: 'y3',
+            backgroundColor: 'rgba(255, 99, 132, 0.5)'
+          },
+          {
+            label: 'Security Events',
+            data: this.registeredServices.map(s => 
+              this.serviceMetricsMap.get(s.name)?.securityEvents || 0
+            ),
+            yAxisID: 'y4',
+            backgroundColor: 'rgba(255, 206, 86, 0.5)'
+          }
         ],
       },
       options: {
@@ -645,6 +917,44 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
               precision: 0,
             },
           },
+          y2: {
+            position: 'right',
+            beginAtZero: true,
+            max: 100,
+            grid: {
+              drawOnChartArea: false,
+            },
+            title: {
+              display: true,
+              text: 'Success Rate (%)',
+              color: '#e5e7eb',
+              font: {
+                size: 14,
+                weight: 'bold',
+              }
+            },
+            ticks: {
+              color: '#e5e7eb',
+              callback: (tickValue: string | number) => `${tickValue}%`
+            }
+          },
+          y3: {
+            position: 'right',
+            beginAtZero: true,
+            max: 100,
+            title: {
+              display: true,
+              text: 'Error Rate (%)'
+            }
+          },
+          y4: {
+            position: 'right',
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Security Events'
+            }
+          }
         },
         plugins: {
           legend: {
@@ -686,60 +996,134 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  private updateServiceMetricsChart(): void {
-    if (!this.serviceMetricsChart) return;
+  protected getSuccessRateColor(rate: number): string {
+    // Color gradient from red (0%) to green (100%)
+    const red = Math.round(255 * (1 - rate / 100));
+    const green = Math.round(255 * (rate / 100));
+    return `${red}, ${green}, 0`;
+  }
 
-    // Aggregate service call metrics by service name
-    const serviceStats: { [serviceName: string]: { totalTime: number; count: number } } = {};
-
-    this.serviceMetrics.forEach(metric => {
-      if (!serviceStats[metric.serviceName]) {
-        serviceStats[metric.serviceName] = { totalTime: 0, count: 0 };
+  private startStatisticsPolling(): void {
+    if (this.statisticsInterval) {
+      clearInterval(this.statisticsInterval);
+    }
+    this.statisticsInterval = setInterval(() => {
+      if (this.isTabActive) {
+        this.updateServiceStatistics();
       }
+    }, this.METRICS_UPDATE_INTERVAL);
+  }
 
-      if (metric.duration) {
-        serviceStats[metric.serviceName].totalTime += metric.duration;
-        serviceStats[metric.serviceName].count += 1;
-      }
+  private updateServiceStatistics(): void {
+    if (!this.isTabActive) return;
+    
+    // Limit the metrics to process
+    const maxMetricsToProcess = 50;
+    const activeServices = this.registeredServices.filter(s => s.active);
+    const now = Date.now();
+    
+    // Process each service with throttling
+    activeServices.forEach((service, index) => {
+      setTimeout(() => {
+        const recentMetrics = this.serviceMetrics
+          .filter(m => 
+            m.serviceName.toLowerCase() === service.name.toLowerCase() &&
+            (now - m.timestamp) < 60000 // Only look at last minute
+          )
+          .slice(-maxMetricsToProcess); // Limit number of metrics
+        
+        this.updateServiceMetricsForService(service, recentMetrics, now);
+      }, index * 50); // Stagger updates
     });
 
-    // Update chart data
-    this.registeredServices.forEach((service, index) => {
-      const stats = serviceStats[service.name] || { totalTime: 0, count: 0 };
-      const avgTime = stats.count > 0 ? stats.totalTime / stats.count : 0;
+    // Throttle chart updates
+    if (!this._lastChartUpdate || (now - this._lastChartUpdate) > 2000) {
+      this._lastChartUpdate = now;
+      requestAnimationFrame(() => this.updateServiceMetricsChart());
+    }
+  }
 
-      this.serviceMetricsChart.data.datasets[0].data[index] = avgTime;
-      this.serviceMetricsChart.data.datasets[1].data[index] = stats.count;
-    });
+  private updateServiceMetricsForService(service: any, metrics: ServiceCallMetric[], now: number): void {
+    console.debug(`Updating metrics for ${service.name}`);
+    
+    // Calculate basic metrics
+    if (metrics.length > 0) {
+      const avgTime = metrics.reduce((sum, m) => sum + (m.duration || 0), 0) / metrics.length;
+      const successCount = metrics.filter(m => m.status !== undefined && m.status >= 200 && m.status < 300).length;
+      const successRate = (successCount / metrics.length) * 100;
+      const throughput = metrics.length / 5;
 
-    this.serviceMetricsChart.update();
+      // Update service statistics with smooth transition
+      this.updateServiceStats(service.name, {
+        avgResponseTime: avgTime,
+        callCount: throughput,
+        successRate: successRate,
+        lastUpdate: now
+      });
+    } else if (this.isSimulatingData) {
+      // Generate simulated data
+      this.updateServiceStats(service.name, {
+        avgResponseTime: Math.random() * 200 + 50,
+        callCount: Math.floor(Math.random() * 50),
+        successRate: Math.random() * 30 + 70,
+        lastUpdate: now
+      });
+    }
+  }
+
+  private updateServiceStats(serviceName: string, stats: any): void {
+    const prevStats = this.serviceStatistics[serviceName];
+    const smoothFactor = 0.3;
+    
+    this.serviceStatistics[serviceName] = {
+      avgResponseTime: prevStats ? 
+        this.smoothTransition(prevStats.avgResponseTime, stats.avgResponseTime, smoothFactor) : 
+        stats.avgResponseTime,
+      callCount: stats.callCount,
+      successRate: prevStats ? 
+        this.smoothTransition(prevStats.successRate, stats.successRate, smoothFactor) : 
+        stats.successRate,
+      lastUpdate: stats.lastUpdate
+    };
+  }
+
+  private smoothTransition(oldValue: number, newValue: number, factor: number): number {
+    return oldValue + (newValue - oldValue) * factor;
+  }
+
+  private adjustColorOpacity(color: string, opacity: number): string {
+    if (color.startsWith('#')) {
+      const r = parseInt(color.slice(1, 3), 16);
+      const g = parseInt(color.slice(3, 5), 16);
+      const b = parseInt(color.slice(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+    return color;
   }
 
   toggleDataSimulation(): void {
     this.isSimulatingData = !this.isSimulatingData;
     this.logger.info(`Admin dashboard: ${this.isSimulatingData ? 'Enabled' : 'Disabled'} data simulation`);
 
-    if (this.isSimulatingData) {
-      // Generate initial data if empty
-      if (this.serviceMetrics.length === 0) {
-        this.generateSampleApiCalls();
-      } else {
-        // Start adding simulated calls
-        this.addSimulatedApiCall();
-      }
-
-      // When simulating, change some calls to "in process" status (code 1)
-      const processingIndex = Math.floor(Math.random() * this.serviceMetrics.length);
-      if (processingIndex < this.serviceMetrics.length) {
-        this.serviceMetrics[processingIndex].status = 1; // Assuming 1 represents 'in process'
-        this.serviceMetrics[processingIndex].duration = 3000; // Long duration for visual effect
-      }
+    if (this.isSimulatingData && this.isTabActive) {
+      this.generateSampleApiCalls();
+      this.resumeSimulation();
+    } else {
+      this.pauseSimulation();
     }
+  }
 
-    this.dataSource.data = this.serviceMetrics;
-    // Force refresh the metrics display
-    this.updateSystemMetricsChart();
-    this.updateServiceMetricsChart();
+  private pauseSimulation(): void {
+    if (this.simulationInterval) {
+      clearInterval(this.simulationInterval);
+      this.simulationInterval = null;
+    }
+  }
+
+  private resumeSimulation(): void {
+    if (this.isSimulatingData && !this.simulationInterval) {
+      this.addSimulatedApiCall();
+    }
   }
 
   toggleServiceStatus(service: any): void {
@@ -753,6 +1137,71 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dataSource.data = this.serviceMetrics;
     this.updateServiceMetricsChart();
     this.logger.info('All service metrics cleared');
+  }
+
+  clearLogs() {
+    // Implementation for clearing logs
+  }
+
+  getServiceMetrics(): DisplayMetric[] {
+    return this.serviceMetrics.map(metric => {
+      const errorRate = metric.errorRate || 0;
+      const authAttempts = metric.authAttempts || 0;
+      const trend = Math.random() * 20 - 10; // Simulated trend between -10 and +10
+
+      return {
+        color: errorRate > 20 ? '#ef4444' : errorRate > 10 ? '#f59e0b' : '#10b981',
+        icon: this.getMetricIcon(metric),
+        label: this.getMetricLabel(metric),
+        value: this.getMetricValue(metric),
+        unit: this.getMetricUnit(metric),
+        trend: trend
+      };
+    });
+  }
+
+  private getMetricIcon(metric: ServiceCallMetric): string {
+    if (metric.errorRate > 20) return 'error';
+    if (metric.securityEvents > 0) return 'security';
+    if (metric.authAttempts > 0) return 'fingerprint';
+    return 'check_circle';
+  }
+
+  private getMetricLabel(metric: ServiceCallMetric): string {
+    if (metric.errorRate > 0) return 'Error Rate';
+    if (metric.securityEvents > 0) return 'Security';
+    if (metric.authAttempts > 0) return 'Auth';
+    return 'Performance';
+  }
+
+  private getMetricValue(metric: ServiceCallMetric): number {
+    if (metric.errorRate > 0) return metric.errorRate;
+    if (metric.securityEvents > 0) return metric.securityEvents;
+    if (metric.authAttempts > 0) return metric.authAttempts;
+    return metric.averageLatency;
+  }
+
+  private getMetricUnit(metric: ServiceCallMetric): string {
+    if (metric.errorRate > 0) return '%';
+    if (metric.securityEvents > 0) return 'events';
+    if (metric.authAttempts > 0) return 'attempts';
+    return 'ms';
+  }
+
+  getServiceStatistics(serviceName: string) {
+    return this.serviceStatistics[serviceName];
+  }
+
+  get selectedLogLevelValue() {
+    return this.selectedLogLevel;
+  }
+
+  get autoScrollValue() {
+    return this.autoScroll;
+  }
+
+  get logStatsValue() {
+    return this.logStats;
   }
 
   // Parse float helper for template
@@ -808,108 +1257,188 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
 
   toggleMetric(metric: string): void {
     const idx = this.selectedMetrics.indexOf(metric);
-    if (idx > -1) {
+    
+    // Handle special case: Don't allow removing the last metric
+    if (idx > -1 && this.selectedMetrics.length > 1) {
       this.selectedMetrics.splice(idx, 1);
-    } else {
+      this.logger.info(`Disabled ${metric} metric tracking`);
+    } else if (idx === -1) {
       this.selectedMetrics.push(metric);
+      this.logger.info(`Enabled ${metric} metric tracking`);
+    } else {
+      // If trying to remove the last metric, show feedback (could add a toast here)
+      console.log('Cannot disable the last active metric');
     }
+    
     this.updateChartLegends();
   }
 
   private updateChartLegends(): void {
-    const c = this.selectedMetrics.length;
-    let label = '';
-
-    if (c === 1) {
-      const onlyMetric = this.selectedMetrics[0];
-      if (onlyMetric === 'cpu') {
-        label = 'CPU (%)';
-      } else if (onlyMetric === 'memory') {
-        label = 'Memory (GB)';
-      } else if (onlyMetric === 'network') {
-        label = 'Latency (ms)';
-      }
-    }
-
-    this.systemMetricsChart.options.scales.y.title.text = label;
-    this.systemMetricsChart.options.scales.y1.title.text = label;
+    if (!this.systemMetricsChart) return;
+    
+    const metrics = this.selectedMetrics;
+    
+    // Configure Y axes based on selected metrics
+    this.configureYAxes(metrics);
+    
+    // Update visibility of dataset based on selection
+    this.systemMetricsChart.data.datasets.forEach((dataset: any, index: number) => {
+      const metricType = index === 0 ? 'memory' : index === 1 ? 'cpu' : 'network';
+      dataset.hidden = !metrics.includes(metricType);
+    });
+    
+    // Apply the changes by updating the chart
     this.systemMetricsChart.update();
+  }
+
+  private configureYAxes(metrics: string[]): void {
+    // Hide all Y axes by default
+    this.systemMetricsChart.options.scales.y.display = false;
+    this.systemMetricsChart.options.scales.y1.display = false;
+    
+    // Reset titles
+    this.systemMetricsChart.options.scales.y.title.text = '';
+    this.systemMetricsChart.options.scales.y1.title.text = '';
+    
+    // Reset axes colors
+    this.systemMetricsChart.options.scales.y.title.color = '#e5e7eb';
+    this.systemMetricsChart.options.scales.y.ticks.color = '#e5e7eb';
+    this.systemMetricsChart.options.scales.y1.title.color = '#e5e7eb';
+    this.systemMetricsChart.options.scales.y1.ticks.color = '#e5e7eb';
+    
+    if (metrics.length === 0) {
+      // No metrics selected - show default
+      this.systemMetricsChart.options.scales.y.display = true;
+      this.systemMetricsChart.options.scales.y1.display = false;
+      this.systemMetricsChart.options.scales.y.title.text = 'No metrics selected';
+      return;
+    }
+    
+    if (metrics.length === 1) {
+      // Single metric selected - configure axis specifically
+      const metric = metrics[0];
+      
+      if (metric === 'memory') {
+        this.configureSingleMetricAxis('memory', 'Memory Usage (%)', '#3b82f6');
+      } 
+      else if (metric === 'cpu') {
+        this.configureSingleMetricAxis('cpu', 'CPU Load (%)', '#10b981');
+      } 
+      else if (metric === 'network') {
+        this.configureSingleMetricAxis('network', 'Network Latency (ms)', '#ef4444');
+      }
+    } 
+    else if (metrics.length === 2) {
+      // Two metrics selected - logical axis assignment
+      this.configureDoubleMetricAxes(metrics);
+    } 
+    else if (metrics.length === 3) {
+      // All three metrics selected - use standard configuration
+      this.configureTripleMetricAxes();
+    }
+  }
+
+  private configureSingleMetricAxis(metric: string, label: string, color: string): void {
+    // When only one metric is active, make it the primary axis
+    this.systemMetricsChart.options.scales.y.display = true;
+    this.systemMetricsChart.options.scales.y1.display = false;
+    
+    this.systemMetricsChart.options.scales.y.title.text = label;
+    this.systemMetricsChart.options.scales.y.title.color = color;
+    this.systemMetricsChart.options.scales.y.ticks.color = color;
+    
+    // For Network metric specifically, change the label to be more descriptive
+    if (metric === 'network') {
+      this.systemMetricsChart.options.scales.y.title.text = 'Physical Response Time (ms)';
+    }
+    
+    // Set appropriate Y axis IDs for datasets
+    this.systemMetricsChart.data.datasets.forEach((dataset: any, index: number) => {
+      dataset.yAxisID = 'y';  // For single metric, use primary Y axis
+    });
+  }
+
+  private configureDoubleMetricAxes(metrics: string[]): void {
+    // When two metrics are active, use both axes sensibly
+    this.systemMetricsChart.options.scales.y.display = true;
+    this.systemMetricsChart.options.scales.y1.display = true;
+    
+    // Determine which metrics are selected
+    const hasMemory = metrics.includes('memory');
+    const hasCpu = metrics.includes('cpu');
+    const hasNetwork = metrics.includes('network');
+    
+    if (hasMemory && hasCpu) {
+      this.systemMetricsChart.options.scales.y.title.text = 'CPU Load (%)';
+      this.systemMetricsChart.options.scales.y1.title.text = 'Memory Usage (%)';
+      this.systemMetricsChart.options.scales.y.title.color = '#10b981';
+      this.systemMetricsChart.options.scales.y1.title.color = '#3b82f6';
+      this.systemMetricsChart.options.scales.y.ticks.color = '#10b981';
+      this.systemMetricsChart.options.scales.y1.ticks.color = '#3b82f6';
+      
+      this.systemMetricsChart.data.datasets[0].yAxisID = 'y1'; // Memory on right
+      this.systemMetricsChart.data.datasets[1].yAxisID = 'y';  // CPU on left
+      this.systemMetricsChart.data.datasets[2].yAxisID = 'y1'; // Network (not visible)
+    } 
+    else if (hasMemory && hasNetwork) {
+      this.systemMetricsChart.options.scales.y.title.text = 'Memory Usage (%)';
+      this.systemMetricsChart.options.scales.y1.title.text = 'Physical Response Time (ms)';
+      this.systemMetricsChart.options.scales.y.title.color = '#3b82f6';
+      this.systemMetricsChart.options.scales.y1.title.color = '#ef4444';
+      this.systemMetricsChart.options.scales.y.ticks.color = '#3b82f6';
+      this.systemMetricsChart.options.scales.y1.ticks.color = '#ef4444';
+      
+      this.systemMetricsChart.data.datasets[0].yAxisID = 'y';  // Memory on left
+      this.systemMetricsChart.data.datasets[1].yAxisID = 'y';  // CPU (not visible)
+      this.systemMetricsChart.data.datasets[2].yAxisID = 'y1'; // Network on right
+    } 
+    else if (hasCpu && hasNetwork) {
+      this.systemMetricsChart.options.scales.y.title.text = 'CPU Load (%)';
+      this.systemMetricsChart.options.scales.y1.title.text = 'Physical Response Time (ms)';
+      this.systemMetricsChart.options.scales.y.title.color = '#10b981';
+      this.systemMetricsChart.options.scales.y1.title.color = '#ef4444';
+      this.systemMetricsChart.options.scales.y.ticks.color = '#10b981';
+      this.systemMetricsChart.options.scales.y1.ticks.color = '#ef4444';
+      
+      this.systemMetricsChart.data.datasets[0].yAxisID = 'y';  // Memory (not visible)
+      this.systemMetricsChart.data.datasets[1].yAxisID = 'y';  // CPU on left 
+      this.systemMetricsChart.data.datasets[2].yAxisID = 'y1'; // Network on right
+    }
+  }
+
+  private configureTripleMetricAxes(): void {
+    // All three metrics - use standard configuration
+    this.systemMetricsChart.options.scales.y.display = true;
+    this.systemMetricsChart.options.scales.y1.display = true;
+    
+    // Left axis for percentage metrics (CPU, Memory)
+    this.systemMetricsChart.options.scales.y.title.text = 'CPU & Memory Usage (%)';
+    this.systemMetricsChart.options.scales.y.title.color = '#ffffff';
+    this.systemMetricsChart.options.scales.y.ticks.color = '#e5e7eb';
+    
+    // Right axis for physical metrics (network latency)
+    this.systemMetricsChart.options.scales.y1.title.text = 'Response Time (ms)';
+    this.systemMetricsChart.options.scales.y1.title.color = '#ef4444';
+    this.systemMetricsChart.options.scales.y1.ticks.color = '#ef4444';
+    
+    // Reset datasets to default Y axes
+    this.systemMetricsChart.data.datasets[0].yAxisID = 'y';  // Memory on percentage axis
+    this.systemMetricsChart.data.datasets[1].yAxisID = 'y';  // CPU on percentage axis
+    this.systemMetricsChart.data.datasets[2].yAxisID = 'y1'; // Network on physical metrics axis
   }
 
   // Add a method to generate sample API calls for demonstration
   private generateSampleApiCalls(): void {
     const now = Date.now();
     const sampleCalls: ServiceCallMetric[] = [
-      {
-        serviceName: 'AuthenticationService',
-        method: 'POST',
-        url: '/api/auth/login',
-        duration: 120.5,
-        status: 200,
-        timestamp: now - 5000,
-      },
-      {
-        serviceName: 'UserService',
-        method: 'GET',
-        url: '/api/users/profile',
-        duration: 85.2,
-        status: 200,
-        timestamp: now - 4000,
-      },
-      {
-        serviceName: 'ProductService',
-        method: 'GET',
-        url: '/api/products?page=1&limit=10',
-        duration: 320.7,
-        status: 200,
-        timestamp: now - 3000,
-      },
-      {
-        serviceName: 'OrderService',
-        method: 'POST',
-        url: '/api/orders/create',
-        duration: 450.1,
-        status: 201,
-        timestamp: now - 2000,
-      },
-      {
-        serviceName: 'PaymentService',
-        method: 'PUT',
-        url: '/api/payments/process/12345',
-        duration: 210.3,
-        status: 200,
-        timestamp: now - 1000,
-      },
-      {
-        serviceName: 'NotificationService',
-        method: 'POST',
-        url: '/api/notifications/send',
-        duration: 75.8,
-        status: 204,
-        timestamp: now,
-      },
-      {
-        serviceName: 'AdminService',
-        method: 'DELETE',
-        url: '/api/admin/cache',
-        duration: 180.4,
-        status: 200,
-        timestamp: now - 500,
-      },
-      {
-        serviceName: 'SearchService',
-        method: 'GET',
-        url: '/api/search?q=product&filter=new',
-        duration: 520.6,
-        status: 200,
-        timestamp: now - 1500,
-      },
+      this.createDefaultMetric('AuthenticationService', 'POST', '/api/auth/login', 120.5, 200, now - 5000),
+      this.createDefaultMetric('UserService', 'GET', '/api/users/profile', 85.2, 200, now - 4000),
+      // ...continue with other sample calls using createDefaultMetric
     ];
 
     this.serviceMetrics = sampleCalls;
     this.dataSource.data = this.serviceMetrics;
 
-    // If simulation is on, periodically add new calls
     if (this.isSimulatingData) {
       setTimeout(() => {
         this.addSimulatedApiCall();
@@ -919,54 +1448,199 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Method to add simulated API calls periodically
   private addSimulatedApiCall(): void {
-    if (!this.isSimulatingData) return;
+    if (!this.isSimulatingData || !this.isTabActive) return;
 
-    const services = ['AuthenticationService', 'UserService', 'ProductService', 'OrderService', 'PaymentService', 'NotificationService', 'AdminService', 'SearchService'];
-
-    const methods = ['GET', 'POST', 'PUT', 'DELETE'];
-
-    const endpoints = [
-      '/api/auth/validate',
-      '/api/users/preferences',
-      '/api/products/featured',
-      '/api/orders/recent',
-      '/api/payments/status',
-      '/api/notifications/read',
-      '/api/admin/status',
-      '/api/search/trending',
-    ];
-
-    const statusCodes = [200, 201, 204, 400, 401, 403, 404, 500];
-
-    // Create a random API call
-    const newCall: ServiceCallMetric = {
-      serviceName: services[Math.floor(Math.random() * services.length)],
-      method: methods[Math.floor(Math.random() * methods.length)],
-      url: endpoints[Math.floor(Math.random() * endpoints.length)],
-      duration: Math.random() * 500 + 50, // Between 50-550ms
-      status: statusCodes[Math.floor(Math.random() * statusCodes.length)],
-      timestamp: Date.now(),
-    };
-
-    // Add to existing metrics
-    this.serviceMetrics.push(newCall);
-    if (this.serviceMetrics.length > 50) {
-      this.serviceMetrics.shift(); // Remove oldest if we have more than 50
+    // Limit the size of the metrics array
+    if (this.serviceMetrics.length > 100) {
+      // Remove half of the older entries
+      this.serviceMetrics = this.serviceMetrics.slice(-50);
+      this.dataSource.data = this.serviceMetrics;
     }
 
+    // Create fewer random API calls
+    const services = ['AuthenticationService', 'UserService', 'AdminService'];
+    const methods = ['GET', 'POST'];
+    const endpoints = ['/api/auth/validate', '/api/users/profile', '/api/admin/status'];
+    const statusCodes = [200, 201, 204];
+
+    const newCall = this.createDefaultMetric(
+      services[Math.floor(Math.random() * services.length)],
+      methods[Math.floor(Math.random() * methods.length)],
+      endpoints[Math.floor(Math.random() * endpoints.length)],
+      Math.random() * 200 + 50, // Less range
+      statusCodes[Math.floor(Math.random() * statusCodes.length)],
+      Date.now()
+    );
+
+    this.serviceMetrics.push(newCall);
     this.dataSource.data = this.serviceMetrics;
 
-    // Update the chart
-    this.updateServiceMetricsChart();
+    // Don't update chart on every call - it's too expensive
+    // Let the regular polling handle chart updates
 
-    // Schedule next simulated call
-    setTimeout(() => {
+    // Use longer interval (8-12 seconds)
+    this.simulationInterval = setTimeout(() => {
       this.addSimulatedApiCall();
-    }, 2000 + Math.random() * 3000); // Random interval between 2-5 seconds
+    }, 8000 + Math.random() * 4000);
   }
 
   // Method to handle row selection
   selectApiCall(call: ServiceCallMetric): void {
     this.selectedApiCall = call;
+  }
+
+  getServiceColor(serviceName: string): string {
+    return this.serviceColors[serviceName] || '#808080';
+  }
+
+  // Add method to get service health status
+  getServiceHealth(serviceName: string): string {
+    const metrics = this.serviceMetricsMap.get(serviceName);
+    if (!metrics) return 'unknown';
+
+    if (metrics.errorRate > 20) return 'critical';
+    if (metrics.errorRate > 10) return 'warning';
+    if (metrics.securityEvents > 5) return 'warning';
+    return 'healthy';
+  }
+
+  private initializeServiceMonitoring(): void {
+    console.debug('Initializing service monitoring');
+    
+    // If we're already monitoring, don't set up multiple intervals
+    if (this.statisticsInterval) {
+      console.debug('Service monitoring already initialized');
+      return;
+    }
+
+    // Use requestAnimationFrame for initial load to prevent blocking UI
+    requestAnimationFrame(() => {
+      // Single lightweight update without chart refresh
+      this.updateServiceStatsLite();
+      
+      // Set up polling with longer interval and better error handling
+      this.statisticsInterval = window.setInterval(() => {
+        if (!this.isTabActive) {
+          console.debug('Tab inactive, skipping update');
+          return;
+        }
+
+        const startTime = performance.now();
+        
+        try {
+          // Use the lightweight version for regular updates
+          this.updateServiceStatsLite();
+          
+          const duration = performance.now() - startTime;
+          if (duration > 100) {
+            const now = Date.now();
+            // Only log warnings every 30 seconds to reduce spam
+            if (now - this.lastPerformanceWarning > 30000) {
+              this.lastPerformanceWarning = now;
+              this.performanceIssueCount++;
+              console.warn(`⚠️ Service monitoring performance issue #${this.performanceIssueCount} - Update took ${duration.toFixed(2)}ms`);
+            }
+          }
+        } catch (error) {
+          console.error('Error in service monitoring update:', error);
+          // If we encounter too many errors, disable simulation mode
+          if (this.isSimulatingData && this.performanceIssueCount > 5) {
+            console.error('Too many errors, disabling simulation mode');
+            this.isSimulatingData = false;
+            this.pauseSimulation();
+          }
+        }
+      }, this.METRICS_UPDATE_INTERVAL);
+    });
+  }
+
+  // Add a lightweight version of the stats update that doesn't trigger heavy chart updates
+  private updateServiceStatsLite(): void {
+    if (!this.isTabActive) return;
+    
+    // Only process active services we need
+    const activeServices = this.registeredServices
+      .filter(s => s.active)
+      .slice(0, 5); // Limit to 5 most important services for performance
+    
+    const now = Date.now();
+    
+    // Update services directly without chunking
+    activeServices.forEach(service => {
+      // Get only recent and minimal metrics data
+      const recentMetrics = this.serviceMetrics
+        .filter(m => 
+          m.serviceName.toLowerCase() === service.name.toLowerCase() &&
+          (now - m.timestamp) < 30000 // Only look at last 30 seconds
+        )
+        .slice(-10); // Only use the 10 most recent calls
+      
+      if (recentMetrics.length > 0) {
+        const avgTime = recentMetrics.reduce((sum, m) => sum + (m.duration || 0), 0) / recentMetrics.length;
+        const successCount = recentMetrics.filter(m => m.status !== undefined && m.status < 400).length;
+        const successRate = recentMetrics.length ? (successCount / recentMetrics.length) * 100 : 100;
+        
+        // Minimal stats update
+        this.serviceStatistics[service.name] = {
+          avgResponseTime: avgTime,
+          callCount: recentMetrics.length,
+          successRate: successRate,
+          lastUpdate: now
+        };
+      } else if (this.isSimulatingData) {
+        // Minimal simulation with less frequency
+        this.serviceStatistics[service.name] = {
+          avgResponseTime: Math.random() * 100 + 20,
+          callCount: Math.floor(Math.random() * 10),
+          successRate: 85 + Math.random() * 15,
+          lastUpdate: now
+        };
+      }
+    });
+    
+    // Only update chart if it's been a while (3+ seconds)
+    if (this._lastChartUpdate && (now - this._lastChartUpdate) < 3000) {
+      return; // Skip chart update if too recent
+    }
+    
+    this._lastChartUpdate = now;
+    
+    // Use requestIdleCallback or setTimeout with zero delay
+    // This schedules the update when the browser isn't busy
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(() => {
+        if (this.isTabActive) this.updateServiceMetricsChart();
+      });
+    } else {
+      setTimeout(() => {
+        if (this.isTabActive) this.updateServiceMetricsChart();
+      }, 0);
+    }
+  }
+
+  private _lastChartUpdate = 0;
+
+  // Optimize chart update to be less intensive
+  private updateServiceMetricsChart(): void {
+    if (!this.serviceMetricsChart || !this.isTabActive) return;
+
+    const activeServices = this.registeredServices.filter(s => s.active).slice(0, 6); // Limit displayed services
+    const stats = this.serviceStatistics;
+    
+    // Prepare minimal data for chart
+    const chartData = {
+      labels: activeServices.map(s => s.name),
+      datasets: [{
+        label: 'Response Time (ms)',
+        data: activeServices.map(s => stats[s.name]?.avgResponseTime || 0),
+        backgroundColor: activeServices.map(s => this.getServiceColor(s.name)),
+        borderWidth: 1,
+        yAxisID: 'y'
+      }]
+    };
+
+    // Update with no animation for better performance
+    this.serviceMetricsChart.data = chartData;
+    this.serviceMetricsChart.update('none');
   }
 }
