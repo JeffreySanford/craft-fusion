@@ -37,36 +37,169 @@ button {
 }
 
 .profile-icon {
-  color: rgba(255, 223, 0, 1);
-  border: 2px solid #00f0ff;
+  color: #ff00ff;
+  border: 2px solid #00f7ff;
   padding: 0.15em;
-  border-radius: 0.25em;
+  border-radius: 50%;
+  transition: all 0.3s ease-in-out;
+  animation: neonPulse 2s infinite;
+  text-shadow: 0 0 10px #ff00ff;
+  
+  &:hover {
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: 
+      0 0 15px rgba(0, 247, 255, 0.6),
+      0 0 30px rgba(255, 0, 255, 0.4);
+  }
 
   &.logged-in {
-    color: rgba(255, 0, 0, 1); // Red color when logged in
-    border: 2px solid rgba(255, 0, 0, 1); // Red border when logged in
+    color: #00ff00;
+    border: 2px solid #00ff00;
+    animation: neonRotate 1s ease-out;
+    text-shadow: 0 0 10px #00ff00;
   }
 }
 
-.cdk-overlay-pane {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 2px solid #000;
-  padding: 0.5em;
-  margin-top: 1em;
-  width: auto;
+@keyframes neonPulse {
+  0% { 
+    box-shadow: 
+      0 0 5px #00f7ff,
+      0 0 10px #00f7ff,
+      0 0 20px #00f7ff;
+  }
+  50% { 
+    box-shadow: 
+      0 0 10px #ff00ff,
+      0 0 20px #ff00ff,
+      0 0 40px #ff00ff;
+  }
+  100% { 
+    box-shadow: 
+      0 0 5px #00f7ff,
+      0 0 10px #00f7ff,
+      0 0 20px #00f7ff;
+  }
+}
 
-  mat-menu-item {
-    color: #000;
-    font-size: 1em;
-    padding: 0.5em 1em;
-    transition: background-color 0.3s;
+@keyframes neonRotate {
+  from { 
+    transform: rotate(0deg); 
+    box-shadow: 0 0 20px #00ff00;
+  }
+  to { 
+    transform: rotate(360deg);
+    box-shadow: 0 0 40px #00ff00;
+  }
+}
+
+::ng-deep .user-menu {
+  transform-origin: top right;
+  animation: slideIn 0.2s ease-out;
+
+  .mat-mdc-menu-panel {
+    background: linear-gradient(135deg, 
+      rgba(0, 0, 102, 0.95) 0%,
+      rgba(139, 0, 0, 0.95) 50%,
+      rgba(0, 0, 102, 0.95) 100%
+    ) !important;
+    border: 2px solid #ff0000;
+    box-shadow: 
+      0 0 25px rgba(255, 255, 255, 0.4),
+      inset 0 0 20px rgba(0, 0, 255, 0.3);
+    border-radius: 14px !important;
+    overflow: hidden;
+  }
+
+  .mat-mdc-menu-content {
+    padding: 6px !important;
+    background: transparent !important;
+    border-radius: 12px;
+    box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.1);
+  }
+
+  .mat-mdc-menu-item {
+    height: 40px !important;
+    line-height: 40px !important;
+    margin: 4px !important;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 153, 0.3);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+      );
+      transition: 0.5s;
+    }
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.1);
+      background: linear-gradient(45deg,
+        rgba(255, 0, 0, 0.4) 0%,
+        rgba(0, 0, 255, 0.4) 100%
+      );
+      transform: translateX(4px);
+      box-shadow: 
+        0 0 15px rgba(255, 255, 255, 0.3),
+        inset 0 0 10px rgba(255, 0, 0, 0.3);
+
+      &::before {
+        left: 100%;
+      }
     }
 
-    mat-icon {
-      margin-right: 0.5em;
+    .mat-icon {
+      color: #ffffff;
+      margin-right: 12px;
+      transition: all 0.3s ease;
+      text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+
+      &:hover {
+        transform: scale(1.2) rotate(10deg);
+        color: #ff0000;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      }
     }
+
+    span {
+      color: #ffffff;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+    }
+  }
+}
+
+// Override Material's default styles
+::ng-deep .mat-mdc-menu-content,
+::ng-deep .mat-mdc-menu-panel {
+  background: transparent !important;
+  color: white !important;
+}
+
+// Add custom positioning for the overlay
+::ng-deep .cdk-overlay-connected-position-bounding-box {
+  top: 4em !important;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }

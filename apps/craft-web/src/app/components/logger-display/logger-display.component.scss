@@ -12,7 +12,7 @@
   h2 {
     color: vars.$patriot-white;
     margin: 0 0 0.75em;
-    font-size: 1.25em;
+    font-size: 2.5em;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 0.5em;
   }
@@ -22,7 +22,7 @@
 
     h3 {
       color: #ddd;
-      font-size: 1em;
+      font-size: 2em;
       margin-bottom: 0.5em;
       display: flex;
       align-items: center;
@@ -32,10 +32,10 @@
     .log-entries {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 0.1px;
       max-height: 300px;
       overflow-y: auto;
-      padding: 0.5em;
+      padding: 0.1em;
       scrollbar-width: thin;
       scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 
@@ -63,7 +63,7 @@
     min-height: 2.5em; // Fixed height for all entries
     font-size: 1.1em; // increased font size
     margin-bottom: 0.3em; // reduced vertical spacing between entries
-    line-height: 1.4;
+    line-height: 1.2;
     flex-direction: row;
     padding: 0.3em 0.5em; // reduced vertical padding (0.3em) while preserving horizontal spacing
     border-radius: 4px;
@@ -74,6 +74,54 @@
     border: none;
     box-shadow: none;
     min-height: auto; // remove fixed height constraints
+    transform-origin: center left;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.9); // Lighter background for contrast
+      color: #000000;
+      border: 1px solid vars.$usa-red;
+      cursor: pointer;
+      
+      .timestamp,
+      .description,
+      .data,
+      .category-indicator {
+        color: #000000;
+      }
+
+      .category-indicator {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .timestamp {
+        color: vars.$usa-gold;
+      }
+
+      .description {
+        color: vars.$usa-white;
+      }
+
+      .data {
+        color: vars.$silver-star;
+      }
+
+      &.error .category-indicator {
+        background-color: rgba(vars.$error-red, 0.4);
+      }
+
+      &.warn .category-indicator {
+        background-color: rgba(vars.$warning-orange, 0.4);
+      }
+
+      &.info .category-indicator {
+        background-color: rgba(vars.$info-blue, 0.4);
+      }
+
+      &.log .category-indicator {
+        background-color: rgba(vars.$silver-star, 0.4);
+      }
+    }
 
     .infographic-icon {
       margin-right: 8px;
@@ -109,6 +157,7 @@
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.05);
+      color: black;
     }
 
     .log-header {

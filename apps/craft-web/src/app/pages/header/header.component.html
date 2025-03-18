@@ -1,10 +1,15 @@
 <mat-card class="header-card">
   <div class="header-content">
     <!-- Other header content can go here -->
-    <button mat-icon-button [matMenuTriggerFor]="userMenu">
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" #menuTrigger="matMenuTrigger">
       <mat-icon class="profile-icon" [class.logged-in]="authService.getAuthToken()">person</mat-icon>
     </button>
-    <mat-menu #userMenu="matMenu">
+    <mat-menu #userMenu="matMenu" 
+              class="user-menu" 
+              [overlapTrigger]="false" 
+              panelClass="user-menu"
+              [yPosition]="'below'"
+              [hasBackdrop]="true">
       <button mat-menu-item *ngFor="let item of userMenuItems" (click)="handleUserMenuAction(item.action)">
         <mat-icon>{{ item.icon }}</mat-icon>
         <span>{{ item.label }}</span>
