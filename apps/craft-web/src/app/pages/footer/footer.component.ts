@@ -180,7 +180,7 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     const startTime = performance.now();
     
     // Create a tiny request to measure network latency
-    fetch('/assets/ping.txt?' + new Date().getTime(), { 
+    fetch('/assets/documents/ping.txt?' + new Date().getTime(), { 
       method: 'HEAD',
       cache: 'no-store'
     })
@@ -266,7 +266,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     const minFps = 10;
     const load = Math.max(0, Math.min(100, 100 * (1 - ((avgFps - minFps) / (maxFps - minFps)))));
     
-    console.log(`Estimated CPU Load based on FPS (${avgFps.toFixed(1)}): ${load.toFixed(2)}%`);
     return of(load);
   }
 

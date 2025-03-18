@@ -230,7 +230,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   private measureNetworkLatency(): void {
     const startTime = performance.now();
 
-    fetch('/assets/ping.txt?' + Date.now(), {
+    fetch('/assets/documents/ping.txt?' + Date.now(), {
       method: 'HEAD',
       cache: 'no-store',
     })

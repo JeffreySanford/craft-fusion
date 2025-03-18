@@ -63,7 +63,10 @@ export class LoggerService {
    */
   info(msg: string) {
     const logMessage = `${this.LOGGER_PREFIX} %c${msg}`;
-    console.log(logMessage, this.LOGGER_STYLE, this.INFO_STYLE);
+    // Remove the console logging for CPU Load messages
+    if (!msg.includes('CPU Load')) {
+      console.log(logMessage, this.LOGGER_STYLE, this.INFO_STYLE);
+    }
     this.addLog(logMessage, 'info');
   }
 
@@ -133,7 +136,8 @@ export class LoggerService {
   }
 
   private addLog(message: string, level: string): void {
-    const timestamp = new Date().toLocaleTimeString();
+    // Use an ISO timestamp to ensure proper parsing later in LoggerDisplayComponent
+    const timestamp = new Date().toISOString();
     const logEntry = `[${timestamp}] ${level.toUpperCase()}: ${message}`;
     const currentLogs = this.logsSubject.getValue();
     this.logsSubject.next([...currentLogs, logEntry]);
