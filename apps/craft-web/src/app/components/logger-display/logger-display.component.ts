@@ -59,7 +59,15 @@ export class LoggerDisplayComponent implements OnInit, OnDestroy {
   }
 
   private processLogs(logs: string[]): void {
-    this.logs = { error: [], warn: [], info: [], log: [] }; // Reset logs
+    this.logs = { error: [
+      { timestamp: '', numericTimestamp: 0, level: 'error', message: 'No logs yet', description: '', data: '' }
+    ], warn: [
+      { timestamp: '', numericTimestamp: 0, level: 'warn', message: 'No logs yet', description: '', data: '' }
+    ], info: [
+      { timestamp: '', numericTimestamp: 0, level: 'info', message: 'No logs yet', description: '', data: '' }
+    ], log: [ 
+      { timestamp: '', numericTimestamp: 0, level: 'log', message: 'No logs yet', description: '', data: '' }
+    ] }; // Reset logs
 
     logs.forEach(log => {
       const match = log.match(/\[(.*?)\]\s(.*?):\s(.*)/);
