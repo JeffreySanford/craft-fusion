@@ -29,7 +29,7 @@ export class RecordService {
    * });
    */
   getRecordByUID(UID: string): Observable<Record> {
-    const uid = `records/${UID}`;
+    const uid = `api/records/${UID}`;
     console.log(`Fetching record by UID: ${UID} from URL: ${this.apiService.getApiUrl()}/${uid}`);
 
     return this.apiService.get<Record>(uid);
@@ -44,7 +44,7 @@ export class RecordService {
    * });
    */
   getAllRecords(): Observable<Record[]> {
-    const url = 'records';
+    const url = 'api/records';
     console.log(`Fetching all records from URL: ${this.apiService.getApiUrl()}/${url}`);
     return this.apiService.get<Record[]>(url).pipe(
       catchError((error: any): Observable<Record[]> => {
@@ -65,7 +65,7 @@ export class RecordService {
    * });
    */
   addRecord(record: Record): Observable<Record> {
-    const url = 'records';
+    const url = 'api/records';
     console.log(`Adding record to URL: ${this.apiService.getApiUrl()}/${url}`);
     return this.apiService.post<Record, Record>(url, record);
   }
@@ -84,7 +84,7 @@ export class RecordService {
 
   //  This is the main service to generated mocked user records
   generateNewRecordSet(count: number): Observable<Record[]> {
-    const url = `records/generate?count=${count}`;
+    const url = `api/records/generate?count=${count}`;
     console.log(`Generating new record set with count: ${count} from URL: ${this.apiService.getApiUrl()}/${url}`);
     return this.apiService.get<Record[]>(url).pipe(
       catchError((error: any): Observable<Record[]> => {
@@ -96,7 +96,7 @@ export class RecordService {
 
   // This is performance testing service to get the creation time of the records
   getCreationTime(): Observable<number> {
-    const url = `records/time`;
+    const url = `api/records/time`;
     console.log(`Fetching creation time from URL: ${this.apiService.getApiUrl()}/${url}`);
     return this.apiService.get<number>(url).pipe(
       catchError((error: any): Observable<number> => {

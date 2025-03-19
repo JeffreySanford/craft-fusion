@@ -1,4 +1,5 @@
 @use 'sass:map';
+@use 'sass:color';
 
 $table-theme: (
   dark-blue: #00008b,
@@ -126,7 +127,7 @@ $table-theme: (
     th.mat-header-cell {
       position: sticky;
       top: 0;
-      background: linear-gradient(180deg, map.get($table-theme, patriotic-blue), darken(map.get($table-theme, patriotic-blue), 10%));
+      background: linear-gradient(180deg, map.get($table-theme, patriotic-blue), color.adjust(map.get($table-theme, patriotic-blue), $lightness: -10%));
       z-index: 9;
       // Keep existing styles but ensure position is sticky
     }
@@ -616,7 +617,7 @@ $table-theme: (
           transition: all 0.3s ease;
           
           &:hover {
-            color: darken(map.get($table-theme, patriotic-red), 15%);
+            color: color.adjust(map.get($table-theme, patriotic-red), $lightness: -15%);
             transform: rotate(90deg);
           }
         }
@@ -685,7 +686,7 @@ mat-card-content {
 .mat-paginator {
   background: linear-gradient(90deg, 
     map.get($table-theme, patriotic-red), 
-    darken(map.get($table-theme, patriotic-red), 5%),
+    color.adjust(map.get($table-theme, patriotic-red), $lightness: -5%),
     map.get($table-theme, patriotic-blue)
   );
   color: map.get($table-theme, primary-white);
@@ -1339,9 +1340,9 @@ mat-icon {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, darken(map.get($table-theme, patriotic-red), 10%),
+  background: linear-gradient(to bottom, color.adjust(map.get($table-theme, patriotic-red), $lightness: -10%),
     map.get($table-theme, primary-white),
-    darken(map.get($table-theme, patriotic-blue), 10%));
+    color.adjust(map.get($table-theme, patriotic-blue), $lightness: -10%));
 }
 
 mat-card {
