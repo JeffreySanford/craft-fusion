@@ -267,8 +267,13 @@ export class UserStateService {
     );
   }
 
+  /**
+   * Fetches all users from the system
+   * @returns Observable<User[]> - Array of users
+   */
   getAllUsers(): Observable<User[]> {
-    return this.api.get<User[]>('/users/getAllUsers').pipe(
+    // Remove the 'api/' prefix since ApiService already adds '/api/'
+    return this.api.get<User[]>('users').pipe(
       catchError(this.handleError.bind(this))
     );
   }
