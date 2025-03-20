@@ -1,163 +1,17 @@
 <div class="logger-display">
-  <div class="log-container" [ngClass]="{'grid-layout': logFilter === 'all', 'single-layout': logFilter !== 'all'}">
-    <!-- Info logs in left column -->
-    <div class="log-category info-column" *ngIf="logFilter === 'info' || logFilter === 'all'">
-      <h3 class="category-header info">
-        <span class="category-icon">
-          <span class="material-icons">info</span>
-        </span>
-        Information
-        <span class="log-count">{{ getLogCount('info') }}</span>
-        <button class="sort-button" (click)="toggleSort('info')" title="Toggle sort order">
-          <span class="material-icons">{{ sortOrder['info'] === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
-        </button>
-      </h3>
-      
-      <div class="log-entries" *ngIf="getObjectKeys(logs['info']).length > 0">
-        <div *ngFor="let date of getObjectKeys(logs['info'])">
-          <h4 class="log-date">{{ date }}</h4>
-          <div class="log-entry" *ngFor="let log of logs['info'][date]">
-            <div class="log-source">
-              <span class="material-icons" *ngIf="log.source === 'frontend'" title="Frontend Log">web</span>
-              <span class="material-icons" *ngIf="log.source === 'backend'" title="Backend Log">code</span>
-            </div>
-            <div class="log-time">
-              <div class="log-timestamp">{{ log.time }}</div>
-              <div class="log-user">{{ log.user }}</div>
-            </div>
-            <div class="log-content">
-              <div class="log-description">{{ log.description }}</div>
-              <div class="log-data" *ngIf="log.data">{{ log.data }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="empty-logs" *ngIf="getObjectKeys(logs['info']).length === 0">
-        <span class="material-icons">info</span>
-        <span>No info logs to show</span>
-      </div>
+  <div #logContainer class="log-entries">
+    <div class="log-entry" *ngFor="let log of filterLogs()" [ngClass]="getLogClass(log)">
+      <span class="log-time">{{ log.timestamp | date:'medium' }}</span>
+      <span class="log-level" [ngClass]="log.level">
+        <mat-icon>{{ getLogIcon(log) }}</mat-icon>
+        {{ log.level.toUpperCase() }}
+      </span>
+      <span class="log-message">{{ log.message }}</span>
     </div>
     
-    <!-- Right column for log, warn, and error -->
-    <div class="right-column">
-      <!-- General logs -->
-      <div class="log-category" *ngIf="logFilter === 'log' || logFilter === 'all'">
-        <h3 class="category-header log">
-          <span class="category-icon">
-            <span class="material-icons">article</span>
-          </span>
-          General Logs
-          <span class="log-count">{{ getLogCount('log') }}</span>
-          <button class="sort-button" (click)="toggleSort('log')" title="Toggle sort order">
-            <span class="material-icons">{{ sortOrder['log'] === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
-          </button>
-        </h3>
-        
-        <div class="log-entries" *ngIf="getObjectKeys(logs['log']).length > 0">
-          <div *ngFor="let date of getObjectKeys(logs['log'])">
-            <h4 class="log-date">{{ date }}</h4>
-            <div class="log-entry" *ngFor="let log of logs['log'][date]">
-              <div class="log-source">
-                <span class="material-icons" *ngIf="log.source === 'frontend'" title="Frontend Log">web</span>
-                <span class="material-icons" *ngIf="log.source === 'backend'" title="Backend Log">code</span>
-              </div>
-              <div class="log-time">
-                <div class="log-timestamp">{{ log.time }}</div>
-                <div class="log-user">{{ log.user }}</div>
-              </div>
-              <div class="log-content">
-                <div class="log-description">{{ log.description }}</div>
-                <div class="log-data" *ngIf="log.data">{{ log.data }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="empty-logs" *ngIf="getObjectKeys(logs['log']).length === 0">
-          <span class="material-icons">article</span>
-          <span>No general logs to show</span>
-        </div>
-      </div>
-      
-      <!-- Warnings -->
-      <div class="log-category" *ngIf="logFilter === 'warn' || logFilter === 'all'">
-        <h3 class="category-header warn">
-          <span class="category-icon">
-            <span class="material-icons">warning</span>
-          </span>
-          Warnings
-          <span class="log-count">{{ getLogCount('warn') }}</span>
-          <button class="sort-button" (click)="toggleSort('warn')" title="Toggle sort order">
-            <span class="material-icons">{{ sortOrder['warn'] === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
-          </button>
-        </h3>
-        
-        <div class="log-entries" *ngIf="getObjectKeys(logs['warn']).length > 0">
-          <div *ngFor="let date of getObjectKeys(logs['warn'])">
-            <h4 class="log-date">{{ date }}</h4>
-            <div class="log-entry" *ngFor="let log of logs['warn'][date]">
-              <div class="log-source">
-                <span class="material-icons" *ngIf="log.source === 'frontend'" title="Frontend Log">web</span>
-                <span class="material-icons" *ngIf="log.source === 'backend'" title="Backend Log">code</span>
-              </div>
-              <div class="log-time">
-                <div class="log-timestamp">{{ log.time }}</div>
-                <div class="log-user">{{ log.user }}</div>
-              </div>
-              <div class="log-content">
-                <div class="log-description">{{ log.description }}</div>
-                <div class="log-data" *ngIf="log.data">{{ log.data }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="empty-logs" *ngIf="getObjectKeys(logs['warn']).length === 0">
-          <span class="material-icons">check_circle</span>
-          <span>No warnings to show</span>
-        </div>
-      </div>
-      
-      <!-- Errors -->
-      <div class="log-category" *ngIf="logFilter === 'error' || logFilter === 'all'">
-        <h3 class="category-header error">
-          <span class="category-icon">
-            <span class="material-icons">error</span>
-          </span>
-          Errors
-          <span class="log-count">{{ getLogCount('error') }}</span>
-          <button class="sort-button" (click)="toggleSort('error')" title="Toggle sort order">
-            <span class="material-icons">{{ sortOrder['error'] === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
-          </button>
-        </h3>
-        
-        <div class="log-entries" *ngIf="getObjectKeys(logs['error']).length > 0">
-          <div *ngFor="let date of getObjectKeys(logs['error'])">
-            <h4 class="log-date">{{ date }}</h4>
-            <div class="log-entry" *ngFor="let log of logs['error'][date]">
-              <div class="log-source">
-                <span class="material-icons" *ngIf="log.source === 'frontend'" title="Frontend Log">web</span>
-                <span class="material-icons" *ngIf="log.source === 'backend'" title="Backend Log">code</span>
-              </div>
-              <div class="log-time">
-                <div class="log-timestamp">{{ log.time }}</div>
-                <div class="log-user">{{ log.user }}</div>
-              </div>
-              <div class="log-content">
-                <div class="log-description">{{ log.description }}</div>
-                <div class="log-data" *ngIf="log.data">{{ log.data }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="empty-logs" *ngIf="getObjectKeys(logs['error']).length === 0">
-          <span class="material-icons">check_circle</span>
-          <span>No errors to show</span>
-        </div>
-      </div>
+    <div *ngIf="filterLogs().length === 0" class="empty-log">
+      <mat-icon>receipt_long</mat-icon>
+      <span>No logs to display</span>
     </div>
   </div>
-  <img src="/assets/images/bald-eagle-transparent.png" alt="USA Eagle" class="usa-eagle">
 </div>

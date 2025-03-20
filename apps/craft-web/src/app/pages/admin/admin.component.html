@@ -218,72 +218,263 @@
       </ng-template>
       
       <div class="tab-content">
-        <div class="api-calls-container">
-          <h2>Recent API Calls</h2>
-          <table mat-table [dataSource]="serviceMetrics" class="api-table">
-            <!-- Service Name Column -->
-            <ng-container matColumnDef="service">
-              <th mat-header-cell *matHeaderCellDef>Service</th>
-              <td mat-cell *matCellDef="let call">
-                <div class="service-cell">
-                  <mat-icon>{{serviceIconMap[call.serviceName.toLowerCase()] || 'api'}}</mat-icon>
-                  <span>{{call.serviceName}}</span>
-                </div>
-              </td>
-            </ng-container>
-            
-            <!-- Method Column -->
-            <ng-container matColumnDef="method">
-              <th mat-header-cell *matHeaderCellDef>Method</th>
-              <td mat-cell *matCellDef="let call">
-                <span class="method-badge method-{{call.method.toLowerCase()}}">{{call.method}}</span>
-              </td>
-            </ng-container>
-            
-            <!-- URL Column -->
-            <ng-container matColumnDef="url">
-              <th mat-header-cell *matHeaderCellDef>URL</th>
-              <td mat-cell *matCellDef="let call" class="url-cell">{{call.url}}</td>
-            </ng-container>
-            
-            <!-- Duration Column -->
-            <ng-container matColumnDef="duration">
-              <th mat-header-cell *matHeaderCellDef>Duration</th>
-              <td mat-cell *matCellDef="let call">
-                <div class="duration-cell">
-                  <div class="duration-bar" [style.width.%]="getPercentage(call.duration)" 
-                       [ngClass]="getDurationClass(call.duration)"></div>
-                  <span>{{call.duration?.toFixed(1)}} ms</span>
-                </div>
-              </td>
-            </ng-container>
-            
-            <!-- Status Column -->
-            <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef>Status</th>
-              <td mat-cell *matCellDef="let call">
-                <div class="status-badge" [ngClass]="getStatusClass(call.status)">
-                  {{call.status === 1 ? 'Processing' : call.status || 'N/A'}}
-                </div>
-              </td>
-            </ng-container>
-            
-            <tr mat-header-row *matHeaderRowDef="['service', 'method', 'url', 'duration', 'status']"></tr>
-            <tr mat-row *matRowDef="let row; columns: ['service', 'method', 'url', 'duration', 'status']"
-                class="api-row"></tr>
-          </table>
-          
-          <!-- API Signature block with eagle background -->
-          <div class="api-signature-block">
-            <div class="eagle-background">
-              <img src="./assets/images/bald-eagle-transparent.png" alt="USA Eagle" class="usa-eagle">
+        <!-- API Activity Summary -->
+        <div class="api-activity-summary">
+          <h2>API Endpoint Logs</h2>
+          <div class="activity-metrics">
+            <div class="metric-card primary">
+              <div class="metric-value">{{ getKeys(endpointLogs).length }}</div>
+              <div class="metric-label">Active Endpoints</div>
             </div>
-            <div class="signature-content">
-              <p>All API calls are monitored and logged for security purposes.</p>
-              <p class="signature-motto">Protected by CraftFusion API Security</p>
+            
+            <div class="metric-card success">
+              <div class="metric-value">{{ getTotalSuccessCount() }}</div>
+              <div class="metric-label">Successful Requests</div>
+            </div>
+            
+            <div class="metric-card warning">
+              <div class="metric-value">{{ getTotalHitCount() }}</div>
+              <div class="metric-label">Total Requests</div>
+            </div>
+            
+            <div class="metric-card danger">
+              <div class="metric-value">{{ getTotalErrorCount() }}</div>
+              <div class="metric-label">Failed Requests</div>
             </div>
           </div>
         </div>
+        
+        <!-- API Endpoints Table with Expandable Rows -->
+        <ng-container *ngIf="getKeys(endpointLogs).length > 0; else emptyState">
+          <div class="api-endpoints-table-container">
+            <table class="api-endpoints-table mat-elevation-z2">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Endpoint</th>
+                  <th>Method</th>
+                  <th>Hits</th>
+                  <th>Avg Response</th>
+                  <th>Success Rate</th>
+                  <th>Last Called</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let endpointKey of getKeys(endpointLogs); let i = index">
+                  <tr class="endpoint-row" 
+                      [class.expanded]="expandedEndpoint === endpointKey"
+                      (click)="toggleEndpointDetails(endpointKey)">
+                    <td class="expand-cell">
+                      <button mat-icon-button class="expand-button">
+                        <mat-icon *ngIf="expandedEndpoint !== endpointKey">expand_more</mat-icon>
+                        <mat-icon *ngIf="expandedEndpoint === endpointKey">expand_less</mat-icon>
+                      </button>
+                    </td>
+                    <td class="endpoint-name-cell">
+                      <div class="endpoint-name-content">
+                        <mat-icon [ngStyle]="{'color': getEndpointMethodColor(endpointLogs[endpointKey].method)}">
+                          {{getEndpointMethodIcon(endpointLogs[endpointKey].method)}}
+                        </mat-icon>
+                        <span class="endpoint-path">{{endpointLogs[endpointKey].path}}</span>
+                      </div>
+                    </td>
+                    <td class="method-cell">
+                      <span class="method-badge" [ngClass]="'method-' + endpointLogs[endpointKey].method.toLowerCase()">
+                        {{endpointLogs[endpointKey].method}}
+                      </span>
+                    </td>
+                    <td class="hit-count-cell">
+                      <div class="hit-counter" [class.pulse]="endpointLogs[endpointKey].hitCount > 0">
+                        <span class="hit-count">{{endpointLogs[endpointKey].hitCount}}</span>
+                      </div>
+                    </td>
+                    <td class="response-time-cell">
+                      {{endpointLogs[endpointKey].avgResponseTime.toFixed(1)}} ms
+                    </td>
+                    <td class="success-rate-cell">
+                      <div class="success-rate-wrapper">
+                        <div class="success-rate-bar">
+                          <div class="success-rate-value" 
+                              [style.width]="getSuccessRate(endpointLogs[endpointKey]) + '%'"
+                              [style.background]="getStatusColor(getSuccessRate(endpointLogs[endpointKey]))">
+                          </div>
+                        </div>
+                        <span>{{getSuccessRate(endpointLogs[endpointKey]).toFixed(0)}}%</span>
+                      </div>
+                    </td>
+                    <td class="last-activity-cell">
+                      {{endpointLogs[endpointKey].lastContacted | date:timestampFormat}}
+                    </td>
+                    <td class="status-cell">
+                      <span class="status-indicator">
+                        <span class="status-dot" [ngClass]="getServiceStatusClass(endpointKey)"></span>
+                        <span class="status-text">{{ getServiceStatusText(endpointKey) }}</span>
+                      </span>
+                    </td>
+                  </tr>
+                  
+                  <!-- Expandable Detail Row - Enhanced with actual log data -->
+                  <tr class="detail-row" *ngIf="expandedEndpoint === endpointKey">
+                    <td colspan="8">
+                      <div class="endpoint-details" [@detailExpand]="expandedEndpoint === endpointKey ? 'expanded' : 'collapsed'">
+                        <div class="detail-header">
+                          <div class="detail-title">
+                            <mat-icon [ngStyle]="{'color': getEndpointMethodColor(endpointLogs[endpointKey].method)}">
+                              {{getEndpointMethodIcon(endpointLogs[endpointKey].method)}}
+                            </mat-icon>
+                            <h3>{{endpointLogs[endpointKey].path}}</h3>
+                            <span class="detail-method-badge" [ngClass]="'method-' + endpointLogs[endpointKey].method.toLowerCase()">
+                              {{endpointLogs[endpointKey].method}}
+                            </span>
+                          </div>
+                          <div class="detail-last-updated">
+                            <span (click)="toggleTimestampFormat()" class="timestamp-toggle">
+                              Last Updated: {{endpointLogs[endpointKey].lastContacted | date:timestampFormat}}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <!-- Stats Summary Row -->
+                        <div class="detail-stats">
+                          <div class="stat-item">
+                            <div class="stat-label">Total Requests</div>
+                            <div class="stat-value total-requests">{{endpointLogs[endpointKey].hitCount}}</div>
+                          </div>
+                          <div class="stat-item">
+                            <div class="stat-label">Success Count</div>
+                            <div class="stat-value success-count">{{endpointLogs[endpointKey].successCount}}</div>
+                          </div>
+                          <div class="stat-item">
+                            <div class="stat-label">Error Count</div>
+                            <div class="stat-value error-count">{{endpointLogs[endpointKey].errorCount}}</div>
+                          </div>
+                          <div class="stat-item">
+                            <div class="stat-label">Min Response</div>
+                            <div class="stat-value min-response">{{getMinResponseTime(endpointKey)}} ms</div>
+                          </div>
+                          <div class="stat-item">
+                            <div class="stat-label">Max Response</div>
+                            <div class="stat-value max-response">{{getMaxResponseTime(endpointKey)}} ms</div>
+                          </div>
+                          <div class="stat-item">
+                            <div class="stat-label">First Seen</div>
+                            <div class="stat-value first-seen">{{endpointLogs[endpointKey].firstSeen | date:'shortDate'}}</div>
+                          </div>
+                        </div>
+                        
+                        <!-- Visualization Metrics -->
+                        <div class="detail-metrics">
+                          <!-- ...existing metrics cards... -->
+                        </div>
+                        
+                        <!-- Log Details Section -->
+                        <div class="log-details-section">
+                          <div class="detail-section-header">
+                            <mat-icon>description</mat-icon>
+                            <span>Latest Request/Response</span>
+                          </div>
+                          
+                          <div class="log-details-content" *ngIf="getEndpointDetails(endpointKey)">
+                            <mat-tab-group>
+                              <mat-tab label="Request">
+                                <div class="detail-code-block">
+                                  <div class="code-header">
+                                    <div class="code-title">Headers</div>
+                                    <button mat-icon-button class="copy-button" title="Copy to clipboard">
+                                      <mat-icon>content_copy</mat-icon>
+                                    </button>
+                                  </div>
+                                  <pre class="detail-code">{{getFormattedHeaders(getEndpointDetails(endpointKey).headers)}}</pre>
+                                  
+                                  <div class="code-header">
+                                    <div class="code-title">Body</div>
+                                    <button mat-icon-button class="copy-button" title="Copy to clipboard">
+                                      <mat-icon>content_copy</mat-icon>
+                                    </button>
+                                  </div>
+                                  <pre class="detail-code">{{getFormattedJson(getEndpointDetails(endpointKey).requestBody)}}</pre>
+                                </div>
+                              </mat-tab>
+                              <mat-tab label="Response">
+                                <div class="detail-code-block">
+                                  <div class="code-header">
+                                    <div class="code-title">Status: {{getEndpointDetails(endpointKey).status}}</div>
+                                    <span class="status-badge" 
+                                          [ngClass]="{'success': getEndpointDetails(endpointKey).status >= 200 && getEndpointDetails(endpointKey).status < 300,
+                                                    'warning': getEndpointDetails(endpointKey).status >= 300 && getEndpointDetails(endpointKey).status < 400,
+                                                    'error': getEndpointDetails(endpointKey).status >= 400}">
+                                      {{getEndpointDetails(endpointKey).status}}
+                                    </span>
+                                  </div>
+                                  <div class="code-header">
+                                    <div class="code-title">Body</div>
+                                    <button mat-icon-button class="copy-button" title="Copy to clipboard">
+                                      <mat-icon>content_copy</mat-icon>
+                                    </button>
+                                  </div>
+                                  <pre class="detail-code">{{getFormattedJson(getEndpointDetails(endpointKey).responseBody)}}</pre>
+                                </div>
+                              </mat-tab>
+                              <mat-tab label="Timeline">
+                                <div class="timeline-container">
+                                  <div class="timeline-item" *ngFor="let item of endpointLogs[endpointKey].timelineData.slice().reverse().slice(0, 10)">
+                                    <div class="timeline-item-header">
+                                      <span class="timeline-timestamp">{{item.timestamp | date:'medium'}}</span>
+                                      <span class="timeline-status" 
+                                            [ngClass]="{'success': item.status >= 200 && item.status < 400, 
+                                                      'error': item.status >= 400}">
+                                        {{item.status}}
+                                      </span>
+                                    </div>
+                                    <div class="timeline-item-content">
+                                      <div class="timeline-response-time">
+                                        <mat-icon>timer</mat-icon> {{item.responseTime.toFixed(1)}} ms
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </mat-tab>
+                            </mat-tab-group>
+                          </div>
+                        </div>
+                        
+                        <div class="detail-actions">
+                          <button mat-flat-button color="primary" class="detail-action-button">
+                            <mat-icon>refresh</mat-icon>
+                            Refresh
+                          </button>
+                          <button mat-flat-button color="accent" class="detail-action-button">
+                            <mat-icon>history</mat-icon>
+                            View History
+                          </button>
+                          <button mat-flat-button color="warn" class="detail-action-button">
+                            <mat-icon>clear_all</mat-icon>
+                            Clear Logs
+                          </button>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </ng-container>
+        
+        <!-- Empty state with American styling -->
+        <ng-template #emptyState>
+          <div class="empty-state">
+            <mat-icon class="empty-icon">cloud_off</mat-icon>
+            <h3 class="empty-title">No API Activity Logs</h3>
+            <p class="empty-message">
+              There are currently no API logs to display. Endpoint activity will be recorded and shown here when API calls are made.
+            </p>
+            <button class="simulate-button" (click)="toggleDataSimulation()" *ngIf="!isSimulatingData">
+              Simulate API Activity
+            </button>
+          </div>
+        </ng-template>
       </div>
     </mat-tab>
     

@@ -1,6 +1,8 @@
 import { Injectable, Injector, Inject, forwardRef } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { ApiService } from './api.service'; // Adjust the path as necessary
+
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 export interface BaseServiceCallMetric {
   serviceName: string;
@@ -28,9 +30,11 @@ interface RegisteredService {
 }
 
 export interface LogEntry {
+  timestamp: Date;
+  level: LogLevel;
   message: string;
-  level: string;
-  timestamp: string;
+  data?: any;
+  source?: string;
 }
 
 @Injectable({
@@ -38,6 +42,11 @@ export interface LogEntry {
 })
 export class LoggerService {
   private apiService!: ApiService;
+  private logs: LogEntry[] = [];
+  private logSubject = new Subject<LogEntry>();
+  
+  // Expose the log stream as an Observable
+  logStream$ = this.logSubject.asObservable();
   
   constructor(private injector: Injector) {
     // Lazy injection to break the circular dependency.
@@ -109,55 +118,28 @@ export class LoggerService {
    * Log an error with vibrant red color
    */
   error(message: string, data?: any): void {
-    const dataStr = data ? ` - ${JSON.stringify(data)}` : '';
-    const fullMessage = `${message}${dataStr}`;
-    
-    console.error(`%cERROR: %c${fullMessage}`, this.COLORS.error, 'color: inherit');
-    this.addLog('ERROR', fullMessage);
+    this.logMessage('error', message, data);
   }
 
   /**
    * Log a warning with vibrant yellow color
    */
   warn(message: string, data?: any): void {
-    const dataStr = data ? ` - ${JSON.stringify(data)}` : '';
-    const fullMessage = `${message}${dataStr}`;
-    
-    console.warn(`%cWARN: %c${fullMessage}`, this.COLORS.warn, 'color: inherit');
-    this.addLog('WARN', fullMessage);
+    this.logMessage('warn', message, data);
   }
 
   /**
    * Log info with vibrant blue color
    */
   info(message: string, data?: any): void {
-    const dataStr = data ? ` - ${JSON.stringify(data)}` : '';
-    const fullMessage = `${message}${dataStr}`;
-    
-    console.info(`%cINFO: %c${fullMessage}`, this.COLORS.info, 'color: inherit');
-    this.addLog('INFO', fullMessage);
-  }
-
-  /**
-   * Log standard message with vibrant green color
-   */
-  log(message: string, data?: any): void {
-    const dataStr = data ? ` - ${JSON.stringify(data)}` : '';
-    const fullMessage = `${message}${dataStr}`;
-    
-    console.log(`%cLOG: %c${fullMessage}`, this.COLORS.log, 'color: inherit');
-    this.addLog('LOG', fullMessage);
+    this.logMessage('info', message, data);
   }
 
   /**
    * Debug log with subtle gray color
    */
   debug(message: string, data?: any): void {
-    const dataStr = data ? ` - ${JSON.stringify(data)}` : '';
-    const fullMessage = `${message}${dataStr}`;
-    
-    console.debug(`%cDEBUG: %c${fullMessage}`, this.COLORS.debug, 'color: inherit');
-    this.addLog('DEBUG', fullMessage);
+    this.logMessage('debug', message, data);
   }
 
   /**
@@ -205,6 +187,7 @@ export class LoggerService {
    * Clear all logs
    */
   clearLogs(): void {
+    this.logs = [];
     this.logHistory = [];
     this.logsSubject.next([]);
     this.system('All logs cleared');
@@ -222,8 +205,8 @@ export class LoggerService {
   /**
    * Get current logs
    */
-  getLogs(): Observable<LogEntry[]> {
-    return this.apiService.get<LogEntry[]>('/logs');
+  getLogs(): LogEntry[] {
+    return [...this.logs];
   }
 
   /**
@@ -355,9 +338,71 @@ export class LoggerService {
   }
 
   /**
-   * Get all registered services
+   * Log standard message with vibrant green color
    */
-  getRegisteredServices(): RegisteredService[] {
-    return Array.from(this.registeredServices.values());
+  log(message: string, data?: any): void {
+    this.logMessage('info', message, data); // Call logMessage instead of log to avoid name conflict
+  }
+  
+  private logMessage(level: LogLevel, message: string, data?: any): void {
+    const logEntry: LogEntry = {
+      timestamp: new Date(),
+      level,
+      message,
+      data,
+      source: this.getCallerInfo()
+    };
+
+    this.logs.push(logEntry);
+    this.logSubject.next(logEntry);
+    
+    // Also log to console in development
+    this.logToConsole(logEntry);
+    
+    // Add to string-based log history for backward compatibility
+    const formattedMessage = `${message}${data ? ` - ${JSON.stringify(data)}` : ''}`;
+    this.addLog(level.toUpperCase(), formattedMessage);
+  }
+
+  private logToConsole(logEntry: LogEntry): void {
+    const consoleMessage = `[${logEntry.level.toUpperCase()}] ${logEntry.message}`;
+    
+    switch (logEntry.level) {
+      case 'debug':
+        console.debug(consoleMessage, logEntry.data || '');
+        break;
+      case 'info':
+        console.info(consoleMessage, logEntry.data || '');
+        break;
+      case 'warn':
+        console.warn(consoleMessage, logEntry.data || '');
+        break;
+      case 'error':
+        console.error(consoleMessage, logEntry.data || '');
+        break;
+    }
+  }
+
+  private getCallerInfo(): string {
+    try {
+      const err = new Error();
+      const stack = err.stack || '';
+      const stackLines = stack.split('\n');
+      
+      // Skip the first few stack frames which belong to this logger
+      if (stackLines.length > 3) {
+        const callerLine = stackLines[3]; // This might need adjusting based on your environment
+        
+        // Extract the caller info from the stack trace
+        const match = callerLine.match(/at\s+(.*)\s+\(/);
+        if (match && match[1]) {
+          return match[1];
+        }
+      }
+    } catch (e) {
+      // Ignore any errors in stack trace parsing
+    }
+    
+    return 'unknown';
   }
 }
