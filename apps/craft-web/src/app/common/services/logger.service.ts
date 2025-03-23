@@ -40,6 +40,7 @@ export interface LogEntry {
 @Injectable({
   providedIn: 'root'
 })
+
 export class LoggerService {
   private apiService!: ApiService;
   private logs: LogEntry[] = [];
@@ -48,11 +49,7 @@ export class LoggerService {
   // Expose the log stream as an Observable
   logStream$ = this.logSubject.asObservable();
   
-  constructor(private injector: Injector) {
-    // Lazy injection to break the circular dependency.
-    setTimeout(() => {
-      this.apiService = this.injector.get(forwardRef(() => ApiService));
-    });
+  constructor() {
     this.system('LoggerService initialized');
   }
   // Colors for console output
