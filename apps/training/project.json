@@ -1,0 +1,143 @@
+{
+  "name": "training",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/training",
+  "targets": {
+    "setup": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pip install -r requirements.txt",
+        "cwd": "apps/training"
+      }
+    },
+    "scrape-etscl": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node new-etscl.js --source website --output ./training_data/etscl/scraped-support.jsonl",
+        "cwd": "apps/training"
+      }
+    },
+    "scrape-etscl-ts": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node new-etscl.ts --source website --output ./training_data/etscl/scraped-support.jsonl",
+        "cwd": "apps/training"
+      }
+    },
+    "scrape-github": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node new-etscl.js --source github --output ./training_data/etscl/github-issues.jsonl",
+        "cwd": "apps/training"
+      }
+    },
+    "scrape-stackexchange": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node new-etscl.js --source stackexchange --output ./training_data/etscl/stackexchange-qa.jsonl",
+        "cwd": "apps/training"
+      }
+    },
+    "merge-datasets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node merge-datasets.js --input ./training_data/etscl --output ./training_data/combined.jsonl",
+        "cwd": "apps/training"
+      }
+    },
+    "finetune-mistral": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "python finetune-mistral-lora.py",
+        "cwd": "apps/training"
+      },
+      "dependsOn": ["setup"]
+    },
+    "finetune-deepseek": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "python finetune-deepseek-lora.py",
+        "cwd": "apps/training"
+      },
+      "dependsOn": ["setup"]
+    },
+    "inference-test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "python test-inference.py",
+        "cwd": "apps/training"
+      },
+      "dependsOn": ["setup"]
+    },
+    "prepare-data": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "mkdir -p ./training_data/etscl",
+          "npm run scrape-etscl",
+          "npm run scrape-github",
+          "npm run scrape-stackexchange",
+          "npm run merge-datasets"
+        ],
+        "parallel": false,
+        "cwd": "apps/training"
+      }
+    },
+    "etscl-pipeline": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run prepare-data && npm run finetune-mistral && npm run inference-test",
+        "cwd": "apps/training"
+      }
+    },
+    "generate-entity-types": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc --declaration --emitDeclarationOnly --outDir ./dist/types entities.ts",
+        "cwd": "apps/training"
+      }
+    },
+    "validate-training-data": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node scripts/validate-entities.ts --source ./training_data/etscl",
+        "cwd": "apps/training"
+      }
+    },
+    "finetune-portfolio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "python finetune-portfolio.py",
+        "cwd": "apps/training"
+      },
+      "dependsOn": ["setup"]
+    },
+    "scrape-portfolio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node portfolio-scraper.js --output ./training_data/portfolio-data.jsonl",
+        "cwd": "apps/training"
+      }
+    },
+    "prepare-portfolio-data": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npm run scrape-portfolio",
+          "node merge-datasets.js --input ./training_data --include jeffreysanford.jsonl,portfolio-data.jsonl,web-development.jsonl --output ./training_data/portfolio-combined.jsonl --deduplicate --randomize"
+        ],
+        "parallel": false,
+        "cwd": "apps/training"
+      }
+    },
+    "portfolio-pipeline": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run prepare-portfolio-data && npm run finetune-portfolio && npm run inference-test -- --model_path ./models/portfolio-finetuned",
+        "cwd": "apps/training"
+      }
+    }
+  },
+  "tags": ["python", "ml", "training", "etscl"]
+}

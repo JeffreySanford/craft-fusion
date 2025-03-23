@@ -308,3 +308,136 @@ export const ENTITY_DESCRIPTIONS: { [key: string]: ENTITY_DESCRIPTION } = {
         otherNames: []
     }
 };
+
+/**
+ * Entity definitions for ETSCL data scraping
+ * 
+ * This file defines TypeScript interfaces representing the structure of 
+ * technical support conversations extracted from various sources.
+ */
+
+/**
+ * Represents a complete conversation with one or more messages
+ */
+export interface Conversation {
+  id: string;
+  title: string;
+  source: Source;
+  messages: Message[];
+  resolutionStatus: 'solved' | 'unsolved' | 'in-progress' | 'unknown';
+  acceptedAnswerId?: string;
+  tags?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+  viewCount?: number;
+  stars?: number;
+  forks?: number;
+}
+
+/**
+ * Represents an individual message within a conversation
+ */
+export interface Message {
+  id: string;
+  content: string;
+  author: Author;
+  timestamp: string;
+  type: 'question' | 'answer' | 'comment' | 'follow-up' | 'edit';
+  codeSnippets?: CodeSnippet[];
+  votes?: number;
+  isAccepted?: boolean;
+  parentId?: string;
+}
+
+/**
+ * Represents a code snippet within a message
+ */
+export interface CodeSnippet {
+  language?: string;
+  code: string;
+  context?: string;
+  lineStart?: number;
+  lineEnd?: number;
+}
+
+/**
+ * Represents an author of a message
+ */
+export interface Author {
+  username: string;
+  role?: 'reporter' | 'maintainer' | 'contributor' | 'community';
+  expertiseLevel?: 'beginner' | 'intermediate' | 'expert' | 'unknown';
+  reputation?: number;
+  profileUrl?: string;
+}
+
+/**
+ * Represents the source of a conversation
+ */
+export interface Source {
+  platform: 'GitHub' | 'StackOverflow' | 'StackExchange' | 'Forum' | 'Other';
+  url: string;
+  timestamp: string;
+  license?: string;
+  category?: string;
+}
+
+/**
+ * Represents a processed conversation ready for training
+ */
+export interface TrainingExample {
+  input: string;
+  output: string;
+  metadata?: {
+    source: string;
+    id: string;
+    tags?: string[];
+    difficulty?: 'beginner' | 'intermediate' | 'advanced';
+    domain?: string;
+  };
+}
+
+/**
+ * Transforms a Conversation to a TrainingExample for fine-tuning
+ * 
+ * @param conversation The conversation to transform
+ * @returns A training example suitable for LLM fine-tuning
+ */
+export function conversationToTrainingExample(conversation: Conversation): TrainingExample {
+  // Find the initial question message
+  const questionMessage = conversation.messages.find(m => m.type === 'question');
+  
+  // Find the accepted answer or the highest voted answer
+  let bestAnswer = conversation.messages.find(m => m.isAccepted);
+  if (!bestAnswer) {
+    const answerMessages = conversation.messages.filter(m => m.type === 'answer');
+    bestAnswer = answerMessages.sort((a, b) => (b.votes || 0) - (a.votes || 0))[0];
+  }
+  
+  if (!questionMessage || !bestAnswer) {
+    throw new Error(`Conversation ${conversation.id} does not have a valid question-answer pair`);
+  }
+  
+  // Format the input and output
+  const input = `${conversation.title}\n\n${questionMessage.content}`;
+  
+  // Include code snippets if available
+  const outputParts = [bestAnswer.content];
+  if (bestAnswer.codeSnippets && bestAnswer.codeSnippets.length > 0) {
+    bestAnswer.codeSnippets.forEach(snippet => {
+      const language = snippet.language ? `\`\`\`${snippet.language}` : '```';
+      outputParts.push(`${language}\n${snippet.code}\n\`\`\``);
+    });
+  }
+  
+  return {
+    input,
+    output: outputParts.join('\n\n'),
+    metadata: {
+      source: conversation.source.platform,
+      id: conversation.id,
+      tags: conversation.tags,
+      domain: conversation.tags && conversation.tags.length > 0 ? conversation.tags[0] : undefined
+    }
+  };
+}

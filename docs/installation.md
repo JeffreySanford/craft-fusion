@@ -1,61 +1,235 @@
-# Craft Fusion Installation Guide
+# 🚀 Craft Fusion Installation Guide
 
-This guide will walk you through the process of setting up Craft Fusion for local development.
+## 📋 Required Tools Installation
 
-## Prerequisites
+### Go Installation
+```bash
+# Windows (using Chocolatey)
+choco install golang
 
-Make sure you have the following installed on your development machine:
+# Windows (Manual)
+# 1. Download from https://go.dev/dl/
+# 2. Run installer
+# 3. Verify installation
+go version
+```
 
-| **Software**     | **Minimum Version** | **Recommended** | **Installation Link** |
-|------------------|---------------------|-----------------|------------------------|
-| **Node.js**      | v18.0.0             | v20.16.0        | [Node.js Download](https://nodejs.org/en/) |
-| **npm**          | v9.0.0              | v10.8.1         | Included with Node.js |
-| **Go**           | v1.20.0             | v1.23.4         | [Go Download](https://golang.org/dl/) |
-| **Docker**       | Latest              | Latest          | [Docker Download](https://www.docker.com/products/docker-desktop/) |
-| **Git**          | Latest              | Latest          | [Git Download](https://git-scm.com/downloads) |
+### Node.js Installation
+```bash
+# Windows (using Chocolatey)
+choco install nodejs-lts
 
-### Dev Tools (Optional but Recommended)
+# Windows (Manual)
+# 1. Download from https://nodejs.org/
+# 2. Install Node.js 20.x LTS
+# 3. Verify installation
+node --version  # Should show v20.x.x
+npm --version   # Should show 10.x.x
+```
 
-- **NX CLI**: `npm install -g nx`
-- **Angular CLI**: `npm install -g @angular/cli`
-- **NestJS CLI**: `npm install -g @nestjs/cli`
-- **Visual Studio Code**: [Download](https://code.visualstudio.com/)
-  - Recommended extensions:
-    - Angular Language Service
-    - ESLint
-    - Prettier
-    - Go
-    - Docker
-
-## Installation Steps
-
-### 1. Clone the Repository
+### Global Dependencies
 
 ```bash
-git clone https://github.com/yourusername/craft-fusion.git
+# Angular CLI
+npm install -g @angular/cli@19.0.6
+
+# NX CLI
+npm install -g nx@20.3.0
+
+# NestJS CLI
+npm install -g @nestjs/cli@10.0.2
+
+# Go Global Tools
+go install github.com/golang/mock/mockgen@v1.6.0
+go install github.com/swaggo/swag/cmd/swag@latest
+```
+
+### Environment Variables
+
+```batch
+# Windows - Add to System Environment Variables
+GOPATH=%USERPROFILE%\go
+GOROOT=C:\Program Files\Go
+PATH=%PATH%;%GOPATH%\bin;%GOROOT%\bin
+```
+
+## 🔍 Verify Installation
+
+```bash
+# Verify versions
+go version         # Should show go1.21 or higher
+node --version     # Should show v20.x.x
+npm --version      # Should show 10.x.x
+ng version        # Should show Angular CLI: 19.0.6
+nx --version      # Should show 20.3.0
+nest --version    # Should show 10.0.2
+
+# Verify global tools
+mockgen --version
+swag --version
+```
+
+## 🚀 Project Setup
+
+### Quick Start
+
+```bash
+# Clone and Install
+git clone https://github.com/your-repo/craft-fusion.git
 cd craft-fusion
+npm run install:deps
+
+# Start Development
+npm start
 ```
 
-### 2. Install Dependencies
+## 🎯 Common Issues
 
+### Node.js Version Mismatch
 ```bash
-# Install npm dependencies
-npm install
+# If you need to switch Node versions, use nvm
+nvm install 20
+nvm use 20
+```
 
-# Install Go dependencies
-cd apps/craft-go
+### Go Module Issues
+```bash
+# Reset Go modules
+go clean -modcache
 go mod tidy
-cd ../..
 ```
 
-### 3. Environment Setup
-
-Create a `.env` file in the root directory with the following content:
-
-## In-Memory Mongo Setup
-For local development, Craft Fusion uses an in-memory MongoDB instance. Install the package:
+### Angular/NX Cache Issues
 ```bash
-npm install --save-dev mongodb-memory-server
-```
-Then in your NestJS or Node code, configure mongodb-memory-server for ephemeral data storage.
+# Clear Angular cache
+ng cache clean
 
+# Clear NX cache
+npm run clean:cache
+```
+
+## 🎨 Project Structure
+
+```mermaid
+graph TD
+    A[craft-fusion] --> B[apps]
+    A --> C[libs]
+    B --> D[craft-web]
+    D --> E[src]
+    E --> F[styles]
+    F --> G[_theme.scss]
+    F --> H[_colors.scss]
+    F --> I[styles.scss]
+```
+
+## 🧰 Prerequisites
+
+- Node.js 20.x
+- npm 10.x
+- A sense of humor
+
+## 🔄 Development Workflow
+
+```mermaid
+sequenceDiagram
+    participant Dev as Developer
+    participant NPM as npm scripts
+    participant NX as Nx Cache
+    participant Build as Build Process
+    
+    Dev->>NPM: npm start
+    NPM->>NX: Check cache
+    NX->>Build: Build if needed
+    Build->>Dev: Started! 🎉
+```
+
+## 🧹 Cleanup Commands
+
+| Command | Description | Usage |
+|---------|-------------|-------|
+| `npm run clean:all` | Nuclear option - cleans everything | When nothing works |
+| `npm run clean:cache` | Clears NX cache | When builds act weird |
+| `npm run clean:build` | Removes build artifacts | Before production build |
+| `npm run clean:deps` | Resets dependencies | When packages fight |
+
+## 🎨 Theme Customization
+
+```scss
+// Your brand colors live in _colors.scss
+$primary-blue: #002868;  // Navy
+$primary-red: #BF0A30;   // Red
+```
+
+## 🐛 Troubleshooting
+
+> Q: Why isn't my theme working?
+> A: Did you remember to sacrifice a semicolon to the SCSS gods?
+
+```mermaid
+flowchart TD
+    A[Error!] --> B{Did you clean?}
+    B -->|No| C[npm run clean:all]
+    B -->|Yes| D{Did you update?}
+    D -->|No| E[npm install]
+    D -->|Yes| F[Stack Overflow time]
+```
+
+## 🚀 CI/CD Pipeline
+
+Our GitHub Actions workflow:
+
+```mermaid
+graph LR
+    A[Push] --> B[Lint]
+    B --> C[Test]
+    C --> D[Build]
+    D --> E[Deploy]
+    E --> F[🎉]
+```
+
+## 📦 Useful Commands
+
+```bash
+# Development
+npm start                  # Start development server
+npm run build             # Build for production
+npm test                  # Run tests
+
+# Cleanup
+npm run clean:all         # Clean everything
+npm run clean:cache       # Clear NX cache
+npm run clean:build       # Remove build files
+npm run clean:deps        # Reset dependencies
+
+# Other
+npm run affected:apps     # Check affected apps
+npm run affected:libs     # Check affected libs
+```
+
+## 🎭 The Dev Cycle
+
+```
+           Monday
+            😊
+     Friday     Tuesday
+    😫           🤔
+    Thursday  Wednesday
+         😅
+
+"It works on my machine!"
+```
+
+## 🆘 Need Help?
+
+1. Try turning it off and on again
+2. Run `npm run clean:all`
+3. Check StackOverflow
+4. Panic
+5. Read this doc again
+6. Ask for help
+
+---
+
+Remember: The only bad question is the one that breaks the build. 🛠️
+
+*May your builds be green and your coffee be strong!* ☕
