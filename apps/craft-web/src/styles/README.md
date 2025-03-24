@@ -17,7 +17,8 @@ This document provides a comprehensive guide to the styling architecture used in
 11. [File Structure](#file-structure)
 12. [Core Files Explained](#core-files-explained)
 13. [Testing Plan](#testing-plan)
-14. [Generating Styles with AI](#generating-styles-with-ai)
+14. [Refactoring Plans](#refactoring-plans)
+15. [Generating Styles with AI](#generating-styles-with-ai)
 
 ## Architecture Overview
 
@@ -700,6 +701,12 @@ All component dimensions and spacing should align with this 8px grid for visual 
 
 Our application applies a consistent patriotic theme across all components, including documentation.
 
+We have updated our theme to use vibrant patriotic colors:
+- Red: #B22234
+- Navy: #002868
+- Gold: #FFD700
+- White: #FFFFFF
+
 ### Core Color Palette
 
 | Color Role | Value | Usage |
@@ -1050,7 +1057,7 @@ We adhere to WCAG 2.1 AA standards:
 
 ## Testing Plan
 
-### [ ] Step 3: Test Style System with Sample Components
+### [WIP] Step 3: Test Style System with Sample Components
 
 Our testing phase involves systematic evaluation of the style system's implementation across all key UI components.
 
@@ -1059,17 +1066,17 @@ Our testing phase involves systematic evaluation of the style system's implement
 We will create a comprehensive test suite covering:
 
 - **Content Containers**
-  - Page containers (varying heights/widths)
-  - Cards (all variants: basic, elevated, outlined, interactive)
-  - Panels (collapsible, tabbed, scrollable)
-  - Dialog/modal containers
+  - [x] Page containers (varying heights/widths)
+  - [x] Cards (all variants: basic, elevated, outlined, interactive)
+  - [ ] Panels (collapsible, tabbed, scrollable)
+  - [ ] Dialog/modal containers
 
 - **Navigation Elements**
-  - Navigation bars (top, side, responsive)
-  - Tab groups (horizontal, vertical)
-  - Breadcrumbs
-  - Pagination
-  - Menus (dropdown, context, nested)
+  - [x] Navigation bars (top, side, responsive)
+  - [x] Tab groups (horizontal, vertical)
+  - [x] Breadcrumbs
+  - [ ] Pagination
+  - [ ] Menus (dropdown, context, nested)
 
 - **Actions & Controls**
   - Button hierarchy (primary, secondary, tertiary, icon)
@@ -1140,6 +1147,47 @@ For each component tested, document:
 - Before/after bundle size
 - Screenshots in various states and breakpoints
 - A11y compliance status
-This comprehensive testing approach ensures our style system not only maintains visual consistency with our patriotic theme but also performs efficiently and remains accessible to all users.
 
-_Last Updated: [Current Date]_
+## Refactoring Plans
+
+The Craft Fusion project is currently undergoing a comprehensive style system refactoring effort. Progress on these efforts is tracked through detailed prompt files that outline the plan, current status, and next steps.
+
+### Core Style System Refactoring
+
+The main style system refactoring plan is documented in [style-refactoring-plan.md](../../prompts/style-refactoring-plan.md), which outlines:
+
+- Implementation of Material Design 3 principles
+- Creation of a consistent patriotic theme
+- Proper structuring of SCSS modules
+- Component testing methodology
+
+### Component-Specific Refactoring
+
+Individual components are being refactored to align with the core style system:
+
+- [Footer Component](../../prompts/footer-refactoring-plan.md): Performance metrics visualization and layout improvements
+- [Header Component](../../prompts/header-refactoring-plan.md): Navigation, search, and notification system enhancements
+- [Sidebar Component](../../prompts/sidebar-refactoring-plan.md): Navigation structure and responsive behavior
+
+### Data Visualization System
+
+A dedicated [Data Visualization Plan](../../prompts/data-visualization-plan.md) outlines our approach to creating consistent, accessible, and themed charts and graphs throughout the application.
+
+### Progress Tracking
+
+Overall progress on the refactoring efforts can be tracked in the [Master Prompt Tracking System](../../prompts/prompts-tracking.md), which provides a centralized view of all refactoring initiatives.
+
+### Contribution to Refactoring
+
+To contribute to the refactoring efforts:
+
+1. Review the relevant prompt files for the component you're working on
+2. Follow the established patterns and guidelines
+3. Extract component-specific styles to core modules where appropriate
+4. Update the prompt files with your progress
+5. Ensure all implemented styles follow MD3 principles and our patriotic theme
+
+## Coding Standards
+For overall development guidelines, see [CODING-STANDARDS.md](../../../../CODING-STANDARDS.md).
+
+_Last Updated: 2025-03-24_

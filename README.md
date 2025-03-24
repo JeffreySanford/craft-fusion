@@ -18,8 +18,8 @@ Ensure the following software is installed on your system:
 
 | **Software**     | **Version**     | **Installation Link** |
 |-------------------|-----------------|------------------------|
-| **Node.js**      | `v20.16.0`      | [Node.js Download](https://nodejs.org/en/) |
-| **npm**          | `v10.8.1`       | Included with Node.js |
+| **Node.js**      | `v22.0.0`       | [Node.js Download](https://nodejs.org/en/) |
+| **npm**          | `v10.9.0`       | Included with Node.js |
 | **Go**           | `v1.23.4`       | [Go Download](https://golang.org/dl/) |
 | **NX CLI**       | Latest          | `npm install -g nx` |
 | **Angular CLI**  | Latest          | `npm install -g @angular/cli` |
@@ -65,7 +65,7 @@ Compare backend performance:
 Craft Fusion implements a comprehensive design system with:
 
 - **Design Tokens**: Centralized design values using Style Dictionary
-- **Patriotic Theme**: USA-inspired colors with consistent application
+- **Patriotic Theme**: Now featuring vibrant red (#B22234), navy (#002868), gold (#FFD700), and white (#FFFFFF)
 - **Animation System**: Performance-optimized, accessible animations
 
 ### Building Design Tokens
@@ -110,3 +110,48 @@ The Record entity is consistently implemented across all platforms with strict v
 - Individual apps should not have their own package.json files
 - All dependencies must be managed through the root package.json
 - Use nx commands to manage dependencies and builds
+
+## Working Parts
+This monorepo is organized into several key areas:
+
+### Angular Frontend (craft-web)
+- Built with Material Design 3 principles
+- Implements patriotic-themed styling
+- Hosts core UI components (header, footer, sidebar) and data visualizations
+
+### NestJS Backend (craft-nest)
+- Integrates MongoDB for data persistence
+- Features real-time capabilities (WebSockets)
+- Supports the same core models as the frontend
+
+### Go Backend (craft-go)
+- Provides an alternative API implementation
+- Focuses on high-performance data operations
+- Offers a comparable interface to match the NestJS backend
+
+### Shared Refactoring Strategies
+- Prompt-based development approach for feature planning
+- Style refactoring plan to unify visual elements under MD3
+- Component-specific refactoring (footer, header, sidebar) for consistency
+- Data visualization plan to standardize chart components and accessibility
+
+# Craft Fusion
+
+This repository contains the Craft Fusion application, prompt plans, and refactoring strategies.
+
+## README Files
+
+- [Styles README](apps/craft-web/src/styles/README.md)
+
+## Prompt & Refactoring Plans
+For details on ongoing refactoring, see:
+- [Master Prompt Tracking System](./prompts/prompts-tracking.md)
+- [Style Refactoring Plan](./prompts/style-refactoring-plan.md)
+- [Footer Refactoring Plan](./prompts/footer-refactoring-plan.md)
+- [Header Refactoring Plan](./prompts/header-refactoring-plan.md)
+- [Sidebar Refactoring Plan](./prompts/sidebar-refactoring-plan.md)
+- [Data Visualization Plan](./prompts/data-visualization-plan.md)
+- [Feature Refactoring Strategy](./prompts/feature-refactoring-strategy.md)
+
+## Coding Standards
+See [CODING-STANDARDS.md](./CODING-STANDARDS.md) for best practices and guidelines.
