@@ -1,28 +1,18 @@
-## 🚀 **Craft-Fusion Monorepo Installation Guide**
+# Craft Fusion
 
-Welcome to the **Craft-Fusion** monorepo! This project contains three applications designed to work together seamlessly:
+Craft Fusion is a monorepo featuring a modern tech stack with an Angular frontend and dual backend implementations (NestJS and Go) for benchmarking and development flexibility.
 
-1. **craft-web** – Angular frontend (Material Design Table for displaying data).  
-2. **craft-nest** – NestJS backend (mocking and delivering up to 1 million users, running on port `3000`).  
-3. **craft-go** – Go backend (ready to deliver mock data for performance testing, running on port `4000`).  
+## Overview
 
-This guide will walk you through setting up your development environment, installing dependencies, and troubleshooting common issues.
+This project demonstrates modern web development best practices through three integrated applications:
 
----
+- **craft-web**: Angular frontend with Material Design 3 and a patriotic theme
+- **craft-nest**: NestJS backend with MongoDB integration and real-time capabilities
+- **craft-go**: High-performance Go backend for alternative API access
 
-## 📚 **Table of Contents**
-1. [Prerequisites](#prerequisites)
-2. [Cloning the Repository](#cloning-the-repository)
-3. [Installing Dependencies](#installing-dependencies)
-4. [Starting Applications](#starting-applications)
-5. [Switching Between NestJS and Go APIs](#switching-between-nestjs-and-go-apis)
-6. [Testing and Troubleshooting](#testing-and-troubleshooting)
-7. [Performance Testing](#performance-testing)
-8. [Additional Resources](#additional-resources)
+## 🚀 **Installation Guide**
 
----
-
-## 🛠️ **1. Prerequisites**
+### Prerequisites
 
 Ensure the following software is installed on your system:
 
@@ -35,147 +25,88 @@ Ensure the following software is installed on your system:
 | **Angular CLI**  | Latest          | `npm install -g @angular/cli` |
 | **NestJS CLI**   | Latest          | `npm install -g @nestjs/cli` |
 
----
-
-## 📥 **2. Cloning the Repository**
-
-Open your terminal and run:
+### Setup
 
 ```bash
+# Clone repository
 git clone https://github.com/JeffreySanford/craft-fusion.git
 cd craft-fusion
-```
 
-Verify the repository is cloned successfully:
+# Install dependencies
+npm install --legacy-peer-deps
 
-```bash
-ls -la
-```
-
----
-
-## 📦 **3. Installing Dependencies**
-
-Ensure you are in the root directory of the `craft-fusion` monorepo, then run:
-
-```bash
-# Remove any existing dependencies (if necessary)
-rm -rf node_modules package-lock.json
-npm cache clear --force
-
-# Install fresh dependencies
-npm install
-```
-
-### **Install Go Dependencies**
-Navigate to the Go application directory and ensure dependencies are installed:
-
-```bash
+# Install Go dependencies
 cd apps/craft-go
 go mod tidy
-```
-
----
-
-## 🚀 **4. Starting Applications**
-
-Return to the root of the monorepo:
-
-```bash
 cd ../../
 ```
 
-### Start the Angular Frontend (craft-web)
+### Starting Applications
+
 ```bash
+# Start Angular frontend
 nx serve craft-web
-```
 
-**Access:** `http://localhost:4200`
-
-### Start the NestJS Backend (craft-nest)
-```bash
+# Start NestJS backend
 nx serve craft-nest
-```
 
-**Access:** `http://localhost:3000/api`
-
-### Start the Go Backend (craft-go)
-```bash
+# Start Go backend
 nx serve craft-go
 ```
 
-**Access:** `http://localhost:4000/records`
+## 📊 **Performance Testing**
 
----
+Compare backend performance:
+- NestJS: `http://localhost:3000/api/users?limit=1000000`
+- Go: `http://localhost:4000/records?limit=1000000`
 
-## 🔄 **5. Switching Between NestJS and Go APIs**
+## 💅 **Design System**
 
-The Angular frontend (`craft-web`) fetches data from the backend APIs. You can toggle between NestJS and Go backends for testing.
+Craft Fusion implements a comprehensive design system with:
 
-## 🛡️ **6. Testing and Troubleshooting**
+- **Design Tokens**: Centralized design values using Style Dictionary
+- **Patriotic Theme**: USA-inspired colors with consistent application
+- **Animation System**: Performance-optimized, accessible animations
 
-### **Common Commands**
-- **Clear NX Cache:**
-  ```bash
-  npx nx reset
-  ```
-- **Check Node/NPM/Go Versions:**
-  ```bash
-  node -v
-  npm -v
-  go version
-  ```
-- **Run Backend Manually (Without NX):**
-  ```bash
-  cd apps/craft-nest
-  npm run start
-  cd ../craft-go
-  go run main.go
-  ```
+### Building Design Tokens
 
----
+```bash
+npm run build:tokens
+```
 
-## 📊 **7. Performance Testing**
+## Data Models
 
-### **Manual Testing Endpoints:**
-- **NestJS Users Endpoint:** `http://localhost:3000/api/users?limit=1000000`
-- **Go Records Endpoint:** `http://localhost:4000/records?limit=1000000`
+### Record Entity
 
-### **Test via Angular Table Toggle:**
-In your Angular frontend, toggle between:
-- **NestJS Data Source:** `/api/users`
-- **Go Data Source:** `/api/go/records`
+The Record entity is consistently implemented across all platforms with strict validation:
 
-### **Load Testing Tools:**
-- **Apache Benchmark:**  
-  ```bash
-  ab -n 10000 -c 100 http://localhost:4000/records
-  ```
-- **wrk:**  
-  ```bash
-  wrk -t4 -c200 -d30s http://localhost:4000/records
-  ```
+- All Record fields are **required** for data integrity
+- Type guards validate entity structure at runtime  
+- Frontend and backend models maintain strict type consistency
+- See [Entity-Validation.md](./docs/Entity-Validation.md) for implementation details
 
----
+## 📖 **Documentation Guide**
 
-## 📚 **8. Additional Resources**
+| Documentation | Purpose | When to Update |
+|---------------|---------|---------------|
+| [README.md](./README.md) | Main project overview | When project scope changes |
+| [CODING-STANDARDS.md](./CODING-STANDARDS.md) | Development guidelines | When standards change |
+| [OLLAMA-SETUP.md](./OLLAMA-SETUP.md) | AI integration setup | When AI procedures change |
+| [styles/README.md](./apps/craft-web/src/styles/README.md) | Style system docs | When styles change |
+| [style-refactoring-plan.md](./prompts/style-refactoring-plan.md) | Style migration roadmap | When migration progresses |
 
-- **Node.js Documentation:** [Node.js Docs](https://nodejs.org/en/docs/)
-- **Go Documentation:** [Go Docs](https://golang.org/doc/)
-- **Angular Documentation:** [Angular Docs](https://angular.io/)
-- **NestJS Documentation:** [NestJS Docs](https://docs.nestjs.com/)
-- **NX Documentation:** [NX Docs](https://nx.dev/)
+## Markdown Requirements
 
----
+- Ensure compliance with MD032 by surrounding lists with blank lines
+- Use proper heading hierarchy
+- Include language identifiers in code blocks
+- Format tables consistently
 
-## 🎯 **9. Final Checklist**
+## Important Repository Rules
 
-- ✅ Node.js and Go installed.
-- ✅ Dependencies installed (`npm install`, `go mod tidy`).
-- ✅ All three apps running (`nx serve craft-web`, `craft-nest`, `craft-go`).
-- ✅ Proxy configured correctly (`proxy.conf.json`).
-- ✅ Angular toggles successfully between `/api` and `/api/go`.
+### Package Management
 
-**You're all set to run and test the Craft-Fusion monorepo!** 🚀  
-If you encounter any issues, feel free to reach out! 😊
-
+- **package.json is only allowed in the root directory**
+- Individual apps should not have their own package.json files
+- All dependencies must be managed through the root package.json
+- Use nx commands to manage dependencies and builds

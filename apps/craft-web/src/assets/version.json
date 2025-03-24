@@ -1,0 +1,19 @@
+{
+  "appVersion": "1.5.0",
+  "buildDate": "2023-10-30T14:25:30.123Z",
+  "commitHash": "a7d3c5b",
+  "nodeVersion": "v20.16.0",
+  "angularVersion": "16.2.12",
+  "materialVersion": "16.2.12",
+  "styleVersion": {
+    "theme": "1.3.5",
+    "typography": "1.2.0",
+    "layout": "1.2.1",
+    "animations": "1.1.2",
+    "md3Components": "0.9.8"
+  },
+  "apiVersions": {
+    "nestApi": "1.4.2",
+    "goApi": "1.2.0"
+  }
+}

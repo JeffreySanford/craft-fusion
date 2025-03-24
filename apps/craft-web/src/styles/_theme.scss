@@ -1,0 +1,174 @@
+@use 'sass:map';
+@use '~@angular/material/theming' as mat;
+@use './variables' as vars;
+
+// Define the color palettes
+$craft-fusion-primary: mat.define-palette(mat.$indigo-palette);
+$craft-fusion-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$craft-fusion-warn: mat.define-palette(mat.$red-palette);
+
+// Define the light theme
+$craft-fusion-light-theme: mat.define-light-theme((
+  color: (
+    primary: $craft-fusion-primary,
+    accent: $craft-fusion-accent,
+    warn: $craft-fusion-warn,
+  )
+));
+
+// Define the dark theme
+$craft-fusion-dark-theme: mat.define-dark-theme((
+  color: (
+    primary: $craft-fusion-primary,
+    accent: $craft-fusion-accent,
+    warn: $craft-fusion-warn,
+  )
+));
+
+// Define the patriotic theme
+$usa-blue-palette: (
+  50: #e3f2fd,
+  100: #bbdefb,
+  500: #002868,
+  700: #001e4d,
+  900: #000e24,
+  contrast: (
+    50: rgba(0, 0, 0, 0.87),
+    100: rgba(0, 0, 0, 0.87),
+    500: white,
+    700: white,
+    900: white,
+  )
+);
+
+$usa-red-palette: (
+  50: #ffebee,
+  100: #ffcdd2,
+  500: #bf0a30,
+  700: #8c0622,
+  900: #5a0415,
+  contrast: (
+    50: rgba(0, 0, 0, 0.87),
+    100: rgba(0, 0, 0, 0.87),
+    500: white,
+    700: white,
+    900: white,
+  )
+);
+
+$patriotic-primary: mat.define-palette($usa-blue-palette, 500, 100, 700);
+$patriotic-accent: mat.define-palette($usa-red-palette, 500, 100, 700);
+$patriotic-warn: mat.define-palette(mat.$red-palette);
+
+$patriotic-theme: mat.define-light-theme((
+  color: (
+    primary: $patriotic-primary,
+    accent: $patriotic-accent,
+    warn: $patriotic-warn,
+  )
+));
+
+// Define a simplified typography config
+$craft-fusion-typography: (
+  font-family: 'Roboto, "Helvetica Neue", sans-serif',
+);
+
+// Define palettes for themes using our custom color palettes
+$red-palette: (
+  50: #ffebee,
+  100: #ffcdd2,
+  200: #ef9a9a,
+  300: #e57373,
+  400: #ef5350,
+  500: #f44336, // Primary
+  600: #e53935,
+  700: #d32f2f,
+  800: #c62828,
+  900: #b71c1c,
+  A100: #ff8a80,
+  A200: #ff5252,
+  A400: #ff1744,
+  A700: #d50000,
+  contrast: (
+    50: rgba(0, 0, 0, 0.87),
+    100: rgba(0, 0, 0, 0.87),
+    200: rgba(0, 0, 0, 0.87),
+    300: rgba(0, 0, 0, 0.87),
+    400: rgba(0, 0, 0, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(0, 0, 0, 0.87),
+    A200: white,
+    A400: white,
+    A700: white,
+  )
+);
+
+$pink-palette: (
+  50: #fce4ec,
+  100: #f8bbd0,
+  200: #f48fb1,
+  300: #f06292,
+  400: #ec407a,
+  500: #e91e63, // Primary
+  600: #d81b60,
+  700: #c2185b,
+  800: #ad1457,
+  900: #880e4f,
+  A100: #ff80ab,
+  A200: #ff4081, // Accent
+  A400: #f50057,
+  A700: #c51162,
+  contrast: (
+    50: rgba(0, 0, 0, 0.87),
+    100: rgba(0, 0, 0, 0.87),
+    200: rgba(0, 0, 0, 0.87),
+    300: rgba(0, 0, 0, 0.87),
+    400: rgba(0, 0, 0, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(0, 0, 0, 0.87),
+    A200: white,
+    A400: white,
+    A700: white,
+  )
+);
+
+$craft-fusion-primary: mat.define-palette($indigo-palette);
+$craft-fusion-accent: mat.define-palette($pink-palette, A200, A100, A400);
+$craft-fusion-warn: mat.define-palette($red-palette);
+
+$craft-fusion-theme: mat.define-light-theme((
+  color: (
+    primary: $craft-fusion-primary,
+    accent: $craft-fusion-accent,
+    warn: $craft-fusion-warn,
+  ),
+  density: 0,
+));
+
+$craft-fusion-dark-theme: mat.define-dark-theme((
+  color: (
+    primary: $craft-fusion-primary,
+    accent: $craft-fusion-accent,
+    warn: $craft-fusion-warn,
+  ),
+  density: 0,
+));
+
+@mixin patriotic-theme() {
+  $patriotic-theme: mat.define-light-theme((
+    color: (
+      primary: mat.define-palette(mat.$blue-palette, 700),
+      accent: mat.define-palette(mat.$red-palette, 700),
+      warn: mat.define-palette(mat.$amber-palette, 500)
+    )
+  ));
+  @include mat.all-component-themes($patriotic-theme);
+}

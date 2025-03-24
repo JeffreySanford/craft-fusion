@@ -1,182 +1,147 @@
 @use '@angular/material' as mat;
+@use './variables' as vars;
+@use './transition-variables' as transitions;
+@use './reset';
+@use './animations';
+@use './layout';
+@use './utilities';
+@use './scrollbar';
+@use './md3-components';
+@use './material-overrides';
 @use 'sass:map';
-@use '_variables' as vars;
+@use './_theme' as theme;
+@use './theme' as theme;
 
-// Import Google Fonts (MD3 recommends Roboto Flex)
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:wght@300;400;500;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;500;700&family=Lora:wght@400;500;600&family=Source+Sans+Pro:wght@300;400;600&family=Open+Sans:wght@300;400;600&display=swap');
+// Core Angular Material styles
 
 // Include the common styles for Angular Material
 @include mat.core();
 
-// MD3 Color System
+// Apply the Angular Material theme
+@include mat.all-component-themes(theme.$craft-fusion-theme);
+
+// Include utility styles
+@include vars.color-utilities;
+@include vars.spacing-utilities;
+
+// Light/dark theme setup
+.light-theme {
+  /* Light theme variables */
+  --background: #{vars.$light-bg};
+  --surface: #{vars.$light-surface};
+  --text-primary: #{vars.$light-text-primary};
+  --text-secondary: #{vars.$light-text-secondary};
+  @include mat.all-component-colors(theme.$craft-fusion-light-theme);
+
+  // Light theme custom variables
+  --background: #{vars.$light-bg};
+  --surface: #{vars.$light-surface};
+  --text-primary: #{vars.$light-text-primary};
+  --text-secondary: #{vars.$light-text-secondary};
+  
+
+  // Dark theme
+.dark-theme {
+  @include mat.all-component-colors(theme.$craft-fusion-dark-theme);
+
+  // Dark theme custom variables
+  --background: #{vars.$dark-bg};
+  --surface: #{vars.$dark-surface};
+  --text-primary: #{vars.$dark-text-primary};
+  --text-secondary: #{vars.$dark-text-secondary};
+}
+
+  // Patriotic theme
+}
+
+.dark-theme {
+  @include mat.all-component-colors(theme.$craft-fusion-dark-theme);
+  
+  // Dark theme custom variables
+  --background: #{vars.$dark-bg};
+  --surface: #{vars.$dark-surface};
+  --text-primary: #{vars.$dark-text-primary};
+  --text-secondary: #{vars.$dark-text-secondary};
+}
+
+// Patriotic theme
+.usa-theme {
+  @include theme.patriotic-theme();
+  
+  // Add patriotic theme variables
+  --usa-blue: #002868;
+  --usa-red: #bf0a30;
+  --usa-white: #ffffff;
+  --usa-gold: #ffd700;
+}
+
+// Global styles
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+body {
+  background-color: var(--background, #ffffff);
+  color: var(--text-primary, rgba(0, 0, 0, 0.87));
+}
+
+// Define CSS variables from our SCSS variables
 :root {
-  // Primary colors (MD3 style)
-  --md-sys-color-primary: #002868;
-  --md-sys-color-on-primary: #FFFFFF;
-  --md-sys-color-primary-container: #D6E2FF;
-  --md-sys-color-on-primary-container: #001849;
+  // Primary colors
+  --md-sys-color-primary: #{map.get(vars.$md-sys-color, primary)};
+  --md-sys-color-on-primary: #{map.get(vars.$md-sys-color, on-primary)};
+  --md-sys-color-primary-container: #{map.get(vars.$md-sys-color, primary-container)};
+  --md-sys-color-on-primary-container: #{map.get(vars.$md-sys-color, on-primary-container)};
   
   // Secondary colors
-  --md-sys-color-secondary: #BF0A30;
-  --md-sys-color-on-secondary: #FFFFFF;
-  --md-sys-color-secondary-container: #FFD9D9;
-  --md-sys-color-on-secondary-container: #400012;
+  --md-sys-color-secondary: #{map.get(vars.$md-sys-color, secondary)};
+  --md-sys-color-on-secondary: #{map.get(vars.$md-sys-color, on-secondary)};
+  --md-sys-color-secondary-container: #{map.get(vars.$md-sys-color, secondary-container)};
+  --md-sys-color-on-secondary-container: #{map.get(vars.$md-sys-color, on-secondary-container)};
+  
+  // Tertiary colors
+  --md-sys-color-tertiary: #{map.get(vars.$md-sys-color, tertiary)};
+  --md-sys-color-on-tertiary: #{map.get(vars.$md-sys-color, on-tertiary)};
+  --md-sys-color-tertiary-container: #{map.get(vars.$md-sys-color, tertiary-container)};
+  --md-sys-color-on-tertiary-container: #{map.get(vars.$md-sys-color, on-tertiary-container)};
   
   // Surface colors
-  --md-sys-color-surface: #FDFBFF;
-  --md-sys-color-on-surface: #1B1B1F;
-  --md-sys-color-surface-variant: #E1E2EC;
-  --md-sys-color-on-surface-variant: #44474F;
+  --md-sys-color-surface: #{map.get(vars.$md-sys-color, surface)};
+  --md-sys-color-on-surface: #{map.get(vars.$md-sys-color, on-surface)};
+  --md-sys-color-surface-variant: #{map.get(vars.$md-sys-color, surface-variant)};
+  --md-sys-color-on-surface-variant: #{map.get(vars.$md-sys-color, on-surface-variant)};
   
   // Background colors
-  --md-sys-color-background: #FDFBFF;
-  --md-sys-color-on-background: #1B1B1F;
+  --md-sys-color-background: #{map.get(vars.$md-sys-color, background)};
+  --md-sys-color-on-background: #{map.get(vars.$md-sys-color, on-background)};
   
   // Error colors
-  --md-sys-color-error: #BA1A1A;
-  --md-sys-color-on-error: #FFFFFF;
-  --md-sys-color-error-container: #FFDAD6;
-  --md-sys-color-on-error-container: #410002;
+  --md-sys-color-error: #{map.get(vars.$md-sys-color, error)};
+  --md-sys-color-on-error: #{map.get(vars.$md-sys-color, on-error)};
+  --md-sys-color-error-container: #{map.get(vars.$md-sys-color, error-container)};
+  --md-sys-color-on-error-container: #{map.get(vars.$md-sys-color, on-error-container)};
   
-  // Outline
-  --md-sys-color-outline: #74777F;
-  --md-sys-color-outline-variant: #C4C6D0;
+  // Outline colors
+  --md-sys-color-outline: #{map.get(vars.$md-sys-color, outline)};
+  --md-sys-color-outline-variant: #{map.get(vars.$md-sys-color, outline-variant)};
   
-  // MD3 State Layers
-  --md-sys-state-hover-state-layer-opacity: 0.08;
-  --md-sys-state-focus-state-layer-opacity: 0.12;
-  --md-sys-state-pressed-state-layer-opacity: 0.12;
-  --md-sys-state-dragged-state-layer-opacity: 0.16;
-  
-  // MD3 Elevation
-  --md-sys-elevation-level1: 0px 1px 2px rgba(0,0,0,0.3), 0px 1px 3px 1px rgba(0,0,0,0.15);
-  --md-sys-elevation-level2: 0px 1px 2px rgba(0,0,0,0.3), 0px 2px 6px 2px rgba(0,0,0,0.15);
-  --md-sys-elevation-level3: 0px 1px 3px rgba(0,0,0,0.3), 0px 4px 8px 3px rgba(0,0,0,0.15);
-  --md-sys-elevation-level4: 0px 2px 3px rgba(0,0,0,0.3), 0px 6px 10px 4px rgba(0,0,0,0.15);
-  --md-sys-elevation-level5: 0px 4px 4px rgba(0,0,0,0.3), 0px 8px 12px 6px rgba(0,0,0,0.15);
-
-  // MD3 Typography
-  --font-source: 'Playfair Display', serif;
-  --font-merriweather: 'Merriweather', serif; 
-  --font-lora: 'Lora', serif;
-  --font-source-sans-pro: 'Source Sans Pro', sans-serif;
-  --font-open-sans: 'Open Sans', sans-serif;
+  // Font families
   --font-roboto: 'Roboto', sans-serif;
-  --font-roboto-flex: 'Roboto Flex', sans-serif;
+  --font-primary: var(--font-roboto);
   
-  // Highlight colors
-  --color-primary: #002868;
-  --color-primary-lighter: #D6E2FF;
-  --color-accent: #BF0A30;
-  --color-accent-lighter: #FFD9D9;
-  --color-gold: #FFD700;
-  --color-white: #FFFFFF;
-  --color-gray-50: #F9FAFB;
+  // Import additional font variables as needed
+  // ...existing code...
 }
 
-/* ===== Scrollbar styling ===== */
-::-webkit-scrollbar {
-  width: 12px; /* Increased scrollbar width */
-}
+// Import Google Fonts (Add necessary fonts here)
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, red, white, blue);
-  border-radius: 16px; /* Larger circle radius */
-  border: 3px solid rgba(0, 40, 104, 0.5); /* Transparent border to create padding effect */
-  background-clip: content-box;
-}
-
-::-webkit-scrollbar-track {
-  background: linear-gradient(to bottom, red, white, blue); /* Gradient track background */
-}
-
-::-webkit-scrollbar-button:vertical:start:decrement {
-  background-color: transparent;
-  height: 24px;
-  width: 100%;
-  position: relative;
-
-  &::after {
-    content: '★'; /* Add a star */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: gold; /* Gold star */
-    font-size: 1.2em;
-  }
-}
-
-::-webkit-scrollbar-button:vertical:end:increment {
-  background-color: transparent;
-  height: 24px;
-  width: 100%;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 70%;
-    height: 70%;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 10%,
-      red 10%,
-      red 20%
-    );
-  }
-}
-
-::-webkit-scrollbar-button {
-  display: block;
-}
-
-// MD3 Typography
-.display-large {
-  font-family: 'Roboto Flex', sans-serif;
-  font-size: 57px;
-  line-height: 64px;
-  letter-spacing: -0.25px;
-  font-weight: 400;
-}
-
-.display-medium {
-  font-family: 'Roboto Flex', sans-serif;
-  font-size: 45px;
-  line-height: 52px;
-  letter-spacing: 0px;
-  font-weight: 400;
-}
-
-.display-small {
-  font-family: 'Roboto Flex', sans-serif;
-  font-size: 36px;
-  line-height: 44px;
-  letter-spacing: 0px;
-  font-weight: 400;
-}
-
-.headline-large {
-  font-family: 'Roboto Flex', sans-serif;
-  font-size: 32px;
-  line-height: 40px;
-  letter-spacing: 0px;
-  font-weight: 400;
-}
-
-// Base styles
-body {
-  margin: 0;
-  font-family: 'Roboto', sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-}
-
+// Add any global styles here that aren't covered in the partial files
 body, html {
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
   overflow-x: hidden;
   position: relative;
   width: 100%;
@@ -184,680 +149,6 @@ body, html {
   margin: 0;
   padding: 0;
 }
-
-.container-wrapper {
-  min-height: 100vh;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  position: relative;
-  overflow: visible;
-}
-
-app-root {
-  overflow: visible;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100vh;
-  min-height: 100%;
-}
-
-.mat-drawer-container, .mat-drawer-content {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: auto;
-  min-height: 100%;
-  overflow: visible; 
-}
-
-.recipe-content-wrapper {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: 100%;
-  min-height: 100vh; /* Ensure full height */
-  overflow: visible;
-}
-
-// Basic typography classes
-.headline-1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 96px;
-  line-height: 96px;
-  font-weight: 300;
-}
-
-.headline-2 {
-  font-family: 'Merriweather', serif;
-  font-size: 60px;
-  line-height: 60px;
-  font-weight: 300;
-}
-
-.headline-3 {
-  font-family: 'Lora', serif;
-  font-size: 48px;
-  line-height: 48px;
-  font-weight: 400;
-}
-
-.headline-4 {
-  font-family: 'Source Sans Pro', sans-serif;
-  font-size: 34px;
-  line-height: 40px;
-  font-weight: 400;
-}
-
-.headline-5 {
-  font-family: 'Open Sans', sans-serif;
-  font-size: 24px;
-  line-height: 32px;
-  font-weight: 400;
-}
-
-.headline-6 {
-  font-family: 'Roboto', sans-serif;
-  font-size: 20px;
-  line-height: 32px;
-  font-weight: 500;
-}
-
-// Material component styles with our patriotic theme
-.mat-mdc-button.mat-primary {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  
-  &:hover {
-    background-color: var(--color-primary-lighter);
-  }
-}
-
-.mat-mdc-button.mat-accent {
-  background-color: var(--color-accent);
-  color: var(--color-white);
-  
-  &:hover {
-    background-color: var(--color-accent-lighter);
-  }
-}
-
-// Add some subtle animations
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// Apply animations to components
-.headline-1,
-.headline-2,
-.headline-3,
-.headline-4,
-.headline-5,
-.headline-6 {
-  animation: fadeIn 0.5s ease-out;
-}
-
-// Card styles with patriotic theme
-.mat-mdc-card {
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-// Interactive button styles with ripple effect
-.patriotic-button {
-  position: relative;
-  overflow: hidden;
-  background: var(--color-primary);
-  color: var(--color-white);
-  border: none;
-  border-radius: 4px;
-  padding: 12px 24px;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: var(--color-primary-lighter);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 40, 104, 0.2);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
-  
-  &.accent {
-    background: var(--color-accent);
-    
-    &:hover {
-      background: var(--color-accent-lighter);
-    }
-  }
-}
-
-// Card variations
-.patriotic-card {
-  &.flag-style {
-    border-left: 4px solid var(--color-primary);
-    border-right: 4px solid var(--color-accent);
-    
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--color-white);
-    }
-  }
-  
-  &.eagle-style {
-    position: relative;
-    overflow: hidden;
-    
-    &::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -50%;
-      width: 100%;
-      height: 100%;
-      border: 1px solid var(--color-yellow);
-      background: linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.1) 50%, transparent 55%);
-      transform: rotate(45deg);
-      animation: eagleShine 3s infinite;
-    }
-  }
-}
-
-// Animated loading state
-.patriotic-loading {
-  width: 100%;
-  height: 4px;
-  background: var(--color-gray-200);
-  overflow: hidden;
-  
-  &::after {
-    content: '';
-    display: block;
-    width: 40%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      var(--color-primary),
-      var(--color-white),
-      var(--color-accent)
-    );
-    animation: loading 1.5s infinite;
-  }
-}
-
-// Text effects
-.text-glow {
-  text-shadow: 0 0 10px rgba(0, 40, 104, 0.3);
-  animation: textPulse 2s infinite;
-}
-
-.text-patriotic {
-  background: linear-gradient(
-    90deg,
-    var(--color-primary),
-    var(--color-accent)
-  );
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-// New animations
-@keyframes eagleShine {
-  0% { transform: rotate(45deg) translateX(-100%); }
-  100% { transform: rotate(45deg) translateX(100%); }
-}
-
-@keyframes loading {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(300%); }
-}
-
-@keyframes textPulse {
-  0% { text-shadow: 0 0 10px rgba(0, 40, 104, 0.3); }
-  50% { text-shadow: 0 0 20px rgba(0, 40, 104, 0.5); }
-  100% { text-shadow: 0 0 10px rgba(0, 40, 104, 0.3); }
-}
-
-// Responsive typography
-@media (max-width: 768px) {
-  :root {
-    --font-size-h1: 72px;
-    --font-size-h2: 48px;
-    --font-size-h3: 36px;
-    --font-size-h4: 28px;
-    --font-size-h5: 20px;
-    --font-size-h6: 18px;
-  }
-}
-
-// Print styles
-@media print {
-  .patriotic-gradient,
-  .text-glow,
-  .patriotic-loading {
-    display: none;
-  }
-  
-  body {
-    color: var(--color-gray-900);
-  }
-  
-  .mat-mdc-card {
-    box-shadow: none;
-    border: 1px solid var(--color-gray-300);
-  }
-}
-
-// Data Table Styles
-.mat-mdc-table {
-  width: 100%;
-  background: var(--color-white);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 40, 104, 0.1);
-
-  .mat-mdc-header-row {
-    background-color: var(--color-primary);
-    
-    .mat-mdc-header-cell {
-      color: var(--color-white);
-      font-family: var(--font-source);
-      font-weight: 500;
-      font-size: 14px;
-      padding: 16px;
-    }
-  }
-
-  .mat-mdc-row {
-    transition: background-color 0.2s ease;
-
-    &:hover {
-      background-color: var(--color-gray-100);
-    }
-
-    &:nth-child(even) {
-      background-color: var(--color-gray-50);
-    }
-
-    .mat-mdc-cell {
-      padding: 12px 16px;
-      font-family: var(--font-primary);
-      border-bottom: 1px solid var(--color-gray-200);
-    }
-  }
-
-  // Sorting indicators
-  .mat-sort-header-arrow {
-    color: var(--color-white);
-  }
-}
-
-// Navigation Styles
-.mat-mdc-toolbar {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  box-shadow: 0 2px 4px rgba(0, 40, 104, 0.1);
-
-  &.transparent {
-    background-color: transparent;
-    box-shadow: none;
-  }
-
-  .mat-mdc-button {
-    font-family: var(--font-open);
-    font-weight: 500;
-    letter-spacing: 0.5px;
-  }
-}
-
-// Sidenav Styles
-.mat-mdc-sidenav {
-  width: 250px;
-  background-color: var(--color-white);
-  border-right: 1px solid var(--color-gray-200);
-
-  .mat-mdc-nav-list {
-    padding-top: 16px;
-
-    .mat-mdc-list-item {
-      margin: 4px 8px;
-      border-radius: 4px;
-      font-family: var(--font-primary);
-
-      &:hover {
-        background-color: var(--color-gray-100);
-      }
-
-      &.active {
-        background-color: var(--color-primary);
-        color: var(--color-white);
-      }
-    }
-  }
-}
-
-// Form Styles
-.mat-mdc-form-field {
-  width: 100%;
-  margin-bottom: 16px;
-
-  .mat-mdc-form-field-wrapper {
-    padding-bottom: 0;
-  }
-
-  .mat-mdc-form-field-label {
-    font-family: var(--font-primary);
-  }
-
-  &.dense {
-    .mat-mdc-form-field-flex {
-      padding-top: 0;
-    }
-  }
-}
-
-// Dialog Styles
-.mat-mdc-dialog-container {
-  border-radius: 8px !important;
-  overflow: hidden;
-
-  .mat-mdc-dialog-title {
-    font-family: var(--font-source);
-    font-size: 24px;
-    margin-bottom: 16px;
-    color: var(--color-primary);
-  }
-
-  .mat-mdc-dialog-content {
-    font-family: var(--font-primary);
-    padding: 24px;
-  }
-
-  .mat-mdc-dialog-actions {
-    padding: 16px 24px;
-    border-top: 1px solid var(--color-gray-200);
-  }
-}
-
-// Card Grid Layout
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
-  padding: 24px;
-
-  .mat-mdc-card {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-
-    .mat-mdc-card-content {
-      flex: 1;
-    }
-  }
-}
-
-// Dashboard Widgets
-.dashboard-widget {
-  background: var(--color-white);
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 40, 104, 0.1);
-  
-  .widget-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-
-    h3 {
-      margin: 0;
-      font-family: var(--font-source);
-      color: var(--color-primary);
-    }
-  }
-
-  &.metric {
-    text-align: center;
-    
-    .metric-value {
-      font-size: 36px;
-      font-weight: 500;
-      color: var(--color-primary);
-    }
-    
-    .metric-label {
-      color: var(--color-gray-600);
-      font-size: 14px;
-    }
-  }
-}
-
-// Responsive Layout Utilities
-.responsive-container {
-  padding: 24px;
-  margin: 0 auto;
-  max-width: 1200px;
-  
-  @media (max-width: 768px) {
-    padding: 16px;
-  }
-}
-
-.flex-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  
-  > * {
-    flex: 1 1 300px;
-  }
-}
-
-// Loading States
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-
-  .mat-mdc-progress-spinner circle {
-    stroke: var(--color-primary);
-  }
-}
-
-// Toast Notifications
-.toast-container {
-  .ngx-toastr {
-    background-color: var(--color-white);
-    color: var(--color-gray-900);
-    box-shadow: 0 4px 12px rgba(0, 40, 104, 0.15);
-    border-radius: 8px;
-    padding: 16px;
-    font-family: var(--font-primary);
-
-    &.toast-success {
-      border-left: 4px solid var(--color-success);
-    }
-
-    &.toast-error {
-      border-left: 4px solid var(--color-error);
-    }
-
-    &.toast-info {
-      border-left: 4px solid var(--color-info);
-    }
-
-    &.toast-warning {
-      border-left: 4px solid var(--color-warning);
-    }
-  }
-}
-
-// MD3 Components
-
-// Buttons
-.md3-button {
-  height: 40px;
-  padding: 0 24px;
-  border-radius: 20px;
-  font-family: 'Roboto Flex', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.1px;
-  text-transform: capitalize;
-  transition: all 0.2s ease;
-  
-  &.filled {
-    background-color: var(--md-sys-color-primary);
-    color: var(--md-sys-color-on-primary);
-    border: none;
-    box-shadow: var(--md-sys-elevation-level1);
-    
-    &:hover {
-      box-shadow: var(--md-sys-elevation-level2);
-      background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
-    }
-  }
-  
-  &.tonal {
-    background-color: var(--md-sys-color-secondary-container);
-    color: var(--md-sys-color-on-secondary-container);
-    border: none;
-    
-    &:hover {
-      background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 92%, black);
-    }
-  }
-  
-  &.outlined {
-    background-color: transparent;
-    color: var(--md-sys-color-primary);
-    border: 1px solid var(--md-sys-color-outline);
-    
-    &:hover {
-      background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
-    }
-  }
-}
-
-// Cards
-.md3-card {
-  background-color: var(--md-sys-color-surface);
-  border-radius: 12px;
-  box-shadow: var(--md-sys-elevation-level1);
-  padding: 16px;
-  transition: box-shadow 0.2s ease;
-  
-  &:hover {
-    box-shadow: var(--md-sys-elevation-level2);
-  }
-  
-  .md3-card-header {
-    padding-bottom: 16px;
-    
-    .md3-card-title {
-      @extend .headline-large;
-      color: var(--md-sys-color-on-surface);
-      margin: 0;
-    }
-  }
-}
-
-// Navigation Rail
-.md3-nav-rail {
-  width: 80px;
-  background-color: var(--md-sys-color-surface);
-  box-shadow: var(--md-sys-elevation-level1);
-  padding: 12px 0;
-  
-  .md3-nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 12px 0;
-    color: var(--md-sys-color-on-surface-variant);
-    
-    &.active {
-      color: var(--md-sys-color-primary);
-    }
-    
-    .material-icons {
-      font-size: 24px;
-      margin-bottom: 4px;
-    }
-    
-    span {
-      font-size: 12px;
-      text-align: center;
-    }
-  }
-}
-
-// Top App Bar
-.md3-top-app-bar {
-  height: 64px;
-  background-color: var(--md-sys-color-surface);
-  color: var(--md-sys-color-on-surface);
-  box-shadow: var(--md-sys-elevation-level2);
-  padding: 0 16px;
-  display: flex;
-  align-items: center;
-  
-  .md3-top-app-bar-title {
-    font-size: 22px;
-    font-weight: 400;
-    margin-left: 16px;
-  }
-}
-
-// Lists
-.md3-list {
-  padding: 8px 0;
-  
-  .md3-list-item {
-    height: 56px;
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    color: var(--md-sys-color-on-surface);
-    
-    &:hover {
-      background-color: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
-    }
-    
-    &.active {
-      background-color: var(--md-sys-color-secondary-container);
-      color: var(--md-sys-color-on-secondary-container);
-    }
-  }
-}
-
-// Add more MD3 components as needed...
-
 
 /* === Background Video === */
 #background-video {
@@ -874,14 +165,18 @@ app-root {
   overflow: hidden;
 }
 
+// Component-specific styles that don't fit in the partials
 .book-content, .chat-content {
-  font-family: 'Merriweather', serif;
+  font-family: var(--font-merriweather);
 }
 
 .table-data {
-  font-family: 'Roboto', sans-serif;
+  font-family: var(--font-roboto);
 }
 
-::ng-deep .mat-expansion-indicator {
-  color: var(--color-gold);
-}
+// Text alignments
+.text-left { text-align: left; }
+.font-bold { font-weight: 700; }
+.font-medium { font-weight: 500; }
+.font-regular { font-weight: 400; }
+.font-light { font-weight: 300; }

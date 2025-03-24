@@ -1,0 +1,103 @@
+// Core animations for the application
+
+// Fade in animation
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Slide in from left
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Slide in from right
+@keyframes slide-in-right {
+  from {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Pulse animation
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(191, 10, 48, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(191, 10, 48, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(191, 10, 48, 0);
+  }
+}
+
+// Twinkle animation
+@keyframes twinkle {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.9) rotate(-8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.1) rotate(8deg);
+  }
+}
+
+// Shine animation for elements
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  50%, 100% {
+    transform: translateX(300%) skewX(-15deg);
+  }
+}
+
+// Wave animation
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+// Footer shine animation
+@keyframes shine-footer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 200%;
+  }
+}
+
+// Flag wave animation
+@keyframes flag-wave {
+  0% {
+    transform: rotate(-1deg);
+  }
+  50% {
+    transform: rotate(1deg);
+  }
+  100% {
+    transform: rotate(-1deg);
+  }
+}
