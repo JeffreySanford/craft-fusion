@@ -59,3 +59,40 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+
+# Distribution directories
+/dist
+/dist-*
+/out-tsc
+/out
+/build
+/artifacts
+**/dist/
+**/dist-*/ 
+**/.dist/
+**/.out/
+**/.compiled/
+**/.build/
+**/build/
+
+# Angular output directories
+/bazel-out
+/browser
+/server
+/.angular/cache
+.sass-cache/
+
+# Temporary folders that might contain build artifacts
+/tmp
+/temp
+/target
+/.tmp
+/**/.tmp/
+
+# Next.js
+/.next/
+/out/
+
+# NestJS
+/dist
+/node_modules
