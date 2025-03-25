@@ -50,9 +50,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private authService: AuthenticationService, // Inject AuthenticationService
     private footerStateService: FooterStateService,
     private userStateService: UserStateService
-  ) {}
+  ) {
+    // Replace direct console logs with logger calls
+    this.logger.info('App component initialized', { appVersion: '1.0.0' });
+  }
 
   ngOnInit(): void {
+    // Replace any existing console.log with logger calls
+    this.logger.debug('Application started', { timestamp: new Date().toISOString() });
+
     // Temporarily set admin status here - will be replaced with auth later
     // this.adminStateService.setAdminStatus(true); // Set to true for development
 
@@ -66,12 +72,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.userDisplayName = '🔒 ' + user.username;
       } else {
         this.isLoggedIn = false;
-        this.userDisplayName = '🔓 Guest';
       }
-    });
-
-    this.userStateService.getAllUsers().subscribe(allUsers => {
-      this.logger.info('All users:', allUsers);
     }, error => {
       this.logger.error('Error fetching users:', error);
     });
@@ -192,5 +193,25 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.videoCheckSubscription) {
       this.videoCheckSubscription.unsubscribe();
     }
+  }
+
+  private loadInitialData(): void {
+    // Example of properly typed service call
+    // If you have an actual service that needs to be used, uncomment and modify:
+    /*
+    this.apiService.getData().subscribe({
+      next: (data: YourDataType) => {
+        // Process data
+        this.logger.info('Data loaded successfully', { count: data.length });
+      },
+      error: (error: Error) => {
+        // Handle error properly
+        this.logger.error('Failed to load data', { error: error.message });
+      }
+    });
+    */
+    
+    // For now, just log a message to avoid the error
+    this.logger.info('App component initialized');
   }
 }

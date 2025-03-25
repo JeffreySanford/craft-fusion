@@ -179,13 +179,16 @@ export class LoggerService {
         component = this.getCallerComponent();
       }
       
+      // Sanitize sensitive information in details
+      const sanitizedDetails = this.sanitizeLogDetails(details);
+      
       // Create log entry
       const entry: LogEntry = {
         timestamp: new Date(),
         level,
         message,
         component,
-        details
+        details: sanitizedDetails
       };
 
       // Add to logs array
@@ -200,7 +203,7 @@ export class LoggerService {
       this.logSubject.next(entry);
       
       // Still send to console for development visibility
-      this.outputToConsole(level, message, details, component);
+      this.outputToConsole(level, message, sanitizedDetails, component);
     }
   }
 
@@ -208,6 +211,7 @@ export class LoggerService {
     const componentPrefix = component ? `[${component}] ` : '';
     const formattedMessage = `${componentPrefix}${message}`;
     
+    // Colorized console output for better visibility
     switch (level) {
       case LogLevel.DEBUG:
         console.debug(formattedMessage, details || '');
@@ -229,20 +233,87 @@ export class LoggerService {
       const err = new Error();
       const stackLines = err.stack?.split('\n') || [];
       
-      // Look for class name in stack trace
-      for (let i = 3; i < stackLines.length; i++) {
+      // Look for class name in stack trace - improved detection pattern
+      for (let i = 3; i < Math.min(10, stackLines.length); i++) { // Check more lines but limit for performance
         const line = stackLines[i];
-        // Match Component name pattern
-        const match = line.match(/at\s+(\w+Component)\./);
-        if (match && match[1]) {
-          return match[1];
+        
+        // Enhanced pattern matching to detect components and services
+        const componentMatch = line.match(/at\s+(\w+(?:Component|Service|Guard|Directive|Pipe|Resolver))\./);
+        if (componentMatch && componentMatch[1]) {
+          return componentMatch[1];
+        }
+        
+        // Try to match class methods with 'this' context
+        const methodMatch = line.match(/at\s+([A-Z]\w*)\.((?:\w+))/);
+        if (methodMatch && methodMatch[1]) {
+          return methodMatch[1]; // Return class name if found
+        }
+        
+        // Last resort: Try to extract file name for context
+        const fileMatch = line.match(/\((.+?)(?:\.ts|\.[jt]sx?):(\d+):(\d+)\)$/);
+        if (fileMatch && fileMatch[1]) {
+          const fileName = fileMatch[1].split(/[/\\]/).pop() || '';
+          if (fileName && !fileName.includes('logger.service') && !fileName.includes('node_modules')) {
+            return fileName.replace(/\.component$/, 'Component')
+                          .replace(/\.service$/, 'Service')
+                          .replace(/\.guard$/, 'Guard')
+                          .replace(/\.[jt]s$/, '');
+          }
         }
       }
     } catch (error) {
       // Silently fail if cannot determine component
+      console.error('Error determining component:', error);
+    }
+    
+    // Default fallbacks based on common patterns
+    if (typeof window !== 'undefined') {
+      const url = window.location.pathname;
+      if (url.includes('/admin')) return 'AdminComponent';
+      if (url.includes('/login')) return 'LoginComponent';
+      if (url.includes('/auth')) return 'AuthComponent';
+      // Add more URL-based fallbacks as needed
     }
     
     return 'Unknown';
+  }
+  
+  // Add a log sanitizer helper to avoid sensitive info in logs
+  private sanitizeLogDetails(details: any): any {
+    if (!details) return details;
+    
+    try {
+      // Make a copy to avoid modifying the original object
+      let sanitized = JSON.parse(JSON.stringify(details));
+      
+      // List of sensitive field names to mask
+      const sensitiveFields = ['password', 'token', 'secret', 'key', 'authorization', 'auth'];
+      
+      // Helper to sanitize an object recursively
+      const sanitizeObject = (obj: any) => {
+        if (!obj || typeof obj !== 'object') return;
+        
+        Object.keys(obj).forEach(key => {
+          const lowerKey = key.toLowerCase();
+          
+          // If sensitive field, mask the value
+          if (sensitiveFields.some(field => lowerKey.includes(field))) {
+            obj[key] = '[REDACTED]';
+          } 
+          // Recurse if object or array
+          else if (typeof obj[key] === 'object' && obj[key] !== null) {
+            sanitizeObject(obj[key]);
+          }
+        });
+      };
+      
+      sanitizeObject(sanitized);
+      return sanitized;
+      
+    } catch (error) {
+      // If any error during sanitization, return original but add warning
+      return { original: details, warning: 'Could not sanitize log details' };
+    }
   }
   
   getLogs(): LogEntry[] {

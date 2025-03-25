@@ -6,7 +6,7 @@ import { LoggerService, LogEntry, LogLevel } from '../../common/services/logger.
   selector: 'app-logger-display',
   templateUrl: './logger-display.component.html',
   styleUrls: ['./logger-display.component.scss'],
-  standalone: false // Changed from true to false
+  standalone: false
 })
 export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() logFilter: string = 'all';
@@ -24,19 +24,19 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
     
     // Subscribe to new logs
     this.logSubscription = this.logger.logStream$.subscribe(log => {
-      this.logs.push(log);
+      this.logs.unshift(log); // Add newest logs to the top
       
       // Apply auto-scroll if enabled
       if (this.autoScroll) {
-        this.scrollToBottom();
+        this.scrollToTop();
       }
     });
   }
   
   ngAfterViewInit(): void {
-    // Initial scroll to bottom
+    // Initial scroll to top where the newest logs will be
     if (this.autoScroll) {
-      this.scrollToBottom();
+      this.scrollToTop();
     }
   }
   
@@ -56,28 +56,110 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   formatDetails(details: any): string {
+    if (!details) return '';
+    
     if (details instanceof Error) {
       return details.message;
     }
-    return JSON.stringify(details, null, 2);
+    
+    try {
+      return JSON.stringify(details, null, 2);
+    } catch (error) {
+      return String(details);
+    }
   }
 
   getLogClass(log: LogEntry): string {
-    switch (log.level) {
-      case LogLevel.ERROR:
-        return 'error-log';
-      case LogLevel.WARN:
-        return 'warn-log';
-      case LogLevel.INFO:
-        return 'info-log';
-      case LogLevel.DEBUG:
-        return 'debug-log';
-      default:
-        return '';
+    const baseClass = this.getLogLevelClass(log.level);
+    
+    // Add special classes for certain log types
+    if (this.isHighlightedLog(log)) {
+      return `${baseClass} log-highlighted`;
     }
+    
+    if (this.isSecurityLog(log)) {
+      return `${baseClass} log-security`;
+    }
+    
+    if (this.isPerformanceLog(log)) {
+      return `${baseClass} log-performance`;
+    }
+    
+    if (this.isUserLog(log)) {
+      return `${baseClass} log-user`;
+    }
+    
+    if (this.isApiLog(log)) {
+      return `${baseClass} log-api`;
+    }
+    
+    if (this.isUSALog(log)) {
+      return `${baseClass} log-usa`;
+    }
+    
+    return baseClass;
+  }
+  
+  private isHighlightedLog(log: LogEntry): boolean {
+    // Check for highlight markers in message
+    return log.message.includes('⭐') || 
+           log.message.includes('IMPORTANT') ||
+           (log.details && log.details.highlight === true);
+  }
+  
+  private isSecurityLog(log: LogEntry): boolean {
+    const securityTerms = ['auth', 'login', 'password', 'token', 'security', 'permission', 'access'];
+    return securityTerms.some(term => 
+      log.message.toLowerCase().includes(term) || 
+      (log.component && log.component.toLowerCase().includes(term))
+    );
+  }
+  
+  private isPerformanceLog(log: LogEntry): boolean {
+    const perfTerms = ['performance', 'latency', 'speed', 'slow', 'fast', 'metrics', 'benchmark'];
+    return perfTerms.some(term => 
+      log.message.toLowerCase().includes(term) || 
+      (log.details && JSON.stringify(log.details).toLowerCase().includes(term))
+    );
+  }
+  
+  private isUserLog(log: LogEntry): boolean {
+    const userTerms = ['user', 'account', 'profile', 'logged in', 'logged out', 'signup'];
+    return userTerms.some(term => 
+      log.message.toLowerCase().includes(term)
+    );
+  }
+  
+  private isApiLog(log: LogEntry): boolean {
+    const apiTerms = ['api', 'endpoint', 'request', 'response', 'http', 'service call'];
+    return apiTerms.some(term => 
+      log.message.toLowerCase().includes(term) ||
+      (log.component && log.component.toLowerCase().includes('api'))
+    ) || log.message.includes('/api/');
+  }
+  
+  private isUSALog(log: LogEntry): boolean {
+    const usaTerms = ['usa', 'patriotic', 'america', 'united states', 'presidential', 'election'];
+    return usaTerms.some(term => 
+      log.message.toLowerCase().includes(term)
+    );
   }
   
   getLogIcon(log: LogEntry): string {
+    if (this.isSecurityLog(log)) {
+      return 'security';
+    } else if (this.isHighlightedLog(log)) {
+      return 'star';
+    } else if (this.isPerformanceLog(log)) {
+      return 'speed';
+    } else if (this.isUserLog(log)) {
+      return 'person';
+    } else if (this.isApiLog(log)) {
+      return 'api';
+    } else if (this.isUSALog(log)) {
+      return 'flag';
+    }
+    
     switch (log.level) {
       case LogLevel.ERROR:
         return 'error';
@@ -92,13 +174,22 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
     }
   }
   
+  scrollToTop(): void {
+    setTimeout(() => {
+      if (this.logContainer && this.logContainer.nativeElement) {
+        const container = this.logContainer.nativeElement;
+        container.scrollTop = 0;
+      }
+    }, 10);
+  }
+  
   scrollToBottom(): void {
     setTimeout(() => {
       if (this.logContainer && this.logContainer.nativeElement) {
         const container = this.logContainer.nativeElement;
         container.scrollTop = container.scrollHeight;
       }
-    }, 100);
+    }, 10);
   }
 
   getLogLevelClass(level: LogLevel): string {
@@ -126,6 +217,21 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
       case LogLevel.DEBUG:
       default:
         return 'DEBUG';
+    }
+  }
+  
+  getTimeAgo(timestamp: Date): string {
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - timestamp.getTime()) / 1000);
+    
+    if (seconds < 60) {
+      return `${seconds}s ago`;
+    } else if (seconds < 3600) {
+      return `${Math.floor(seconds / 60)}m ago`;
+    } else if (seconds < 86400) {
+      return `${Math.floor(seconds / 3600)}h ago`;
+    } else {
+      return `${Math.floor(seconds / 86400)}d ago`;
     }
   }
 }

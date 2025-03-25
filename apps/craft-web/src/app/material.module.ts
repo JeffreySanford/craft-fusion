@@ -20,6 +20,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   imports: [
@@ -43,7 +44,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatGridListModule,
     DragDropModule,
     MatSnackBarModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatTooltipModule 
   ],
   exports: [
     MatButtonModule,
@@ -66,7 +68,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatGridListModule,
     DragDropModule,
     MatSnackBarModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatTooltipModule 
   ]
 })
 export class MaterialModule { }

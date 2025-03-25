@@ -17,6 +17,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip'; // Add this import
 
 // Components
 import { AdminComponent } from './admin.component';
@@ -46,6 +47,7 @@ import { LoggerDisplayComponent } from '../../components/logger-display/logger-d
     MatCardModule,
     MatSlideToggleModule,
     MatButtonToggleModule,
+    MatTooltipModule, // Add this module to the imports array
     // LoggerDisplayComponent removed from here
     RouterModule.forChild([
       {

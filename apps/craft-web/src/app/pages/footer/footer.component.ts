@@ -90,6 +90,9 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     this.adminStateService.isAdmin$.subscribe(isAdmin => {
       this.isAdmin = isAdmin;
     });
+    
+    // Explicitly provide component name for important logs
+    this.logger.info('Footer component initialized', {}, 'FooterComponent');
   }
 
   ngAfterViewInit() {
@@ -582,6 +585,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   onPanelToggled(isExpanded: boolean): void {
     this.expanded = isExpanded;
     this.footerStateService.setExpanded(isExpanded);
-    this.logger.info(`Footer panel ${isExpanded ? 'expanded' : 'collapsed'}`);
+    this.logger.info(`Footer panel ${isExpanded ? 'expanded' : 'collapsed'}`, {}, 'FooterComponent');
   }
 }
