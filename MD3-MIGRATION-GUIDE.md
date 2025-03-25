@@ -112,3 +112,6 @@ For each migrated component:
 - [Material Design 3 Guidelines](https://m3.material.io/)
 - [Angular Material Documentation](https://material.angular.io/)
 - [Material Theme Builder](https://m3.material.io/theme-builder)
+
+## Additional Documentation
+Explain any new migration steps or clarifications here.

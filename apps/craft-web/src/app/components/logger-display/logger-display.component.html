@@ -1,6 +1,6 @@
 <div class="logger-display">
   <div class="logs-container" #logContainer>
-    <div *ngFor="let log of filterLogs()" 
+    <div *ngFor="let log of filterLogs(); trackBy: getLogId" 
          [ngClass]="getLogClass(log)" 
          class="log-entry">
       <div class="log-header">
@@ -12,7 +12,7 @@
           <span class="log-component" *ngIf="log.component">{{ log.component }}</span>
         </div>
         <span class="log-timestamp" [matTooltip]="log.timestamp | date:'medium'">
-          {{ getTimeAgo(log.timestamp) }}
+          {{ getTimeAgo(log) }}
         </span>
       </div>
       <div class="log-message">{{ log.message }}</div>

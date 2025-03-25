@@ -78,3 +78,6 @@ The book typography automatically adjusts for different screen sizes:
 - Font sizes use relative units (em) for user scalability
 - Line heights are optimized for readability (1.5-1.7 for body text)
 - Color is not used as the only means of conveying information
+
+## Additional Documentation
+List any supplementary typography guidelines here.

@@ -203,7 +203,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (data: YourDataType) => {
         // Process data
         this.logger.info('Data loaded successfully', { count: data.length });
-      },
+      },Glimm
       error: (error: Error) => {
         // Handle error properly
         this.logger.error('Failed to load data', { error: error.message });

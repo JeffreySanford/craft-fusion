@@ -168,6 +168,9 @@ For more detailed guidelines, see the [Component Alignment Standards](apps/craft
 - Component documentation should explain usage patterns and inputs/outputs
 - Update README files when introducing significant changes
 
+## Additional Documentation
+Outline newly introduced coding conventions or guidelines here.
+
 ---
 
 These standards should be followed for all new code and applied to existing code during refactoring efforts.

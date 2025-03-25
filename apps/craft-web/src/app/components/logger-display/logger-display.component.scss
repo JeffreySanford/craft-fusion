@@ -1,4 +1,5 @@
-@use '../../../styles/_variables.scss';
+@use '../../../styles/_variables.scss' as vars;
+@use "sass:color";
 
 .logger-display {
   display: flex;
@@ -217,150 +218,157 @@
     
     // Vibrant color schemes for different log levels
     .log-level-debug {
-      background-color: rgba(59, 130, 246, 0.15);
-      border-left-color: #3b82f6; // Blue
+      background-color: rgba(vars.$log-debug-color, 0.15);
+      border-left-color: vars.$log-debug-color;
       
       .log-level {
-        background-color: #3b82f6;
+        background-color: vars.$log-debug-color;
         color: white;
       }
       
       .log-message {
-        color: #93c5fd;
+        color: color.adjust(vars.$log-debug-color, $lightness: 20%);
       }
     }
     
     .log-level-info {
-      background-color: rgba(16, 185, 129, 0.15);
-      border-left-color: #10b981; // Green
+      background-color: rgba(vars.$patriotic-blue, 0.15);
+      border-left-color: vars.$patriotic-blue;
       
       .log-level {
-        background-color: #10b981;
+        background-color: vars.$patriotic-blue;
         color: white;
       }
       
       .log-message {
-        color: #6ee7b7;
+        color: color.adjust(vars.$patriotic-blue, $lightness: 20%);
       }
     }
     
     .log-level-warn {
-      background-color: rgba(245, 158, 11, 0.15);
-      border-left-color: #f59e0b; // Amber
+      background-color: rgba(vars.$log-warning-color, 0.15);
+      border-left-color: vars.$log-warning-color;
       
       .log-level {
-        background-color: #f59e0b;
+        background-color: vars.$log-warning-color;
         color: white;
       }
       
       .log-message {
-        color: #fcd34d;
+        color: color.adjust(vars.$log-warning-color, $lightness: 20%);
       }
     }
     
     .log-level-error {
-      background-color: rgba(239, 68, 68, 0.15);
-      border-left-color: #ef4444; // Red
+      background-color: rgba(vars.$patriotic-red, 0.15);
+      border-left-color: vars.$patriotic-red;
       
       .log-level {
-        background-color: #ef4444;
+        background-color: vars.$patriotic-red;
         color: white;
       }
       
       .log-message {
-        color: #fca5a5;
+        color: color.adjust(vars.$patriotic-red, $lightness: 20%);
       }
     }
     
     // Special styling for highlighted logs
     .log-highlighted {
-      background-color: rgba(139, 92, 246, 0.15);
-      border-left-color: #8b5cf6; // Purple
+      background-color: rgba(vars.$patriotic-gold, 0.15);
+      border-left-color: vars.$patriotic-gold;
       animation: pulseHighlight 2s infinite;
       
       .log-level {
-        background-color: #8b5cf6;
-        color: white;
+        background-color: vars.$patriotic-gold;
+        color: vars.$patriotic-navy;
+        font-weight: bold;
       }
       
       .log-message {
-        color: #c4b5fd;
+        color: vars.$patriotic-gold;
         font-weight: bold;
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
       }
     }
     
     // Special styling for security-related logs
     .log-security {
-      background-color: rgba(255, 0, 0, 0.2);
-      border-left-color: #ff0000; // Red
+      background-color: rgba(vars.$patriotic-red, 0.2);
+      border-left-color: vars.$patriotic-red;
       
       .log-level {
-        background-color: #ff0000;
+        background-color: vars.$patriotic-red;
         color: white;
       }
       
       .log-message {
-        color: #ff6b6b;
+        color: color.adjust(vars.$patriotic-red, $lightness: 15%);
       }
     }
     
     // Special styling for performance-related logs
     .log-performance {
-      background-color: rgba(79, 70, 229, 0.15);
-      border-left-color: #4f46e5; // Indigo
+      background-color: rgba(vars.$patriotic-navy, 0.15);
+      border-left-color: vars.$patriotic-navy;
       
       .log-level {
-        background-color: #4f46e5;
+        background-color: vars.$patriotic-navy;
         color: white;
       }
       
       .log-message {
-        color: #a5b4fc;
+        color: color.adjust(vars.$patriotic-navy, $lightness: 30%);
       }
     }
     
     // Special styling for user-related logs
     .log-user {
-      background-color: rgba(236, 72, 153, 0.15);
-      border-left-color: #ec4899; // Pink
+      background: linear-gradient(135deg, rgba(191, 10, 48, 0.1) 0%, rgba(0, 82, 180, 0.1) 100%);
+      border-left: 4px solid;
+      border-image: linear-gradient(to bottom, vars.$patriotic-red, vars.$patriotic-blue) 1;
       
       .log-level {
-        background-color: #ec4899;
+        background: linear-gradient(135deg, vars.$patriotic-red, vars.$patriotic-blue);
         color: white;
       }
       
       .log-message {
-        color: #f9a8d4;
+        color: vars.$patriotic-white;
       }
     }
     
     // USA Patriotic theme special logs
     .log-usa {
-      background: linear-gradient(135deg, rgba(187, 10, 48, 0.15), rgba(0, 40, 104, 0.15));
-      border-left-color: #bf0a30; // USA Red
+      background: linear-gradient(135deg, rgba(191, 10, 48, 0.2), rgba(0, 82, 180, 0.2));
+      border-left: 4px solid;
+      border-image: linear-gradient(to bottom, vars.$patriotic-red, vars.$patriotic-blue, vars.$patriotic-white) 1;
+      box-shadow: 0 0 10px rgba(vars.$patriotic-gold, 0.3);
       
       .log-level {
-        background: linear-gradient(135deg, #bf0a30, #002868);
+        background: linear-gradient(135deg, vars.$patriotic-red, vars.$patriotic-blue);
         color: white;
+        text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
       }
       
       .log-message {
-        color: #ffd700; // Gold
-        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        color: vars.$patriotic-gold;
+        text-shadow: 0 0 10px rgba(vars.$patriotic-gold, 0.3);
+        font-weight: bold;
       }
     }
     
     .log-api {
-      background-color: rgba(20, 184, 166, 0.15);
-      border-left-color: #14b8a6; // Teal
+      background-color: rgba(vars.$patriotic-blue, 0.15);
+      border-left-color: vars.$patriotic-blue;
       
       .log-level {
-        background-color: #14b8a6;
+        background-color: vars.$patriotic-blue;
         color: white;
       }
       
       .log-message {
-        color: #99f6e4;
+        color: color.adjust(vars.$patriotic-blue, $lightness: 30%);
       }
     }
   }
@@ -479,6 +487,12 @@
   }
 }
 
+.log-timestamp {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  font-size: 0.85em;
+}
+
 /* Animation for fade-in effect when switching layouts */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -495,4 +509,11 @@
       gap: 8px;
     }
   }
+}
+
+// Add a pulsing animation for highlighted logs
+@keyframes pulseHighlight {
+  0% { box-shadow: 0 0 5px rgba(vars.$patriotic-gold, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(vars.$patriotic-gold, 0.8); }
+  100% { box-shadow: 0 0 5px rgba(vars.$patriotic-gold, 0.5); }
 }

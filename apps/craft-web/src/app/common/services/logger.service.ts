@@ -74,23 +74,23 @@ export class LoggerService {
     return this.loggerLevel;
   }
 
-  debug(message: string, details?: any, component?: string) {
+  debug(message: string, details?: any, component: string = this.getCallerComponent()) {
     this.log(LogLevel.DEBUG, message, details, component);
   }
 
-  info(message: string, details?: any, component?: string) {
+  info(message: string, details?: any, component: string = this.getCallerComponent()) {
     this.log(LogLevel.INFO, message, details, component);
   }
 
-  warn(message: string, details?: any, component?: string) {
+  warn(message: string, details?: any, component: string = this.getCallerComponent()) {
     this.log(LogLevel.WARN, message, details, component);
   }
 
-  error(message: string, details?: any, component?: string) {
+  error(message: string, details?: any, component: string = this.getCallerComponent()) {
     this.log(LogLevel.ERROR, message, details, component);
   }
   
-  highlight(message: string, details?: any, component?: string) {
+  highlight(message: string, details?: any, component: string = this.getCallerComponent()) {
     // Special highlighted log - treat as INFO level
     this.log(LogLevel.INFO, `⭐ ${message} ⭐`, details, component);
   }
@@ -174,7 +174,7 @@ export class LoggerService {
   private log(level: LogLevel, message: string, details?: any, component?: string) {
     // Only log if the level is greater than or equal to the logger level
     if (level >= this.loggerLevel) {
-      // Determine component name from call stack if not provided
+      // If component not provided, try to determine it
       if (!component) {
         component = this.getCallerComponent();
       }
@@ -207,27 +207,296 @@ export class LoggerService {
     }
   }
 
-  private outputToConsole(level: LogLevel, message: string, details?: any, component?: string) {
+  private outputToConsole(level: LogLevel, message: string, details?: any, component: string = '') {
     const componentPrefix = component ? `[${component}] ` : '';
-    const formattedMessage = `${componentPrefix}${message}`;
     
-    // Colorized console output for better visibility
+    // Enhanced color definitions for different log categories
+    const styles = {
+      // Core log levels - Updated for patriotic theme
+      debug: 'color: #3b82f6; font-weight: normal;',      // blue
+      info: 'color: #0052B4; font-weight: normal;',       // more vibrant blue for info (patriotic blue)
+      warn: 'color: #FF8C00; font-weight: bold;',         // more vibrant orange for warnings
+      error: 'color: #BF0A30; font-weight: bold;',        // patriotic red for errors
+      
+      // Special categories with patriotic colors
+      highlight: 'color: #3C3B6E; font-weight: bold; text-decoration: underline;', // patriotic navy blue
+      security: 'color: #BF0A30; font-weight: bold; background-color: rgba(191, 10, 48, 0.1); padding: 2px 4px;', // patriotic red
+      performance: 'color: #3C3B6E; font-weight: normal; font-style: italic;', // patriotic navy
+      user: 'color: #BF0A30; font-weight: normal;',       // patriotic red
+      api: 'color: #0052B4; font-weight: normal;',        // patriotic blue
+      navigation: 'color: #FF8C00; font-weight: normal;', // vibrant orange
+      data: 'color: #0052B4; font-weight: normal;',       // patriotic blue
+      storage: 'color: #BF0A30; font-weight: normal;',    // patriotic red
+      rendering: 'color: #0052B4; font-weight: normal;',  // patriotic blue
+      initialization: 'color: #3C3B6E; font-weight: normal;', // patriotic navy blue
+      lifecycle: 'color: #3C3B6E; font-weight: normal;',  // patriotic navy blue
+      usa: 'background: linear-gradient(90deg, #BF0A30, #0052B4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;', // enhanced patriotic gradient
+      system: 'color: #3C3B6E; font-weight: normal;',     // patriotic navy blue
+      
+      // Component styling
+      component: 'color: #FFFFFF; font-style: italic; background-color: rgba(60, 59, 110, 0.5); padding: 2px 4px; border-radius: 2px;'    // white on navy background for component name
+    };
+    
+    // Format component prefix with style
+    const styledPrefix = component ? `%c[${component}]%c ` : '';
+    const styledMessage = `${styledPrefix}%c${message}`;
+    
+    // Prepare style arguments
+    const styleArgs = [];
+    if (component) {
+      styleArgs.push(styles.component, ''); // Reset after component
+    }
+    
+    // Determine message category for special styling
+    let messageStyle = '';
+    
+    // Order matters here - check in order of most to least specific
+    
+    // Check for special categories first
+    if (message.includes('⭐') || message.includes('IMPORTANT')) {
+      messageStyle = styles.highlight;
+    } 
+    // Check for security-related messages
+    else if (this.isSecurityRelated(message, component, details)) {
+      messageStyle = styles.security;
+    }
+    // Authentication-related messages
+    else if (this.isAuthRelated(message, component)) {
+      messageStyle = styles.security; // Use security style for auth as well
+    }
+    // Performance-related messages
+    else if (this.isPerformanceRelated(message, component, details)) {
+      messageStyle = styles.performance;
+    }
+    // User-related messages
+    else if (this.isUserRelated(message, component)) {
+      messageStyle = styles.user;
+    }
+    // API-related messages
+    else if (this.isApiRelated(message, component)) {
+      messageStyle = styles.api;
+    }
+    // Navigation/routing related messages
+    else if (this.isNavigationRelated(message, component)) {
+      messageStyle = styles.navigation;
+    }
+    // Data handling/state related messages
+    else if (this.isDataRelated(message, component)) {
+      messageStyle = styles.data;
+    }
+    // Storage/caching related messages
+    else if (this.isStorageRelated(message, component)) {
+      messageStyle = styles.storage;
+    }
+    // Rendering/view related messages
+    else if (this.isRenderingRelated(message, component)) {
+      messageStyle = styles.rendering;
+    }
+    // Initialization related messages
+    else if (this.isInitializationRelated(message, component)) {
+      messageStyle = styles.initialization;
+    }
+    // Component lifecycle related messages
+    else if (this.isLifecycleRelated(message, component)) {
+      messageStyle = styles.lifecycle;
+    }
+    // USA/patriotic related messages
+    else if (this.isUSARelated(message, component)) {
+      messageStyle = styles.usa;
+    }
+    // System-related messages
+    else if (this.isSystemRelated(message, component)) {
+      messageStyle = styles.system;
+    }
+    else {
+      // Default styling based on log level
+      switch (level) {
+        case LogLevel.DEBUG:
+          messageStyle = styles.debug;
+          break;
+        case LogLevel.INFO:
+          messageStyle = styles.info;
+          break;
+        case LogLevel.WARN:
+          messageStyle = styles.warn;
+          break;
+        case LogLevel.ERROR:
+          messageStyle = styles.error;
+          break;
+      }
+    }
+    
+    // Add the detected style
+    styleArgs.push(messageStyle);
+    
+    // Output to console with appropriate styling
     switch (level) {
       case LogLevel.DEBUG:
-        console.debug(formattedMessage, details || '');
+        console.debug(styledMessage, ...styleArgs, details || '');
         break;
       case LogLevel.INFO:
-        console.info(formattedMessage, details || '');
+        console.info(styledMessage, ...styleArgs, details || '');
         break;
       case LogLevel.WARN:
-        console.warn(formattedMessage, details || '');
+        console.warn(styledMessage, ...styleArgs, details || '');
         break;
       case LogLevel.ERROR:
-        console.error(formattedMessage, details || '');
+        console.error(styledMessage, ...styleArgs, details || '');
         break;
     }
   }
-  
+
+  // Helper methods for categorizing log messages
+  private isSecurityRelated(message: string, component: string = '', details?: any): boolean {
+    const securityTerms = [
+      'security', 'permission', 'access', 'credential', 'protect', 'firewall',
+      'encrypt', 'decrypt', 'hash', 'salt', 'csrf', 'xss', 'injection', 'vulnerability'
+    ];
+    return Boolean(this.containsTerms(securityTerms, message) || 
+           (component && this.containsTerms(securityTerms, component)) ||
+           (component && ['AuthService', 'SecurityService', 'AuthGuard', 'PermissionService'].includes(component)));
+  }
+
+  private isAuthRelated(message: string, component: string = ''): boolean {
+    const authTerms = [
+      'auth', 'login', 'logout', 'signin', 'signout', 'register', 'password',
+      'token', 'jwt', 'authenticate', 'identity', 'oauth', 'session', 'user'
+    ];
+    return Boolean(this.containsTerms(authTerms, message) || 
+           (component && this.containsTerms(authTerms, component)) ||
+           (component && ['AuthService', 'LoginComponent', 'AuthGuard'].includes(component)));
+  }
+
+  private isPerformanceRelated(message: string, component: string = '', details?: any): boolean {
+    const perfTerms = [
+      'performance', 'latency', 'speed', 'slow', 'fast', 'metrics', 'benchmark',
+      'timeout', 'memory', 'cpu', 'load', 'resource', 'optimize', 'render time'
+    ];
+    return Boolean(this.containsTerms(perfTerms, message) || 
+           (component && this.containsTerms(perfTerms, component)) ||
+           (details && JSON.stringify(details).toLowerCase().includes('performance')));
+  }
+
+  private isUserRelated(message: string, component: string = ''): boolean {
+    const userTerms = [
+      'user', 'account', 'profile', 'logged in', 'logged out', 'signup', 'register',
+      'preference', 'settings', 'avatar', 'role', 'permission'
+    ];
+    return Boolean(this.containsTerms(userTerms, message) || 
+           (component && this.containsTerms(userTerms, component)) ||
+           (component && ['UserService', 'ProfileComponent', 'AccountComponent'].includes(component)));
+  }
+
+  private isApiRelated(message: string, component: string = ''): boolean {
+    const apiTerms = [
+      'api', 'endpoint', 'request', 'response', 'http', 'service call', 'fetch', 
+      'xhr', 'rest', 'graphql', 'post', 'get', 'put', 'delete', 'patch'
+    ];
+    return Boolean(this.containsTerms(apiTerms, message) || 
+           (component && this.containsTerms(apiTerms, component)) ||
+           (component && ['ApiService', 'HttpClient', 'ApiLoggerService', 'DataService'].includes(component)) ||
+           message.includes('/api/'));
+  }
+
+  private isNavigationRelated(message: string, component: string = ''): boolean {
+    const navTerms = [
+      'navigate', 'routing', 'route', 'path', 'url', 'link', 'redirect',
+      'forward', 'back', 'page', 'view', 'location'
+    ];
+    return Boolean(this.containsTerms(navTerms, message) || 
+           (component && this.containsTerms(navTerms, component)) ||
+           (component && ['Router', 'NavigationService', 'RouteGuard'].includes(component)));
+  }
+
+  private isDataRelated(message: string, component: string = ''): boolean {
+    const dataTerms = [
+      'data', 'model', 'entity', 'object', 'json', 'parse', 'serialize', 
+      'store', 'state', 'update', 'change', 'mutation'
+    ];
+    return Boolean(this.containsTerms(dataTerms, message) || 
+           (component && this.containsTerms(dataTerms, component)) ||
+           (component && ['StoreService', 'DataService', 'StateService'].includes(component)));
+  }
+
+  private isStorageRelated(message: string, component: string = ''): boolean {
+    const storageTerms = [
+      'storage', 'cache', 'persist', 'save', 'load', 'local', 'session',
+      'cookie', 'indexdb', 'database', 'db'
+    ];
+    return Boolean(this.containsTerms(storageTerms, message) || 
+           (component && this.containsTerms(storageTerms, component)) ||
+           (component && ['StorageService', 'CacheService', 'PersistenceService'].includes(component)));
+  }
+
+  private isRenderingRelated(message: string, component: string = ''): boolean {
+    const renderTerms = [
+      'render', 'view', 'template', 'component', 'ui', 'interface', 'dom',
+      'element', 'layout', 'style', 'css', 'html'
+    ];
+    return Boolean(this.containsTerms(renderTerms, message) || 
+           (component && this.containsTerms(renderTerms, component)) ||
+           (message.toLowerCase().includes('render') || message.toLowerCase().includes('template')));
+  }
+
+  private isInitializationRelated(message: string, component: string = ''): boolean {
+    const initTerms = [
+      'init', 'start', 'bootstrap', 'launch', 'setup', 'config', 'load',
+      'ready', 'create', 'instantiate'
+    ];
+    return Boolean(this.containsTerms(initTerms, message) || 
+           (component && this.containsTerms(initTerms, component)) || 
+           message.toLowerCase().includes('initialized'));
+  }
+
+  private isLifecycleRelated(message: string, component: string = ''): boolean {
+    const lifecycleTerms = [
+      'lifecycle', 'oninit', 'onchanges', 'ondestroy', 'afterviewinit',
+      'mount', 'unmount', 'construct', 'destroy'
+    ];
+    return Boolean(this.containsTerms(lifecycleTerms, message) ||
+           (component && this.containsTerms(lifecycleTerms, component)));
+  }
+
+  private isUSARelated(message: string, component: string = ''): boolean {
+    const usaTerms = [
+      'usa', 'patriotic', 'america', 'united states', 'flag', 'military',
+      'veteran', 'patriot', 'freedom', 'liberty', 'independence', 'eagle'
+    ];
+    return Boolean(this.containsTerms(usaTerms, message) ||
+           (component && this.containsTerms(usaTerms, component)));
+  }
+
+  private isSystemRelated(message: string, component: string = ''): boolean {
+    const systemTerms = [
+      'system', 'core', 'framework', 'platform', 'infrastructure'
+    ];
+    
+    const systemComponents = [
+      'SystemService', 
+      'ConfigService', 
+      'InitializationService', 
+      'AppComponent',
+      'CoreModule'
+    ];
+    
+    return Boolean(this.containsTerms(systemTerms, message) ||
+           (component && this.containsTerms(systemTerms, component)) ||
+           (component && systemComponents.includes(component)));
+  }
+
+  // Helper method to check if a message contains any terms from an array
+  private containsTerms(terms: string[], text: string, component: string = ''): boolean {
+    if (!text) return false;
+    
+    const lowerText = text.toLowerCase();
+    const lowerComponent = component ? component.toLowerCase() : '';
+    
+    return Boolean(terms.some(term => 
+      lowerText.includes(term.toLowerCase()) || 
+      (component && lowerComponent.includes(term.toLowerCase()))
+    ));
+  }
+
   private getCallerComponent(): string {
     try {
       const err = new Error();
