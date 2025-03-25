@@ -1,17 +1,17 @@
 <div class="logger-display">
-  <div #logContainer class="log-entries">
-    <div class="log-entry" *ngFor="let log of filterLogs()" [ngClass]="getLogClass(log)">
-      <span class="log-time">{{ log.timestamp | date:'medium' }}</span>
-      <span class="log-level" [ngClass]="log.level">
-        <mat-icon>{{ getLogIcon(log) }}</mat-icon>
-        {{ log.level.toUpperCase() }}
-      </span>
-      <span class="log-message">{{ log.message }}</span>
-    </div>
-    
-    <div *ngIf="filterLogs().length === 0" class="empty-log">
-      <mat-icon>receipt_long</mat-icon>
-      <span>No logs to display</span>
+  <div class="logs-container">
+    <div *ngFor="let log of filterLogs()" class="log-entry" [ngClass]="getLogLevelClass(log.level)">
+      <div class="log-header">
+        <span class="log-timestamp">{{ log.timestamp | date:'medium' }}</span>
+        <span class="log-level" [ngClass]="getLogLevelClass(log.level)">
+          {{ getLevelName(log.level) }}
+        </span>
+        <span class="log-component">{{ log.component }}</span>
+      </div>
+      <div class="log-message">{{ log.message }}</div>
+      <div class="log-details" *ngIf="log.details">
+        <pre>{{ formatDetails(log.details) }}</pre>
+      </div>
     </div>
   </div>
 </div>

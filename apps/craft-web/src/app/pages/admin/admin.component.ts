@@ -53,7 +53,7 @@ interface ApiEndpointLog {
   firstSeen: Date;
   // Add data for tracking logs and timeline
   timelineData: {
-    timestamp: number;
+    timestamp: Date; // Change from number to Date
     responseTime: number;
     status: number;
     requestBody?: any;
@@ -108,15 +108,15 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     timestamp: number
   ): ServiceCallMetric {
     return {
+      id: `${serviceName}-${Date.now()}`,
       serviceName,
       method,
       url,
       duration,
       status,
-      timestamp,
+      timestamp: new Date(timestamp), // Convert number to Date object
       securityEvents: 0,
       authAttempts: 0,
-      failedAuths: 0,
       activeUsers: 0,
       averageLatency: duration,
       errorRate: status >= 400 ? 100 : 0,
@@ -464,7 +464,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
           
           // Add data point for timeline/sparkline
           serviceInfo.timelineData.push({
-            timestamp: metric.timestamp,
+            timestamp: new Date(metric.timestamp), // Convert to Date
             responseTime: metric.duration || 0,
             status: metric.status ?? 0
           });
@@ -1142,7 +1142,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
         const recentMetrics = this.serviceMetrics
           .filter(m => 
             m.serviceName.toLowerCase() === service.name.toLowerCase() &&
-            (now - m.timestamp) < 60000 // Only look at last minute
+            (now - m.timestamp.getTime()) < 60000 // Only look at last minute
           )
           .slice(-maxMetricsToProcess); // Limit number of metrics
         
@@ -1282,30 +1282,28 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getMetricIcon(metric: ServiceCallMetric): string {
-    if (metric.errorRate > 20) return 'error';
-    if (metric.securityEvents > 0) return 'security';
-    if (metric.authAttempts > 0) return 'fingerprint';
+    // Default icon based on status code
+    if (!metric.status || metric.status >= 500) return 'error';
+    if (metric.status >= 400) return 'warning';
+    if (metric.status >= 300) return 'swap_horiz';
     return 'check_circle';
   }
 
   private getMetricLabel(metric: ServiceCallMetric): string {
-    if (metric.errorRate > 0) return 'Error Rate';
-    if (metric.securityEvents > 0) return 'Security';
-    if (metric.authAttempts > 0) return 'Auth';
-    return 'Performance';
+    // Default label based on status code
+    if (!metric.status || metric.status >= 500) return 'Server Error';
+    if (metric.status >= 400) return 'Client Error';
+    if (metric.status >= 300) return 'Redirect';
+    return 'Success';
   }
 
   private getMetricValue(metric: ServiceCallMetric): number {
-    if (metric.errorRate > 0) return metric.errorRate;
-    if (metric.securityEvents > 0) return metric.securityEvents;
-    if (metric.authAttempts > 0) return metric.authAttempts;
-    return metric.averageLatency;
+    // Use duration as the default metric value
+    return metric.duration || 0;
   }
 
   private getMetricUnit(metric: ServiceCallMetric): string {
-    if (metric.errorRate > 0) return '%';
-    if (metric.securityEvents > 0) return 'events';
-    if (metric.authAttempts > 0) return 'attempts';
+    // All metrics are time-based
     return 'ms';
   }
 
@@ -1692,7 +1690,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
       const recentMetrics = this.serviceMetrics
         .filter(m => 
           m.serviceName.toLowerCase() === service.name.toLowerCase() &&
-          (now - m.timestamp) < 30000 // Only look at last 30 seconds
+          (now - m.timestamp.getTime()) < 30000 // Only look at last 30 seconds
         )
         .slice(-10); // Only use the 10 most recent calls
       
@@ -1778,7 +1776,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     const availableHeight = height - (padding * 2);
     
     // Get time range and response time range
-    const timeValues = timelineData.map(d => d.timestamp);
+    const timeValues = timelineData.map(d => d.timestamp.getTime());
     const responseValues = timelineData.map(d => d.responseTime);
     
     const minTime = Math.min(...timeValues);
@@ -1788,7 +1786,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     
     // Generate points for the sparkline
     const points = timelineData.map((d, i) => {
-      const x = padding + (availableWidth * (d.timestamp - minTime) / (maxTime - minTime));
+      const x = padding + (availableWidth * (d.timestamp.getTime() - minTime) / (maxTime - minTime));
       const y = height - padding - (availableHeight * (d.responseTime - minResponse) / (maxResponse - minResponse));
       return `${x},${y}`;
     }).join(' ');
@@ -1803,7 +1801,6 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
           points="${points}" 
         />
         <defs>
-          <linearGradient id="sparklineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.8" />
             <stop offset="50%" style="stop-color:#10b981;stop-opacity:0.8" />
             <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0.8" />
@@ -2061,7 +2058,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
       
       // Add to timeline data (keep last 50 entries)
       endpointLog.timelineData.push({
-        timestamp,
+        timestamp: new Date(timestamp), // Convert to Date object to match the type
         responseTime,
         status: statusCode,
         requestBody: logEntry.request.body,
@@ -2239,5 +2236,28 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       return 'rgba(239, 68, 68, 0.7)'; // Red for low success
     }
+  }
+
+  // Update the timestamp handling to match ServiceCallMetric type
+  private processServiceCall(call: any): ServiceCallMetric {
+    // Fix timestamp type
+    return {
+      id: call.id || `call-${Date.now()}`,
+      timestamp: new Date(call.timestamp), // Convert to Date object
+      serviceName: call.service,
+      method: call.method,
+      url: call.url,
+      status: call.status,
+      duration: call.duration,
+      // Don't include properties not in ServiceCallMetric interface
+    };
+  }
+
+  // Fix timestamp comparison by properly converting to milliseconds
+  private getRecentMetrics(): ServiceCallMetric[] {
+    const now = new Date().getTime();
+    return this.serviceMetrics.filter(m => 
+      (now - m.timestamp.getTime()) < 30000 // Only look at last 30 seconds
+    );
   }
 }

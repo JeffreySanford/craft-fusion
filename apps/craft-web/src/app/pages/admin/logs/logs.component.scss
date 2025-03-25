@@ -1,0 +1,112 @@
+.logs-container {
+  padding: 1em;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.logs-title {
+  color: var(--md-sys-color-on-surface);
+  margin: 0 0 1em 0;
+}
+
+.filter-panel {
+  background-color: var(--md-sys-color-surface-variant);
+  padding: 1em;
+  border-radius: 8px;
+  margin-bottom: 1em;
+}
+
+.filter-form {
+  .filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1em;
+  }
+  
+  .filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1em;
+    margin-top: 0.5em;
+    flex-wrap: wrap;
+  }
+}
+
+.table-container {
+  flex: 1;
+  overflow: auto;
+  background-color: var(--md-sys-color-surface);
+  border-radius: 8px;
+  position: relative;
+}
+
+.logs-table {
+  width: 100%;
+  
+  .mat-column-timestamp {
+    width: 180px;
+    white-space: nowrap;
+  }
+  
+  .mat-column-level {
+    width: 100px;
+    text-align: center;
+  }
+  
+  .mat-column-component {
+    width: 150px;
+  }
+  
+  .mat-column-message {
+    max-width: 400px;
+  }
+  
+  .message-cell {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  
+  .details-cell {
+    max-width: 300px;
+    overflow: hidden;
+    
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.85em;
+      max-height: 100px;
+      overflow: auto;
+    }
+  }
+}
+
+// Log level styling
+.log-level-debug {
+  color: var(--md-sys-color-primary);
+}
+
+.log-level-info {
+  color: var(--md-sys-color-tertiary);
+}
+
+.log-level-warn {
+  color: orange;
+  font-weight: 500;
+}
+
+.log-level-error {
+  color: var(--md-sys-color-error);
+  font-weight: 700;
+}
+
+.no-logs-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--md-sys-color-on-surface-variant);
+  font-style: italic;
+}

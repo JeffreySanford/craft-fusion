@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subscription, interval, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import Chart from 'chart.js/auto';
 import { LoggerService, ServiceCallMetric } from '../../common/services/logger.service';
 import { AdminStateService } from '../../common/services/admin-state.service';
@@ -103,6 +102,8 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     interval(500).subscribe(() => {
       this.updateChartData();
     });
+
+    this.logger.info('Footer chart initialized');
   }
 
   ngOnDestroy() {
@@ -114,10 +115,12 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.chart) {
       this.chart.destroy();
     }
+
+    this.logger.info('Footer component destroyed');
   }
 
   private startPerformanceMonitoring() {
-    console.log('Starting performance monitoring');
+    this.logger.info('Starting performance monitoring');
     const performanceInterval = interval(3000); // Emit every 3 seconds
     this.performanceSubscription = performanceInterval.subscribe(() => {
       this.updatePerformanceMetrics();
@@ -125,7 +128,7 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private stopPerformanceMonitoring() {
-    console.log('Stopping performance monitoring');
+    this.logger.info('Stopping performance monitoring');
     if (this.performanceSubscription) {
       this.performanceSubscription.unsubscribe();
     }
@@ -240,7 +243,7 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
         const totalDifference = endMeasure.total - startMeasure.total;
         const cpuLoad = 100 - (100 * idleDifference / totalDifference);
         const currentTime = new Date().toLocaleString();
-        console.log(`Simulated CPU Load at ${currentTime}: ${cpuLoad.toFixed(2)}%`);
+        this.logger.debug(`Simulated CPU Load at ${currentTime}: ${cpuLoad.toFixed(2)}%`);
         observer.next(cpuLoad);
         observer.complete();
       }, 1000);
@@ -336,13 +339,13 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
       wakeLock: navigator.wakeLock
     };
 
-    console.log('Navigator Info:', navigatorInfo);
+    this.logger.info('Navigator Info:', navigatorInfo);
   }
 
   private initializeChart() {
     try {
       if (!this.performanceChartRef || !this.performanceChartRef.nativeElement) {
-        console.error('Canvas element reference is not available');
+        this.logger.error('Canvas element reference is not available');
         return;
       }
 
@@ -350,7 +353,7 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
       const ctx = canvas.getContext('2d');
       
       if (!ctx) {
-        console.error('Failed to get canvas context for performance chart');
+        this.logger.error('Failed to get canvas context for performance chart');
         return;
       }
       
@@ -399,7 +402,7 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
       });
       
       this.chartInitialized = true;
-      console.log('Chart initialized successfully');
+      this.logger.info('Chart initialized successfully');
       
       // Process any buffered metrics
       if (this.metricsBuffer.length > 0) {
@@ -413,7 +416,7 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
         this.metricsBuffer = [];
       }
     } catch (error) {
-      console.error('Error initializing chart:', error);
+      this.logger.error('Error initializing chart:', error);
     }
   }
 
@@ -513,7 +516,7 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
 
   toggleDataSimulation() {
     this.isSimulatingData = !this.isSimulatingData;
-    console.log(`${this.isSimulatingData ? 'Enabled' : 'Disabled'} data simulation`);
+    this.logger.debug('Data simulation toggled', { isSimulating: this.isSimulatingData });
     
     // Update border color based on whether we're simulating data
     this.updateChartBorderColor();

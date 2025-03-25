@@ -1,405 +1,261 @@
-import { Injectable, Injector, Inject, forwardRef } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { ApiService } from './api.service'; // Adjust the path as necessary
 
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
-
-export interface BaseServiceCallMetric {
-  serviceName: string;
-  method: string;
-  url: string;
-  timestamp: number;
-  duration?: number;
-  status?: number;
-}
-
-export interface ServiceCallMetric extends BaseServiceCallMetric {
-  securityEvents: number;
-  authAttempts: number;
-  failedAuths: number;
-  activeUsers: number;
-  averageLatency: number;
-  errorRate: number;
-  lastIncident?: Date;
-}
-
-interface RegisteredService {
-  name: string;
-  status: 'active' | 'inactive' | 'error';
-  lastActivity: number;
+export enum LogLevel {
+  DEBUG = 0,
+  INFO = 1,
+  WARN = 2,
+  ERROR = 3
 }
 
 export interface LogEntry {
   timestamp: Date;
   level: LogLevel;
   message: string;
-  data?: any;
-  source?: string;
+  component?: string;
+  details?: any;
+}
+
+export interface ServiceCallMetric {
+  id: string;
+  timestamp: Date;
+  serviceName: string;
+  method: string;
+  url: string;
+  status?: number;
+  duration?: number;
+  error?: any;
+  // Additional properties needed by admin component
+  errorRate?: number;
+  authAttempts?: number;
+  securityEvents?: number;
+  activeUsers?: number;
+  averageLatency?: number;
+  lastIncident?: Date;
 }
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class LoggerService {
-  private apiService!: ApiService;
   private logs: LogEntry[] = [];
+  private logLimit = 1000; // Maximum number of logs to store
+  private loggerLevel = LogLevel.DEBUG; // Current log level
   private logSubject = new Subject<LogEntry>();
   
-  // Expose the log stream as an Observable
-  logStream$ = this.logSubject.asObservable();
-  
-  constructor() {
-    this.system('LoggerService initialized');
-  }
-  // Colors for console output
-  private readonly COLORS = {
-    error: 'color: #ff3860; font-weight: bold; background-color: rgba(255, 56, 96, 0.1); padding: 2px 6px; border-radius: 4px;',
-    warn: 'color: #ffdd57; font-weight: bold; background-color: rgba(255, 221, 87, 0.1); padding: 2px 6px; border-radius: 4px;',
-    info: 'color: #3273dc; font-weight: bold; background-color: rgba(50, 115, 220, 0.1); padding: 2px 6px; border-radius: 4px;',
-    log: 'color: #23d160; font-weight: bold; background-color: rgba(35, 209, 96, 0.1); padding: 2px 6px; border-radius: 4px;',
-    debug: 'color: #9da5b4; font-weight: bold; background-color: rgba(157, 165, 180, 0.1); padding: 2px 6px; border-radius: 4px;',
-    highlight: 'color: #ff470f; font-weight: bold; text-decoration: underline; background-color: rgba(255, 71, 15, 0.1); padding: 2px 6px; border-radius: 4px;',
-    system: 'color: #8A2BE2; font-weight: bold; background-color: rgba(138, 43, 226, 0.1); padding: 2px 6px; border-radius: 4px;'
-  };
-  
-  // Maximum number of logs to keep in memory
-  private readonly MAX_LOGS = 1000;
-  
-  // Store logs in memory
-  private logHistory: string[] = [];
-  
-  // Observable for frontend components
-  private logsSubject = new BehaviorSubject<string[]>([]);
-  public logs$: Observable<string[]> = this.logsSubject.asObservable();
-  
-  // Store service call metrics
-  private serviceCallsHistory: ServiceCallMetric[] = [];
+  // Service call tracking
+  private serviceMetrics: ServiceCallMetric[] = [];
+  private serviceMetricsLimit = 100;
   private serviceCallsSubject = new BehaviorSubject<ServiceCallMetric[]>([]);
-  public serviceCalls$: Observable<ServiceCallMetric[]> = this.serviceCallsSubject.asObservable();
-
-  // Track registered services
-  private registeredServices: Map<string, RegisteredService> = new Map();
-  private registeredServicesSubject = new BehaviorSubject<RegisteredService[]>([]);
-  public registeredServices$ = this.registeredServicesSubject.asObservable();
+  private registeredServices: Set<string> = new Set();
+  private serviceCallsInProgress: Map<string, ServiceCallMetric> = new Map();
   
-  // Track active service calls
-  private activeServiceCalls: Map<string, BaseServiceCallMetric> = new Map();
+  // Observable that components can subscribe to for log updates
+  logAdded$ = this.logSubject.asObservable();
+  logStream$ = this.logSubject.asObservable(); // Alias for compatibility
+  serviceCalls$ = this.serviceCallsSubject.asObservable();
 
-  /**
-   * Format a message with timestamp and level
-   */
-  private formatMessage(level: string, message: string): string {
-    const timestamp = new Date().toISOString();
-    const source = level === 'SYSTEM' ? 'system' : 'user'; // Indicate source
-    return `[${timestamp}] ${level}: (${source}) ${message}`;
-  }
-
-  /**
-   * Add a log to history and notify subscribers
-   */
-  private addLog(level: string, message: string): void {
-    const formattedMessage = this.formatMessage(level, message);
-    this.logHistory.push(formattedMessage);
-    
-    // Trim log history if it exceeds the maximum
-    if (this.logHistory.length > this.MAX_LOGS) {
-      this.logHistory = this.logHistory.slice(-this.MAX_LOGS);
+  constructor() {
+    // Check for stored log level preference
+    const storedLevel = localStorage.getItem('loggerLevel');
+    if (storedLevel !== null) {
+      this.loggerLevel = parseInt(storedLevel, 10);
     }
     
-    // Notify subscribers
-    this.logsSubject.next([...this.logHistory]);
+    this.info('LoggerService initialized', { level: this.loggerLevel });
   }
 
-  /**
-   * Log an error with vibrant red color
-   */
-  error(message: string, data?: any): void {
-    this.logMessage('error', message, data);
+  setLevel(level: LogLevel) {
+    this.loggerLevel = level;
+    localStorage.setItem('loggerLevel', level.toString());
   }
 
-  /**
-   * Log a warning with vibrant yellow color
-   */
-  warn(message: string, data?: any): void {
-    this.logMessage('warn', message, data);
+  getLevel(): LogLevel {
+    return this.loggerLevel;
   }
 
-  /**
-   * Log info with vibrant blue color
-   */
-  info(message: string, data?: any): void {
-    this.logMessage('info', message, data);
+  debug(message: string, details?: any, component?: string) {
+    this.log(LogLevel.DEBUG, message, details, component);
   }
 
-  /**
-   * Debug log with subtle gray color
-   */
-  debug(message: string, data?: any): void {
-    this.logMessage('debug', message, data);
+  info(message: string, details?: any, component?: string) {
+    this.log(LogLevel.INFO, message, details, component);
   }
 
-  /**
-   * System log with vibrant purple color - for internal service messages
-   */
-  system(message: string): void {
-    console.log(`%cSYSTEM: %c${message}`, this.COLORS.system, 'color: inherit');
-    this.addLog('LOG', message);
+  warn(message: string, details?: any, component?: string) {
+    this.log(LogLevel.WARN, message, details, component);
   }
 
-  /**
-   * Highlight log with vibrant orange color - for important messages
-   */
-  highlight(message: string, data?: any): void {
-    const dataStr = data ? ` - ${JSON.stringify(data)}` : '';
-    const fullMessage = `${message}${dataStr}`;
-    
-    console.log(`%cHIGHLIGHT: %c${fullMessage}`, this.COLORS.highlight, 'color: inherit');
-    this.addLog('HIGHLIGHT', fullMessage);
-  }
-
-  /**
-   * Log service call metrics for API tracking
-   */
-  logServiceCall(metric: ServiceCallMetric): void {
-    this.serviceCallsHistory.push(metric);
-    this.serviceCallsSubject.next([...this.serviceCallsHistory]);
-
-    // Log the service call to console with appropriate color
-    const status = metric.status || 0;
-    const method = metric.method || 'UNKNOWN';
-    const url = metric.url || 'unknown-url';
-    const duration = metric.duration ? `${metric.duration.toFixed(2)}ms` : 'N/A';
-    
-    if (status >= 400) {
-      this.error(`API ${method} ${url} - ${status}`, { duration, ...metric });
-    } else if (status >= 300) {
-      this.warn(`API ${method} ${url} - ${status}`, { duration, ...metric });
-    } else {
-      this.info(`API ${method} ${url} - ${status}`, { duration, serviceName: metric.serviceName });
-    }
-  }
-
-  /**
-   * Clear all logs
-   */
-  clearLogs(): void {
-    this.logs = [];
-    this.logHistory = [];
-    this.logsSubject.next([]);
-    this.system('All logs cleared');
-  }
-
-  /**
-   * Clear metrics
-   */
-  clearMetrics(): void {
-    this.serviceCallsHistory = [];
-    this.serviceCallsSubject.next([]);
-    this.system('All metrics cleared');
-  }
-
-  /**
-   * Get current logs
-   */
-  getLogs(): LogEntry[] {
-    return [...this.logs];
-  }
-
-  /**
-   * Log user login activities
-   */
-  logUserLogin(username: string, loginDate: Date): void {
-    const loginTime = loginDate.toISOString();
-    this.highlight(`User login: ${username} at ${loginTime}`);
-    this.logServiceCall({
-      serviceName: 'AuthenticationService',
-      method: 'POST',
-      url: '/auth/login',
-      status: 200,
-      duration: 120,
-      timestamp: loginDate.getTime(),
-      securityEvents: 1,
-      authAttempts: 1,
-      failedAuths: 0,
-      activeUsers: 1,
-      averageLatency: 120,
-      errorRate: 0
-    });
-  }
-
-  /**
-   * Log record generation events 
-   */
-  logRecordGeneration(count: number): void {
-    this.info(`Generated ${count} records`, { timestamp: new Date().toISOString(), count });
+  error(message: string, details?: any, component?: string) {
+    this.log(LogLevel.ERROR, message, details, component);
   }
   
-  /**
-   * Log state changes
-   */
-  logStateChange(key: string, value: string): void {
-    this.debug(`State change: ${key} = ${value}`);
+  highlight(message: string, details?: any, component?: string) {
+    // Special highlighted log - treat as INFO level
+    this.log(LogLevel.INFO, `⭐ ${message} ⭐`, details, component);
   }
-
-  /**
-   * Register a service with the logger
-   */
+  
+  // Service call tracking methods
   registerService(serviceName: string): void {
-    const service: RegisteredService = {
-      name: serviceName,
-      status: 'active',
-      lastActivity: Date.now()
-    };
-    
-    this.registeredServices.set(serviceName, service);
-    this.system(`Service registered: ${serviceName}`);
-    this.updateRegisteredServices();
-  }
-
-  /**
-   * Update service status
-   */
-  updateServiceStatus(serviceName: string, status: 'active' | 'inactive' | 'error'): void {
-    const service = this.registeredServices.get(serviceName);
-    if (service) {
-      service.status = status;
-      service.lastActivity = Date.now();
-      this.updateRegisteredServices();
-      
-      if (status === 'error') {
-        this.error(`Service ${serviceName} reported error status`);
-      } else {
-        this.debug(`Service ${serviceName} status: ${status}`);
-      }
+    if (!this.registeredServices.has(serviceName)) {
+      this.registeredServices.add(serviceName);
+      this.debug(`Service registered: ${serviceName}`);
     }
   }
   
-  /**
-   * Start tracking a service call
-   */
   startServiceCall(serviceName: string, method: string, url: string): string {
-    const callId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const callId = `${serviceName}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    this.activeServiceCalls.set(callId, {
+    const metric: ServiceCallMetric = {
+      id: callId,
+      timestamp: new Date(),
       serviceName,
       method,
-      url,
-      timestamp: Date.now()
-    });
+      url
+    };
     
-    this.debug(`${serviceName} API call started: ${method} ${url}`);
+    this.serviceCallsInProgress.set(callId, metric);
+    this.debug(`Service call started: ${serviceName}`, { method, url, callId });
     
     return callId;
   }
-
-  /**
-   * End tracking a service call with status
-   */
-  endServiceCall(callId: string, status: number): void {
-    const startData = this.activeServiceCalls.get(callId);
-    if (!startData) return;
+  
+  endServiceCall(callId: string, status: number, error?: any): void {
+    const startMetric = this.serviceCallsInProgress.get(callId);
     
-    const endTime = Date.now();
-    const duration = endTime - startData.timestamp;
-    
-    // Create complete metric
-    const metric: ServiceCallMetric = {
-      ...startData,
-      status,
-      duration,
-      securityEvents: 0,
-      authAttempts: 0,
-      failedAuths: 0,
-      activeUsers: 0,
-      averageLatency: duration,
-      errorRate: status >= 400 ? 100 : 0
-    };
-    
-    // Update service last activity time
-    const service = this.registeredServices.get(startData.serviceName);
-    if (service) {
-      service.lastActivity = Date.now();
-      this.updateRegisteredServices();
+    if (startMetric) {
+      const endTime = new Date();
+      const duration = endTime.getTime() - startMetric.timestamp.getTime();
+      
+      const completedMetric: ServiceCallMetric = {
+        ...startMetric,
+        status,
+        duration,
+        error
+      };
+      
+      // Remove from in-progress map
+      this.serviceCallsInProgress.delete(callId);
+      
+      // Add to metrics history
+      this.serviceMetrics.unshift(completedMetric);
+      
+      // Limit number of stored metrics
+      if (this.serviceMetrics.length > this.serviceMetricsLimit) {
+        this.serviceMetrics.pop();
+      }
+      
+      // Notify subscribers
+      this.serviceCallsSubject.next([...this.serviceMetrics]);
+      
+      // Log appropriate message
+      if (status >= 200 && status < 300) {
+        this.debug(`Service call completed: ${startMetric.serviceName}`, 
+          { method: startMetric.method, url: startMetric.url, status, duration: `${duration}ms` });
+      } else {
+        this.error(`Service call failed: ${startMetric.serviceName}`, 
+          { method: startMetric.method, url: startMetric.url, status, duration: `${duration}ms`, error });
+      }
+    } else {
+      this.warn(`Attempted to end unknown service call: ${callId}`);
     }
-    
-    // Log and store the complete service call
-    this.logServiceCall(metric);
-    
-    // Remove from active calls
-    this.activeServiceCalls.delete(callId);
   }
   
-  private updateRegisteredServices(): void {
-    this.registeredServicesSubject.next(Array.from(this.registeredServices.values()));
-  }
-
-  /**
-   * Log standard message with vibrant green color
-   */
-  log(message: string, data?: any): void {
-    this.logMessage('info', message, data); // Call logMessage instead of log to avoid name conflict
+  getServiceMetrics(): ServiceCallMetric[] {
+    return [...this.serviceMetrics];
   }
   
-  private logMessage(level: LogLevel, message: string, data?: any): void {
-    const logEntry: LogEntry = {
-      timestamp: new Date(),
-      level,
-      message,
-      data,
-      source: this.getCallerInfo()
-    };
-
-    this.logs.push(logEntry);
-    this.logSubject.next(logEntry);
-    
-    // Also log to console in development
-    this.logToConsole(logEntry);
-    
-    // Add to string-based log history for backward compatibility
-    const formattedMessage = `${message}${data ? ` - ${JSON.stringify(data)}` : ''}`;
-    this.addLog(level.toUpperCase(), formattedMessage);
+  clearMetrics(): void {
+    this.serviceMetrics = [];
+    this.serviceCallsSubject.next([]);
+    this.info('Service metrics cleared');
   }
 
-  private logToConsole(logEntry: LogEntry): void {
-    const consoleMessage = `[${logEntry.level.toUpperCase()}] ${logEntry.message}`;
-    
-    switch (logEntry.level) {
-      case 'debug':
-        console.debug(consoleMessage, logEntry.data || '');
-        break;
-      case 'info':
-        console.info(consoleMessage, logEntry.data || '');
-        break;
-      case 'warn':
-        console.warn(consoleMessage, logEntry.data || '');
-        break;
-      case 'error':
-        console.error(consoleMessage, logEntry.data || '');
-        break;
+  private log(level: LogLevel, message: string, details?: any, component?: string) {
+    // Only log if the level is greater than or equal to the logger level
+    if (level >= this.loggerLevel) {
+      // Determine component name from call stack if not provided
+      if (!component) {
+        component = this.getCallerComponent();
+      }
+      
+      // Create log entry
+      const entry: LogEntry = {
+        timestamp: new Date(),
+        level,
+        message,
+        component,
+        details
+      };
+
+      // Add to logs array
+      this.logs.unshift(entry);
+      
+      // Limit the number of logs stored
+      if (this.logs.length > this.logLimit) {
+        this.logs.pop();
+      }
+      
+      // Notify subscribers
+      this.logSubject.next(entry);
+      
+      // Still send to console for development visibility
+      this.outputToConsole(level, message, details, component);
     }
   }
 
-  private getCallerInfo(): string {
+  private outputToConsole(level: LogLevel, message: string, details?: any, component?: string) {
+    const componentPrefix = component ? `[${component}] ` : '';
+    const formattedMessage = `${componentPrefix}${message}`;
+    
+    switch (level) {
+      case LogLevel.DEBUG:
+        console.debug(formattedMessage, details || '');
+        break;
+      case LogLevel.INFO:
+        console.info(formattedMessage, details || '');
+        break;
+      case LogLevel.WARN:
+        console.warn(formattedMessage, details || '');
+        break;
+      case LogLevel.ERROR:
+        console.error(formattedMessage, details || '');
+        break;
+    }
+  }
+  
+  private getCallerComponent(): string {
     try {
       const err = new Error();
-      const stack = err.stack || '';
-      const stackLines = stack.split('\n');
+      const stackLines = err.stack?.split('\n') || [];
       
-      // Skip the first few stack frames which belong to this logger
-      if (stackLines.length > 3) {
-        const callerLine = stackLines[3]; // This might need adjusting based on your environment
-        
-        // Extract the caller info from the stack trace
-        const match = callerLine.match(/at\s+(.*)\s+\(/);
+      // Look for class name in stack trace
+      for (let i = 3; i < stackLines.length; i++) {
+        const line = stackLines[i];
+        // Match Component name pattern
+        const match = line.match(/at\s+(\w+Component)\./);
         if (match && match[1]) {
           return match[1];
         }
       }
-    } catch (e) {
-      // Ignore any errors in stack trace parsing
+    } catch (error) {
+      // Silently fail if cannot determine component
     }
     
-    return 'unknown';
+    return 'Unknown';
+  }
+  
+  getLogs(): LogEntry[] {
+    return [...this.logs];
+  }
+  
+  clearLogs() {
+    this.logs = [];
+    this.logSubject.next({
+      timestamp: new Date(),
+      level: LogLevel.INFO,
+      message: 'Logs cleared',
+      component: 'LoggerService'
+    });
   }
 }
