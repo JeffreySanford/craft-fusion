@@ -22,34 +22,104 @@ This document outlines the key technical standards and patterns to be followed a
 ## Angular Guidelines
 
 - Use standalone components by default for new components
+- **IMPORTANT:** Always maintain `standalone: false` for existing NgModule-based components 
+- Never remove the `standalone: false` property from component decorators unless explicitly converting to standalone
+- Components refactored from NgModule-based to standalone architecture require team review
 - Leverage Angular signals for state management
 - Implement lazy loading for all feature modules
 - Use resolvers for preloading necessary data
 - Follow reactive forms approach instead of template-driven forms
 
+### Component Configuration
+
+```typescript
+@Component({
+  selector: 'app-example',
+  templateUrl: './example.component.html',
+  styleUrls: ['./example.component.scss'],
+  standalone: false  // CRITICAL: Must be preserved for NgModule-based components
+})
+export class ExampleComponent implements OnInit {
+  // Component implementation
+}
+```
+
 ## Styling Standards
 
-Our application uses a custom implementation of Material Design 3 with a patriotic theme.
+Our application uses a custom implementation of Material Design 3 with a patriotic theme and support for both light and dark modes.
 
 ### Core Style Structure
 
 - Global styles: `styles/` directory
 - Component styles: Component-specific SCSS files
-- Design tokens: CSS variables in `:root` for consistent values
+- Design tokens: CSS variables in `:root` and `.dark-theme` for consistent values
 
 ### Material Design Implementation
 
 - Use the Material Components Web (MDC) via `mat-mdc-*` components
 - Override Material components using the techniques documented in `_material-overrides.scss`
 
-### Spacing Standard
+### Theme System
 
-We follow an 8px grid system implemented with em-based units to ensure proper scaling:
+Our application supports both light and dark themes:
 
-- Base unit: 0.5em (equivalent to 8px at default font size)
-- Container margins: 0.5em (8px)
-- Component padding: 1em (16px) by default
-- Form element spacing: 0.75em (12px) 
+1. **Theme Detection**: System preference is automatically detected using `prefers-color-scheme` media query
+2. **Theme Toggle**: Users can override system preference via the theme toggle in the header
+3. **Theme Persistence**: User preference is saved to localStorage and applied on subsequent visits
+
+### Implementing Theme-Aware Components
+
+Always create components that adapt to both light and dark themes:
+
+```scss
+// GOOD: Theme-aware component
+.my-component {
+  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface);
+  
+  .dark-theme & {
+    // Dark theme specific overrides if needed
+  }
+}
+
+// BAD: Hard-coded colors that don't adapt to themes
+.my-component {
+  color: #333333;
+  background-color: white;
+}
+```
+
+### Theme Service Usage
+
+Components that need to react to theme changes should use the ThemeService:
+
+```typescript
+constructor(private themeService: ThemeService) {}
+
+ngOnInit() {
+  this.themeSubscription = this.themeService.isDarkTheme$.subscribe(isDark => {
+    this.isDarkTheme = isDark;
+    // Update component state based on theme
+  });
+}
+
+ngOnDestroy() {
+  // Always clean up subscriptions
+  if (this.themeSubscription) {
+    this.themeSubscription.unsubscribe();
+  }
+}
+```
+
+### Color Palette Usage
+
+- Primary (Navy #002868): Main actions, headers, primary UI elements
+- Secondary/Accent (Red #BF0A30): Highlights, secondary actions, alerts
+- Tertiary/Warn (Gold #FFD700): Warnings, special accents, tertiary elements
+- Always use the appropriate semantic colors for proper theme support
+
+## MD3 Transparency
+These standards now reflect a move toward MD3 design tokens. Some code transitions were generated through automated insights for faster adoption.
 
 ## Component Layout Standards
 

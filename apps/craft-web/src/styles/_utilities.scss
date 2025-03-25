@@ -63,6 +63,7 @@
     var(--md-sys-color-secondary)
   );
   -webkit-background-clip: text;
+  background-clip: text; // Added standard property
   color: transparent;
 }
 
@@ -556,5 +557,397 @@
   &.bottom-right {
     bottom: 5px;
     right: 5px;
+  }
+}
+
+@mixin header-container($height: 4em, $bottom-margin: 0.5em) {
+  .header-card {
+    position: fixed;
+    top: 0.5em;
+    left: 0.5em;
+    right: 0.5em;
+    height: $height;
+    margin-bottom: $bottom-margin;
+    width: calc(100% - 1em);
+    background: linear-gradient(
+      to right,
+      #002868 0%, /* Darker navy blue */
+      #2c4f9e 40%, /* Medium blue */
+      #BF0A30 80%, /* Brighter red */
+      #8c0624 100% /* Darker red */
+    );
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border-radius: 0.25em;
+    z-index: 1000;
+    overflow: hidden;
+  }
+
+  .header-content {
+    height: calc($height - 0.5em);
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    position: relative;
+    padding: 0 1em;
+    border-radius: 0;
+  }
+}
+
+@mixin profile-icon($primary-color: #ff00ff, $secondary-color: #00f7ff, $logged-in-color: #00ff00) {
+  .profile-icon {
+    color: $primary-color;
+    border: 2px solid $secondary-color;
+    padding: 0.15em;
+    border-radius: 50%;
+    transition: all 0.3s ease-in-out;
+    animation: neonPulse 2s infinite;
+    text-shadow: 0 0 10px $primary-color;
+    
+    &:hover {
+      transform: scale(1.1) rotate(15deg);
+      box-shadow: 
+        0 0 15px rgba($secondary-color, 0.6),
+        0 0 30px rgba($primary-color, 0.4);
+    }
+
+    &.logged-in {
+      color: $logged-in-color;
+      border: 2px solid $logged-in-color;
+      animation: neonRotate 1s ease-out;
+      text-shadow: 0 0 10px $logged-in-color;
+    }
+  }
+}
+
+@mixin patriotic-menu($border-radius: 14px) {
+  .patriotic-menu {
+    transform-origin: top right;
+    animation: slideIn 0.2s ease-out;
+
+    // Enforce styling on menu panel
+    &.mat-mdc-menu-panel,
+    .mat-mdc-menu-panel {
+      background: linear-gradient(135deg, 
+        rgba(0, 0, 102, 0.95) 0%,
+        rgba(139, 0, 0, 0.95) 50%,
+        rgba(0, 0, 102, 0.95) 100%
+      ) !important;
+      border: 2px solid #FFD700 !important;
+      box-shadow: 
+        0 0 25px rgba(255, 255, 255, 0.4),
+        inset 0 0 20px rgba(0, 0, 255, 0.3) !important;
+      border-radius: $border-radius !important;
+      overflow: hidden;
+    }
+
+    .mat-mdc-menu-content {
+      padding: 6px !important;
+      background: transparent !important;
+      border-radius: calc($border-radius - 2px);
+      box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.1);
+    }
+
+    .mat-mdc-menu-item {
+      height: 40px !important;
+      line-height: 40px !important;
+      margin: 4px !important;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 153, 0.3) !important;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      color: white !important;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+        transition: 0.5s;
+      }
+
+      &:hover {
+        background: linear-gradient(45deg,
+          rgba(255, 0, 0, 0.4) 0%,
+          rgba(0, 0, 255, 0.4) 100%
+        ) !important;
+        transform: translateX(4px);
+        box-shadow: 
+          0 0 15px rgba(255, 255, 255, 0.3),
+          inset 0 0 10px rgba(255, 0, 0, 0.3);
+
+        &::before {
+          left: 100%;
+        }
+      }
+
+      .mat-icon {
+        color: #FFD700 !important;
+        margin-right: 12px;
+        transition: all 0.3s ease;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+      }
+
+      span {
+        color: white !important;
+        font-weight: 500;
+        letter-spacing: 1px;
+        text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+        background: linear-gradient(90deg, white, gold);
+        -webkit-background-clip: text;
+        background-clip: text; // Added standard property
+      }
+    }
+  }
+}
+
+@mixin patriotic-header($height: 4em) {
+  .patriotic-header {
+    position: fixed;
+    top: 0.5em;
+    left: 0.5em;
+    right: 0.5em;
+    height: $height;
+    width: auto !important; 
+    max-width: none !important; 
+    margin: 0 !important;
+    @include patriotic-gradient-background();
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    border-radius: 0.5em;
+    z-index: 100;
+    overflow: visible;
+    
+    .header-content {
+      height: calc($height - 0.5em);
+      display: flex;
+      align-items: center;
+      width: 100%;
+      justify-content: space-between; // Important: Space between left and right content
+      position: relative;
+      padding: 0 1.5em;
+    }
+    
+    .header-left, .header-right {
+      display: flex;
+      align-items: center;
+    }
+    
+    .header-right {
+      margin-left: auto; // Push to the right side
+    }
+    
+    .app-title {
+      font-size: 1.6em;
+      font-weight: bold;
+      background: linear-gradient(90deg, #FFFFFF, #FFD700);
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: 0.05em;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      margin-left: 3em; // Space for star field
+    }
+    
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75em;
+    }
+    
+    .admin-button {
+      background-color: rgba(191, 10, 48, 0.8);
+      color: white;
+      border-radius: 0.25em;
+      padding: 0.5em 1em;
+      font-size: 0.9em;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background-color: rgba(191, 10, 48, 1);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
+      
+      mat-icon {
+        font-size: 1.2em;
+        height: 1.2em;
+        width: 1.2em;
+      }
+    }
+    
+    .flag-stripe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 0.3em;
+      background: repeating-linear-gradient(
+        90deg,
+        #BF0A30 0%, #BF0A30 10%,
+        white 10%, white 20%
+      );
+      opacity: 0.7;
+    }
+    
+    .star-field {
+      position: absolute;
+      top: 0.5em;
+      left: 0.75em;
+      width: 2em;
+      height: 2em;
+      background-color: #002868;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0, 40, 104, 0.5);
+      
+      &::before {
+        content: '★';
+        color: white;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.2em;
+      }
+    }
+  }
+}
+
+@mixin patriotic-gradient-background($angle: 135deg) {
+  background: linear-gradient(
+    $angle,
+    #001f54 0%,
+    #033277 30%,
+    #792433 70%,
+    #a01c33 100%
+  );
+}
+
+@mixin wave-animation-container() {
+  position: relative;
+  overflow: hidden;
+  
+  .wave-animation {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.03) 50%,
+      transparent 100%
+    );
+    animation: flagWave 15s ease-in-out infinite;
+    transform-origin: right center;
+  }
+}
+
+@mixin user-profile-button($icon-color: #FFD700, $border-color: #FFFFFF, $icon-size: 1.2em) {
+  .user-profile-button {
+    position: relative;
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25em;
+    height: 2.25em;
+    padding: 0;
+    
+    .profile-icon {
+      color: $icon-color;
+      border: 1.5px solid $border-color;
+      padding: 0.12em;
+      border-radius: 50%;
+      transition: all 0.3s ease-in-out;
+      font-size: $icon-size;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      &:hover {
+        transform: scale(1.1) rotate(10deg);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+      }
+      
+      &.logged-in {
+        color: #10b981;
+        border-color: #10b981;
+      }
+      
+      // Fix for mat-icon centering within circular border
+      ::ng-deep .mat-icon {
+        font-size: $icon-size;
+        height: $icon-size;
+        width: $icon-size;
+        line-height: $icon-size;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+    
+    .notification-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background-color: #BF0A30;
+      color: white;
+      border-radius: 50%;
+      min-width: 16px;
+      height: 16px;
+      font-size: 0.65em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+
+@mixin patriotic-banner($height: 0.3em, $animation-duration: 20s) {
+  .patriotic-banner {
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: $height;
+    width: 100%;
+    z-index: 2000;
+    background: repeating-linear-gradient(
+      90deg,
+      #BF0A30 0%, #BF0A30 10%, /* Red */
+      #FFFFFF 10%, #FFFFFF 20%, /* White */
+      #002868 20%, #002868 30% /* Blue */
+    );
+    background-size: 300% 100%;
+    animation: patrioticShimmer $animation-duration linear infinite;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    
+    &.top {
+      top: 0;
+    }
+    
+    &.bottom {
+      bottom: 0;
+    }
   }
 }

@@ -1,174 +1,166 @@
 @use 'sass:map';
-@use '~@angular/material/theming' as mat;
+@use 'sass:meta';
+// @use '@angular/material/theming' as mat;
 @use './variables' as vars;
 
-// Define the color palettes
-$craft-fusion-primary: mat.define-palette(mat.$indigo-palette);
-$craft-fusion-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
-$craft-fusion-warn: mat.define-palette(mat.$red-palette);
-
-// Define the light theme
-$craft-fusion-light-theme: mat.define-light-theme((
-  color: (
-    primary: $craft-fusion-primary,
-    accent: $craft-fusion-accent,
-    warn: $craft-fusion-warn,
-  )
-));
-
-// Define the dark theme
-$craft-fusion-dark-theme: mat.define-dark-theme((
-  color: (
-    primary: $craft-fusion-primary,
-    accent: $craft-fusion-accent,
-    warn: $craft-fusion-warn,
-  )
-));
-
-// Define the patriotic theme
-$usa-blue-palette: (
-  50: #e3f2fd,
-  100: #bbdefb,
-  500: #002868,
-  700: #001e4d,
-  900: #000e24,
-  contrast: (
-    50: rgba(0, 0, 0, 0.87),
-    100: rgba(0, 0, 0, 0.87),
-    500: white,
-    700: white,
-    900: white,
-  )
+// Light theme color scheme
+$light-theme-colors: (
+  primary: #002868, // Navy blue
+  on-primary: #FFFFFF,
+  primary-container: #D6E2FF,
+  on-primary-container: #001849,
+  
+  secondary: #BF0A30, // USA Red
+  on-secondary: #FFFFFF,
+  secondary-container: #FFD9D9,
+  on-secondary-container: #400012,
+  
+  tertiary: #FFD700, // USA Gold
+  on-tertiary: #000000,
+  tertiary-container: #FFF8DC,
+  on-tertiary-container: #493900,
+  
+  surface: #F8F9FA,
+  on-surface: #1A1C1E,
+  surface-variant: #E7E0EC,
+  on-surface-variant: #49454F,
+  
+  background: #F8F9FA,
+  on-background: #1A1C1E,
+  
+  error: #B3261E,
+  on-error: #FFFFFF,
+  
+  outline: #79747E,
+  shadow: #000000
 );
 
-$usa-red-palette: (
-  50: #ffebee,
-  100: #ffcdd2,
-  500: #bf0a30,
-  700: #8c0622,
-  900: #5a0415,
-  contrast: (
-    50: rgba(0, 0, 0, 0.87),
-    100: rgba(0, 0, 0, 0.87),
-    500: white,
-    700: white,
-    900: white,
-  )
+// Dark theme color scheme
+$dark-theme-colors: (
+  primary: #B6C5FF, // Lighter blue for dark theme
+  on-primary: #002E6A,
+  primary-container: #004395,
+  on-primary-container: #D6E2FF,
+  
+  secondary: #FFB4AB, // Lighter red for dark theme
+  on-secondary: #690020,
+  secondary-container: #93000A,
+  on-secondary-container: #FFD9D9,
+  
+  tertiary: #FFD700, // Gold remains the same
+  on-tertiary: #1C1500,
+  tertiary-container: #302A00,
+  on-tertiary-container: #FFE979,
+  
+  surface: #1A1C1E,
+  on-surface: #E2E2E6,
+  surface-variant: #49454F,
+  on-surface-variant: #CAC4D0,
+  
+  background: #111214, 
+  on-background: #E2E2E6,
+  
+  error: #F2B8B5,
+  on-error: #601410,
+  
+  outline: #938F99,
+  shadow: #000000
 );
 
-$patriotic-primary: mat.define-palette($usa-blue-palette, 500, 100, 700);
-$patriotic-accent: mat.define-palette($usa-red-palette, 500, 100, 700);
-$patriotic-warn: mat.define-palette(mat.$red-palette);
+// Generate CSS variables for both themes
+@mixin generate-theme-variables($colors, $prefix: '') {
+  @each $name, $value in $colors {
+    #{$prefix}--md-sys-color-#{$name}: #{$value};
+  }
+}
 
-$patriotic-theme: mat.define-light-theme((
-  color: (
-    primary: $patriotic-primary,
-    accent: $patriotic-accent,
-    warn: $patriotic-warn,
-  )
-));
+@mixin apply-theme-variables() {
+  // Light theme variables
+  :root, .light-theme, [data-theme="light"] {
+    // Generate light theme variables
+    @include generate-theme-variables($light-theme-colors);
+    
+    // Material-specific tokens
+    --md-sys-elevation-level1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    --md-sys-elevation-level2: 0 3px 6px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.12);
+    --md-sys-elevation-level3: 0 10px 20px rgba(0,0,0,0.15), 0 3px 6px rgba(0,0,0,0.10);
+    --md-sys-elevation-level4: 0 14px 28px rgba(0,0,0,0.20), 0 10px 10px rgba(0,0,0,0.15);
+    --md-sys-elevation-level5: 0 19px 38px rgba(0,0,0,0.25), 0 15px 12px rgba(0,0,0,0.18);
+    
+    // Header gradients
+    --header-gradient: linear-gradient(
+      135deg,
+      #001f54 0%,
+      #033277 30%,
+      #792433 70%,
+      #a01c33 100%
+    );
+    
+    // Menu gradients 
+    --menu-gradient: linear-gradient(135deg, 
+      rgba(0, 0, 102, 0.95) 0%,
+      rgba(139, 0, 0, 0.95) 50%,
+      rgba(0, 0, 102, 0.95) 100%
+    );
+  }
+  
+  // Dark theme variables
+  .dark-theme, [data-theme="dark"] {
+    // Generate dark theme variables
+    @include generate-theme-variables($dark-theme-colors);
+    
+    // Material-specific tokens
+    --md-sys-elevation-level1: 0 1px 3px rgba(0,0,0,0.24), 0 1px 2px rgba(0,0,0,0.36);
+    --md-sys-elevation-level2: 0 3px 6px rgba(0,0,0,0.26), 0 2px 4px rgba(0,0,0,0.34);
+    --md-sys-elevation-level3: 0 10px 20px rgba(0,0,0,0.29), 0 3px 6px rgba(0,0,0,0.23);
+    --md-sys-elevation-level4: 0 14px 28px rgba(0,0,0,0.35), 0 10px 10px rgba(0,0,0,0.28);
+    --md-sys-elevation-level5: 0 19px 38px rgba(0,0,0,0.40), 0 15px 12px rgba(0,0,0,0.32);
+    
+    // Header gradients - darker for dark theme
+    --header-gradient: linear-gradient(
+      135deg,
+      #000d24 0%,
+      #001f54 30%,
+      #4a0f1d 70%,
+      #6a0f21 100%
+    );
+    
+    // Menu gradients - darker for dark theme
+    --menu-gradient: linear-gradient(135deg, 
+      rgba(0, 0, 60, 0.95) 0%,
+      rgba(90, 0, 0, 0.95) 50%,
+      rgba(0, 0, 60, 0.95) 100%
+    );
+  }
+}
 
-// Define a simplified typography config
-$craft-fusion-typography: (
-  font-family: 'Roboto, "Helvetica Neue", sans-serif',
-);
+// Angular Material theme configuration
+@mixin configure-material-themes() {
+  // @include mat.core();
 
-// Define palettes for themes using our custom color palettes
-$red-palette: (
-  50: #ffebee,
-  100: #ffcdd2,
-  200: #ef9a9a,
-  300: #e57373,
-  400: #ef5350,
-  500: #f44336, // Primary
-  600: #e53935,
-  700: #d32f2f,
-  800: #c62828,
-  900: #b71c1c,
-  A100: #ff8a80,
-  A200: #ff5252,
-  A400: #ff1744,
-  A700: #d50000,
-  contrast: (
-    50: rgba(0, 0, 0, 0.87),
-    100: rgba(0, 0, 0, 0.87),
-    200: rgba(0, 0, 0, 0.87),
-    300: rgba(0, 0, 0, 0.87),
-    400: rgba(0, 0, 0, 0.87),
-    500: white,
-    600: white,
-    700: white,
-    800: white,
-    900: white,
-    A100: rgba(0, 0, 0, 0.87),
-    A200: white,
-    A400: white,
-    A700: white,
-  )
-);
+  // Use Angular Material's built-in palettes:
+  // Replace define-light-theme and define-dark-theme with define-theme
+  // $light-theme: mat.define-theme((
+  //   color: (
+  //     primary: mat.define-palette(mat.$blue-palette),
+  //     accent: mat.define-palette(mat.$red-palette),
+  //     warn: mat.define-palette(mat.$amber-palette)
+  //   )
+  // ));
 
-$pink-palette: (
-  50: #fce4ec,
-  100: #f8bbd0,
-  200: #f48fb1,
-  300: #f06292,
-  400: #ec407a,
-  500: #e91e63, // Primary
-  600: #d81b60,
-  700: #c2185b,
-  800: #ad1457,
-  900: #880e4f,
-  A100: #ff80ab,
-  A200: #ff4081, // Accent
-  A400: #f50057,
-  A700: #c51162,
-  contrast: (
-    50: rgba(0, 0, 0, 0.87),
-    100: rgba(0, 0, 0, 0.87),
-    200: rgba(0, 0, 0, 0.87),
-    300: rgba(0, 0, 0, 0.87),
-    400: rgba(0, 0, 0, 0.87),
-    500: white,
-    600: white,
-    700: white,
-    800: white,
-    900: white,
-    A100: rgba(0, 0, 0, 0.87),
-    A200: white,
-    A400: white,
-    A700: white,
-  )
-);
+  // $dark-theme: mat.define-theme((
+  //   color: (
+  //     primary: mat.define-palette(mat.$blue-palette, 200),
+  //     accent: mat.define-palette(mat.$red-palette, 200),
+  //     warn: mat.define-palette(mat.$amber-palette)
+  //   )
+  // ));
 
-$craft-fusion-primary: mat.define-palette($indigo-palette);
-$craft-fusion-accent: mat.define-palette($pink-palette, A200, A100, A400);
-$craft-fusion-warn: mat.define-palette($red-palette);
-
-$craft-fusion-theme: mat.define-light-theme((
-  color: (
-    primary: $craft-fusion-primary,
-    accent: $craft-fusion-accent,
-    warn: $craft-fusion-warn,
-  ),
-  density: 0,
-));
-
-$craft-fusion-dark-theme: mat.define-dark-theme((
-  color: (
-    primary: $craft-fusion-primary,
-    accent: $craft-fusion-accent,
-    warn: $craft-fusion-warn,
-  ),
-  density: 0,
-));
-
-@mixin patriotic-theme() {
-  $patriotic-theme: mat.define-light-theme((
-    color: (
-      primary: mat.define-palette(mat.$blue-palette, 700),
-      accent: mat.define-palette(mat.$red-palette, 700),
-      warn: mat.define-palette(mat.$amber-palette, 500)
-    )
-  ));
-  @include mat.all-component-themes($patriotic-theme);
+  // Apply the light theme by default
+  // @include mat.all-component-themes($light-theme);
+  
+  // Apply the dark theme only when the .dark-theme class is applied to the body
+  // .dark-theme {
+  //   @include mat.all-component-colors($dark-theme);
+  // }
 }

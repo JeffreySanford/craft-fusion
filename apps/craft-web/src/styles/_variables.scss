@@ -88,24 +88,141 @@ $md-sys-state: (
 );
 
 // Spacing system
+$base-spacing: 0.5em; // 8px equivalent
 $spacing-unit: 8px;
 $spacing: (
   0: 0,
-  1: $spacing-unit,
-  2: $spacing-unit * 2,
-  3: $spacing-unit * 3,
-  4: $spacing-unit * 4,
-  5: $spacing-unit * 5,
-  6: $spacing-unit * 6,
-  7: $spacing-unit * 7,
-  8: $spacing-unit * 8
+  1: $spacing-unit,     // 8px
+  2: $spacing-unit * 2, // 16px
+  3: $spacing-unit * 3, // 24px
+  4: $spacing-unit * 4, // 32px
+  5: $spacing-unit * 5, // 40px
+  6: $spacing-unit * 6, // 48px
+  7: $spacing-unit * 7, // 56px
+  8: $spacing-unit * 8  // 64px
 );
 
 // Breakpoints for responsive design
 $breakpoints: (
-  sm: 576px,
-  md: 768px,
-  lg: 992px,
-  xl: 1200px,
-  xxl: 1400px
+  sm: 576px,   // Small devices
+  md: 768px,   // Medium devices
+  lg: 992px,   // Large devices
+  xl: 1200px,  // Extra large devices
+  xxl: 1400px  // Extra extra large devices
 );
+
+// Z-index layers
+$z-layers: (
+  basement: -1,
+  default: 1,
+  footer: 90,
+  header: 100,
+  star-field: 200,
+  star-content: 201,
+  overlay: 300,
+  modal: 400,
+  popover: 500,
+  dropdown: 600,
+  tooltip: 700
+);
+
+// Typography
+$font-sizes: (
+  xs: 0.75em,   // 12px
+  sm: 0.875em,  // 14px
+  base: 1em,    // 16px
+  lg: 1.125em,  // 18px
+  xl: 1.25em,   // 20px
+  2xl: 1.5em,   // 24px
+  3xl: 1.875em, // 30px
+  4xl: 2.25em,  // 36px
+  5xl: 3em,     // 48px
+  6xl: 4em      // 64px
+);
+
+// Theme colors - primary patriotic palette
+$color-navy: #002868;
+$color-red: #BF0A30;
+$color-gold: #FFD700;
+$color-white: #FFFFFF;
+
+// Animation timing
+$animation-duration-fast: 150ms;
+$animation-duration-normal: 300ms;
+$animation-duration-slow: 500ms;
+$animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+
+// Border radius
+$border-radius: (
+  none: 0,
+  xs: 2px,
+  sm: 4px,
+  md: 8px,
+  lg: 12px,
+  xl: 16px,
+  full: 9999px
+);
+
+// Box shadows - Fixed trailing comma issue
+$box-shadow: (
+  none: none,
+  sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05),
+  md: (0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)),
+  lg: (0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)),
+  xl: (0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)),
+  inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)
+);
+
+// Container dimensions
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px,
+  xxl: 1320px
+);
+
+// Grid columns
+$grid-columns: 12;
+$grid-gutter-width: 1.5em;
+
+// Transition properties - Fix invalid comma syntax
+$transition-property: (
+  none: none,
+  all: all,
+  default: (background-color, border-color, color, fill, stroke, opacity, box-shadow, transform),
+  colors: (background-color, border-color, color, fill, stroke),
+  opacity: opacity,
+  shadow: box-shadow,
+  transform: transform
+);
+
+// Animation keyframes - Fix invalid map syntax
+$keyframes: (
+  spin: (
+    from: (transform: rotate(0deg)),
+    to: (transform: rotate(360deg))
+  ),
+  ping: (
+    "0%": (transform: scale(1), opacity: 1),
+    "75%": (transform: scale(2), opacity: 0),
+    "100%": (transform: scale(2), opacity: 0)
+  ),
+  pulse: (
+    "0%": (opacity: 1),
+    "50%": (opacity: 0.5),
+    "100%": (opacity: 1)
+  ),
+  bounce: (
+    "0%": (transform: translateY(-25%), animation-timing-function: cubic-bezier(0.8, 0, 1, 1)),
+    "50%": (transform: translateY(0), animation-timing-function: cubic-bezier(0, 0, 0.2, 1)),
+    "100%": (transform: translateY(-25%), animation-timing-function: cubic-bezier(0.8, 0, 1, 1))
+  )
+);
+
+// Component-specific variables
+$header-height: 4em;
+$sidebar-width: 250px;
+$sidebar-collapsed-width: 64px;
+$footer-height: 3em;
+$footer-expanded-height: 20em;

@@ -148,6 +148,28 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
   100% { transform: translateY(0px); }
 }
 
+// Enhanced star animation
+@keyframes starEnhanced {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.4;
+    color: white;
+    text-shadow: 0 0 5px white;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(5); // Maintain centered position during scaling
+    opacity: 1;
+    color: gold;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.4);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.4;
+    color: white;
+    text-shadow: 0 0 5px white;
+  }
+}
+
 // 4. Loading Animations
 @keyframes spin {
   from { transform: rotate(0deg); }
@@ -180,6 +202,86 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
     box-shadow: $md-elevation4;
     transform: translateY(-2px);
   }
+}
+
+// Header-specific animations
+@keyframes neonPulse {
+  0% { 
+    box-shadow: 
+      0 0 5px #00f7ff,
+      0 0 10px #00f7ff,
+      0 0 20px #00f7ff;
+  }
+  50% { 
+    box-shadow: 
+      0 0 10px #ff00ff,
+      0 0 20px #ff00ff,
+      0 0 40px #ff00ff;
+  }
+  100% { 
+    box-shadow: 
+      0 0 5px #00f7ff,
+      0 0 10px #00f7ff,
+      0 0 20px #00f7ff;
+  }
+}
+
+@keyframes neonRotate {
+  from { 
+    transform: rotate(0deg); 
+    box-shadow: 0 0 20px #00ff00;
+  }
+  to { 
+    transform: rotate(360deg);
+    box-shadow: 0 0 40px #00ff00;
+  }
+}
+
+@keyframes patrioticSpin {
+  0% {
+    transform: rotate(0deg);
+    box-shadow: 0 0 10px rgba(0, 40, 104, 0.8);
+  }
+  33% {
+    box-shadow: 0 0 15px rgba(191, 10, 48, 0.8);
+  }
+  66% {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+  }
+  100% {
+    transform: rotate(360deg);
+    box-shadow: 0 0 10px rgba(0, 40, 104, 0.8);
+  }
+}
+
+// Header/Menu animations
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// Add userPulse animation
+@keyframes userPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
 // ----- Animation Utility Classes ----- //
@@ -370,6 +472,19 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
     @include respect-motion-preferences {
       transform: scaleX(1);
     }
+  }
+}
+
+// Add animation utility classes for the keyframes
+.zoom-in {
+  @include respect-motion-preferences {
+    animation: zoomIn 0.2s $ease-decelerate forwards;
+  }
+}
+
+.slide-in {
+  @include respect-motion-preferences {
+    animation: slideIn 0.2s $ease-decelerate forwards;
   }
 }
 

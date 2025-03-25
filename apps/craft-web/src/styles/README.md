@@ -74,9 +74,7 @@ This is another paragraph.
 - Prefer triple backticks over indentation
 
 ```markdown
-```typescript
-const example = 'This is properly formatted code';
-```
+console.log('This is properly formatted code');
 ```
 
 #### Tables
@@ -951,6 +949,8 @@ Component-specific styles should be placed in the component's SCSS file, not in 
 }
 ```
 
+> **IMPORTANT NOTE:** When working with component styling, never modify the `standalone: false` property in the component decorator. This property is critical for NgModule-based components and removing it will cause compilation errors.
+
 ### Extending the System
 When adding new styles, follow these guidelines:
 
@@ -1271,5 +1271,109 @@ To ensure consistency across the application, all components should follow these
 - Use Chrome DevTools device emulation for verification
 
 _This standard was established in March 2025 and should be followed for all new components and layout modifications._
+
+_Last Updated: 2025-03-24_
+
+## Header Layout Standards
+
+The header component must follow a specific layout pattern to ensure consistency across the application:
+
+## Theming System
+
+Craft Fusion now implements a comprehensive theming system with both light and dark modes.
+
+### Theme Implementation Details
+
+The theming system uses three levels of styling:
+
+1. **CSS Variables**: Core design tokens defined in `:root` and `.dark-theme` selectors
+2. **Angular Material Theming**: Custom Material palettes for components
+3. **Theme-Aware Components**: CSS that responds to the current theme context
+
+### Theme Files Organization
+
+- `_theming.scss`: Contains theme configuration, palette definitions, and Material integration
+- `_variables.scss`: Core design tokens and system-wide values
+- Individual component SCSS files: Apply theme-aware styles
+
+### How Themes Are Applied
+
+Our theming system follows a CSS-variables first approach with Angular Material integration:
+
+```scss
+// In _theming.scss
+@mixin apply-theme-variables() {
+  // Light theme variables (default)
+  :root, .light-theme, [data-theme="light"] {
+    --md-sys-color-primary: #002868;
+    --md-sys-color-on-primary: #FFFFFF;
+    // ...other variables
+  }
+  
+  // Dark theme variables
+  .dark-theme, [data-theme="dark"] {
+    --md-sys-color-primary: #B6C5FF;
+    --md-sys-color-on-primary: #002E6A;
+    // ...other variables
+  }
+}
+```
+
+The themes are controlled by the ThemeService which:
+
+1. Detects system preference using `prefers-color-scheme`
+2. Saves user preference to localStorage
+3. Applies the appropriate theme class to the body element
+
+### Using Themes In Components
+
+Components can respond to theme changes in several ways:
+
+1. **CSS Variables**
+   ```scss
+   .my-component {
+     color: var(--md-sys-color-on-surface);
+     background-color: var(--md-sys-color-surface);
+   }
+   ```
+
+2. **Theme Context Selectors**
+   ```scss
+   .my-component {
+     // Base styles
+     
+     .light-theme & {
+       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+     }
+     
+     .dark-theme & {
+       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+     }
+   }
+   ```
+
+3. **Programmatic Theme Access**
+   ```typescript
+   constructor(private themeService: ThemeService) {}
+   
+   ngOnInit() {
+     this.themeService.isDarkTheme$.subscribe(isDark => {
+       // Respond to theme changes
+     });
+   }
+   ```
+
+### Custom Theme Palettes
+
+Our Material theme uses custom patriotic palettes:
+
+- **Primary**: Navy blue (#002868) - For primary actions, headers
+- **Accent**: USA red (#BF0A30) - For highlights, secondary actions
+- **Warn**: Gold (#FFD700) - For warnings, tertiary elements
+
+These colors shift appropriately in dark mode for better visibility and reduced eye strain.
+
+## MD3 & Transparency
+We have implemented MD3 tokens and used automated suggestions to merge them. This improves design consistency while acknowledging machine-assisted updates.
 
 _Last Updated: 2025-03-24_

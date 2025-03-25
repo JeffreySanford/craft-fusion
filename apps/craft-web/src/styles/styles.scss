@@ -1,139 +1,21 @@
-@use '@angular/material' as mat;
+// @use '~@angular/material/theming' as mat;
 @use 'sass:map';
 @use '_variables' as vars;
+@use './_theme.scss' as theme;
+@use './patriotic-overrides' as patriot;
+@use './_responsive.scss' as responsive;
 
 // Import Google Fonts (MD3 recommends Roboto Flex)
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:wght@300;400;500;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;500;700&family=Lora:wght@400;500;600&family=Source+Sans+Pro:wght@300;400;600&family=Open+Sans:wght@300;400;600&display=swap');
 
-// Include the common styles for Angular Material
-@include mat.core();
+// Apply theme variables and Material themes
+@include theme.apply-theme-variables();
+@include theme.configure-material-themes();
+@include patriot.apply-patriotic-colors();
+@include responsive.responsive-typography();
 
-// MD3 Color System
-:root {
-  // Primary colors (MD3 style)
-  --md-sys-color-primary: #002868;
-  --md-sys-color-on-primary: #FFFFFF;
-  --md-sys-color-primary-container: #D6E2FF;
-  --md-sys-color-on-primary-container: #001849;
-  
-  // Secondary colors
-  --md-sys-color-secondary: #BF0A30;
-  --md-sys-color-on-secondary: #FFFFFF;
-  --md-sys-color-secondary-container: #FFD9D9;
-  --md-sys-color-on-secondary-container: #400012;
-  
-  // Surface colors
-  --md-sys-color-surface: #FDFBFF;
-  --md-sys-color-on-surface: #1B1B1F;
-  --md-sys-color-surface-variant: #E1E2EC;
-  --md-sys-color-on-surface-variant: #44474F;
-  
-  // Background colors
-  --md-sys-color-background: #FDFBFF;
-  --md-sys-color-on-background: #1B1B1F;
-  
-  // Error colors
-  --md-sys-color-error: #BA1A1A;
-  --md-sys-color-on-error: #FFFFFF;
-  --md-sys-color-error-container: #FFDAD6;
-  --md-sys-color-on-error-container: #410002;
-  
-  // Outline
-  --md-sys-color-outline: #74777F;
-  --md-sys-color-outline-variant: #C4C6D0;
-  
-  // MD3 State Layers
-  --md-sys-state-hover-state-layer-opacity: 0.08;
-  --md-sys-state-focus-state-layer-opacity: 0.12;
-  --md-sys-state-pressed-state-layer-opacity: 0.12;
-  --md-sys-state-dragged-state-layer-opacity: 0.16;
-  
-  // MD3 Elevation
-  --md-sys-elevation-level1: 0px 1px 2px rgba(0,0,0,0.3), 0px 1px 3px 1px rgba(0,0,0,0.15);
-  --md-sys-elevation-level2: 0px 1px 2px rgba(0,0,0,0.3), 0px 2px 6px 2px rgba(0,0,0,0.15);
-  --md-sys-elevation-level3: 0px 1px 3px rgba(0,0,0,0.3), 0px 4px 8px 3px rgba(0,0,0,0.15);
-  --md-sys-elevation-level4: 0px 2px 3px rgba(0,0,0,0.3), 0px 6px 10px 4px rgba(0,0,0,0.15);
-  --md-sys-elevation-level5: 0px 4px 4px rgba(0,0,0,0.3), 0px 8px 12px 6px rgba(0,0,0,0.15);
-
-  // MD3 Typography
-  --font-source: 'Playfair Display', serif;
-  --font-merriweather: 'Merriweather', serif; 
-  --font-lora: 'Lora', serif;
-  --font-source-sans-pro: 'Source Sans Pro', sans-serif;
-  --font-open-sans: 'Open Sans', sans-serif;
-  --font-roboto: 'Roboto', sans-serif;
-  --font-roboto-flex: 'Roboto Flex', sans-serif;
-  
-  // Highlight colors
-  --color-primary: #002868;
-  --color-primary-lighter: #D6E2FF;
-  --color-accent: #BF0A30;
-  --color-accent-lighter: #FFD9D9;
-  --color-gold: #FFD700;
-  --color-white: #FFFFFF;
-  --color-gray-50: #F9FAFB;
-}
-
-/* ===== Scrollbar styling ===== */
-::-webkit-scrollbar {
-  width: 12px; /* Increased scrollbar width */
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, red, white, blue);
-  border-radius: 16px; /* Larger circle radius */
-  border: 3px solid rgba(0, 40, 104, 0.5); /* Transparent border to create padding effect */
-  background-clip: content-box;
-}
-
-::-webkit-scrollbar-track {
-  background: linear-gradient(to bottom, red, white, blue); /* Gradient track background */
-}
-
-::-webkit-scrollbar-button:vertical:start:decrement {
-  background-color: transparent;
-  height: 24px;
-  width: 100%;
-  position: relative;
-
-  &::after {
-    content: '★'; /* Add a star */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: gold; /* Gold star */
-    font-size: 1.2em;
-  }
-}
-
-::-webkit-scrollbar-button:vertical:end:increment {
-  background-color: transparent;
-  height: 24px;
-  width: 100%;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 70%;
-    height: 70%;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 10%,
-      red 10%,
-      red 20%
-    );
-  }
-}
-
-::-webkit-scrollbar-button {
-  display: block;
-}
+// Apply responsive app shell with consistent alignment
+@include responsive.responsive-app-shell();
 
 // MD3 Typography
 .display-large {
@@ -415,6 +297,7 @@ app-root {
     var(--color-accent)
   );
   -webkit-background-clip: text;
+  background-clip: text; // Added standard property
   color: transparent;
 }
 
@@ -539,7 +422,7 @@ app-root {
     .mat-mdc-list-item {
       margin: 4px 8px;
       border-radius: 4px;
-      font-family: var(--font-primary);
+      font-family: var (--font-primary);
 
       &:hover {
         background-color: var(--color-gray-100);
@@ -759,7 +642,7 @@ app-root {
     border: 1px solid var(--md-sys-color-outline);
     
     &:hover {
-      background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
+      background-color: color-mix(in srgb, var (--md-sys-color-primary) 8%, transparent);
     }
   }
 }
@@ -856,8 +739,16 @@ app-root {
   }
 }
 
-// Add more MD3 components as needed...
+// Update theme-specific styles
+.header-card {
+  background: var(--header-gradient) !important;
+}
 
+::ng-deep .patriotic-menu.mat-mdc-menu-panel {
+  background: var(--menu-gradient) !important;
+}
+
+// Add more MD3 components as needed...
 
 /* === Background Video === */
 #background-video {

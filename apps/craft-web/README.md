@@ -57,6 +57,9 @@ cd ../../  # Navigate to root
 npm install some-package --save
 ```
 
+## Transparency Note
+This README now reflects our ongoing MD3 migration. Some updates were guided by automated suggestions to streamline the process.
+
 ## Data Validation
 
 ### Record Validation

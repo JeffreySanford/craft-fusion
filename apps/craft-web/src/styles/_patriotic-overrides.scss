@@ -1,0 +1,149 @@
+// Vibrant Patriotic Colors Overrides
+
+// Enhanced vibrant color variables
+$vibrant-navy: #0033a0; // More saturated navy blue
+$vibrant-red: #e40032;  // Brighter, more vivid red
+$vibrant-gold: #ffcc01; // More vibrant gold
+$pure-white: #ffffff;   // Pure white for maximum contrast
+
+// Brighten specific colors for dark theme
+$dark-navy-glow: #3a78ff; // Glowing blue for dark mode
+$dark-red-glow: #ff3b5c;  // Glowing red for dark mode
+$dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
+
+@mixin apply-patriotic-colors() {
+  // Core elements with vibrant patriotic styling
+  .header-card, .enhanced-panel, .sidebar, .main-stage {
+    color: $pure-white;
+    border: none;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+  }
+  
+  // Enhanced gradients with more vibrant colors
+  :root, .light-theme, [data-theme="light"] {
+    // Vibrant light mode gradients
+    --vibrant-header-gradient: linear-gradient(
+      135deg,
+      $vibrant-navy 0%,
+      #0046cc 30%,
+      #c80028 70%,
+      $vibrant-red 100%
+    );
+    
+    --vibrant-menu-gradient: linear-gradient(135deg, 
+      rgba(0, 51, 160, 0.97) 0%,
+      rgba(228, 0, 50, 0.97) 50%,
+      rgba(0, 51, 160, 0.97) 100%
+    );
+    
+    // Override primary colors with more vibrant versions
+    --md-sys-color-primary: #{$vibrant-navy};
+    --md-sys-color-secondary: #{$vibrant-red};
+    --md-sys-color-tertiary: #{$vibrant-gold};
+    
+    // Shared background gradients for core components
+    --sidebar-gradient: var(--vibrant-header-gradient);
+    --dashboard-gradient: linear-gradient(
+      135deg,
+      rgba(0, 51, 160, 0.15) 0%,
+      rgba(228, 0, 50, 0.15) 100%
+    );
+  }
+  
+  // Dark theme gets even more vibrant with glow effects
+  .dark-theme, [data-theme="dark"] {
+    // Vibrant dark mode gradients with glow effect
+    --vibrant-header-gradient: linear-gradient(
+      135deg,
+      #001e60 0%,
+      $dark-navy-glow 30%,
+      $dark-red-glow 70%,
+      #b3002a 100%
+    );
+    
+    --vibrant-menu-gradient: linear-gradient(135deg, 
+      rgba(30, 65, 190, 0.97) 0%,
+      rgba(255, 59, 92, 0.97) 50%,
+      rgba(30, 65, 190, 0.97) 100%
+    );
+    
+    // Override primary colors with glowing versions for dark theme
+    --md-sys-color-primary: #{$dark-navy-glow};
+    --md-sys-color-secondary: #{$dark-red-glow};
+    --md-sys-color-tertiary: #{$dark-gold-glow};
+    
+    // Shared background gradients for core components
+    --sidebar-gradient: var(--vibrant-header-gradient);
+    --dashboard-gradient: linear-gradient(
+      135deg,
+      rgba(30, 65, 190, 0.2) 0%,
+      rgba(255, 59, 92, 0.2) 100%
+    );
+  }
+  
+  // Apply vibrant gradients to specific components
+  .header-card, .enhanced-panel {
+    background: var(--vibrant-header-gradient) !important;
+  }
+  
+  .sidebar {
+    background: var(--sidebar-gradient) !important;
+  }
+  
+  .main-stage {
+    background: var(--dashboard-gradient) !important;
+  }
+  
+  ::ng-deep .patriotic-menu.mat-mdc-menu-panel {
+    background: var(--vibrant-menu-gradient) !important;
+    border: 2px solid $vibrant-gold !important;
+  }
+  
+  // Add subtle gold accents to interactive elements
+  .mat-mdc-button.mat-primary {
+    border-bottom: 2px solid $vibrant-gold;
+  }
+  
+  // Star field gets more vibrant
+  .star-field {
+    background-color: $vibrant-navy;
+    
+    &::before {
+      color: $vibrant-gold;
+      text-shadow: 0 0 10px rgba(255, 204, 1, 0.8);
+    }
+  }
+  
+  // Vibrant app title with enhanced shimmer
+  .app-title {
+    background: linear-gradient(90deg, $pure-white, $vibrant-gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 20px rgba(255, 204, 1, 0.6);
+  }
+  
+  // Text utility classes get more vibrant
+  .text-primary {
+    color: var(--md-sys-color-primary);
+    font-weight: 500;
+  }
+  
+  .text-secondary {
+    color: var(--md-sys-color-secondary);
+    font-weight: 500;
+  }
+  
+  // Make patriotic text more vibrant
+  .text-patriotic {
+    background: linear-gradient(
+      90deg,
+      $vibrant-navy,
+      $vibrant-red
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: bold;
+  }
+}

@@ -1,6 +1,11 @@
+# Book Typography
+
 # Book Application Typography Guide
 
 This document outlines the typography system used in the Craft Fusion book application, following Material Design 3 principles.
+
+## Transparency Note
+Typography guidelines now align with MD3 principles. Automated steps helped ensure consistent updates across all styles.
 
 ## Font Hierarchy
 
