@@ -39,9 +39,15 @@
         </button>
       </div>
       <div class="logo-performance-block">
-        <div class="logo-row">
-          <img *ngFor="let logo of logoLinks" [src]="logo.src" [alt]="logo.alt" [class]="logo.class" />
+        <div class="logo-container">
+          <div class="dev-logos">
+            <img *ngFor="let logo of logoLinks.slice(0, 3)" [src]="logo.src" [alt]="logo.alt" [class]="logo.class" />
+          </div>
+          <div class="agency-logos">
+            <img *ngFor="let logo of logoLinks.slice(3)" [src]="logo.src" [alt]="logo.alt" [class]="logo.class" />
+          </div>
         </div>
+        
         <mat-card class="performance-card" [ngStyle]="{'border': '2px solid ' + chartBorderColor}">
           <div class="performance-metrics">
             <div class="data-mode-toggle">

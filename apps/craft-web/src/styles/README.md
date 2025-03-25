@@ -19,6 +19,7 @@ This document provides a comprehensive guide to the styling architecture used in
 13. [Testing Plan](#testing-plan)
 14. [Refactoring Plans](#refactoring-plans)
 15. [Generating Styles with AI](#generating-styles-with-ai)
+16. [Component Alignment Standards](#component-alignment-standards)
 
 ## Architecture Overview
 
@@ -1189,5 +1190,86 @@ To contribute to the refactoring efforts:
 
 ## Coding Standards
 For overall development guidelines, see [CODING-STANDARDS.md](../../../../CODING-STANDARDS.md).
+
+## Component Alignment Standards
+
+To ensure consistency across the application, all components should follow these alignment guidelines:
+
+### Core Layout Structure
+
+1. **Container Spacing**
+   - All outer containers should have uniform 0.5em margins around them
+   - Fixed components (header, footer, sidebar) should align with these margins
+   - Example: `.footer-container { left: 0.5em; right: 0.5em; bottom: 0.5em; }`
+
+2. **Vertical Layout**
+   - Header: Fixed at top with 0.5em spacing
+   - Main content: Fills available space between header and footer
+   - Footer: Fixed at bottom with 0.5em spacing
+   - Use `calc(100% - Xem)` for precise width calculations that account for margins
+
+3. **Horizontal Layout**
+   - Sidebar: Fixed to left with 0.5em margin from edge
+   - Content area: Fills remaining space with responsive padding
+   - Use flexible layouts that maintain proper spacing across screen sizes
+
+### Component-Specific Standards
+
+1. **Header Component**
+   - Full width with 0.5em margins on left and right sides
+   - Fixed height based on content with minimum of 3em
+   - Navigation elements left-aligned with consistent spacing
+
+2. **Sidebar Component**
+   - Fixed width on desktop (250px)
+   - Collapsible on mobile with touch-friendly toggle
+   - Consistent padding: 0.5em
+
+3. **Main Content Area**
+   - Responsive padding that scales with viewport
+   - Default: 1em padding on all sides
+   - Mobile: 0.5em padding on all sides
+
+4. **Footer Component**
+   - Full width with 0.5em margins on all sides
+   - Expandable with smooth transition
+   - Default height when collapsed for optimal screen space utilization
+
+5. **Card Components**
+   - Consistent corner radius (standard: 8px, or 0.5em)
+   - Uniform padding (standard: 1em, mobile: 0.75em)
+   - Consistent elevation (use `var(--md-sys-elevation-level1)`)
+
+### Responsive Behavior
+
+- All core layouts should dynamically adjust based on these breakpoints:
+  - Small: 576px
+  - Medium: 768px
+  - Large: 992px
+  - XLarge: 1200px
+
+- On smaller screens:
+  - Sidebar becomes collapsible or transforms to bottom navigation
+  - Horizontal layouts convert to vertical stacks
+  - Spacing reduces proportionally (typically by 25-50%)
+
+### Integration with Design System
+
+- Utilize the established mixins for layout consistency:
+  ```scss
+  @include utilities.performance-chart(5em);
+  @include utilities.footer-expansion-panel(...);
+  @include utilities.logo-containers();
+  ```
+
+- Apply position helpers from _utilities.scss for standard positioning
+
+### Documentation and Testing
+
+- Each component should include responsive adjustment notes in its documentation
+- All layouts should be tested at each standard breakpoint
+- Use Chrome DevTools device emulation for verification
+
+_This standard was established in March 2025 and should be followed for all new components and layout modifications._
 
 _Last Updated: 2025-03-24_
