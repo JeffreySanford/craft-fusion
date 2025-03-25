@@ -54,4 +54,7 @@ npm install your-dev-package --save-dev
 
 ## Making Changes
 
-// ...existing development workflow details...
+<!-- Ensure blank lines around headings/lists -->
+<!-- Added "Last Updated" -->
+
+Last Updated: 2025-03-25

@@ -5,26 +5,35 @@ All notable changes to the Craft Fusion project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Format Guidelines
+
+This changelog follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format:
+
+1. Most recent changes appear at the top (reverse chronological order)
+2. Changes are grouped by type: Added, Changed, Fixed, Removed, etc.
+3. All notable changes are documented, not just bug fixes
+4. Unreleased changes appear in the "Unreleased" section at the top
+5. When releasing a version, move items from "Unreleased" to a new version heading
+6. Version headings include release date in ISO format: [x.y.z] - YYYY-MM-DD
+7. Each change should be described in plain language with technical context
+
+*Note: Please follow this format when updating the changelog. Keep entries concise, meaningful, and organized by type.*
+
 ## [Unreleased]
 
 ### Added
-
-- Dark/light theme toggle in the header
-- ThemeService for managing theme preferences
-- Support for system theme preference detection
+- Enhanced service monitoring visualization in admin dashboard
+- Admin logs component with advanced filtering capabilities
 
 ### Changed
-
-- Updated styling architecture to follow Material Design 3 principles
-- Improved header component with better positioning and animations
-- Enhanced star field animation with higher z-index and proper overflow
-- Added transparency notes to MD3-related docs and READMEs for clarity
+- Improved logger service with patriotic color theme
+- Optimized logger display component rendering
+- Enhanced footer component with performance metrics visualization
 
 ### Fixed
-
-- Fixed header width issues causing overflow
-- Resolved star animation visibility problems
-- Corrected user icon positioning for better alignment
+- Type errors in category detection methods for logger service
+- Rendering performance issues in admin dashboard
+- Missing type safety in service monitoring components
 
 ## [1.5.0] - 2023-10-30
 
@@ -147,5 +156,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dashboard analytics
 - Data visualization components
 
-## Additional Documentation
-Include high-level notes about recent changes or releases here.
+## [0.8.0] - 2025-03-25
+
+### Added
+- Comprehensive logger service with patriotic color theme
+- Category-based log classification system
+- API endpoint monitoring dashboard
+- Performance metrics visualization
+- Responsive design system with _responsive.scss mixins
+- Service call tracking and visualization
+
+### Fixed
+- Type errors in logger service category detection
+- Service monitoring component rendering issues
+- Chart visualization performance problems
+
+### Changed
+- Updated Material Design 3 implementation with vibrant patriotic theme
+- Enhanced admin dashboard with expandable endpoint details
+- Improved API logs with timeline visualization
+
+## [0.7.0] - 2025-03-10
+
+Last Updated: 2025-03-25

@@ -9,3 +9,5 @@ This directory contains comprehensive documentation for the Craft Fusion project
 - [Deployment Script](../scripts/deploy-digitalocean.sh) - Automates server setup on Digital Ocean
 
 **Note**: Ensure firewalld, Docker, and Nginx are configured properly.
+
+Last Updated: 2025-03-25
