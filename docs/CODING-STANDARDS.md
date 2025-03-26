@@ -171,6 +171,16 @@ For more detailed guidelines, see the [Component Alignment Standards](apps/craft
 - Component documentation should explain usage patterns and inputs/outputs
 - Update README files when introducing significant changes
 
+### Documentation File Naming Standards
+
+All documentation files in the `docs/` directory should follow these standards:
+
+- Use UPPERCASE for filenames with hyphens as separators: e.g., `CODING-STANDARDS.md`, `INSTALLATION.md`
+- Group related documents with prefixes: e.g., `AUTHENTICATION.md`, `AUTHENTICATION-VULNERABILITIES.md`
+- File extensions should be lowercase: `.md` not `.MD`
+- Be descriptive but concise in naming
+- Always use hyphens, not underscores or spaces, for word separation
+
 ## Additional Documentation
 
 Outline newly introduced coding conventions or guidelines here.

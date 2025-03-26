@@ -6,7 +6,7 @@ Craft Fusion features a comprehensive logging system with a flexible, interactiv
 
 ## Features
 
-- **Dual Layout Options**: 
+- **Dual Layout Options**:
   - **Grid Layout**: Split-view with a full log stream on the left and categorized collapsible cards on the right
   - **Inline Layout**: Traditional table view of all logs
 
@@ -35,6 +35,7 @@ Craft Fusion features a comprehensive logging system with a flexible, interactiv
 ### Log Display Filter
 
 Allows users to filter logs based on multiple criteria:
+
 - Log level (debug, info, warn, error)
 - Security level
 - User roles
@@ -57,6 +58,7 @@ Provides two layouts for viewing logs:
 ## Message Parser
 
 The system includes an intelligent message parser that:
+
 - Removes redundant prefixes and boilerplate text
 - Makes messages more concise and readable
 - Formats technical details appropriately
@@ -65,6 +67,7 @@ The system includes an intelligent message parser that:
 ## Security Considerations
 
 The logging system implements robust security controls:
+
 - Role-based access ensures logs are only visible to authorized users
 - Security levels allow for categorizing sensitive information
 - Export controls respect security settings
@@ -87,6 +90,7 @@ this.logger.error('Database connection failed', { errorCode: 500 });
 ## Admin Configuration
 
 Administrators can configure log permissions through the admin interface:
+
 - Set which roles can view each log level
 - Configure default security levels
 - Toggle public visibility options

@@ -106,6 +106,15 @@ Remember: Every expert developer started where you are now. We're excited to hav
 
 ## Questions?
 
-If you have any questions about contributing, please open an issue on the repository or contact the project maintainers.
+At Craft Fusion, questions aren't just welcomed—they're celebrated! Our codebase follows best practices because of developers who care enough to ask "why?" and "how?":
+
+- **No question is too basic**: We all started somewhere, and terminology that seems obvious to some may be new to others
+- **Questions improve our docs**: When you ask a question, you're identifying an opportunity to improve our documentation
+- **Code reviews are learning opportunities**: Use PR reviews to ask about patterns and practices you're curious about
+- **Document as you learn**: Found an answer to your question? Consider adding it to the relevant documentation or creating a new guide
+
+If you're hesitant to ask publicly, reach out to any team member directly—we're all committed to supporting each other's growth.
+
+Remember: The developers who built this codebase are still learning too. Your questions help us all become better engineers.
 
 Thank you for contributing to Craft Fusion!

@@ -89,4 +89,32 @@ As you become more comfortable, challenge yourself with:
 - Post questions in the `#learning` channel
 - Share resources you find helpful!
 
+## 🙋‍♂️ Craft Fusion's Question Culture
+
+Our team has cultivated what we call a "question-rich environment" where curiosity drives quality:
+
+### Why Questions Matter to Our Codebase
+
+- **Questions reveal hidden assumptions**: What seems obvious to the author may not be to others
+- **Questions drive architecture clarity**: Our clean architecture exists because people asked "why is this here?"
+- **Questions create teaching moments**: They give experienced team members a chance to share their knowledge
+- **Questions identify documentation gaps**: They tell us exactly what we need to document better
+
+### How We Respond to Questions
+
+When you ask a question at Craft Fusion, expect:
+
+1. **Thoughtful answers**: Not just "what to do" but "why we do it"
+2. **Code examples**: Practical demonstrations that illustrate the concept
+3. **Documentation improvements**: Your question often leads to better docs for everyone
+4. **Follow-up discussions**: Complex topics might spawn deeper exploration in team meetings
+
+### From Question to Documentation
+
+Many of our best documentation pieces started as questions:
+
+- Our [ENTITY-VALIDATION.md](../ENTITY-VALIDATION.md) guide emerged from questions about data integrity
+- The [style-refactoring-plan.md](../prompts/style-refactoring-plan.md) was created after recurring questions about our Material Design 3 implementation
+- This very document began as an answer to "where can I learn more about our tech stack?"
+
 Remember: Everyone on the team is still learning. Each day is an opportunity to grow your skills!

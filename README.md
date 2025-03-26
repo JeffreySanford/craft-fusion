@@ -238,7 +238,7 @@ New to the team or just starting your development journey? We're thrilled to hav
 ### 🧗‍♂️ Learning Path
 
 1. **Start here**: Read through this README completely
-2. **Setup your environment**: Follow our [Installation Guide](./docs/installation.md)
+2. **Setup your environment**: Follow our [INSTALLATION Guide](./docs/INSTALLATION.md)
 3. **Understand our code**: Review [CODING-STANDARDS.md](./CODING-STANDARDS.md)
 4. **Pick a small task**: Look for issues tagged with `good-first-issue`
 
@@ -269,5 +269,17 @@ Don't worry if it feels overwhelming at first - we all started somewhere! The mo
 - **"Which codebase should I work on first?"** - Start with craft-web for frontend or craft-nest for backend, as they have more documentation for beginners
 - **"I'm getting strange errors after pulling"** - Try `npm run clean:all` followed by `npm install`
 - **"How do I test my changes?"** - Each app has its own testing commands in its README
+
+### 💬 Our Question-Friendly Culture
+
+At Craft Fusion, we believe **the only bad question is the one you don't ask**. Our team was built on the foundation that sharing knowledge elevates everyone's skills:
+
+- **Every question improves our code**: Questions often reveal opportunities to enhance our documentation or codebase
+- **Questions lead to examples**: We love providing real-world examples that demonstrate best practices
+- **Documentation evolves through questions**: Many of our best docs started as answers to great questions
+
+The developers who ask thoughtful questions are the same ones who help us maintain our clean architecture and consistent practices. Your fresh perspective helps us see our code in new ways!
+
+**Pro tip**: When asking questions in our channels, include what you've tried and what you're trying to accomplish. This helps us provide the most helpful response.
 
 Remember: **Every expert was once a beginner**. Don't hesitate to ask questions in our development channels!

@@ -248,6 +248,39 @@ If you encounter issues during installation or development:
 
 Remember that complex issues may require collaboration to resolve, and properly documenting any solutions will benefit the whole team.
 
+### 🎯 Getting Unstuck
+
+Stuck on something? We've all been there! Try these approaches:
+
+1. **Take a step back**: Sometimes a short break helps solve problems
+2. **Check your environment**: Many issues stem from environment mismatches
+3. **Ask in the right channel**: Post in `#craft-fusion-help` with details about what you tried
+4. **Remember the logs**: Error logs have clues - share them when asking for help
+
+### 💬 Asking Great Questions (and Why We Love Them)
+
+At Craft Fusion, our perfectly structured codebase didn't happen by accident—it evolved through questions, discussions, and collaborative improvements. When you're stuck:
+
+- **Ask with context**: "I'm trying to run the Go API but getting this error after following step 3..."
+- **Share what you've tried**: "I've already verified my Go version and tried clearing the module cache..."
+- **Explain your goal**: "I'm ultimately trying to test my new endpoint against the local API..."
+
+**Why we value your questions:**
+
+- They help us improve our documentation for everyone
+- They often reveal edge cases we hadn't considered
+- They create opportunities for us to share best practices and examples
+- They show us where our processes could be more intuitive
+
+**Where to ask:**
+
+- `#craft-fusion-help` channel for general help
+- GitHub issues for specific bugs
+- Team meetings for architectural discussions
+- Direct messages to team leads for sensitive questions
+
+Every developer on the team started with questions—they're the foundation of our collaborative learning culture.
+
 ## 🧰 Detailed Prerequisites
 
 ### Required Software
@@ -411,5 +444,29 @@ Stuck on something? We've all been there! Try these approaches:
 2. **Check your environment**: Many issues stem from environment mismatches
 3. **Ask in the right channel**: Post in `#craft-fusion-help` with details about what you tried
 4. **Remember the logs**: Error logs have clues - share them when asking for help
+
+### 💬 Asking Great Questions (and Why We Love Them)
+
+At Craft Fusion, our perfectly structured codebase didn't happen by accident—it evolved through questions, discussions, and collaborative improvements. When you're stuck:
+
+- **Ask with context**: "I'm trying to run the Go API but getting this error after following step 3..."
+- **Share what you've tried**: "I've already verified my Go version and tried clearing the module cache..."
+- **Explain your goal**: "I'm ultimately trying to test my new endpoint against the local API..."
+
+**Why we value your questions:**
+
+- They help us improve our documentation for everyone
+- They often reveal edge cases we hadn't considered
+- They create opportunities for us to share best practices and examples
+- They show us where our processes could be more intuitive
+
+**Where to ask:**
+
+- `#craft-fusion-help` channel for general help
+- GitHub issues for specific bugs
+- Team meetings for architectural discussions
+- Direct messages to team leads for sensitive questions
+
+Every developer on the team started with questions—they're the foundation of our collaborative learning culture.
 
 Remember: Being stuck is part of software development. Even experienced developers encounter issues regularly!
