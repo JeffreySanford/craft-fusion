@@ -8,6 +8,7 @@
   height: 88%;
   position: relative; /* Ensure the container is positioned relative to its parent */
   transition: height 0.3s ease;
+  z-index: 1; /* Ensure it's above the background video */
 
   &.footer-expanded {
     height: 80%; /* Reduce height when footer is expanded */
@@ -59,5 +60,20 @@
       height: 75vh; /* Reduce main stage height when footer is expanded */
     }
   }
+}
+
+/* Background video styling */
+#background-video {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -100; /* Ensure it stays behind all content */
+  object-fit: cover;
+  background-size: cover;
+  overflow: hidden;
 }
 

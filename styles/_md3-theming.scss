@@ -1,8 +1,85 @@
+/* Material Design 3 Core Theming
+ * This file provides the foundation for the application's MD3 implementation
+ * with the vibrant patriotic color scheme.
+ */
+
 :root {
+  /* Primary color palette */
   --md3-color-primary: #B22234; /* Vibrant Red */
+  --md3-color-on-primary: #FFFFFF;
+  --md3-color-primary-container: #FFD9D9;
+  --md3-color-on-primary-container: #410009;
+  
+  /* Secondary color palette */
   --md3-color-secondary: #002868; /* Navy */
+  --md3-color-on-secondary: #FFFFFF;
+  --md3-color-secondary-container: #D6E2FF;
+  --md3-color-on-secondary-container: #001849;
+  
+  /* Tertiary color palette */
   --md3-color-tertiary: #FFD700; /* Gold */
+  --md3-color-on-tertiary: #000000;
+  --md3-color-tertiary-container: #FFF8DC;
+  --md3-color-on-tertiary-container: #493900;
+  
+  /* Surface colors */
+  --md3-color-surface: #FDFBFF;
+  --md3-color-on-surface: #1B1B1F;
+  --md3-color-surface-variant: #E1E2EC;
+  --md3-color-on-surface-variant: #44474F;
+  
+  /* Background colors */
   --md3-color-background: #FFFFFF; /* White */
+  --md3-color-on-background: #1B1B1F;
 }
 
-/* Additional shared typography or overrides */
+/* Typography settings */
+:root {
+  --md3-font-family: 'Roboto Flex', sans-serif;
+  --md3-headline-large-size: 2rem;
+  --md3-headline-large-weight: 400;
+  --md3-headline-large-line-height: 2.5rem;
+  --md3-headline-large-letter-spacing: 0px;
+  
+  --md3-body-medium-size: 1rem;
+  --md3-body-medium-weight: 400;
+  --md3-body-medium-line-height: 1.5rem;
+  --md3-body-medium-letter-spacing: 0.5px;
+}
+
+/* Elevation */
+:root {
+  --md3-elevation-level1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --md3-elevation-level2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+  --md3-elevation-level3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15);
+  --md3-elevation-level4: 0px 6px 10px 4px rgba(0, 0, 0, 0.15);
+  --md3-elevation-level5: 0px 8px 12px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark theme overrides */
+@media (prefers-color-scheme: dark) {
+  :root.auto-theme, .dark-theme {
+    --md3-color-primary: #FFB4B4;
+    --md3-color-on-primary: #68000F;
+    --md3-color-primary-container: #930018;
+    --md3-color-on-primary-container: #FFD9D9;
+
+    --md3-color-secondary: #ADC6FF;
+    --md3-color-on-secondary: #002E6A;
+    --md3-color-secondary-container: #004397;
+    --md3-color-on-secondary-container: #D6E2FF;
+
+    --md3-color-tertiary: #FFD84C;
+    --md3-color-on-tertiary: #3F2F00;
+    --md3-color-tertiary-container: #5A4500;
+    --md3-color-on-tertiary-container: #FFEEA8;
+    
+    --md3-color-surface: #1B1B1F;
+    --md3-color-on-surface: #E4E2E6;
+    --md3-color-surface-variant: #44474F;
+    --md3-color-on-surface-variant: #C5C6D0;
+    
+    --md3-color-background: #1B1B1F;
+    --md3-color-on-background: #E4E2E6;
+  }
+}

@@ -1,0 +1,39 @@
+/* 
+ * Update high contrast mode to use modern forced-colors standard
+ * https://blogs.windows.com/msedgedev/2020/09/17/styling-for-windows-high-contrast-with-new-standards-for-forced-colors/
+ */
+
+// Replace any existing -ms-high-contrast media queries
+@media (forced-colors: active) {
+  // Ensure essential UI elements have proper contrast in high contrast mode
+  .important-ui-element {
+    // Use system colors for high contrast mode
+    forced-color-adjust: none;
+    background-color: ButtonFace;
+    color: ButtonText;
+    border-color: ButtonText;
+  }
+
+  // Make sure links are visible in high contrast mode
+  a {
+    color: LinkText;
+  }
+
+  // Ensure focus indicators remain visible
+  :focus {
+    outline: 2px solid Highlight;
+  }
+
+  // Buttons and interactive elements
+  .md3-button {
+    forced-color-adjust: none;
+    background-color: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+    
+    &:hover, &:focus {
+      background-color: Highlight;
+      color: HighlightText;
+    }
+  }
+}
