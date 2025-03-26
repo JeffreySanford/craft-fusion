@@ -48,11 +48,9 @@ Each feature or refactoring effort should have a dedicated prompt file following
 5. **Archiving**: Keep as documentation after completion
 
 ### Task Tracking Syntax
-Use consistent checkbox syntax for tracking:
-- `[ ]` - Task not started
-- `[x]` - Task completed
-- `[~]` - Task in progress
-- `[!]` - Task blocked or has issues
+- [ ] - Not started
+- [~] - In progress
+- [x] - Completed
 
 ### Integration with Project Management
 - Reference ticket/issue numbers in task lists
