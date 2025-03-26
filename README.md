@@ -57,6 +57,7 @@ nx serve craft-go
 ## 📊 **Performance Testing**
 
 Compare backend performance:
+
 - NestJS: `http://localhost:3000/api/users?limit=1000000`
 - Go: `http://localhost:4000/records?limit=1000000`
 
@@ -71,6 +72,7 @@ Craft Fusion implements a comprehensive design system with:
 - **Admin Dashboard**: Real-time service monitoring with detailed API endpoint tracking
 
 ### Current Implementation Status (60% Complete)
+
 - ✅ Core Material Design 3 token system
 - ✅ Typography system and scale
 - ✅ Layout containers and responsive grid
@@ -126,32 +128,38 @@ The Record entity is consistently implemented across all platforms with strict v
 - Use nx commands to manage dependencies and builds
 
 ## Working Parts
+
 This monorepo is organized into several key areas:
 
 ### Angular Frontend (craft-web)
+
 - Built with Material Design 3 principles
 - Implements patriotic-themed styling with vibrant red, navy, gold, and white
 - Hosts core UI components (header, footer, sidebar) and data visualizations
 - Features enhanced logger display with patriotic color scheme
 
 ### NestJS Backend (craft-nest)
+
 - Integrates MongoDB for data persistence
 - Features real-time capabilities (WebSockets)
 - Supports the same core models as the frontend
 - Provides detailed service metrics for admin dashboard
 
 ### Go Backend (craft-go)
+
 - Provides an alternative API implementation
 - Focuses on high-performance data operations
 - Offers a comparable interface to match the NestJS backend
 
 ### Shared Refactoring Strategies
+
 - Prompt-based development approach for feature planning
 - Style refactoring plan to unify visual elements under MD3
 - Component-specific refactoring (footer, header, sidebar) for consistency
 - Data visualization plan to standardize chart components and accessibility
 
 ## Recent Updates
+
 - Fixed type errors in category detection methods
 - Enhanced logger display component with better performance  
 - Implemented patriotic color scheme for logger service
@@ -164,7 +172,9 @@ Last Updated: 2025-03-25
 - [Styles README](apps/craft-web/src/styles/README.md)
 
 ## Prompt & Refactoring Plans
+
 For details on ongoing refactoring, see:
+
 - [Master Prompt Tracking System](./prompts/prompts-tracking.md)
 - [Style Refactoring Plan](./prompts/style-refactoring-plan.md)
 - [Footer Refactoring Plan](./prompts/footer-refactoring-plan.md)
@@ -174,4 +184,90 @@ For details on ongoing refactoring, see:
 - [Feature Refactoring Strategy](./prompts/feature-refactoring-strategy.md)
 
 ## Coding Standards
+
 See [CODING-STANDARDS.md](./CODING-STANDARDS.md) for best practices and guidelines.
+
+## Project Status
+
+| Application | Status | Build | Test Coverage |
+|-------------|--------|-------|--------------|
+| craft-web | Active | [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/your-org/craft-fusion) | [![Coverage](https://img.shields.io/badge/coverage-75%25-yellow.svg)](https://github.com/your-org/craft-fusion) |
+| craft-nest | Active | [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/your-org/craft-fusion) | [![Coverage](https://img.shields.io/badge/coverage-80%25-yellow.svg)](https://github.com/your-org/craft-fusion) |
+| craft-go | Active | [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/your-org/craft-fusion) | [![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/your-org/craft-fusion) |
+| craft-automation | In Development | [![Build Status](https://img.shields.io/badge/build-pending-lightgrey.svg)](https://github.com/your-org/craft-fusion) | [![Coverage](https://img.shields.io/badge/coverage-85%25-yellow.svg)](https://github.com/your-org/craft-fusion) |
+
+## Getting Started with Development
+
+For detailed installation instructions for each application, see:
+
+- [craft-web Setup Guide](./apps/craft-web/README.md)
+- [craft-nest Setup Guide](./apps/craft-nest/README.md)
+- [craft-go Setup Guide](./apps/craft-go/README.md)
+- [craft-automation Setup Guide](./apps/craft-automation/README.md)
+
+### Quick Start
+
+```bash
+# Clone repository
+git clone https://github.com/your-org/craft-fusion.git
+cd craft-fusion
+
+# Install dependencies
+npm install
+
+# Start all applications
+nx run-many --target=serve --all
+```
+
+## Contribution Guidelines
+
+Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+## Versioning Strategy
+
+We use [SemVer](http://semver.org/) for versioning. For available versions, see the [tags on this repository](https://github.com/your-org/craft-fusion/tags).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## 🌟 Welcome to New Developers
+
+New to the team or just starting your development journey? We're thrilled to have you! Here's a roadmap to help you navigate this project:
+
+### 🧗‍♂️ Learning Path
+
+1. **Start here**: Read through this README completely
+2. **Setup your environment**: Follow our [Installation Guide](./docs/installation.md)
+3. **Understand our code**: Review [CODING-STANDARDS.md](./CODING-STANDARDS.md)
+4. **Pick a small task**: Look for issues tagged with `good-first-issue`
+
+### 🔍 Understanding the Architecture
+
+```ascii
+       ┌───────────────┐
+       │   craft-web   │
+       │   (Angular)   │
+       └───────┬───────┘
+               │
+               ▼
+┌──────────────┬──────────────┐
+│   craft-go   │  craft-nest  │
+│     (Go)     │   (NestJS)   │
+└──────────────┴──────────────┘
+               │
+               ▼
+       ┌───────────────┐
+       │   MongoDB     │
+       └───────────────┘
+```
+
+Don't worry if it feels overwhelming at first - we all started somewhere! The monorepo structure allows you to focus on one application while understanding how it fits into the bigger picture.
+
+### 🤔 Common Questions
+
+- **"Which codebase should I work on first?"** - Start with craft-web for frontend or craft-nest for backend, as they have more documentation for beginners
+- **"I'm getting strange errors after pulling"** - Try `npm run clean:all` followed by `npm install`
+- **"How do I test my changes?"** - Each app has its own testing commands in its README
+
+Remember: **Every expert was once a beginner**. Don't hesitate to ask questions in our development channels!

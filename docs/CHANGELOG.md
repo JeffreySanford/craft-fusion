@@ -22,15 +22,18 @@ This changelog follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.
 ## [Unreleased]
 
 ### Added
+
 - Enhanced service monitoring visualization in admin dashboard
 - Admin logs component with advanced filtering capabilities
 
 ### Changed
+
 - Improved logger service with patriotic color theme
 - Optimized logger display component rendering
 - Enhanced footer component with performance metrics visualization
 
 ### Fixed
+
 - Type errors in category detection methods for logger service
 - Rendering performance issues in admin dashboard
 - Missing type safety in service monitoring components
@@ -84,7 +87,7 @@ This changelog follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.
 ### Added
 
 - Dark mode toggle
-- Improved responsive layout for mobile devices 
+- Improved responsive layout for mobile devices
 - Performance monitoring for API requests
 - User preference persistence
 - Offline mode capabilities
@@ -159,6 +162,7 @@ This changelog follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.
 ## [0.8.0] - 2025-03-25
 
 ### Added
+
 - Comprehensive logger service with patriotic color theme
 - Category-based log classification system
 - API endpoint monitoring dashboard
@@ -167,11 +171,13 @@ This changelog follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.
 - Service call tracking and visualization
 
 ### Fixed
+
 - Type errors in logger service category detection
 - Service monitoring component rendering issues
 - Chart visualization performance problems
 
 ### Changed
+
 - Updated Material Design 3 implementation with vibrant patriotic theme
 - Enhanced admin dashboard with expandable endpoint details
 - Improved API logs with timeline visualization

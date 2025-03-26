@@ -24,7 +24,7 @@ This document outlines the key technical standards and patterns to be followed a
 ## Angular Guidelines
 
 - Use standalone components by default for new components
-- **IMPORTANT:** Always maintain `standalone: false` for existing NgModule-based components 
+- **IMPORTANT:** Always maintain `standalone: false` for existing NgModule-based components
 - Never remove the `standalone: false` property from component decorators unless explicitly converting to standalone
 - Components refactored from NgModule-based to standalone architecture require team review
 - Leverage Angular signals for state management
@@ -121,13 +121,14 @@ ngOnDestroy() {
 - Always use the appropriate semantic colors for proper theme support
 
 ## MD3 Transparency
+
 These standards now reflect a move toward MD3 design tokens. Some code transitions were generated through automated insights for faster adoption.
 
 ## Component Layout Standards
 
 All components in the application should follow a consistent layout approach. The core application structure follows this pattern:
 
-```
+``` html
 <app-root>
   <app-header fixed="top" margin="0.5em"/>
   <div class="layout-container">
@@ -171,6 +172,7 @@ For more detailed guidelines, see the [Component Alignment Standards](apps/craft
 - Update README files when introducing significant changes
 
 ## Additional Documentation
+
 Outline newly introduced coding conventions or guidelines here.
 
 ---

@@ -39,12 +39,14 @@ Craft-Nest is a robust NestJS backend service that provides API endpoints, real-
 
 ### Package Management
 
-> **Important**: This application follows monorepo architecture principles. 
+> **Important**: This application follows monorepo architecture principles.
+>
 > - **DO NOT** create a package.json file in this directory
 > - All dependencies must be managed through the root-level package.json
 > - Use `nx run craft-nest:command` format for operations
 
 To install a new dependency:
+
 ```bash
 # Add a dependency for this application
 cd ../../  # Navigate to root
@@ -67,4 +69,3 @@ validateRecord(data: any): boolean {
 ```
 
 All fields in the Record entity are required to ensure data consistency.
-
