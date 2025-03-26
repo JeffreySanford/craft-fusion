@@ -1,23 +1,81 @@
-// @use '~@angular/material/theming' as mat;
-@use 'sass:map';
-@use '_variables' as vars;
-@use './_theme.scss' as theme;
-@use './patriotic-overrides' as patriot;
-@use './_responsive.scss' as responsive;
+/**
+ * Craft Fusion Main Stylesheet
+ * This is the main entry point for all styles in the application.
+ */
 
-// Import Google Fonts (MD3 recommends Roboto Flex)
+@use 'sass:map';
+@use 'sass:color';
+@use 'sass:math';
+@use 'variables' as vars;
+@use 'patriotic' as patriot;
+@use 'typography';
+@use 'md3-tokens';
+@use 'theme';
+@use 'utilities';
+@use 'reset';
+@use 'responsive';
+@use 'md3-components';
+@use 'material-overrides';
+@use 'patriotic-overrides';
+@use 'layout';
+@use 'scrollbar';
+@use 'animations';
+
+/* Define custom patriotic colors */
+$usa-red: vars.$usa-red;
+$usa-blue: vars.$usa-blue;
+$usa-white: vars.$usa-white;
+$usa-gold: vars.$usa-gold;
+
+/* Define theme color variables */
+$craft-primary: vars.$usa-blue;
+$craft-accent: vars.$usa-red;
+$craft-warn: vars.$usa-gold;
+
+/* Apply patriotic colors */
+@include patriot.apply-patriotic-colors();
+
+/* Main styles for Craft Fusion application */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
+}
+
+/* Apply global styles to all elements */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:wght@300;400;500;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;500;700&family=Lora:wght@400;500;600&family=Source+Sans+Pro:wght@300;400;600&family=Open+Sans:wght@300;400;600&display=swap');
 
-// Apply theme variables and Material themes
+/* Apply theme variables and Material themes */
 @include theme.apply-theme-variables();
-@include theme.configure-material-themes();
-@include patriot.apply-patriotic-colors();
 @include responsive.responsive-typography();
 
-// Apply responsive app shell with consistent alignment
+/* Apply responsive app shell with consistent alignment */
 @include responsive.responsive-app-shell();
 
-// MD3 Typography
+/* MD3 Typography */
 .display-large {
   font-family: 'Roboto Flex', sans-serif;
   font-size: 57px;
@@ -50,7 +108,7 @@
   font-weight: 400;
 }
 
-// Base styles
+/* Base styles for the app */
 body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
@@ -97,59 +155,7 @@ app-root {
   overflow: visible; 
 }
 
-.recipe-content-wrapper {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: 100%;
-  min-height: 100vh; /* Ensure full height */
-  overflow: visible;
-}
-
-// Basic typography classes
-.headline-1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 96px;
-  line-height: 96px;
-  font-weight: 300;
-}
-
-.headline-2 {
-  font-family: 'Merriweather', serif;
-  font-size: 60px;
-  line-height: 60px;
-  font-weight: 300;
-}
-
-.headline-3 {
-  font-family: 'Lora', serif;
-  font-size: 48px;
-  line-height: 48px;
-  font-weight: 400;
-}
-
-.headline-4 {
-  font-family: 'Source Sans Pro', sans-serif;
-  font-size: 34px;
-  line-height: 40px;
-  font-weight: 400;
-}
-
-.headline-5 {
-  font-family: 'Open Sans', sans-serif;
-  font-size: 24px;
-  line-height: 32px;
-  font-weight: 400;
-}
-
-.headline-6 {
-  font-family: 'Roboto', sans-serif;
-  font-size: 20px;
-  line-height: 32px;
-  font-weight: 500;
-}
-
-// Material component styles with our patriotic theme
+/* Material component styles with our patriotic theme */
 .mat-mdc-button.mat-primary {
   background-color: var(--color-primary);
   color: var(--color-white);
@@ -168,7 +174,6 @@ app-root {
   }
 }
 
-// Add some subtle animations
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -180,7 +185,7 @@ app-root {
   }
 }
 
-// Apply animations to components
+/* Apply animations to components */
 .headline-1,
 .headline-2,
 .headline-3,
@@ -190,13 +195,13 @@ app-root {
   animation: fadeIn 0.5s ease-out;
 }
 
-// Card styles with patriotic theme
+/* Card styles with patriotic theme */
 .mat-mdc-card {
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-// Interactive button styles with ripple effect
+/* Interactive button styles with ripple effect */
 .patriotic-button {
   position: relative;
   overflow: hidden;
@@ -226,7 +231,7 @@ app-root {
   }
 }
 
-// Card variations
+/* Card variations */
 .patriotic-card {
   &.flag-style {
     border-left: 4px solid var(--color-primary);
@@ -262,7 +267,7 @@ app-root {
   }
 }
 
-// Animated loading state
+/* Animated loading state */
 .patriotic-loading {
   width: 100%;
   height: 4px;
@@ -284,7 +289,7 @@ app-root {
   }
 }
 
-// Text effects
+/* Text effects */
 .text-glow {
   text-shadow: 0 0 10px rgba(0, 40, 104, 0.3);
   animation: textPulse 2s infinite;
@@ -297,11 +302,11 @@ app-root {
     var(--color-accent)
   );
   -webkit-background-clip: text;
-  background-clip: text; // Added standard property
+  background-clip: text;
   color: transparent;
 }
 
-// New animations
+/* New animations */
 @keyframes eagleShine {
   0% { transform: rotate(45deg) translateX(-100%); }
   100% { transform: rotate(45deg) translateX(100%); }
@@ -318,7 +323,7 @@ app-root {
   100% { text-shadow: 0 0 10px rgba(0, 40, 104, 0.3); }
 }
 
-// Responsive typography
+/* Responsive typography */
 @media (max-width: 768px) {
   :root {
     --font-size-h1: 72px;
@@ -330,7 +335,7 @@ app-root {
   }
 }
 
-// Print styles
+/* Print styles */
 @media print {
   .patriotic-gradient,
   .text-glow,
@@ -348,7 +353,7 @@ app-root {
   }
 }
 
-// Data Table Styles
+/* Data Table Styles */
 .mat-mdc-table {
   width: 100%;
   background: var(--color-white);
@@ -386,13 +391,13 @@ app-root {
     }
   }
 
-  // Sorting indicators
+  /* Sorting indicators */
   .mat-sort-header-arrow {
     color: var(--color-white);
   }
 }
 
-// Navigation Styles
+/* Navigation Styles */
 .mat-mdc-toolbar {
   background-color: var(--color-primary);
   color: var(--color-white);
@@ -410,7 +415,7 @@ app-root {
   }
 }
 
-// Sidenav Styles
+/* Sidenav Styles */
 .mat-mdc-sidenav {
   width: 250px;
   background-color: var(--color-white);
@@ -436,7 +441,7 @@ app-root {
   }
 }
 
-// Form Styles
+/* Form Styles */
 .mat-mdc-form-field {
   width: 100%;
   margin-bottom: 16px;
@@ -456,7 +461,7 @@ app-root {
   }
 }
 
-// Dialog Styles
+/* Dialog Styles */
 .mat-mdc-dialog-container {
   border-radius: 8px !important;
   overflow: hidden;
@@ -479,7 +484,7 @@ app-root {
   }
 }
 
-// Card Grid Layout
+/* Card Grid Layout */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -497,7 +502,7 @@ app-root {
   }
 }
 
-// Dashboard Widgets
+/* Dashboard Widgets */
 .dashboard-widget {
   background: var(--color-white);
   border-radius: 8px;
@@ -533,7 +538,7 @@ app-root {
   }
 }
 
-// Responsive Layout Utilities
+/* Responsive Layout Utilities */
 .responsive-container {
   padding: 24px;
   margin: 0 auto;
@@ -554,7 +559,7 @@ app-root {
   }
 }
 
-// Loading States
+/* Loading States */
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -572,7 +577,7 @@ app-root {
   }
 }
 
-// Toast Notifications
+/* Toast Notifications */
 .toast-container {
   .ngx-toastr {
     background-color: var(--color-white);
@@ -600,9 +605,9 @@ app-root {
   }
 }
 
-// MD3 Components
+/* MD3 Components */
 
-// Buttons
+/* Buttons */
 .md3-button {
   height: 40px;
   padding: 0 24px;
@@ -647,7 +652,7 @@ app-root {
   }
 }
 
-// Cards
+/* Cards */
 .md3-card {
   background-color: var(--md-sys-color-surface);
   border-radius: 12px;
@@ -670,7 +675,7 @@ app-root {
   }
 }
 
-// Navigation Rail
+/* Navigation Rail */
 .md3-nav-rail {
   width: 80px;
   background-color: var(--md-sys-color-surface);
@@ -700,7 +705,7 @@ app-root {
   }
 }
 
-// Top App Bar
+/* Top App Bar */
 .md3-top-app-bar {
   height: 64px;
   background-color: var(--md-sys-color-surface);
@@ -717,7 +722,7 @@ app-root {
   }
 }
 
-// Lists
+/* Lists */
 .md3-list {
   padding: 8px 0;
   
@@ -734,12 +739,12 @@ app-root {
     
     &.active {
       background-color: var(--md-sys-color-secondary-container);
-      color: var(--md-sys-color-on-secondary-container);
+      color: var (--md-sys-color-on-secondary-container);
     }
   }
 }
 
-// Update theme-specific styles
+/* Update theme-specific styles */
 .header-card {
   background: var(--header-gradient) !important;
 }
@@ -748,7 +753,7 @@ app-root {
   background: var(--menu-gradient) !important;
 }
 
-// Add more MD3 components as needed...
+/* Add more MD3 components as needed... */
 
 /* === Background Video === */
 #background-video {
@@ -775,4 +780,23 @@ app-root {
 
 ::ng-deep .mat-expansion-indicator {
   color: var(--color-gold);
+}
+
+/* Define scrollbar styles that can be extended by components */
+.patriotic-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
 }

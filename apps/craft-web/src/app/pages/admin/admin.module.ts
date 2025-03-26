@@ -28,7 +28,7 @@ import { LoggerDisplayComponent } from '../../components/logger-display/logger-d
   declarations: [
     AdminComponent,
     LogsComponent,
-    LoggerDisplayComponent // Changed: now declared in the module instead of imported
+    LoggerDisplayComponent
   ],
   imports: [
     CommonModule,

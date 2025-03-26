@@ -1,58 +1,50 @@
-/* Modern CSS Reset */
+/**
+ * Craft Fusion CSS Reset
+ * 
+ * A modern CSS reset that removes browser inconsistencies and
+ * provides a clean foundation for our styling.
+ *
+ * Last Updated: March 26, 2025
+ */
 
-/* Box sizing rules */
+// Reset box sizing
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-/* Remove default margin */
+// Reset margins
 body,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-figure,
-blockquote,
-dl,
-dd {
+h1, h2, h3, h4, h5, h6,
+p, figure, blockquote, dl, dd {
   margin: 0;
 }
 
-/* Set core body defaults */
+// Body setup
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   min-height: 100vh;
-  scroll-behavior: smooth;
   text-rendering: optimizeSpeed;
   line-height: 1.5;
-  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Create a root stacking context */
-#root, #__next {
-  isolation: isolate;
-}
-
-/* Remove list styles on ul, ol elements */
-ul,
-ol {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-/* Make images easier to work with */
+// Media defaults
 img,
-picture {
-  max-width: 100%;
+picture,
+video,
+canvas,
+svg {
   display: block;
+  max-width: 100%;
 }
 
-/* Inherit fonts for inputs and buttons */
+// Form elements
 input,
 button,
 textarea,
@@ -60,26 +52,57 @@ select {
   font: inherit;
 }
 
-/* Remove all animations and transitions for people that prefer not to see them */
+// Tables
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+// Links
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+// List styles
+ul, ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+// Fix line height in all browsers
+html {
+  line-height: 1.15;
+}
+
+// Remove margin in all browsers
+body {
+  margin: 0;
+}
+
+// Correct font size in all browsers
+small {
+  font-size: 80%;
+}
+
+// Remove default focus styles for improved custom focus styles
+:focus {
+  outline: none;
+}
+
+// Remove animations for users who prefer reduced motion
 @media (prefers-reduced-motion: reduce) {
-  * {
+  html:focus-within {
+   scroll-behavior: auto;
+  }
+  
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* Remove default button styles */
-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-/* Remove default anchor styles */
-a {
-  text-decoration: none;
-  color: inherit;
 }

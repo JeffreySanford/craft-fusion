@@ -1,6 +1,27 @@
 @use '@angular/material' as mat;
 @use 'sass:color';
 @use './styles/theme' as *;
+@use "sass:map";
+
+/* Define the missing font-families map */
+$font-families: (
+  roboto: 'Roboto, sans-serif',
+  merriweather: 'Merriweather, serif',
+  lora: 'Lora, serif',
+  ibm-plex: 'IBM Plex Serif, serif',
+  libre: 'Libre Baskerville, serif',
+  eb-garamond: 'EB Garamond, serif',
+  crimson: 'Crimson Pro, serif'
+);
+
+/* Define the book-fonts map */
+$book-fonts: (
+  body-text: 'Lora, serif',
+  chapter-heading: 'Libre Baskerville, serif',
+  section-heading: 'IBM Plex Serif, serif',
+  quotes: 'EB Garamond, serif',
+  footnotes: 'Crimson Pro, serif'
+);
 
 $vibrant-red: #f00;
 $vibrant-blue: #00f;
@@ -38,8 +59,64 @@ $vibrant-yellow: #fc0;
   font-weight: 200;
 }
 
+
+/* Typography for specific components */
+.book-content, .chat-content {
+  font-family: map.get($font-families, merriweather);
+}
+
+.table-data {
+  font-family: map.get($font-families, roboto);
+}
+
+/* Book-specific typography classes */
+.book-body-text {
+  font-family: map.get($book-fonts, body-text);
+  font-size: 1.125em;
+  line-height: 1.7;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+}
+
+.book-chapter-title {
+  font-family: map.get($book-fonts, chapter-heading);
+  font-size: 2.5em;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  margin-bottom: 1em;
+}
+
+.book-section-title {
+  font-family: map.get($book-fonts, section-heading);
+  font-size: 1.75em;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+.book-quote {
+  font-family: map.get($book-fonts, quotes);
+  font-size: 1.25em;
+  line-height: 1.6;
+  font-style: italic;
+  letter-spacing: 0;
+  padding: 1em 2em;
+  border-left: 4px solid var(--md-sys-color-tertiary);
+  background-color: color-mix(in srgb, var(--md-sys-color-tertiary) 10%, transparent);
+}
+
+.book-footnote {
+  font-family: map.get($book-fonts, footnotes);
+  font-size: 0.875em;
+  line-height: 1.5;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
 :root {
-  // Light theme colors
+  /* Light theme colors */
   --light-background: #f5f5f5;
   --light-text: #1e1e1e;
   --light-myth-bg: rgba(0, 255, 0, 0.02);
@@ -47,7 +124,7 @@ $vibrant-yellow: #fc0;
   --light-myth-text: #0c0;
   --light-myth-hover: #2f2;
   
-  // Dark theme colors
+  /* Dark theme colors */
   --dark-background: #1e1e1e;
   --dark-text: #e0e0e0;
   --dark-myth-bg: rgba(0, 255, 0, 0.05);
@@ -71,7 +148,7 @@ $vibrant-yellow: #fc0;
     .toolbar {
       background: var(--book-light-toolbar);
       border-bottom: 1px solid var(--book-light-border);
-      color: var(--book-light-text); /* Add text color */
+      color: var(--book-light-text);
     }
 
     .markdown-preview {
@@ -125,7 +202,7 @@ $vibrant-yellow: #fc0;
     .toolbar {
       background: var(--book-dark-toolbar);
       border-bottom: 1px solid var(--book-dark-border);
-      color: var(--book-dark-text); /* Add text color */
+      color: var(--book-dark-text);
     }
 
     .markdown-preview {
@@ -154,7 +231,7 @@ $vibrant-yellow: #fc0;
 
     .outline-box {
       background-color: var(--book-dark-outline-bg);
-      color: var(--book-dark-outline-text);
+      color: var (--book-dark-outline-text);
       border: 1px solid var(--book-dark-outline-border);
 
       .chapter-link {
@@ -215,19 +292,19 @@ $vibrant-yellow: #fc0;
 
       h1 {
         font-size: 2.5em;
-        color: #FF4081 !important; // Pink
+        color: #FF4081 !important;
         text-shadow: 1px 1px 2px rgba(255, 64, 129, 0.3);
       }
 
       h2 {
         font-size: 2em;
-        color: #7C4DFF !important; // Deep Purple
+        color: #7C4DFF !important;
         text-shadow: 1px 1px 2px rgba(124, 77, 255, 0.3);
       }
 
       h3 {
         font-size: 1.75em;
-        color: #00BCD4 !important; // Cyan
+        color: #00BCD4 !important;
         text-shadow: 1px 1px 2px rgba(0, 188, 212, 0.3);
         letter-spacing: 0.009375em;
         font-weight: 400;
@@ -241,19 +318,19 @@ $vibrant-yellow: #fc0;
 
       h4 {
         font-size: 1.5em;
-        color: #FFC107 !important; // Amber
+        color: #FFC107 !important;
         text-shadow: 1px 1px 2px rgba(255, 193, 7, 0.3);
       }
 
       h5 {
         font-size: 1em;
-        color: #64FFDA !important; // Teal Accent
+        color: #64FFDA !important;
         text-shadow: 1px 1px 2px rgba(100, 255, 218, 0.3);
       }
 
       h6 {
         font-size: 0.8em;
-        color: #FF5722 !important; // Deep Orange
+        color: #FF5722 !important;
         text-shadow: 1px 1px 2px rgba(255, 87, 34, 0.3);
       }
 
@@ -285,12 +362,11 @@ $vibrant-yellow: #fc0;
         }
 
         p {
-          color: #90EE90 !important; // Light green
+          color: #90EE90 !important;
           font-family: var(--book-font-family) !important;
           margin-left: 2em;
           position: relative;
           
-          // Target paragraphs that start with numbers
           &[data-myth-line]::before {
             content: attr(data-myth-line);
             position: absolute;
@@ -301,7 +377,6 @@ $vibrant-yellow: #fc0;
         }
       }
 
-      // Simple myth styling
       [data-myth-line] {
         color: $vibrant-green !important;
         padding-left: 3em;
@@ -312,7 +387,7 @@ $vibrant-yellow: #fc0;
           content: attr(data-myth-line);
           position: absolute;
           left: 0;
-          color: color.adjust($vibrant-green, $lightness: -20%); // Line 191: Fixed
+          color: color.adjust($vibrant-green, $lightness: -20%);
           font-weight: bold;
           font-style: normal;
           width: 2.5em;
@@ -336,7 +411,7 @@ $vibrant-yellow: #fc0;
             content: attr(data-myth-line);
             position: absolute;
             left: 1em;
-            color: color.adjust($vibrant-green, $lightness: -20%); // Line 216: Fixed - removed extra parameters
+            color: color.adjust($vibrant-green, $lightness: -20%);
             font-weight: bold;
             font-style: normal;
           }
@@ -364,7 +439,7 @@ $vibrant-yellow: #fc0;
             content: attr(data-verse);
             position: absolute;
             left: 0;
-            color: color.adjust($vibrant-green, $lightness: -20%); // Line 237: Fixed - removed extra parameters
+            color: color.adjust($vibrant-green, $lightness: -20%);
             font-weight: bold;
             font-style: normal;
             width: 2.5em;
@@ -398,7 +473,7 @@ $vibrant-yellow: #fc0;
       }
 
       p.myth-line {
-        color: #B2FF59 !important; // Light Green Accent
+        color: #B2FF59 !important;
         font-style: italic;
         position: relative;
         padding-left: 2em;
@@ -408,7 +483,7 @@ $vibrant-yellow: #fc0;
         .myth-number {
           position: absolute;
           left: 0;
-          color: color.adjust($vibrant-green, $lightness: -20%); // Line 257: Fixed - removed extra parameters
+          color: color.adjust($vibrant-green, $lightness: -20%);
           font-weight: bold;
           font-style: normal;
         }

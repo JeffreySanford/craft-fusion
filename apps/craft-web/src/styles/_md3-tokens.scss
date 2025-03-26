@@ -37,3 +37,134 @@ $md-sys-color: (
     // ...other type styles
   )
 );
+
+/**
+ * Material Design 3 Design Tokens
+ * 
+ * This file contains the core MD3 design token variables.
+ * These tokens follow official Material Design 3 naming conventions.
+ * 
+ * The tokens defined here are exposed as CSS variables for runtime theming capabilities.
+ */
+
+@use 'variables' as vars;
+
+// --------------------------------------
+// Material Design 3 Tokens
+// --------------------------------------
+
+// CSS variables for light theme
+:root, .light-theme {
+  // Primary colors
+  --md-sys-color-primary: #{vars.$primary-navy};
+  --md-sys-color-on-primary: #{vars.$usa-white};
+  --md-sys-color-primary-container: #D6E2FF;
+  --md-sys-color-on-primary-container: #001849;
+  
+  // Secondary colors
+  --md-sys-color-secondary: #{vars.$usa-red};
+  --md-sys-color-on-secondary: #{vars.$usa-white};
+  --md-sys-color-secondary-container: #FFD9D9;
+  --md-sys-color-on-secondary-container: #400012;
+  
+  // Tertiary colors
+  --md-sys-color-tertiary: #{vars.$usa-gold};
+  --md-sys-color-on-tertiary: #000000;
+  --md-sys-color-tertiary-container: #FFF8DC;
+  --md-sys-color-on-tertiary-container: #493900;
+  
+  // Surface colors
+  --md-sys-color-surface: #FDFBFF;
+  --md-sys-color-on-surface: #1B1B1F;
+  --md-sys-color-surface-variant: #E1E2EC;
+  --md-sys-color-on-surface-variant: #44474F;
+  
+  // Background colors
+  --md-sys-color-background: #FDFBFF;
+  --md-sys-color-on-background: #1B1B1F;
+  
+  // Error colors
+  --md-sys-color-error: #B3261E;
+  --md-sys-color-on-error: #FFFFFF;
+  --md-sys-color-error-container: #F9DEDC;
+  --md-sys-color-on-error-container: #410E0B;
+  
+  // Outline colors
+  --md-sys-color-outline: #74777F;
+  --md-sys-color-outline-variant: #C4C6D0;
+  
+  // Additional colors
+  --md-sys-color-shadow: #{vars.$black};
+  --md-sys-color-scrim: #{vars.$black};
+  --md-sys-color-inverse-surface: #313033;
+  --md-sys-color-inverse-on-surface: #F4EFF4;
+  --md-sys-color-inverse-primary: #B6C5FF;
+  --md-sys-color-surface-dim: #DED8E1;
+  --md-sys-color-surface-bright: #FFF8F6;
+  --md-sys-color-surface-container-lowest: #FFFFFF;
+  --md-sys-color-surface-container-low: #F7F2FA;
+  --md-sys-color-surface-container: #F3EDF7;
+  --md-sys-color-surface-container-high: #ECE6F0;
+  --md-sys-color-surface-container-highest: #E6E0E9;
+
+  /* For opacity calculations */
+  --md-sys-color-primary-rgb: 0, 40, 104; /* #002868 */
+  --md-sys-color-secondary-rgb: 191, 10, 48; /* #BF0A30 */
+  --md-sys-color-tertiary-rgb: 255, 215, 0; /* #FFD700 */
+  --md-sys-color-surface-variant-rgb: 225, 226, 236; /* #E1E2EC */
+}
+
+// CSS variables for dark theme
+.dark-theme {
+  // Primary colors
+  --md-sys-color-primary: #B6C5FF;
+  --md-sys-color-on-primary: #002E6A;
+  --md-sys-color-primary-container: #1A4494;
+  --md-sys-color-on-primary-container: #D8E2FF;
+  
+  // Secondary colors
+  --md-sys-color-secondary: #FFB3B3;
+  --md-sys-color-on-secondary: #680020;
+  --md-sys-color-secondary-container: #920030;
+  --md-sys-color-on-secondary-container: #FFD9D9;
+  
+  // Tertiary colors
+  --md-sys-color-tertiary: #FFDF80;
+  --md-sys-color-on-tertiary: #402D00;
+  --md-sys-color-tertiary-container: #5D4200;
+  --md-sys-color-on-tertiary-container: #FFDF9E;
+  
+  // Surface colors
+  --md-sys-color-surface: #1C1B1F;
+  --md-sys-color-on-surface: #E6E1E5;
+  --md-sys-color-surface-variant: #49454F;
+  --md-sys-color-on-surface-variant: #CAC4D0;
+  
+  // Background colors
+  --md-sys-color-background: #1C1B1F;
+  --md-sys-color-on-background: #E6E1E5;
+  
+  // Error colors
+  --md-sys-color-error: #F2B8B5;
+  --md-sys-color-on-error: #601410;
+  --md-sys-color-error-container: #8C1D18;
+  --md-sys-color-on-error-container: #F9DEDC;
+  
+  // Outline colors
+  --md-sys-color-outline: #938F99;
+  --md-sys-color-outline-variant: #444746;
+  
+  // Additional colors
+  --md-sys-color-shadow: #{vars.$black};
+  --md-sys-color-scrim: #{vars.$black};
+  --md-sys-color-inverse-surface: #E6E1E5;
+  --md-sys-color-inverse-on-surface: #313033;
+  --md-sys-color-inverse-primary: #1A4494;
+  --md-sys-color-surface-dim: #131316;
+  --md-sys-color-surface-bright: #3B383E;
+  --md-sys-color-surface-container-lowest: #0F0F12;
+  --md-sys-color-surface-container-low: #1D1B20;
+  --md-sys-color-surface-container: #211F26;
+  --md-sys-color-surface-container-high: #2B2930;
+  --md-sys-color-surface-container-highest: #36343B;
+}

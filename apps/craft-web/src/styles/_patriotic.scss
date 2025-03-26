@@ -1,0 +1,38 @@
+@use 'variables' as vars;
+
+@mixin apply-patriotic-colors() {
+  :root {
+    --usa-red: #{vars.$usa-red};
+    --usa-blue: #{vars.$usa-blue};
+    --usa-white: #{vars.$usa-white};
+    --usa-gold: #{vars.$usa-gold};
+    
+    --patriotic-gradient: linear-gradient(135deg, 
+      var(--usa-blue) 0%,
+      var(--usa-white) 50%,
+      var(--usa-red) 100%);
+    
+    --star-gradient: radial-gradient(
+      circle at center,
+      var(--usa-white) 0%,
+      var(--usa-gold) 50%,
+      rgba(255, 215, 0, 0.5) 100%
+    );
+  }
+  
+  .patriotic-text {
+    background: var(--patriotic-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .patriotic-bg {
+    background: var(--patriotic-gradient);
+  }
+  
+  .patriotic-border {
+    border: 2px solid;
+    border-image: var(--patriotic-gradient) 1;
+  }
+}

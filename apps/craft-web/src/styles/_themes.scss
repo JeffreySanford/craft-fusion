@@ -1,80 +1,113 @@
+@use 'sass:map';
+@use 'sass:color';
+@use './variables' as vars;
+
 // _themes.scss
+
+// Theme palette definitions
+$patriotic-blue-palette: (
+  50: #e3f2fd,
+  100: #bbdefb,
+  200: #90caf9,
+  300: #64b5f6,
+  400: #42a5f5,
+  500: #002868, // patriotic blue
+  600: #1e88e5,
+  700: #1976d2,
+  800: #1565c0,
+  900: #0d47a1,
+  contrast: (
+    50: rgba(0, 0, 0, 0.87),
+    100: rgba(0, 0, 0, 0.87),
+    200: rgba(0, 0, 0, 0.87),
+    300: rgba(0, 0, 0, 0.87),
+    400: rgba(0, 0, 0, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
 
 // Light Theme
 $light-theme: (
-    primary: #ffffff,
-    secondary: #f0f0f0,
-    accent: #007bff,
-    text: #000000,
-    background: #ffffff
+  primary: vars.$primary-navy,
+  secondary: vars.$usa-red,
+  accent: vars.$usa-gold,
+  text: #333333,
+  background: #FFFFFF,
 );
 
 // Dark Theme
 $dark-theme: (
-    primary: #000000,
-    secondary: #333333,
-    accent: #ff4081,
-    text: #ffffff,
-    background: #000000
+  primary: vars.$primary-navy,
+  secondary: vars.$usa-red,
+  accent: vars.$usa-gold,
+  text: #FFFFFF,
+  background: #121212,
 );
 
 // Patriotic Theme
 $patriotic-theme: (
-    primary: #ffffff,
-    secondary: #ff0000,
-    accent: #0000ff,
-    text: #000000,
-    background: #ffffff
+  primary: #ffffff,
+  secondary: #ff0000,
+  accent: #0000ff,
+  text: #000000,
+  background: #ffffff
 );
 
 // Hoorah Levels Theme
 $hoorah-theme: (
-    primary: #ffcc00,
-    secondary: #ff6600,
-    accent: #cc0000,
-    text: #000000,
-    background: #ffffff
+  primary: #ffcc00,
+  secondary: #ff6600,
+  accent: #cc0000,
+  text: #000000,
+  background: #ffffff
 );
 
 // Mixin to apply theme
 @mixin apply-theme($theme) {
-    $primary: map-get($theme, primary);
-    $secondary: map-get($theme, secondary);
-    $accent: map-get($theme, accent);
-    $text: map-get($theme, text);
-    $background: map-get($theme, background);
-
-    body {
-        color: $text;
-        background-color: $background;
-    }
-
-    .primary {
-        color: $primary;
-    }
-
-    .secondary {
-        color: $secondary;
-    }
-
-    .accent {
-        color: $accent;
-    }
+  // Extract theme colors using map.get instead of map-get
+  $primary: map.get($theme, primary);
+  $secondary: map.get($theme, secondary);
+  $accent: map.get($theme, accent);
+  $text: map.get($theme, text);
+  $background: map.get($theme, background);
+  
+  // Generate CSS variables
+  :root {
+    --primary: #{$primary};
+    --secondary: #{$secondary};
+    --accent: #{$accent};
+    --text: #{$text};
+    --background: #{$background};
+    
+    // Add additional theme variables as needed
+  }
+  
+  // Apply colors to components
+  body {
+    background-color: $background;
+    color: $text;
+  }
+  
+  // More component styles...
 }
 
 // Usage example
 body.light-theme {
-    @include apply-theme($light-theme);
+  @include apply-theme($light-theme);
 }
 
 body.dark-theme {
-    @include apply-theme($dark-theme);
+  @include apply-theme($dark-theme);
 }
 
 body.patriotic-theme {
-    @include apply-theme($patriotic-theme);
+  @include apply-theme($patriotic-theme);
 }
 
 body.hoorah-theme {
-    @include apply-theme($hoorah-theme);
+  @include apply-theme($hoorah-theme);
 }

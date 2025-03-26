@@ -1,22 +1,22 @@
-@use '.../../../styles/_utilities.scss' as utilities;
-@use '.../../../styles/_animations.scss'; // Import shared animations
+@use '../../../styles/_utilities.scss' as utilities;
+@use '../../../styles/_animations.scss';
 
 .footer-container {
   position: fixed;
-  bottom: 0.5em; // Changed from 1em to 0.5em for consistency
-  left: 0.5em; // Added to ensure consistent spacing
-  right: 0.5em; // Added to ensure consistent spacing
+  bottom: 0.5em; /* Changed from 1em to 0.5em for consistency */
+  left: 0.5em; /* Added to ensure consistent spacing */
+  right: 0.5em; /* Added to ensure consistent spacing */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  width: calc(100% - 1em); // Changed from 99% to ensure exact 0.5em margins on both sides
+  width: calc(100% - 1em); /* Changed from 99% to ensure exact 0.5em margins on both sides */
   overflow: visible;
   transition: height 0.3s ease;
   z-index: 1000;
   
   &.expanded {
-    // When expanded, footer takes up more space
+    /* When expanded, footer takes up more space */
     height: auto;
   }
 
@@ -83,7 +83,7 @@
     position: relative;
     z-index: 10;
     overflow: visible;
-    width: 100%; // Make it full width
+    width: 100%; /* Make it full width */
 
     @include utilities.logo-containers();
 
@@ -113,7 +113,7 @@
     }
 
     mat-card {
-      @include utilities.performance-chart(5em); // Increased height
+      @include utilities.performance-chart(5em); /* Increased height */
       .performance-metrics {
         display: flex;
         justify-content: center;
@@ -335,17 +335,17 @@ mat-expansion-panel[expanded] {
 
 .footer-content {
   display: flex;
-  flex-direction: row; // Ensure elements are inline
+  flex-direction: row; /* Ensure elements are inline */
   justify-content: space-between;
-  align-items: flex-start; // Align items to the top
+  align-items: flex-start; /* Align items to the top */
   width: 100%;
   gap: 1.5em;
   padding: 1em;
   
   .contact-block {
     display: flex;
-    flex-direction: row; // Make contacts inline
-    flex-wrap: wrap; // Allow wrapping on small screens
+    flex-direction: row; /* Make contacts inline */
+    flex-wrap: wrap; /* Allow wrapping on small screens */
     gap: 0.75em;
     min-width: 200px;
     
@@ -373,7 +373,7 @@ mat-expansion-panel[expanded] {
   }
 }
 
-// Responsive behavior
+/* Responsive behavior */
 @media (max-width: 768px) {
   .footer-content {
     flex-direction: column;
@@ -389,13 +389,13 @@ mat-expansion-panel[expanded] {
   }
 }
 
-// Responsive enhancements
+/* Responsive enhancements */
 @media (max-width: 480px) {
   .footer-content {
     padding: 0.5em;
     
     .performance-card {
-      height: 4em !important; // Override for mobile
+      height: 4em !important; /* Override for mobile */
     }
   }
 }
@@ -408,14 +408,14 @@ mat-expansion-panel[expanded] {
 ::ng-deep .mat-expansion-indicator::after {
 
   color: gold !important;
-  // background-color: white !important;
+  /* background-color: white !important; */
   
   svg {
     fill: gold !important;
   }
 }
 
-// Style for admin button
+/* Style for admin button */
 button[color="warn"] {
   background-color: rgba(220, 53, 69, 0.8);
   

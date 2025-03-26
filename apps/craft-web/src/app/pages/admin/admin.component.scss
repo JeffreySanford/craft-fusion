@@ -1,6 +1,10 @@
+@use 'sass:map';
 @use 'sass:color';
 @use '../../../styles/variables' as vars;
+@use '../../../styles/transition-variables' as transitions;
+@use '../../../styles/utilities';
 
+/* Flag animations */
 $flag-wave-duration: 6s;
 $flag-stars-twinkle: 2s;
 
@@ -8,7 +12,7 @@ $flag-stars-twinkle: 2s;
   display: flex;
   flex-direction: column;
   height: 100%;
-  color: vars.$patriot-white;
+  color: vars.$usa-white; /* Changed from patriot-white to usa-white */
   background: linear-gradient(135deg, vars.$dark-bg 0%, vars.$usa-blue 100%);
   padding: 20px;
   position: relative;
@@ -22,13 +26,7 @@ $flag-stars-twinkle: 2s;
       left: 0;
       right: 0;
       height: 10px;
-      background: repeating-linear-gradient(
-        90deg,
-        vars.$usa-red,
-        vars.$usa-red 50px,
-        vars.$usa-white 50px,
-        vars.$usa-white 100px
-      );
+      background: repeating-linear-gradient(90deg, vars.$usa-red, vars.$usa-red 50px, vars.$usa-white 50px, vars.$usa-white 100px);
       z-index: 10;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
@@ -40,20 +38,156 @@ $flag-stars-twinkle: 2s;
       left: 0;
       right: 0;
       height: 10px;
-      background: repeating-linear-gradient(
-        90deg,
-        vars.$usa-red,
-        vars.$usa-red 50px,
-        vars.$usa-white 50px,
-        vars.$usa-white 100px
-      );
+      background: repeating-linear-gradient(90deg, vars.$usa-red, vars.$usa-red 50px, vars.$usa-white 50px, vars.$usa-white 100px);
       z-index: 10;
       box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
     }
   }
 }
 
-// Patriotic Header
+/* Admin dashboard layout */
+.admin-dashboard {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1em;
+  padding: 1em;
+  width: 100%;
+}
+
+/* Admin header card */
+.admin-header {
+  grid-column: span 12;
+  @include utilities.header-container();
+}
+
+/* Admin dashboard metrics section */
+.metrics-section {
+  grid-column: span 12;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  margin-bottom: 1em;
+  
+  .metric-card {
+    flex: 1 1 200px;
+    background: var(--md-sys-color-surface);
+    border-radius: 0.5em;
+    padding: 1em;
+    box-shadow: var(--md-sys-elevation-level1);
+    transition: transform transitions.$medium-duration transitions.$ease-standard;
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--md-sys-elevation-level2);
+    }
+  }
+}
+
+/* Admin tabs section */
+.admin-tabs {
+  grid-column: span 12;
+  background: var(--md-sys-color-surface);
+  border-radius: 0.5em;
+  overflow: hidden;
+  box-shadow: var(--md-sys-elevation-level1);
+  
+  .tab-header {
+    display: flex;
+    background: linear-gradient(90deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
+    color: var(--md-sys-color-on-primary);
+    
+    .tab-item {
+      padding: 1em 1.5em;
+      cursor: pointer;
+      transition: background-color transitions.$fast-duration transitions.$ease-standard;
+      position: relative;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--md-sys-color-tertiary);
+        transform: scaleX(0);
+        transition: transform transitions.$medium-duration transitions.$ease-patriotic;
+        transform-origin: center;
+      }
+      
+      &.active::after {
+        transform: scaleX(1);
+      }
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+  
+  .tab-content {
+    padding: 1em;
+  }
+}
+
+/* Admin data tables */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  
+  th {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    text-align: left;
+    padding: 0.75em;
+  }
+  
+  td {
+    padding: 0.75em;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+  
+  tr:nth-child(even) {
+    background-color: rgba(var(--md-sys-color-surface-variant-rgb), 0.3);
+  }
+  
+  tr:hover {
+    background-color: rgba(var(--md-sys-color-primary-rgb), 0.05);
+  }
+}
+
+/* Admin action buttons */
+.admin-actions {
+  display: flex;
+  gap: 0.5em;
+  margin: 1em 0;
+  
+  button {
+    @extend .patriotic-button;
+    
+    &.secondary {
+      background: var(--md-sys-color-secondary);
+    }
+  }
+}
+
+/* Admin performance chart */
+.performance-chart {
+  @include utilities.performance-chart();
+}
+
+/* Responsive adjustments */
+@media (max-width: map.get(vars.$breakpoints, md)) {
+  .admin-dashboard {
+    grid-template-columns: 1fr;
+  }
+  
+  .metrics-section .metric-card {
+    flex-basis: 100%;
+  }
+}
+
+/* Patriotic Header */
 .admin-header {
   margin-bottom: 20px;
   padding: 15px 20px;
@@ -91,11 +225,7 @@ $flag-stars-twinkle: 2s;
           left: 0;
           right: 0;
           bottom: 0;
-          background: linear-gradient(
-            135deg,
-            rgba(255, 255, 255, 0.3),
-            rgba(255, 255, 255, 0) 60%
-          );
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 60%);
           z-index: 3;
         }
 
@@ -112,21 +242,21 @@ $flag-stars-twinkle: 2s;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        height: 40px; // Match the flag container height
+        height: 40px; /* Match the flag container height */
 
         h1 {
           margin: 0;
-          font-size: 1.6em; // Reduced font size
+          font-size: 1.6em; /* Reduced font size */
           color: vars.$usa-white;
           text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
-          line-height: 1.2; // Adjust line height
+          line-height: 1.2; /* Adjust line height */
         }
 
         .subtitle {
           margin: 0;
-          font-size: 0.9em; // Reduced font size
+          font-size: 0.9em; /* Reduced font size */
           color: vars.$usa-gold;
-          line-height: 1.2; // Adjust line height
+          line-height: 1.2; /* Adjust line height */
         }
       }
     }
@@ -158,7 +288,7 @@ $flag-stars-twinkle: 2s;
     }
   }
 
-  // USA Flag Animation
+  /* USA Flag Animation */
   .usa-flag-container {
     width: 60px;
     height: 40px;
@@ -178,11 +308,7 @@ $flag-stars-twinkle: 2s;
       left: 0;
       right: 0;
       bottom: 0;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.3),
-        rgba(255, 255, 255, 0) 60%
-      );
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 60%);
       z-index: 3;
     }
 
@@ -260,7 +386,7 @@ $flag-stars-twinkle: 2s;
 
       .metric-info {
         flex: 1;
-        min-width: 0; // Prevents flex items from overflowing
+        min-width: 0; /* Prevents flex items from overflowing */
 
         .metric-label {
           font-size: clamp(0.8rem, 1vw, 1rem);
@@ -283,7 +409,7 @@ $flag-stars-twinkle: 2s;
   }
 }
 
-// Additional styles for service metrics and tables
+/* Additional styles for service metrics and tables */
 .service-item {
   &.active-service {
     border-left: 3px solid vars.$success-green;
@@ -420,34 +546,36 @@ $flag-stars-twinkle: 2s;
   }
 }
 
-// Add advanced chart styling
+/* Add advanced chart styling */
 .chart-container {
   background: linear-gradient(135deg, rgba(23, 33, 43, 0.8) 0%, rgba(18, 26, 46, 0.95) 100%);
   border-radius: 12px;
-  padding: 15px; // Reduced padding
-  margin-bottom: 15px; // Reduced margin
+  padding: 15px; /* Reduced padding */
+  margin-bottom: 15px; /* Reduced margin */
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
   animation: slide-up 0.6s ease-out forwards;
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-  width: 100%; // Ensure full width
+  width: 100%; /* Ensure full width */
 
-  // Add subtle animated gradient overlay
+  /* Add subtle animated gradient overlay */
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg,
+    background: linear-gradient(
+      45deg,
       rgba(255, 255, 255, 0) 25%,
       rgba(255, 255, 255, 0.02) 25%,
       rgba(255, 255, 255, 0.02) 50%,
       rgba(255, 255, 255, 0) 50%,
       rgba(255, 255, 255, 0) 75%,
-      rgba(255, 255, 255, 0.02) 75%);
+      rgba(255, 255, 255, 0.02) 75%
+    );
     background-size: 8px 8px;
     animation: moveGradient 30s linear infinite;
     opacity: 0.5;
@@ -465,9 +593,9 @@ $flag-stars-twinkle: 2s;
   h2 {
     color: vars.$patriot-white;
     margin-top: 0;
-    margin-bottom: 15px; // Reduced from 20px
-    font-size: 1.4em; // Slightly smaller
-    padding-bottom: 10px; // Reduced from 12px
+    margin-bottom: 15px; /* Reduced from 20px */
+    font-size: 1.4em; /* Slightly smaller */
+    padding-bottom: 10px; /* Reduced from 12px */
     position: relative;
     display: inline-block;
 
@@ -485,14 +613,14 @@ $flag-stars-twinkle: 2s;
 
   canvas {
     width: 100% !important;
-    height: 300px !important; // Fixed height for better consistency
+    height: 300px !important; /* Fixed height for better consistency */
     max-height: 300px;
     animation: fadeIn 1s ease-out forwards;
     transition: transform 0.3s ease, opacity 0.3s ease;
   }
 }
 
-// Star-spangled background effect for selected containers
+/* Star-spangled background effect for selected containers */
 .security-container {
   position: relative;
   overflow: hidden;
@@ -504,9 +632,7 @@ $flag-stars-twinkle: 2s;
     left: 0;
     right: 0;
     bottom: 0;
-    background-image:
-      radial-gradient(circle, rgba(255, 215, 0, 0.2) 1px, transparent 1px),
-      radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(255, 215, 0, 0.2) 1px, transparent 1px), radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
     background-size: 30px 30px, 15px 15px;
     background-position: 0 0, 15px 15px;
     pointer-events: none;
@@ -604,11 +730,6 @@ $flag-stars-twinkle: 2s;
       &::after {
         content: '';
         position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background: vars.$usa-red;
         border-radius: 2px;
       }
     }
@@ -671,7 +792,7 @@ $flag-stars-twinkle: 2s;
   }
 }
 
-// Update the admin footer (now without the eagle)
+/* Update the admin footer (now without the eagle) */
 .admin-footer {
   margin-top: 20px;
   padding: 15px 0;
@@ -696,13 +817,23 @@ $flag-stars-twinkle: 2s;
   }
 }
 
-// Add missing animations
+/* Add missing animations */
 @keyframes flag-wave {
-  0% { transform: skewX(0deg); }
-  25% { transform: skewX(-5deg); }
-  50% { transform: skewX(0deg); }
-  75% { transform: skewX(5deg); }
-  100% { transform: skewX(0deg); }
+  0% {
+    transform: skewX(0deg);
+  }
+  25% {
+    transform: skewX(-5deg);
+  }
+  50% {
+    transform: skewX(0deg);
+  }
+  75% {
+    transform: skewX(5deg);
+  }
+  100% {
+    transform: skewX(0deg);
+  }
 }
 
 @keyframes slide-in-top {
@@ -727,7 +858,7 @@ $flag-stars-twinkle: 2s;
   }
 }
 
-// Pulse animation for alerts
+/* Pulse animation for alerts */
 @keyframes pulse-animation {
   0% {
     box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
@@ -744,40 +875,62 @@ $flag-stars-twinkle: 2s;
   animation: pulse-animation 1.5s infinite;
 }
 
-// Add new animations
+/* Add new animations */
 @keyframes moveGradient {
-  0% { background-position: 0 0; }
-  100% { background-position: 100% 100%; }
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
 }
 
 @keyframes twinkleStars {
-  0% { opacity: 0.2; }
-  50% { opacity: 0.3; }
-  100% { opacity: 0.4; }
+  0% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.4;
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slide-up {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-// Responsive improvements
+/* Responsive improvements */
 @media (max-width: 1200px) {
   .metrics-summary {
     flex-wrap: wrap;
     gap: 20px 2%;
-    row-gap: 30px; // Increased gap between rows
+    row-gap: 30px; /* Increased gap between rows */
 
     .metric-card {
       flex: 1 1 calc(50% - 2%);
       max-width: calc(50% - 2%);
-      margin-bottom: 0; // Remove default margin to let gap handle spacing
-      min-height: 100px; // Reduced height
+      margin-bottom: 0; /* Remove default margin to let gap handle spacing */
+      min-height: 100px; /* Reduced height */
     }
   }
 }
@@ -802,7 +955,7 @@ $flag-stars-twinkle: 2s;
       .metric-card {
         flex: 1;
         max-width: 100%;
-        min-height: 80px; // Reduced height
+        min-height: 80px; /* Reduced height */
         padding: 1rem;
 
         .metric-icon {
@@ -866,7 +1019,7 @@ $flag-stars-twinkle: 2s;
   }
 }
 
-// Similar red pulse or any extra styling
+/* Similar red pulse or any extra styling */
 .pulse-red {
   animation: pulse-animation 1.2s infinite;
 }
@@ -930,7 +1083,7 @@ table thead tr {
   }
 }
 
-// Service monitoring legend
+/* Service monitoring legend */
 .service-monitoring-legend {
   display: flex;
   flex-wrap: wrap;
@@ -950,7 +1103,7 @@ table thead tr {
     background: rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
     min-width: 200px;
-    
+
     &:hover {
       transform: translateY(-2px);
       background: rgba(0, 0, 0, 0.3);
@@ -974,12 +1127,12 @@ table thead tr {
       border-radius: 4px;
       font-size: 0.8rem;
       font-weight: 500;
-      
+
       &.active {
         background: rgba(16, 185, 129, 0.2);
         color: #10b981;
       }
-      
+
       &.inactive {
         background: rgba(239, 68, 68, 0.2);
         color: #ef4444;
@@ -988,18 +1141,18 @@ table thead tr {
   }
 }
 
-// Service color variables
+/* Service color variables */
 :root {
-  --service-api: #FF6B6B;
-  --service-auth: #4ECDC4;
-  --service-user: #45B7D1;
-  --service-session: #96CEB4;
-  --service-busy: #FFEEAD;
-  --service-notification: #D4A5A5;
-  --service-logger: #9B59B6;
-  --service-chat: #3498DB;
-  --service-settings: #FF9F4A;
-  --service-admin: #2ECC71;
+  --service-api: #ff6b6b;
+  --service-auth: #4ecdc4;
+  --service-user: #45b7d1;
+  --service-session: #96ceb4;
+  --service-busy: #ffeead;
+  --service-notification: #d4a5a5;
+  --service-logger: #9b59b6;
+  --service-chat: #3498db;
+  --service-settings: #ff9f4a;
+  --service-admin: #2ecc71;
 }
 
 .services-list {
@@ -1047,13 +1200,13 @@ table thead tr {
   }
 }
 
-// Update tab content to ensure proper containment
+/* Update tab content to ensure proper containment */
 .tab-content {
-  height: calc(100vh - 280px); // Reduced from 300px for less top space
+  height: calc(100vh - 280px); /* Reduced from 300px for less top space */
   overflow-y: auto;
-  padding: 0.5rem 0.75rem; // Reduced padding
-  width: 100%; // Ensure full width
-  margin: 0; // Remove any margin
+  padding: 0.5rem 0.75rem; /* Reduced padding */
+  width: 100%; /* Ensure full width */
+  margin: 0; /* Remove any margin */
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 
@@ -1103,10 +1256,19 @@ table thead tr {
         display: flex;
         align-items: center;
         justify-content: center;
-        
-        &.healthy { background: rgba(46, 213, 115, 0.2); color: #2ed573; }
-        &.warning { background: rgba(255, 171, 0, 0.2); color: #ffab00; }
-        &.critical { background: rgba(255, 71, 87, 0.2); color: #ff4757; }
+
+        &.healthy {
+          background: rgba(46, 213, 115, 0.2);
+          color: #2ed573;
+        }
+        &.warning {
+          background: rgba(255, 171, 0, 0.2);
+          color: #ffab00;
+        }
+        &.critical {
+          background: rgba(255, 71, 87, 0.2);
+          color: #ff4757;
+        }
       }
 
       .status-info {
@@ -1147,8 +1309,8 @@ table thead tr {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px; // Reduced from 1.5rem
-    padding: 0.5rem; // Reduced padding
+    margin-bottom: 10px; /* Reduced from 1.5rem */
+    padding: 0.5rem; /* Reduced padding */
   }
 
   .log-statistics {
@@ -1173,7 +1335,7 @@ table thead tr {
         display: flex;
         align-items: center;
         justify-content: center;
-        
+
         mat-icon {
           color: white;
         }
@@ -1200,17 +1362,29 @@ table thead tr {
   }
 }
 
-// Add new animations
+/* Add new animations */
 @keyframes pulse-success {
-  0% { box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(46, 213, 115, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(46, 213, 115, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(46, 213, 115, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(46, 213, 115, 0);
+  }
 }
 
 @keyframes pulse-warning {
-  0% { box-shadow: 0 0 0 0 rgba(255, 171, 0, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(255, 171, 0, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 171, 0, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 171, 0, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 171, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 171, 0, 0);
+  }
 }
 
 /* Simulation Mode Toggle Button Styles */
@@ -1231,26 +1405,21 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-  
+
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.1) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-  
+
   &.active::before {
     opacity: 1;
   }
@@ -1281,7 +1450,7 @@ table thead tr {
   ::ng-deep.mat-checked .mat-slide-toggle-bar {
     background: rgba(239, 68, 68, 0.3) !important;
   }
-  
+
   .toggle-label {
     color: #e5e7eb;
     font-weight: 500;
@@ -1290,7 +1459,7 @@ table thead tr {
     user-select: none;
     z-index: 2;
   }
-  
+
   .danger-zone {
     font-size: 8px;
     color: #ef4444;
@@ -1300,7 +1469,7 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-  
+
   &.active .danger-zone {
     opacity: 1;
   }
@@ -1333,26 +1502,21 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-  
+
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.1) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-  
+
   &.active::before {
     opacity: 1;
   }
@@ -1379,7 +1543,7 @@ table thead tr {
   ::ng-deep.mat-checked .mat-slide-toggle-bar {
     background: rgba(16, 185, 129, 0.3) !important;
   }
-  
+
   .toggle-label {
     color: #e5e7eb;
     font-weight: 500;
@@ -1421,9 +1585,7 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image:
-        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
       background-size: 20px 20px, 30px 30px;
       background-position: 0 0, 15px 15px;
       pointer-events: none;
@@ -1436,7 +1598,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-      
+
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -1444,53 +1606,48 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-        
+
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-        
+
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-          
-          &[value="all"] {
+
+          &[value='all'] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-          
-          &[value="error"] {
+
+          &[value='error'] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-          
-          &[value="warn"] {
+
+          &[value='warn'] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-          
-          &[value="info"] {
+
+          &[value='info'] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-          
+
           &::after {
-            content: "";
+            content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(
-              to right,
-              rgba(255, 255, 255, 0) 0%,
-              rgba(255, 255, 255, 0.3) 50%,
-              rgba(255, 255, 255, 0) 100%
-            );
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
             animation: shine 2s infinite;
           }
         }
@@ -1517,13 +1674,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-        
+
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-        
+
         &::before {
           content: '';
           position: absolute;
@@ -1531,21 +1688,17 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(
-            circle,
-            rgba(255, 255, 255, 0.3) 0%,
-            rgba(255, 255, 255, 0) 60%
-          );
+          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-        
+
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-        
+
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -1557,14 +1710,24 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% { left: -100%; }
-  20% { left: 100%; }
-  100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+  20% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 @keyframes rotate-gradient {
-  0% { transform: rotate(30deg); }
-  100% { transform: rotate(390deg); }
+  0% {
+    transform: rotate(30deg);
+  }
+  100% {
+    transform: rotate(390deg);
+  }
 }
 
 /* Add stars animation for log level selector */
@@ -1575,8 +1738,7 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -1584,14 +1746,23 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% { opacity: 0; background-position: 0 0; }
-  50% { opacity: 0.2; background-position: 5px 5px; }
-  100% { opacity: 0; background-position: 10px 10px; }
+  0% {
+    opacity: 0;
+    background-position: 0 0;
+  }
+  50% {
+    opacity: 0.2;
+    background-position: 5px 5px;
+  }
+  100% {
+    opacity: 0;
+    background-position: 10px 10px;
+  }
 }
 
 /* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
-  margin-bottom: 10px !important; // Reduced from 15px
+  margin-bottom: 10px !important; /* Reduced from 15px */
   border-radius: 10px;
   background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(17, 24, 39, 1));
   padding: 6px;
@@ -1599,25 +1770,19 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-  
+
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, 
-      vars.$usa-red 0%, 
-      vars.$usa-red 33%, 
-      vars.$usa-white 33%, 
-      vars.$usa-white 66%, 
-      vars.$usa-blue 66%, 
-      vars.$usa-blue 100%);
+    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-  
+
   /* Star background effect */
   &::after {
     content: '';
@@ -1632,7 +1797,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-  
+
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -1641,20 +1806,18 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-    
+
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-    
+
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, 
-        rgba(59, 130, 246, 0.3) 0%, 
-        rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-      
+
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -1663,13 +1826,11 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, 
-          rgba(255, 255, 255, 0.4) 0%, 
-          rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-      
+
       /* Animated border effect */
       &::after {
         content: '';
@@ -1678,22 +1839,20 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, 
-          vars.$usa-red, 
-          vars.$usa-white,
-          vars.$usa-blue);
+        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-      
+
       /* Make tab icon and label brighter */
-      .mat-icon, .mdc-tab__text-label {
+      .mat-icon,
+      .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-  
+
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -1702,7 +1861,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-  
+
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -1730,26 +1889,21 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-  
+
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.1) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-  
+
   &:hover::before {
     opacity: 1;
   }
@@ -1768,18 +1922,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-    
+
     &:hover {
       color: #ef4444;
     }
-    
+
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-  
+
   .danger-text {
     position: absolute;
     right: 6px;
@@ -1789,27 +1943,46 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-  
+
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% { opacity: 0; }
-  50% { opacity: 0.5; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes sliding-gradient {
-  0% { background-position: 0% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @keyframes twinkle-bg {
-  0% { opacity: 0.1; background-position: 0 0; }
-  50% { opacity: 0.3; background-position: 5px 5px; }
-  100% { opacity: 0.1; background-position: 10px 10px; }
+  0% {
+    opacity: 0.1;
+    background-position: 0 0;
+  }
+  50% {
+    opacity: 0.3;
+    background-position: 5px 5px;
+  }
+  100% {
+    opacity: 0.1;
+    background-position: 10px 10px;
+  }
 }
 
 /* Enhanced tab content indicator */
@@ -1821,26 +1994,30 @@ table thead tr {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
-  
+
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, 
-      rgba(59, 130, 246, 0.7), 
-      rgba(16, 185, 129, 0.7));
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(16, 185, 129, 0.7));
     border-radius: 3px;
     animation: tab-progress 3s ease-in-out infinite;
   }
 }
 
 @keyframes tab-progress {
-  0% { left: -30%; }
-  50% { left: 100%; }
-  100% { left: 100%; }
+  0% {
+    left: -30%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 /* Enhanced logger controls with synchronized styles */
@@ -1866,9 +2043,7 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image:
-        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
       background-size: 20px 20px, 30px 30px;
       background-position: 0 0, 15px 15px;
       pointer-events: none;
@@ -1881,7 +2056,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-      
+
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -1889,53 +2064,48 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-        
+
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-        
+
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-          
-          &[value="all"] {
+
+          &[value='all'] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-          
-          &[value="error"] {
+
+          &[value='error'] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-          
-          &[value="warn"] {
+
+          &[value='warn'] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-          
-          &[value="info"] {
+
+          &[value='info'] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-          
+
           &::after {
-            content: "";
+            content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(
-              to right,
-              rgba(255, 255, 255, 0) 0%,
-              rgba(255, 255, 255, 0.3) 50%,
-              rgba(255, 255, 255, 0) 100%
-            );
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
             animation: shine 2s infinite;
           }
         }
@@ -1961,27 +2131,29 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-  
+
   /* Reduced-height, more blended tricolor gradient accent */
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 1.5px; /* Half height */
-    background: linear-gradient(90deg, 
-      rgba(220, 38, 38, 0.9) 0%, 
-      rgba(220, 38, 38, 0.9) 33%, 
-      rgba(255, 255, 255, 0.9) 33%, 
-      rgba(255, 255, 255, 0.9) 66%, 
-      rgba(37, 99, 235, 0.9) 66%, 
-      rgba(37, 99, 235, 0.9) 100%);
+    background: linear-gradient(
+      90deg,
+      rgba(220, 38, 38, 0.9) 0%,
+      rgba(220, 38, 38, 0.9) 33%,
+      rgba(255, 255, 255, 0.9) 33%,
+      rgba(255, 255, 255, 0.9) 66%,
+      rgba(37, 99, 235, 0.9) 66%,
+      rgba(37, 99, 235, 0.9) 100%
+    );
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
     opacity: 0.8;
     z-index: 1;
   }
-  
+
   /* Star background effect */
   &::after {
     content: '';
@@ -1996,7 +2168,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-  
+
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -2005,32 +2177,32 @@ table thead tr {
     position: relative;
     overflow: hidden;
     opacity: 1; /* Full opacity by default */
-    
+
     &:hover {
       background-color: rgba(255, 255, 255, 0.05);
     }
 
     /* Default state - teal */
-    .mat-icon, .mdc-tab__text-label {
-      color: #20B2AA; /* Teal */
+    .mat-icon,
+    .mdc-tab__text-label {
+      color: #20b2aa; /* Teal */
       transition: all 0.3s ease;
     }
-    
+
     &.mdc-tab--active {
-      background: linear-gradient(135deg, 
-        rgba(37, 99, 235, 0.2) 0%, 
-        rgba(59, 130, 246, 0.7) 100%);
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.2) 0%, rgba(59, 130, 246, 0.7) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-      
+
       /* Active state - brilliant blue */
-      .mat-icon, .mdc-tab__text-label {
-        color: #1E90FF; /* Brilliant blue */
+      .mat-icon,
+      .mdc-tab__text-label {
+        color: #1e90ff; /* Brilliant blue */
         text-shadow: 0 0 10px rgba(30, 144, 255, 0.5);
-        font-weight: 500; // Lighter font weight
+        font-weight: 200;
         letter-spacing: 0.5px;
       }
-      
+
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -2039,13 +2211,11 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, 
-          rgba(255, 255, 255, 0.4) 0%, 
-          rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-      
+
       /* Animated border effect */
       &::after {
         content: '';
@@ -2054,33 +2224,31 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, 
-          #ef4444, 
-          #ffffff,
-          #3b82f6);
+        background: linear-gradient(to right, #ef4444, #ffffff, #3b82f6);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
     }
-    
+
     /* Disabled state - faded red */
     &.mat-mdc-tab-disabled {
       opacity: 0.6;
-      
-      .mat-icon, .mdc-tab__text-label {
-        color: #FF6A6A; /* Faded red */
+
+      .mat-icon,
+      .mdc-tab__text-label {
+        color: #ff6a6a; /* Faded red */
         text-shadow: none;
       }
     }
   }
-  
+
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
     height: 22px;
     width: 22px;
   }
-  
+
   .mdc-tab__text-label {
     font-size: 14px;
     font-weight: 500;
@@ -2101,7 +2269,7 @@ table thead tr {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -2109,9 +2277,7 @@ table thead tr {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image:
-      radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-      radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
     background-size: 20px 20px, 30px 30px;
     background-position: 0 0, 15px 15px;
     pointer-events: none;
@@ -2133,12 +2299,12 @@ table thead tr {
   overflow: hidden;
   min-width: 140px;
   justify-content: center;
-  
+
   &:hover {
     transform: translateY(-2px);
     background: rgba(255, 255, 255, 0.1);
   }
-  
+
   .metric-label {
     color: white;
     font-weight: 500;
@@ -2146,47 +2312,46 @@ table thead tr {
     text-align: center;
     pointer-events: none;
   }
-  
+
   &.active {
     &.memory-toggle {
       background: linear-gradient(135deg, rgba(54, 162, 235, 0.3), rgba(54, 162, 235, 0.6));
       box-shadow: 0 0 15px rgba(54, 162, 235, 0.5);
     }
-    
+
     &.cpu-toggle {
       background: linear-gradient(135deg, rgba(75, 192, 192, 0.3), rgba(75, 192, 192, 0.6));
       box-shadow: 0 0 15px rgba(75, 192, 192, 0.5);
     }
-    
+
     &.network-toggle {
       background: linear-gradient(135deg, rgba(255, 99, 132, 0.3), rgba(255, 99, 132, 0.6));
       box-shadow: 0 0 15px rgba(255, 99, 132, 0.5);
     }
-    
+
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       top: 0;
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(
-        to right,
-        rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.3) 50%,
-        rgba(255, 255, 255, 0) 100%
-      );
+      background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
       animation: shine 2s infinite;
     }
-    
-    // Glow animation for active toggle
+
+    /* Glow animation for active toggle */
     animation: pulse-toggle 2s infinite alternate;
   }
 }
 
 @keyframes pulse-toggle {
-  0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.3); }
-  100% { box-shadow: 0 0 12px rgba(255, 255, 255, 0.7); }
+  0% {
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+  }
 }
 
 /* Metric selector styles */
@@ -2201,7 +2366,7 @@ table thead tr {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -2209,9 +2374,7 @@ table thead tr {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image:
-      radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-      radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
     background-size: 20px 20px, 30px 30px;
     background-position: 0 0, 15px 15px;
     pointer-events: none;
@@ -2232,18 +2395,18 @@ table thead tr {
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  
+
   &:hover {
     transform: translateY(-2px);
     background: rgba(255, 255, 255, 0.1);
   }
-  
+
   .metric-check {
     width: 24px;
     height: 24px;
     border-radius: 4px;
     position: relative;
-    
+
     .check-mark {
       display: none;
       position: absolute;
@@ -2255,13 +2418,13 @@ table thead tr {
       font-weight: bold;
     }
   }
-  
+
   .metric-label {
     color: white;
     font-weight: 500;
     font-size: 14px;
   }
-  
+
   &.active {
     .metric-check {
       .check-mark {
@@ -2269,59 +2432,60 @@ table thead tr {
         animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
       }
     }
-    
+
     &.memory-toggle {
       background: linear-gradient(135deg, rgba(54, 162, 235, 0.3), rgba(54, 162, 235, 0.6));
       box-shadow: 0 0 15px rgba(54, 162, 235, 0.5);
-      
+
       .metric-check {
         background: #3b82f6;
         animation: pulse-blue 1.5s infinite;
       }
     }
-    
+
     &.cpu-toggle {
       background: linear-gradient(135deg, rgba(75, 192, 192, 0.3), rgba(75, 192, 192, 0.6));
       box-shadow: 0 0 15px rgba(75, 192, 192, 0.5);
-      
+
       .metric-check {
         background: #10b981;
         animation: pulse-green 1.5s infinite;
       }
     }
-    
+
     &.network-toggle {
       background: linear-gradient(135deg, rgba(255, 99, 132, 0.3), rgba(255, 99, 132, 0.6));
       box-shadow: 0 0 15px rgba(255, 99, 132, 0.5);
-      
+
       .metric-check {
         background: #ef4444;
         animation: pulse-red 1.5s infinite;
       }
     }
-    
+
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       top: 0;
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(
-        to right,
-        rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.3) 50%,
-        rgba(255, 255, 255, 0) 100%
-      );
+      background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
       animation: shine 2s infinite;
     }
   }
 }
 
 @keyframes bounce-in {
-  0% { transform: translate(-50%, -50%) scale(0); }
-  50% { transform: translate(-50%, -50%) scale(1.2); }
-  100% { transform: translate(-50%, -50%) scale(1); }
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 /* Custom legend styling for interactive chart legends */
@@ -2337,7 +2501,7 @@ table thead tr {
   position: relative;
   overflow: hidden;
   justify-content: center;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -2345,9 +2509,7 @@ table thead tr {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image:
-      radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-      radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
     background-size: 20px 20px, 30px 30px;
     background-position: 0 0, 15px 15px;
     pointer-events: none;
@@ -2368,19 +2530,19 @@ table thead tr {
     transition: all 0.3s ease;
     position: relative;
     min-width: 140px;
-    
+
     &:hover {
       transform: translateY(-2px);
       background: rgba(255, 255, 255, 0.1);
     }
-    
+
     /* Styling for the check */
     .legend-check {
       width: 24px;
       height: 24px;
       position: relative;
       border-radius: 50%;
-      
+
       .check-mark {
         position: absolute;
         top: 50%;
@@ -2393,109 +2555,94 @@ table thead tr {
         transition: opacity 0.3s ease;
       }
     }
-    
+
     /* Memory item styling */
     &.memory-item {
       &.active {
         background: linear-gradient(135deg, rgba(54, 162, 235, 0.3), rgba(54, 162, 235, 0.6));
         box-shadow: 0 0 15px rgba(54, 162, 235, 0.5);
-        
+
         .legend-check {
           background: #3b82f6;
           animation: pulse-blue 1.5s infinite;
         }
-        
+
         .check-mark {
           opacity: 1;
           animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        
+
         &::after {
-          content: "";
+          content: '';
           position: absolute;
           top: 0;
           left: -100%;
           width: 100%;
           height: 100%;
-          background: linear-gradient(
-            to right,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.3) 50%,
-            rgba(255, 255, 255, 0) 100%
-          );
+          background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
           animation: shine 2s infinite;
         }
       }
     }
-    
+
     /* CPU item styling */
     &.cpu-item {
       &.active {
         background: linear-gradient(135deg, rgba(75, 192, 192, 0.3), rgba(75, 192, 192, 0.6));
         box-shadow: 0 0 15px rgba(75, 192, 192, 0.5);
-        
+
         .legend-check {
           background: #10b981;
           animation: pulse-green 1.5s infinite;
         }
-        
+
         .check-mark {
           opacity: 1;
           animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        
+
         &::after {
-          content: "";
+          content: '';
           position: absolute;
           top: 0;
           left: -100%;
           width: 100%;
           height: 100%;
-          background: linear-gradient(
-            to right,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.3) 50%,
-            rgba(255, 255, 255, 0) 100%
-          );
+          background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
           animation: shine 2s infinite;
         }
       }
     }
-    
+
     /* Network item styling */
     &.network-item {
       &.active {
         background: linear-gradient(135deg, rgba(255, 99, 132, 0.3), rgba(255, 99, 132, 0.6));
         box-shadow: 0 0 15px rgba(255, 99, 132, 0.5);
-        
+
         .legend-check {
           background: #ef4444;
           animation: pulse-red 1.5s infinite;
         }
-        
+
         .check-mark {
           opacity: 1;
           animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        
+
         &::after {
-          content: "";
+          content: '';
           position: absolute;
           top: 0;
           left: -100%;
           width: 100%;
           height: 100%;
-          background: linear-gradient(
-            to right,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.3) 50%,
-            rgba(255, 255, 255, 0) 100%
-          );
+          background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
           animation: shine 2s infinite;
         }
       }
     }
-    
+
     /* Legend label */
     .legend-label {
       color: white;
@@ -2531,9 +2678,20 @@ table thead tr {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
   position: relative !important;
   overflow: hidden !important;
-  
+
   &::before {
-    // ...existing code...
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px) !important;
+    background-size: 20px 20px, 30px 30px !important;
+    background-position: 0 0, 15px 15px !important;
+    pointer-events: none !important;
+    opacity: 0.2 !important;
+    animation: twinkleStars 8s infinite alternate !important;
   }
 
   li {
@@ -2547,16 +2705,16 @@ table thead tr {
     margin: 0 !important;
     display: flex !important;
     align-items: center !important;
-    
+
     &:hover {
       transform: translateY(-2px) !important;
       background: rgba(255, 255, 255, 0.1) !important;
     }
-    
+
     /* Checkmark styling */
     .legend-checkmark {
       position: absolute !important;
-      right: 8px !important; 
+      right: 8px !important;
       top: 50% !important;
       transform: translateY(-50%) !important;
       color: white !important;
@@ -2565,90 +2723,81 @@ table thead tr {
       opacity: 1 !important;
       animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
     }
-    
+
     /* Metric-specific styling when active */
-    &[data-metric-type="memory"][data-active="true"] {
+    &[data-metric-type='memory'][data-active='true'] {
       background: linear-gradient(135deg, rgba(54, 162, 235, 0.3), rgba(54, 162, 235, 0.6)) !important;
       box-shadow: 0 0 15px rgba(54, 162, 235, 0.5) !important;
-      
+
       &.pulse-memory {
         animation: pulse-blue 1.5s infinite !important;
       }
-      
+
       &::after {
-        content: "" !important;
+        content: '' !important;
         position: absolute !important;
         top: 0 !important;
         left: -100% !important;
         width: 100% !important;
         height: 100% !important;
-        background: linear-gradient(
-          to right,
-          rgba(255, 255, 255, 0) 0%,
-          rgba(255, 255, 255, 0.3) 50%,
-          rgba(255, 255, 255, 0) 100%
-        ) !important;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%) !important;
         animation: shine 2s infinite !important;
       }
     }
-    
-    &[data-metric-type="cpu"][data-active="true"] {
+
+    &[data-metric-type='cpu'][data-active='true'] {
       background: linear-gradient(135deg, rgba(75, 192, 192, 0.3), rgba(75, 192, 192, 0.6)) !important;
       box-shadow: 0 0 15px rgba(75, 192, 192, 0.5) !important;
-      
+
       &.pulse-cpu {
         animation: pulse-green 1.5s infinite !important;
       }
-      
+
       &::after {
-        content: "" !important;
+        content: '' !important;
         position: absolute !important;
         top: 0 !important;
         left: -100% !important;
         width: 100% !important;
         height: 100% !important;
-        background: linear-gradient(
-          to right,
-          rgba(255, 255, 255, 0) 0%,
-          rgba(255, 255, 255, 0.3) 50%,
-          rgba(255, 255, 255, 0) 100%
-        ) !important;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%) !important;
         animation: shine 2s infinite !important;
       }
     }
-    
-    &[data-metric-type="network"][data-active="true"] {
+
+    &[data-metric-type='network'][data-active='true'] {
       background: linear-gradient(135deg, rgba(255, 99, 132, 0.3), rgba(255, 99, 132, 0.6)) !important;
       box-shadow: 0 0 15px rgba(255, 99, 132, 0.5) !important;
-      
+
       &.pulse-network {
         animation: pulse-red 1.5s infinite !important;
       }
-      
+
       &::after {
-        content: "" !important;
+        content: '' !important;
         position: absolute !important;
         top: 0 !important;
         left: -100% !important;
         width: 100% !important;
         height: 100% !important;
-        background: linear-gradient(
-          to right,
-          rgba(255, 255, 255, 0) 0%,
-          rgba(255, 255, 255, 0.3) 50%,
-          rgba(255, 255, 255, 0) 100%
-        ) !important;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%) !important;
         animation: shine 2s infinite !important;
       }
     }
   }
 }
 
-// Add animations for bounce-in effect
+/* Add animations for bounce-in effect */
 @keyframes bounce-in {
-  0% { transform: translateY(-50%) scale(0); }
-  50% { transform: translateY(-50%) scale(1.2); }
-  100% { transform: translateY(-50%) scale(1); }
+  0% {
+    transform: translateY(-50%) scale(0);
+  }
+  50% {
+    transform: translateY(-50%) scale(1.2);
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
 }
 
 /* Enhanced legend styling with checkmarks - Fix text color and improve visual cues */
@@ -2664,9 +2813,20 @@ table thead tr {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
   position: relative !important;
   overflow: hidden !important;
-  
+
   &::before {
-    // ...existing code...
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px) !important;
+    background-size: 20px 20px, 30px 30px !important;
+    background-position: 0 0, 15px 15px !important;
+    pointer-events: none !important;
+    opacity: 0.2 !important;
+    animation: twinkleStars 8s infinite alternate !important;
   }
 
   li {
@@ -2680,23 +2840,23 @@ table thead tr {
     margin: 0 !important;
     display: flex !important;
     align-items: center !important;
-    
+
     &:hover {
       transform: translateY(-2px) !important;
       background: rgba(255, 255, 255, 0.1) !important;
     }
-    
+
     /* Fix text & indicator colors to be white/light */
     .chartjs-legend-text {
       color: white !important;
       font-weight: 500 !important;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.5) !important;
     }
-    
+
     /* Checkmark styling */
     .legend-checkmark {
       position: absolute !important;
-      right: 8px !important; 
+      right: 8px !important;
       top: 50% !important;
       transform: translateY(-50%) !important;
       color: white !important;
@@ -2705,62 +2865,95 @@ table thead tr {
       opacity: 1 !important;
       animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
     }
-    
+
     /* Metric-specific styling when active */
-    &[data-metric-type="memory"][data-active="true"] {
+    &[data-metric-type='memory'][data-active='true'] {
       background: linear-gradient(135deg, rgba(54, 162, 235, 0.3), rgba(54, 162, 235, 0.6)) !important;
       box-shadow: 0 0 15px rgba(54, 162, 235, 0.5) !important;
       border-color: rgba(54, 162, 235, 0.7) !important;
-      
+
       &.pulse-memory {
         animation: pulse-blue 1.5s infinite !important;
       }
-      
+
       .chartjs-legend-text {
         color: white !important;
         text-shadow: 0 0 5px rgba(54, 162, 235, 0.8) !important;
       }
-      
+
       &::after {
-        // ...existing animation code...
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px) !important;
+        background-size: 20px 20px, 30px 30px !important;
+        background-position: 0 0, 15px 15px !important;
+        pointer-events: none !important;
+        opacity: 0.2 !important;
+        animation: twinkleStars 8s infinite alternate !important;
       }
     }
-    
-    &[data-metric-type="cpu"][data-active="true"] {
+
+    &[data-metric-type='cpu'][data-active='true'] {
       background: linear-gradient(135deg, rgba(75, 192, 192, 0.3), rgba(75, 192, 192, 0.6)) !important;
       box-shadow: 0 0 15px rgba(75, 192, 192, 0.5) !important;
       border-color: rgba(75, 192, 192, 0.7) !important;
-      
+
       &.pulse-cpu {
         animation: pulse-green 1.5s infinite !important;
       }
-      
+
       .chartjs-legend-text {
         color: white !important;
         text-shadow: 0 0 5px rgba(75, 192, 192, 0.8) !important;
       }
-      
+
       &::after {
-        // ...existing animation code...
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px) !important;
+        background-size: 20px 20px, 30px 30px !important;
+        background-position: 0 0, 15px 15px !important;
+        pointer-events: none !important;
+        opacity: 0.2 !important;
+        animation: twinkleStars 8s infinite alternate !important;
       }
     }
-    
-    &[data-metric-type="network"][data-active="true"] {
+
+    &[data-metric-type='network'][data-active='true'] {
       background: linear-gradient(135deg, rgba(255, 99, 132, 0.3), rgba(255, 99, 132, 0.6)) !important;
       box-shadow: 0 0 15px rgba(255, 99, 132, 0.5) !important;
       border-color: rgba(255, 99, 132, 0.7) !important;
-      
+
       &.pulse-network {
         animation: pulse-red 1.5s infinite !important;
       }
-      
+
       .chartjs-legend-text {
         color: white !important;
         text-shadow: 0 0 5px rgba(255, 99, 132, 0.8) !important;
       }
-      
+
       &::after {
-        // ...existing animation code...
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 ! important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px) !important;
+        background-size: 20px 20px, 30px 30px !important;
+        background-position: 0 0, 15px 15px !important;
+        pointer-events: none !important;
+        opacity: 0.2 !important;
+        animation: twinkleStars 8s infinite alternate !important;
       }
     }
   }
@@ -2782,20 +2975,14 @@ table thead tr {
   left: 0 !important;
   width: 100% !important;
   height: 2px !important;
-  background: linear-gradient(90deg, 
-    rgba(239, 68, 68, 0), 
-    rgba(239, 68, 68, 1), 
-    rgba(255, 255, 255, 1),
-    rgba(59, 130, 246, 1),
-    rgba(59, 130, 246, 0)
-  ) !important;
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0), rgba(239, 68, 68, 1), rgba(255, 255, 255, 1), rgba(59, 130, 246, 1), rgba(59, 130, 246, 0)) !important;
   background-size: 200% 100% !important;
   animation: patriotic-shine 2s linear infinite !important;
   opacity: 0 !important;
   transition: opacity 0.3s ease !important;
 }
 
-.chart-legend li[data-active="true"] .legend-active-indicator {
+.chart-legend li[data-active='true'] .legend-active-indicator {
   opacity: 1 !important;
 }
 
@@ -2827,8 +3014,8 @@ table thead tr {
 
 /* Instructions for chart usage */
 .chart-instructions {
-  margin-bottom: 10px; // Reduced from 15px
-  padding: 6px 10px; // Reduced padding
+  margin-bottom: 10px;
+  padding: 6px 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2840,7 +3027,7 @@ table thead tr {
   color: white;
   font-size: 14px;
   animation: gentle-pulse 2s infinite alternate;
-  
+
   mat-icon {
     font-size: 18px;
     height: 18px;
@@ -2850,17 +3037,21 @@ table thead tr {
 }
 
 @keyframes gentle-pulse {
-  0% { opacity: 0.7; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 /* Add an initial state indicator for the legend items */
-.chart-legend li:not([data-active="true"]) {
+.chart-legend li:not([data-active='true']) {
   opacity: 0.7 !important;
   border: 1px dashed rgba(255, 255, 255, 0.3) !important;
-  
+
   &::before {
-    content: "Click to show" !important;
+    content: 'Click to show' !important;
     position: absolute !important;
     bottom: -20px !important;
     left: 50% !important;
@@ -2871,7 +3062,7 @@ table thead tr {
     transition: opacity 0.3s ease !important;
     white-space: nowrap !important;
   }
-  
+
   &:hover::before {
     opacity: 1 !important;
   }
@@ -2892,7 +3083,7 @@ table thead tr {
 
 .system-info {
   margin-top: 15px;
-  
+
   mat-card {
     background: linear-gradient(135deg, rgba(23, 33, 43, 0.8) 0%, rgba(18, 26, 46, 0.95) 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -2940,31 +3131,29 @@ table thead tr {
     height: calc(100vh - 400px);
     min-height: 400px;
   }
-  
-  // ... existing logger-tab styles ...
 }
 
 /* Logger tab enhancements for the two-column layout */
 .logger-tab {
   .animated-logger {
-    margin-top: 10px; // Reduced margin
+    margin-top: 10px;
     transition: all 0.3s ease;
-    height: calc(100vh - 360px); // Increased height for less scrolling
+    height: calc(100vh - 360px);
     min-height: 300px;
   }
-  
+
   .logger-controls {
-    margin-bottom: 10px; // Reduced margin
-    padding: 8px; // Reduced padding
+    margin-bottom: 10px;
+    padding: 8px;
   }
-  
+
   .log-statistics {
-    gap: 8px; // Reduced gap
-    margin-top: 10px; // Reduced margin
-    
+    gap: 8px;
+    margin-top: 10px;
+
     .stat-card {
-      padding: 8px; // Reduced padding
-      gap: 8px; // Reduced gap
+      padding: 8px;
+      gap: 8px;
     }
   }
 }
@@ -2979,9 +3168,9 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-  
-  // ... existing code for ::before and ::after ...
-  
+
+  /* ... existing code for ::before and ::after ... */
+
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -2990,33 +3179,33 @@ table thead tr {
     position: relative;
     overflow: hidden;
     opacity: 1; /* Full opacity by default */
-    
+
     &:hover {
       background-color: rgba(255, 255, 255, 0.05);
     }
 
     /* Default state - subtle teal */
-    .mat-icon, .mdc-tab__text-label {
-      color: #80CBC4; /* Subtle teal */
+    .mat-icon,
+    .mdc-tab__text-label {
+      color: #80cbc4; /* Subtle teal */
       transition: all 0.3s ease;
     }
-    
+
     &.mdc-tab--active {
       /* Updated background with teal gradient */
-      background: linear-gradient(135deg, 
-        rgba(0, 150, 136, 0.2) 0%, 
-        rgba(38, 166, 154, 0.7) 100%);
+      background: linear-gradient(135deg, rgba(0, 150, 136, 0.2) 0%, rgba(38, 166, 154, 0.7) 100%);
       box-shadow: 0 4px 10px rgba(0, 150, 136, 0.3);
       transform: translateY(-2px);
-      
+
       /* Active state - bright teal */
-      .mat-icon, .mdc-tab__text-label {
-        color: #00E5FF; /* Bright teal */
+      .mat-icon,
+      .mdc-tab__text-label {
+        color: #00e5ff; /* Bright teal */
         text-shadow: 0 0 10px rgba(0, 229, 255, 0.8);
         font-weight: 600;
         letter-spacing: 0.5px;
       }
-      
+
       /* Teal pulse effect for active tab */
       &::before {
         content: '';
@@ -3025,13 +3214,11 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, 
-          rgba(0, 229, 255, 0.4) 0%, 
-          rgba(0, 150, 136, 0) 60%);
+        background: radial-gradient(circle at center, rgba(0, 229, 255, 0.4) 0%, rgba(0, 150, 136, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-      
+
       /* Animated border effect with teal */
       &::after {
         content: '';
@@ -3040,19 +3227,14 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, 
-          #00BCD4, 
-          #00E5FF,
-          #1DE9B6);
+        background: linear-gradient(to right, #00bcd4, #00e5ff, #1de9b6);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
     }
-    
-    // ... existing code for disabled state ...
+
+    /* ... existing code for disabled state ... */
   }
-  
-  // ... existing code for mat-icon and tab__text-label ...
 }
 
 /* Add teal pulse animation */
@@ -3070,19 +3252,25 @@ table thead tr {
 
 /* Update tab-pulse animation with teal glow */
 @keyframes tab-pulse {
-  0% { opacity: 0; }
-  50% { opacity: 0.7; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .usa-eagle {
-  &[src$="bald-eagle-transparent.png"] {
-    border: 2px solid #ffeb3b;  // Yellow warning border
-    min-height: 60px;           // Preserve space while loading
+  &[src$='bald-eagle-transparent.png'] {
+    border: 2px solid #ffeb3b;
+    min-height: 60px;
     min-width: 60px;
-    
+
     &:after {
-      content: '🖼️';           // Show placeholder emoji
+      content: '🖼️';
       position: absolute;
       left: 50%;
       top: 50%;
@@ -3164,12 +3352,12 @@ table thead tr {
   overflow: hidden;
   animation: fadeIn 0.5s ease-out forwards;
   transition: all 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
   }
-  
+
   /* Add patriotic star background */
   &::before {
     content: '';
@@ -3192,7 +3380,7 @@ table thead tr {
     margin-bottom: 15px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 10px;
-    
+
     h3 {
       color: vars.$patriot-white;
       margin: 0;
@@ -3200,7 +3388,7 @@ table thead tr {
       display: flex;
       align-items: center;
       gap: 8px;
-      
+
       .service-icon {
         width: 24px;
         height: 24px;
@@ -3209,7 +3397,7 @@ table thead tr {
         justify-content: center;
       }
     }
-    
+
     .hit-counter {
       background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6));
       padding: 4px 10px;
@@ -3221,11 +3409,11 @@ table thead tr {
       font-weight: 500;
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: vars.$patriot-white;
-      
+
       &.pulse {
         animation: hit-pulse 1s cubic-bezier(0.4, 0, 0.6, 1);
       }
-      
+
       .hit-count {
         min-width: 20px;
         text-align: right;
@@ -3238,7 +3426,7 @@ table thead tr {
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 10px;
     margin-bottom: 15px;
-    
+
     .stat-item {
       padding: 8px;
       border-radius: 8px;
@@ -3246,13 +3434,13 @@ table thead tr {
       display: flex;
       flex-direction: column;
       align-items: center;
-      
+
       .stat-label {
         font-size: 0.8em;
         color: vars.$silver-star;
         margin-bottom: 5px;
       }
-      
+
       .stat-value {
         font-size: 1.1em;
         font-weight: 500;
@@ -3265,7 +3453,7 @@ table thead tr {
     height: 40px;
     margin-bottom: 10px;
     position: relative;
-    
+
     /* Add patriotic gradient for sparkline */
     .sparkline {
       display: block;
@@ -3273,7 +3461,7 @@ table thead tr {
       height: 100%;
       filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
     }
-    
+
     .chart-overlay {
       position: absolute;
       top: 0;
@@ -3281,11 +3469,7 @@ table thead tr {
       right: 0;
       bottom: 0;
       pointer-events: none;
-      background: linear-gradient(to right, 
-        rgba(30, 41, 59, 0.3) 0%, 
-        rgba(30, 41, 59, 0) 5%, 
-        rgba(30, 41, 59, 0) 95%, 
-        rgba(30, 41, 59, 0.3) 100%);
+      background: linear-gradient(to right, rgba(30, 41, 59, 0.3) 0%, rgba(30, 41, 59, 0) 5%, rgba(30, 41, 59, 0) 95%, rgba(30, 41, 59, 0.3) 100%);
     }
   }
 
@@ -3296,7 +3480,7 @@ table thead tr {
     margin-top: 10px;
     position: relative;
     overflow: hidden;
-    
+
     .success-rate-value {
       position: absolute;
       top: 0;
@@ -3309,7 +3493,7 @@ table thead tr {
       transition: width 1s ease-in-out;
     }
   }
-  
+
   .status-indicator {
     display: flex;
     justify-content: space-between;
@@ -3317,43 +3501,43 @@ table thead tr {
     padding-top: 10px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     margin-top: 10px;
-    
+
     .status-text {
       font-size: 0.85em;
       color: vars.$silver-star;
       display: flex;
       align-items: center;
       gap: 5px;
-      
+
       .status-dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        
+
         &.active {
           background-color: #10b981;
           box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
           animation: status-pulse 2s infinite;
         }
-        
+
         &.warning {
           background-color: #f59e0b;
           box-shadow: 0 0 8px rgba(245, 158, 11, 0.8);
           animation: status-pulse 2s infinite;
         }
-        
+
         &.error {
           background-color: #ef4444;
           box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
           animation: status-pulse 2s infinite;
         }
-        
+
         &.inactive {
           background-color: #9ca3af;
         }
       }
     }
-    
+
     .time-indicator {
       font-size: 0.75em;
       color: vars.$silver-star;
@@ -3363,7 +3547,8 @@ table thead tr {
 
 /* Animation for hit counter pulse */
 @keyframes hit-pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6));
   }
@@ -3375,9 +3560,15 @@ table thead tr {
 
 /* Animation for status indicator */
 @keyframes status-pulse {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
 }
 
 /* API activity summary section */
@@ -3388,7 +3579,7 @@ table thead tr {
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  
+
   h2 {
     margin-top: 0;
     margin-bottom: 15px;
@@ -3397,12 +3588,12 @@ table thead tr {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     padding-bottom: 10px;
   }
-  
+
   .activity-metrics {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 15px;
-    
+
     .metric-card {
       padding: 15px;
       border-radius: 8px;
@@ -3411,41 +3602,41 @@ table thead tr {
       flex-direction: column;
       align-items: center;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      
+
       .metric-value {
         font-size: 1.8em;
         font-weight: 700;
         margin-bottom: 5px;
         color: vars.$patriot-white;
       }
-      
+
       .metric-label {
         font-size: 0.9em;
         color: vars.$silver-star;
         text-align: center;
       }
-      
+
       &.primary {
         background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
         .metric-value {
           color: #60a5fa;
         }
       }
-      
+
       &.success {
         background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
         .metric-value {
           color: #34d399;
         }
       }
-      
+
       &.warning {
         background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
         .metric-value {
           color: #fbbf24;
         }
       }
-      
+
       &.danger {
         background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
         .metric-value {
@@ -3466,7 +3657,7 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-  
+
   /* Stars and stripes background */
   &::before {
     content: '';
@@ -3475,38 +3666,31 @@ table thead tr {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: 
-      radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-      repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 10px,
-        rgba(255, 255, 255, 0.03) 10px,
-        rgba(255, 255, 255, 0.03) 20px
-      );
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+      repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(255, 255, 255, 0.03) 10px, rgba(255, 255, 255, 0.03) 20px);
     background-size: 20px 20px, 100% 20px;
     opacity: 0.3;
     pointer-events: none;
   }
-  
+
   .empty-icon {
     font-size: 48px;
     margin-bottom: 15px;
     color: vars.$patriot-white;
     opacity: 0.5;
   }
-  
+
   .empty-title {
     font-size: 1.4em;
     margin-bottom: 10px;
     color: vars.$patriot-white;
   }
-  
+
   .empty-message {
     color: vars.$silver-star;
     margin-bottom: 20px;
   }
-  
+
   .simulate-button {
     background: linear-gradient(135deg, #3b82f6, #2563eb);
     color: white;
@@ -3516,7 +3700,7 @@ table thead tr {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
-    
+
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
@@ -3534,25 +3718,25 @@ table thead tr {
   background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(17, 24, 39, 0.9));
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  
+
   /* Style scrollbar */
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-  
+
   &::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: transparent;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 4px;
   }
-  
+
   /* Add star background */
   &::before {
     content: '';
@@ -3574,13 +3758,14 @@ table thead tr {
   border-collapse: collapse;
   position: relative;
   z-index: 1;
-  
-  th, td {
+
+  th,
+  td {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
-  
+
   th {
     position: sticky;
     top: 0;
@@ -3593,45 +3778,45 @@ table thead tr {
     z-index: 10;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-  
+
   tbody tr {
     transition: all 0.2s ease;
-    
+
     &:hover {
       background: rgba(255, 255, 255, 0.05);
       transform: translateY(-1px);
     }
-    
+
     &:last-child td {
       border-bottom: none;
     }
   }
-  
+
   .service-name-cell {
     min-width: 180px;
-    
+
     .service-name-content {
       display: flex;
       align-items: center;
       gap: 8px;
-      
+
       mat-icon {
         color: vars.$patriot-white;
         font-size: 20px;
         height: 20px;
         width: 20px;
       }
-      
+
       span {
         font-weight: 500;
         color: vars.$patriot-white;
       }
     }
   }
-  
+
   .hit-count-cell {
     text-align: center;
-    
+
     .hit-counter {
       display: inline-flex;
       align-items: center;
@@ -3642,27 +3827,27 @@ table thead tr {
       border-radius: 12px;
       font-weight: 500;
       color: vars.$patriot-white;
-      
+
       &.pulse {
         animation: hit-pulse 1s cubic-bezier(0.4, 0, 0.6, 1);
       }
     }
   }
-  
+
   .response-time-cell {
     text-align: center;
     font-weight: 500;
     color: vars.$patriot-white;
   }
-  
+
   .success-rate-cell {
     min-width: 120px;
-    
+
     .success-rate-wrapper {
       display: flex;
       align-items: center;
       gap: 10px;
-      
+
       .success-rate-bar {
         flex: 1;
         height: 6px;
@@ -3670,7 +3855,7 @@ table thead tr {
         border-radius: 3px;
         position: relative;
         overflow: hidden;
-        
+
         .success-rate-value {
           position: absolute;
           top: 0;
@@ -3683,7 +3868,7 @@ table thead tr {
           transition: width 1s ease-in-out;
         }
       }
-      
+
       span {
         font-weight: 500;
         color: vars.$patriot-white;
@@ -3692,34 +3877,34 @@ table thead tr {
       }
     }
   }
-  
+
   .last-activity-cell {
     text-align: center;
     color: vars.$silver-star;
     font-size: 0.9em;
   }
-  
+
   .timeline-cell {
     min-width: 120px;
     padding: 8px 15px;
-    
+
     .sparkline-container {
       height: 30px;
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      
+
       .sparkline {
         width: 100%;
         filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
       }
     }
   }
-  
+
   .status-cell {
     text-align: center;
-    
+
     .status-indicator {
       display: inline-flex;
       align-items: center;
@@ -3727,31 +3912,31 @@ table thead tr {
       padding: 4px 10px;
       border-radius: 12px;
       background: rgba(0, 0, 0, 0.2);
-      
+
       .status-dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        
+
         &.active {
           background-color: #10b981;
           box-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
           animation: status-pulse 2s infinite;
         }
-        
+
         &.warning {
           background-color: #f59e0b;
           box-shadow: 0 0 8px rgba(245, 158, 11, 0.8);
           animation: status-pulse 2s infinite;
         }
-        
+
         &.error {
           background-color: #ef4444;
           box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
           animation: status-pulse 2s infinite;
         }
       }
-      
+
       .status-text {
         font-size: 0.85em;
         color: vars.$patriot-white;
@@ -3771,12 +3956,6 @@ table thead tr {
   background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(17, 24, 39, 0.9));
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  
-  /* Style scrollbar */
-  // ...existing code...
-  
-  /* Add star background */
-  // ...existing code...
 }
 
 .api-endpoints-table {
@@ -3785,23 +3964,48 @@ table thead tr {
   border-collapse: collapse;
   position: relative;
   z-index: 1;
-  
-  th, td {
+
+  th,
+  td {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
-  
+
   /* Column width distribution */
-  th:nth-child(1), td:nth-child(1) { width: 48px; } /* Expand column */
-  th:nth-child(2), td:nth-child(2) { width: 22%; } /* Endpoint name */
-  th:nth-child(3), td:nth-child(3) { width: 8%; } /* Method */
-  th:nth-child(4), td:nth-child(4) { width: 8%; } /* Hits */
-  th:nth-child(5), td:nth-child(5) { width: 12%; } /* Avg Response */
-  th:nth-child(6), td:nth-child(6) { width: 20%; } /* Success Rate */
-  th:nth-child(7), td:nth-child(7) { width: 10%; } /* Last Called */
-  th:nth-child(8), td:nth-child(8) { width: 12%; } /* Status */
-  
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 48px;
+  } /* Expand column */
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 22%;
+  } /* Endpoint name */
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 8%;
+  } /* Method */
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 8%;
+  } /* Hits */
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 12%;
+  } /* Avg Response */
+  th:nth-child(6),
+  td:nth-child(6) {
+    width: 20%;
+  } /* Success Rate */
+  th:nth-child(7),
+  td:nth-child(7) {
+    width: 10%;
+  } /* Last Called */
+  th:nth-child(8),
+  td:nth-child(8) {
+    width: 12%;
+  } /* Status */
+
   th {
     position: sticky;
     top: 0;
@@ -3814,21 +4018,19 @@ table thead tr {
     z-index: 10;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-  
+
   tbody tr {
     transition: all 0.2s ease;
-    
+
     &:hover {
       background: rgba(255, 255, 255, 0.05);
       transform: translateY(-1px);
     }
-    
+
     &:last-child td {
       border-bottom: none;
     }
   }
-  
-  // ...existing cell styling...
 }
 
 /* Enhanced Endpoint Details - More compact and visually appealing */
@@ -3840,7 +4042,7 @@ table thead tr {
   position: relative;
   overflow: hidden;
   max-height: 400px; /* Limit height to approximately 2-3 rows */
-  
+
   /* Add star background with patriotic theme */
   &::before {
     content: '';
@@ -3849,9 +4051,7 @@ table thead tr {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: 
-      radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-      radial-gradient(circle, rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(59, 130, 246, 0.05) 1px, transparent 1px),
       radial-gradient(circle, rgba(239, 68, 68, 0.05) 1px, transparent 1px);
     background-position: 0 0, 15px 15px, 30px 30px;
     background-size: 20px 20px, 25px 25px, 30px 30px;
@@ -3869,49 +4069,49 @@ table thead tr {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     z-index: 1;
-    
+
     .detail-title {
       display: flex;
       align-items: center;
       gap: 8px;
-      
+
       h3 {
         margin: 0;
         color: vars.$patriot-white;
         font-weight: 500;
         font-size: 1.1em;
       }
-      
+
       .detail-method-badge {
         padding: 4px 8px;
         border-radius: 4px;
         font-size: 0.75em;
         font-weight: 600;
-        
+
         &.method-get {
           background: rgba(59, 130, 246, 0.2);
           color: #60a5fa;
           border: 1px solid rgba(59, 130, 246, 0.3);
         }
-        
+
         &.method-post {
           background: rgba(16, 185, 129, 0.2);
           color: #34d399;
           border: 1px solid rgba(16, 185, 129, 0.3);
         }
-        
+
         &.method-put {
           background: rgba(245, 158, 11, 0.2);
           color: #fbbf24;
           border: 1px solid rgba(245, 158, 11, 0.3);
         }
-        
+
         &.method-delete {
           background: rgba(239, 68, 68, 0.2);
           color: #f87171;
           border: 1px solid rgba(239, 68, 68, 0.3);
         }
-        
+
         &.method-patch {
           background: rgba(139, 92, 246, 0.2);
           color: #a78bfa;
@@ -3919,13 +4119,13 @@ table thead tr {
         }
       }
     }
-    
+
     .detail-last-updated {
       font-size: 0.75em;
       color: vars.$silver-star;
     }
   }
-  
+
   /* New 3-column layout for metrics and stats */
   .detail-content-grid {
     display: grid;
@@ -3935,7 +4135,7 @@ table thead tr {
     position: relative;
     z-index: 1;
   }
-  
+
   .detail-metrics {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -3943,7 +4143,7 @@ table thead tr {
     margin-bottom: 15px;
     position: relative;
     z-index: 1;
-    
+
     .detail-card {
       background: rgba(17, 24, 39, 0.5);
       border-radius: 8px;
@@ -3954,13 +4154,13 @@ table thead tr {
       transition: all 0.3s ease;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       min-height: 140px; /* Set consistent card height */
-      
+
       &:hover {
         transform: translateY(-3px);
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         border-color: rgba(255, 255, 255, 0.15);
       }
-      
+
       .detail-card-header {
         display: flex;
         align-items: center;
@@ -3968,27 +4168,27 @@ table thead tr {
         margin-bottom: 10px;
         padding-bottom: 8px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        
+
         mat-icon {
           font-size: 18px;
           height: 18px;
           width: 18px;
         }
-        
+
         span {
           font-weight: 500;
           color: vars.$patriot-white;
           font-size: 0.9em;
         }
       }
-      
+
       .detail-chart {
         flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 10px;
-        
+
         /* Mini gauge styling */
         .mini-gauge {
           width: 100%;
@@ -3997,19 +4197,19 @@ table thead tr {
           display: flex;
           justify-content: center;
           align-items: center;
-          
+
           svg {
             width: 100%;
             height: 60px;
             overflow: visible;
-            
+
             .gauge-bg {
               fill: none;
               stroke: rgba(255, 255, 255, 0.1);
               stroke-width: 6;
               stroke-linecap: round;
             }
-            
+
             .gauge-fill {
               fill: none;
               stroke: vars.$info-blue;
@@ -4020,12 +4220,12 @@ table thead tr {
               transition: stroke-dasharray 1s ease;
               filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.5));
             }
-            
+
             .success-gauge {
               stroke: vars.$success-green;
               filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.5));
             }
-            
+
             .gauge-text {
               fill: vars.$patriot-white;
               font-size: 12px;
@@ -4034,18 +4234,18 @@ table thead tr {
             }
           }
         }
-        
+
         /* Timeline chart styling */
         &.timeline-chart {
           height: 60px;
-          
+
           .sparkline-large-container {
             width: 100%;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            
+
             svg {
               width: 100%;
               height: 100%;
@@ -4053,7 +4253,7 @@ table thead tr {
           }
         }
       }
-      
+
       .detail-card-footer {
         display: flex;
         flex-direction: column;
@@ -4062,89 +4262,89 @@ table thead tr {
         padding-top: 5px;
         border-top: 1px solid rgba(255, 255, 255, 0.1);
         font-size: 0.8em;
-        
+
         .trend-indicator {
           display: flex;
           align-items: center;
           gap: 4px;
           font-weight: 500;
-          
+
           &.positive {
             color: vars.$success-green;
           }
-          
+
           &.negative {
             color: vars.$error-red;
           }
-          
+
           mat-icon {
             font-size: 14px;
             width: 14px;
             height: 14px;
           }
         }
-        
+
         .trend-label {
           font-size: 0.75em;
           color: vars.$silver-star;
           margin-top: 2px;
         }
-        
+
         .ratio-indicator {
           display: flex;
           align-items: center;
           gap: 4px;
           font-weight: 500;
-          
+
           .success-count {
             color: vars.$success-green;
           }
-          
+
           .separator {
             color: vars.$silver-star;
           }
-          
+
           .total-count {
             color: vars.$info-blue;
           }
         }
-        
+
         .ratio-label {
           font-size: 0.75em;
           color: vars.$silver-star;
           margin-top: 2px;
         }
-        
+
         /* Timeline legend styles */
         &.timeline-legend {
           flex-direction: row;
           justify-content: center;
           flex-wrap: wrap;
           gap: 10px;
-          
+
           .legend-item {
             display: flex;
             align-items: center;
             gap: 4px;
-            
+
             .legend-color {
               width: 8px;
               height: 8px;
               border-radius: 2px;
-              
+
               &.success {
                 background-color: vars.$success-green;
               }
-              
+
               &.error {
                 background-color: vars.$error-red;
               }
-              
+
               &.duration {
                 background-color: vars.$info-blue;
               }
             }
-            
+
             .legend-label {
               font-size: 0.75em;
               color: vars.$silver-star;
@@ -4154,7 +4354,7 @@ table thead tr {
       }
     }
   }
-  
+
   .detail-stats {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -4162,7 +4362,7 @@ table thead tr {
     margin-bottom: 15px;
     position: relative;
     z-index: 1;
-    
+
     .stat-item {
       background: rgba(17, 24, 39, 0.5);
       border-radius: 6px;
@@ -4170,57 +4370,57 @@ table thead tr {
       padding: 8px;
       text-align: center;
       transition: all 0.3s ease;
-      
+
       &:hover {
         transform: translateY(-2px);
         background: rgba(30, 41, 59, 0.5);
       }
-      
+
       .stat-label {
         font-size: 0.7em;
         color: vars.$silver-star;
         margin-bottom: 4px;
       }
-      
+
       .stat-value {
         font-size: 0.95em;
         font-weight: 500;
         color: vars.$patriot-white;
-        
+
         &.total-requests {
           color: vars.$info-blue;
         }
-        
+
         &.success-count {
           color: vars.$success-green;
         }
-        
+
         &.error-count {
           color: vars.$error-red;
         }
-        
+
         &.min-response {
           color: vars.$info-blue;
         }
-        
+
         &.max-response {
           color: vars.$warning-orange;
         }
-        
+
         &.first-seen {
           color: vars.$silver-star;
         }
       }
     }
   }
-  
+
   .detail-actions {
     display: flex;
     gap: 8px;
     justify-content: flex-end;
     position: relative;
     z-index: 1;
-    
+
     .detail-action-button {
       padding: 0 12px;
       height: 32px;
@@ -4231,12 +4431,12 @@ table thead tr {
       font-size: 0.85em;
       border-radius: 6px;
       transition: all 0.3s ease;
-      
+
       &:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       }
-      
+
       mat-icon {
         font-size: 16px;
         width: 16px;
@@ -4250,7 +4450,7 @@ table thead tr {
 .endpoint-row.expanded {
   background: rgba(59, 130, 246, 0.1) !important;
   position: relative;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -4262,7 +4462,7 @@ table thead tr {
     box-shadow: 0 0 10px rgba(59, 130, 246, 0.7);
     animation: border-pulse 1.5s infinite alternate;
   }
-  
+
   td {
     background: rgba(59, 130, 246, 0.1);
   }
@@ -4286,194 +4486,194 @@ table thead tr {
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;
-  
+
   .detail-section-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 15px;
-    background: rgba(0, 0, 0, 0.2);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    
-    mat-icon {
-      font-size: 18px;
-      height: 18px;
-      width: 18px;
-    }
-    
-    span {
-      font-weight: 500;
-      color: vars.$patriot-white;
-    }
-  }
-  
-  .log-details-content {
-    padding: 0;
-    
-    ::ng-deep .mat-tab-header {
-      background: rgba(17, 24, 39, 0.6);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      margin-bottom: 0;
-    }
-    
-    ::ng-deep .mat-tab-body-content {
-      padding: 0;
-    }
-  }
-  
-  .detail-code-block {
-    padding: 0;
-    
-    .code-header {
+    .detail-section-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 8px 15px;
+      gap: 8px;
+      padding: 10px 15px;
       background: rgba(0, 0, 0, 0.2);
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      
-      .code-title {
-        font-size: 0.9em;
+
+      mat-icon {
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+      }
+
+      span {
         font-weight: 500;
         color: vars.$patriot-white;
       }
-      
-      .copy-button {
-        color: vars.$silver-star;
-        
-        &:hover {
-          color: vars.$patriot-white;
-        }
-      }
-      
-      .status-badge {
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 0.8em;
-        font-weight: 500;
-        
-        &.success {
-          background: rgba(16, 185, 129, 0.2);
-          color: #34d399;
-        }
-        
-        &.warning {
-          background: rgba(245, 158, 11, 0.2);
-          color: #fbbf24;
-        }
-        
-        &.error {
-          background: rgba(239, 68, 68, 0.2);
-          color: #f87171;
-        }
-      }
     }
-    
-    .detail-code {
-      margin: 0;
-      padding: 10px 15px;
-      background: rgba(0, 0, 0, 0.3);
-      color: vars.$silver-star;
-      font-family: monospace;
-      font-size: 12px;
-      line-height: 1.5;
-      overflow-x: auto;
-      white-space: pre-wrap;
-      max-height: 200px;
-      overflow-y: auto;
-      
-      &::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-      }
-      
-      &::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      
-      &::-webkit-scrollbar-thumb {
-        background-color: rgba(255, 255, 255, 0.2);
-        border-radius: 4px;
-      }
-    }
-  }
-  
-  .timeline-container {
-    padding: 15px;
-    max-height: 300px;
-    overflow-y: auto;
-    
-    .timeline-item {
-      margin-bottom: 15px;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      overflow: hidden;
-      
-      &:last-child {
+
+    .log-details-content {
+      padding: 0;
+
+      ::ng-deep .mat-tab-header {
+        background: rgba(17, 24, 39, 0.6);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         margin-bottom: 0;
       }
-      
-      .timeline-item-header {
+
+      ::ng-deep .mat-tab-body-content {
+        padding: 0;
+      }
+    }
+
+    .detail-code-block {
+      padding: 0;
+
+      .code-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 8px 15px;
-        background: rgba(0, 0, 0, 0.1);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        
-        .timeline-timestamp {
-          font-size: 0.85em;
-          color: vars.$silver-star;
+        background: rgba(0, 0, 0, 0.2);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+        .code-title {
+          font-size: 0.9em;
+          font-weight: 500;
+          color: vars.$patriot-white;
         }
-        
-        .timeline-status {
+
+        .copy-button {
+          color: vars.$silver-star;
+
+          &:hover {
+            color: vars.$patriot-white;
+          }
+        }
+
+        .status-badge {
           padding: 2px 8px;
           border-radius: 12px;
           font-size: 0.8em;
           font-weight: 500;
-          
+
           &.success {
             background: rgba(16, 185, 129, 0.2);
             color: #34d399;
           }
-          
+
+          &.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+          }
+
           &.error {
             background: rgba(239, 68, 68, 0.2);
             color: #f87171;
           }
         }
       }
-      
-      .timeline-item-content {
-        padding: 8px 15px;
-        
-        .timeline-response-time {
+
+      .detail-code {
+        margin: 0;
+        padding: 10px 15px;
+        background: rgba(0, 0, 0, 0.3);
+        color: vars.$silver-star;
+        font-family: monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        max-height: 200px;
+        overflow-y: auto;
+
+        &::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background-color: rgba(255, 255, 255, 0.2);
+          border-radius: 4px;
+        }
+      }
+    }
+
+    .timeline-container {
+      padding: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+
+      .timeline-item {
+        margin-bottom: 15px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .timeline-item-header {
           display: flex;
+          justify-content: space-between;
           align-items: center;
-          gap: 5px;
-          color: vars.$patriot-white;
-          
-          mat-icon {
-            font-size: 16px;
-            height: 16px;
-            width: 16px;
-            color: vars.$info-blue;
+          padding: 8px 15px;
+          background: rgba(0, 0, 0, 0.1);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+          .timeline-timestamp {
+            font-size: 0.85em;
+            color: vars.$silver-star;
+          }
+
+          .timeline-status {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+
+            &.success {
+              background: rgba(16, 185, 129, 0.2);
+              color: #34d399;
+            }
+
+            &.error {
+              background: rgba(239, 68, 68, 0.2);
+              color: #f87171;
+            }
+          }
+        }
+
+        .timeline-item-content {
+          padding: 8px 15px;
+
+          .timeline-response-time {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: vars.$patriot-white;
+
+            mat-icon {
+              font-size: 16px;
+              height: 16px;
+              width: 16px;
+              color: vars.$info-blue;
+            }
           }
         }
       }
     }
   }
-}
 
-.timestamp-toggle {
-  cursor: pointer;
-  transition: color 0.3s ease;
-  
-  &:hover {
-    color: vars.$patriot-white;
-    text-decoration: underline;
+  .timestamp-toggle {
+    cursor: pointer;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: vars.$patriot-white;
+      text-decoration: underline;
+    }
   }
 }
-
-// ...existing code...

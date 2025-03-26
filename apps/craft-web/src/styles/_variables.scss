@@ -1,32 +1,49 @@
-// USA Patriotic Color Scheme
+/**
+ * Craft Fusion Design Tokens
+ * 
+ * This file contains all design tokens and variables used throughout the application.
+ * These variables feed into our design system and should be used instead of hard-coded values.
+ * 
+ * Contents:
+ * - Color tokens (primary, secondary, tertiary, neutral, semantic colors)
+ * - Spacing scale (8px grid system converted to em)
+ * - Breakpoints for responsive design
+ * - Elevation/shadow values
+ * - Animation timings
+ * - Border radii
+ * - Layout constants
+ */
 
-// Core colors
+@use 'sass:map';
+@use 'sass:color';
+
+/* Core Patriotic Color Palette */
 $usa-red: #BF0A30;
 $usa-blue: #002868;
 $usa-white: #FFFFFF;
 $usa-gold: #FFD700;
+$black: #000000; // Added missing black color variable
 
-// Secondary colors
-$silver-star: #C0C0C0;
-$dark-bg: #1A1A2E;
+/* Additional Patriotic Palette */
+$patriot-white: #FFFFFF;
+$patriot-blue: #0052B4;
+$primary-navy: #002868;
+$patriot-red: #BF0A30;
+$patriot-navy: #041E42;
+$patriot-gold: #FFD700;
 
-// Functional colors
+/* Semantic Colors */
 $success-green: #10B981;
 $error-red: #EF4444;
 $warning-orange: #F59E0B;
 $info-blue: #3B82F6;
 
-// Additional semantic variables
-$patriot-red: $usa-red;     // Using $usa-red for consistency
-$patriot-blue: $usa-blue;   // Using $usa-blue for consistency
-$patriot-white: $usa-white; // Using $usa-white for consistency
-
-// Other app variables
+/* Layout & UI Colors */
+$silver-star: #C0C0C0;
+$dark-bg: #1A1A2E;
 $card-bg: #27293d;
-$navy-blue: #001F3F;
-$liberty-blue: #002868;
 
-// MD3 color system tokens
+/* MD3 Color System Tokens */
 $md-sys-color: (
   primary: $usa-blue,
   on-primary: $usa-white,
@@ -60,26 +77,16 @@ $md-sys-color: (
   outline-variant: #C4C6D0
 );
 
-// MD3 elevation tokens - fixed the trailing comma issue
-$md-sys-elevation: (
-  level1: (0px 1px 2px rgba(0,0,0,0.3), 0px 1px 3px 1px rgba(0,0,0,0.15)),
-  level2: (0px 1px 2px rgba(0,0,0,0.3), 0px 2px 6px 2px rgba(0,0,0,0.15)),
-  level3: (0px 1px 3px rgba(0,0,0,0.3), 0px 4px 8px 3px rgba(0,0,0,0.15)),
-  level4: (0px 2px 3px rgba(0,0,0,0.3), 0px 6px 10px 4px rgba(0,0,0,0.15)),
-  level5: (0px 4px 4px rgba(0,0,0,0.3), 0px 8px 12px 6px rgba(0,0,0,0.15))
+/* MD3 Elevation Tokens */
+$md-elevations: (
+  level1: (0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12)),
+  level2: (0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12)),
+  level3: (0 3px 3px -2px rgba(0,0,0,.2), 0 3px 4px 0 rgba(0,0,0,.14), 0 1px 8px 0 rgba(0,0,0,.12)),
+  level4: (0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12)),
+  level5: (0 3px 5px -1px rgba(0,0,0,.2), 0 5px 8px 0 rgba(0,0,0,.14), 0 1px 14px 0 rgba(0,0,0,.12))
 );
 
-$elevation-umbra: rgba(0, 0, 0, 0.2);
-$elevation-penumbra: rgba(0, 0, 0, 0.14);
-$elevation-ambient: rgba(0, 0, 0, 0.12);
-
-$elevations: (
-  level1: (0px 1px 2px rgba(0,0,0,0.3), 0px 1px 3px 1px rgba(0,0,0,0.15)),
-  level2: (0px 1px 2px rgba(0,0,0,0.3), 0px 2px 6px 2px rgba(0,0,0,0.15)),
-  level3: (0px 1px 3px rgba(0,0,0,0.3), 0px 4px 8px 3px rgba(0,0,0,0.15))
-);
-
-// MD3 state layer opacity tokens
+/* MD3 State Layer Opacity Tokens */
 $md-sys-state: (
   hover-opacity: 0.08,
   focus-opacity: 0.12,
@@ -87,31 +94,31 @@ $md-sys-state: (
   dragged-opacity: 0.16
 );
 
-// Spacing system
-$base-spacing: 0.5em; // 8px equivalent
+/* Spacing System (8px grid) */
 $spacing-unit: 8px;
+$base-spacing: 0.5em; /* 8px equivalent */
 $spacing: (
   0: 0,
-  1: $spacing-unit,     // 8px
-  2: $spacing-unit * 2, // 16px
-  3: $spacing-unit * 3, // 24px
-  4: $spacing-unit * 4, // 32px
-  5: $spacing-unit * 5, // 40px
-  6: $spacing-unit * 6, // 48px
-  7: $spacing-unit * 7, // 56px
-  8: $spacing-unit * 8  // 64px
+  1: $spacing-unit,     /* 8px */
+  2: $spacing-unit * 2, /* 16px */
+  3: $spacing-unit * 3, /* 24px */
+  4: $spacing-unit * 4, /* 32px */
+  5: $spacing-unit * 5, /* 40px */
+  6: $spacing-unit * 6, /* 48px */
+  7: $spacing-unit * 7, /* 56px */
+  8: $spacing-unit * 8  /* 64px */
 );
 
-// Breakpoints for responsive design
+/* Responsive Breakpoints */
 $breakpoints: (
-  sm: 576px,   // Small devices
-  md: 768px,   // Medium devices
-  lg: 992px,   // Large devices
-  xl: 1200px,  // Extra large devices
-  xxl: 1400px  // Extra extra large devices
+  sm: 576px,   /* Small devices */
+  md: 768px,   /* Medium devices */
+  lg: 992px,   /* Large devices */
+  xl: 1200px,  /* Extra large devices */
+  xxl: 1400px  /* Extra extra large devices */
 );
 
-// Z-index layers
+/* Z-index Layers */
 $z-layers: (
   basement: -1,
   default: 1,
@@ -126,33 +133,27 @@ $z-layers: (
   tooltip: 700
 );
 
-// Typography
+/* Typography Scale */
 $font-sizes: (
-  xs: 0.75em,   // 12px
-  sm: 0.875em,  // 14px
-  base: 1em,    // 16px
-  lg: 1.125em,  // 18px
-  xl: 1.25em,   // 20px
-  2xl: 1.5em,   // 24px
-  3xl: 1.875em, // 30px
-  4xl: 2.25em,  // 36px
-  5xl: 3em,     // 48px
-  6xl: 4em      // 64px
+  xs: 0.75em,   /* 12px */
+  sm: 0.875em,  /* 14px */
+  base: 1em,    /* 16px */
+  lg: 1.125em,  /* 18px */
+  xl: 1.25em,   /* 20px */
+  2xl: 1.5em,   /* 24px */
+  3xl: 1.875em, /* 30px */
+  4xl: 2.25em,  /* 36px */
+  5xl: 3em,     /* 48px */
+  6xl: 4em      /* 64px */
 );
 
-// Theme colors - primary patriotic palette
-$color-navy: #002868;
-$color-red: #BF0A30;
-$color-gold: #FFD700;
-$color-white: #FFFFFF;
-
-// Animation timing
+/* Animation Timing */
 $animation-duration-fast: 150ms;
 $animation-duration-normal: 300ms;
 $animation-duration-slow: 500ms;
 $animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 
-// Border radius
+/* Border Radii */
 $border-radius: (
   none: 0,
   xs: 2px,
@@ -163,7 +164,18 @@ $border-radius: (
   full: 9999px
 );
 
-// Box shadows - Fixed trailing comma issue
+$md-radii: (
+  none: 0,
+  xs: 0.25em,
+  sm: 0.5em,
+  md: 0.75em,
+  lg: 1em,
+  xl: 1.25em,
+  pill: 9999px,
+  circular: 50%
+);
+
+/* Box Shadows */
 $box-shadow: (
   none: none,
   sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05),
@@ -173,7 +185,7 @@ $box-shadow: (
   inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)
 );
 
-// Container dimensions
+/* Container Dimensions */
 $container-max-widths: (
   sm: 540px,
   md: 720px,
@@ -182,11 +194,11 @@ $container-max-widths: (
   xxl: 1320px
 );
 
-// Grid columns
+/* Grid Settings */
 $grid-columns: 12;
 $grid-gutter-width: 1.5em;
 
-// Transition properties - Fix invalid comma syntax
+/* Transition Properties */
 $transition-property: (
   none: none,
   all: all,
@@ -197,7 +209,7 @@ $transition-property: (
   transform: transform
 );
 
-// Animation keyframes - Fix invalid map syntax
+/* Animation Keyframes */
 $keyframes: (
   spin: (
     from: (transform: rotate(0deg)),
@@ -220,37 +232,32 @@ $keyframes: (
   )
 );
 
-// Component-specific variables
+/* Component Dimensions */
 $header-height: 4em;
 $sidebar-width: 250px;
 $sidebar-collapsed-width: 64px;
 $footer-height: 3em;
 $footer-expanded-height: 20em;
 
-// Logger color variables
-$log-debug-color: #3b82f6;       // blue
-$log-info-color: #10b981;        // green
-$log-warning-color: #f59e0b;     // amber/orange
-$log-error-color: #ef4444;       // red
-$log-highlight-color: #8b5cf6;   // purple
-$log-security-color: #dc2626;    // bright red
-$log-performance-color: #4f46e5; // indigo
-$log-user-color: #ec4899;        // pink
-$log-api-color: #14b8a6;         // teal
-$log-system-color: #9333ea;      // purple
-$log-usa-primary: #bf0a30;       // USA red
-$log-usa-secondary: #002868;     // USA blue
-$log-usa-tertiary: #ffd700;      // USA gold
+/* Logger Color System */
+$log-debug-color: #3b82f6;       /* blue */
+$log-info-color: #0052B4;        /* Patriotic blue */
+$log-warning-color: #FF8C00;     /* Vibrant orange */
+$log-error-color: #BF0A30;       /* Patriotic red */
+$log-highlight-color: #8b5cf6;   /* purple */
+$log-security-color: #dc2626;    /* bright red */
+$log-performance-color: #4f46e5; /* indigo */
+$log-user-color: #ec4899;        /* pink */
+$log-api-color: #14b8a6;         /* teal */
+$log-system-color: #9333ea;      /* purple */
 
-// Updated Log colors - patriotic theme
-$log-debug-color: #3b82f6;        // Blue
-$log-info-color: #0052B4;         // Patriotic blue
-$log-warning-color: #FF8C00;      // Vibrant orange
-$log-error-color: #BF0A30;        // Patriotic red
-
-// Patriotic theme colors
-$patriotic-red: #BF0A30;          // Deeper patriotic red
-$patriotic-blue: #0052B4;         // Vibrant patriotic blue
-$patriotic-navy: #3C3B6E;         // Navy blue (from flag)
-$patriotic-white: #FFFFFF;        // Pure white 
-$patriotic-gold: #FFD700;         // Gold for accents
+/* CSS Variables Export */
+:root {
+  @each $level, $value in $md-elevations {
+    --md-sys-elevation-#{$level}: #{$value};
+  }
+  
+  @each $size, $value in $md-radii {
+    --md-sys-radius-#{$size}: #{$value};
+  }
+}

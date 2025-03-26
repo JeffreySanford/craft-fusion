@@ -1,117 +1,158 @@
 # Material Design 3 Migration Guide
 
-This document outlines our approach to migrating Craft Fusion to Material Design 3, providing guidelines for developers implementing the new design system.
+This document outlines our approach to migrating from Material Design 2 to Material Design 3 (MD3) in the Craft Fusion project.
 
-## Table of Contents
-1. [Migration Strategy](#migration-strategy)
-2. [Design Tokens](#design-tokens)
-3. [Component Migration](#component-migration)
-4. [Testing Approach](#testing-approach)
-5. [Resources](#resources)
+## Migration Overview
 
-## Migration Strategy
+We've adopted Material Design 3 principles to enhance our design system with dynamic color, improved accessibility, and consistent components. This migration brings our application in line with the latest Google design standards.
 
-Our migration to MD3 follows these phases:
+## Key Changes
 
-1. **Foundation Phase** *(Current)*
-   - Implement MD3 design tokens
-   - Set up theme system (light/dark)
-   - Create core utility functions
+### 1. Color System
 
-2. **Layout Phase** *(In Progress)*
-   - Update header and footer components
-   - Implement navigation patterns
-   - Establish layout grids and containers
-
-3. **Component Phase** *(Upcoming)*
-   - Migrate interactive components
-   - Update form elements
-   - Enhance data visualization
-
-4. **Refinement Phase** *(Planned)*
-   - Conduct accessibility audits
-   - Performance optimization
-   - Comprehensive testing
-
-## Transparency Note
-During this migration, automated suggestions have been used to expedite MD3 token creation and styling updates, ensuring consistent application across the codebase.
-
-## Design Tokens
-
-MD3 uses a structured token system that we've implemented as follows:
-
-### Color Tokens
-
-- **Base Palette**: Primary (Navy), Secondary (Red), Tertiary (Gold)
-- **Tonal Palette**: Generated variants for each base color
-- **Semantic Tokens**: Functional color mappings (e.g., on-surface, error)
+**Before**: Static color palette with primary, accent, and warn colors
+**After**: Dynamic color system with semantic color roles and custom themes
 
 ```scss
-// Example usage
-.my-component {
-  background-color: var(--md-sys-color-surface);
-  color: var(--md-sys-color-on-surface);
+// Old MD2 approach
+$primary: mat-palette($mat-blue);
+$accent: mat-palette($mat-amber);
+
+// New MD3 approach
+:root {
+  --md-sys-color-primary: #002868;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #D6E2FF;
+  --md-sys-color-on-primary-container: #001849;
+  // ...other color tokens
 }
 ```
 
-### Typography Tokens
+### 2. Typography
 
-We follow the MD3 type scale with our patriotic font selections:
-
-- Display: Playfair Display
-- Headline: Merriweather
-- Title: Lora
-- Body: Source Sans Pro
-- Label: Roboto Flex
+**Before**: Limited type scale with fewer styles
+**After**: Expanded type scale with clear hierarchy and consistent line heights
 
 ```scss
-// Example usage
-.page-title {
-  @extend .display-large;
-  color: var(--md-sys-color-on-surface);
+// Old typography
+h1 {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+// New MD3 typography
+.headline-large {
+  font-family: 'Roboto Flex', sans-serif;
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 400;
 }
 ```
 
-### Elevation and Shape
+### 3. Shape and Elevation
 
-- Elevation uses MD3's updated shadow system
-- Shapes follow MD3's corner radius guidelines with patriotic adaptations
+**Before**: Mixed border radius values and elevation models
+**After**: Consistent shape scale and MD3 elevation tokens
 
-## Component Migration
+```scss
+// Old elevation
+box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 
+           0 4px 5px 0 rgba(0,0,0,.14), 
+           0 1px 10px 0 rgba(0,0,0,.12);
 
-When migrating components to MD3:
-
-1. **Start with structure**: Update HTML to match MD3 component structure
-2. **Apply tokens**: Replace hard-coded values with design tokens
-3. **Add states**: Implement hover, pressed, and disabled states
-4. **Enhance with motion**: Add appropriate animations from _animations.scss
-
-Example:
-
-```html
-<!-- Before: Old button -->
-<button class="btn btn-primary">Submit</button>
-
-<!-- After: MD3 button -->
-<button class="md3-button filled">
-  <span class="md3-button-label">Submit</span>
-</button>
+// New MD3 elevation
+box-shadow: var(--md-sys-elevation-level2);
 ```
 
-## Testing Approach
+### 4. Component Updates
 
-For each migrated component:
+We've updated all components to match MD3 specifications:
 
-1. Test in both light and dark modes
-2. Verify responsive behavior
-3. Check accessibility (contrast, keyboard navigation)
-4. Validate animations respect reduced motion preferences
+- Buttons now use new MD3 states and typography
+- Cards have updated padding and shape
+- Form fields follow the new filled/outlined patterns
+- Icons updated to Material Symbols font
 
-## Resources
+## Implementation Strategy
+
+Our migration followed these steps:
+
+1. **Design Tokens**: Created CSS variables for all MD3 design tokens
+2. **Foundation**: Updated typography, colors, and shape systems
+3. **Base Components**: Migrated core components like buttons, cards, etc.
+4. **Complex Components**: Updated specialized and composite components
+5. **Theming**: Implemented light/dark theme support
+
+## Component Status
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Buttons | Complete | Fully migrated to MD3 |
+| Cards | Complete | Using new elevation and shape |
+| Dialog | Complete | Updated to new specs |
+| Tabs | Complete | Finalized on July 15, 2024 |
+| Tables | Complete | Finalized on July 10, 2024 |
+| Menus | Complete | Using new patterns |
+| Navigation | Complete | Using new patterns |
+| Forms | Complete | Using filled style by default |
+
+## Angular Material Integration
+
+We're using Angular Material components with our custom MD3 styling:
+
+```typescript
+// Example: Button configuration
+@Component({
+  selector: 'md3-button',
+  template: `
+    <button mat-button 
+      [class.md3-filled]="appearance === 'filled'"
+      [class.md3-outlined]="appearance === 'outlined'"
+      [class.md3-text]="appearance === 'text'">
+      <ng-content></ng-content>
+    </button>
+  `
+})
+export class Md3ButtonComponent {
+  @Input() appearance: 'filled' | 'outlined' | 'text' = 'filled';
+}
+```
+
+## Handling Legacy Components
+
+For legacy components that haven't been fully migrated:
+
+1. Use the `legacy-component` class to apply transitional styling
+2. Document components needing migration in the backlog
+3. Apply basic MD3 color tokens as an intermediate step
+
+## Theme Customization
+
+We've implemented our patriotic theme using MD3 color utilities:
+
+```scss
+// Patriotic theme based on MD3 principles
+:root {
+  --md-sys-color-primary: #002868; // Navy blue
+  --md-sys-color-secondary: #BF0A30; // Red
+  --md-sys-color-tertiary: #FFD700; // Gold
+  // ...other colors
+}
+```
+
+## Documentation and Resources
 
 - [Material Design 3 Guidelines](https://m3.material.io/)
 - [Angular Material Documentation](https://material.angular.io/)
-- [Material Theme Builder](https://m3.material.io/theme-builder)
+- [Theme Builder](https://m3.material.io/theme-builder)
 
-## Additional Documentation
-Explain any new migration steps or clarifications here.
+## Next Steps
+
+1. Complete migration for remaining components
+2. Enhance documentation with visual examples
+3. Add more custom patriotic components
+4. Improve animation system to follow MD3 motion principles
+
+> **Note**: As you make progress on the MD3 migration tasks, please update the [central TODO document](../../../../docs/TODO.md), [ROADMAP](../../../../docs/ROADMAP.md), and [CHANGELOG](../../../../docs/CHANGELOG.md) accordingly.
+
+Last Updated: March 26, 2025

@@ -1,5 +1,6 @@
-/* Craft Fusion Animation System
- * Version: 1.1.2
+/**
+ * Craft Fusion Animation System
+ * Version: 1.2.0
  *
  * This file contains all application-wide animations, organized by type.
  * All animations respect the prefers-reduced-motion media query.
@@ -109,14 +110,13 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
 }
 
 @keyframes starTwinkle {
-  0% { opacity: 0.4; }
-  50% { opacity: 1; }
-  100% { opacity: 0.4; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(0.9); }
 }
 
 @keyframes patrioticShimmer {
-  0% { background-position: -100% 0; }
-  100% { background-position: 200% 0; }
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 @keyframes shimmer {
@@ -124,22 +124,11 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
   100% { transform: rotate(30deg) translateX(100%); }
 }
 
-@keyframes pulse-green {
-  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-}
-
-@keyframes pulse-yellow {
-  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
-}
-
-@keyframes pulse-red {
-  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+// Pulse variations (consolidated)
+@keyframes pulse-colored {
+  0% { box-shadow: 0 0 0 0 var(--pulse-color, rgba(16, 185, 129, 0.4)); }
+  70% { box-shadow: 0 0 0 6px var(--pulse-color, rgba(16, 185, 129, 0)); }
+  100% { box-shadow: 0 0 0 0 var(--pulse-color, rgba(16, 185, 129, 0)); }
 }
 
 @keyframes float {
@@ -157,7 +146,7 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
     text-shadow: 0 0 5px white;
   }
   50% {
-    transform: translate(-50%, -50%) scale(5); // Maintain centered position during scaling
+    transform: translate(-50%, -50%) scale(5);
     opacity: 1;
     color: gold;
     text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.4);
@@ -206,34 +195,24 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
 
 // Header-specific animations
 @keyframes neonPulse {
-  0% { 
-    box-shadow: 
-      0 0 5px #00f7ff,
-      0 0 10px #00f7ff,
-      0 0 20px #00f7ff;
+  0%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 10px currentColor;
   }
-  50% { 
-    box-shadow: 
-      0 0 10px #ff00ff,
-      0 0 20px #ff00ff,
-      0 0 40px #ff00ff;
-  }
-  100% { 
-    box-shadow: 
-      0 0 5px #00f7ff,
-      0 0 10px #00f7ff,
-      0 0 20px #00f7ff;
+  50% {
+    opacity: 0.7;
+    text-shadow: 0 0 20px currentColor;
   }
 }
 
 @keyframes neonRotate {
-  from { 
-    transform: rotate(0deg); 
-    box-shadow: 0 0 20px #00ff00;
+  0% {
+    transform: rotate(-10deg) scale(0.8);
+    opacity: 0.5;
   }
-  to { 
-    transform: rotate(360deg);
-    box-shadow: 0 0 40px #00ff00;
+  100% {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
   }
 }
 
@@ -254,7 +233,6 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
   }
 }
 
-// Header/Menu animations
 @keyframes zoomIn {
   from {
     opacity: 0;
@@ -268,20 +246,31 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
 
 @keyframes slideIn {
   from {
+    transform: translateY(-10px);
     opacity: 0;
-    transform: translateY(-20px) scale(0.95);
   }
   to {
+    transform: translateY(0);
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
-// Add userPulse animation
-@keyframes userPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+@keyframes loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes eagleShine {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
 }
 
 // ----- Animation Utility Classes ----- //
@@ -385,7 +374,7 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
       rgba(255, 255, 255, 0) 100%
     );
     background-size: 200% 100%;
-    animation: patrioticShimmer 3s linear infinite;
+    animation: patrioticShimmer 4s linear infinite;
   }
 }
 

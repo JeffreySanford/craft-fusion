@@ -1,68 +1,164 @@
+/**
+ * Craft Fusion Scrollbar Styling
+ * 
+ * This file provides custom scrollbar styling that matches our patriotic theme.
+ * It includes both Webkit-based browser support and Firefox support.
+ *
+ * Last Updated: March 26, 2025
+ */
+
 @use 'variables' as vars;
 
-/* Scrollbar styling */
+// Chrome, Edge, and Safari scrollbar styling 
 ::-webkit-scrollbar {
-  width: 12px; /* Increased scrollbar width */
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, var(--md-sys-color-secondary), var(--md-sys-color-on-primary), var(--md-sys-color-primary));
-  border-radius: 16px; /* Larger circle radius */
-  border: 3px solid rgba(0, 40, 104, 0.5); /* Transparent border to create padding effect */
-  background-clip: content-box;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: linear-gradient(to bottom, var(--md-sys-color-secondary), var(--md-sys-color-on-primary), var(--md-sys-color-primary)); /* Gradient track background */
+  background: var(--md-sys-color-surface-variant);
+  border-radius: 5px;
 }
 
-::-webkit-scrollbar-button:vertical:start:decrement {
-  background-color: transparent;
-  height: 24px;
-  width: 100%;
-  position: relative;
-
-  &::after {
-    content: '★'; /* Add a star */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--md-sys-color-tertiary); /* Gold star */
-    font-size: 1.2em;
+::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-primary);
+  border-radius: 5px;
+  
+  &:hover {
+    background: color-mix(in srgb, var(--md-sys-color-primary) 80%, black);
   }
 }
 
-::-webkit-scrollbar-button:vertical:end:increment {
-  background-color: transparent;
-  height: 24px;
-  width: 100%;
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 70%;
-    height: 70%;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 10%,
-      var(--md-sys-color-secondary) 10%,
-      var(--md-sys-color-secondary) 20%
-    );
-  }
-}
-
-::-webkit-scrollbar-button {
-  display: block;
-}
-
-/* Firefox scrollbar (limited styling options) */
+// firefox scrollbar styling
 * {
-  scrollbar-color: var(--md-sys-color-primary) var(--md-sys-color-surface-variant);
   scrollbar-width: thin;
+  scrollbar-color: var(--md-sys-color-primary) var(--md-sys-color-surface-variant);
+}
+
+// Special patriotic scrollbar
+.patriotic-container {
+  &::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: white;
+    border-radius: 6px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      to bottom,
+      var(--color-usa-red) 0%,
+      var(--color-usa-red) 33%,
+      white 33%,
+      white 66%,
+      var(--color-usa-blue) 66%,
+      var(--color-usa-blue) 100%
+    );
+    border-radius: 6px;
+    border: 2px solid white;
+    
+    &:hover {
+      background: linear-gradient(
+        to bottom,
+        var(--color-usa-red) 0%,
+        var(--color-usa-red) 33%,
+        white 33%,
+        white 66%,
+        var(--color-usa-blue) 66%,
+        var(--color-usa-blue) 100%
+      );
+      border: 1px solid white;
+    }
+  }
+}
+
+// Star-themed scrollbar for special sections
+.star-themed-container {
+  &::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: var(--md-sys-color-surface-variant);
+    border-radius: 7px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-usa-blue);
+    border-radius: 7px;
+    position: relative;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    
+    &::after {
+      content: "★";
+      color: var(--color-usa-gold);
+      font-size: 10px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    &:hover {
+      background: color-mix(in srgb, var(--color-usa-blue) 80%, black);
+    }
+  }
+}
+
+// Dark theme adjustments
+.dark-theme {
+  ::-webkit-scrollbar-track {
+    background: var(--md-sys-color-surface-container);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--md-sys-color-primary);
+    
+    &:hover {
+      background: color-mix(in srgb, var(--md-sys-color-primary) 80%, white);
+    }
+  }
+  
+  * {
+    scrollbar-color: var(--md-sys-color-primary) var(--md-sys-color-surface-container);
+  }
+  
+  .patriotic-container {
+    &::-webkit-scrollbar-track {
+      background: var(--md-sys-color-surface-container);
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      border-color: var(--md-sys-color-surface-container);
+    }
+  }
+}
+
+// Thin scrollbars for components with limited space
+.thin-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+  }
+  
+  scrollbar-width: thin;
+}
+
+// Hidden scrollbars with functionality preserved
+.hidden-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
 }

@@ -1,5 +1,14 @@
 # Craft Fusion Styling System
 
+## Tasks
+
+- [ ] Fill empty style files (reset.scss, responsive.scss, scrollbar.scss, etc.)
+- [ ] Review MD3 token alignment with official specifications
+- [ ] Complete animation pattern library (90% complete)
+- [ ] Standardize component patterns across the application
+- [ ] Add usage examples for all components
+- [ ] Implement style auditing tool to verify consistency
+
 This document provides a comprehensive guide to the styling architecture used in the Craft Fusion application. The system follows Material Design 3 (MD3) principles and implements best practices for Angular applications, with a distinctive patriotic theme.
 
 ## Table of Contents
@@ -10,7 +19,7 @@ This document provides a comprehensive guide to the styling architecture used in
 4. [Material Design 3 Integration](#material-design-3-integration)
 5. [Design Token System](#design-token-system)
 6. [Animation System](#animation-system)
-7. [Modern Angular Styling Patterns](#modern-angular-styling-patterns)
+7. [Angular Styling Patterns](#angular-styling-patterns)
 8. [Units and Sizing Standards](#units-and-sizing-standards)
 9. [Container Guidelines](#container-guidelines)
 10. [Patriotic Theme Implementation](#patriotic-theme-implementation)
@@ -202,6 +211,7 @@ We use the latest Angular Material implementation which uses MDC (Material Compo
 #### Component Patterns
 
 1. **Form Controls**: Use the latest Angular Material form controls with reactive forms
+
    ```html
    <mat-mdc-form-field appearance="fill">
      <mat-label>Input Label</mat-label>
@@ -211,6 +221,7 @@ We use the latest Angular Material implementation which uses MDC (Material Compo
    ```
 
 2. **Buttons**: Use the appropriate button variant based on hierarchy
+
    ```html
    <!-- Primary action -->
    <button mat-mdc-raised-button color="primary">Primary Action</button>
@@ -223,6 +234,7 @@ We use the latest Angular Material implementation which uses MDC (Material Compo
    ```
 
 3. **Cards**: Use for contained content blocks
+
    ```html
    <mat-mdc-card>
      <mat-mdc-card-header>
@@ -239,6 +251,7 @@ We use the latest Angular Material implementation which uses MDC (Material Compo
    ```
 
 4. **Lists**: Use for repeating data items
+
    ```html
    <mat-mdc-list>
      <mat-mdc-list-item *ngFor="let item of items">
@@ -249,6 +262,7 @@ We use the latest Angular Material implementation which uses MDC (Material Compo
    ```
 
 5. **Dialogs**: Use for focused interactions
+
    ```typescript
    import {MatDialog} from '@angular/material/dialog';
    
@@ -266,6 +280,7 @@ We use the latest Angular Material implementation which uses MDC (Material Compo
    ```
 
 6. **Theming**: Apply theming consistently
+
    ```typescript
    // In component
    @Component({
@@ -324,9 +339,10 @@ Our tokens are organized in a hierarchical structure:
 
 ## Modern Angular Styling Patterns
 
-### Component Styling Architecture
+### Component Style Architecture
 
 1. **Component-Specific Styles**: Each component should have its own `.scss` file
+
    ```typescript
    @Component({
      selector: 'app-my-component',
@@ -337,6 +353,7 @@ Our tokens are organized in a hierarchical structure:
    ```
 
 2. **No Inline Styles**: Avoid inline styles in component decorators
+
    ```typescript
    // Avoid this:
    @Component({
@@ -347,6 +364,7 @@ Our tokens are organized in a hierarchical structure:
    ```
 
 3. **Use SCSS Modules**: Structure component SCSS files with sections
+
    ```scss
    // my-component.component.scss
    @use '../../../styles/variables' as vars;
@@ -370,9 +388,10 @@ Our tokens are organized in a hierarchical structure:
    }
    ```
 
-### Component Styling Architecture
+### Component Style Organization
 
 1. **View Encapsulation**: Prefer `ViewEncapsulation.Emulated` (default) for component styles
+
    ```typescript
    @Component({
      selector: 'app-my-component',
@@ -383,6 +402,7 @@ Our tokens are organized in a hierarchical structure:
    ```
 
 2. **Component Class Selectors**: Add a class to the host element for targeting
+
    ```typescript
    @Component({
      selector: 'app-my-component',
@@ -392,6 +412,7 @@ Our tokens are organized in a hierarchical structure:
    ```
 
 3. **Modular SCSS Files**: Structure component SCSS files with sections
+
    ```scss
    // Component Variables
    $component-padding: 16px;
@@ -422,6 +443,7 @@ Our tokens are organized in a hierarchical structure:
    ```
 
 4. **CSS Custom Properties Scoping**: Scope component-specific variables
+
    ```scss
    :host {
      --component-specific-spacing: 12px;
@@ -437,6 +459,7 @@ Our tokens are organized in a hierarchical structure:
 Modern Angular applications benefit from CSS Grid for complex layouts:
 
 1. **Grid Layout Component**: Create a dedicated grid system
+
    ```scss
    .grid-container {
      display: grid;
@@ -462,6 +485,7 @@ Modern Angular applications benefit from CSS Grid for complex layouts:
    ```
 
 2. **Named Grid Areas**: For more semantic layouts
+
    ```scss
    .dashboard-layout {
      display: grid;
@@ -492,6 +516,7 @@ Modern Angular applications benefit from CSS Grid for complex layouts:
 ### Performance Optimization
 
 1. **Critical CSS**: Identify and inline critical CSS for faster First Contentful Paint
+
    ```typescript
    // In angular.json
    "styles": [
@@ -505,6 +530,7 @@ Modern Angular applications benefit from CSS Grid for complex layouts:
    ```
 
 2. **Reduced Motion**: Support users who prefer reduced motion
+
    ```scss
    @media (prefers-reduced-motion: reduce) {
      * {
@@ -517,6 +543,7 @@ Modern Angular applications benefit from CSS Grid for complex layouts:
    ```
 
 3. **Lazy-loaded Styles**: Use Angular's lazy loading to defer non-critical styles
+
    ```typescript
    // In lazy-loaded module
    @NgModule({
@@ -531,6 +558,7 @@ Modern Angular applications benefit from CSS Grid for complex layouts:
    ```
 
 4. **View Transitions API**: For modern browsers, use the View Transitions API
+
    ```typescript
    // In navigation component
    import { Router, NavigationStart } from '@angular/router';
@@ -552,6 +580,7 @@ Modern Angular applications benefit from CSS Grid for complex layouts:
 Our system supports both light and dark modes using MD3 conventions:
 
 1. **Theme Configuration**:
+
    ```scss
    // In _theme.scss
    $craft-fusion-light-theme: mat.define-light-theme((/* ... */));
@@ -570,6 +599,7 @@ Our system supports both light and dark modes using MD3 conventions:
    ```
 
 2. **System Preference Detection**:
+
    ```typescript
    // In theme service
    @Injectable({providedIn: 'root'})
@@ -590,6 +620,7 @@ Our system supports both light and dark modes using MD3 conventions:
    ```
 
 3. **User Preference Storage**:
+
    ```typescript
    // Store user preference
    setUserThemePreference(theme: 'light' | 'dark' | 'system') {
@@ -612,6 +643,7 @@ Our system supports both light and dark modes using MD3 conventions:
 For responsive and adaptable designs, we follow these unit standards:
 
 1. **Percentages (%)**: First choice for widths, heights, and layout dimensions to ensure responsiveness
+
    ```scss
    .container {
      width: 100%;
@@ -621,6 +653,7 @@ For responsive and adaptable designs, we follow these unit standards:
    ```
 
 2. **EM Units**: Second choice, especially for typography and component dimensions relative to their context
+
    ```scss
    .card-title {
      font-size: 1.25em;
@@ -629,6 +662,7 @@ For responsive and adaptable designs, we follow these unit standards:
    ```
 
 3. **Limited Usage of PX**: Only for very small, specific values like borders and when necessary for precise control
+
    ```scss
    .divider {
      border: 1px solid rgba(0, 0, 0, 0.12);
@@ -661,6 +695,7 @@ All component dimensions and spacing should align with this 8px grid for visual 
 ## Container Guidelines
 
 - **No Overflows**: All content should fit within its container without causing page scrolling
+
   ```scss
   .page-container {
     height: 100%;
@@ -676,6 +711,7 @@ All component dimensions and spacing should align with this 8px grid for visual 
   ```
 
 - **Adaptive Height Management**: Using percentage-based heights and flexbox for layout
+
   ```scss
   .adaptive-container {
     display: flex;
@@ -701,6 +737,7 @@ All component dimensions and spacing should align with this 8px grid for visual 
 Our application applies a consistent patriotic theme across all components, including documentation.
 
 We have updated our theme to use vibrant patriotic colors:
+
 - Red: #B22234
 - Navy: #002868
 - Gold: #FFD700
@@ -718,6 +755,7 @@ We have updated our theme to use vibrant patriotic colors:
 ### Visual Elements
 
 1. **Flag-Inspired Gradients**: Use for special UI elements like cards
+
    ```scss
    .patriotic-card {
      background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(187,10,48,0.1) 100%);
@@ -726,6 +764,7 @@ We have updated our theme to use vibrant patriotic colors:
    ```
 
 2. **Star Motifs**: Implement subtly in lists, bullets, and special indicators
+
    ```scss
    .patriotic-list li::before {
      content: "★";
@@ -761,7 +800,7 @@ For charts, graphs, and data displays:
 
 ## File Structure
 
-```
+```plaintext
 styles/
 ├── README.md              # This documentation file
 ├── _variables.scss        # Color tokens, breakpoints, spacing
@@ -780,6 +819,7 @@ styles/
 ## Core Files Explained
 
 ### _variables.scss
+
 Contains all design tokens including colors, spacing, breakpoints, and elevation. These variables are used throughout the application for consistent styling.
 
 ```scss
@@ -792,6 +832,7 @@ Contains all design tokens including colors, spacing, breakpoints, and elevation
 ```
 
 ### _typography.scss
+
 Defines the MD3 type scale and typography-related styles. Includes font families, sizes, weights, and spacing.
 
 ```scss
@@ -803,9 +844,11 @@ Defines the MD3 type scale and typography-related styles. Includes font families
 ```
 
 ### _theme.scss
+
 Configures Angular Material theming using our custom color palettes. This is where we integrate our design tokens with the Angular Material component library.
 
 ### _animations.scss
+
 Contains reusable animation keyframes and utility classes for adding motion to components.
 
 ```scss
@@ -817,6 +860,7 @@ Contains reusable animation keyframes and utility classes for adding motion to c
 ```
 
 ### _layout.scss
+
 Provides layout utilities, flexbox helpers, and grid systems for creating responsive layouts.
 
 ```scss
@@ -828,6 +872,7 @@ Provides layout utilities, flexbox helpers, and grid systems for creating respon
 ```
 
 ### _utilities.scss
+
 Contains atomic utility classes for common styling needs like spacing, colors, borders, etc.
 
 ```scss
@@ -838,6 +883,7 @@ Contains atomic utility classes for common styling needs like spacing, colors, b
 ```
 
 ### _md3-components.scss
+
 Implements custom components following MD3 guidelines that aren't covered by Angular Material.
 
 ```scss
@@ -848,26 +894,31 @@ Implements custom components following MD3 guidelines that aren't covered by Ang
 ```
 
 ### _material-overrides.scss
+
 Contains custom styles that override Angular Material defaults to match our design system.
 
 ## Design Tokens
 
 ### Colors
+
 Our color system follows the MD3 color roles pattern, with primary, secondary, and tertiary colors, along with their on- variants and containers.
 
 #### Primary Palette
+
 - Primary: `#002868` (USA Navy Blue)
 - On Primary: `#FFFFFF`
 - Primary Container: `#D6E2FF`
 - On Primary Container: `#001849`
 
 #### Secondary Palette
+
 - Secondary: `#BF0A30` (USA Red)
 - On Secondary: `#FFFFFF`
 - Secondary Container: `#FFD9D9`
 - On Secondary Container: `#400012`
 
 #### Tertiary Palette
+
 - Tertiary: `#FFD700` (USA Gold)
 - On Tertiary: `#000000`
 - Tertiary Container: `#FFF8DC`
@@ -921,6 +972,7 @@ $breakpoints: (
 ## Best Practices
 
 ### Using CSS Variables
+
 Always use CSS variables for theming-related properties rather than hard-coded values:
 
 ```scss
@@ -936,6 +988,7 @@ Always use CSS variables for theming-related properties rather than hard-coded v
 ```
 
 ### Component-Specific Styles
+
 Component-specific styles should be placed in the component's SCSS file, not in global styles:
 
 ```scss
@@ -949,9 +1002,12 @@ Component-specific styles should be placed in the component's SCSS file, not in 
 }
 ```
 
+## Component-Level Implementation Guidelines
+
 > **IMPORTANT NOTE:** When working with component styling, never modify the `standalone: false` property in the component decorator. This property is critical for NgModule-based components and removing it will cause compilation errors.
 
 ### Extending the System
+
 When adding new styles, follow these guidelines:
 
 1. If it's a global token, add it to `_variables.scss`
@@ -960,6 +1016,7 @@ When adding new styles, follow these guidelines:
 4. If it's an Angular Material override, add it to `_material-overrides.scss`
 
 ### Responsive Design
+
 Always design with mobile-first approach using percentage-based widths and flexbox:
 
 ```scss
@@ -982,7 +1039,10 @@ Always design with mobile-first approach using percentage-based widths and flexb
 
 We adhere to WCAG 2.1 AA standards:
 
+### Color Contrast
+
 1. **Color Contrast**: Maintain a minimum contrast ratio of 4.5:1 for normal text and 3:1 for large text
+
    ```scss
    // Use built-in accessibility tools to verify contrast
    // For example, with the MD3 color system:
@@ -994,6 +1054,7 @@ We adhere to WCAG 2.1 AA standards:
    ```
 
 2. **Focus Indicators**: Ensure visible focus indicators for keyboard navigation
+
    ```scss
    // Do not remove outlines without providing alternatives
    .interactive-element:focus-visible {
@@ -1003,6 +1064,7 @@ We adhere to WCAG 2.1 AA standards:
    ```
 
 3. **Text Resizing**: Ensure text can be resized up to 200% without loss of content
+
    ```scss
    // Use relative units and fluid layouts
    .container {
@@ -1013,6 +1075,7 @@ We adhere to WCAG 2.1 AA standards:
    ```
 
 4. **Touch Targets**: Ensure touch targets are at least 44px × 44px
+
    ```scss
    .interactive-element {
      min-width: 44px;
@@ -1023,6 +1086,7 @@ We adhere to WCAG 2.1 AA standards:
    ```
 
 ### Patriotic Design and Accessibility
+
 - Ensure that patriotic design elements don't reduce readability
 - Maintain sufficient contrast even with red, white and blue color schemes
 - Provide alternative styling for users with color vision deficiencies
@@ -1059,7 +1123,8 @@ We adhere to WCAG 2.1 AA standards:
 ## Testing Plan
 
 ### [WIP] Step 3: Test Style System with Sample Components
-**Current Status: In Progress - 60% Complete**
+
+### Current Status: In Progress - 60% Complete
 
 Our testing phase involves systematic evaluation of the style system's implementation across all key UI components.
 
@@ -1156,6 +1221,7 @@ For each component tested, document:
 - A11y compliance status
 
 #### 4. Recent Achievements
+
 - Fixed type errors in category detection methods
 - Enhanced logger display component with better performance
 - Implemented patriotic color scheme for logger service
@@ -1201,6 +1267,7 @@ To contribute to the refactoring efforts:
 5. Ensure all implemented styles follow MD3 principles and our patriotic theme
 
 ## Coding Standards
+
 For overall development guidelines, see [CODING-STANDARDS.md](../../../../CODING-STANDARDS.md).
 
 ## Component Alignment Standards
@@ -1268,6 +1335,7 @@ To ensure consistency across the application, all components should follow these
 ### Integration with Design System
 
 - Utilize the established mixins for layout consistency:
+
   ```scss
   @include utilities.performance-chart(5em);
   @include utilities.footer-expansion-panel(...);
@@ -1282,9 +1350,11 @@ To ensure consistency across the application, all components should follow these
 - All layouts should be tested at each standard breakpoint
 - Use Chrome DevTools device emulation for verification
 
-_This standard was established in March 2025 and should be followed for all new components and layout modifications._
+### Establishment Date
 
-_Last Updated: 2025-03-24_
+This standard was established in March 2025 and should be followed for all new components and layout modifications.
+
+#### Last Updated: March 26, 2025
 
 ## Header Layout Standards
 
@@ -1342,6 +1412,7 @@ The themes are controlled by the ThemeService which:
 Components can respond to theme changes in several ways:
 
 1. **CSS Variables**
+
    ```scss
    .my-component {
      color: var(--md-sys-color-on-surface);
@@ -1350,6 +1421,7 @@ Components can respond to theme changes in several ways:
    ```
 
 2. **Theme Context Selectors**
+
    ```scss
    .my-component {
      // Base styles
@@ -1365,6 +1437,7 @@ Components can respond to theme changes in several ways:
    ```
 
 3. **Programmatic Theme Access**
+
    ```typescript
    constructor(private themeService: ThemeService) {}
    
@@ -1386,9 +1459,864 @@ Our Material theme uses custom patriotic palettes:
 These colors shift appropriately in dark mode for better visibility and reduced eye strain.
 
 ## MD3 & Transparency
+
 We have implemented MD3 tokens and used automated suggestions to merge them. This improves design consistency while acknowledging machine-assisted updates.
 
 ## Additional Documentation
+
 Provide updates or clarifications here.
 
-_Last Updated: 2025-03-25_
+## File Structure Status
+
+The table below shows the current status of our style files:
+
+| File | Purpose | Status |
+|------|---------|--------|
+| `_animations.scss` | Animation keyframes and utilities | ✅ Complete |
+| `_layout.scss` | Layout utilities and containers | ✅ Complete |
+| `_material-overrides.scss` | Angular Material customizations | ✅ Complete |
+| `_md3-components.scss` | Custom MD3-styled components | ✅ Complete |
+| `_md3-tokens.scss` | MD3 design tokens | 🟡 Needs review |
+| `_patriotic-overrides.scss` | Patriotic theme enhancements | ❌ Empty/Missing |
+| `_reset.scss` | CSS normalization | ❌ Empty/Missing |
+| `_responsive.scss` | Responsive utilities | ❌ Empty/Missing |
+| `_scrollbar.scss` | Custom scrollbar styling | ❌ Empty/Missing |
+| `_theme.scss` | Theme generation | ❌ Empty/Missing |
+| `_themes.scss` | Theme palette definitions | ❌ Empty/Missing |
+| `_transition-variables.scss` | Transition timing variables | ❌ Empty/Missing |
+| `_typography.scss` | Typography system | ❌ Empty/Missing |
+| `_utilities.scss` | Utility classes | ❌ Empty/Missing |
+| `_variables.scss` | Global SCSS variables | 🟡 Needs review |
+| `styles.scss` | Main entry point | ✅ Complete |
+
+## Next Steps and Future Implementation
+
+To complete our MD3 implementation, we need to:
+
+1. **Fill Remaining Empty Files**: Implement the missing style files with the guidance provided
+2. **Component Library Expansion**: Develop additional MD3 components
+3. **Style Auditing Tool**: Create tooling to verify style consistency
+4. **User Customization Options**: Add user preference controls for theming
+5. **Performance Optimization**: Analyze and optimize CSS bundle size
+
+## Last Updated: March 26, 2025
+
+## Animation System
+
+Our animation system is designed to provide consistent motion across the application while respecting user preferences for reduced motion.
+
+### Animation Structure
+
+The animation system is organized into the following categories:
+
+1. **Entrance Animations**: Animations for elements entering the view (fade-in, slide-in)
+2. **Exit Animations**: Animations for elements leaving the view (fade-out, slide-out)
+3. **Attention Animations**: Animations to draw attention to elements (pulse, shimmer)
+4. **Loading Animations**: Animations indicating loading states (spin, progress)
+5. **Interaction Feedback**: Animations responding to user interaction (ripple, elevation-change)
+6. **Patriotic Animations**: Special animations specific to our theme (flag-wave, star-twinkle)
+
+### Animation Guidelines
+
+- **Duration**:
+  - Fast actions: 150-200ms
+  - Standard transitions: 250-300ms
+  - Complex animations: 400-500ms
+- **Easing**:
+  - Standard easing: `cubic-bezier(0.4, 0.0, 0.2, 1)`
+  - Deceleration (entering): `cubic-bezier(0.0, 0.0, 0.2, 1)`
+  - Acceleration (exiting): `cubic-bezier(0.4, 0.0, 1, 1)`
+  - Patriotic emphasis: `cubic-bezier(0.6, 0.0, 0.2, 1)`
+- **Motion Sensitivity**: Always respect user preferences via `prefers-reduced-motion`
+
+### Angular Animation Integration
+
+```typescript
+// Example of Angular animation integration
+import { animate, state, style, transition, trigger } from '@angular/animations';
+
+@Component({
+  selector: 'app-example',
+  templateUrl: './example.component.html',
+  animations: [
+    trigger('fadeInOut', [
+      state('void', style({ opacity: 0 })),
+      transition('void <=> *', [
+        animate('{{duration}} {{easing}}')
+      ], { params: { duration: '300ms', easing: 'cubic-bezier(0.4, 0.0, 0.2, 1)' } })
+    ])
+  ]
+})
+export class ExampleComponent {
+  // Component implementation
+}
+```
+
+### SCSS Animation Mixins
+
+Our `_animations.scss` file provides several mixins for easy animation application:
+
+```scss
+// Example usage of animation mixins
+.my-component {
+  @include animate-property('transform', 300ms, $ease-standard);
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+  
+  .children {
+    @include staggered-animation('fadeIn', 5, 0.1s);
+  }
+}
+```
+
+## Typography System
+
+Our typography system implements the Material Design 3 type scale with a focus on readability, hierarchy, and consistency.
+
+### Font Family Strategy
+
+- **Primary Font**: Roboto Flex for its versatility and variable font capabilities
+- **Secondary Fonts**: Used sparingly for specific emphasis or stylistic variations
+- **Monospace Font**: Roboto Mono for code examples and technical content
+
+### Type Scale Implementation
+
+The type scale follows the MD3 specification with these key components:
+
+```scss
+// Typography scale example
+.display-large {
+  font-family: 'Roboto Flex', sans-serif;
+  font-size: 3.5625em; // 57px at 16px base
+  line-height: 1.12;   // 64px
+  letter-spacing: -0.015625em; // -0.25px
+  font-weight: 400;
+}
+
+.body-medium {
+  font-family: 'Roboto Flex', sans-serif;
+  font-size: 0.875em; // 14px at 16px base
+  line-height: 1.43;  // 20px
+  letter-spacing: 0.015625em; // 0.25px
+  font-weight: 400;
+}
+```
+
+### Typography Utilities
+
+The `_typography.scss` file provides mixins and utility classes:
+
+```scss
+// Example typography mixin
+@mixin headline-small {
+  font-family: 'Roboto Flex', sans-serif;
+  font-size: 1.5em;
+  line-height: 1.33;
+  font-weight: 400;
+}
+
+// Example utility class
+.headline-small {
+  @include headline-small;
+}
+```
+
+### Patriotic Typography Accents
+
+For our patriotic theme, we use specific typography treatments:
+
+- **Headers**: Navy blue color with slightly increased weight for emphasis
+- **Highlighted Text**: Red accents for important information
+- **Special Content**: Gold highlighting for achievements or featured content
+
+## Angular Styling Patterns
+
+### Component-Based Styling
+
+Angular encourages a component-based architecture, and our styling system aligns with this principle:
+
+1. **Encapsulation**: Use `ViewEncapsulation.Emulated` (default) to scope styles to components.
+2. **Component-Specific SCSS**: Each component should have its own SCSS file for maintainability.
+3. **Host Styling**: Use the `:host` selector for styling the component's root element.
+
+```scss
+:host {
+  display: block;
+  padding: 1em;
+  background-color: var(--md-sys-color-surface);
+}
+```
+
+### SCSS Structure
+
+Organize SCSS files with clear sections for base styles, states, and responsive adjustments:
+
+```scss
+// Base styles
+.component {
+  color: var(--md-sys-color-on-surface);
+}
+
+// States
+.component--active {
+  background-color: var(--md-sys-color-primary);
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .component {
+    padding: 0.5em;
+  }
+}
+```
+
+### Utility Classes
+
+Use utility classes for common patterns like spacing, alignment, and typography:
+
+```html
+<div class="flex items-center justify-between p-4">
+  <span class="text-primary">Title</span>
+</div>
+```
+
+### Angular Material Integration
+
+Extend Angular Material components with custom styles:
+
+```scss
+.mat-mdc-button {
+  &.mat-primary {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+  }
+}
+```
+
+### Responsive Design
+
+Leverage SCSS mixins for responsive adjustments:
+
+```scss
+@use 'responsive' as *;
+
+.container {
+  width: 100%;
+
+  @include responsive(md) {
+    width: 720px;
+    margin: 0 auto;
+  }
+}
+```
+
+### Best Practices
+
+1. Avoid inline styles for consistency and maintainability.
+2. Use design tokens for colors, spacing, and typography.
+3. Document component styles for clarity and reuse.
+
+By following these patterns, we ensure a scalable and maintainable styling system for Angular applications.
+
+## Implementation Patterns
+
+### Material Design 3 Integration
+
+Our implementation of MD3 follows these key principles:
+
+1. **CSS Variables First**: We use CSS variables for all design tokens to enable runtime theming
+2. **Angular Material Extensions**: We extend Angular Material components with our custom MD3 styling
+3. **Custom Component Patterns**: For components not covered by Angular Material, we create custom implementations
+
+### Custom MD3 Components
+
+For components not yet available in Angular Material, we implement them following MD3 guidelines:
+
+```html
+<!-- Example of custom MD3 button -->
+<button class="md3-button filled">
+  <span class="md3-button__label">Button Text</span>
+  <span class="md3-button__icon material-icons">arrow_forward</span>
+</button>
+```
+
+```scss
+// Corresponding SCSS in _md3-components.scss
+.md3-button {
+  height: 40px;
+  padding: 0 24px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  
+  &.filled {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+  }
+  
+  // ...other variants
+}
+```
+
+### Extending Angular Material
+
+We customize Angular Material components to match our MD3 implementation:
+
+```scss
+// Example from _material-overrides.scss
+.mat-mdc-button {
+  &.mat-primary {
+    --mdc-filled-button-container-color: var(--md-sys-color-primary);
+    --mdc-filled-button-label-text-color: var(--md-sys-color-on-primary);
+    
+    &:hover {
+      background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
+    }
+  }
+}
+```
+
+## Detailed Core Files Documentation
+
+### _reset.scss
+
+This file provides a modern CSS reset that:
+
+- Normalizes default styles across browsers
+- Sets up sensible box-sizing defaults
+- Removes unwanted margins and paddings
+- Improves form element styling
+- Enhances accessibility defaults
+
+```scss
+// Example from _reset.scss
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Roboto Flex', sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+```
+
+### _transition-variables.scss
+
+Defines standard transition durations and easing functions to ensure consistency across animations:
+
+```scss
+// Example from _transition-variables.scss
+$duration: (
+  fastest: 100ms,
+  faster: 150ms,
+  fast: 200ms,
+  normal: 300ms,
+  slow: 400ms,
+  slower: 500ms,
+  slowest: 750ms
+);
+
+$ease: (
+  standard: cubic-bezier(0.4, 0.0, 0.2, 1),
+  decelerate: cubic-bezier(0.0, 0.0, 0.2, 1),
+  accelerate: cubic-bezier(0.4, 0.0, 1, 1),
+  sharp: cubic-bezier(0.4, 0.0, 0.6, 1),
+  patriotic: cubic-bezier(0.6, 0.0, 0.2, 1)
+);
+```
+
+### _responsive.scss
+
+Contains responsive mixins and utilities for creating mobile-first designs:
+
+```scss
+// Example from _responsive.scss
+@mixin responsive($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (min-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @error "Unknown breakpoint: #{$breakpoint}";
+  }
+}
+
+// Usage
+.container {
+  width: 100%;
+  
+  @include responsive(md) {
+    width: 720px;
+    margin: 0 auto;
+  }
+  
+  @include responsive(lg) {
+    width: 960px;
+  }
+}
+```
+
+### _scrollbar.scss
+
+Customizes scrollbars to match our patriotic theme while ensuring good usability:
+
+```scss
+// Example from _scrollbar.scss
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--md-sys-color-surface-variant);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-primary);
+  border-radius: 5px;
+  
+  &:hover {
+    background: color-mix(in srgb, var(--md-sys-color-primary) 80%, black);
+  }
+}
+
+// Firefox scrollbar
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-sys-color-primary) var(--md-sys-color-surface-variant);
+}
+```
+
+### _patriotic-overrides.scss
+
+Contains specialized styling for the patriotic theme, enhancing standard components with themed colors and effects:
+
+```scss
+// Example from _patriotic-overrides.scss
+@mixin apply-patriotic-colors() {
+  :root {
+    --color-usa-red: #BF0A30;
+    --color-usa-blue: #002868;
+    --color-usa-gold: #FFD700;
+    
+    --patriotic-gradient: linear-gradient(
+      135deg,
+      var(--md-sys-color-primary) 0%,
+      var(--md-sys-color-primary) 30%,
+      var(--md-sys-color-secondary) 70%,
+      var(--md-sys-color-secondary) 100%
+    );
+  }
+  
+  .patriotic-header {
+    background: var(--patriotic-gradient);
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .star-icon::before {
+    content: '★';
+    color: var(--color-usa-gold);
+    margin-right: 0.5em;
+  }
+}
+```
+
+## Implementation Guidance for Empty Files
+
+For the files marked as "Empty/Missing" in the File Structure Status table, here is guidance for proper implementation:
+
+### For _typography.scss
+
+```scss
+/**
+ * Craft Fusion Typography System
+ * 
+ * This file implements the Material Design 3 type scale with our patriotic theme extensions.
+ */
+
+// Import core variables
+@use 'variables' as vars;
+
+// MD3 Type scale
+// Display styles - Used for largest text (page headers)
+@mixin display-large {
+  font-family: 'Roboto Flex', sans-serif;
+  font-size: 3.5625em;   // 57px
+  line-height: 1.12;     // 64px
+  letter-spacing: -0.016em; // -0.25px
+  font-weight: 400;
+}
+
+@mixin display-medium {
+  font-family: 'Roboto Flex', sans-serif;
+  font-size: 2.8125em;   // 45px
+  line-height: 1.16;     // 52px
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+// ... additional typography mixins ...
+
+// Utility classes
+.display-large { @include display-large; }
+.display-medium { @include display-medium; }
+// ... additional utility classes ...
+
+// Patriotic typography accents
+.text-primary {
+  color: var(--md-sys-color-primary);
+}
+
+.text-secondary {
+  color: var(--md-sys-color-secondary);
+}
+
+.text-tertiary {
+  color: var(--md-sys-color-tertiary);
+}
+
+.patriotic-heading {
+  @include headline-large;
+  color: var(--md-sys-color-primary);
+  border-bottom: 2px solid var(--md-sys-color-secondary);
+  padding-bottom: 0.25em;
+}
+
+// Responsive typography adjustments
+@media (max-width: map.get(vars.$breakpoints, md)) {
+  .display-large {
+    font-size: 3em; // Scale down on smaller screens
+  }
+  
+  .display-medium {
+    font-size: 2.5em;
+  }
+  
+  // ... additional responsive adjustments ...
+}
+```
+
+### For _reset.scss
+
+```scss
+/**
+ * Craft Fusion CSS Reset
+ * 
+ * A modern CSS reset that removes browser inconsistencies and
+ * provides a clean foundation for our styling.
+ */
+
+// Reset box sizing
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+// Reset margins
+body,
+h1, h2, h3, h4, h5, h6,
+p, figure, blockquote, dl, dd {
+  margin: 0;
+}
+
+// Body setup
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Media defaults
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+// Form elements
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+// Remove animations for users who prefer reduced motion
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+   scroll-behavior: auto;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+```
+
+## Comprehensive Implementation Model
+
+The style system follows this implementation pattern:
+
+1. **Design Tokens**: Defined in `_variables.scss` and `_md3-tokens.scss`
+2. **Global Styles**: Base HTML styling in `_reset.scss` and `styles.scss`
+3. **Functional Systems**: Typography, animation, and layout systems in their respective files
+4. **Component Styling**: MD3 component styles and Material overrides
+5. **Utilities and Theme Extensions**: Helper classes and theme-specific enhancements
+
+### Integration Example
+
+A typical component would use our style system like this:
+
+```typescript
+// Component implementation
+@Component({
+  selector: 'app-feature-card',
+  template: `
+    <div class="feature-card" [@fadeIn]>
+      <div class="feature-card__header">
+        <h3 class="headline-small">{{ title }}</h3>
+      </div>
+      <div class="feature-card__content">
+        <p class="body-medium">{{ description }}</p>
+      </div>
+      <div class="feature-card__actions">
+        <button mat-mdc-button color="primary">Learn More</button>
+      </div>
+    </div>
+  `,
+  styleUrls: ['./feature-card.component.scss'],
+  animations: [fadeIn]
+})
+export class FeatureCardComponent {
+  @Input() title: string = '';
+  @Input() description: string = '';
+}
+```
+
+```scss
+// Component-specific SCSS
+@use '../../styles/variables' as vars;
+@use '../../styles/mixins' as mix;
+
+.feature-card {
+  background-color: var(--md-sys-color-surface);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: var(--md-sys-elevation-level1);
+  transition: box-shadow 0.2s vars.$ease-standard;
+  
+  &:hover {
+    box-shadow: var(--md-sys-elevation-level2);
+  }
+  
+  &__header {
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    padding-bottom: 8px;
+  }
+  
+  &__content {
+    margin-bottom: 16px;
+  }
+  
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  // Apply patriotic accents
+  @include mix.patriotic-accents;
+}
+```
+
+## Next Steps
+
+With these detailed sections and implementation guides, we now have a comprehensive documentation for our style system. The next steps in our roadmap include:
+
+1. **Fill Remaining Empty Files**: Implement the missing style files with the guidance provided
+2. **Component Library Expansion**: Develop additional MD3 components
+3. **Style Auditing Tool**: Create tooling to verify style consistency
+4. **User Customization Options**: Add user preference controls for theming
+5. **Performance Optimization**: Analyze and optimize CSS bundle size
+
+### Last Updated: March 26, 2025
+
+## Generating Styles with AI
+
+Craft Fusion leverages AI tools to accelerate style development and maintain design system consistency. This section outlines our approach to AI-assisted style generation.
+
+### AI Integration Strategy
+
+We use AI tools in three key ways within our styling workflow:
+
+1. **Style Generation**: Creating initial SCSS templates based on design specifications
+2. **Pattern Recognition**: Identifying inconsistent styling patterns across components
+3. **Documentation Enhancement**: Improving style documentation clarity and completeness
+
+### AI-Generated Code Guidelines
+
+When using AI to generate stylesheet code, follow these best practices:
+
+1. **Human Review Required**: All AI-generated styles must be reviewed by a human developer
+   - Check for alignment with our MD3 and patriotic theme implementation
+   - Verify accessibility standards compliance
+   - Ensure proper use of design tokens and variables
+
+2. **Progressive Enhancement**: Start with AI-generated base styles, then enhance with:
+   - Custom animation effects
+   - Responsive behavior refinements
+   - Special patriotic theme elements
+   - Accessibility improvements
+
+3. **Documentation Requirements**: AI-generated styles must include:
+   - Clear comments explaining component-specific decisions
+   - References to design tokens used
+   - Edge case handling strategies
+   - Browser compatibility considerations
+
+### AI Tools in Our Workflow
+
+#### Style Generation Tools
+
+We integrate these AI tools into our styling workflow:
+
+1. **GitHub Copilot**
+   - Integrated directly in VSCode for real-time style suggestions
+   - Most useful for individual component styling patterns
+   - Example usage: `@include responsive(md) { ... }`
+
+2. **Specialized AI Models**
+   - Custom-trained models familiar with our design system
+   - Best for comprehensive style generation from design specs
+   - Deployed via our internal AI service
+
+#### AI Assistance Examples
+
+1. **Generating Basic Component Styles**
+
+   ```scss
+   // Example of AI-generated base component style
+   .data-card {
+     background-color: var(--md-sys-color-surface);
+     border-radius: var(--md-sys-radius-md);
+     padding: map.get(vars.$spacing, 3);
+     box-shadow: var(--md-sys-elevation-level1);
+     
+     &__header {
+       margin-bottom: map.get(vars.$spacing, 2);
+     }
+     
+     &__content {
+       color: var(--md-sys-color-on-surface);
+       
+       // Human-added enhancements after AI generation
+       &--highlighted {
+         border-left: 3px solid var(--md-sys-color-tertiary);
+         padding-left: map.get(vars.$spacing, 2);
+       }
+     }
+   }
+   ```
+
+2. **AI-Assisted Theme Generation**
+
+   The AI can analyze design tokens and propose color relationships:
+
+   ```scss
+   // AI-suggested color relationships based on MD3 principles
+   $suggested-relationships: (
+     primary-container: lighten($primary, 40%),
+     on-primary-container: darken($primary, 30%),
+     secondary-container: lighten($secondary, 40%),
+     on-secondary-container: darken($secondary, 30%),
+     // Other relationships...
+   );
+   ```
+
+3. **Responsive Behavior Generation**
+
+   ```scss
+   // AI-generated responsive patterns
+   @mixin responsive-layout {
+     display: grid;
+     gap: map.get(vars.$spacing, 3);
+     grid-template-columns: 1fr;
+     
+     @include responsive(sm) {
+       grid-template-columns: repeat(2, 1fr);
+     }
+     
+     @include responsive(md) {
+       grid-template-columns: repeat(3, 1fr);
+     }
+     
+     @include responsive(lg) {
+       grid-template-columns: repeat(4, 1fr);
+     }
+   }
+   ```
+
+### AI Training Data Security
+
+To ensure security and privacy:
+
+1. We never include sensitive application data in AI training datasets
+2. All AI tools are self-hosted or use secure enterprise channels
+3. Generated code is scanned for security vulnerabilities before integration
+
+### Roadmap for AI Style Integration
+
+Our plans for expanding AI-assisted styling include:
+
+1. **Automated Style Auditing**: AI analysis to identify inconsistencies across components
+2. **Design-to-Code Pipeline**: Directly converting Figma designs to Angular component styles
+3. **Performance Optimization**: AI suggestions for improving CSS delivery and rendering
+4. **Automated A11y Improvements**: AI analysis to enhance accessibility in generated styles
+
+### AI and Human Collaboration
+
+We view AI as an accelerator for our styling workflow, not a replacement for human expertise. The ideal workflow combines:
+
+1. AI-generated initial styles and patterns
+2. Human refinement for brand alignment and special cases
+3. Collaborative review to ensure system consistency
+4. Continuous feedback to improve AI training
+
+By leveraging AI tools within clear guidelines, we maintain our design system integrity while accelerating development.
+
+### Last Updated: March 26, 2025

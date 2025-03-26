@@ -1,83 +1,81 @@
-# Book Typography
+# Craft Fusion Typography System
 
-# Book Application Typography Guide
+## Overview
 
-This document outlines the typography system used in the Craft Fusion book application, following Material Design 3 principles.
+This document provides comprehensive guidelines on the typography system used in Craft Fusion applications. Our typography is based on Material Design 3 principles with adaptations for our patriotic theme.
 
-## Transparency Note
-Typography guidelines now align with MD3 principles. Automated steps helped ensure consistent updates across all styles.
+## Font Family
 
-## Font Hierarchy
+We use Roboto Flex as our primary font family for its excellent readability and flexibility:
 
-We use five specialized fonts for different parts of the book content:
-
-| Role | Font | Usage |
-|------|------|-------|
-| Body Text | Merriweather | Main content text for optimal reading experience |
-| Chapter Headings | Playfair Display | Chapter titles and major section divisions |
-| Section Headings | Lora | Section headings and subheadings within chapters |
-| Quotes & Callouts | Libre Baskerville | Block quotes, important callouts, and epigraphs |
-| Footnotes & Captions | Source Sans Pro | Footnotes, captions, and supplementary information |
-
-## Typography Classes
-
-### Main Content
-
-```html
-<div class="chapter-content">
-  <h1>Chapter One: The Beginning</h1>
-  
-  <p>The main text of the chapter goes here, using the body text font.</p>
-  
-  <h2>First Section Heading</h2>
-  
-  <p>More content using the body text font.</p>
-  
-  <blockquote>
-    This is a quote that will use the quote styling.
-  </blockquote>
-  
-  <p>Additional content with a <span class="footnote">1. This is a footnote using the footnote styling.</span></p>
-</div>
+```css
+font-family: 'Roboto Flex', sans-serif;
 ```
 
-### Title Page
+For monospaced text (code examples, terminal output), we use:
 
-```html
-<div class="book-title-page">
-  <h1 class="book-title">The Great American Novel</h1>
-  <h2 class="book-subtitle">A Journey Through History</h2>
-  <div class="book-author">By John Doe</div>
-</div>
+```css
+font-family: 'Roboto Mono', monospace;
 ```
 
-## CSS Variables
+## Type Scale
 
-For component-specific styling, use these CSS variables:
+Our type scale follows MD3 guidelines with these key text styles:
+
+| Style | Size (em) | Line Height | Weight | Usage |
+|-------|-----------|-------------|--------|-------|
+| Display Large | 3.5625 | 1.12 | 400 | Hero headers |
+| Display Medium | 2.8125 | 1.16 | 400 | Major section headers |
+| Display Small | 2.25 | 1.22 | 400 | Secondary section headers |
+| Headline Large | 2 | 1.25 | 400 | Important content headers |
+| Headline Medium | 1.75 | 1.29 | 400 | Card titles, major UI elements |
+| Headline Small | 1.5 | 1.33 | 400 | Minor section headers |
+| Title Large | 1.375 | 1.27 | 500 | Bold titles, interactive elements |
+| Body Large | 1 | 1.5 | 400 | Primary body text |
+| Label Medium | 0.75 | 1.33 | 500 | Button labels, annotations |
+
+## Usage Guidelines
+
+1. **Consistency**: Use the defined type scale exclusively - don't create custom sizes
+2. **Hierarchy**: Maintain proper heading hierarchy (h1 → h2 → h3) for accessibility
+3. **Responsiveness**: Our typography automatically scales on different viewports
+4. **Color**: Use semantic color tokens for text (`--md-sys-color-on-surface`, etc.)
+
+## Patriotic Accents
+
+For special patriotic emphasis:
+
+1. **Navy Blue Headers**: Primary section headers use `--md-sys-color-primary`
+2. **Red Accents**: Important callouts and warnings use `--md-sys-color-secondary`
+3. **Gold Highlights**: Special achievements or featured content use `--md-sys-color-tertiary`
+
+## Implementation
 
 ```scss
-// Font families
---font-book-body: var(--font-merriweather);
---font-book-chapter: var(--font-playfair);
---font-book-section: var(--font-lora);
---font-book-quote: var(--font-libre-baskerville);
---font-book-footnote: var(--font-source-sans-pro);
+// Example implementation in a component
+.article-header {
+  @extend .headline-large;
+  color: var(--md-sys-color-primary);
+  margin-bottom: 1em;
+}
+
+.article-subheader {
+  @extend .headline-small;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 0.5em;
+}
+
+.article-body {
+  @extend .body-large;
+  color: var(--md-sys-color-on-surface);
+}
 ```
 
-## Responsive Considerations
+## Accessibility Considerations
 
-The book typography automatically adjusts for different screen sizes:
+- Maintain minimum 4.5:1 contrast ratio for normal text
+- Use relative units (em) to support user font size preferences
+- Include proper ARIA attributes where typography conveys meaning
+- Ensure text remains legible when zoomed up to 200%
 
-- **Desktop**: Optimal reading width of 800px with larger font sizes
-- **Tablet**: Slightly reduced margins and font sizes
-- **Mobile**: Single-column layout with adjusted font sizes for readability
-
-## Accessibility Features
-
-- All text maintains a minimum contrast ratio of 4.5:1 against backgrounds
-- Font sizes use relative units (em) for user scalability
-- Line heights are optimized for readability (1.5-1.7 for body text)
-- Color is not used as the only means of conveying information
-
-## Additional Documentation
-List any supplementary typography guidelines here.
+Last Updated: March 26, 2025

@@ -1,6 +1,6 @@
 # Craft Fusion Coding Standards
 
-Last Updated: 2025-03-25
+Last Updated: 2025-03-26
 
 This document outlines the key technical standards and patterns to be followed across all Craft Fusion applications.
 

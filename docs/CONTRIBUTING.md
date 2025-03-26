@@ -30,11 +30,13 @@ Craft Fusion is a monorepo using Nx for workspace management. It contains:
 
 1. Clone the repository
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
-3. Run a specific application:
+3.Run a specific application:
+
 ```bash
 nx serve craft-web
 # or
@@ -57,4 +59,29 @@ npm install your-dev-package --save-dev
 <!-- Ensure blank lines around headings/lists -->
 <!-- Added "Last Updated" -->
 
-Last Updated: 2025-03-25
+## Additional Contribution Guidelines (Added July 2024)
+
+### Code Review Process
+
+1. All PRs require at least one approving review before merging
+2. Documentation changes must be included in the same PR as code changes
+3. All tests must pass before code review begins
+4. Commits should follow conventional commit format
+
+### Material Design 3 Compliance
+
+As of March 2025, our entire component library has been migrated to Material Design 3. When contributing:
+
+1. Use the latest MD3 patterns documented in the [MD3-MIGRATION-GUIDE.md](../apps/craft-web/src/styles/MD3-MIGRATION-GUIDE.md)
+2. Follow our patriotic theme color system for new components
+3. Ensure dark mode compatibility for all UI elements
+
+## Progress Tracking
+
+1. All project tasks are centrally tracked in the [TODO document](TODO.md)
+2. Before starting work, check the TODO document for task status
+3. Mark tasks as "In Progress" with your name when working on them
+4. Update the TODO document, [ROADMAP](ROADMAP.md), and [CHANGELOG](CHANGELOG.md) when completing tasks
+5. Always update the "Last Updated" date in document sections you modify
+
+Last Updated: March 26, 2025
