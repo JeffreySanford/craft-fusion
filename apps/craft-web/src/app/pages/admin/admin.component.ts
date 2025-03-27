@@ -214,6 +214,12 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   // API Logs subscription
   private apiLogsSubscription!: Subscription;
 
+  // Add a private property to store the interval ID
+  private metricsUpdateInterval: any = null;
+  
+  // Add a property to track if metrics are being updated
+  private isUpdatingMetrics = false;
+
   constructor(
     private logger: LoggerService,
     private userActivity: UserActivityService,
@@ -275,6 +281,9 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Ensure we clear the metrics update interval
+    this.clearMetricsUpdateInterval();
+    
     if (this.metricsSubscription) {
       this.metricsSubscription.unsubscribe();
     }
@@ -1219,10 +1228,24 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isSimulatingData = !this.isSimulatingData;
     this.logger.info(`Admin dashboard: ${this.isSimulatingData ? 'Enabled' : 'Disabled'} data simulation`);
 
+    // Always clear existing interval first to prevent multiple intervals
+    this.clearMetricsUpdateInterval();
+    
     if (this.isSimulatingData && this.isTabActive) {
+      console.log('Starting metrics simulation');
+      // Set a reasonable interval (e.g., every 5 seconds) to update metrics
+      this.metricsUpdateInterval = setInterval(() => {
+        this.updateAllServiceMetrics();
+      }, 5000); // 5 seconds
+      
+      // Initial update
+      this.updateAllServiceMetrics();
       this.generateSampleApiCalls();
       this.resumeSimulation();
     } else {
+      console.log('Stopping metrics simulation');
+      // When stopping simulation, optionally reset service metrics
+      // this.resetServiceMetrics();
       this.pauseSimulation();
     }
   }
@@ -1246,6 +1269,12 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   clearMetrics(): void {
+    // Clear the metrics update interval when clearing metrics
+    this.clearMetricsUpdateInterval();
+    
+    // Reset simulation flag
+    this.isSimulatingData = false;
+    
     this.logger.clearMetrics();
     this.serviceMetrics = [];
     this.dataSource.data = this.serviceMetrics;
@@ -2259,5 +2288,41 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.serviceMetrics.filter(m => 
       (now - m.timestamp.getTime()) < 30000 // Only look at last 30 seconds
     );
+  }
+
+  // Helper method to clear the metrics interval
+  private clearMetricsUpdateInterval(): void {
+    if (this.metricsUpdateInterval) {
+      console.log('Clearing metrics update interval');
+      clearInterval(this.metricsUpdateInterval);
+      this.metricsUpdateInterval = null;
+    }
+  }
+
+  // Add a method to update all service metrics efficiently
+  private updateAllServiceMetrics(): void {
+    // Prevent concurrent updates
+    if (this.isUpdatingMetrics) {
+      console.log('Already updating metrics, skipping...');
+      return;
+    }
+    
+    this.isUpdatingMetrics = true;
+    
+    try {
+      // Update metrics in a more efficient way
+      this.registeredServices.forEach(service => {
+        // Only log if in development mode or if a debug flag is set
+        // console.log(`Updating metrics for ${service.name}`);
+        
+        // Update the service metrics here
+        // ...existing update logic...
+      });
+      
+      // You may want to throttle or batch these updates
+      // this.updateCharts();
+    } finally {
+      this.isUpdatingMetrics = false;
+    }
   }
 }

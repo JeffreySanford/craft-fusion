@@ -175,6 +175,9 @@ Reset test data before running integration tests:
 npm run test:db:reset
 ```
 
+## Last Updated
+March 27, 2025
+
 ---
 
 Last updated: 2025-03-30

@@ -186,5 +186,4 @@ All documentation files in the `docs/` directory should follow these standards:
 Outline newly introduced coding conventions or guidelines here.
 
 ---
-
-These standards should be followed for all new code and applied to existing code during refactoring efforts.
+**Last Updated**: March 27, 2025

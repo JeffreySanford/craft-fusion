@@ -12,7 +12,7 @@ This directory contains comprehensive documentation for the Craft Fusion project
 
 ## Status of Documentation
 
-All core documentation is up to date as of March 26, 2025. The following documents were recently updated:
+All core documentation is up to date as of March 27, 2025. The following documents were recently updated:
 
 - ROADMAP.md - Updated to reflect current project status and completion of MD3 migration
 - CHANGELOG.md - Added version 1.6.0 release notes

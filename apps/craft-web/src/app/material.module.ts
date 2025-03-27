@@ -21,6 +21,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @NgModule({
   imports: [
@@ -45,7 +46,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     DragDropModule,
     MatSnackBarModule,
     MatSlideToggleModule,
-    MatTooltipModule 
+    MatTooltipModule,
+    MatFormFieldModule
   ],
   exports: [
     MatButtonModule,
@@ -69,7 +71,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     DragDropModule,
     MatSnackBarModule,
     MatSlideToggleModule,
-    MatTooltipModule 
+    MatTooltipModule,
+    MatFormFieldModule 
   ]
 })
 export class MaterialModule { }
