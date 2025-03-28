@@ -63,6 +63,8 @@
     var(--md-sys-color-secondary)
   );
   -webkit-background-clip: text;
+  background-clip: text;
+  background-clip: text;
   background-clip: text; // Added standard property
   color: transparent;
 }

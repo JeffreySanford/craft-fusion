@@ -1,21 +1,47 @@
 @use '@angular/material' as mat;
+@use '../../../styles/_utilities.scss' as utilities;
 
 .header-card {
   width: 100%;
   height: 4em;
-  margin-bottom: 0.5em;
+  margin: 0.5em;
   background: linear-gradient(
     to right,
-    rgba(255, 0, 0, 0.7) 0%,
-    rgba(255, 255, 255, 0.7) 20%,
-    rgba(0, 0, 255, 0.7) 30%,
-    rgba(0, 128, 128, 0.7) 100%
+    rgba(191, 10, 48, 0.8) 0%,
+    rgba(0, 40, 104, 0.8) 70%,
+    rgba(0, 40, 104, 0.9) 100%
   );
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: none;
-  border-radius: 0.25em;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  border-radius: 0.5em;
+  position: relative;
+  overflow: hidden;
+  cursor: default; // Explicitly set cursor to default
+  
+  // Remove the gold highlight that's causing flicker
+  &::before {
+    content: none; // Remove the shimmering gold line entirely
+  }
+
+  // Add a rule to disable any transform on hover
+  &:hover {
+    transform: none !important; // Prevent the header from moving up on hover
+  }
+}
+
+// Remove the animation causing header gradient shift 
+@keyframes headerGradientShift {
+  0%, 100% {
+    // Static values to prevent animation
+    background: linear-gradient(
+      to right,
+      rgba(191, 10, 48, 0.8) 0%,
+      rgba(0, 40, 104, 0.8) 70%,
+      rgba(0, 40, 104, 0.9) 100%
+    );
+  }
 }
 
 .header-content {
@@ -27,29 +53,80 @@
   position: relative;
   padding: 0 1em;
   border-radius: 0;
+  animation: none;
+
+  button {
+    position: static;
+    top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    height: 100%;
+    margin: 0;
+  }
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--md-sys-color-tertiary); // Use global CSS variable for gold color
+  font-size: 1.8em;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+  letter-spacing: 1px;
+  
+  // Add wave animation that runs every 15 seconds
+  animation: textWave 2s ease-in-out 0s, textWave 2s ease-in-out 15s infinite;
 }
 
 button {
-  position: relative;
-  right: 0.5em;
-  top: -0.1em;
+  position: static;
+  top: auto;
   margin-left: auto;
+  cursor: pointer; // Ensure the button has the pointer cursor
+}
+
+.theme-switch {
+  margin-right: 0.5em;
+  &:hover {
+    transform: scale(1.1) rotate(-10deg);
+    transition: transform 0.3s ease-in-out;
+  }
+}
+
+/* Profile icon button container - ensure it maintains circular shape */
+.user-profile-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto; // Change from 100% to auto to prevent stretching
 }
 
 .profile-icon {
   color: #ff00ff;
-  border: 2px solid #00f7ff;
-  padding: 0.15em;
+  border: 1px solid #00f7ff;
+  padding: 0.1em;
   border-radius: 50%;
   transition: all 0.3s ease-in-out;
   animation: neonPulse 2s infinite;
   text-shadow: 0 0 10px #ff00ff;
-  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5em;
+  height: 1.5em; // Keep width and height equal for circle
+  min-width: 1.5em; // Add min-width to prevent compression
+  min-height: 1.5em; // Add min-height to prevent compression
+  margin-right: 0.5em;
+
   &:hover {
     transform: scale(1.1) rotate(15deg);
     box-shadow: 
-      0 0 15px rgba(0, 247, 255, 0.6),
-      0 0 30px rgba(255, 0, 255, 0.4);
+      0 0 15px #0000ff,
+      0 0 30px #0000ff;
+    color: #0000ff;
   }
 
   &.logged-in {
@@ -58,6 +135,139 @@ button {
     animation: neonRotate 1s ease-out;
     text-shadow: 0 0 10px #00ff00;
   }
+}
+
+.animated-star-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-right: 0.5em;
+  cursor: pointer;
+  z-index: 10; // Increase z-index to ensure it's above other elements
+  
+  // Make tap target larger on touch devices
+  @media (pointer: coarse) {
+    min-width: 48px;
+    min-height: 48px;
+  }
+  
+  &:focus {
+    outline: none;
+    
+    .animated-star {
+      text-shadow: 0 0 15px var(--md-sys-color-tertiary), 0 0 30px var(--md-sys-color-tertiary);
+    }
+  }
+  
+  &:hover {
+    .animated-star {
+      animation: starSpin 1s linear infinite, starPulse 1.5s infinite;
+      transform-origin: center;
+      text-shadow: 0 0 15px var(--md-sys-color-tertiary), 0 0 30px var(--md-sys-color-tertiary);
+    }
+    
+    .progress-circle {
+      opacity: 1;
+      transform: scale(1.2);
+      
+      .progress-indicator {
+        stroke-dashoffset: 0;
+        transition: stroke-dashoffset 1.5s ease-in-out;
+      }
+    }
+  }
+}
+
+// Update button styling to look like the previous star container
+button.animated-star-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-right: 0.5em;
+  z-index: 10;
+  padding: 0;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  
+  &::after {
+    display: none; // Remove any button after effects
+  }
+  
+  &:hover {
+    background: transparent;
+    transform: none; // Let the star animations handle hover effects
+  }
+  
+  &:focus {
+    outline: none;
+    
+    .animated-star {
+      text-shadow: 0 0 15px var(--md-sys-color-tertiary), 0 0 30px var(--md-sys-color-tertiary);
+    }
+  }
+  
+  // ...existing hover effects for animated-star-container can remain...
+}
+
+.animated-star {
+  animation: starSpin 2s linear infinite;
+  font-size: 1.5em;
+  color: var(--md-sys-color-tertiary); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5em;
+  z-index: 2;
+  position: relative;
+  transition: text-shadow 0.3s ease;
+}
+
+.progress-circle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 1;
+  
+  .progress-background {
+    fill: transparent;
+    stroke: rgba(255, 215, 0, 0.2);
+    stroke-width: 2;
+  }
+  
+  .progress-indicator {
+    fill: transparent;
+    stroke: var(--md-sys-color-tertiary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 113; /* 2 * PI * r (where r is 18) */
+    stroke-dashoffset: 113; /* Start from full offset (invisible) */
+    transform-origin: center;
+    transform: rotate(-90deg); /* Start from the top */
+  }
+}
+
+.animated-star {
+  animation: starSpin 2s linear infinite;
+  font-size: 1.5em;
+  margin-right: 0.5em;
+  color: var(--md-sys-color-tertiary); // Use global CSS variable for gold color
+  display: flex; /* Add this for proper flexbox alignment */
+  align-items: center; /* Add this for proper vertical alignment */
+  justify-content: center; /* Add this for proper horizontal alignment */
+  height: 1.5em; /* Match height for consistency */
 }
 
 @keyframes neonPulse {
@@ -92,15 +302,63 @@ button {
   }
 }
 
+@keyframes starSpin {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes starSpinWithPause {
+  0% { transform: rotate(0deg) scale(1); }
+  80% { transform: rotate(340deg) scale(1.1); }
+  90% { transform: rotate(350deg) scale(1.05); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes starGlowEnhanced {
+  0%, 100% {
+    color: var(--md-sys-color-tertiary);
+    text-shadow: 0 0 10px var(--md-sys-color-tertiary);
+  }
+  50% {
+    color: #ffffff;
+    text-shadow: 0 0 20px var(--md-sys-color-tertiary), 0 0 40px var(--md-sys-color-tertiary);
+  }
+}
+
+@keyframes starGrow {
+  0% {
+    transform: scale(0.5);
+    color: #ffd700;
+    text-shadow: none;
+  }
+  25% {
+    transform: scale(1);
+    text-shadow: none;
+  }
+  50% {
+    transform: scale(1.2);
+    text-shadow: 0 0 10px gold;
+  }
+  75% {
+    transform: scale(1);
+    text-shadow: 0 0 5px gold;
+  }
+  100% {
+    transform: scale(1);
+    text-shadow: none;
+  }
+}
+
 ::ng-deep .user-menu {
   transform-origin: top right;
   animation: slideIn 0.2s ease-out;
 
   .mat-mdc-menu-panel {
     background: linear-gradient(135deg, 
-      rgba(0, 0, 102, 0.95) 0%,
-      rgba(139, 0, 0, 0.95) 50%,
-      rgba(0, 0, 102, 0.95) 100%
+      rgba(0, 0, 102, 0.98) 0%,  // Increased opacity
+      rgba(139, 0, 0, 0.98) 50%, // Increased opacity
+      rgba(0, 0, 102, 0.98) 100% // Increased opacity
     ) !important;
     border: 2px solid #ff0000;
     box-shadow: 
@@ -108,6 +366,9 @@ button {
       inset 0 0 20px rgba(0, 0, 255, 0.3);
     border-radius: 14px !important;
     overflow: hidden;
+    margin: 2px !important;
+    padding: 4px !important;
+    background-color: rgba(0, 0, 0, 0.5) !important; // Semi-transparent container background
   }
 
   .mat-mdc-menu-content {
@@ -117,16 +378,21 @@ button {
     box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.1);
   }
 
-  .mat-mdc-menu-item {
+  .mat-mdc-menu-item, .menu-button {
     height: 40px !important;
     line-height: 40px !important;
-    margin: 4px !important;
+    margin: 2px !important;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(0, 0, 153, 0.3);
+    background: linear-gradient(45deg,
+      rgba(0, 40, 104, 0.6) 0%,  // Increased opacity
+      rgba(191, 10, 48, 0.6) 100% // Increased opacity
+    ) !important;
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
 
     &::before {
       content: '';
@@ -148,7 +414,7 @@ button {
       background: linear-gradient(45deg,
         rgba(255, 0, 0, 0.4) 0%,
         rgba(0, 0, 255, 0.4) 100%
-      );
+      ) !important;
       transform: translateX(4px);
       box-shadow: 
         0 0 15px rgba(255, 255, 255, 0.3),
@@ -158,7 +424,9 @@ button {
         left: 100%;
       }
     }
+  }
 
+  .mat-mdc-menu-item {
     .mat-icon {
       color: #ffffff;
       margin-right: 12px;
@@ -181,11 +449,54 @@ button {
   }
 }
 
+.theme-menu {
+  animation: slideIn 0.2s ease-out;
+
+  .theme-option {
+    transition: all 0.3s ease;
+    &:hover {
+      background-color: #ff00ff;
+      color: #000;
+      transform: scale(1.05);
+      box-shadow: 0 0 10px #fff;
+    }
+  }
+
+  .active-theme {
+    border: 2px solid #fff200;
+    background-color: #333;
+  }
+}
+
+.theme-sub-menu {
+  animation: slideIn 0.2s ease-out;
+
+  .theme-sub-option {
+    transition: all 0.3s ease;
+    &:hover {
+      background-color: #ff33cc;
+      color: #000;
+      transform: scale(1.05);
+      box-shadow: 0 0 10px #ffe600;
+    }
+  }
+
+  .active-theme {
+    border: 2px solid #33ff33;
+    background-color: #333;
+  }
+}
+
 // Override Material's default styles
 ::ng-deep .mat-mdc-menu-content,
 ::ng-deep .mat-mdc-menu-panel {
   background: transparent !important;
   color: white !important;
+  
+  // Make sure the menu doesn't close when clicking inside the theme flip section
+  .theme-flip {
+    pointer-events: all;  // Ensure click events are captured
+  }
 }
 
 // Add custom positioning for the overlay
@@ -201,5 +512,563 @@ button {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/* Vibrant switch styles */
+.vibrant-switch {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-right: 0.75em;
+  animation: pulseVibrant 2s infinite;
+  mat-icon {
+    color: #ff7700; // Vibrant2 as default
+    transition: all 0.3s ease;
+  }
+  &:hover mat-icon {
+    color: #ff007f; // Vibrant1
+    transform: scale(1.2) rotate(10deg);
+  }
+}
+
+@keyframes pulseVibrant {
+  0%, 100% { box-shadow: 0 0 10px #ff007f; }
+  50%      { box-shadow: 0 0 10px #ff7700; }
+}
+
+.theme-flip {
+  animation: flipDown 0.4s ease forwards;
+  background: linear-gradient(45deg,
+    rgba(0, 40, 104, 0.5) 0%,    // Increased opacity
+    rgba(191, 10, 48, 0.5) 100%  // Increased opacity
+  );
+  margin: 0;
+  padding: 12px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  transform-origin: top center;
+  border: 1px solid rgba(255,215,0,0.3);
+  border-top: none;
+  overflow: hidden;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3);
+  width: 100%; // Match width to parent
+}
+
+.theme-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  
+  .theme-radio-option {
+    color: white;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: translateX(4px);
+    }
+  }
+}
+
+.theme-options-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%; // Ensure full width
+}
+
+.theme-section {
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 2px 0;
+  width: 100%; // Ensure full width
+}
+
+// Make spacing between items consistent
+.theme-section + button {
+  margin-top: 2px !important; // Consistent spacing with other items
+}
+
+.theme-radio-button {
+  margin-bottom: 8px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  ::ng-deep .mdc-form-field {
+    width: 100%;
+  }
+  
+  ::ng-deep .mdc-radio {
+    padding: 8px;
+  }
+  
+  ::ng-deep .mdc-radio__background {
+    border-color: gold;
+  }
+  
+  ::ng-deep .mdc-radio__inner-circle {
+    background-color: gold;
+  }
+  
+  .theme-option-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 0;
+  }
+  
+  .theme-color-preview {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s ease;
+  }
+  
+  // Theme color preview styles with enhanced gradients
+  .light-preview {
+    background: radial-gradient(circle, #fff 0%, #eee 100%);
+  }
+  
+  .dark-preview {
+    background: radial-gradient(circle, #333 0%, #111 100%);
+  }
+  
+  .vibrant1-preview {
+    background: linear-gradient(135deg, #ff00cc 0%, #3300ff 50%, #00ffcc 100%); // Cosmic Glow colors
+  }
+  
+  .vibrant2-preview {
+    background: linear-gradient(135deg, #ff9500 0%, #ffcc00 50%, #ff5500 100%); // Solar Flare colors
+  }
+  
+  .theme-label {
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+  }
+  
+  &:hover {
+    .theme-color-preview {
+      transform: scale(1.2);
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+    }
+    
+    .theme-label {
+      color: gold;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    }
+  }
+}
+
+.theme-options-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.theme-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.theme-radio-button {
+  margin-bottom: 8px;
+  
+  ::ng-deep .mdc-form-field {
+    width: 100%;
+  }
+  
+  ::ng-deep .mdc-radio {
+    padding: 8px;
+  }
+  
+  ::ng-deep .mdc-radio__background {
+    border-color: gold;
+  }
+  
+  ::ng-deep .mdc-radio__inner-circle {
+    background-color: gold;
+  }
+  
+  .theme-option-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .theme-color-preview {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .light-preview {
+    background: linear-gradient(135deg, #fff 0%, #eee 100%);
+  }
+  
+  .dark-preview {
+    background: linear-gradient(135deg, #333 0%, #111 100%);
+  }
+  
+  .vibrant1-preview {
+    background: linear-gradient(135deg, #ff00cc 0%, #3300ff 50%, #00ffcc 100%); // Cosmic Glow colors
+  }
+  
+  .vibrant2-preview {
+    background: linear-gradient(135deg, #ff9500 0%, #ffcc00 50%, #ff5500 100%); // Solar Flare colors
+  }
+  
+  .theme-label {
+    color: white;
+    font-size: 14px;
+  }
+  
+  &:focus {
+    outline: none;  // Prevent blue outline when clicking
+  }
+}
+
+.theme-section {
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 2px 0;
+}
+
+@keyframes flipDown {
+  0% {
+    transform: rotateX(-90deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes flipUp {
+  0% {
+    transform: rotateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateX(-90deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+// Fix for all menu buttons to use proper flex layout
+::ng-deep .user-menu .mat-mdc-menu-item {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+// Theme-specific header styles - modify these to remove flicker
+.vibrant1-theme .header-card {
+  background: var(--header-gradient) !important;
+  background-size: 400% 400% !important;
+  // Slow down animation to reduce flicker
+  animation: cosmicBackgroundPulse 30s ease infinite !important;
+  
+  &::before {
+    content: none; // Remove flicker-causing highlight
+  }
+  
+  .header-title {
+    color: var(--md-sys-color-tertiary) !important;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6) !important;
+    
+    // Keep the wave animation
+    animation: textWave 2s ease-in-out 0s, textWave 2s ease-in-out 15s infinite;
+  }
+  
+  .animated-star {
+    color: var(--md-sys-color-tertiary) !important;
+    animation: starSpin 2s linear infinite, starPulse 3s infinite !important; // Keep spinning animation
+  }
+}
+
+.vibrant2-theme .header-card {
+  background: var(--header-gradient) !important;
+  background-size: 400% 400% !important;
+  animation: solarBackgroundPulse 12s ease infinite !important;
+  
+  &::before {
+    content: none; // Remove flicker-causing highlight
+  }
+  
+  .header-title {
+    color: var(--md-sys-color-tertiary) !important;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6) !important;
+    
+    // Keep the wave animation
+    animation: textWave 2s ease-in-out 0s, textWave 2s ease-in-out 15s infinite;
+  }
+  
+  .animated-star {
+    color: var(--md-sys-color-tertiary) !important;
+    animation: starSpin 2s linear infinite, starPulse 3s infinite !important; // Keep spinning animation
+  }
+}
+
+.vibrant1-theme .animated-star-container:hover {
+  .animated-star {
+    animation: starSpin 0.8s linear infinite, cosmicTextGlow 1.5s infinite;
+  }
+  
+  .progress-circle .progress-indicator {
+    stroke: #ff00cc;
+  }
+}
+
+.vibrant2-theme .animated-star-container:hover {
+  .animated-star {
+    animation: starSpin 0.8s linear infinite, solarTextGlow 1.5s infinite;
+  }
+  
+  .progress-circle .progress-indicator {
+    stroke: #ff5500;
+  }
+}
+
+// Enhanced menu styling for vibrant themes
+.vibrant1-theme ::ng-deep {
+  .user-menu .mat-mdc-menu-panel {
+    background: linear-gradient(135deg, 
+      rgba(34, 0, 56, 0.98) 0%,
+      rgba(51, 0, 255, 0.92) 50%,
+      rgba(34, 0, 56, 0.98) 100%
+    ) !important;
+    border: 2px solid #ff00cc !important;
+    box-shadow: 0 0 30px rgba(255, 0, 204, 0.4) !important;
+  }
+  
+  .mat-mdc-menu-item, .menu-button {
+    background: linear-gradient(45deg,
+      rgba(51, 0, 255, 0.4) 0%,
+      rgba(255, 0, 204, 0.4) 100%
+    ) !important;
+    
+    &:hover {
+      background: linear-gradient(45deg,
+        rgba(255, 0, 204, 0.6) 0%,
+        rgba(51, 0, 255, 0.6) 100%
+      ) !important;
+      transform: translateX(6px) !important;
+      box-shadow: 0 0 20px rgba(255, 0, 204, 0.5) !important;
+    }
+    
+    .mat-icon {
+      color: #00ffcc !important;
+      text-shadow: 0 0 8px #00ffcc !important;
+    }
+  }
+  
+  .theme-color-preview {
+    box-shadow: 0 0 8px currentColor !important;
+    transform: scale(1.1) !important;
+  }
+  
+  .vibrant1-preview {
+    animation: cosmicBorderGlow 6s infinite !important;
+  }
+  
+  .vibrant2-preview {
+    animation: solarBorderGlow 6s infinite !important;
+  }
+}
+
+.vibrant2-theme ::ng-deep {
+  .user-menu .mat-mdc-menu-panel {
+    background: linear-gradient(135deg, 
+      rgba(255, 85, 0, 0.92) 0%,
+      rgba(255, 170, 0, 0.85) 50%,
+      rgba(255, 85, 0, 0.92) 100%
+    ) !important;
+    border: 2px solid #0088ff !important;
+    box-shadow: 0 0 30px rgba(0, 136, 255, 0.4) !important;
+  }
+  
+  .mat-mdc-menu-item, .menu-button {
+    background: linear-gradient(45deg,
+      rgba(255, 85, 0, 0.6) 0%,
+      rgba(255, 170, 0, 0.6) 100%
+    ) !important;
+    border: 1px solid rgba(0, 136, 255, 0.3) !important;
+    
+    &:hover {
+      background: linear-gradient(45deg,
+        rgba(0, 136, 255, 0.6) 0%,
+        rgba(255, 85, 0, 0.6) 100%
+      ) !important;
+      transform: translateX(6px) !important;
+      box-shadow: 0 0 20px rgba(0, 136, 255, 0.5) !important;
+    }
+    
+    .mat-icon {
+      color: #ffffff !important;
+      text-shadow: 0 0 8px #0088ff !important;
+    }
+  }
+  
+  .theme-color-preview {
+    box-shadow: 0 0 8px currentColor !important;
+    transform: scale(1.1) !important;
+  }
+  
+  .vibrant1-preview {
+    animation: cosmicBorderGlow 6s infinite !important;
+  }
+  
+  .vibrant2-preview {
+    animation: solarBorderGlow 6s infinite !important;
+  }
+}
+
+// Enhanced theme flip animation for vibrant themes
+.vibrant1-theme .theme-flip {
+  background: linear-gradient(45deg,
+    rgba(34, 0, 56, 0.7) 0%,
+    rgba(51, 0, 255, 0.5) 100%
+  ) !important;
+  border: 1px solid rgba(255, 0, 204, 0.5) !important;
+  box-shadow: inset 0 0 20px rgba(255, 0, 204, 0.3) !important;
+}
+
+.vibrant2-theme .theme-flip {
+  background: linear-gradient(45deg,
+    rgba(255, 85, 0, 0.7) 0%,
+    rgba(255, 170, 0, 0.5) 100%
+  ) !important;
+  border: 1px solid rgba(0, 136, 255, 0.5) !important;
+  box-shadow: inset 0 0 20px rgba(0, 136, 255, 0.3) !important;
+}
+
+.header-container {
+  position: fixed;
+  top: 0.5em; /* Match footer's bottom spacing */
+  left: 0.5em; /* Ensure consistent spacing */
+  right: 0.5em; /* Ensure consistent spacing */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: calc(100% - 1em); /* Match footer's width calculation */
+  overflow: visible;
+  z-index: 1000;
+
+  .top-containers {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .navigation-block {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0.75em;
+    padding: 0.625em;
+
+    button {
+      font-size: 1em;
+      display: flex;
+      align-items: center;
+      padding: 0.125em 0.5em;
+      color: lightskyblue;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: lighter;
+
+      &:hover {
+        text-decoration: underline;
+      }
+
+      mat-icon {
+        margin-right: 0.5em;
+        color: brightblue;
+      }
+    }
+  }
+
+  .logo-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    position: relative;
+    z-index: 10;
+    overflow: visible;
+
+    @include utilities.logo-containers();
+
+    .logo-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+      margin: 0.5em 0;
+      overflow: visible;
+
+      img {
+        width: auto;
+        height: 3.5em;
+        padding: 0.25em;
+        margin: 0 1.5em;
+        border: 0.0625em solid blue;
+        transition: transform 0.3s, z-index 0.3s;
+        position: relative;
+
+        &:hover {
+          transform: scale(3);
+          z-index: 9999;
+          background-color: black;
+        }
+      }
+    }
+  }
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+
+    .navigation-block {
+      justify-content: center;
+    }
+
+    .logo-block {
+      width: 100%;
+    }
+  }
+}
+
+/* Responsive enhancements */
+@media (max-width: 480px) {
+  .header-container {
+    padding: 0.5em;
+
+    .logo-row img {
+      height: 2.5em; /* Adjust for smaller screens */
+    }
   }
 }

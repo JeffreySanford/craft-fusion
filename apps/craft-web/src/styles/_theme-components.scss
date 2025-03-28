@@ -1,0 +1,419 @@
+/**
+ * Theme Component Styles
+ *
+ * Systematically applies theme styles to all major components
+ * for each theme variant including the vibrant themes.
+ */
+
+@use 'sass:map';
+@use './variables' as vars;
+@use './themes' as themes;
+
+// ===== BUTTONS =====
+// Basic Material buttons
+.mat-mdc-button, 
+.mat-mdc-raised-button, 
+.mat-mdc-outlined-button, 
+.mat-mdc-unelevated-button {
+  // Base styles for all themes
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  
+  // Vibrant1 theme (Cosmic Glow)
+  .vibrant1-theme & {
+    position: relative;
+    overflow: hidden;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transform: rotate(30deg);
+      transition: all 0.5s;
+      opacity: 0;
+    }
+    
+    &:hover {
+      box-shadow: var(--cosmic-glow-shadow);
+      transform: translateY(-3px);
+      
+      &::after {
+        opacity: 1;
+        left: 100%;
+        transition: all 0.7s ease;
+      }
+    }
+    
+    &:active {
+      transform: translateY(1px);
+    }
+    
+    &.mat-primary {
+      background-color: #ff00cc;
+      color: white;
+    }
+    
+    &.mat-accent {
+      background-color: #00ffcc;
+    }
+  }
+  
+  // Vibrant2 theme (Solar Flare)
+  .vibrant2-theme & {
+    position: relative;
+    overflow: hidden;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transform: rotate(-30deg);
+      transition: all 0.5s;
+      opacity: 0;
+    }
+    
+    &:hover {
+      box-shadow: var(--solar-glow-shadow);
+      transform: translateY(-3px) rotate(1deg);
+      
+      &::after {
+        opacity: 1;
+        left: 100%;
+        transition: all 0.7s ease;
+      }
+    }
+    
+    &:active {
+      transform: translateY(1px) rotate(-1deg);
+    }
+    
+    &.mat-primary {
+      background-color: #ff5500;
+      color: white;
+    }
+    
+    &.mat-accent {
+      background-color: #0088ff;
+    }
+  }
+}
+
+// ===== CARDS =====
+.mat-mdc-card {
+  // Base styles for all themes
+  transition: all 0.3s ease;
+  
+  // Vibrant1 theme (Cosmic Glow)
+  .vibrant1-theme & {
+    background: color-mix(in srgb, #220038 80%, #ff00cc 20%);
+    color: white;
+    border: 1px solid rgba(255, 0, 204, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 0, 204, 0.3);
+    }
+    
+    .mat-mdc-card-title {
+      color: #ff00cc;
+      text-shadow: 0 0 8px rgba(255, 0, 204, 0.5);
+    }
+    
+    .mat-mdc-card-subtitle {
+      color: #00ffcc;
+    }
+  }
+  
+  // Vibrant2 theme (Solar Flare)
+  .vibrant2-theme & {
+    background: color-mix(in srgb, #fff8f0 80%, #ff5500 20%);
+    color: #331100;
+    border: 1px solid rgba(255, 85, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    
+    &:hover {
+      transform: translateY(-8px) rotate(0.5deg);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(255, 85, 0, 0.3);
+    }
+    
+    .mat-mdc-card-title {
+      color: #ff5500;
+      text-shadow: 0 0 8px rgba(255, 85, 0, 0.3);
+    }
+    
+    .mat-mdc-card-subtitle {
+      color: #0088ff;
+    }
+  }
+}
+
+// ===== FORM FIELDS =====
+.mat-mdc-form-field {
+  // Vibrant1 theme (Cosmic Glow)
+  .vibrant1-theme & {
+    ::ng-deep .mat-mdc-form-field-focus-overlay {
+      background-color: rgba(255, 0, 204, 0.1);
+    }
+    
+    ::ng-deep .mdc-line-ripple::after {
+      border-color: #ff00cc;
+      box-shadow: 0 0 8px #ff00cc;
+    }
+    
+    ::ng-deep .mat-mdc-form-field-label {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    &.mat-focused {
+      ::ng-deep .mat-mdc-form-field-label {
+        color: #ff00cc;
+      }
+    }
+  }
+  
+  // Vibrant2 theme (Solar Flare)
+  .vibrant2-theme & {
+    ::ng-deep .mat-mdc-form-field-focus-overlay {
+      background-color: rgba(255, 85, 0, 0.1);
+    }
+    
+    ::ng-deep .mdc-line-ripple::after {
+      border-color: #ff5500;
+      box-shadow: 0 0 8px #ff5500;
+    }
+    
+    ::ng-deep .mat-mdc-form-field-label {
+      color: rgba(51, 17, 0, 0.7);
+    }
+    
+    &.mat-focused {
+      ::ng-deep .mat-mdc-form-field-label {
+        color: #ff5500;
+      }
+    }
+  }
+}
+
+// ===== TABLES =====
+.mat-mdc-table {
+  // Vibrant1 theme (Cosmic Glow)
+  .vibrant1-theme & {
+    background-color: rgba(34, 0, 56, 0.8);
+    
+    .mat-mdc-header-row {
+      background-color: #3300ff;
+    }
+    
+    .mat-mdc-header-cell {
+      color: white;
+      text-shadow: 0 0 5px rgba(255, 0, 204, 0.5);
+    }
+    
+    .mat-mdc-row {
+      &:nth-child(even) {
+        background-color: rgba(51, 0, 255, 0.1);
+      }
+      
+      &:hover {
+        background-color: rgba(255, 0, 204, 0.2);
+      }
+    }
+    
+    .mat-mdc-cell {
+      color: white;
+      border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+    }
+  }
+  
+  // Vibrant2 theme (Solar Flare)
+  .vibrant2-theme & {
+    background-color: rgba(255, 248, 240, 0.9);
+    
+    .mat-mdc-header-row {
+      background-color: #ff5500;
+    }
+    
+    .mat-mdc-header-cell {
+      color: white;
+      text-shadow: 0 0 5px rgba(255, 85, 0, 0.5);
+    }
+    
+    .mat-mdc-row {
+      &:nth-child(even) {
+        background-color: rgba(255, 170, 0, 0.1);
+      }
+      
+      &:hover {
+        background-color: rgba(255, 85, 0, 0.2);
+      }
+    }
+    
+    .mat-mdc-cell {
+      color: #331100;
+      border-bottom: 1px solid rgba(0, 136, 255, 0.2);
+    }
+  }
+}
+
+// ===== TABLE (RecordList) =====
+.table-container {
+  // Light & Dark themes
+  &.light-theme, &.dark-theme {
+    // Use your existing MD3 tokens or color vars
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+  }
+
+  // Vibrant1 (Cosmic Glow)
+  .vibrant1-theme & {
+    background-color: rgba(34, 0, 56, 0.8);
+    // Additional cosmic glow table styling...
+  }
+
+  // Vibrant2 (Solar Flare)
+  .vibrant2-theme & {
+    background-color: rgba(255, 248, 240, 0.9);
+    // Additional solar flare table styling...
+  }
+}
+
+// ===== PEASANT KITCHEN (Recipes) =====
+.peasant-kitchen {
+  // ...similar structure for .light-theme, .dark-theme, .vibrant1-theme, and .vibrant2-theme...
+  // Example:
+  &.light-theme {
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+  }
+}
+
+// ===== DIALOGS =====
+.mat-mdc-dialog-container {
+  // Vibrant1 theme (Cosmic Glow)
+  .vibrant1-theme & {
+    .mat-mdc-dialog-surface {
+      background: color-mix(in srgb, #220038 80%, #ff00cc 20%);
+      box-shadow: 0 0 30px rgba(255, 0, 204, 0.3);
+      border: 1px solid rgba(255, 0, 204, 0.5);
+    }
+    
+    .mat-mdc-dialog-title {
+      color: #ff00cc;
+    }
+    
+    .mat-mdc-dialog-content {
+      color: white;
+    }
+  }
+  
+  // Vibrant2 theme (Solar Flare)
+  .vibrant2-theme & {
+    .mat-mdc-dialog-surface {
+      background: color-mix(in srgb, #fff8f0 80%, #ff5500 20%);
+      box-shadow: 0 0 30px rgba(255, 85, 0, 0.3);
+      border: 1px solid rgba(255, 85, 0, 0.5);
+    }
+    
+    .mat-mdc-dialog-title {
+      color: #ff5500;
+    }
+    
+    .mat-mdc-dialog-content {
+      color: #331100;
+    }
+  }
+}
+
+// ===== TOOLBARS =====
+.mat-toolbar {
+  // Vibrant1 theme (Cosmic Glow)
+  .vibrant1-theme & {
+    background: linear-gradient(135deg, #ff00cc, #3300ff);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 204, 0.4);
+  }
+  
+  // Vibrant2 theme (Solar Flare)
+  .vibrant2-theme & {
+    background: linear-gradient(135deg, #ff5500, #ffaa00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 85, 0, 0.4);
+  }
+}
+
+// ===== TEXT AND TYPOGRAPHY =====
+.vibrant1-theme {
+  h1, h2, h3, h4, h5, h6 {
+    color: #ff00cc;
+    text-shadow: 0 0 8px rgba(255, 0, 204, 0.3);
+  }
+  
+  a:not(.mat-button):not(.mat-raised-button):not(.mat-menu-item) {
+    color: #00ffcc;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.5s ease;
+    }
+    
+    &:hover {
+      text-shadow: 0 0 8px rgba(0, 255, 204, 0.5);
+      
+      &::after {
+        transform: scaleX(1);
+        transform-origin: left;
+      }
+    }
+  }
+}
+
+.vibrant2-theme {
+  h1, h2, h3, h4, h5, h6 {
+    color: #ff5500;
+    text-shadow: 0 0 8px rgba(255, 85, 0, 0.3);
+  }
+  
+  a:not(.mat-button):not(.mat-raised-button):not(.mat-menu-item) {
+    color: #0088ff;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.5s ease;
+    }
+    
+    &:hover {
+      text-shadow: 0 0 8px rgba(0, 136, 255, 0.5);
+      
+      &::after {
+        transform: scaleX(1);
+        transform-origin: left;
+      }
+    }
+  }
+}

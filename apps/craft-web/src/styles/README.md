@@ -29,6 +29,7 @@ This document provides a comprehensive guide to the styling architecture used in
 14. [Refactoring Plans](#refactoring-plans)
 15. [Generating Styles with AI](#generating-styles-with-ai)
 16. [Component Alignment Standards](#component-alignment-standards)
+17. [Component Configuration Standards](#component-configuration-standards)
 
 ## Architecture Overview
 
@@ -173,7 +174,6 @@ You can run Stylelint checks using:
 nx run craft-web:lint-styles
 
 # Fix auto-fixable issues
-nx run craft-web:lint-styles --fix
 
 # Check specific file
 npx stylelint "apps/craft-web/src/styles/_variables.scss"

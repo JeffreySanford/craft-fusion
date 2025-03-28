@@ -1,0 +1,196 @@
+/**
+ * Shared animation and color mixins for Material Icons and Buttons pages
+ */
+
+// Generate a complementary color based on hue rotation
+@function complementary-color($color) {
+  @return adjust-hue($color, 180deg);
+}
+
+// Generate an analogous color
+@function analogous-color($color, $angle: 30deg) {
+  @return adjust-hue($color, $angle);
+}
+
+// Create a rainbow palette of n colors
+@mixin rainbow-palette($n: 10) {
+  @for $i from 0 through $n - 1 {
+    $hue: $i * (360deg / $n);
+    --color-#{$i}: hsl($hue, 80%, 60%);
+    --color-#{$i}-light: hsl($hue, 80%, 75%);
+    --color-#{$i}-dark: hsl($hue, 80%, 45%);
+  }
+}
+
+// Shared animation keyframes
+@keyframes floating {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 5px currentColor, 0 0 10px currentColor; }
+  50% { box-shadow: 0 0 15px currentColor, 0 0 30px currentColor; }
+  100% { box-shadow: 0 0 5px currentColor, 0 0 10px currentColor; }
+}
+
+@keyframes color-shift {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+@keyframes border-dance {
+  0% { border-radius: 8px; }
+  25% { border-radius: 16px 8px 16px 8px; }
+  50% { border-radius: 24px; }
+  75% { border-radius: 8px 16px 8px 16px; }
+  100% { border-radius: 8px; }
+}
+
+@keyframes input-highlight {
+  0% { border-color: var(--md-sys-color-primary); }
+  50% { border-color: var(--md-sys-color-tertiary); }
+  100% { border-color: var(--md-sys-color-primary); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+// Animation variants for items in grids
+@mixin animated-grid-items($base-selector, $total-items: 30) {
+  @for $i from 1 through $total-items {
+    #{$base-selector}:nth-child(#{$i}) {
+      $hue: ($i * 25) % 360;
+      $delay: $i * 0.05s;
+      color: hsl($hue, 80%, 60%);
+      animation-delay: $delay;
+      transition-delay: $delay;
+
+      &:hover {
+        color: hsl($hue, 90%, 70%);
+        box-shadow: 0 0 15px hsl($hue, 90%, 70%);
+      }
+    }
+  }
+}
+
+// Content container with optimized spacing
+@mixin optimized-container {
+  padding: 12px;
+  gap: 12px;
+  margin: 12px auto;
+  max-width: 1400px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+// Apply colorful focus effects to inputs
+@mixin colorful-inputs {
+  input, textarea, select {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    
+    &:focus {
+      animation: input-highlight 2s infinite;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(var(--md-sys-color-primary-rgb), 0.3);
+    }
+  }
+}
+
+// Colorful button variants
+@mixin colorful-buttons($n: 10) {
+  @for $i from 0 through $n - 1 {
+    .color-btn-#{$i} {
+      background-color: var(--color-#{$i});
+      color: white;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: var(--color-#{$i}-light);
+        box-shadow: 0 0 15px var(--color-#{$i});
+        transform: translateY(-3px) scale(1.05);
+      }
+      
+      &:active {
+        background-color: var(--color-#{$i}-dark);
+        transform: translateY(1px);
+      }
+    }
+  }
+}
+
+// Colorful icon variants
+@mixin colorful-icons($n: 10) {
+  @for $i from 0 through $n - 1 {
+    .color-icon-#{$i} {
+      color: var(--color-#{$i});
+      transition: all 0.3s ease;
+      
+      &:hover {
+        color: var(--color-#{$i}-light);
+        text-shadow: 0 0 10px var(--color-#{$i});
+        animation: floating 2s infinite ease-in-out;
+      }
+    }
+  }
+}
+
+// Vibrant theme enhancements
+@mixin vibrant-theme-enhancements {
+  // Cosmic Glow (Vibrant1)
+  .vibrant1-theme & {
+    --shimmer-color-1: rgba(255, 0, 204, 0.7);
+    --shimmer-color-2: rgba(51, 0, 255, 0.7);
+    --shimmer-color-3: rgba(0, 255, 204, 0.7);
+    
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      var(--shimmer-color-1),
+      var(--shimmer-color-2),
+      var(--shimmer-color-3),
+      transparent
+    );
+    background-size: 200% 100%;
+    
+    &:hover {
+      animation: shimmer 2s infinite;
+    }
+  }
+  
+  // Solar Flare (Vibrant2)
+  .vibrant2-theme & {
+    --shimmer-color-1: rgba(255, 85, 0, 0.7);
+    --shimmer-color-2: rgba(255, 170, 0, 0.7);
+    --shimmer-color-3: rgba(0, 136, 255, 0.7);
+    
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      var(--shimmer-color-1),
+      var(--shimmer-color-2),
+      var(--shimmer-color-3),
+      transparent
+    );
+    background-size: 200% 100%;
+    
+    &:hover {
+      animation: shimmer 2s infinite;
+    }
+  }
+}

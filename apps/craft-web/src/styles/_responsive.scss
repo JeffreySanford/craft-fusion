@@ -1,246 +1,215 @@
 /**
- * Craft Fusion Responsive Utilities
+ * Craft Fusion Responsive Style System
  * 
- * This file contains mixins and utilities for creating responsive designs
- * that adapt to different viewport sizes.
- *
- * Last Updated: March 26, 2025
+ * Contains responsive mixins, breakpoints, and utilities for consistent 
+ * responsive behavior across the application.
  */
 
-@use 'variables' as vars;
-@use 'sass:map';
+@use './_variables' as vars;
 
-// Mixin for creating media queries from our defined breakpoints
-@mixin responsive($breakpoint) {
-  @if map.has-key(vars.$breakpoints, $breakpoint) {
-    @media (min-width: map.get(vars.$breakpoints, $breakpoint)) {
-      @content;
-    }
-  } @else {
-    @error "Unknown breakpoint: #{$breakpoint}";
+// Standard breakpoints
+$breakpoint-xs: 0;
+$breakpoint-sm: 600px;
+$breakpoint-md: 960px;
+$breakpoint-lg: 1280px;
+$breakpoint-xl: 1920px;
+
+// Mixins for media queries
+@mixin xs {
+  @media (max-width: #{$breakpoint-sm - 1px}) {
+    @content;
   }
 }
 
-// For max-width media queries (useful for mobile-first approach)
-@mixin responsive-down($breakpoint) {
-  @if map.has-key(vars.$breakpoints, $breakpoint) {
-    @media (max-width: (map.get(vars.$breakpoints, $breakpoint) - 0.1px)) {
-      @content;
-    }
-  } @else {
-    @error "Unknown breakpoint: #{$breakpoint}";
+@mixin sm {
+  @media (min-width: #{$breakpoint-sm}) and (max-width: #{$breakpoint-md - 1px}) {
+    @content;
   }
 }
 
-// For between-width media queries
-@mixin responsive-between($min-breakpoint, $max-breakpoint) {
-  @if map.has-key(vars.$breakpoints, $min-breakpoint) and map.has-key(vars.$breakpoints, $max-breakpoint) {
-    $min-width: map.get(vars.$breakpoints, $min-breakpoint);
-    $max-width: map.get(vars.$breakpoints, $max-breakpoint) - 0.1px;
-    
-    @media (min-width: $min-width) and (max-width: $max-width) {
-      @content;
-    }
-  } @else {
-    @error "Unknown breakpoint range: #{$min-breakpoint} to #{$max-breakpoint}";
+@mixin md {
+  @media (min-width: #{$breakpoint-md}) and (max-width: #{$breakpoint-lg - 1px}) {
+    @content;
   }
 }
 
-// Hide elements based on breakpoint
-@mixin hide-on($breakpoint) {
-  @include responsive($breakpoint) {
-    display: none !important;
+@mixin lg {
+  @media (min-width: #{$breakpoint-lg}) and (max-width: #{$breakpoint-xl - 1px}) {
+    @content;
   }
 }
 
-// Show elements based on breakpoint
-@mixin show-on($breakpoint) {
-  display: none !important;
-  
-  @include responsive($breakpoint) {
-    display: block !important;
+@mixin xl {
+  @media (min-width: #{$breakpoint-xl}) {
+    @content;
   }
 }
 
-// Container width adjustment
-@mixin container {
-  width: 100%;
-  padding-right: map.get(vars.$spacing, 2);
-  padding-left: map.get(vars.$spacing, 2);
-  margin-right: auto;
-  margin-left: auto;
-  
-  @include responsive(sm) {
-    max-width: 540px;
-  }
-  
-  @include responsive(md) {
-    max-width: 720px;
-  }
-  
-  @include responsive(lg) {
-    max-width: 960px;
-  }
-  
-  @include responsive(xl) {
-    max-width: 1140px;
-  }
-  
-  @include responsive(xxl) {
-    max-width: 1320px;
+// Up mixins (from breakpoint and up)
+@mixin sm-up {
+  @media (min-width: #{$breakpoint-sm}) {
+    @content;
   }
 }
 
-// Responsive font sizes
-@mixin responsive-font-size($size, $min-size: null, $max-size: null) {
-  font-size: $size;
-  
-  @if $min-size {
-    @include responsive-down(md) {
-      font-size: $min-size;
-    }
-  }
-  
-  @if $max-size {
-    @include responsive(xl) {
-      font-size: $max-size;
-    }
+@mixin md-up {
+  @media (min-width: #{$breakpoint-md}) {
+    @content;
   }
 }
 
-// Responsive spacing
-@mixin responsive-spacing($property, $size-map) {
-  @each $breakpoint, $size in $size-map {
-    @if $breakpoint == 'base' {
-      #{$property}: $size;
-    } @else {
-      @include responsive($breakpoint) {
-        #{$property}: $size;
-      }
-    }
+@mixin lg-up {
+  @media (min-width: #{$breakpoint-lg}) {
+    @content;
   }
 }
 
-// Responsive grid columns
-@mixin responsive-grid($columns-map: (base: 1, md: 2, lg: 3, xl: 4)) {
-  display: grid;
-  gap: map.get(vars.$spacing, 3);
-  
-  @each $breakpoint, $columns in $columns-map {
-    @if $breakpoint == 'base' {
-      grid-template-columns: repeat($columns, 1fr);
-    } @else {
-      @include responsive($breakpoint) {
-        grid-template-columns: repeat($columns, 1fr);
-      }
-    }
+// Down mixins (from breakpoint and down)
+@mixin sm-down {
+  @media (max-width: #{$breakpoint-md - 1px}) {
+    @content;
   }
 }
 
-// Responsive app shell with proper alignment
-@mixin responsive-app-shell {
-  .app-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    width: 100%;
-    overflow: hidden;
-  }
-  
-  .app-header {
-    position: fixed;
-    top: 0.5em;
-    left: 0.5em;
-    right: 0.5em;
-    z-index: map.get(vars.$z-layers, header);
-  }
-  
-  .app-content {
-    display: flex;
-    flex: 1;
-    margin-top: calc(vars.$header-height + 1em);
-    margin-bottom: calc(vars.$footer-height + 1em);
-    height: calc(100vh - vars.$header-height - vars.$footer-height - 2em);
-    overflow: hidden;
-  }
-  
-  .app-sidebar {
-    width: vars.$sidebar-width;
-    margin-left: 0.5em;
-    transition: width 0.3s ease;
-    
-    @include responsive-down(md) {
-      position: fixed;
-      left: 0;
-      bottom: vars.$footer-height;
-      top: vars.$header-height;
-      z-index: map.get(vars.$z-layers, footer) - 1;
-      transform: translateX(-100%);
-      
-      &.active {
-        transform: translateX(0);
-      }
-    }
-  }
-  
-  .app-main {
-    flex: 1;
-    padding: 1em;
-    margin-right: 0.5em;
-    overflow-y: auto;
-    
-    @include responsive-down(md) {
-      padding: 0.5em;
-    }
-  }
-  
-  .app-footer {
-    position: fixed;
-    bottom: 0.5em;
-    left: 0.5em;
-    right: 0.5em;
-    height: vars.$footer-height;
-    z-index: map.get(vars.$z-layers, footer);
-    transition: height 0.3s ease;
-    
-    &.expanded {
-      height: vars.$footer-expanded-height;
-    }
+@mixin md-down {
+  @media (max-width: #{$breakpoint-lg - 1px}) {
+    @content;
   }
 }
 
-// Responsive typography adjustments
+@mixin lg-down {
+  @media (max-width: #{$breakpoint-xl - 1px}) {
+    @content;
+  }
+}
+
+// Special device type mixins
+@mixin mobile-only {
+  @media (max-width: #{$breakpoint-md - 1px}) and (hover: none) {
+    @content;
+  }
+}
+
+@mixin tablet-only {
+  @media (min-width: #{$breakpoint-sm}) and (max-width: #{$breakpoint-lg - 1px}) and (hover: none) and (pointer: coarse) {
+    @content;
+  }
+}
+
+@mixin desktop-only {
+  @media (min-width: #{$breakpoint-md}) and (hover: hover) {
+    @content;
+  }
+}
+
+// Touch vs. pointer device detection
+@mixin touch-device {
+  @media (hover: none) {
+    @content;
+  }
+}
+
+@mixin mouse-device {
+  @media (hover: hover) {
+    @content;
+  }
+}
+
+// Print media query
+@mixin print {
+  @media print {
+    @content;
+  }
+}
+
+// Prefers-reduced-motion media query
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+// Orientation mixins
+@mixin landscape {
+  @media (orientation: landscape) {
+    @content;
+  }
+}
+
+@mixin portrait {
+  @media (orientation: portrait) {
+    @content;
+  }
+}
+
+// Dynamic spacing that scales with viewport
+@function fluid-calc($min-size, $max-size, $min-width: $breakpoint-sm, $max-width: $breakpoint-lg) {
+  @return clamp(#{$min-size}, #{$min-size} + (#{$max-size} - #{$min-size}) * ((100vw - #{$min-width}) / (#{$max-width} - #{$min-width})), #{$max-size});
+}
+
+// Responsive typography system
 @mixin responsive-typography {
-  .display-large {
-    @include responsive-down(md) {
-      font-size: 45px;
-      line-height: 52px;
+  html {
+    // Default font size (16px)
+    font-size: 100%;
+
+    @include xs {
+      font-size: 87.5%; // 14px
     }
-    
-    @include responsive-down(sm) {
-      font-size: 36px;
-      line-height: 44px;
+
+    @include sm {
+      font-size: 93.75%; // 15px
     }
-  }
-  
-  .display-medium {
-    @include responsive-down(md) {
-      font-size: 36px;
-      line-height: 44px;
-    }
-    
-    @include responsive-down(sm) {
-      font-size: 32px;
-      line-height: 40px;
+
+    @include lg-up {
+      font-size: 106.25%; // 17px
     }
   }
-  
-  .headline-large {
-    @include responsive-down(md) {
-      font-size: 28px;
-      line-height: 36px;
-    }
+
+  h1 {
+    font-size: fluid-calc(1.75rem, 2.5rem);
+    line-height: 1.2;
   }
-  
-  // Add more responsive typography adjustments as needed
+
+  h2 {
+    font-size: fluid-calc(1.5rem, 2rem);
+    line-height: 1.25;
+  }
+
+  h3 {
+    font-size: fluid-calc(1.25rem, 1.75rem);
+    line-height: 1.3;
+  }
+
+  h4 {
+    font-size: fluid-calc(1.125rem, 1.5rem);
+    line-height: 1.35;
+  }
+
+  h5,
+  h6 {
+    font-size: fluid-calc(1rem, 1.25rem);
+    line-height: 1.4;
+  }
+
+  p,
+  li,
+  td,
+  th,
+  input,
+  button,
+  select,
+  textarea {
+    font-size: fluid-calc(0.875rem, 1rem);
+    line-height: 1.5;
+  }
+}
+
+// Responsive app shell with consistent alignment
+@mixin responsive-app-shell {
+  .container {
+    width: 100%;
+    margin-right: auto;
+    height: vars.$footer-expanded-height;
+  }
 }

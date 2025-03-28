@@ -10,6 +10,10 @@ export class ThemeService {
   private _isDarkTheme = new BehaviorSubject<boolean>(false);
   readonly isDarkTheme$ = this._isDarkTheme.asObservable();
 
+  // Current theme
+  private _currentTheme = new BehaviorSubject<string>('light');
+  readonly currentTheme$ = this._currentTheme.asObservable();
+
   // System preference
   private prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -25,7 +29,7 @@ export class ThemeService {
       // Only update if user hasn't explicitly set a preference
       if (!localStorage.getItem('theme-preference')) {
         this.logger.debug('System theme preference changed', { isDark: e.matches });
-        this.setTheme(e.matches);
+        this.setTheme(e.matches ? 'dark' : 'light');
       }
     });
   }
@@ -37,46 +41,51 @@ export class ThemeService {
     
     if (savedTheme) {
       // Use saved preference
-      this.setTheme(savedTheme === 'dark');
+      this.setTheme(savedTheme);
       this.logger.endServiceCall(callId, 200);
       this.logger.info('Theme initialized from user preference', { theme: savedTheme });
     } else {
       // Use system preference
-      this.setTheme(this.prefersDarkScheme.matches);
+      this.setTheme(this.prefersDarkScheme.matches ? 'dark' : 'light');
       this.logger.endServiceCall(callId, 204);
       this.logger.info('Theme initialized from system preference', { isDark: this.prefersDarkScheme.matches });
     }
   }
 
-  public setTheme(isDark: boolean): void {
-    // Update state
-    this._isDarkTheme.next(isDark);
+  public setTheme(themeName: string): void {
+    // Update dark theme state (for backward compatibility)
+    this._isDarkTheme.next(themeName === 'dark');
+    
+    // Update current theme state
+    this._currentTheme.next(themeName);
     
     // Save preference
-    localStorage.setItem('theme-preference', isDark ? 'dark' : 'light');
+    localStorage.setItem('theme-preference', themeName);
     
     // Apply theme to document
-    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', themeName);
     
-    // Update body class
-    if (isDark) {
-      document.body.classList.add('dark-theme');
-      document.body.classList.remove('light-theme');
-    } else {
-      document.body.classList.add('light-theme');
-      document.body.classList.remove('dark-theme');
-    }
+    // Update body class - remove all theme classes first
+    document.body.classList.remove('light-theme', 'dark-theme', 'vibrant1-theme', 'vibrant2-theme');
     
-    this.logger.info(`Theme set to ${isDark ? 'dark' : 'light'} mode`);
+    // Add the current theme class with consistent naming convention
+    document.body.classList.add(themeName + '-theme');
+    
+    this.logger.info(`Theme set to ${themeName} mode`);
   }
 
   public toggleTheme(): void {
-    const currentTheme = this._isDarkTheme.value;
-    this.setTheme(!currentTheme);
-    this.logger.info('Theme toggled', { newIsDark: !currentTheme });
+    const currentTheme = this._currentTheme.value;
+    // Fix inconsistent naming - remove 'theme-' prefix
+    const newTheme = currentTheme === 'dark' ? 'light' : 
+                     currentTheme === 'light' ? 'dark' : 
+                     currentTheme === 'vibrant1' ? 'vibrant2' : 'vibrant1';
+    this.setTheme(newTheme);
+    this.logger.info('Theme toggled', { newTheme });
   }
 
   public getCurrentTheme(): string {
-    return this._isDarkTheme.value ? 'dark' : 'light';
+    // Return the actual current theme from local storage
+    return localStorage.getItem('theme-preference') || 'light';
   }
 }

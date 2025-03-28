@@ -22,6 +22,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatRadioModule } from '@angular/material/radio';
+
+
 
 @NgModule({
   imports: [
@@ -47,7 +50,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatSnackBarModule,
     MatSlideToggleModule,
     MatTooltipModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatRadioModule
   ],
   exports: [
     MatButtonModule,
@@ -72,7 +76,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatSnackBarModule,
     MatSlideToggleModule,
     MatTooltipModule,
-    MatFormFieldModule 
+    MatFormFieldModule,
+    MatRadioModule 
   ]
 })
 export class MaterialModule { }

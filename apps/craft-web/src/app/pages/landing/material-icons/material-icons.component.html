@@ -1,7 +1,100 @@
-<div class="icons-container">
-    <div class="icon-item" *ngFor="let icon of materialIcons; let i = index" [ngClass]="getTileClass(i)">
-      <mat-icon>{{ icon }}</mat-icon>
-      <span>{{ icon }}</span>
+<mat-card class="page-container animate-in">
+  <mat-card-header class="header-with-actions">
+    <div>
+      <mat-card-title class="slide-in rainbow-text">Material Icons</mat-card-title>
+      <mat-card-subtitle class="slide-in-delayed shimmer-text">Explore a collection of Material Design icons</mat-card-subtitle>
     </div>
+    <div class="navigation-links">
+      <button mat-raised-button color="primary" class="elevate-on-hover rainbow-btn active-page">
+        <mat-icon>format_shapes</mat-icon> Icons
+      </button>
+      <button mat-raised-button color="accent" class="elevate-on-hover rainbow-btn" (click)="navigateToButtons()">
+        <mat-icon>toggle_on</mat-icon> Buttons
+      </button>
+      <button mat-raised-button color="warn" class="elevate-on-hover rainbow-btn" (click)="navigateToAnimations()">
+        <mat-icon>animation</mat-icon> Animations
+      </button>
+    </div>
+  </mat-card-header>
+
+  <div class="search-container">
+    <mat-form-field class="search-field" appearance="outline">
+      <mat-label>Search Icons</mat-label>
+      <input matInput type="text" [(ngModel)]="searchTerm" (input)="filterIcons()" placeholder="Example: home, star, etc.">
+      <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="clearSearch()">
+        <mat-icon class="animated-clear">close</mat-icon>
+      </button>
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
   </div>
   
+  <mat-card-content>
+    <h2 class="section-title">Icon Categories</h2>
+    <div class="categories-container" cdkDropListGroup>
+      <mat-card *ngFor="let category of categories; let i = index" 
+                class="category-card scroll-animation color-category-{{i % 10}}"
+                [style.animation-delay]="i * 100 + 'ms'"
+                cdkDropList
+                [cdkDropListData]="category.icons"
+                (cdkDropListDropped)="drop($event)">
+        <mat-card-title>{{category.name}}</mat-card-title>
+        <div class="category-icons">
+          <div *ngFor="let icon of category.icons; let j = index" 
+               class="icon-item with-glow color-icon-{{(i+j) % 10}}" 
+               cdkDrag 
+               [cdkDragData]="icon"
+               (click)="copyIconName(icon)">
+            <mat-icon [@iconAnimation]="{value: '', params: {delay: (i+j) * 30}}">{{ icon }}</mat-icon>
+            <span class="icon-name">{{ icon }}</span>
+            <!-- Preview when dragging -->
+            <div *cdkDragPreview class="icon-item-preview">
+              <mat-icon>{{ icon }}</mat-icon>
+              <span>{{ icon }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+    
+    <h2 class="section-title">All Icons</h2>
+    
+    <!-- Pagination controls with animations -->
+    <div class="pagination-controls fade-in">
+      <button mat-button [disabled]="currentPage === 0" (click)="prevPage()" class="smart-hover pagination-btn">
+        <mat-icon>navigate_before</mat-icon> Previous
+      </button>
+      <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+      <button mat-button [disabled]="currentPage === totalPages - 1" (click)="nextPage()" class="smart-hover pagination-btn">
+        Next <mat-icon>navigate_next</mat-icon>
+      </button>
+    </div>
+    
+    <!-- Main icons grid with animations -->
+    <div class="icons-container" [@iconListAnimation]="paginatedIcons.length">
+      <div *ngFor="let icon of paginatedIcons; let i = index" 
+           class="icon-item ripple" 
+           [ngClass]="[getTileClass(i), 'color-icon-' + (i % 10)]"
+           [@iconAnimation]="{value: '', params: {delay: i * 30}}"
+           (click)="copyIconName(icon)">
+        <mat-icon [@iconPulse]="icon">{{ icon }}</mat-icon>
+        <span class="icon-name">{{ icon }}</span>
+      </div>
+    </div>
+    
+    <!-- Bottom pagination controls -->
+    <div class="pagination-controls fade-in">
+      <button mat-button [disabled]="currentPage === 0" (click)="prevPage()" class="smart-hover pagination-btn">
+        <mat-icon>navigate_before</mat-icon> Previous
+      </button>
+      <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+      <button mat-button [disabled]="currentPage === totalPages - 1" (click)="nextPage()" class="smart-hover pagination-btn">
+        Next <mat-icon>navigate_next</mat-icon>
+      </button>
+    </div>
+  </mat-card-content>
+
+  <div *ngIf="showCopyNotification" class="copy-notification">
+    <mat-icon>check_circle</mat-icon>
+    <span>Copied "{{ copiedIcon }}" to clipboard!</span>
+  </div>
+</mat-card>

@@ -2,112 +2,206 @@
 @use 'sass:color';
 @use './variables' as vars;
 
-// _themes.scss
+// Core theme definitions - all themes should be defined here
+// and then applied in _theme.scss
 
-// Theme palette definitions
-$patriotic-blue-palette: (
-  50: #e3f2fd,
-  100: #bbdefb,
-  200: #90caf9,
-  300: #64b5f6,
-  400: #42a5f5,
-  500: #002868, // patriotic blue
-  600: #1e88e5,
-  700: #1976d2,
-  800: #1565c0,
-  900: #0d47a1,
-  contrast: (
-    50: rgba(0, 0, 0, 0.87),
-    100: rgba(0, 0, 0, 0.87),
-    200: rgba(0, 0, 0, 0.87),
-    300: rgba(0, 0, 0, 0.87),
-    400: rgba(0, 0, 0, 0.87),
-    500: white,
-    600: white,
-    700: white,
-    800: white,
-    900: white,
-  )
-);
-
-// Light Theme
+// Light Theme (Default)
 $light-theme: (
-  primary: vars.$primary-navy,
+  primary: vars.$usa-blue,
+  on-primary: vars.$usa-white,
+  primary-container: #D6E2FF,
+  on-primary-container: #001849,
+  
   secondary: vars.$usa-red,
-  accent: vars.$usa-gold,
-  text: #333333,
-  background: #FFFFFF,
+  on-secondary: vars.$usa-white,
+  secondary-container: #FFD9D9,
+  on-secondary-container: #400012,
+  
+  tertiary: vars.$usa-gold,
+  on-tertiary: #000000,
+  tertiary-container: #FFF8DC,
+  on-tertiary-container: #493900,
+  
+  background: #FAFAFA,
+  on-background: #1C1B1F,
+  
+  surface: #FAFAFA,
+  on-surface: #1C1B1F,
+  surface-variant: #E7E0EC,
+  on-surface-variant: #49454F,
+  
+  error: #B3261E,
+  on-error: #FFFFFF,
+  error-container: #F9DEDC,
+  on-error-container: #410E0B,
+  
+  outline: #79747E,
+  outline-variant: #C4C7C5,
+  
+  // RGB versions for animations/transparency
+  primary-rgb: unquote('0, 40, 104'),
+  secondary-rgb: unquote('191, 10, 48'),
+  tertiary-rgb: unquote('255, 215, 0'),
+  
+  // Theme-specific effects
+  header-gradient: linear-gradient(135deg, vars.$usa-blue 0%, color.adjust(vars.$usa-blue, $lightness: -10%) 100%),
+  menu-gradient: linear-gradient(135deg, vars.$usa-white 0%, rgba(vars.$usa-blue, 0.05) 100%)
 );
 
 // Dark Theme
 $dark-theme: (
-  primary: vars.$primary-navy,
-  secondary: vars.$usa-red,
-  accent: vars.$usa-gold,
-  text: #FFFFFF,
-  background: #121212,
-);
-
-// Patriotic Theme
-$patriotic-theme: (
-  primary: #ffffff,
-  secondary: #ff0000,
-  accent: #0000ff,
-  text: #000000,
-  background: #ffffff
-);
-
-// Hoorah Levels Theme
-$hoorah-theme: (
-  primary: #ffcc00,
-  secondary: #ff6600,
-  accent: #cc0000,
-  text: #000000,
-  background: #ffffff
-);
-
-// Mixin to apply theme
-@mixin apply-theme($theme) {
-  // Extract theme colors using map.get instead of map-get
-  $primary: map.get($theme, primary);
-  $secondary: map.get($theme, secondary);
-  $accent: map.get($theme, accent);
-  $text: map.get($theme, text);
-  $background: map.get($theme, background);
+  primary: #B6C5FF,
+  on-primary: #002E6A,
+  primary-container: #1A4494,
+  on-primary-container: #D8E2FF,
   
-  // Generate CSS variables
-  :root {
-    --primary: #{$primary};
-    --secondary: #{$secondary};
-    --accent: #{$accent};
-    --text: #{$text};
-    --background: #{$background};
-    
-    // Add additional theme variables as needed
+  secondary: #FFB3B3,
+  on-secondary: #680020,
+  secondary-container: #920030,
+  on-secondary-container: #FFD9D9,
+  
+  tertiary: #FFDF80,
+  on-tertiary: #402D00,
+  tertiary-container: #5D4200,
+  on-tertiary-container: #FFDF9E,
+  
+  background: #1C1B1F,
+  on-background: #E6E1E5,
+  
+  surface: #1C1B1F,
+  on-surface: #E6E1E5,
+  surface-variant: #49454F,
+  on-surface-variant: #CAC4D0,
+  
+  error: #F2B8B5,
+  on-error: #601410,
+  error-container: #8C1D18,
+  on-error-container: #F9DEDC,
+  
+  outline: #938F99,
+  outline-variant: #444746,
+  
+  // RGB versions for animations/transparency
+  primary-rgb: unquote('182, 197, 255'),
+  secondary-rgb: unquote('255, 179, 179'),
+  tertiary-rgb: unquote('255, 223, 128'),
+  
+  // Theme-specific effects
+  header-gradient: linear-gradient(135deg, #1A4494 0%, color.adjust(#1A4494, $lightness: -10%) 100%),
+  menu-gradient: linear-gradient(135deg, #211F26 0%, rgba(#1A4494, 0.15) 100%)
+);
+
+// Cosmic Glow Theme (Vibrant1)
+$cosmic-glow-theme: (
+  primary: #ff00cc,
+  on-primary: #ffffff,
+  primary-container: #3300ff,
+  on-primary-container: #ffffff,
+  
+  secondary: #00ffcc,
+  on-secondary: #000000,
+  secondary-container: #00ccff,
+  on-secondary-container: #000000,
+  
+  tertiary: #ffff00,
+  on-tertiary: #000000,
+  tertiary-container: #cc00ff,
+  on-tertiary-container: #ffffff,
+  
+  background: #120021,
+  on-background: #ffffff,
+  
+  surface: #220038,
+  on-surface: #ffffff,
+  surface-variant: #330044,
+  on-surface-variant: #ffccff,
+  
+  error: #ff3377,
+  on-error: #ffffff,
+  error-container: #7a0029,
+  on-error-container: #ffb3c5,
+  
+  outline: #cc33ff,
+  outline-variant: #9900cc,
+  
+  // RGB versions for animations/transparency
+  primary-rgb: unquote('255, 0, 204'),
+  secondary-rgb: unquote('0, 255, 204'),
+  tertiary-rgb: unquote('255, 255, 0'),
+  
+  // Theme-specific effects
+  glow-shadow: unquote('0 0 10px rgba(255, 0, 204, 0.7), 0 0 20px rgba(255, 0, 204, 0.4)'),
+  pulse-color: rgba(51, 0, 255, 0.8),
+  text-shadow: unquote('0 0 8px #ff00cc, 0 0 15px #3300ff'),
+  gradient: linear-gradient(135deg, #ff00cc, #3300ff, #00ffcc),
+  background-animation: cosmicBackgroundPulse 8s infinite alternate,
+  animation-speed-factor: 1.2,
+  
+  // Special gradient for header and menu
+  header-gradient: linear-gradient(-45deg, #ff00cc, #3300ff, #00ffcc, #cc00ff),
+  menu-gradient: linear-gradient(135deg, rgba(34, 0, 56, 0.98), rgba(51, 0, 255, 0.92) 50%, rgba(34, 0, 56, 0.98))
+);
+
+// Solar Flare Theme (Vibrant2) - Enhanced
+$solar-flare-theme: (
+  primary: #ff2d00, // Even more intense orange-red
+  on-primary: #ffffff,
+  primary-container: #ffaa00,
+  on-primary-container: #000000,
+  
+  secondary: #0066ff, // More saturated blue
+  on-secondary: #ffffff,
+  secondary-container: #00ccff,
+  on-secondary-container: #000000,
+  
+  tertiary: #ff0055, // Kept bright magenta
+  on-tertiary: #ffffff,
+  tertiary-container: #ffdd00, // Bright yellow
+  on-tertiary-container: #000000,
+  
+  background: #fff2d6, // Warmer background
+  on-background: #1f0800, // Darker for contrast
+  
+  surface: #fff8f0,
+  on-surface: #1f0800, // Darker for contrast
+  surface-variant: #ffe0a0, // More golden-orange surface
+  on-surface-variant: #4f1500, // Darker for contrast
+  
+  error: #ff1a1a, // More vibrant red
+  on-error: #ffffff,
+  error-container: #ffcccc,
+  on-error-container: #550000,
+  
+  outline: #ff6600, // Vibrant orange outline
+  outline-variant: #ffbb44, // Brighter golden outline
+  
+  // RGB versions for animations/transparency
+  primary-rgb: unquote('255, 45, 0'),
+  secondary-rgb: unquote('0, 102, 255'),
+  tertiary-rgb: unquote('255, 0, 85'),
+  
+  // Theme-specific effects - dramatically enhanced
+  glow-shadow: unquote('0 0 20px rgba(255, 45, 0, 0.9), 0 0 40px rgba(255, 45, 0, 0.6)'),
+  pulse-color: rgba(255, 170, 0, 1.0),
+  text-shadow: unquote('0 0 12px #ff2d00, 0 0 24px #ffaa00'),
+  gradient: linear-gradient(135deg, #ff2d00, #ffaa00, #0066ff),
+  background-animation: solarBackgroundPulseEnhanced 4s infinite alternate,
+  animation-speed-factor: 1.8, // Even faster animations
+  
+  // Special gradient for header and menu - more dramatic & vibrant
+  header-gradient: linear-gradient(-45deg, #ff2d00, #ffaa00, #0066ff, #ff0055),
+  menu-gradient: linear-gradient(135deg, rgba(255, 45, 0, 0.97), rgba(255, 170, 0, 0.92) 50%, rgba(255, 45, 0, 0.97))
+);
+
+// Function to extract theme value with fallback
+@function theme-value($theme, $key, $fallback: null) {
+  @if map.has-key($theme, $key) {
+    @return map.get($theme, $key);
+  } @else {
+    @if $fallback {
+      @return $fallback;
+    } @else {
+      @error "Key '#{$key}' not found in theme";
+    }
   }
-  
-  // Apply colors to components
-  body {
-    background-color: $background;
-    color: $text;
-  }
-  
-  // More component styles...
-}
-
-// Usage example
-body.light-theme {
-  @include apply-theme($light-theme);
-}
-
-body.dark-theme {
-  @include apply-theme($dark-theme);
-}
-
-body.patriotic-theme {
-  @include apply-theme($patriotic-theme);
-}
-
-body.hoorah-theme {
-  @include apply-theme($hoorah-theme);
 }

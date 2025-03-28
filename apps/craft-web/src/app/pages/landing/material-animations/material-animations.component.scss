@@ -1,0 +1,493 @@
+@import '../../../../styles/component-animations';
+
+// Generate rainbow palette colors
+:host {
+  @include rainbow-palette(10);
+}
+
+.page-container {
+  padding: 12px; 
+  margin: 12px; 
+  transition: all 0.3s ease;
+  
+  // Light theme (default)
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  
+  // Dark theme
+  .dark-theme & {
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+  }
+  
+  // Vibrant1 theme (Cosmic Glow)
+  .vibrant1-theme & {
+    background: linear-gradient(135deg, rgba(34, 0, 56, 0.9), rgba(51, 0, 255, 0.7));
+    box-shadow: 0 8px 30px rgba(255, 0, 204, 0.3);
+    border: 1px solid rgba(255, 0, 204, 0.3);
+    
+    mat-card-title {
+      color: #ff00cc;
+      text-shadow: 0 0 10px rgba(255, 0, 204, 0.5);
+    }
+    
+    mat-card-subtitle {
+      color: #00ffcc;
+    }
+  }
+  
+  // Vibrant2 theme (Solar Flare)
+  .vibrant2-theme & {
+    background: linear-gradient(135deg, rgba(255, 248, 240, 0.9), rgba(255, 170, 0, 0.4));
+    box-shadow: 0 8px 30px rgba(255, 85, 0, 0.3);
+    border: 1px solid rgba(255, 85, 0, 0.3);
+    
+    mat-card-title {
+      color: #ff5500;
+      text-shadow: 0 0 10px rgba(255, 85, 0, 0.5);
+    }
+    
+    mat-card-subtitle {
+      color: #0088ff;
+    }
+  }
+}
+
+.animation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.animation-card {
+  padding: 16px;
+  transition: all 0.5s ease;
+  background-color: var(--md-sys-color-surface);
+  
+  // Dark theme
+  .dark-theme & {
+    background-color: var(--md-sys-color-surface);
+  }
+  
+  // Vibrant1 theme (Cosmic Glow)
+  .vibrant1-theme & {
+    background: rgba(34, 0, 56, 0.8);
+    border: 1px solid rgba(255, 0, 204, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 0, 204, 0.2);
+    
+    mat-card-title {
+      color: #ff00cc;
+      text-shadow: 0 0 8px rgba(255, 0, 204, 0.4);
+    }
+  }
+  
+  // Vibrant2 theme (Solar Flare)
+  .vibrant2-theme & {
+    background: rgba(255, 248, 240, 0.85);
+    border: 1px solid rgba(255, 85, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(255, 85, 0, 0.2);
+    
+    mat-card-title {
+      color: #ff5500;
+      text-shadow: 0 0 8px rgba(255, 85, 0, 0.4);
+    }
+  }
+
+  // Only the card (not the items) should have hover effect
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--md-sys-elevation-level3);
+  }
+}
+
+.animation-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.animation-example {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  
+  // Light theme
+  background-color: var(--md-sys-color-surface-variant);
+  
+  .animation-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-right: 12px;
+    border-radius: 50%;
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    
+    mat-icon {
+      font-size: 24px;
+    }
+  }
+  
+  .animation-info {
+    flex: 1;
+    
+    h3 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+    
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--md-sys-color-on-surface-variant);
+      opacity: 0.8;
+    }
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--md-sys-elevation-level2);
+    background-color: var(--md-sys-color-primary-container);
+    
+    .animation-info {
+      h3, p {
+        color: var(--md-sys-color-on-primary-container);
+      }
+    }
+  }
+  
+  // Vibrant1 theme (Cosmic Glow)
+  .vibrant1-theme & {
+    background: rgba(34, 0, 56, 0.6);
+    
+    .animation-icon {
+      background: rgba(255, 0, 204, 0.2);
+      color: #00ffcc;
+      box-shadow: 0 0 15px rgba(255, 0, 204, 0.3);
+    }
+    
+    .animation-info {
+      h3 {
+        color: #ff00cc;
+      }
+      
+      p {
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
+    
+    &:hover {
+      background: rgba(51, 0, 255, 0.4);
+      box-shadow: 0 4px 15px rgba(255, 0, 204, 0.4);
+      
+      .animation-icon {
+        background: rgba(255, 0, 204, 0.4);
+        box-shadow: 0 0 20px rgba(255, 0, 204, 0.5);
+        
+        mat-icon {
+          animation: pulse 1.5s infinite;
+        }
+      }
+    }
+  }
+  
+  // Vibrant2 theme (Solar Flare)
+  .vibrant2-theme & {
+    background: rgba(255, 248, 240, 0.6);
+    
+    .animation-icon {
+      background: rgba(255, 85, 0, 0.2);
+      color: #0088ff;
+      box-shadow: 0 0 15px rgba(255, 85, 0, 0.3);
+    }
+    
+    .animation-info {
+      h3 {
+        color: #ff5500;
+      }
+      
+      p {
+        color: rgba(51, 17, 0, 0.9);
+      }
+    }
+    
+    &:hover {
+      background: rgba(255, 170, 0, 0.3);
+      box-shadow: 0 4px 15px rgba(255, 85, 0, 0.4);
+      
+      .animation-icon {
+        background: rgba(255, 85, 0, 0.4);
+        box-shadow: 0 0 20px rgba(255, 85, 0, 0.5);
+        
+        mat-icon {
+          animation: pulse 1.5s infinite;
+        }
+      }
+    }
+  }
+}
+
+// Add color variants for animation examples
+@for $i from 0 through 9 {
+  .color-animation-#{$i} {
+    .animation-icon {
+      background-color: var(--color-#{$i}-light);
+      color: var(--color-#{$i}-dark);
+    }
+    
+    &:hover .animation-icon {
+      background-color: var(--color-#{$i});
+    }
+  }
+}
+
+// Pagination controls styling
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px 0;
+  gap: 16px;
+
+  .page-info {
+    min-width: 100px;
+    text-align: center;
+  }
+  
+  // Vibrant theme enhancements for pagination
+  .vibrant1-theme & {
+    button {
+      background-color: rgba(51, 0, 255, 0.2);
+      color: #00ffcc;
+      
+      &:hover:not([disabled]) {
+        background-color: rgba(51, 0, 255, 0.5);
+        box-shadow: 0 0 15px rgba(255, 0, 204, 0.5);
+      }
+      
+      &[disabled] {
+        color: rgba(255, 255, 255, 0.3);
+      }
+    }
+    
+    .page-info {
+      color: #ff00cc;
+      text-shadow: 0 0 5px rgba(255, 0, 204, 0.3);
+    }
+  }
+  
+  .vibrant2-theme & {
+    button {
+      background-color: rgba(255, 85, 0, 0.2);
+      color: #0088ff;
+      
+      &:hover:not([disabled]) {
+        background-color: rgba(255, 85, 0, 0.5);
+        box-shadow: 0 0 15px rgba(255, 85, 0, 0.5);
+      }
+      
+      &[disabled] {
+        color: rgba(51, 17, 0, 0.3);
+      }
+    }
+    
+    .page-info {
+      color: #ff5500;
+      text-shadow: 0 0 5px rgba(255, 85, 0, 0.3);
+    }
+  }
+}
+
+// Header with actions
+.header-with-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  
+  .navigation-links {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+// Search container styling
+.search-container {
+  margin-bottom: 16px;
+  
+  .search-field {
+    width: 100%;
+  }
+}
+
+// Interactive demo section
+.interactive-demo {
+  margin: 24px 0;
+  
+  .demo-container {
+    padding: 24px;
+    border-radius: 8px;
+    background-color: var(--md-sys-color-surface-variant);
+    margin: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    
+    // Vibrant1 theme (Cosmic Glow)
+    .vibrant1-theme & {
+      background: rgba(34, 0, 56, 0.6);
+      box-shadow: 0 0 20px rgba(255, 0, 204, 0.2);
+    }
+    
+    // Vibrant2 theme (Solar Flare)
+    .vibrant2-theme & {
+      background: rgba(255, 248, 240, 0.7);
+      box-shadow: 0 0 20px rgba(255, 85, 0, 0.2);
+    }
+    
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: center;
+    }
+    
+    .demo-content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .demo-controls {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      
+      .demo-description {
+        margin: 0;
+        font-size: 14px;
+      }
+      
+      .demo-code {
+        padding: 12px;
+        background-color: var(--md-sys-color-surface);
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 13px;
+        white-space: pre-wrap;
+        overflow-x: auto;
+        
+        // Vibrant1 theme (Cosmic Glow)
+        .vibrant1-theme & {
+          background: rgba(0, 0, 0, 0.5);
+          color: #00ffcc;
+          border: 1px solid rgba(255, 0, 204, 0.3);
+        }
+        
+        // Vibrant2 theme (Solar Flare)
+        .vibrant2-theme & {
+          background: rgba(0, 0, 0, 0.1);
+          color: #0088ff;
+          border: 1px solid rgba(255, 85, 0, 0.3);
+        }
+      }
+    }
+  }
+}
+
+// Demo animation containers
+.demo-box {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  
+  // Vibrant1 theme (Cosmic Glow)
+  .vibrant1-theme & {
+    background: rgba(255, 0, 204, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 0, 204, 0.5);
+    box-shadow: 0 0 20px rgba(255, 0, 204, 0.3);
+  }
+  
+  // Vibrant2 theme (Solar Flare)
+  .vibrant2-theme & {
+    background: rgba(255, 85, 0, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 85, 0, 0.5);
+    box-shadow: 0 0 20px rgba(255, 85, 0, 0.3);
+  }
+}
+
+.demo-container-outer {
+  width: 200px;
+  overflow: hidden;
+}
+
+.demo-list-container {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.demo-list-item {
+  padding: 12px;
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-radius: 6px;
+  
+  // Vibrant1 theme (Cosmic Glow)
+  .vibrant1-theme & {
+    background: rgba(51, 0, 255, 0.3);
+    color: white;
+  }
+  
+  // Vibrant2 theme (Solar Flare)
+  .vibrant2-theme & {
+    background: rgba(255, 170, 0, 0.3);
+    color: white;
+  }
+}
+
+// Scroll animations
+.scroll-animation {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Animation utility classes
+.animate-in {
+  animation: zoomIn 0.3s ease-in forwards;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+.slide-in-delayed {
+  animation: slideIn 0.3s ease-out 0.1s forwards;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}

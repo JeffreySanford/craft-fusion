@@ -29,9 +29,37 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
   }
 }
 
+// Enhanced mixin to apply animations only when appropriate
+@mixin apply-animation($animation-name, $duration, $easing, $other...) {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: $animation-name $duration $easing $other;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none !important;
+  }
+}
+
 .prefers-reduced-motion * {
   animation-duration: 0.001s !important;
   transition-duration: 0.001s !important;
+}
+
+// Add this class to your components that should animate on scroll
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 // ----- Keyframe Animations ----- //
@@ -159,6 +187,26 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
   }
 }
 
+// Wave animation for text that runs every 15 seconds
+@keyframes textWave {
+  0% { transform: translateY(0); }
+  20% { transform: translateY(-6px); }
+  40% { transform: translateY(4px); }
+  60% { transform: translateY(-2px); }
+  80% { transform: translateY(1px); }
+  100% { transform: translateY(0); }
+}
+
+// Enhanced star pulse animation
+@keyframes starPulse {
+  0%, 100% {
+    filter: brightness(1) drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+  }
+  50% {
+    filter: brightness(1.5) drop-shadow(0 0 12px rgba(255, 215, 0, 0.8));
+  }
+}
+
 // 4. Loading Animations
 @keyframes spin {
   from { transform: rotate(0deg); }
@@ -270,6 +318,529 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
   }
   100% {
     transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+// Cosmic Glow Animation Keyframes
+@keyframes cosmicPulse {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 0, 204, 0.7), 0 0 10px rgba(255, 0, 204, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 0, 204, 0.9), 0 0 40px rgba(51, 0, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(255, 0, 204, 0.7), 0 0 10px rgba(255, 0, 204, 0.3);
+  }
+}
+
+@keyframes cosmicTextGlow {
+  0% {
+    text-shadow: 0 0 5px rgba(255, 0, 204, 0.7), 0 0 10px rgba(51, 0, 255, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(255, 0, 204, 0.9), 0 0 20px rgba(51, 0, 255, 0.7);
+  }
+  100% {
+    text-shadow: 0 0 5px rgba(255, 0, 204, 0.7), 0 0 10px rgba(51, 0, 255, 0.3);
+  }
+}
+
+@keyframes cosmicBackgroundPulse {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes cosmicRotate {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  to {
+    transform: rotate(360deg) scale(1.1);
+  }
+}
+
+@keyframes cosmicBorderGlow {
+  0%, 100% {
+    border-color: #ff00cc;
+    box-shadow: 0 0 10px #ff00cc;
+  }
+  33% {
+    border-color: #3300ff;
+    box-shadow: 0 0 15px #3300ff;
+  }
+  66% {
+    border-color: #00ffcc;
+    box-shadow: 0 0 20px #00ffcc;
+  }
+}
+
+// Solar Flare Animation Keyframes
+@keyframes solarPulse {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 85, 0, 0.7), 0 0 10px rgba(255, 170, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 85, 0, 0.9), 0 0 40px rgba(255, 170, 0, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(255, 85, 0, 0.7), 0 0 10px rgba(255, 170, 0, 0.3);
+  }
+}
+
+@keyframes solarTextGlow {
+  0% {
+    text-shadow: 0 0 5px rgba(255, 85, 0, 0.7), 0 0 10px rgba(255, 170, 0, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(255, 85, 0, 0.9), 0 0 20px rgba(255, 170, 0, 0.7);
+  }
+  100% {
+    text-shadow: 0 0 5px rgba(255, 85, 0, 0.7), 0 0 10px rgba(255, 170, 0, 0.3);
+  }
+}
+
+@keyframes solarBackgroundPulse {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes solarRotate {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  to {
+    transform: rotate(360deg) scale(1.15);
+  }
+}
+
+@keyframes solarBorderGlow {
+  0%, 100% {
+    border-color: #ff5500;
+    box-shadow: 0 0 10px #ff5500;
+  }
+  33% {
+    border-color: #ffaa00;
+    box-shadow: 0 0 15px #ffaa00;
+  }
+  66% {
+    border-color: #0088ff;
+    box-shadow: 0 0 20px #0088ff;
+  }
+}
+
+@keyframes cosmicHoverEffect {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.03);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes solarHoverEffect {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+// Enhanced Solar Flare animations
+@keyframes solarPulseEnhanced {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 51, 0, 0.8), 0 0 20px rgba(255, 170, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 51, 0, 0.9), 0 0 60px rgba(255, 170, 0, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 51, 0, 0.8), 0 0 20px rgba(255, 170, 0, 0.4);
+  }
+}
+
+@keyframes solarTextGlowEnhanced {
+  0% {
+    text-shadow: 0 0 8px rgba(255, 51, 0, 0.8), 0 0 15px rgba(255, 170, 0, 0.4);
+  }
+  50% {
+    text-shadow: 0 0 15px rgba(255, 51, 0, 0.9), 0 0 30px rgba(255, 170, 0, 0.7);
+  }
+  100% {
+    text-shadow: 0 0 8px rgba(255, 51, 0, 0.8), 0 0 15px rgba(255, 170, 0, 0.4);
+  }
+}
+
+@keyframes solarBackgroundPulseEnhanced {
+  0% {
+    background-position: 0% 50%;
+    background-size: 100% 100%;
+  }
+  50% {
+    background-position: 100% 50%;
+    background-size: 150% 150%;
+  }
+  100% {
+    background-position: 0% 50%;
+    background-size: 100% 100%;
+  }
+}
+
+@keyframes solarRotateEnhanced {
+  0% {
+    transform: rotate(0deg) scale(1);
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.2);
+    filter: hue-rotate(30deg);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    filter: hue-rotate(0deg);
+  }
+}
+
+@keyframes solarFlare {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes solarFlameEffect {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(1);
+  }
+  10% {
+    opacity: 0.9;
+    transform: translateY(-15px) scale(1.1);
+  }
+  20% {
+    opacity: 0.3;
+    transform: translateY(-25px) scale(0.9);
+  }
+  30% {
+    opacity: 0.8;
+    transform: translateY(-35px) scale(1.05);
+  }
+  40% {
+    opacity: 0.4;
+    transform: translateY(-45px) scale(0.95);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.5);
+  }
+}
+
+@keyframes solarRadiateEffect {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 45, 0, 0.8);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(255, 45, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 45, 0, 0);
+  }
+}
+
+@keyframes solarRippleStrong {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 45, 0, 0.8);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 15px rgba(255, 45, 0, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 45, 0, 0);
+  }
+}
+
+@keyframes solarGlowIntense {
+  0%, 100% { 
+    text-shadow: 0 0 10px #ff2d00, 0 0 20px #ffaa00;
+    opacity: 1;
+  }
+  50% { 
+    text-shadow: 0 0 20px #ff2d00, 0 0 40px #ffaa00, 0 0 60px #ff2d00;
+    opacity: 0.95;
+  }
+}
+
+/* Theme-specific animation classes */
+.vibrant1-theme {
+  .cosmic-animated-element {
+    animation: cosmicPulse 3s infinite;
+  }
+  
+  .cosmic-text {
+    animation: cosmicTextGlow 3s infinite;
+  }
+  
+  .cosmic-rotate {
+    animation: cosmicRotate 8s linear infinite;
+  }
+  
+  .cosmic-border {
+    animation: cosmicBorderGlow 6s infinite;
+  }
+  
+  // Enhance standard UI elements
+  .mat-mdc-button, .mat-mdc-raised-button {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transform: rotate(30deg);
+      transition: all 0.5s;
+      opacity: 0;
+    }
+    
+    &:hover {
+      box-shadow: var(--cosmic-glow-shadow);
+      transform: translateY(-3px);
+      
+      &::after {
+        opacity: 1;
+        left: 100%;
+        transition: all 0.7s ease;
+      }
+    }
+    
+    &:active {
+      transform: translateY(1px);
+    }
+  }
+  
+  .header-card {
+    background-size: 300% 300% !important;
+    animation: cosmicBackgroundPulse 10s ease infinite !important;
+  }
+  
+  .profile-icon {
+    animation: cosmicPulse 3s infinite !important;
+  }
+  
+  .animated-star {
+    animation: starSpin 4s linear infinite, cosmicTextGlow 3s infinite !important;
+  }
+}
+
+.vibrant2-theme {
+  .solar-animated-element {
+    animation: solarPulse 3s infinite;
+  }
+  
+  .solar-text {
+    animation: solarTextGlow 3s infinite;
+  }
+  
+  .solar-rotate {
+    animation: solarRotate 10s linear infinite;
+  }
+  
+  .solar-border {
+    animation: solarBorderGlow 6s infinite;
+  }
+  
+  // Enhance standard UI elements
+  .mat-mdc-button, .mat-mdc-raised-button {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transform: rotate(-30deg);
+      transition: all 0.5s;
+      opacity: 0;
+    }
+    
+    &:hover {
+      box-shadow: var(--solar-glow-shadow);
+      transform: translateY(-3px) rotate(1deg);
+      
+      &::after {
+        opacity: 1;
+        left: 100%;
+        transition: all 0.7s ease;
+      }
+    }
+    
+    &:active {
+      transform: translateY(1px) rotate(-1deg);
+    }
+  }
+  
+  .header-card {
+    background-size: 300% 300% !important;
+    animation: solarBackgroundPulse 8s ease infinite !important;
+  }
+  
+  .profile-icon {
+    animation: solarPulse 3s infinite !important;
+  }
+  
+  .animated-star {
+    animation: starSpin 3s linear infinite, solarTextGlow 3s infinite !important;
+  }
+  
+  // Enhanced animations for major components
+  .solar-animated-element-enhanced {
+    animation: solarPulseEnhanced 4s infinite;
+  }
+  
+  .solar-text-enhanced {
+    animation: solarTextGlowEnhanced 4s infinite;
+  }
+  
+  .solar-rotate-enhanced {
+    animation: solarRotateEnhanced 8s linear infinite;
+  }
+  
+  .solar-flare-effect {
+    position: relative;
+    overflow: hidden;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      right: -50%;
+      bottom: -50%;
+      background: radial-gradient(ellipse at center, rgba(255, 170, 0, 0.7) 0%, rgba(255, 51, 0, 0.5) 30%, transparent 70%);
+      z-index: 0;
+      opacity: 0;
+      animation: solarFlare 5s infinite;
+      pointer-events: none;
+    }
+  }
+  
+  // Enhanced flame effect for hoverable elements
+  .flame-effect {
+    position: relative;
+    overflow: hidden;
+    
+    &:hover::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(to top, rgba(255, 45, 0, 0.7), rgba(255, 170, 0, 0.5), rgba(255, 221, 0, 0.2), transparent);
+      transform-origin: bottom;
+      z-index: 1;
+      pointer-events: none;
+      animation: solarFlameEffect 1.2s infinite;
+    }
+  }
+  
+  // Radiate effect for buttons and interactive elements
+  .radiate-effect {
+    animation: solarRadiateEffect 1.5s infinite;
+  }
+  
+  // Strong ripple effect
+  .ripple-strong {
+    animation: solarRippleStrong 2s infinite;
+  }
+  
+  // Intense text glow
+  .glow-intense {
+    animation: solarGlowIntense 2s infinite;
+  }
+}
+
+// Common theme-specific enhancements
+:root {
+  .vibrant1-theme, .vibrant2-theme {
+    // Card hover animations are enhanced in vibrant themes
+    .mat-mdc-card {
+      transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+      
+      &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+      }
+    }
+    
+    // Links get special effects
+    a:not(.mat-mdc-button):not(.mat-mdc-raised-button) {
+      position: relative;
+      transition: all 0.3s ease;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: currentColor;
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.5s ease;
+      }
+      
+      &:hover::after {
+        transform: scaleX(1);
+        transform-origin: left;
+      }
+    }
+    
+    // Headers get subtle motion effect
+    h1, h2, h3 {
+      transition: transform 0.3s ease-out;
+      
+      &:hover {
+        transform: skewX(-1deg);
+      }
+    }
   }
 }
 

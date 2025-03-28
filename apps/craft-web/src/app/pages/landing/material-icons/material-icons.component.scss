@@ -1,8 +1,10 @@
 .icons-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px; /* Adjust the gap between tiles as needed */
-  padding: 16px; /* Optional: Add padding around the container */
+  gap: 8px; // Reduced from 16px
+  padding: 8px; // Reduced from 16px
+  transition: all 0.3s ease;
+  justify-content: center; // Center items
 }
 
 .icon-item {
@@ -10,36 +12,573 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100px; /* Adjust the width of each tile as needed */
-  height: 100px; /* Adjust the height of each tile as needed */
-  border: 1px solid #ccc; /* Optional: Add a border around each tile */
-  border-radius: 8px; /* Optional: Add rounded corners to each tile */
-  padding: 8px; /* Optional: Add padding inside each tile */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow to each tile */
-  background-color: #fff; /* Optional: Set a background color for each tile */
+  width: 80px; // Reduced from 100px
+  height: 80px; // Reduced from 100px
+  border-radius: 6px; // Reduced from 8px
+  padding: 4px; // Reduced from 8px
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  
+  // Default styling (Light theme)
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  box-shadow: var(--md-sys-elevation-level1);
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--md-sys-elevation-level3);
+    
+    mat-icon {
+      animation: pop 0.5s ease;
+    }
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+  
+  // Light theme specific 
+  .light-theme & {
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--md-sys-elevation-level2);
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+    }
+  }
+  
+  // Dark theme specific
+  .dark-theme & {
+    &:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      background-color: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      border-color: var(--md-sys-color-primary);
+    }
+  }
+  
+  // Vibrant1 theme (Cosmic Glow)
+  .vibrant1-theme & {
+    background: rgba(34, 0, 56, 0.8);
+    border-color: rgba(255, 0, 204, 0.5);
+    box-shadow: 0 4px 12px rgba(255, 0, 204, 0.2);
+    color: #ffffff;
+    
+    mat-icon {
+      color: #00ffcc;
+      text-shadow: 0 0 8px rgba(0, 255, 204, 0.5);
+    }
+    
+    span {
+      color: #ffffff;
+    }
+    
+    &:hover {
+      transform: translateY(-5px) rotate(5deg);
+      background: rgba(51, 0, 255, 0.8);
+      box-shadow: 0 8px 20px rgba(255, 0, 204, 0.4), 0 0 15px rgba(255, 0, 204, 0.3);
+      border-color: #ff00cc;
+      
+      mat-icon {
+        color: #ff00cc;
+        text-shadow: 0 0 12px rgba(255, 0, 204, 0.7);
+        animation: iconPulse 1.5s infinite;
+      }
+    }
+  }
+  
+  // Vibrant2 theme (Solar Flare)
+  .vibrant2-theme & {
+    background: rgba(255, 248, 240, 0.9);
+    border-color: rgba(255, 85, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(255, 85, 0, 0.2);
+    color: #331100;
+    
+    mat-icon {
+      color: #0088ff;
+      text-shadow: 0 0 8px rgba(0, 136, 255, 0.4);
+    }
+    
+    span {
+      color: #331100;
+    }
+    
+    &:hover {
+      transform: translateY(-5px) rotate(-5deg);
+      background: rgba(255, 170, 0, 0.8);
+      box-shadow: 0 8px 20px rgba(255, 85, 0, 0.4), 0 0 15px rgba(255, 85, 0, 0.3);
+      border-color: #ff5500;
+      
+      mat-icon {
+        color: #ff2d00;
+        text-shadow: 0 0 12px rgba(255, 45, 0, 0.7);
+        animation: iconPulse 1.5s infinite;
+      }
+    }
+  }
+  
+  // Optimize icon and text to fit better
+  mat-icon {
+    font-size: 36px; // Reduced from 48px
+    margin-bottom: 4px; // Reduced from 8px
+  }
+  
+  .icon-name {
+    font-size: 10px; // Reduced from 14px
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .icon-item mat-icon {
-  font-size: 48px; /* Adjust the size of the icons as needed */
-  margin-bottom: 8px; /* Adjust the space between the icon and the label */
+  font-size: 36px; // Reduced from 48px
+  margin-bottom: 4px; // Reduced from 8px
+  transition: all 0.3s ease;
 }
 
 .icon-item span {
-  font-size: 14px; /* Adjust the size of the labels as needed */
-  text-align: center; /* Center-align the text */
+  font-size: 10px; // Reduced from 14px
+  text-align: center;
+  transition: all 0.3s ease;
 }
 
+.page-container {
+  padding: 12px; // Reduced from 20px
+  margin: 12px; // Reduced from 20px
+  transition: all 0.3s ease;
+  
+  // Light theme (default)
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  
+  // Dark theme
+  .dark-theme & {
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+  }
+  
+  // Vibrant1 theme (Cosmic Glow)
+  .vibrant1-theme & {
+    background: linear-gradient(135deg, rgba(34, 0, 56, 0.9), rgba(51, 0, 255, 0.7));
+    box-shadow: 0 8px 30px rgba(255, 0, 204, 0.3);
+    border: 1px solid rgba(255, 0, 204, 0.3);
+    
+    mat-card-title {
+      color: #ff00cc;
+      text-shadow: 0 0 10px rgba(255, 0, 204, 0.5);
+    }
+    
+    mat-card-subtitle {
+      color: #00ffcc;
+    }
+  }
+  
+  // Vibrant2 theme (Solar Flare)
+  .vibrant2-theme & {
+    background: linear-gradient(135deg, rgba(255, 248, 240, 0.9), rgba(255, 170, 0, 0.4));
+    box-shadow: 0 8px 30px rgba(255, 85, 0, 0.3);
+    border: 1px solid rgba(255, 85, 0, 0.3);
+    
+    mat-card-title {
+      color: #ff5500;
+      text-shadow: 0 0 10px rgba(255, 85, 0, 0.5);
+    }
+    
+    mat-card-subtitle {
+      color: #0088ff;
+    }
+  }
+}
+
+.navigation-links {
+  margin: 8px 0; // Reduced from 16px
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+button.active-page {
+  box-shadow: 0 0 10px 2px var(--md-sys-color-primary);
+  border: 2px solid var(--md-sys-color-primary);
+}
+
+.categories-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px; // Reduced from 20px
+  margin: 12px 0; // Reduced from 20px
+}
+
+.category-card {
+  padding: 10px; // Reduced from 15px
+  min-width: 250px; // Reduced from 300px
+  flex: 1;
+  transition: all 0.3s ease;
+  
+  // Light theme (default)
+  background-color: var(--md-sys-color-surface-variant);
+  
+  // Dark theme
+  .dark-theme & {
+    background-color: var(--md-sys-color-surface-variant);
+  }
+  
+  // Vibrant1 theme (Cosmic Glow)
+  .vibrant1-theme & {
+    background: rgba(34, 0, 56, 0.7);
+    border: 1px solid rgba(255, 0, 204, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 0, 204, 0.2);
+    
+    mat-card-title {
+      color: #ff00cc;
+      text-shadow: 0 0 8px rgba(255, 0, 204, 0.4);
+    }
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 0, 204, 0.3);
+    }
+  }
+  
+  // Vibrant2 theme (Solar Flare)
+  .vibrant2-theme & {
+    background: rgba(255, 248, 240, 0.8);
+    border: 1px solid rgba(255, 85, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(255, 85, 0, 0.2);
+    
+    mat-card-title {
+      color: #ff5500;
+      text-shadow: 0 0 8px rgba(255, 85, 0, 0.4);
+    }
+    
+    &:hover {
+      transform: translateY(-5px) rotate(1deg);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 85, 0, 0.3);
+    }
+  }
+  
+  .category-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px; // Reduced from 10px
+    margin-top: 8px; // Reduced from 15px
+  }
+}
+
+// Custom color tiles
 .red-tile {
-  background-color: red;
-  color: white;
+  // Dynamic theme-aware red styling
+  .light-theme & {
+    background-color: var(--md-sys-color-error);
+    color: var(--md-sys-color-on-error);
+  }
+  
+  .dark-theme & {
+    background-color: var(--md-sys-color-error);
+    color: var(--md-sys-color-on-error);
+  }
+  
+  .vibrant1-theme & {
+    background: rgba(255, 0, 76, 0.9);
+    color: white;
+    border-color: rgba(255, 0, 76, 0.5);
+  }
+  
+  .vibrant2-theme & {
+    background: rgba(255, 45, 0, 0.9);
+    color: white;
+    border-color: rgba(255, 45, 0, 0.5);
+  }
 }
 
 .blue-tile {
-  background-color: blue;
-  color: white;
+  // Dynamic theme-aware blue styling
+  .light-theme & {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+  }
+  
+  .dark-theme & {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+  }
+  
+  .vibrant1-theme & {
+    background: rgba(51, 0, 255, 0.9);
+    color: white;
+    border-color: rgba(51, 0, 255, 0.5);
+  }
+  
+  .vibrant2-theme & {
+    background: rgba(0, 136, 255, 0.9);
+    color: white;
+    border-color: rgba(0, 136, 255, 0.5);
+  }
 }
 
 .white-tile {
-  background-color: white;
-  color: black;
+  // Dynamic theme-aware white styling
+  .light-theme & {
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+  }
+  
+  .dark-theme & {
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+  }
+  
+  .vibrant1-theme & {
+    background: rgba(255, 255, 255, 0.9);
+    color: #220038;
+    border-color: rgba(255, 0, 204, 0.5);
+  }
+  
+  .vibrant2-theme & {
+    background: rgba(255, 255, 255, 0.9);
+    color: #331100;
+    border-color: rgba(255, 85, 0, 0.5);
+  }
+}
+
+// Add pagination controls styling
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 8px 0; // Reduced from 16px
+  gap: 8px; // Reduced from 16px
+
+  .page-info {
+    min-width: 80px; // Reduced from 100px
+    text-align: center;
+  }
+  
+  // Vibrant theme enhancements for pagination
+  .vibrant1-theme & {
+    button {
+      background-color: rgba(51, 0, 255, 0.2);
+      color: #00ffcc;
+      
+      &:hover:not([disabled]) {
+        background-color: rgba(51, 0, 255, 0.5);
+        box-shadow: 0 0 15px rgba(255, 0, 204, 0.5);
+      }
+      
+      &[disabled] {
+        color: rgba(255, 255, 255, 0.3);
+      }
+    }
+    
+    .page-info {
+      color: #ff00cc;
+      text-shadow: 0 0 5px rgba(255, 0, 204, 0.3);
+    }
+  }
+  
+  .vibrant2-theme & {
+    button {
+      background-color: rgba(255, 85, 0, 0.2);
+      color: #0088ff;
+      
+      &:hover:not([disabled]) {
+        background-color: rgba(255, 85, 0, 0.5);
+        box-shadow: 0 0 15px rgba(255, 85, 0, 0.5);
+      }
+      
+      &[disabled] {
+        color: rgba(51, 17, 0, 0.3);
+      }
+    }
+    
+    .page-info {
+      color: #ff5500;
+      text-shadow: 0 0 5px rgba(255, 85, 0, 0.3);
+    }
+  }
+}
+
+// Responsive layout adjustments
+@media (max-width: 960px) {
+  .icons-container {
+    gap: 8px; // Reduced from 12px
+  }
+  
+  .icon-item {
+    width: 80px; // Match new icon-item width
+    height: 80px; // Match new icon-item height
+  }
+}
+
+@media (max-width: 600px) {
+  .icons-container {
+    gap: 8px;
+  }
+  
+  .icon-item {
+    width: 80px;
+    height: 80px;
+    
+    mat-icon {
+      font-size: 36px; // Match new icon size
+    }
+    
+    span {
+      font-size: 10px; // Match new icon text size
+    }
+  }
+  
+  .categories-container {
+    flex-direction: column;
+  }
+}
+
+// Animation for icons
+@keyframes iconPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// Minimal component-specific styling - using core animations and styles
+.header-with-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 8px; // Reduced spacing
+  
+  mat-card-title {
+    font-size: 1.5rem; // Slightly smaller title
+  }
+  
+  mat-card-subtitle {
+    font-size: 0.9rem; // Slightly smaller subtitle
+  }
+}
+
+// Use animation utility classes from core styles
+.animate-in {
+  animation: zoomIn 0.3s ease-in forwards;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+.slide-in-delayed {
+  animation: slideIn 0.3s ease-out 0.1s forwards;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+// Drag and drop styling
+.cdk-drag-preview {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  opacity: 0.8;
+  border-radius: 8px;
+  z-index: 1000;
+  
+  .vibrant1-theme & {
+    box-shadow: 0 5px 20px rgba(255, 0, 204, 0.5), 0 0 15px rgba(51, 0, 255, 0.3);
+  }
+  
+  .vibrant2-theme & {
+    box-shadow: 0 5px 20px rgba(255, 85, 0, 0.5), 0 0 15px rgba(255, 170, 0, 0.3);
+  }
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.icon-item-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80px; // Match new icon-item width
+  height: 80px; // Match new icon-item height
+  border-radius: 6px; // Match new icon-item border-radius
+  padding: 4px; // Match new icon-item padding
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  
+  .vibrant1-theme & {
+    background: rgba(34, 0, 56, 0.8);
+    color: white;
+    box-shadow: 0 5px 20px rgba(255, 0, 204, 0.5), 0 0 15px rgba(51, 0, 255, 0.3);
+    
+    mat-icon {
+      color: #00ffcc;
+    }
+  }
+  
+  .vibrant2-theme & {
+    background: rgba(255, 248, 240, 0.9);
+    color: #331100;
+    box-shadow: 0 5px 20px rgba(255, 85, 0, 0.5), 0 0 15px rgba(255, 170, 0, 0.3);
+    
+    mat-icon {
+      color: #0088ff;
+    }
+  }
+  
+  mat-icon {
+    font-size: 36px; // Match new icon size
+  }
+}
+
+// Scroll animations
+.scroll-animation {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Make section titles more compact
+h2.section-title {
+  margin-bottom: 8px; // Add this to reduce spacing
+  font-size: 1.25rem; // Make section titles slightly smaller
+}
+
+// Make search container more compact
+.search-container {
+  margin-bottom: 8px; // Reduced from likely higher value
+  
+  .search-field {
+    width: 100%;
+    
+    ::ng-deep .mat-mdc-form-field-wrapper {
+      padding-bottom: 0; // Remove extra padding
+    }
+    
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      padding-top: 0;
+      padding-bottom: 0;
+      height: 48px; // More compact height
+    }
+  }
 }

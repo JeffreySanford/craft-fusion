@@ -8,7 +8,6 @@ import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { MaterialModule } from './material.module';
 import { appRoutes } from './app.routes';
 
-
 import { AppComponent } from './app.component';
 import { LandingModule } from './pages/landing/landing.module';
 import { SidebarModule } from './pages/sidebar/sidebar.module';

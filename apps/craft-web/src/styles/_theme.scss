@@ -1,207 +1,111 @@
 /**
  * Craft Fusion Theme System
  * 
- * This file handles the core theme configuration for the application.
- * It configures Angular Material themes and exposes CSS variables for custom theming.
+ * This file applies the themes defined in _themes.scss
+ * It uses the theme maps to generate CSS variables for theming.
  *
  * Last Updated: March 26, 2025
  */
 
 @use 'sass:map';
-@use 'sass:color';
 @use './variables' as vars;
 @use './themes' as themes;
 
-// Define custom theme classes
-.light-theme {
-  --primary-color: #{vars.$primary-navy};
-  --secondary-color: #{vars.$usa-red};
-  --tertiary-color: #{vars.$usa-gold};
-  --background-color: #FFFFFF;
-  --text-color: #333333;
-  --surface-color: #F5F5F5;
-  --error-color: #B00020;
-}
-
-.dark-theme {
-  --primary-color: #{vars.$primary-navy};
-  --secondary-color: #{vars.$usa-red};
-  --tertiary-color: #{vars.$usa-gold};
-  --background-color: #121212;
-  --text-color: #FFFFFF;
-  --surface-color: #1E1E1E;
-  --error-color: #CF6679;
-}
-
-// Generates all CSS variables for theming
-@mixin apply-theme-variables() {
-  // Light theme variables (default)
-  :root, .light-theme, [data-theme="light"] {
-    // Primary colors
-    --md-sys-color-primary: #{vars.$usa-blue};
-    --md-sys-color-on-primary: #{vars.$usa-white};
-    --md-sys-color-primary-container: #D6E2FF;
-    --md-sys-color-on-primary-container: #001849;
+// Generate CSS variables from theme map
+@mixin apply-theme-variables($theme, $selector) {
+  #{$selector} {
+    // Core Material Design 3 colors
+    --md-sys-color-primary: #{map.get($theme, primary)};
+    --md-sys-color-on-primary: #{map.get($theme, on-primary)};
+    --md-sys-color-primary-container: #{map.get($theme, primary-container)};
+    --md-sys-color-on-primary-container: #{map.get($theme, on-primary-container)};
     
-    // Secondary colors
-    --md-sys-color-secondary: #{vars.$usa-red};
-    --md-sys-color-on-secondary: #{vars.$usa-white};
-    --md-sys-color-secondary-container: #FFD9D9;
-    --md-sys-color-on-secondary-container: #400012;
+    --md-sys-color-secondary: #{map.get($theme, secondary)};
+    --md-sys-color-on-secondary: #{map.get($theme, on-secondary)};
+    --md-sys-color-secondary-container: #{map.get($theme, secondary-container)};
+    --md-sys-color-on-secondary-container: #{map.get($theme, on-secondary-container)};
     
-    // Tertiary colors
-    --md-sys-color-tertiary: #{vars.$usa-gold};
-    --md-sys-color-on-tertiary: #000000;
-    --md-sys-color-tertiary-container: #FFF8DC;
-    --md-sys-color-on-tertiary-container: #493900;
+    --md-sys-color-tertiary: #{map.get($theme, tertiary)};
+    --md-sys-color-on-tertiary: #{map.get($theme, on-tertiary)};
+    --md-sys-color-tertiary-container: #{map.get($theme, tertiary-container)};
+    --md-sys-color-on-tertiary-container: #{map.get($theme, on-tertiary-container)};
     
-    // Surface colors
-    --md-sys-color-surface: #FAFAFA;
-    --md-sys-color-on-surface: #1C1B1F;
-    --md-sys-color-surface-variant: #E7E0EC;
-    --md-sys-color-on-surface-variant: #49454F;
+    --md-sys-color-background: #{map.get($theme, background)};
+    --md-sys-color-on-background: #{map.get($theme, on-background)};
     
-    // Background colors
-    --md-sys-color-background: #FAFAFA;
-    --md-sys-color-on-background: #1C1B1F;
+    --md-sys-color-surface: #{map.get($theme, surface)};
+    --md-sys-color-on-surface: #{map.get($theme, on-surface)};
+    --md-sys-color-surface-variant: #{map.get($theme, surface-variant)};
+    --md-sys-color-on-surface-variant: #{map.get($theme, on-surface-variant)};
     
-    // Error colors
-    --md-sys-color-error: #B3261E;
-    --md-sys-color-on-error: #FFFFFF;
-    --md-sys-color-error-container: #F9DEDC;
-    --md-sys-color-on-error-container: #410E0B;
+    --md-sys-color-error: #{map.get($theme, error)};
+    --md-sys-color-on-error: #{map.get($theme, on-error)};
+    --md-sys-color-error-container: #{map.get($theme, error-container)};
+    --md-sys-color-on-error-container: #{map.get($theme, on-error-container)};
     
-    // Outline colors
-    --md-sys-color-outline: #79747E;
-    --md-sys-color-outline-variant: #C4C7C5;
+    --md-sys-color-outline: #{map.get($theme, outline)};
+    --md-sys-color-outline-variant: #{map.get($theme, outline-variant)};
     
-    // Additional colors
-    --md-sys-color-shadow: #000000;
-    --md-sys-color-scrim: #000000;
-    --md-sys-color-inverse-surface: #313033;
-    --md-sys-color-inverse-on-surface: #F4EFF4;
-    --md-sys-color-inverse-primary: #B6C5FF;
+    // RGB values for transparency/animations
+    --md-sys-color-primary-rgb: #{map.get($theme, primary-rgb)};
+    --md-sys-color-secondary-rgb: #{map.get($theme, secondary-rgb)};
+    --md-sys-color-tertiary-rgb: #{map.get($theme, tertiary-rgb)};
     
-    // Surface container colors
-    --md-sys-color-surface-dim: #DED8E1;
-    --md-sys-color-surface-bright: #FFF8F6;
-    --md-sys-color-surface-container-lowest: #FFFFFF;
-    --md-sys-color-surface-container-low: #F7F2FA;
-    --md-sys-color-surface-container: #F3EDF7;
-    --md-sys-color-surface-container-high: #ECE6F0;
-    --md-sys-color-surface-container-highest: #E6E0E9;
-    
-    // Custom theme colors
-    --color-primary: #{vars.$usa-blue};
-    --color-accent: #{vars.$usa-red};
-    --color-warn: #{vars.$usa-gold};
-    --color-white: #{vars.$usa-white};
-    --color-gold: #{vars.$usa-gold};
-    
-    // Custom gradients
-    --header-gradient: linear-gradient(135deg, #{vars.$usa-blue} 0%, #{color.adjust(vars.$usa-blue, $lightness: -10%)} 100%);
-    --menu-gradient: linear-gradient(135deg, #{vars.$usa-white} 0%, #{rgba(vars.$usa-blue, 0.05)} 100%);
-    
-    // Card variations
-    --card-bg-light: #{vars.$usa-white};
-    --card-bg-primary: #{rgba(vars.$usa-blue, 0.1)};
-    --card-bg-secondary: #{rgba(vars.$usa-red, 0.1)};
-    --card-bg-tertiary: #{rgba(vars.$usa-gold, 0.1)};
-    
-    // Elevation levels
-    @each $level, $value in vars.$md-elevations {
-      --md-sys-elevation-#{$level}: #{$value};
+    // Special effects variables if they exist in the theme map
+    @if map.has-key($theme, glow-shadow) {
+      @if map.get($theme, name) == "cosmic-glow" {
+        --cosmic-glow-shadow: #{map.get($theme, glow-shadow)};
+        --cosmic-pulse-color: #{map.get($theme, pulse-color)};
+        --cosmic-text-shadow: #{map.get($theme, text-shadow)};
+        --cosmic-gradient: #{map.get($theme, gradient)};
+        --cosmic-background-animation: #{map.get($theme, background-animation)};
+      } @else if map.get($theme, name) == "solar-flare" {
+        --solar-glow-shadow: #{map.get($theme, glow-shadow)};
+        --solar-pulse-color: #{map.get($theme, pulse-color)};
+        --solar-text-shadow: #{map.get($theme, text-shadow)};
+        --solar-gradient: #{map.get($theme, gradient)};
+        --solar-background-animation: #{map.get($theme, background-animation)};
+      }
     }
     
-    // Border radii
-    @each $size, $value in vars.$md-radii {
-      --md-sys-radius-#{$size}: #{$value};
-    }
-    
-    // Animation timings
-    --animation-duration-fast: #{vars.$animation-duration-fast};
-    --animation-duration-normal: #{vars.$animation-duration-normal};
-    --animation-duration-slow: #{vars.$animation-duration-slow};
-    --animation-timing-function: #{vars.$animation-timing-function};
-  }
-  
-  // Dark theme variables
-  .dark-theme, [data-theme="dark"] {
-    // Primary colors
-    --md-sys-color-primary: #B6C5FF;
-    --md-sys-color-on-primary: #002E6A;
-    --md-sys-color-primary-container: #1A4494;
-    --md-sys-color-on-primary-container: #D8E2FF;
-    
-    // Secondary colors
-    --md-sys-color-secondary: #FFB3B3;
-    --md-sys-color-on-secondary: #680020;
-    --md-sys-color-secondary-container: #920030;
-    --md-sys-color-on-secondary-container: #FFD9D9;
-    
-    // Tertiary colors
-    --md-sys-color-tertiary: #FFDF80;
-    --md-sys-color-on-tertiary: #402D00;
-    --md-sys-color-tertiary-container: #5D4200;
-    --md-sys-color-on-tertiary-container: #FFDF9E;
-    
-    // Surface colors
-    --md-sys-color-surface: #1C1B1F;
-    --md-sys-color-on-surface: #E6E1E5;
-    --md-sys-color-surface-variant: #49454F;
-    --md-sys-color-on-surface-variant: #CAC4D0;
-    
-    // Background colors
-    --md-sys-color-background: #1C1B1F;
-    --md-sys-color-on-background: #E6E1E5;
-    
-    // Error colors
-    --md-sys-color-error: #F2B8B5;
-    --md-sys-color-on-error: #601410;
-    --md-sys-color-error-container: #8C1D18;
-    --md-sys-color-on-error-container: #F9DEDC;
-    
-    // Outline colors
-    --md-sys-color-outline: #938F99;
-    --md-sys-color-outline-variant: #444746;
-    
-    // Additional colors
-    --md-sys-color-shadow: #000000;
-    --md-sys-color-scrim: #000000;
-    --md-sys-color-inverse-surface: #E6E1E5;
-    --md-sys-color-inverse-on-surface: #313033;
-    --md-sys-color-inverse-primary: #1A4494;
-    
-    // Surface container colors
-    --md-sys-color-surface-dim: #131316;
-    --md-sys-color-surface-bright: #3B383E;
-    --md-sys-color-surface-container-lowest: #0F0F12;
-    --md-sys-color-surface-container-low: #1D1B20;
-    --md-sys-color-surface-container: #211F26;
-    --md-sys-color-surface-container-high: #2B2930;
-    --md-sys-color-surface-container-highest: #36343B;
-    
-    // Custom theme colors
-    --color-primary: #B6C5FF;
-    --color-accent: #FFB3B3;
-    --color-warn: #FFDF80;
-    --color-white: #E6E1E5;
-    --color-gold: #FFDF80;
-    
-    // Custom gradients
-    --header-gradient: linear-gradient(135deg, #1A4494 0%, #{color.adjust(#1A4494, $lightness: -10%)} 100%);
-    --menu-gradient: linear-gradient(135deg, #211F26 0%, #{rgba(#1A4494, 0.15)} 100%);
-    
-    // Card variations
-    --card-bg-light: #211F26;
-    --card-bg-primary: #{rgba(#1A4494, 0.2)};
-    --card-bg-secondary: #{rgba(#920030, 0.2)};
-    --card-bg-tertiary: #{rgba(#5D4200, 0.2)};
+    // For theme-specific gradients
+    --header-gradient: #{map.get($theme, header-gradient)};
+    --menu-gradient: #{map.get($theme, menu-gradient)};
   }
 }
 
-// Apply the theme variables
-@include apply-theme-variables();
+// Apply all themes
+// Light theme (default)
+@include apply-theme-variables(
+  themes.$light-theme, 
+  ":root, .light-theme, [data-theme=\"light\"]"
+);
+
+// Dark theme
+@include apply-theme-variables(
+  themes.$dark-theme, 
+  ".dark-theme, [data-theme=\"dark\"]"
+);
+
+// Cosmic Glow theme (vibrant1)
+$cosmic-with-name: map.merge(
+  themes.$cosmic-glow-theme, 
+  (name: "cosmic-glow")
+);
+@include apply-theme-variables(
+  $cosmic-with-name, 
+  ".vibrant1-theme, [data-theme=\"vibrant1\"]"
+);
+
+// Solar Flare theme (vibrant2)
+$solar-with-name: map.merge(
+  themes.$solar-flare-theme, 
+  (name: "solar-flare")
+);
+@include apply-theme-variables(
+  $solar-with-name, 
+  ".vibrant2-theme, [data-theme=\"vibrant2\"]"
+);
 
 // High contrast theme adjustments
 @media (prefers-contrast: more) {
@@ -213,10 +117,5 @@
     --md-sys-color-tertiary: #B8860B;
     --md-sys-color-on-tertiary: white;
     --md-sys-color-outline: black;
-    
-    .patriotic-gradient {
-      background: var(--md-sys-color-surface);
-      border: 2px solid var(--md-sys-color-primary);
-    }
   }
 }

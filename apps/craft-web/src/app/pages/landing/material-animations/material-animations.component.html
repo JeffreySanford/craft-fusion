@@ -1,0 +1,130 @@
+<mat-card class="page-container animate-in">
+  <mat-card-header class="header-with-actions">
+    <div>
+      <mat-card-title class="slide-in rainbow-text">Material Animations</mat-card-title>
+      <mat-card-subtitle class="slide-in-delayed shimmer-text">A showcase of Angular animations and effects</mat-card-subtitle>
+    </div>
+    <div class="navigation-links">
+      <button mat-raised-button color="primary" class="elevate-on-hover rainbow-btn" (click)="navigateToIcons()">
+        <mat-icon>format_shapes</mat-icon> Icons
+      </button>
+      <button mat-raised-button color="accent" class="elevate-on-hover rainbow-btn" (click)="navigateToButtons()">
+        <mat-icon>toggle_on</mat-icon> Buttons
+      </button>
+      <button mat-raised-button color="warn" class="elevate-on-hover rainbow-btn active-page">
+        <mat-icon>animation</mat-icon> Animations
+      </button>
+    </div>
+  </mat-card-header>
+
+  <div class="search-container">
+    <mat-form-field class="search-field" appearance="outline">
+      <mat-label>Search Animations</mat-label>
+      <input matInput type="text" [(ngModel)]="searchTerm" (input)="filterAnimations()" placeholder="Example: fade, slide, etc.">
+      <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="clearSearch()">
+        <mat-icon class="animated-clear">close</mat-icon>
+      </button>
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+  </div>
+  
+  <mat-card-content>
+    <!-- Interactive demo section -->
+    <div class="interactive-demo" *ngIf="selectedAnimation">
+      <h2 class="section-title">Interactive Demo: {{selectedAnimation.name}}</h2>
+      <div class="demo-container" [@containerAnimation]="'in'">
+        <div class="demo-content" [ngSwitch]="selectedAnimation.type">
+          <!-- Fade animation -->
+          <div *ngSwitchCase="'fade'" class="demo-box"
+               [@fadeInOut]="animationStates[selectedAnimation.id] || 'in'">
+            <div class="demo-content">Fade Animation</div>
+          </div>
+          
+          <!-- Slide animation -->
+          <div *ngSwitchCase="'slide'" class="demo-box"
+               [@slideInOut]="animationStates[selectedAnimation.id] || 'in'">
+            <div class="demo-content">Slide Animation</div>
+          </div>
+          
+          <!-- Expand/collapse animation -->
+          <div *ngSwitchCase="'expand'" class="demo-container-outer">
+            <div class="demo-box"
+                 [@expandCollapse]="animationStates[selectedAnimation.id] || 'expanded'">
+              <div class="demo-content">Expand Animation Content</div>
+            </div>
+          </div>
+          
+          <!-- List animation -->
+          <div *ngSwitchCase="'list'" class="demo-list-container">
+            <div *ngIf="animationStates[selectedAnimation.id] !== 'default'" [@listAnimation]="animationStates[selectedAnimation.id]">
+              <div class="demo-list-item" *ngFor="let i of [1, 2, 3, 4, 5]">
+                List Item {{ i }}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Other animation types -->
+          <div *ngSwitchDefault class="demo-box">
+            <div class="demo-content">{{ selectedAnimation.name }}</div>
+          </div>
+        </div>
+        
+        <div class="demo-controls">
+          <button mat-raised-button color="primary" (click)="toggleAnimationState(selectedAnimation.id)">
+            Toggle Animation
+          </button>
+          <p class="demo-description">{{ selectedAnimation.description }}</p>
+          <pre class="demo-code"><code>{{ selectedAnimation.code }}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination controls -->
+    <div class="pagination-controls fade-in" *ngIf="totalPages > 1">
+      <button mat-button [disabled]="currentPage === 0" (click)="prevPage()" class="smart-hover pagination-btn">
+        <mat-icon>navigate_before</mat-icon> Previous
+      </button>
+      <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+      <button mat-button [disabled]="currentPage === totalPages - 1" (click)="nextPage()" class="smart-hover pagination-btn">
+        Next <mat-icon>navigate_next</mat-icon>
+      </button>
+    </div>
+
+    <!-- Animation categories grid with animations -->
+    <div class="animation-grid">
+      <mat-card *ngFor="let category of paginatedCategories; let i = index" 
+                class="animation-card elevate-on-hover scroll-animation color-category-{{i % 10}}"
+                [style.animation-delay]="i * 100 + 'ms'"
+                [@categoryAnimation]="{value: '', params: {delay: i * 100 + 100}}">
+        <mat-card-title>{{ category.name }}</mat-card-title>
+        <mat-card-content>
+          <div class="animation-examples">
+            <div *ngFor="let example of category.examples; let j = index"
+                 class="animation-example ripple color-animation-{{(i+j) % 10}}"
+                 [@showcaseAnimation]="{value: '', params: {delay: j * 50 + 100}}"
+                 (click)="showAnimationDemo(example)">
+              <div class="animation-icon">
+                <mat-icon>{{ example.icon || 'animation' }}</mat-icon>
+              </div>
+              <div class="animation-info">
+                <h3>{{ example.name }}</h3>
+                <p>{{ example.shortDescription || (example.description | slice:0:60) + (example.description.length > 60 ? '...' : '') }}</p>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    
+    <!-- Bottom pagination controls -->
+    <div class="pagination-controls fade-in" *ngIf="totalPages > 1">
+      <button mat-button [disabled]="currentPage === 0" (click)="prevPage()" class="smart-hover pagination-btn">
+        <mat-icon>navigate_before</mat-icon> Previous
+      </button>
+      <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+      <button mat-button [disabled]="currentPage === totalPages - 1" (click)="nextPage()" class="smart-hover pagination-btn">
+        Next <mat-icon>navigate_next</mat-icon>
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>

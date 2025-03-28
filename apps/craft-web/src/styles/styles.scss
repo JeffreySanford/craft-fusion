@@ -11,15 +11,17 @@
 @use 'typography';
 @use 'md3-tokens';
 @use 'theme';
+@use 'themes';
 @use 'utilities';
 @use 'reset';
-@use 'responsive';
+@use './_responsive'; // Keep this one
 @use 'md3-components';
 @use 'material-overrides';
 @use 'patriotic-overrides';
 @use 'layout';
 @use 'scrollbar';
 @use 'animations';
+@use 'theme-components'; // Add this line to import the theme components file
 
 /* Define custom patriotic colors */
 $usa-red: vars.$usa-red;
@@ -68,8 +70,7 @@ body {
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:wght@300;400;500;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;500;700&family=Lora:wght@400;500;600&family=Source+Sans+Pro:wght@300;400;600&family=Open+Sans:wght@300;400;600&display=swap');
 
-/* Apply theme variables and Material themes */
-@include theme.apply-theme-variables();
+/* Apply responsive typography */
 @include responsive.responsive-typography();
 
 /* Apply responsive app shell with consistent alignment */

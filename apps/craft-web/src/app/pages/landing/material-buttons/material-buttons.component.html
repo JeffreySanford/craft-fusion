@@ -1,48 +1,204 @@
-<div class="container">
-  <h1>Material Buttons Showcase</h1>
-  <p>Explore various types of Material buttons with different styles and icons.</p>
+<mat-card class="page-container animate-in">
+  <mat-card-header class="header-with-actions">
+    <div>
+      <mat-card-title class="slide-in rainbow-text">Material Buttons</mat-card-title>
+      <mat-card-subtitle class="slide-in-delayed shimmer-text">Explore a variety of Material Design buttons</mat-card-subtitle>
+    </div>
+    <div class="navigation-links">
+      <button mat-raised-button color="primary" class="elevate-on-hover rainbow-btn" (click)="navigateToIcons()">
+        <mat-icon>format_shapes</mat-icon> Icons
+      </button>
+      <button mat-raised-button color="accent" class="elevate-on-hover rainbow-btn active-page">
+        <mat-icon>toggle_on</mat-icon> Buttons
+      </button>
+      <button mat-raised-button color="warn" class="elevate-on-hover rainbow-btn" (click)="navigateToAnimations()">
+        <mat-icon>animation</mat-icon> Animations
+      </button>
+    </div>
+  </mat-card-header>
 
-  <div class="button-grid">
-    <!-- Basic Buttons Section -->
-    <mat-card class="button-card">
-      <mat-card-title>Basic Buttons</mat-card-title>
-      <mat-card-content>
-        <button mat-button class="elevated-button">Click me!</button>
-        <button mat-raised-button class="elevated-button">Click me!</button>
-        <button mat-flat-button class="elevated-button">Click me!</button>
-        <button mat-stroked-button class="elevated-button">Click me!</button>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Icon Buttons Section -->
-    <mat-card class="button-card">
-      <mat-card-title>Icon Buttons</mat-card-title>
-      <mat-card-content>
-        <button mat-icon-button class="elevated-button">
-          <mat-icon>menu</mat-icon>
-        </button>
-        <button mat-button class="elevated-button">
-          <mat-icon svgIcon="thumbs-up"></mat-icon>
-          Click me!
-        </button>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Fab Buttons Section -->
-    <mat-card class="button-card">
-      <mat-card-title>Fab Buttons</mat-card-title>
-      <mat-card-content>
-        <button mat-fab class="elevated-button">
-          <mat-icon>favorite</mat-icon>
-        </button>
-        <button mat-mini-fab class="elevated-button">
-          <mat-icon>favorite</mat-icon>
-        </button>
-        <button mat-fab color="primary" aria-label="Example icon button with a heart icon" class="elevated-button">
-          <mat-icon>favorite</mat-icon>
-          <span>Favorite</span>
-        </button>
-      </mat-card-content>
-    </mat-card>
+  <div class="search-container">
+    <mat-form-field class="search-field" appearance="outline">
+      <mat-label>Search Buttons</mat-label>
+      <input matInput type="text" [(ngModel)]="searchTerm" (input)="filterButtons()" placeholder="Example: primary, accent, etc.">
+      <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="clearSearch()">
+        <mat-icon class="animated-clear">close</mat-icon>
+      </button>
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
   </div>
-</div>
+  
+  <mat-card-content>
+    <!-- Interactive demo section -->
+    <div class="interactive-demo" *ngIf="selectedButton">
+      <h2 class="section-title">Interactive Demo</h2>
+      <div class="demo-container" [@buttonFocus]>
+        <div class="demo-button-container">
+          <ng-container [ngSwitch]="selectedButton.type">
+            <button *ngSwitchCase="'mat-button'" 
+                    mat-button 
+                    [color]="selectedButton.color" 
+                    class="demo-button">
+              <mat-icon *ngIf="selectedButton.icon">{{ selectedButton.icon }}</mat-icon>
+              {{ selectedButton.label }}
+            </button>
+            <button *ngSwitchCase="'mat-raised-button'" 
+                    mat-raised-button 
+                    [color]="selectedButton.color" 
+                    class="demo-button">
+              <mat-icon *ngIf="selectedButton.icon">{{ selectedButton.icon }}</mat-icon>
+              {{ selectedButton.label }}
+            </button>
+            <button *ngSwitchCase="'mat-stroked-button'" 
+                    mat-stroked-button 
+                    [color]="selectedButton.color" 
+                    class="demo-button">
+              <mat-icon *ngIf="selectedButton.icon">{{ selectedButton.icon }}</mat-icon>
+              {{ selectedButton.label }}
+            </button>
+            <button *ngSwitchCase="'mat-flat-button'" 
+                    mat-flat-button 
+                    [color]="selectedButton.color" 
+                    class="demo-button">
+              <mat-icon *ngIf="selectedButton.icon">{{ selectedButton.icon }}</mat-icon>
+              {{ selectedButton.label }}
+            </button>
+            <button *ngSwitchCase="'mat-icon-button'" 
+                    mat-icon-button 
+                    [color]="selectedButton.color" 
+                    class="demo-button">
+              <mat-icon>{{ selectedButton.icon }}</mat-icon>
+            </button>
+            <button *ngSwitchCase="'mat-fab'" 
+                    mat-fab 
+                    [color]="selectedButton.color" 
+                    class="demo-button">
+              <mat-icon>{{ selectedButton.icon }}</mat-icon>
+            </button>
+            <button *ngSwitchCase="'mat-mini-fab'" 
+                    mat-mini-fab 
+                    [color]="selectedButton.color" 
+                    class="demo-button">
+              <mat-icon>{{ selectedButton.icon }}</mat-icon>
+            </button>
+          </ng-container>
+        </div>
+        <div class="demo-info">
+          <h3>{{ selectedButton.type | titlecase }}</h3>
+          <p>Click the button to see its active and focus states.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination controls -->
+    <div class="pagination-controls fade-in" *ngIf="totalPages > 1">
+      <button mat-button [disabled]="currentPage === 0" (click)="prevPage()" class="smart-hover pagination-btn">
+        <mat-icon>navigate_before</mat-icon> Previous
+      </button>
+      <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+      <button mat-button [disabled]="currentPage === totalPages - 1" (click)="nextPage()" class="smart-hover pagination-btn">
+        Next <mat-icon>navigate_next</mat-icon>
+      </button>
+    </div>
+
+    <!-- Button categories grid with animations -->
+    <div class="button-grid" [@cardAnimation]="paginatedCategories.length">
+      <mat-card *ngFor="let category of paginatedCategories; let i = index" 
+                class="button-card elevate-on-hover scroll-animation color-category-{{i % 10}}"
+                [style.animation-delay]="i * 200 + 'ms'"
+                [@cardAppear]="{value: '', params: {delay: i * 100 + 100}}">
+        <mat-card-title>{{ category.title }}</mat-card-title>
+        <mat-card-content>
+          <div class="button-row">
+            <ng-container *ngFor="let button of category.buttons; let j = index">
+              <!-- Basic buttons -->
+              <button *ngIf="button.type === 'mat-button'" 
+                      mat-button 
+                      [color]="button.color" 
+                      class="elevated-button ripple color-btn-{{(i+j) % 10}}"
+                      (click)="showButtonDemo(button)"
+                      [@buttonAppear]="{value: '', params: {delay: j * 100}}">
+                <mat-icon *ngIf="button.icon">{{ button.icon }}</mat-icon>
+                {{ button.label }}
+              </button>
+              
+              <!-- Raised buttons -->
+              <button *ngIf="button.type === 'mat-raised-button'" 
+                      mat-raised-button 
+                      [color]="button.color" 
+                      class="elevated-button ripple color-btn-{{(i+j) % 10}}"
+                      (click)="showButtonDemo(button)"
+                      [@buttonAppear]="{value: '', params: {delay: j * 100}}">
+                <mat-icon *ngIf="button.icon">{{ button.icon }}</mat-icon>
+                {{ button.label }}
+              </button>
+              
+              <!-- Stroked buttons -->
+              <button *ngIf="button.type === 'mat-stroked-button'" 
+                      mat-stroked-button 
+                      [color]="button.color" 
+                      class="elevated-button ripple color-btn-{{(i+j) % 10}}"
+                      (click)="showButtonDemo(button)"
+                      [@buttonAppear]="{value: '', params: {delay: j * 100}}">
+                <mat-icon *ngIf="button.icon">{{ button.icon }}</mat-icon>
+                {{ button.label }}
+              </button>
+              
+              <!-- Flat buttons -->
+              <button *ngIf="button.type === 'mat-flat-button'" 
+                      mat-flat-button 
+                      [color]="button.color" 
+                      class="elevated-button ripple color-btn-{{(i+j) % 10}}"
+                      (click)="showButtonDemo(button)"
+                      [@buttonAppear]="{value: '', params: {delay: j * 100}}">
+                <mat-icon *ngIf="button.icon">{{ button.icon }}</mat-icon>
+                {{ button.label }}
+              </button>
+              
+              <!-- Icon buttons -->
+              <button *ngIf="button.type === 'mat-icon-button'" 
+                      mat-icon-button 
+                      [color]="button.color" 
+                      class="ripple color-btn-{{(i+j) % 10}}"
+                      (click)="showButtonDemo(button)"
+                      [@buttonAppear]="{value: '', params: {delay: j * 100}}">
+                <mat-icon>{{ button.icon }}</mat-icon>
+              </button>
+              
+              <!-- FAB buttons -->
+              <button *ngIf="button.type === 'mat-fab'" 
+                      mat-fab 
+                      [color]="button.color" 
+                      class="elevated-button ripple color-btn-{{(i+j) % 10}}"
+                      (click)="showButtonDemo(button)"
+                      [@buttonAppear]="{value: '', params: {delay: j * 100}}">
+                <mat-icon>{{ button.icon }}</mat-icon>
+              </button>
+              
+              <!-- Mini FAB buttons -->
+              <button *ngIf="button.type === 'mat-mini-fab'" 
+                      mat-mini-fab 
+                      [color]="button.color" 
+                      class="elevated-button ripple color-btn-{{(i+j) % 10}}"
+                      (click)="showButtonDemo(button)"
+                      [@buttonAppear]="{value: '', params: {delay: j * 100}}">
+                <mat-icon>{{ button.icon }}</mat-icon>
+              </button>
+            </ng-container>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    
+    <!-- Bottom pagination controls -->
+    <div class="pagination-controls fade-in" *ngIf="totalPages > 1">
+      <button mat-button [disabled]="currentPage === 0" (click)="prevPage()" class="smart-hover pagination-btn">
+        <mat-icon>navigate_before</mat-icon> Previous
+      </button>
+      <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+      <button mat-button [disabled]="currentPage === totalPages - 1" (click)="nextPage()" class="smart-hover pagination-btn">
+        Next <mat-icon>navigate_next</mat-icon>
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -1,16 +1,72 @@
 <mat-card class="header-card">
   <div class="header-content">
-    <!-- Other header content can go here -->
-    <button mat-icon-button [matMenuTriggerFor]="userMenu" #menuTrigger="matMenuTrigger">
-      <mat-icon class="profile-icon" [class.logged-in]="authService.getAuthToken()">person</mat-icon>
-    </button>
+    <div class="header-title">
+      <!-- Replace span with mat-button for more reliable click handling -->
+      <span class="animated-star-container"
+            (click)="$event.stopPropagation(); handleUserMenuAction('material-buttons')"
+            tabindex="0"
+            role="button"
+            aria-label="View Material Buttons">
+        <span class="animated-star">★</span>
+        <svg class="progress-circle" width="40" height="40">
+          <circle class="progress-background" cx="20" cy="20" r="18" />
+          <circle class="progress-indicator" cx="20" cy="20" r="18" />
+        </svg>
+      </span>
+      Portfolio
+    </div>
+    <!-- Spacer to push user profile button to the right -->
+    <div class="flex-spacer"></div>
+    
+    <!-- Wrap the user profile button in a container for consistent alignment -->
+    <div class="user-profile-container">
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" #menuTrigger="matMenuTrigger" style="margin-right: 0.5em;">
+        <mat-icon class="profile-icon" [class.logged-in]="authService.getAuthToken()">person</mat-icon>
+      </button>
+    </div>
+    
     <mat-menu #userMenu="matMenu" 
               class="user-menu" 
               [overlapTrigger]="false" 
               panelClass="user-menu"
               [yPosition]="'below'"
               [hasBackdrop]="true">
-      <button mat-menu-item *ngFor="let item of userMenuItems" (click)="handleUserMenuAction(item.action)">
+      <!-- Profile item always shows first -->
+      <button mat-menu-item (click)="handleUserMenuAction('profile')" class="menu-button">
+        <mat-icon>person</mat-icon>
+        <span>Profile</span>
+      </button>
+      
+      <!-- Theme button and its expandable section -->
+      <div class="theme-section">
+        <button mat-menu-item (click)="toggleThemeSection($event)" class="theme-menu-button">
+          <mat-icon>palette</mat-icon>
+          <span>Themes</span>
+          <span class="flex-spacer"></span>
+          <mat-icon class="expand-icon">{{ isThemeSectionOpen ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </button>
+        <div class="theme-flip" *ngIf="isThemeSectionOpen" [@expandCollapse]="isThemeSectionOpen ? 'expanded' : 'collapsed'">
+          <div class="theme-options-container">
+            <mat-radio-group class="theme-radio-group">
+              <mat-radio-button
+                *ngFor="let theme of themeOptions"
+                [value]="theme.value"
+                [checked]="isCurrentTheme(theme.value)"
+                (change)="handleThemeSelection($event, theme.value)" (click)="$event.stopPropagation()"
+                class="theme-radio-button"
+              >
+                <div class="theme-option-content">
+                  <span class="theme-color-preview" [class]="theme.value + '-preview'"></span>
+                  <span class="theme-label">{{ theme.label }}</span>
+                </div>
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Remaining menu items - Settings, Reports, Login/Logout -->
+      <button mat-menu-item *ngFor="let item of remainingMenuItems" (click)="handleUserMenuAction(item.action)" class="menu-button">
         <mat-icon>{{ item.icon }}</mat-icon>
         <span>{{ item.label }}</span>
       </button>
