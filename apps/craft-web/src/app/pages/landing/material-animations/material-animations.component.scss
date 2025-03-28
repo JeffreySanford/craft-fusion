@@ -322,6 +322,11 @@
   }
 }
 
+button.active-page {
+  box-shadow: 0 0 10px 2px var(--md-sys-color-warn);
+  border: 2px solid var(--md-sys-color-warn);
+}
+
 // Search container styling
 .search-container {
   margin-bottom: 16px;

@@ -317,6 +317,7 @@
   margin: 8px 0; // Reduced from 16px
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
   
   // Vibrant1 theme (Cosmic Glow)
   .vibrant1-theme & button {
@@ -393,6 +394,11 @@
       color: #ffffff;
     }
   }
+}
+
+button.active-page {
+  box-shadow: 0 0 10px 2px var(--md-sys-color-accent);
+  border: 2px solid var(--md-sys-color-accent);
 }
 
 /* Animation for button hover in Vibrant themes */
