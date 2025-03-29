@@ -1,5 +1,6 @@
 @use 'sass:map';
 @use 'sass:color';
+@use 'sass:string';
 @use './variables' as vars;
 
 // Core theme definitions - all themes should be defined here
@@ -39,9 +40,9 @@ $light-theme: (
   outline-variant: #C4C7C5,
   
   // RGB versions for animations/transparency
-  primary-rgb: unquote('0, 40, 104'),
-  secondary-rgb: unquote('191, 10, 48'),
-  tertiary-rgb: unquote('255, 215, 0'),
+  primary-rgb: string.unquote('0, 40, 104'),
+  secondary-rgb: string.unquote('191, 10, 48'),
+  tertiary-rgb: string.unquote('255, 215, 0'),
   
   // Theme-specific effects
   header-gradient: linear-gradient(135deg, vars.$usa-blue 0%, color.adjust(vars.$usa-blue, $lightness: -10%) 100%),
@@ -82,9 +83,9 @@ $dark-theme: (
   outline-variant: #444746,
   
   // RGB versions for animations/transparency
-  primary-rgb: unquote('182, 197, 255'),
-  secondary-rgb: unquote('255, 179, 179'),
-  tertiary-rgb: unquote('255, 223, 128'),
+  primary-rgb: string.unquote('182, 197, 255'),
+  secondary-rgb: string.unquote('255, 179, 179'),
+  tertiary-rgb: string.unquote('255, 223, 128'),
   
   // Theme-specific effects
   header-gradient: linear-gradient(135deg, #1A4494 0%, color.adjust(#1A4494, $lightness: -10%) 100%),
@@ -125,14 +126,14 @@ $cosmic-glow-theme: (
   outline-variant: #9900cc,
   
   // RGB versions for animations/transparency
-  primary-rgb: unquote('255, 0, 204'),
-  secondary-rgb: unquote('0, 255, 204'),
-  tertiary-rgb: unquote('255, 255, 0'),
+  primary-rgb: string.unquote('255, 0, 204'),
+  secondary-rgb: string.unquote('0, 255, 204'),
+  tertiary-rgb: string.unquote('255, 255, 0'),
   
   // Theme-specific effects
-  glow-shadow: unquote('0 0 10px rgba(255, 0, 204, 0.7), 0 0 20px rgba(255, 0, 204, 0.4)'),
+  glow-shadow: string.unquote('0 0 10px rgba(255, 0, 204, 0.7), 0 0 20px rgba(255, 0, 204, 0.4)'),
   pulse-color: rgba(51, 0, 255, 0.8),
-  text-shadow: unquote('0 0 8px #ff00cc, 0 0 15px #3300ff'),
+  text-shadow: string.unquote('0 0 8px #ff00cc, 0 0 15px #3300ff'),
   gradient: linear-gradient(135deg, #ff00cc, #3300ff, #00ffcc),
   background-animation: cosmicBackgroundPulse 8s infinite alternate,
   animation-speed-factor: 1.2,
@@ -176,14 +177,14 @@ $solar-flare-theme: (
   outline-variant: #ffbb44, // Brighter golden outline
   
   // RGB versions for animations/transparency
-  primary-rgb: unquote('255, 45, 0'),
-  secondary-rgb: unquote('0, 102, 255'),
-  tertiary-rgb: unquote('255, 0, 85'),
+  primary-rgb: string.unquote('255, 45, 0'),
+  secondary-rgb: string.unquote('0, 102, 255'),
+  tertiary-rgb: string.unquote('255, 0, 85'),
   
   // Theme-specific effects - dramatically enhanced
-  glow-shadow: unquote('0 0 20px rgba(255, 45, 0, 0.9), 0 0 40px rgba(255, 45, 0, 0.6)'),
+  glow-shadow: string.unquote('0 0 20px rgba(255, 45, 0, 0.9), 0 0 40px rgba(255, 45, 0, 0.6)'),
   pulse-color: rgba(255, 170, 0, 1.0),
-  text-shadow: unquote('0 0 12px #ff2d00, 0 0 24px #ffaa00'),
+  text-shadow: string.unquote('0 0 12px #ff2d00, 0 0 24px #ffaa00'),
   gradient: linear-gradient(135deg, #ff2d00, #ffaa00, #0066ff),
   background-animation: solarBackgroundPulseEnhanced 4s infinite alternate,
   animation-speed-factor: 1.8, // Even faster animations

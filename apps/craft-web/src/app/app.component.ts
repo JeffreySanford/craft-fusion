@@ -51,18 +51,21 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private footerStateService: FooterStateService,
     private userStateService: UserStateService
   ) {
-    // Replace direct console logs with logger calls
-    this.logger.info('App component initialized', { appVersion: '1.0.0' });
+    this.logger.registerService('AppComponent');
+    this.logger.info('App component initialized', { 
+      type: 'CORE_STYLING',
+      appVersion: '1.0.0'
+    });
   }
 
   ngOnInit(): void {
-    // Replace any existing console.log with logger calls
-    this.logger.debug('Application started', { timestamp: new Date().toISOString() });
-
-    // Temporarily set admin status here - will be replaced with auth later
-    // this.adminStateService.setAdminStatus(true); // Set to true for development
+    this.logger.info('App component initialized');
+    this.logger.debug('Initializing application layout structure', {
+      type: 'CORE_STYLING'
+    });
 
     this.authService.isAdmin$.subscribe(isAdmin => {
+      console.log('Admin status in AppComponent:', isAdmin);
       this.adminStateService.setAdminStatus(isAdmin);
     });
 
@@ -90,26 +93,38 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.isSmallScreen = this.breakpointObserver.isMatched('(max-width: 599px)');
 
-    // Removed login event registration to avoid infinite loop
-
     this.logger.info('App component initialized');
 
     // Subscribe to footer state changes
     this.footerStateSubscription = this.footerStateService.expanded$
       .subscribe(expanded => {
         this.isFooterExpanded = expanded;
-        console.log('Footer expanded state changed:', expanded);
+        this.logger.debug('Footer expanded state changed', {
+          type: 'CORE_STYLING',
+          expanded
+        });
+        
         // Apply the appropriate class to the body
         if (expanded) {
           document.body.classList.add('footer-expanded');
+          this.logger.debug('Added footer-expanded class to body', {
+            type: 'CORE_STYLING'
+          });
         } else {
           document.body.classList.remove('footer-expanded');
+          this.logger.debug('Removed footer-expanded class from body', {
+            type: 'CORE_STYLING'
+          });
         }
       });
+
+    this.logger.debug('App setup complete');
   }
 
   ngAfterViewInit() {
-    console.log('Step 2: ngAfterViewInit called');
+    this.logger.debug('App component view initialized, setting up layout', {
+      type: 'CORE_STYLING'
+    });
     this.ensureVideoIsPlaying();
     this.addUserInteractionListener();
     this.startVideoCheckPolling();
@@ -118,13 +133,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log('Step 4: ngOnDestroy called');
+    this.logger.debug('App component destroying, cleaning up layout resources', {
+      type: 'CORE_STYLING'
+    });
     this.removeUserInteractionListener();
     this.stopVideoCheckPolling();
 
     this.logger.info('App component destroyed');
     
-    // Log user activity summary on exit
     const activitySummary = this.userActivityService.getActivitySummary();
     this.logger.info(`Session summary: ${activitySummary.pageViews} page views, ${activitySummary.clicks} clicks, ${Math.round(activitySummary.sessionDuration / 1000)} seconds duration`);
 
@@ -196,22 +212,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadInitialData(): void {
-    // Example of properly typed service call
-    // If you have an actual service that needs to be used, uncomment and modify:
-    /*
-    this.apiService.getData().subscribe({
-      next: (data: YourDataType) => {
-        // Process data
-        this.logger.info('Data loaded successfully', { count: data.length });
-      },Glimm
-      error: (error: Error) => {
-        // Handle error properly
-        this.logger.error('Failed to load data', { error: error.message });
-      }
-    });
-    */
-    
-    // For now, just log a message to avoid the error
     this.logger.info('App component initialized');
   }
 }

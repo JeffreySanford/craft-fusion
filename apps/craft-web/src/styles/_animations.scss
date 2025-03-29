@@ -253,6 +253,18 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
   }
 }
 
+@keyframes pulse-colored {
+  0% {
+    box-shadow: 0 0 5px var(--pulse-color);
+  }
+  50% {
+    box-shadow: 0 0 15px var(--pulse-color);
+  }
+  100% {
+    box-shadow: 0 0 5px var(--pulse-color);
+  }
+}
+
 @keyframes neonRotate {
   0% {
     transform: rotate(-10deg) scale(0.8);

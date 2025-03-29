@@ -1,5 +1,9 @@
 @use '@angular/material' as mat;
 @use '../../../styles/_utilities.scss' as utilities;
+@use 'sass:map';
+@use '../../../styles/_themes' as themes;
+@use '../../../styles/_responsive' as responsive;
+@use '../../../styles/_layout' as layout;
 
 .header-card {
   width: 100%;
@@ -962,113 +966,48 @@ button.animated-star-container {
 }
 
 .header-container {
-  position: fixed;
-  top: 0.5em; /* Match footer's bottom spacing */
-  left: 0.5em; /* Ensure consistent spacing */
-  right: 0.5em; /* Ensure consistent spacing */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  width: calc(100% - 1em); /* Match footer's width calculation */
-  overflow: visible;
-  z-index: 1000;
-
-  .top-containers {
+  @include layout.header; // Apply the enhanced header mixin
+  
+  .header-logo {
     display: flex;
-    justify-content: space-between;
-    width: 100%;
+    align-items: center;
+    gap: 0.5em;
+    
+    img {
+      height: 2.5em;
+      width: auto;
+    }
+    
+    .title {
+      font-size: 1.2em;
+      font-weight: 500;
+      color: var(--md-sys-color-on-surface);
+    }
   }
-
-  .navigation-block {
+  
+  .header-actions {
     display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 0.75em;
-    padding: 0.625em;
-
-    button {
-      font-size: 1em;
+    align-items: center;
+    gap: 1em;
+    
+    .user-info {
       display: flex;
       align-items: center;
-      padding: 0.125em 0.5em;
-      color: lightskyblue;
-      background-color: rgba(255, 255, 255, 0.1);
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      font-weight: lighter;
-
-      &:hover {
-        text-decoration: underline;
-      }
-
-      mat-icon {
-        margin-right: 0.5em;
-        color: brightblue;
+      gap: 0.5em;
+      
+      .mat-icon {
+        color: var(--md-sys-color-on-surface);
       }
     }
   }
-
-  .logo-block {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    position: relative;
-    z-index: 10;
-    overflow: visible;
-
-    @include utilities.logo-containers();
-
-    .logo-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      align-items: center;
-      margin: 0.5em 0;
-      overflow: visible;
-
-      img {
-        width: auto;
-        height: 3.5em;
-        padding: 0.25em;
-        margin: 0 1.5em;
-        border: 0.0625em solid blue;
-        transition: transform 0.3s, z-index 0.3s;
-        position: relative;
-
-        &:hover {
-          transform: scale(3);
-          z-index: 9999;
-          background-color: black;
-        }
-      }
-    }
-  }
-}
-
-/* Responsive behavior */
-@media (max-width: 768px) {
-  .header-container {
-    flex-direction: column;
-
-    .navigation-block {
-      justify-content: center;
-    }
-
-    .logo-block {
-      width: 100%;
-    }
-  }
-}
-
-/* Responsive enhancements */
-@media (max-width: 480px) {
-  .header-container {
+  
+  @include responsive.sm-down {
     padding: 0.5em;
-
-    .logo-row img {
-      height: 2.5em; /* Adjust for smaller screens */
+    
+    .header-logo {
+      .title {
+        display: none;
+      }
     }
   }
 }

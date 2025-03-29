@@ -1,16 +1,70 @@
+@use '../../../styles/_responsive' as responsive;
+@use '../../../styles/_layout' as layout;
+
+:host {
+  display: block;
+  width: 100%; // Take full width of parent
+  height: 100%; // Take full height of parent
+  overflow: auto; // Allow scrolling within the component if needed
+  padding: 0; // Remove padding that causes overflow
+}
+
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+  max-width: 100%; // Ensure it doesn't exceed parent width
+  height: auto; // Let content dictate height
+  padding: 1em;
+
+  @include responsive.sm-down {
+    gap: 1em;
+    padding: 0.5em;
+  }
+}
+
+.section {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: var(--md-sys-shape-corner-medium);
+  padding: 1.5em;
+  margin-bottom: 1em;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%; // Ensure it fits within container
+
+  h2 {
+    margin-top: 0;
+    color: var(--md-sys-color-primary);
+  }
+
+  @include responsive.sm-down {
+    padding: 1em;
+  }
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1em;
+  width: 100%;
+}
+
 .landing-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; // Changed from center to avoid extra space
   flex: 1;
   padding: 2em;
   background-color: rgba(0, 0, 0, 0.3);
   width: 100%;
-  height: 80vh;
+  height: auto; // Remove fixed height that causes overflow
+  max-height: 100%; // Ensure it doesn't exceed parent height
   overflow: visible;
   animation: backgroundAnimation 10s infinite alternate;
   border-radius: 0.25em;
+
+  // Use the layout service's container properties
+  @include layout.content-container;
 
   .landing-content {
     display: flex;
@@ -18,7 +72,7 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    max-width: 75em;
+    max-width: 100%; // Ensure it doesn't exceed parent width
     text-align: center;
     background-color: rgba(red, 0.3);
     animation: fadeIn 2s ease-out forwards;
@@ -58,7 +112,7 @@
   }
 
   .title {
-    font-size: 400%;
+    font-size: clamp(2rem, 5vw, 4rem); // Responsive font size that won't overflow
     color: red;
     text-align: center;
     position: relative;
@@ -255,7 +309,7 @@
 
 @media (max-width: 900px) {
   .title {
-    font-size: 200%;
+    font-size: clamp(1.5rem, 4vw, 2rem); // Adjust responsive font size
     color: blue;
     flex-direction: column;
     gap: 0.2em;
@@ -290,5 +344,23 @@
     .animated-item {
       font-size: 1em;
     }
+  }
+}
+
+// Add more responsive breakpoints from our system
+@include responsive.md-down {
+  .landing-page {
+    padding: 1em;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr; // Stack cards on smaller screens
+  }
+}
+
+@include responsive.lg-up {
+  .landing-container {
+    max-width: 1200px; // Only apply max-width on larger screens
+    margin: 0 auto; // Center on larger screens
   }
 }

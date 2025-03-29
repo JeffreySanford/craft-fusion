@@ -1,198 +1,158 @@
-.sidebar-container {
-  background-color: rgba(0, 0, 255, 0.2);
-  padding: 1em;
-  height: 100%;
-  margin: 0 0 0 0.125em;
-  border-radius: 0.25em;
-  position: relative; // Ensure relative positioning for absolute children
+@use 'sass:map';
+@use '../../../styles/_themes' as themes;
+@use '../../../styles/_responsive' as responsive;
+@use '../../../styles/_layout' as layout;
 
-  &.collapsed {
-    width: 7em;
+// Main sidebar container
+.sidebar-container {
+  @include layout.sidebar; // Apply the sidebar mixin
+  width: 100%; // Ensure it takes the full width of its container
+  height: 100%; // Ensure it takes the full height of its container
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  @include responsive.sm-down {
+    margin: 0; // Remove margins for small screens
+    padding: 0.25em; // Reduce padding for small screens
   }
 
-  .toggle {
+  .collapse-toggle {
     position: absolute;
-    bottom: 1em; // Position at the bottom
-    left: 1em; // Position at the left
-    color: #00FFFF;
-    border: 1px solid #00FFFF;
-    font-size: 0.85em; // Increased font size
-    cursor: pointer;
-    transition: color 300ms ease;
-    padding: 0.35em; // Increased padding
-    min-width: unset; // Override default button styles
-    height: 2.25em; // Increased height
-    width: 2.25em; // Increased width
-    line-height: 1em;
-    display: flex; // Use flexbox to center the icon
-    align-items: center; // Vertically center
-    justify-content: center; // Horizontally center
-
-    .mat-icon {
-      margin: 0 0 0 -0.05em; // Remove any default margins on the icon and nudge left
-      font-size: 1.1em; // Reduced icon size
-      color: #00FF7F; // Blue-green color
-      display: flex;        // Use flexbox on the icon itself
-      align-items: center;  // Vertically center the icon content
-      justify-content: center; // Horizontally center the icon content
-    }
-
-    &:hover {
-      color: greenyellow;
-    }
+    bottom: 1rem;
+    right: 1rem;
   }
 }
 
+// Menu container
+.sidebar-menu-container {
+  @include layout.sidebar-menu-container;
+  flex: 1; // Take available space
+}
+
+// Menu group
+.menu-group {
+  @include layout.menu-group;
+}
+
+// Menu items
 .menu-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 0.25em;
-  width: 13em;
-  height: 3em;
-  line-height: 1.25em;
-  text-align: right;
-  border-radius: 0.25em;
-  border: 1px solid darkblue;
-  outline: 0.1em solid rgba(4, 0, 252, 0.3);;
-  background-color: rgba(4, 0, 252, 0.7) !important;
-  color: white;
-
-  &.collapsed {
-    width: 5em;
-    margin: 0 auto;
-  }
-
-  &:hover {
-    transform: scale(1.1);
-    outline-color: rgba(96, 33, 243, 0.8);
-    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(33, 150, 243, 0.3);
-  }
-
-  &.active {
-    outline-color: rgba(33, 236, 243, 0.8);
-    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(33, 194, 243, 0.3);
-    color: #00FFFF; // Neon cyan
-    
-    .mat-icon, .menu-text {
-      color: #00FFFF;
-    }
-  }
-
+  @include layout.menu-item;
+  // Background and border styles
+  background-color: rgba(0, 150, 255, 0.1) !important;
+  border: 1px solid rgba(0, 150, 255, 0.5) !important;
+  
+  // REDUCED: Make buttons much more compact
+  padding: 0.2em 0.6em !important; // Significantly reduced padding
+  min-height: 1.8em !important; // Reduced from 3.2em to 1.8em (about 50% reduction)
+  margin-bottom: 0.15em !important; // Tighter spacing between buttons
+  
+  // Adjust flex layout for left alignment
+  display: flex !important;
+  justify-content: flex-start !important; // Explicitly align content to left
+  align-items: center !important;
+  
+  // Adjust icon styling - make even larger
   .mat-icon {
-    color: white;
-    font-size: 2.25em;
-    height: 1em;
-    width: 2em;
-    margin: 0.25em 0.25em 0.25em 0em;
-    text-align: left;
-    transition: transform 0.3s ease;
+    font-size: 24px !important; // Smaller than before but still visible
+    width: 24px !important;
+    height: 24px !important;
+    line-height: 24px !important;
+    margin: 0.1em 0.4em 0.1em 0.1em !important; // More compact margins, more space on right for text separation
+    align-self: center !important;
   }
-
+  
+  // Adjust text for better alignment with icon
   .menu-text {
-    color: white;
-    flex-grow: 1;
-    text-align: right;
-    opacity: 1;
-    transform: translateX(-1.25em);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 1em !important; // Slightly reduced
+    font-weight: 500 !important;
+    padding-top: 0.05em !important; // Small adjustment to vertically align with icon
+    margin-left: 0.2em !important; // Reduced spacing between icon and text
   }
-
-  &[routerLink="/admin"] {
-    background-color: rgba(252, 4, 0, 0.7) !important;
-    border: 1px solid darkred;
-    outline: 0.1em solid rgba(252, 0, 0, 0.3);
-    color: white;
+  
+  // Add a subtle transition for a "fancy" effect
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  
+  &:hover {
+    transform: translateX(3px) !important; // Shift slightly right on hover instead of scaling
+    background-color: rgba(0, 150, 255, 0.2) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; // Add subtle shadow on hover
+  }
+  
+  // Admin-specific styling (more specific selector for better targeting)
+  &.admin-button, &[routerLink="/admin"] {
+    background-color: rgba(255, 0, 0, 0.1) !important; // Light red transparent background
+    border: 1px solid rgba(255, 0, 0, 0.5) !important; // Thin red border
 
     &:hover {
       transform: scale(1.1);
-      outline-color: rgba(243, 33, 33, 0.8);
-      box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(243, 33, 33, 0.3);
+      outline-color: rgba(255, 0, 0, 0.8);
+      box-shadow: var(--md-sys-elevation-level2);
+      background-color: rgba(255, 0, 0, 0.2) !important; // Slightly darker on hover
     }
 
     &.active {
-      outline-color: rgba(33, 236, 243, 0.8);
-      box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(33, 194, 243, 0.3);
-      background-color: rgba(252, 4, 0, 0.7) !important;
-      color: #00FFFF; // Neon cyan
+      outline-color: rgba(255, 0, 0, 0.9);
+      box-shadow: var(--md-sys-elevation-level3);
+      background-color: rgba(255, 0, 0, 0.25) !important;
+      color: var(--md-sys-color-on-error);
 
       .mat-icon,
       .menu-text {
-        color: #00FFFF;
+        color: var(--md-sys-color-on-error);
       }
     }
   }
-}
-
-.admin-link {
-  background-color: rgba(252, 4, 0, 0.7) !important;
-  border: 1px solid darkred;
-  outline: 0.1em solid rgba(252, 0, 0, 0.3);
-  color: white;
-
-  &:hover {
-    transform: scale(1.1);
-    outline-color: rgba(243, 33, 33, 0.8);
-    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(243, 33, 33, 0.3);
-  }
-
+  
+  // Active state icon/text colors
   &.active {
-    outline-color: rgba(33, 236, 243, 0.8);
-    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(33, 194, 243, 0.3);
-    background-color: rgba(252, 4, 0, 0.7) !important;
-    color: #00FFFF; // Neon cyan
-
+    background-color: rgba(0, 150, 255, 0.25) !important; // Darker blue background when active
+    
     .mat-icon,
     .menu-text {
-      color: #00FFFF;
+      color: var(--md-sys-color-on-secondary);
     }
   }
 }
 
-.sidebar {
-  color: white;
-  width: 250px;
-  background-color: #f8f9fa;
-  padding: 15px;
-  border-right: 1px solid #dee2e6;
-
-  .sidebar-header {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-
-  .sidebar-content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-
-    .sidebar-item {
-      padding: 10px;
-      transition: background-color 0.3s;
-
-      &:hover {
-        background-color: #e9ecef;
-      }
-
-      &.collapsed {
-        width: 7em;
-        border: 1px solid #00FFFF;
-      }
-    }
-  }
-
-  .sidebar-footer {
-    margin-top: auto;
-    font-size: 14px;
-    color: #6c757d;
-  }
+// Toggle button
+.toggle {
+  @include layout.sidebar-toggle-button;
 }
 
-// Add collapsed class styles
+// Handle collapsed state for deep nested elements
 :host ::ng-deep .collapsed {
   .menu-item.mdc-button {
-    padding: 0 0 0 1.25em;
-    max-width: 7em;
+    padding: 0.3em !important; // REDUCED from 0.6em
+    min-height: 2.8em !important; // REDUCED from 3.5em
+    justify-content: center !important; // Keep centered when collapsed
+    
+    .mat-icon {
+      margin: auto !important; // Center icon in collapsed state
+      font-size: 28px !important; // Keep larger in collapsed state
+      width: 28px !important;
+      height: 28px !important;
+    }
+    
+    .menu-text {
+      display: none !important; // Hide text in collapsed state
+    }
   }
+}
+
+// Animation keyframes
+@keyframes ripple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 20px rgba(255, 255, 255, 0);
+  }
+}
+
+// Fix for sidebar collapsed icons in any theme
+.collapsed .menu-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }

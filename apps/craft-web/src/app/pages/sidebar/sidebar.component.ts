@@ -1,12 +1,14 @@
-import { Component, HostListener, EventEmitter, Output, Input, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, HostListener, EventEmitter, Output, Input, OnInit, ViewChild, ChangeDetectorRef, AfterViewInit, ElementRef, Renderer2 } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer } from '@angular/material/sidenav';
-import { MenuItem, MenuGroup } from './sidebar.types'
+import { MenuItem, MenuGroup } from './sidebar.types';
 import { Router } from '@angular/router';
 import { SidebarStateService } from '../../common/services/sidebar-state.service';
 import { AuthorizationService } from '../../common/services/authorization.service';
 import { AdminStateService } from '../../common/services/admin-state.service';
+import { LayoutService } from '../../common/services/layout.service';
+import { LoggerService } from '../../common/services/logger.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -25,12 +27,13 @@ import { AdminStateService } from '../../common/services/admin-state.service';
   },
   standalone: false
 })
-
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, AfterViewInit {
   @Output() sidebarToggle = new EventEmitter<boolean>();
   @Input() isSmallScreen = false;
   @Input() isCollapsed = false;
   @ViewChild('drawer') drawer!: MatDrawer;
+  @ViewChild('sidebarContainer') sidebarContainer!: ElementRef;
+
   isMobile = false;
   isAdmin = false; // For demonstration, set or derive from user state
 
@@ -50,36 +53,66 @@ export class SidebarComponent implements OnInit {
     }
   ];
   menuItems: MenuItem[] = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
+
   constructor(
     private breakpointObserver: BreakpointObserver, 
     private router: Router,
     private sidebarStateService: SidebarStateService,
     private authorizationService: AuthorizationService,
     private adminStateService: AdminStateService,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private layoutService: LayoutService,
+    private renderer: Renderer2,
+    private logger: LoggerService
+  ) {
+    this.logger.registerService('SidebarComponent');
+    this.logger.info('Sidebar component initialized', {
+      type: 'COMPONENT_STYLING'
+    });
+  }
 
   ngOnInit() {
+    this.logger.info('Sidebar component initialized');
+    this.logger.debug('Setting up sidebar breakpoint observers', {
+      type: 'COMPONENT_STYLING'
+    });
+    
     this.breakpointObserver.observe([Breakpoints.Handset])
       .subscribe(result => {
         this.isMobile = result.matches;
+        this.logger.debug('Breakpoint observer update', {
+          type: 'COMPONENT_STYLING', 
+          isMobile: this.isMobile
+        });
       });
 
     this.adminStateService.isAdmin$.subscribe(isAdmin => {
       this.isAdmin = isAdmin;
+      this.logger.debug('Admin state changed in sidebar', {
+        type: 'COMPONENT_STYLING',
+        isAdmin
+      });
+      
       if (isAdmin) {
-        // Check if the admin item already exists to avoid duplicates
         const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
         if (adminItemIndex === -1) {
-          this.menuGroups[0].items.push({ icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false });
+          // Add admin button with a clear identifier
+          this.menuGroups[0].items.push({ 
+            icon: 'admin_panel_settings', 
+            label: 'Admin', 
+            routerLink: '/admin', 
+            active: false,
+            isAdmin: true // Add explicit flag for admin items
+          });
           this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
+          this.logger.info('Admin button added to sidebar', { route: '/admin' });
         }
       } else {
-        // Remove the admin item if it exists
         const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
         if (adminItemIndex !== -1) {
           this.menuGroups[0].items.splice(adminItemIndex, 1);
           this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
+          this.logger.info('Admin button removed from sidebar');
         }
       }
       this.cdr.detectChanges();
@@ -87,10 +120,30 @@ export class SidebarComponent implements OnInit {
 
     this.router.events.subscribe(() => {
       const activeRoute = this.router.url;
-      this.menuItems.forEach(item => {
-        item.active = item.routerLink === activeRoute;
+      this.menuGroups.forEach(group => {
+        group.items.forEach(item => {
+          item.active = item.routerLink === activeRoute;
+        });
       });
+      
+      this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
     });
+
+    this.logger.debug('Sidebar setup complete');
+  }
+
+  ngAfterViewInit(): void {
+    this.logger.debug('Sidebar view initialized, calculating button widths', {
+      type: 'COMPONENT_STYLING'
+    });
+    
+    setTimeout(() => {
+      this.layoutService.calculateSidebarButtonWidth(
+        this.sidebarContainer, 
+        '.menu-item',
+        this.renderer
+      );
+    }, 100);
   }
 
   @HostListener('window:resize', ['$event'])
@@ -101,17 +154,31 @@ export class SidebarComponent implements OnInit {
   
     this.sidebarToggle.emit(!this.isCollapsed);
     this.sidebarStateService.toggleSidebar(this.isCollapsed);
+    
+    this.logger.debug('Window resize detected', {
+      type: 'COMPONENT_STYLING',
+      width,
+      isCollapsed: this.isCollapsed
+    });
   }
 
   toggleCollapse() {
     this.isCollapsed = !this.isCollapsed;
     this.sidebarToggle.emit(!this.isCollapsed);
     this.sidebarStateService.toggleSidebar(this.isCollapsed);
+    
+    this.logger.info('Sidebar collapsed state toggled', {
+      type: 'COMPONENT_STYLING',
+      isCollapsed: this.isCollapsed
+    });
   }
 
   setActive(item: MenuItem) {
-    this.menuItems.forEach(menuItem => menuItem.active = false);
-    item.active = true;
+    this.menuGroups.forEach(group => {
+      group.items.forEach(menuItem => menuItem.active = (menuItem === item));
+    });
+    
+    this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
   }
 
   getActiveItemLabel(): string {
@@ -122,8 +189,17 @@ export class SidebarComponent implements OnInit {
   toggleMenu() {
     this.isCollapsed = !this.isCollapsed;
     this.sidebarStateService.toggleSidebar(this.isCollapsed);
+    
+    this.logger.info('Sidebar menu toggled', {
+      type: 'COMPONENT_STYLING',
+      isCollapsed: this.isCollapsed
+    });
+    
     if (this.isSmallScreen) {
       this.drawer.toggle();
+      this.logger.debug('Toggled drawer for small screen', {
+        type: 'COMPONENT_STYLING'
+      });
     }
   }
 

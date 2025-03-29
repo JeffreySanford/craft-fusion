@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 /**
  * Shared animation and color mixins for Material Icons and Buttons pages
  */
@@ -15,7 +17,7 @@
 // Create a rainbow palette of n colors
 @mixin rainbow-palette($n: 10) {
   @for $i from 0 through $n - 1 {
-    $hue: $i * (360deg / $n);
+    $hue: $i * math.div(360deg, $n);
     --color-#{$i}: hsl($hue, 80%, 60%);
     --color-#{$i}-light: hsl($hue, 80%, 75%);
     --color-#{$i}-dark: hsl($hue, 80%, 45%);

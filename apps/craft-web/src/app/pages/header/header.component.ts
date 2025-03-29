@@ -91,6 +91,7 @@ export class HeaderComponent implements OnInit {
     });
     
     this.updateUserMenuItems(); // Initial call to set menu items
+    this.logger.debug('Header setup complete', { userMenu: this.remainingMenuItems });
   }
 
   updateUserMenuItems() {

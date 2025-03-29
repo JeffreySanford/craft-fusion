@@ -1,21 +1,28 @@
-<div class="sidebar-container" [class.collapsed]="isCollapsed">
-  <mat-nav-list *ngFor="let item of menuItems" class="sidenav">
-    <button mat-raised-button
-      [routerLink]="item.routerLink"
-      [ngClass]="{ active: item.active }"
-      (click)="setActive(item)"
-      class="mat-elevation-z10 menu-item"
-      [class.mat-elevation-z8]="item.active"
-      [class.collapsed]="isCollapsed"
-      [class.admin-link]="item.label === 'Admin'"
-    >
-      <mat-icon>{{ item.icon }}</mat-icon>
-      <span class="menu-text" [class.collapsed]="isCollapsed" *ngIf="!isCollapsed">{{ item.label }}</span>
-    </button>
-  </mat-nav-list>
-  <button mat-icon-button class="toggle" (click)="toggleMenu()">
-    <mat-icon>
-      {{ toggleIcon }}
-    </mat-icon>
+<div #sidebarContainer class="sidebar-container" [class.collapsed]="isCollapsed">
+  <div class="sidebar-menu-container">
+    <ng-container *ngFor="let group of menuGroups">
+      <div class="menu-group">
+        <ng-container *ngFor="let item of group.items">
+          <button mat-raised-button
+            [routerLink]="item.routerLink"
+            [ngClass]="{ 
+              'active': item.active, 
+              'admin-button': item.routerLink === '/admin'
+            }"
+            (click)="setActive(item)"
+            class="mat-elevation-z10 menu-item"
+            [class.mat-elevation-z8]="item.active"
+            [class.collapsed]="isCollapsed"
+          >
+            <mat-icon>{{ item.icon }}</mat-icon>
+            <span class="menu-text" [class.collapsed]="isCollapsed" *ngIf="!isCollapsed">{{ item.label }}</span>
+          </button>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+  
+  <button class="collapse-toggle" (click)="toggleMenu()">
+    Toggle
   </button>
 </div>

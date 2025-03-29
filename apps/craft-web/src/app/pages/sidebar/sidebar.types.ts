@@ -3,12 +3,12 @@ export interface MenuItem {
   icon: string;
   label: string;
   routerLink: string;
-  active?: boolean;
+  active: boolean;
+  isAdmin?: boolean; // Add optional property to identify admin items
 }
 
 export interface MenuGroup {
   title: string;
-  icon: string;
+  icon?: string;
   items: MenuItem[];
-  active?: boolean;
 }

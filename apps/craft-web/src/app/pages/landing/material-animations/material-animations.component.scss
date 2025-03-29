@@ -1,8 +1,8 @@
-@import '../../../../styles/component-animations';
+@use '../../../../styles/_component-animations' as animations;
 
-// Generate rainbow palette colors
+// Apply the rainbow-palette mixin
 :host {
-  @include rainbow-palette(10);
+  @include animations.rainbow-palette(10);
 }
 
 .page-container {
