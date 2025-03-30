@@ -1,16 +1,24 @@
-<div class="page-container" [class.footer-expanded]="isFooterExpanded">
-  <app-header></app-header>
-  <div class="layout-container" [class.footer-expanded]="isFooterExpanded">
-    <aside class="sidebar">
-      <app-sidebar [isSmallScreen]="isSmallScreen" [isCollapsed]="isCollapsed" [ngClass]="{ 'collapsed': !isCollapsed }"></app-sidebar>
-    </aside>
-    <main class="main-stage" [class.footer-expanded]="isFooterExpanded">
-      <router-outlet></router-outlet>
-    </main>
+<div class="app-container" [ngClass]="{'mobile': isMobile, 'dark-theme': isDarkTheme, 'footer-expanded': isFooterExpanded}">
+  <!-- Background video component -->
+  <app-video-background></app-video-background>
+
+  <!-- Main application layout -->
+  <div class="content-wrapper">
+    <!-- Header -->
+    <app-header></app-header>
+    
+    <!-- Main content area with sidebar -->
+    <div class="main-content-area">
+      <!-- Sidebar -->
+      <app-sidebar></app-sidebar>
+      
+      <!-- Main content -->
+      <main class="main-content">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+    
+    <!-- Footer -->
+    <app-footer></app-footer>
   </div>
-  <app-footer></app-footer>
-  <video id="background-video" autoplay loop muted>
-    <source src="assets/us-flag-disa-navy.mp4" type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
 </div>

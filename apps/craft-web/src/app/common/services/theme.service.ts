@@ -88,4 +88,26 @@ export class ThemeService {
     // Return the actual current theme from local storage
     return localStorage.getItem('theme-preference') || 'light';
   }
+
+  /**
+   * Toggle between light and dark theme
+   */
+  public toggleDarkTheme(): void {
+    const newThemeValue = !this._isDarkTheme.value;
+    this._isDarkTheme.next(newThemeValue);
+    this.saveThemePreference(newThemeValue);
+  }
+
+  /**
+   * Explicitly set the theme
+   * @param isDark - Whether to use dark theme (true) or light theme (false)
+   */
+  public setDarkTheme(isDark: boolean): void {
+    this._isDarkTheme.next(isDark);
+    this.saveThemePreference(isDark);
+  }
+
+  private saveThemePreference(isDark: boolean): void {
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }
 }

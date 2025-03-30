@@ -1,0 +1,154 @@
+<div class="performance-container" [ngClass]="themeClass">
+  <div class="metric-selectors">
+    <div class="metric-toggle cpu-toggle" [class.active]="true">
+      <mat-icon>memory</mat-icon>
+      <span class="metric-label">CPU</span>
+      <div class="active-indicator"></div>
+    </div>
+    <div class="metric-toggle memory-toggle" [class.active]="true">
+      <mat-icon>storage</mat-icon>
+      <span class="metric-label">Memory</span>
+      <div class="active-indicator"></div>
+    </div>
+    <div class="metric-toggle network-toggle" [class.active]="true">
+      <mat-icon>network_check</mat-icon>
+      <span class="metric-label">Network</span>
+      <div class="active-indicator"></div>
+    </div>
+    <button mat-button (click)="toggleMetricsCollection()" class="toggle-metrics-btn">
+      <mat-icon>{{ isMonitoring ? 'pause' : 'play_arrow' }}</mat-icon>
+      {{ isMonitoring ? 'Pause Monitoring' : 'Resume Monitoring' }}
+    </button>
+  </div>
+  
+  <div class="chart-container">
+    <div class="chart-header">
+      <h2>System Performance</h2>
+      <div class="chart-legend">
+        <div class="legend-item cpu active">
+          <div class="legend-color"></div>
+          <span>CPU</span>
+        </div>
+        <div class="legend-item memory active">
+          <div class="legend-color"></div>
+          <span>Memory</span>
+        </div>
+        <div class="legend-item network active">
+          <div class="legend-color"></div>
+          <span>Network</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="chart-wrapper">
+      <div class="chart-visualization">
+        <!-- CPU bars -->
+        <div *ngFor="let value of cpuMetric.history; let i = index" 
+             class="chart-bar cpu-bar"
+             [style.height.%]="value"
+             [style.left.%]="(i * 5)"
+             [style.opacity]="0.8">
+        </div>
+        
+        <!-- Memory bars -->
+        <div *ngFor="let value of memoryMetric.history; let i = index" 
+             class="chart-bar memory-bar"
+             [style.height.%]="value"
+             [style.left.%]="(i * 5 + 1.5)"
+             [style.opacity]="0.8">
+        </div>
+        
+        <!-- Network bars - scaled since network latency typically has smaller values -->
+        <div *ngFor="let value of networkMetric.history; let i = index" 
+             class="chart-bar network-bar"
+             [style.height.%]="value * 10" 
+             [style.left.%]="(i * 5 + 3)"
+             [style.opacity]="0.8">
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="metrics-section">
+    <!-- CPU Metric Card -->
+    <div class="metric-card cpu">
+      <div class="metric-icon">
+        <mat-icon>memory</mat-icon>
+      </div>
+      <div class="metric-info">
+        <div class="metric-label">CPU Load</div>
+        <div class="metric-value">
+          {{cpuMetric.value}}{{cpuMetric.unit}}
+          <span class="inline-indicator" [innerHTML]="getCpuTrend()"></span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Memory Metric Card -->
+    <div class="metric-card memory">
+      <div class="metric-icon">
+        <mat-icon>storage</mat-icon>
+      </div>
+      <div class="metric-info">
+        <div class="metric-label">Memory Usage</div>
+        <div class="metric-value">
+          {{memoryMetric.value}}{{memoryMetric.unit}}
+          <span class="inline-indicator" [innerHTML]="getMemoryTrend()"></span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Network Metric Card -->
+    <div class="metric-card network">
+      <div class="metric-icon">
+        <mat-icon>network_check</mat-icon>
+      </div>
+      <div class="metric-info">
+        <div class="metric-label">Network Latency</div>
+        <div class="metric-value">
+          {{networkMetric.value}}{{networkMetric.unit}}
+          <span class="inline-indicator" [innerHTML]="getNetworkTrend()"></span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- FPS Metric Card -->
+    <div class="metric-card fps">
+      <div class="metric-icon">
+        <mat-icon>speed</mat-icon>
+      </div>
+      <div class="metric-info">
+        <div class="metric-label">Framerate</div>
+        <div class="metric-value">
+          {{fps}} FPS
+        </div>
+      </div>
+    </div>
+    
+    <!-- User Activity Card -->
+    <div class="metric-card uptime">
+      <div class="metric-icon">
+        <mat-icon>watch_later</mat-icon>
+      </div>
+      <div class="metric-info">
+        <div class="metric-label">User Session</div>
+        <div class="metric-value">
+          {{formatSessionDuration(userActivitySummary.sessionDuration)}}
+        </div>
+      </div>
+    </div>
+    
+    <!-- User Interactions Card -->
+    <div class="metric-card">
+      <div class="metric-icon" style="background: rgba(245, 158, 11, 0.2); color: rgb(245, 158, 11);">
+        <mat-icon>touch_app</mat-icon>
+      </div>
+      <div class="metric-info">
+        <div class="metric-label">User Interactions</div>
+        <div class="metric-value">
+          {{userActivitySummary.clicks || 0}} clicks
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

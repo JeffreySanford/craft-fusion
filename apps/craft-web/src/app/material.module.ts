@@ -23,8 +23,9 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatRadioModule } from '@angular/material/radio';
-
-
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @NgModule({
   imports: [
@@ -51,7 +52,10 @@ import { MatRadioModule } from '@angular/material/radio';
     MatSlideToggleModule,
     MatTooltipModule,
     MatFormFieldModule,
-    MatRadioModule
+    MatRadioModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatButtonToggleModule
   ],
   exports: [
     MatButtonModule,
@@ -77,7 +81,10 @@ import { MatRadioModule } from '@angular/material/radio';
     MatSlideToggleModule,
     MatTooltipModule,
     MatFormFieldModule,
-    MatRadioModule 
+    MatRadioModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatButtonToggleModule
   ]
 })
 export class MaterialModule { }

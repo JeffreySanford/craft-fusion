@@ -373,6 +373,115 @@ mat-expansion-panel[expanded] {
   }
 }
 
+// Health Status Indicator
+.health-status-indicator {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ccc;
+    transition: background-color 0.3s ease;
+  }
+  
+  &.status-online .status-dot {
+    background-color: #4caf50; // Green for online
+    box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);
+  }
+  
+  &.status-degraded .status-dot {
+    background-color: #ff9800; // Orange/yellow for degraded
+    box-shadow: 0 0 6px rgba(255, 152, 0, 0.5);
+  }
+  
+  &.status-offline .status-dot,
+  &.status-warning .status-dot {
+    background-color: #f44336; // Red for offline/warning
+    box-shadow: 0 0 6px rgba(244, 67, 54, 0.5);
+  }
+  
+  // Health tooltip
+  .health-tooltip {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    border-radius: 4px;
+    padding: 12px;
+    min-width: 280px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    
+    // Arrow pointing down
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid var(--md-sys-color-surface);
+    }
+    
+    .tooltip-header {
+      font-weight: 500;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--md-sys-color-outline);
+    }
+    
+    .tooltip-content {
+      .tooltip-item {
+        display: flex;
+        margin-bottom: 6px;
+        font-size: 0.875rem;
+        
+        .label {
+          font-weight: 500;
+          min-width: 100px;
+        }
+        
+        .value {
+          flex: 1;
+          
+          .status-up {
+            color: #4caf50;
+          }
+          
+          .status-degraded {
+            color: #ff9800;
+          }
+          
+          .status-down {
+            color: #f44336;
+          }
+        }
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+.footer-actions {
+  display: flex;
+  align-items: center;
+}
+
 /* Responsive behavior */
 @media (max-width: 768px) {
   .footer-content {

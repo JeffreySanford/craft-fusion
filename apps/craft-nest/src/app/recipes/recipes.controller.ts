@@ -1,55 +1,60 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { Recipe } from './recipes.service';
+import { Controller, Get, Post, Body, Param, Put, Delete, Logger } from '@nestjs/common';
 import { RecipesService } from './recipes.service';
+import { Recipe } from './interfaces/recipe.interface';
+import { CreateRecipeDto, UpdateRecipeDto } from './dto/recipe.dto';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-/**
- * Controller responsible for handling recipe-related HTTP requests.
- * Provides endpoints for retrieving recipe information.
- * 
- * @route /recipes
- */
 @Controller('recipes')
 export class RecipesController {
-  /**
-   * Creates an instance of RecipesController.
-   * @param recipesService - Service handling recipe business logic
-   */
-  constructor(private readonly recipesService: RecipesService) {}
+  private readonly logger = new Logger(RecipesController.name);
 
-  /**
-   * Retrieves all recipes from the system
-   * @returns Recipe[] Array of all available recipes
-   * 
-   * @example
-   * GET /recipes
-   * Response: [
-   *   {
-   *     "name": "Pasta Carbonara",
-   *     "countryCode": "Italy",
-   *     "ingredients": ["pasta", "eggs", "cheese"]
-   *   }
-   * ]
-   */
-  @Get()
-  getAllRecipes(): Recipe[] {
-    return this.recipesService.getAllRecipes();
+  constructor(private readonly recipesService: RecipesService) {
+    this.logger.log('RecipesController initialized');
   }
 
-  /**
-   * Retrieves a specific recipe by its URL
-   * @param url - URL-friendly identifier for the recipe
-   * @returns Recipe Matching recipe object
-   * 
-   * @example
-   * GET /recipes/pasta-carbonara
-   * Response: {
-   *   "name": "Pasta Carbonara",
-   *   "countryCode": "Italy",
-   *   "ingredients": ["pasta", "eggs", "cheese"]
-   * }
-   */
-  @Get(':url')
-  getRecipeByUrl(@Param('url') url: string): Recipe {
-    return this.recipesService.getRecipeByUrl(url);
+  @Get()
+  findAll(): Observable<Recipe[]> {
+    return this.recipesService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string): Observable<Recipe> {
+    return this.recipesService.findOne(id).pipe(
+      map(recipe => {
+        if (!recipe) {
+          throw new Error(`Recipe with ID ${id} not found`);
+        }
+        return recipe;
+      })
+    );
+  }
+
+  @Post()
+  create(@Body() createRecipeDto: CreateRecipeDto): Observable<Recipe> {
+    const recipe: Recipe = {
+      id: Date.now().toString(),
+      ...createRecipeDto
+    };
+    return this.recipesService.create(recipe);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateRecipeDto: UpdateRecipeDto): Observable<Recipe> {
+    return this.recipesService.update(id, updateRecipeDto as Recipe).pipe(
+      map(recipe => {
+        if (!recipe) {
+          throw new Error(`Recipe with ID ${id} not found`);
+        }
+        return recipe;
+      })
+    );
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string): Observable<{ success: boolean }> {
+    return this.recipesService.remove(id).pipe(
+      map(success => ({ success }))
+    );
   }
 }

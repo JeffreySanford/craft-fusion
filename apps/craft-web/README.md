@@ -1,4 +1,4 @@
-# Craft Web
+# Craft Web - Angular Frontend
 
 Angular frontend application for the Craft Fusion platform featuring Material Design 3 with a distinctive patriotic theme.
 
@@ -23,26 +23,75 @@ Craft-Web provides the user interface for the Craft Fusion platform, built with 
 - D3.js and Chart.js for data visualization
 - Angular Material components
 
-## Development Setup
+## Development Environment Setup
 
 ### Prerequisites
 
-- Node.js 16+
-- npm 8+
+- Node.js (v16+)
+- npm or yarn
 - Angular CLI
 
-### Installation
+### Quick Start
 
 ```bash
-# From repository root
+# Install dependencies
 npm install
 
-# Serve the application
-nx serve craft-web
-
-# Build for production
-nx build craft-web --prod
+# Start the development server
+npm run start:web
 ```
+
+Navigate to `http://localhost:4200/`.
+
+### Backend Services
+
+The frontend application connects to backend services:
+
+- **NestJS API**: Runs on port 3000 by default
+- **Go API**: Runs on port 4000 by default
+
+#### Running without Backend Services
+
+During development, you can run the frontend without having the backend services active. The application will use mock data when backend services are unavailable.
+
+You can also explicitly enable mock mode:
+
+1. Open browser developer tools (F12)
+2. In the console, run: `localStorage.setItem('dev-mock-mode', 'true')`
+3. Refresh the page
+
+To disable mock mode:
+```javascript
+localStorage.setItem('dev-mock-mode', 'false')
+```
+
+#### Proxy Configuration
+
+The development server is configured to proxy API requests to the backend services. See `src/proxy.config.json` for the configuration.
+
+### Environment Configuration
+
+Environment configuration is located in:
+
+- `src/environments/environment.ts` (development)
+- `src/environments/environment.prod.ts` (production)
+
+Key environment variables:
+
+- `apiUrl`: Base URL for API requests
+- `useMockMetrics`: Force using mock metrics
+- `useMockApiWhenUnavailable`: Use mock data when backend is unavailable
+- `maxConnectionRetries`: Number of connection retries before using mock data
+
+## Health Monitoring
+
+The application includes health monitoring to check the status of backend services. The health status is displayed in the footer with a colored indicator:
+
+- **Green**: All systems operational
+- **Yellow**: Degraded performance
+- **Red**: System offline
+
+When hovering over the health indicator, a tooltip shows detailed health information.
 
 ## Architecture
 
@@ -201,3 +250,7 @@ Then visit any page and press `Ctrl+Shift+D` to see style guides, component outl
 ## Additional Documentation
 
 Add or revise any instructions for setting up this app.
+
+## Application Architecture
+
+See the project's main [ARCHITECTURE.md](../../docs/ARCHITECTURE.md) for details on the application architecture.

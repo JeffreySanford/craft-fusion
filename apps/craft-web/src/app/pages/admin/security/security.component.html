@@ -1,0 +1,150 @@
+<div class="security-container" [ngClass]="themeClass">
+  <div class="security-header">
+    <h2>Security Control Panel</h2>
+    <div class="header-actions">
+      <button mat-raised-button color="accent" (click)="refreshSecurityData()">
+        <mat-icon>refresh</mat-icon>
+        Refresh Data
+      </button>
+    </div>
+  </div>
+    
+  <div class="security-overview">
+    <div class="security-score-card">
+      <div class="security-score-wrapper">
+        <div class="security-score-gauge" 
+             [style.background]="'conic-gradient(' + securityScore.color + ' ' + securityScore.value + '%, #2c3e50 0%)'">
+          <div class="security-score-inner">
+            <div class="score-value">{{ securityScore.value }}</div>
+            <div class="score-label">{{ securityScore.label }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="security-score-metrics">
+        <div class="security-metric">
+          <div class="metric-icon warning">
+            <mat-icon>warning</mat-icon>
+          </div>
+          <div class="metric-details">
+            <div class="metric-value">{{ securityStats.totalWarnings }}</div>
+            <div class="metric-label">Warnings</div>
+          </div>
+        </div>
+        
+        <div class="security-metric">
+          <div class="metric-icon error">
+            <mat-icon>error</mat-icon>
+          </div>
+          <div class="metric-details">
+            <div class="metric-value">{{ securityStats.totalErrors }}</div>
+            <div class="metric-label">Errors</div>
+          </div>
+        </div>
+        
+        <div class="security-metric">
+          <div class="metric-icon recent">
+            <mat-icon>schedule</mat-icon>
+          </div>
+          <div class="metric-details">
+            <div class="metric-value">{{ securityStats.recentEvents }}</div>
+            <div class="metric-label">Recent Events</div>
+          </div>
+        </div>
+        
+        <div class="security-metric">
+          <div class="metric-icon auth">
+            <mat-icon>vpn_key</mat-icon>
+          </div>
+          <div class="metric-details">
+            <div class="metric-value">{{ securityStats.authAttempts }}</div>
+            <div class="metric-label">Auth Attempts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="security-details">
+    <mat-card class="security-events-card">
+      <mat-card-header>
+        <mat-card-title>Security Events</mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="security-events-list">
+          <div *ngFor="let event of securityEvents" class="security-event" [ngClass]="getEventClass(event.type)">
+            <div class="event-icon">
+              <mat-icon>{{ getEventIcon(event.type) }}</mat-icon>
+            </div>
+            <div class="event-details">
+              <div class="event-message">{{ event.message }}</div>
+              <div class="event-meta">
+                <span class="event-source">{{ event.source }}</span>
+                <span class="event-time">{{ getTimeAgo(event.timestamp) }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="securityEvents.length === 0" class="no-events-message">
+            No security events detected
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    
+    <div class="right-column">
+      <mat-card class="recent-logins-card">
+        <mat-card-header>
+          <mat-card-title>Recent Logins</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="recent-logins-list">
+            <div *ngFor="let login of recentLogins" class="login-item">
+              <div class="login-icon" [ngClass]="{'success': login.success, 'failed': !login.success}">
+                <mat-icon>{{ login.success ? 'check_circle' : 'cancel' }}</mat-icon>
+              </div>
+              <div class="login-details">
+                <div class="login-user">{{ login.username }}</div>
+                <div class="login-meta">
+                  <span class="login-ip">{{ login.ipAddress }}</span>
+                  <span class="login-time">{{ getTimeAgo(login.timestamp) }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div *ngIf="recentLogins.length === 0" class="no-events-message">
+              No recent logins recorded
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      
+      <mat-card class="firewall-status-card">
+        <mat-card-header>
+          <mat-card-title>Firewall Status</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="firewall-status">
+            <div class="status-indicator" [ngClass]="{'active': firewallActive, 'inactive': !firewallActive}">
+              <mat-icon>{{ firewallActive ? 'security' : 'gpp_bad' }}</mat-icon>
+              <span>{{ firewallActive ? 'Active' : 'Inactive' }}</span>
+            </div>
+            <div class="firewall-metrics">
+              <div class="metric">
+                <div class="metric-label">Blocked Requests:</div>
+                <div class="metric-value">{{ firewallStats.blockedRequests }}</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Last Updated:</div>
+                <div class="metric-value">{{ getTimeAgo(firewallStats.lastUpdated) }}</div>
+              </div>
+            </div>
+            <button mat-raised-button color="{{ firewallActive ? 'warn' : 'primary' }}" (click)="toggleFirewall()">
+              {{ firewallActive ? 'Deactivate' : 'Activate' }}
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

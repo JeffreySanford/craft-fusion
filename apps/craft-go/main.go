@@ -60,16 +60,52 @@ func main() {
 	// Middleware: Gzip Compression
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	// Health Check
+	// Health Check and API Status
 	router.GET("/api-go/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "OK"})
 	})
+	router.GET("/api-go/api/status", handlers.GetApiStatusHandler)
+	router.GET("/health", func(c *gin.Context) { // Add direct health endpoint
+		c.JSON(200, gin.H{"status": "OK"})
+	})
+
+	// Metrics API - expanded paths for better compatibility
+	router.GET("/api-go/metrics", handlers.GetMetricsHandler)
+	router.GET("/api-go/api/metrics", handlers.GetMetricsHandler)
+	router.GET("/metrics", handlers.GetMetricsHandler)
+	router.GET("/api-go/v1/metrics", handlers.GetMetricsHandler)
+	router.GET("/api-go/metrics/go", handlers.GetMetricsHandler)
+
+	// Add more path variations to ensure compatibility
+	router.GET("/api/metrics", handlers.GetMetricsHandler)
+	router.GET("/api/metrics/go", handlers.GetMetricsHandler)
+
+	// Handle root path to provide basic information
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"service": "Go API Server",
+			"status":  "running",
+			"endpoints": []string{
+				"/metrics",
+				"/api-go/metrics",
+				"/api/metrics",
+				"/health",
+			},
+		})
+	})
+
+	// OAuth Routes
+	router.GET("/api-go/oauth/nest/authorize", handlers.NestAuthorizeHandler)
+	router.GET("/api-go/oauth/nest/callback", handlers.NestCallbackHandler)
+	router.POST("/api-go/oauth/nest/token", handlers.NestTokenHandler)
+	router.POST("/api-go/oauth/nest/refresh", handlers.NestRefreshHandler)
+	router.POST("/api-go/oauth/nest/revoke", handlers.NestRevokeHandler)
 
 	// User Records API
 	router.GET("/api-go/records", handlers.GetRecordsHandler)
 	router.GET("/api-go/records/generate", handlers.GenerateRecordsHandler)
-	router.GET("/api-go/records/time", handlers.GetCreationTimeHandler) // Ensure the correct route
-	router.GET("/api-go/records/:UID", handlers.GetRecordByUIDHandler)  // Ensure the correct route
+	router.GET("/api-go/records/time", handlers.GetCreationTimeHandler)
+	router.GET("/api-go/records/:UID", handlers.GetRecordByUIDHandler)
 
 	// Swagger
 	router.GET("/api-go/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

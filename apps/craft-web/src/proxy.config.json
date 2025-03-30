@@ -2,11 +2,12 @@
   "/api": {
     "target": "http://localhost:3000",
     "secure": false,
-    "changeOrigin": true,
     "logLevel": "debug",
-    "pathRewrite": {
-      "^/api": "/api"
-    }
+    "changeOrigin": true,
+    "timeout": 5000,
+    "proxyTimeout": 5000,
+    "followRedirects": true,
+    "onError": "function(err, req, res) { console.log('Proxy error:', err); res.writeHead(500, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ status: 'error', message: 'Backend server unavailable', errorCode: 'BACKEND_UNAVAILABLE', timestamp: new Date().toISOString(), path: req.url })); }"
   },
   "/api-go": {
     "target": "http://localhost:4000",
@@ -16,5 +17,13 @@
     "pathRewrite": {
       "^/api-go": "/api-go"
     }
+  },
+  "/health": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "timeout": 3000,
+    "onError": "function(err, req, res) { console.log('Health check proxy error:', err); res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ status: 'offline', message: 'Backend server unavailable - mock data provided', timestamp: new Date().toISOString(), uptime: 0, hostname: 'mock-server', version: '1.0.0-mock', environment: 'development', memory: { free: 512 * 1024 * 1024, total: 1024 * 1024 * 1024, usage: 50 }, services: { database: 'down', cache: 'down' } })); }"
   }
 }

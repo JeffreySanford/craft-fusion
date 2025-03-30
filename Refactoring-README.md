@@ -14,6 +14,7 @@ This document consolidates all major refactoring efforts taking place within the
     - [Sidebar Refactoring](#sidebar-refactoring)
     - [Data Visualization System](#data-visualization-system)
     - [Feature Refactoring Strategy](#feature-refactoring-strategy)
+    - [Circular Dependency Refactoring](#circular-dependency-refactoring)
   - [Primary Goals](#primary-goals)
   - [Current Status Summary](#current-status-summary)
   - [Additional References](#additional-references)
@@ -60,6 +61,35 @@ Refactoring efforts mainly focus on the frontend (craft-web) for Material Design
 - Objective: Promote a prompt-driven approach to track major features, decisions, and status
 - Status: Complete (100%) — used as the framework for all new prompt files
 
+### Circular Dependency Refactoring
+
+#### Overview
+A critical circular dependency was identified between `ApiService` and `UserStateService`, causing runtime errors (NG0200). This refactoring introduces a service intermediary pattern to break the cycle.
+
+#### Approach
+- Created `HttpClientWrapperService` as a mediator for HTTP operations
+- Removed direct dependencies between circular services
+- Used `forwardRef()` for remaining necessary cross-references
+- Ensured proper initialization order through the dependency hierarchy
+
+#### Implementation Details
+1. `HttpClientWrapperService` now handles all HTTP operations, wrapping Angular's HttpClient
+2. `ApiService` depends on the wrapper instead of HttpClient directly
+3. `UserStateService` now uses the wrapper service rather than ApiService
+4. Remaining circular references use `@Inject(forwardRef(() => Service))`
+
+#### Rollback Plan
+If this refactoring causes new issues, the following rollback steps are prepared:
+
+1. Revert to previous service implementation with direct dependencies
+2. Temporarily use the Injector pattern as a workaround for circular dependencies
+3. Consider separating services into smaller responsibility areas
+
+#### Next Steps
+- Further refine service boundaries for cleaner separation of concerns
+- Replace remaining Injector patterns with proper DI
+- Create comprehensive tests for service initialization order
+
 ## Primary Goals
 
 1. Ensure full Material Design 3 compliance
@@ -73,7 +103,7 @@ Refactoring efforts mainly focus on the frontend (craft-web) for Material Design
 • Style System: 60% complete — nearing animation system integration  
 • Footer, Header, Sidebar: Each 15% complete — moving from analysis to implementation phases  
 • Data Visualization: 5% complete — library selection and early planning  
-• Feature Refactoring Strategy: 100% — established as standard practice
+• Feature Refactoring Strategy: 100% — established as standard practice  
 
 Last Updated: 2025-03-24
 

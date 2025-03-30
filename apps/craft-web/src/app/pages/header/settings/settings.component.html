@@ -1,0 +1,116 @@
+<div class="settings-container" [ngClass]="themeClass">
+  <div class="settings-header">
+    <h2>Application Settings</h2>
+    
+    <div class="settings-actions">
+      <div class="advanced-toggle">
+        <mat-slide-toggle [(ngModel)]="showAdvanced" color="accent">
+          Show Advanced Settings
+        </mat-slide-toggle>
+      </div>
+      
+      <div class="header-actions">
+        <button mat-stroked-button color="warn" (click)="resetSettings()">
+          <mat-icon>restore</mat-icon>
+          Reset to Defaults
+        </button>
+        
+        <button mat-raised-button color="primary" (click)="saveSettings()">
+          <mat-icon>save</mat-icon>
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="settings-theme-preview" [ngClass]="activeTheme + '-theme'">
+    <div class="theme-preview-content">
+      <div class="theme-preview-header">
+        <span class="theme-name">{{ getThemeName(activeTheme) }}</span>
+        <mat-icon>{{ getThemeIcon(activeTheme) }}</mat-icon>
+      </div>
+      <div class="theme-preview-elements">
+        <button mat-raised-button color="primary" class="preview-button">Primary</button>
+        <button mat-raised-button color="accent" class="preview-button">Accent</button>
+        <button mat-raised-button color="warn" class="preview-button">Warn</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="settings-content">
+    <div class="settings-groups">
+      <mat-accordion>
+        <mat-expansion-panel 
+          *ngFor="let group of settingsGroups" 
+          [expanded]="isGroupExpanded(group.title)"
+          (opened)="toggleGroupExpansion(group.title)"
+          (closed)="toggleGroupExpansion(group.title)"
+          class="settings-group">
+          
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon class="group-icon">{{ group.icon }}</mat-icon>
+              <span class="group-title">{{ group.title }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          
+          <div class="settings-list">
+            <ng-container *ngFor="let setting of group.settings">
+              <div 
+                class="setting-item"
+                [class.advanced-setting]="setting.advanced"
+                [class.hidden]="setting.advanced && !showAdvanced">
+                
+                <div class="setting-header">
+                  <div class="setting-label">
+                    {{ setting.label }}
+                    <div class="setting-badges">
+                      <span *ngIf="setting.requiresRestart" class="badge restart-badge" matTooltip="Requires restart">
+                        <mat-icon>restart_alt</mat-icon>
+                      </span>
+                      <span *ngIf="setting.experimental" class="badge experimental-badge" matTooltip="Experimental feature">
+                        <mat-icon>science</mat-icon>
+                      </span>
+                      <span *ngIf="setting.advanced" class="badge advanced-badge" matTooltip="Advanced setting">
+                        <mat-icon>tune</mat-icon>
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div class="setting-description" *ngIf="setting.description">
+                    {{ setting.description }}
+                  </div>
+                </div>
+                
+                <div class="setting-control">
+                  <!-- Toggle Switch -->
+                  <mat-slide-toggle 
+                    *ngIf="setting.type === 'toggle'"
+                    [ngModel]="setting.value" 
+                    (ngModelChange)="onSettingChange(group, setting, $event)"
+                    color="primary">
+                  </mat-slide-toggle>
+                  
+                  <!-- Dropdown Select -->
+                  <mat-form-field *ngIf="setting.type === 'select'" appearance="outline">
+                    <mat-select 
+                      [ngModel]="setting.value" 
+                      (ngModelChange)="onSettingChange(group, setting, $event)">
+                      <mat-option *ngFor="let option of setting.options" [value]="option.value">
+                        <div class="select-option-with-icon" *ngIf="option.icon">
+                          <mat-icon>{{ option.icon }}</mat-icon>
+                          <span>{{ option.label }}</span>
+                        </div>
+                        <span *ngIf="!option.icon">{{ option.label }}</span>
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+</div>

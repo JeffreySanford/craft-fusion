@@ -1,42 +1,60 @@
 import { Injectable } from '@nestjs/common';
+import { Recipe } from './interfaces/recipe.interface';
 import { LoggingService } from '../logging/logging.service';
-import recipes from './recipes.json';
-
-export interface Recipe {
-  name: string;
-  countryCode: string;
-  description: string;
-  ingredients: string[];
-  directions: string[];
-  servingSize?: string;
-  url: string;
-  history?: string[];
-}
+import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class RecipesService {
-  recipes: Recipe[] = [];
- 
+  private readonly recipes: Recipe[] = [];
+
   constructor(private readonly loggingService: LoggingService) {
-    this.loggingService.info('RecipesService initialized with recipes', { count: recipes.recipes.length });
-    this.recipes = recipes.recipes;
-    if (!this.recipes || this.recipes.length === 0) {
-      this.loggingService.warn('No recipes found in the service. Please check the recipes.json file.');
-    }
-  }
-  
-  getAllRecipes() {
-    this.loggingService.info('Retrieving all recipes');
-    return this.recipes;
+    this.loggingService.info('RecipesService initialized');
+    
+    // Add some initial recipes
+    this.recipes.push(
+      { id: '1', name: 'Pasta Carbonara', ingredients: ['pasta', 'eggs', 'cheese', 'bacon'], instructions: 'Mix and cook' },
+      { id: '2', name: 'Pizza Margherita', ingredients: ['dough', 'tomato sauce', 'mozzarella', 'basil'], instructions: 'Bake in hot oven' }
+    );
+    
+    this.loggingService.info(`Initialized with ${this.recipes.length} recipes`);
   }
 
-  getRecipeByUrl(url: string): Recipe {
-    this.loggingService.info(`Looking for recipe with URL: ${url}`);
-    const recipe = this.recipes.find(recipe => recipe.url === url);
-    if (!recipe) {
-      this.loggingService.error(`Recipe with URL ${url} not found`);
-      throw new Error(`Recipe with url ${url} not found`);
+  findAll(): Observable<Recipe[]> {
+    this.loggingService.info('Finding all recipes');
+    return of([...this.recipes]);
+  }
+
+  findOne(id: string): Observable<Recipe | undefined> {
+    this.loggingService.info(`Finding recipe with id: ${id}`);
+    const recipe = this.recipes.find(recipe => recipe.id === id);
+    return of(recipe);
+  }
+
+  create(recipe: Recipe): Observable<Recipe> {
+    this.loggingService.info(`Creating new recipe: ${recipe.name}`);
+    this.recipes.push(recipe);
+    return of(recipe);
+  }
+
+  update(id: string, recipe: Recipe): Observable<Recipe | undefined> {
+    this.loggingService.info(`Updating recipe with id: ${id}`);
+    const index = this.recipes.findIndex(r => r.id === id);
+    if (index === -1) {
+      return of(undefined);
     }
-    return recipe;
+    
+    this.recipes[index] = { ...recipe, id };
+    return of(this.recipes[index]);
+  }
+
+  remove(id: string): Observable<boolean> {
+    this.loggingService.info(`Removing recipe with id: ${id}`);
+    const index = this.recipes.findIndex(r => r.id === id);
+    if (index === -1) {
+      return of(false);
+    }
+    
+    this.recipes.splice(index, 1);
+    return of(true);
   }
 }

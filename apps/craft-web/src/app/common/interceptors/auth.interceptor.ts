@@ -1,81 +1,124 @@
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
-import { catchError, EMPTY, finalize, Observable, throwError } from "rxjs";
-import { AuthenticationService } from "../services/authentication.service";
-import { BusyService } from "../services/busy.service";
-import { LoggerService } from "../services/logger.service";
+import { Injectable } from '@angular/core';
+import {
+  HttpRequest,
+  HttpHandler,
+  HttpEvent,
+  HttpInterceptor,
+  HttpErrorResponse
+} from '@angular/common/http';
+import { Observable, throwError, BehaviorSubject, of } from 'rxjs';
+import { catchError, filter, take, switchMap, finalize } from 'rxjs/operators';
+import { AuthenticationService } from '../services/authentication.service';
+import { LoggerService } from '../services/logger.service';
 
-@Injectable({ providedIn: 'root' })
-export class AuthHttpInterceptor implements HttpInterceptor {
-    constructor(
-        private authenticationService: AuthenticationService, 
-        private router: Router,
-        private logger: LoggerService
-    ) {
-        this.logger.registerService('AuthHttpInterceptor');
-        this.logger.info('AuthHttpInterceptor initialized');
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+  private isRefreshing = false;
+  private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+
+  constructor(
+    private authService: AuthenticationService,
+    private logger: LoggerService
+  ) {}
+
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    // Skip authentication for public endpoints
+    if (this.isPublicEndpoint(request.url)) {
+      return next.handle(request);
     }
     
-    intercept(request: HttpRequest<any>, next: HttpHandler) {
-        // Get token from auth service
-        const token = this.authenticationService.getAuthToken();
-        const callId = this.logger.startServiceCall('AuthHttpInterceptor', request.method, request.url);
+    // Add auth headers if we have a token
+    const token = this.authService.getAccessToken();
+    if (token) {
+      request = this.addAuthenticationHeader(request, token);
+    }
+    
+    // Add CSRF token for mutation operations (POST, PUT, DELETE, PATCH)
+    if (this.isMutationMethod(request.method)) {
+      const csrfToken = this.authService.getCSRFToken();
+      if (csrfToken) {
+        request = request.clone({
+          headers: request.headers.set('X-CSRF-TOKEN', csrfToken)
+        });
+      }
+    }
+    
+    return next.handle(request).pipe(
+      catchError(error => {
+        if (error instanceof HttpErrorResponse && error.status === 401) {
+          return this.handle401Error(request, next);
+        }
         
-        // Only add token if we have one
-        if (token) {
-            const headers = { 'Authorization': `Bearer ${token}` };
-            this.logger.debug(`Adding auth token to request: ${request.url}`);
-            
-            request = request.clone({
-                setHeaders: headers,
-                withCredentials: true
-            });
-        } else {
-            this.logger.debug(`No auth token available for request: ${request.url}`);
+        // Add detailed logging for security-related errors
+        if (error instanceof HttpErrorResponse && 
+            [400, 401, 403, 419, 429].includes(error.status)) {
+          this.logger.warn('Security-related HTTP error', {
+            status: error.status,
+            url: request.url,
+            method: request.method,
+            message: error.message
+          });
         }
-
-        return next.handle(request).pipe(
-            catchError((error: HttpErrorResponse) => {
-                const status = error.status;
-                this.logger.endServiceCall(callId, status);
-                
-                if (status === 401) {
-                    return this.handle401(error);
-                }
-                
-                // Log all other errors
-                this.logger.error(`Request failed: ${request.url}`, {
-                    status,
-                    statusText: error.statusText,
-                    message: error.message
-                });
-                
-                return throwError(() => error);
-            }),
-            finalize(() => {
-                // We don't call endServiceCall here as it's already handled in the error case
-                // and for success cases, other interceptors (like metrics) handle it
-            })
-        );
+        
+        return throwError(() => error);
+      })
+    );
+  }
+  
+  private addAuthenticationHeader(request: HttpRequest<any>, token: string): HttpRequest<any> {
+    return request.clone({
+      headers: request.headers.set('Authorization', `Bearer ${token}`)
+    });
+  }
+  
+  private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    if (!this.isRefreshing) {
+      this.isRefreshing = true;
+      this.refreshTokenSubject.next(null);
+      
+      return this.authService.refreshToken().pipe(
+        switchMap(() => {
+          this.isRefreshing = false;
+          const newToken = this.authService.getAccessToken();
+          this.refreshTokenSubject.next(newToken);
+          
+          return next.handle(this.addAuthenticationHeader(request, newToken!));
+        }),
+        catchError((refreshError) => {
+          this.isRefreshing = false;
+          this.logger.error('Token refresh failed in interceptor', { error: refreshError });
+          this.authService.logout().subscribe();
+          return throwError(() => refreshError);
+        }),
+        finalize(() => {
+          this.isRefreshing = false;
+        })
+      );
+    } else {
+      // Wait for the token to be refreshed
+      return this.refreshTokenSubject.pipe(
+        filter(token => token !== null),
+        take(1),
+        switchMap(token => {
+          return next.handle(this.addAuthenticationHeader(request, token));
+        })
+      );
     }
-
-    private handle401(error: HttpErrorResponse) {
-        const authResHeader = error.headers.get('WWW-Authenticate');
-
-        if (authResHeader) {
-            this.logger.warn('Authentication failed', { header: authResHeader });
-            if (/is expired/.test(authResHeader)) {
-                this.logger.info('Token expired, redirecting to login');
-                this.router.navigate(['login']);  // Token expired, leave app and sign-in again
-            }
-        } else {
-            this.logger.warn('Authentication required', { url: error.url });
-        }
-
-        /**
-         * The error is handled. Call should get non-response. Empty completes without emitting
-         */
-        return EMPTY;
-    }
+  }
+  
+  private isPublicEndpoint(url: string): boolean {
+    const publicEndpoints = [
+      '/api/auth/login',
+      '/api/auth/register',
+      '/api/auth/forgot-password',
+      '/api/public',
+      '/assets/'
+    ];
+    
+    return publicEndpoints.some(endpoint => url.includes(endpoint));
+  }
+  
+  private isMutationMethod(method: string): boolean {
+    return ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method.toUpperCase());
+  }
 }

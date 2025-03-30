@@ -1,0 +1,87 @@
+<div class="security-settings-container">
+  <div class="settings-header">
+    <h3 class="section-title">Security Settings</h3>
+    <div *ngIf="!isAdmin" class="admin-warning">
+      <mat-icon>lock</mat-icon>
+      <span>These settings can only be modified by administrators.</span>
+    </div>
+  </div>
+
+  <div *ngIf="!isServerOnline" class="server-offline-warning">
+    <mat-icon>cloud_off</mat-icon>
+    <span>Server appears to be offline. Settings cannot be saved until connection is restored.</span>
+  </div>
+
+  <form [formGroup]="securityForm" class="security-form" (ngSubmit)="saveSettings()" novalidate>
+    <!-- Security Level Setting -->
+    <div class="form-section">
+      <h4>Security Level</h4>
+      
+      <div class="security-levels">
+        <mat-radio-group formControlName="securityLevel" class="security-level-group">
+          <div *ngFor="let level of securityLevels" class="security-level-option">
+            <mat-radio-button [value]="level.value" [disabled]="!isAdmin">
+              <div class="level-content">
+                <div class="level-header">
+                  <mat-icon>{{level.icon}}</mat-icon>
+                  <span class="level-name">{{level.label}}</span>
+                </div>
+                <div class="level-description">{{level.description}}</div>
+              </div>
+            </mat-radio-button>
+          </div>
+        </mat-radio-group>
+      </div>
+      
+      <div *ngIf="securityForm.get('securityLevel')?.value" class="current-level-info">
+        <div class="info-box" [ngClass]="securityForm.get('securityLevel')?.value">
+          <mat-icon>{{getSecurityLevelInfo(securityForm.get('securityLevel')?.value)?.icon}}</mat-icon>
+          <div class="info-content">
+            <div class="info-title">Current Security Level: <strong>{{getSecurityLevelInfo(securityForm.get('securityLevel')?.value)?.label}}</strong></div>
+            <div class="info-text">{{getSecurityLevelInfo(securityForm.get('securityLevel')?.value)?.description}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Additional Security Settings -->
+    <div class="form-section">
+      <h4>Additional Security Options</h4>
+      
+      <div class="form-row">
+        <mat-slide-toggle formControlName="enableAuditLogs" color="primary" [disabled]="!isAdmin">
+          Enable security audit logs
+        </mat-slide-toggle>
+      </div>
+      
+      <div class="form-row">
+        <mat-slide-toggle formControlName="enforceStrongPasswords" color="primary" [disabled]="!isAdmin">
+          Enforce strong password policy
+        </mat-slide-toggle>
+      </div>
+      
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Session timeout (minutes)</mat-label>
+          <input matInput type="number" formControlName="sessionTimeout" [disabled]="!isAdmin">
+          <mat-icon matPrefix>timer</mat-icon>
+          <mat-hint>Time until user is automatically logged out due to inactivity</mat-hint>
+        </mat-form-field>
+      </div>
+      
+      <div class="form-row">
+        <mat-slide-toggle formControlName="requireMfa" color="primary" [disabled]="!isAdmin">
+          Require multi-factor authentication (MFA)
+        </mat-slide-toggle>
+      </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="action-buttons" *ngIf="isAdmin">
+      <button mat-raised-button color="primary" type="submit" [disabled]="!isServerOnline">
+        <mat-icon>save</mat-icon>
+        Save Security Settings
+      </button>
+    </div>
+  </form>
+</div>

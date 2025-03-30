@@ -1,11 +1,37 @@
 import { Injectable, ElementRef, Renderer2 } from '@angular/core';
 import { LoggerService } from './logger.service';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map, distinctUntilChanged } from 'rxjs/operators';
+
+export interface LayoutBreakpoint {
+  isXSmall: boolean;
+  isSmall: boolean;
+  isMedium: boolean;
+  isLarge: boolean;
+  isXLarge: boolean;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class LayoutService {
-  constructor(private logger: LoggerService) {
+  // Add the missing breakpointChanges$ observable
+  private _breakpointChanges = new BehaviorSubject<LayoutBreakpoint>({
+    isXSmall: false,
+    isSmall: false, 
+    isMedium: false,
+    isLarge: false,
+    isXLarge: true
+  });
+  
+  // Expose as public observable
+  readonly breakpointChanges$: Observable<LayoutBreakpoint> = this._breakpointChanges.asObservable();
+
+  constructor(
+    private logger: LoggerService,
+    private breakpointObserver: BreakpointObserver
+  ) {
     this.logger.registerService('LayoutService');
     this.logger.info('Layout service initialized', { 
       type: 'CORE_STYLING'
@@ -13,6 +39,9 @@ export class LayoutService {
     
     // Set core layout CSS variables
     this.setLayoutCSSVariables();
+
+    // Setup breakpoint observer
+    this.setupBreakpointObserver();
   }
   
   /**
@@ -131,5 +160,35 @@ export class LayoutService {
    */
   getMainstageMargin(): string {
     return '0.25rem';
+  }
+
+  /**
+   * Setup breakpoint observer to track layout changes
+   */
+  private setupBreakpointObserver() {
+    this.breakpointObserver
+      .observe([
+        Breakpoints.XSmall,  // (max-width: 599.98px)
+        Breakpoints.Small,   // (min-width: 600px) and (max-width: 959.98px)
+        Breakpoints.Medium,  // (min-width: 960px) and (max-width: 1279.98px)
+        Breakpoints.Large,   // (min-width: 1280px) and (max-width: 1919.98px)
+        Breakpoints.XLarge   // (min-width: 1920px)
+      ])
+      .pipe(
+        distinctUntilChanged(),
+        map(result => {
+          const breakpoints: LayoutBreakpoint = {
+            isXSmall: result.breakpoints[Breakpoints.XSmall],
+            isSmall: result.breakpoints[Breakpoints.Small],
+            isMedium: result.breakpoints[Breakpoints.Medium],
+            isLarge: result.breakpoints[Breakpoints.Large],
+            isXLarge: result.breakpoints[Breakpoints.XLarge]
+          };
+          return breakpoints;
+        })
+      )
+      .subscribe(breakpoint => {
+        this._breakpointChanges.next(breakpoint);
+      });
   }
 }

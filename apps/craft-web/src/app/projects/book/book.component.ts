@@ -207,7 +207,7 @@ export class BookComponent implements OnInit, AfterViewInit {
         this.logger.error(`Received empty document data for ${fileUrl}`);
         return;
         }
-        this.logger.info(`Document ${fileUrl} loaded successfully, size:`, data.byteLength);
+        this.logger.info(`Document ${fileUrl} loaded successfully, size: ${data.byteLength}`);
         this.processDocument(data, fileUrl); // Pass the fileUrl
       },
       error: (error) => {
@@ -417,7 +417,7 @@ export class BookComponent implements OnInit, AfterViewInit {
   }
 
   setEditorContent(content: string): void {
-    this.logger.info('Setting editor content:', content);
+    this.logger.info(`Setting editor content: ${content.substring(0, 100)}${content.length > 100 ? '...' : ''}`);
     this.editorData = content;
 
     if (this.editorComponent && this.editorComponent.editor) {
@@ -705,7 +705,7 @@ export class BookComponent implements OnInit, AfterViewInit {
           this.logger.error(`Received empty document data for ${fileUrl}`);
           return;
         }
-        this.logger.info(`Document ${fileUrl} loaded successfully, size:`, data.byteLength);
+        this.logger.info(`Document ${fileUrl} loaded successfully, size: ${data.byteLength}`);
         this.docParseService.parseDoc(new File([data], documentName + '.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })).then(content => {
           this.editorData = content;
           this.renderMarkdown(content);

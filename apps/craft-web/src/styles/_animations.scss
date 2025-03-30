@@ -90,6 +90,35 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
   to { transform: translateY(0); opacity: 1; }
 }
 
+@keyframes flyInLeft {
+  0% {
+    transform: translateX(-150%);
+    opacity: 0;
+  }
+  75% {
+    transform: translateX(10%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes flyOutRight {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  25% {
+    transform: translateX(-5%);
+  }
+  100% {
+    transform: translateX(150%);
+    opacity: 0;
+  }
+}
+
 // 2. Exit Animations
 @keyframes fadeOut {
   from { opacity: 1; }
@@ -608,6 +637,19 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
   }
 }
 
+// Export the rotate animation for use in components
+@mixin rotate-animation {
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+}
+
+// Animation for icon rotation
+.rotate {
+  animation: rotate 1s ease-in-out;
+}
+
 /* Theme-specific animation classes */
 .vibrant1-theme {
   .cosmic-animated-element {
@@ -887,6 +929,14 @@ $md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 
   @include respect-motion-preferences {
     animation: slideInDown $base-duration $ease-decelerate forwards;
   }
+}
+
+.fly-in-out-in {
+  animation: flyInLeft 1s ease-in-out forwards;
+}
+
+.fly-in-out-out {
+  animation: flyOutRight 1s ease-in-out forwards;
 }
 
 // 2. Exit Animations

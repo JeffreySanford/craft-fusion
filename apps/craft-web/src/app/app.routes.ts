@@ -48,7 +48,11 @@ export const appRoutes: Routes = [
     title: 'Material Animations'
   },
   { path: 'resume', component: ResumeComponent },
-  { path: 'admin', loadChildren: () => import('./pages/admin/admin.module').then(m => m.AdminModule), canActivate: [AdminGuard] },
+  {
+    path: 'admin',
+    loadChildren: () => import('./pages/admin/admin.module').then(m => m.AdminModule),
+    canActivate: [AdminGuard]
+  },
   { path: '404', component: LandingComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/404' },

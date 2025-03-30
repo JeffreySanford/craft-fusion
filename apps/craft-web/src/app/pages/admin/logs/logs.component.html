@@ -1,114 +1,234 @@
-<div class="logs-container">
-  <h2 class="logs-title">System Logs</h2>
-
-  <div class="filter-panel mat-elevation-z1">
-    <form [formGroup]="filterForm" class="filter-form">
-      <div class="filter-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Log Level</mat-label>
-          <mat-select formControlName="level">
-            <mat-option [value]="''">All Levels</mat-option>
+<div class="logs-container" [ngClass]="themeClass">
+  <div class="logs-header">
+    <div class="header-left">
+      <h2>System Logs & Metrics</h2>
+      <div class="filter-controls">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search logs</mat-label>
+          <input matInput [(ngModel)]="searchTerm" (keyup)="applyFilters(); buildCategories()" placeholder="Search logs...">
+          <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''; applyFilters(); buildCategories()">
+            <mat-icon>close</mat-icon>
+          </button>
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+        
+        <div class="display-mode-tabs">
+          <div class="tab" 
+               [class.active]="displayMode === 'all'" 
+               (click)="setDisplayMode('all')">
+            <mat-icon>list_alt</mat-icon>
+            <span>All</span>
+          </div>
+          <div class="tab" 
+               [class.active]="displayMode === 'logs'" 
+               (click)="setDisplayMode('logs')">
+            <mat-icon>description</mat-icon>
+            <span>System Logs</span>
+          </div>
+          <div class="tab" 
+               [class.active]="displayMode === 'metrics'" 
+               (click)="setDisplayMode('metrics')">
+            <mat-icon>speed</mat-icon>
+            <span>Performance Metrics</span>
+          </div>
+          <div class="tab" 
+               [class.active]="displayMode === 'api'" 
+               (click)="setDisplayMode('api')">
+            <mat-icon>api</mat-icon>
+            <span>API Calls</span>
+          </div>
+        </div>
+        
+        <mat-form-field appearance="outline" class="level-filter">
+          <mat-label>Level</mat-label>
+          <mat-select [(value)]="selectedLevel" (selectionChange)="setLevelFilter($event.value)">
+            <mat-option [value]="null">All Levels</mat-option>
             <mat-option *ngFor="let level of logLevels" [value]="level.value">
-              {{level.viewValue}}
+              <div class="level-option">
+                <mat-icon [style.color]="level.color">{{level.icon}}</mat-icon>
+                <span>{{level.label}}</span>
+              </div>
             </mat-option>
           </mat-select>
         </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Component</mat-label>
-          <mat-select formControlName="component">
-            <mat-option [value]="''">All Components</mat-option>
-            <mat-option *ngFor="let component of componentOptions" [value]="component">
-              {{component}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Message Contains</mat-label>
-          <input matInput formControlName="message" placeholder="Filter by message text">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>From Date</mat-label>
-          <input matInput [matDatepicker]="startPicker" formControlName="startDate" placeholder="Start date">
-          <mat-hint>MM/DD/YYYY</mat-hint>
-          <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
-          <mat-datepicker #startPicker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>To Date</mat-label>
-          <input matInput [matDatepicker]="endPicker" formControlName="endDate" placeholder="End date">
-          <mat-hint>MM/DD/YYYY</mat-hint>
-          <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
-          <mat-datepicker #endPicker></mat-datepicker>
-        </mat-form-field>
-      </div>
-
-      <div class="filter-actions">
-        <mat-checkbox formControlName="autoRefresh" color="primary">Auto Refresh</mat-checkbox>
-        <button mat-flat-button color="primary" type="button" (click)="fetchLogs()">
-          <mat-icon>refresh</mat-icon> Refresh
-        </button>
-        <button mat-stroked-button color="warn" type="button" (click)="clearFilters()">
-          <mat-icon>filter_list_off</mat-icon> Clear Filters
-        </button>
-        <button mat-stroked-button color="warn" type="button" (click)="clearLogs()">
-          <mat-icon>delete</mat-icon> Clear Logs
+        
+        <button mat-stroked-button *ngIf="searchTerm || selectedLevel !== null || selectedCategory !== null" 
+                (click)="clearFilters()" color="accent" class="clear-filters-btn">
+          <mat-icon>filter_alt_off</mat-icon>
+          Clear Filters
         </button>
       </div>
-    </form>
+    </div>
+    <div class="header-actions">
+      <div class="filters-group">
+        <mat-checkbox [(ngModel)]="showPerformanceMetrics" (change)="togglePerformanceMetrics()" class="filter-checkbox">
+          <mat-icon>speed</mat-icon> Performance Metrics
+        </mat-checkbox>
+        <mat-checkbox [(ngModel)]="showApiLogs" (change)="toggleApiLogs()" class="filter-checkbox">
+          <mat-icon>api</mat-icon> API Logs
+        </mat-checkbox>
+      </div>
+      <button mat-raised-button color="accent" (click)="refreshLogs()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+    </div>
   </div>
+  
+  <!-- Metrics Overview -->
+  <div class="metrics-overview" *ngIf="displayMode === 'metrics' || displayMode === 'api'">
+    <mat-card class="metrics-summary-card">
+      <mat-card-header>
+        <mat-card-title>API Metrics Overview</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="metrics-stats">
+          <div class="metric-stat">
+            <div class="metric-value">{{ metricsSnapshot.apiCalls }}</div>
+            <div class="metric-label">Total API Calls</div>
+          </div>
+          
+          <div class="metric-stat">
+            <div class="metric-value" [ngClass]="getResponseTimeClass(metricsSnapshot.avgResponseTime)">
+              {{ metricsSnapshot.avgResponseTime.toFixed(1) }}ms
+            </div>
+            <div class="metric-label">Average Response</div>
+          </div>
+          
+          <div class="metric-stat">
+            <div class="metric-value" 
+                 [ngClass]="metricsSnapshot.errorRate > 5 ? 'response-critical' : 
+                          metricsSnapshot.errorRate > 2 ? 'response-poor' : 'response-good'">
+              {{ metricsSnapshot.errorRate.toFixed(1) }}%
+            </div>
+            <div class="metric-label">Error Rate</div>
+          </div>
+          
+          <div class="metric-stat">
+            <div class="metric-value" [ngClass]="getResponseTimeClass(metricsSnapshot.highestLatency)">
+              {{ metricsSnapshot.highestLatency.toFixed(1) }}ms
+            </div>
+            <div class="metric-label">Highest Latency</div>
+          </div>
+        </div>
+        
+        <!-- Slowest Endpoints -->
+        <div class="slowest-endpoints" *ngIf="metricsSnapshot.slowestEndpoints.length > 0">
+          <h4>Slowest Endpoints</h4>
+          <div class="endpoint-list">
+            <div *ngFor="let endpoint of metricsSnapshot.slowestEndpoints" class="endpoint-item">
+              <div class="endpoint-url">{{ endpoint.endpoint }}</div>
+              <div class="endpoint-time" [ngClass]="getResponseTimeClass(endpoint.avgTime)">
+                {{ endpoint.avgTime.toFixed(1) }}ms
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  
+  <!-- Category Tiles View -->
+  <div class="category-tiles-container" *ngIf="viewAsTiles">
+    <div class="category-tiles">
+      <div *ngFor="let category of categories" class="category-tile" 
+           [style.border-color]="category.color"
+           (click)="setCategoryFilter(category.name === selectedCategory ? null : category.name)">
+        <div class="category-header" [style.background-color]="category.color + '33'">
+          <div class="category-icon" [style.background-color]="category.color + '33'">
+            <mat-icon [style.color]="category.color">{{category.icon}}</mat-icon>
+          </div>
+          <div class="category-info">
+            <div class="category-name">{{ category.name }}</div>
+            <div class="category-count">{{ category.count }} logs</div>
+          </div>
+          <div class="category-selected" *ngIf="selectedCategory === category.name">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+        </div>
+        
+        <div class="category-logs-preview">
+          <div *ngFor="let log of category.entries.slice(0, 3)" class="preview-log">
+            <div class="preview-log-level" [style.background-color]="getLogLevelInfoForString(log.level).color + '33'">
+              <mat-icon [style.color]="getLogLevelInfoForString(log.level).color">{{ getLogLevelInfoForString(log.level).icon }}</mat-icon>
+            </div>
+            <div class="preview-log-content">
+              <div class="preview-log-message">{{ log.message }}</div>
+              <div class="preview-log-time">{{ formatTimeAgo(log.timestamp) }}</div>
+            </div>
+          </div>
+          <div *ngIf="category.count > 3" class="more-logs">
+            + {{ category.count - 3 }} more...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- List View -->
+  <div class="logs-list-container" *ngIf="!viewAsTiles">
+    <div class="logs-list">
+      <div *ngFor="let log of filteredLogs" class="log-entry" [ngClass]="'log-level-' + log.level">
+        <div class="log-level-indicator" [style.background-color]="getLogLevelInfoForString(log.level).color">
+          <mat-icon>{{ getLogLevelInfoForString(log.level).icon }}</mat-icon>
+        </div>
+        
+        <div class="log-content">
+          <div class="log-header">
+            <div class="log-timestamp">{{ log.timestamp | date:'medium' }}</div>
+            <div class="log-category" *ngIf="log.category" 
+                 (click)="setCategoryFilter(log.category !== selectedCategory ? log.category : null)">
+              {{ log.category }}
+            </div>
+          </div>
+          
+          <div class="log-message">{{ log.message }}</div>
+          
+          <div class="log-details" *ngIf="log.source || log.details">
+            <div class="log-source" *ngIf="log.source">Source: {{ log.source }}</div>
+            <div class="log-extra" *ngIf="log.details">
+              <pre>{{ log.details | json }}</pre>
+            </div>
+          </div>
+          
+          <!-- Enhanced display for performance metrics -->
+          <div class="log-metrics" *ngIf="log.metrics && log.metrics.length">
+            <div class="metrics-grid">
+              <div *ngFor="let metric of log.metrics" class="metric-item">
+                <div class="metric-name">{{ metric.name }}</div>
+                <div class="metric-value" [ngClass]="getPerformanceValueClass(metric)">
+                  {{ metric.value }} {{ metric.unit }}
+                </div>
+              </div>
+            </div>
+          </div>
 
-  <div class="table-container mat-elevation-z2">
-    <table mat-table [dataSource]="filteredLogs" class="logs-table">
-      <!-- Timestamp Column -->
-      <ng-container matColumnDef="timestamp">
-        <th mat-header-cell *matHeaderCellDef>Timestamp</th>
-        <td mat-cell *matCellDef="let log">
-          {{log.timestamp | date:'medium'}}
-        </td>
-      </ng-container>
-
-      <!-- Level Column -->
-      <ng-container matColumnDef="level">
-        <th mat-header-cell *matHeaderCellDef>Level</th>
-        <td mat-cell *matCellDef="let log" [ngClass]="getLevelClass(log.level)">
-          {{getLevelName(log.level)}}
-        </td>
-      </ng-container>
-
-      <!-- Component Column -->
-      <ng-container matColumnDef="component">
-        <th mat-header-cell *matHeaderCellDef>Component</th>
-        <td mat-cell *matCellDef="let log">
-          {{log.component || 'Unknown'}}
-        </td>
-      </ng-container>
-
-      <!-- Message Column -->
-      <ng-container matColumnDef="message">
-        <th mat-header-cell *matHeaderCellDef>Message</th>
-        <td mat-cell *matCellDef="let log" class="message-cell">
-          {{log.message}}
-        </td>
-      </ng-container>
-
-      <!-- Details Column -->
-      <ng-container matColumnDef="details">
-        <th mat-header-cell *matHeaderCellDef>Details</th>
-        <td mat-cell *matCellDef="let log" class="details-cell">
-          <pre *ngIf="log.details">{{formatDetails(log.details)}}</pre>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-
-    <div class="no-logs-message" *ngIf="filteredLogs.length === 0">
-      No logs found matching the current filters
+          <!-- API Call Details (if this log is from an API call) -->
+          <div class="api-details" *ngIf="log.category && log.category.toLowerCase().includes('api') && log.content">
+            <div class="api-header" *ngIf="log.content.method && log.content.url">
+              <span class="api-method" [ngClass]="log.content.method?.toLowerCase()">
+                {{ log.content.method }}
+              </span>
+              <span class="api-url">{{ log.content.url }}</span>
+            </div>
+            
+            <div class="api-metrics" *ngIf="log.content.responseTime || log.content.status">
+              <span class="api-time" [ngClass]="getResponseTimeClass(log.content.responseTime)">
+                {{ log.content.responseTime }}ms
+              </span>
+              <span class="api-status" 
+                    [ngClass]="log.content.status >= 400 ? 'response-critical' : 
+                             log.content.status >= 300 ? 'response-medium' : 'response-good'">
+                {{ log.content.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="filteredLogs.length === 0" class="no-logs-message">
+        No logs found matching your criteria
+      </div>
     </div>
   </div>
 </div>

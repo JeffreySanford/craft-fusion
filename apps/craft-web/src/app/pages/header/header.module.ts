@@ -1,23 +1,33 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from './header.component';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
+import { MaterialModule } from '../../material.module';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatButtonModule } from '@angular/material/button';
-import { MatRadioModule } from '@angular/material/radio';
+import { MatDividerModule } from '@angular/material/divider';
+import { ProfileModule } from './profile/profile.module';
+import { SettingsModule } from './settings/settings.module';
+import { HeaderRoutingModule } from './header-routing.module';
 
 @NgModule({
-  declarations: [HeaderComponent],
+  declarations: [
+    HeaderComponent
+  ],
   imports: [
     CommonModule,
-    RouterModule, // Ensure RouterModule is imported
-    MatCardModule,
-    MatIconModule,
+    FormsModule,
+    MaterialModule,
+    RouterModule,
+    HeaderRoutingModule,
+    MatBadgeModule,
+    MatTooltipModule,
     MatMenuModule,
-    MatButtonModule,
-    MatRadioModule
+    MatDividerModule,
+    ProfileModule,
+    SettingsModule
   ],
   exports: [HeaderComponent]
 })

@@ -1,0 +1,191 @@
+<div class="profile-container" [ngClass]="themeClass" @fadeIn>
+  <div class="profile-header">
+    <div class="profile-banner" [ngClass]="themeClass">
+      <div class="animated-banner-effect"></div>
+    </div>
+    
+    <div class="profile-avatar-container">
+      <div class="avatar-wrapper" [class.editing]="isEditing">
+        <img [src]="selectedAvatar || 'assets/images/default-avatar.png'" alt="User Avatar" class="profile-avatar" />
+        <div class="avatar-edit-overlay" *ngIf="isEditing">
+          <mat-icon>edit</mat-icon>
+        </div>
+      </div>
+    </div>
+    
+    <div class="profile-title" @slideIn>
+      <h2>{{ userProfile.displayName }}</h2>
+      <p>{{ userProfile.title }}</p>
+    </div>
+    
+    <div class="action-buttons">
+      <button *ngIf="!isEditing" mat-raised-button color="primary" (click)="toggleEditMode()">
+        <mat-icon>edit</mat-icon>
+        Edit Profile
+      </button>
+      
+      <ng-container *ngIf="isEditing">
+        <button mat-raised-button color="accent" (click)="saveProfile()" [disabled]="profileForm.invalid" [@pulse]="pulseState">
+          <mat-icon>save</mat-icon>
+          Save Changes
+        </button>
+        
+        <button mat-stroked-button color="warn" (click)="toggleEditMode()">
+          <mat-icon>cancel</mat-icon>
+          Cancel
+        </button>
+      </ng-container>
+    </div>
+  </div>
+  
+  <div class="profile-content">
+    <mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="loading-bar"></mat-progress-bar>
+    
+    <form [formGroup]="profileForm" class="profile-form" *ngIf="!isLoading">
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <h3 class="section-title">Basic Information</h3>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Display Name</mat-label>
+            <input matInput formControlName="displayName" placeholder="Your display name">
+            <mat-icon matPrefix>person</mat-icon>
+            <mat-error *ngIf="profileForm.get('displayName')?.hasError('required')">Display name is required</mat-error>
+            <mat-error *ngIf="profileForm.get('displayName')?.hasError('minlength')">Display name must be at least 3 characters</mat-error>
+          </mat-form-field>
+        </div>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Title</mat-label>
+            <input matInput formControlName="title" placeholder="Your professional title">
+            <mat-icon matPrefix>work</mat-icon>
+          </mat-form-field>
+        </div>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Bio</mat-label>
+            <textarea matInput formControlName="bio" placeholder="Tell us about yourself" rows="3"></textarea>
+            <mat-icon matPrefix>description</mat-icon>
+            <mat-hint align="end">{{profileForm.get('bio')?.value?.length || 0}}/500</mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+      
+      <!-- Contact Information Section -->
+      <div class="form-section">
+        <h3 class="section-title">Contact Information</h3>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" placeholder="Your email address">
+            <mat-icon matPrefix>email</mat-icon>
+            <mat-error *ngIf="profileForm.get('email')?.hasError('required')">Email is required</mat-error>
+            <mat-error *ngIf="profileForm.get('email')?.hasError('email')">Please enter a valid email address</mat-error>
+          </mat-form-field>
+        </div>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Phone</mat-label>
+            <input matInput formControlName="phone" placeholder="Your phone number">
+            <mat-icon matPrefix>phone</mat-icon>
+            <mat-error *ngIf="profileForm.get('phone')?.hasError('pattern')">Please enter a valid phone number</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      
+      <!-- Avatar Selection Section -->
+      <div class="form-section" *ngIf="isEditing">
+        <h3 class="section-title">Avatar</h3>
+        
+        <div class="avatar-gallery">
+          <div class="avatar-option" 
+               *ngFor="let avatar of avatarOptions"
+               [class.selected]="selectedAvatar === avatar"
+               (click)="selectAvatar(avatar)"
+               [style.transform]="getRandomTransform()">
+            <img [src]="avatar" alt="Avatar option" />
+          </div>
+        </div>
+      </div>
+      
+      <!-- Preferences Section -->
+      <div class="form-section">
+        <h3 class="section-title">Preferences</h3>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Skill Level</mat-label>
+            <mat-select formControlName="skillLevel">
+              <mat-option *ngFor="let level of skillLevels" [value]="level.value">
+                {{level.label}}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>trending_up</mat-icon>
+          </mat-form-field>
+        </div>
+        
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Preferred Theme</mat-label>
+            <mat-select formControlName="preferredTheme">
+              <mat-option value="light">Light</mat-option>
+              <mat-option value="dark">Dark</mat-option>
+              <mat-option value="vibrant1">Cosmic Glow</mat-option>
+              <mat-option value="vibrant2">Solar Flare</mat-option>
+            </mat-select>
+            <mat-icon matPrefix>palette</mat-icon>
+          </mat-form-field>
+        </div>
+        
+        <div class="form-row">
+          <mat-slide-toggle formControlName="enableNotifications" color="primary">
+            Enable Notifications
+          </mat-slide-toggle>
+        </div>
+        
+        <div class="form-row">
+          <mat-slide-toggle formControlName="showAvatarInHeader" color="accent">
+            Show Avatar in Header
+          </mat-slide-toggle>
+        </div>
+        
+        <!-- Admin-Only Feature with special styling -->
+        <div class="form-row admin-feature" [class.disabled]="!isAdmin">
+          <div class="admin-badge" *ngIf="isAdmin">ADMIN ONLY</div>
+          <mat-slide-toggle 
+            formControlName="enableAdminFeatures" 
+            color="warn"
+            [disabled]="!isAdmin">
+            Enable Admin Features
+          </mat-slide-toggle>
+          <div class="admin-info" *ngIf="!isAdmin">
+            <mat-icon>lock</mat-icon>
+            <span>This feature requires administrator privileges</span>
+          </div>
+        </div>
+      </div>
+    </form>
+    
+    <!-- Animated badges section -->
+    <div class="badges-section" *ngIf="!isEditing">
+      <h3 class="section-title">Achievements</h3>
+      
+      <div class="badges-container">
+        <div class="badge-item" *ngFor="let i of [1, 2, 3, 4, 5]" [style.animation-delay]="(i * 0.2) + 's'">
+          <div class="badge-icon">
+            <mat-icon>stars</mat-icon>
+          </div>
+          <div class="badge-info">
+            <h4>Achievement {{i}}</h4>
+            <p>Unlocked on {{ '2023-0' + i + '-15' | date }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -109,7 +109,7 @@
             <!-- Total Annual Salary Footer -->
             <tr mat-header-row *matHeaderRowDef="salaryDisplayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: salaryDisplayedColumns;" @listAnimation></tr>
-            <tr mat-footer-row>
+            <tr mat-footer-row *matFooterRowDef="salaryDisplayedColumns">
               <td colspan="2">
                 <div style="display: flex; align-items: center; justify-content: flex-end;">
                   <mat-icon style="margin-right: 8px; color: #002868; font-size: 24px;">account_balance</mat-icon>

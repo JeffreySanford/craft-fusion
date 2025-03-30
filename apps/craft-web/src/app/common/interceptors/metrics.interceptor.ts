@@ -1,48 +1,44 @@
-import { Inject, Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor,
-  HttpResponse,
-  HttpErrorResponse
-} from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Injectable, Injector } from '@angular/core';
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpResponse } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { PerformanceMetricsService } from '../services/performance-metrics.service';
 import { LoggerService } from '../services/logger.service';
 
 @Injectable()
 export class MetricsInterceptor implements HttpInterceptor {
+  constructor(
+    private performanceMetricsService: PerformanceMetricsService,
+    private injector: Injector
+  ) {}
 
-  constructor(@Inject(LoggerService) private logger: LoggerService) {
-    this.logger.registerService('MetricsInterceptor');
-    this.logger.info('MetricsInterceptor initialized');
+  private get logger(): LoggerService {
+    return this.injector.get(LoggerService);
   }
 
-  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Generate service name from URL
-    const url = new URL(req.url, window.location.origin);
-    const pathParts = url.pathname.split('/');
-    const serviceName = pathParts.length > 1 ? pathParts[1] : 'api';
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const startTime = performance.now();
     
-    // Start tracking the call - use the enhanced method
-    const callId = this.logger.startServiceCall(serviceName, req.method, req.url);
-
     return next.handle(req).pipe(
-      tap((event) => {
+      tap(event => {
         if (event instanceof HttpResponse) {
-          // End tracking with status code
-          this.logger.endServiceCall(callId, event.status);
+          const duration = performance.now() - startTime;
+          
+          // Log performance metrics for this API call
+          this.performanceMetricsService.recordApiCall({
+            endpoint: req.url,
+            method: req.method,
+            duration: Math.round(duration),
+            success: event.status >= 200 && event.status < 400
+          });
+          
+          this.logger.debug('MetricsInterceptor: Recorded API call metrics', {
+            url: req.url,
+            method: req.method,
+            duration: Math.round(duration),
+            status: event.status
+          });
         }
-      }),
-      catchError((error: any) => {
-        let status = 500; // Default server error
-        if (error instanceof HttpErrorResponse) {
-          status = error.status;
-        }
-        // End tracking with error status
-        this.logger.endServiceCall(callId, status);
-        return throwError(() => error);
       })
     );
   }

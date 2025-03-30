@@ -115,6 +115,68 @@
   }
 }
 
+// Admin item styling
+.admin-item {
+  position: relative;
+  background: linear-gradient(90deg, rgba(191, 10, 48, 0.1), rgba(0, 40, 104, 0.1));
+  border-left: 3px solid #BF0A30;
+  
+  &:hover {
+    background: linear-gradient(90deg, rgba(191, 10, 48, 0.2), rgba(0, 40, 104, 0.2));
+  }
+  
+  mat-icon {
+    color: #BF0A30;
+  }
+}
+
+// Admin-specific button styling
+.admin-button {
+  background-color: rgba(191, 10, 48, 0.1) !important; // Light red transparent background
+  border: 1px solid rgba(191, 10, 48, 0.5) !important; // Red border
+  position: relative;
+  
+  &:hover {
+    background-color: rgba(191, 10, 48, 0.2) !important;
+    border-color: rgba(191, 10, 48, 0.7) !important;
+  }
+  
+  &.active {
+    background-color: rgba(191, 10, 48, 0.3) !important;
+    border-color: rgba(191, 10, 48, 0.9) !important;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background-color: #BF0A30;
+    }
+  }
+  
+  .mat-icon {
+    color: #BF0A30 !important;
+  }
+  
+  .menu-text {
+    color: #BF0A30;
+  }
+}
+
+.admin-badge {
+  position: absolute;
+  right: 8px;
+  top: 4px;
+  font-size: 8px;
+  background-color: #BF0A30;
+  color: white;
+  padding: 1px 4px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
 // Toggle button
 .toggle {
   @include layout.sidebar-toggle-button;

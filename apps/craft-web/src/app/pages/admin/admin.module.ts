@@ -1,65 +1,59 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-
-// Material Modules
-import { MatTableModule } from '@angular/material/table';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatCardModule } from '@angular/material/card';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatTooltipModule } from '@angular/material/tooltip'; // Add this import
-
-// Components
+import { RouterModule, Routes } from '@angular/router';
 import { AdminComponent } from './admin.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { PerformanceComponent } from './performance/performance.component';
 import { LogsComponent } from './logs/logs.component';
-import { LoggerDisplayComponent } from '../../components/logger-display/logger-display.component';
+import { SecurityComponent } from './security/security.component';
+import { ApiMonitorComponent } from './api-monitor/api-monitor.component';
+
+// Import Material modules
+import { MaterialModule } from '../../material.module';
+
+// Import form modules
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+// Import pipes and services
+import { SharedPipesModule } from '../../common/pipes/shared-pipes.module';
+import { ThemeService } from '../../common/services/theme.service';
+import { LayoutService } from '../../common/services/layout.service';
+import { ApiService } from '../../common/services/api.service';
+import { HttpClientModule } from '@angular/common/http';
+import { LoggerHelperService } from '../../common/services/logger-helper.service';
+
+// Define routes for lazy loading child components
+const routes: Routes = [
+  {
+    path: '',
+    component: AdminComponent,
+  },
+  { path: ':tab', component: AdminComponent }
+];
 
 @NgModule({
   declarations: [
     AdminComponent,
+    DashboardComponent,
+    PerformanceComponent,
     LogsComponent,
-    LoggerDisplayComponent
+    SecurityComponent,
+    ApiMonitorComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MatTableModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCheckboxModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatTabsModule,
-    MatCardModule,
-    MatSlideToggleModule,
-    MatButtonToggleModule,
-    MatTooltipModule, // Add this module to the imports array
-    // LoggerDisplayComponent removed from here
-    RouterModule.forChild([
-      {
-        path: '',
-        component: AdminComponent,
-        children: [
-          { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-          { path: 'logs', component: LogsComponent },
-          // Other admin routes
-        ]
-      }
-    ])
+    RouterModule.forChild(routes),
+    MaterialModule,
+    SharedPipesModule,
+    HttpClientModule
+  ],
+  providers: [
+    ThemeService,
+    LayoutService,
+    ApiService,
+    LoggerHelperService
   ]
 })
 export class AdminModule { }

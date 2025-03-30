@@ -12,6 +12,7 @@ This document outlines the key technical standards and patterns to be followed a
 4. [Component Layout Standards](#component-layout-standards)
 5. [Testing Requirements](#testing-requirements)
 6. [Documentation Requirements](#documentation-requirements)
+7. [Service Dependency Guidelines](#service-dependency-guidelines)
 
 ## General Guidelines
 
@@ -180,6 +181,48 @@ All documentation files in the `docs/` directory should follow these standards:
 - File extensions should be lowercase: `.md` not `.MD`
 - Be descriptive but concise in naming
 - Always use hyphens, not underscores or spaces, for word separation
+
+## Service Dependency Guidelines
+
+### Preventing Circular Dependencies
+
+Circular dependencies are a common issue in Angular applications that cause runtime errors with the message `NG0200: Circular dependency in DI detected`. To prevent these issues:
+
+1. **Use Intermediary Services**
+   - Create abstraction services that mediate between potentially circular dependencies
+   - Example: `HttpClientWrapperService` mediates between services that need HTTP functionality
+
+2. **Service Responsibility Separation**
+   - Divide large services with multiple responsibilities into smaller focused services
+   - Ensure services have a single responsibility that doesn't require circular dependencies
+
+3. **Forward References**
+   - When circular dependencies cannot be avoided, use `@Inject(forwardRef(() => Service))` 
+   - Only use as a last resort when proper separation is not immediately possible
+
+4. **Optional Dependencies**
+   - Make circular dependencies optional with `@Optional()` decorator
+   - Provide fallback behavior when dependency is not available
+
+Example of using forwardRef (only when necessary):
+
+```typescript
+import { Injectable, Inject, forwardRef } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ServiceA {
+  constructor(
+    @Inject(forwardRef(() => ServiceB)) private serviceB: ServiceB
+  ) {}
+}
+```
+
+### Interface-based Design
+
+- Define interfaces for service contracts to decouple implementation from usage
+- Use injection tokens with interfaces for flexible implementation swapping
 
 ## Additional Documentation
 

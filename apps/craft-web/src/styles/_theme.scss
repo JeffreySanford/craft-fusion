@@ -119,3 +119,11 @@ $solar-with-name: map.merge(
     --md-sys-color-outline: black;
   }
 }
+
+// Vibrant patriotic color variables for custom logger categories
+:root {
+  --logger-patriotic-blue: #1E3A8A;
+  --logger-patriotic-red: #9B111E;
+  --logger-patriotic-white: #ffffff;
+  --logger-patriotic-gold: #FFD700;
+}

@@ -1,403 +1,499 @@
 @use '@angular/material' as mat;
 @use '../../../styles/_utilities.scss' as utilities;
-@use 'sass:map';
 @use '../../../styles/_themes' as themes;
 @use '../../../styles/_responsive' as responsive;
 @use '../../../styles/_layout' as layout;
+@use '../../../styles/_animations' as animations;
+@use '../../../styles/_variables' as vars;
+@use 'sass:map';
+@use 'sass:color';
 
-.header-card {
-  width: 100%;
-  height: 4em;
-  margin: 0.5em;
-  background: linear-gradient(
-    to right,
-    rgba(191, 10, 48, 0.8) 0%,
-    rgba(0, 40, 104, 0.8) 70%,
-    rgba(0, 40, 104, 0.9) 100%
-  );
+// Base Header Container
+.header-container {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-  border-radius: 0.5em;
+  align-items: center;
+  padding: 0 1.2em;
+  width: 100%;
+  height: 4rem;
+  color: white;
   position: relative;
   overflow: hidden;
-  cursor: default; // Explicitly set cursor to default
+  z-index: 10;
+  background: linear-gradient(
+    to right,
+    rgba(191, 10, 48, 0.95) 0%,
+    rgba(0, 40, 104, 0.95) 70%,
+    rgba(0, 40, 104, 1) 100%
+  );
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
   
-  // Remove the gold highlight that's causing flicker
-  &::before {
-    content: none; // Remove the shimmering gold line entirely
-  }
-
-  // Add a rule to disable any transform on hover
-  &:hover {
-    transform: none !important; // Prevent the header from moving up on hover
-  }
-}
-
-// Remove the animation causing header gradient shift 
-@keyframes headerGradientShift {
-  0%, 100% {
-    // Static values to prevent animation
+  // Theme variations
+  &.dark-theme {
     background: linear-gradient(
       to right,
-      rgba(191, 10, 48, 0.8) 0%,
-      rgba(0, 40, 104, 0.8) 70%,
-      rgba(0, 40, 104, 0.9) 100%
+      rgba(140, 10, 35, 0.95) 0%,
+      rgba(0, 25, 65, 0.95) 70%,
+      rgba(0, 25, 65, 1) 100%
     );
-  }
-}
-
-.header-content {
-  height: 3.5em;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  justify-content: space-between;
-  position: relative;
-  padding: 0 1em;
-  border-radius: 0;
-  animation: none;
-
-  button {
-    position: static;
-    top: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    height: 100%;
-    margin: 0;
-  }
-}
-
-.header-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-  color: var(--md-sys-color-tertiary); // Use global CSS variable for gold color
-  font-size: 1.8em;
-  font-weight: bold;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-  letter-spacing: 1px;
-  
-  // Add wave animation that runs every 15 seconds
-  animation: textWave 2s ease-in-out 0s, textWave 2s ease-in-out 15s infinite;
-}
-
-button {
-  position: static;
-  top: auto;
-  margin-left: auto;
-  cursor: pointer; // Ensure the button has the pointer cursor
-}
-
-.theme-switch {
-  margin-right: 0.5em;
-  &:hover {
-    transform: scale(1.1) rotate(-10deg);
-    transition: transform 0.3s ease-in-out;
-  }
-}
-
-/* Profile icon button container - ensure it maintains circular shape */
-.user-profile-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: auto; // Change from 100% to auto to prevent stretching
-}
-
-.profile-icon {
-  color: #ff00ff;
-  border: 1px solid #00f7ff;
-  padding: 0.1em;
-  border-radius: 50%;
-  transition: all 0.3s ease-in-out;
-  animation: neonPulse 2s infinite;
-  text-shadow: 0 0 10px #ff00ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5em;
-  height: 1.5em; // Keep width and height equal for circle
-  min-width: 1.5em; // Add min-width to prevent compression
-  min-height: 1.5em; // Add min-height to prevent compression
-  margin-right: 0.5em;
-
-  &:hover {
-    transform: scale(1.1) rotate(15deg);
-    box-shadow: 
-      0 0 15px #0000ff,
-      0 0 30px #0000ff;
-    color: #0000ff;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
   }
 
-  &.logged-in {
-    color: #00ff00;
-    border: 2px solid #00ff00;
-    animation: neonRotate 1s ease-out;
-    text-shadow: 0 0 10px #00ff00;
-  }
-}
-
-.animated-star-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin-right: 0.5em;
-  cursor: pointer;
-  z-index: 10; // Increase z-index to ensure it's above other elements
-  
-  // Make tap target larger on touch devices
-  @media (pointer: coarse) {
-    min-width: 48px;
-    min-height: 48px;
-  }
-  
-  &:focus {
-    outline: none;
+  &.vibrant1-theme {
+    background: linear-gradient(
+      135deg,
+      rgba(15, 5, 30, 0.95) 0%,
+      rgba(255, 0, 204, 0.8) 50%,
+      rgba(51, 0, 255, 0.95) 100%
+    );
+    box-shadow: 0 0 25px rgba(255, 0, 204, 0.4);
     
-    .animated-star {
-      text-shadow: 0 0 15px var(--md-sys-color-tertiary), 0 0 30px var(--md-sys-color-tertiary);
-    }
-  }
-  
-  &:hover {
-    .animated-star {
-      animation: starSpin 1s linear infinite, starPulse 1.5s infinite;
-      transform-origin: center;
-      text-shadow: 0 0 15px var(--md-sys-color-tertiary), 0 0 30px var(--md-sys-color-tertiary);
+    // Subtle animation for cosmic glow theme
+    animation: cosmicPulse 8s infinite alternate;
+    
+    @keyframes cosmicPulse {
+      0% {
+        box-shadow: 0 0 25px rgba(255, 0, 204, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 25px rgba(51, 0, 255, 0.4);
+      }
+      100% {
+        box-shadow: 0 0 25px rgba(255, 0, 204, 0.4);
+      }
     }
     
-    .progress-circle {
-      opacity: 1;
-      transform: scale(1.2);
-      
-      .progress-indicator {
-        stroke-dashoffset: 0;
-        transition: stroke-dashoffset 1.5s ease-in-out;
+    .logo-shine {
+      animation: cosmicShine 4s infinite;
+    }
+    
+    @keyframes cosmicShine {
+      0% {
+        left: -150%;
+        background: linear-gradient(90deg, 
+          rgba(255, 255, 255, 0) 0%, 
+          rgba(255, 0, 204, 0.4) 50%, 
+          rgba(255, 255, 255, 0) 100%);
+      }
+      100% {
+        left: 150%;
+        background: linear-gradient(90deg, 
+          rgba(255, 255, 255, 0) 0%, 
+          rgba(51, 0, 255, 0.4) 50%, 
+          rgba(255, 255, 255, 0) 100%);
+      }
+    }
+  }
+
+  &.vibrant2-theme {
+    background: linear-gradient(
+      135deg,
+      rgba(25, 10, 5, 0.95) 0%,
+      rgba(255, 85, 0, 0.8) 50%,
+      rgba(255, 170, 0, 0.95) 100%
+    );
+    box-shadow: 0 0 25px rgba(255, 85, 0, 0.4);
+    
+    // Subtle animation for solar flare theme
+    animation: solarPulse 8s infinite alternate;
+    
+    @keyframes solarPulse {
+      0% {
+        box-shadow: 0 0 25px rgba(255, 85, 0, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 25px rgba(255, 170, 0, 0.4);
+      }
+      100% {
+        box-shadow: 0 0 25px rgba(255, 85, 0, 0.4);
+      }
+    }
+    
+    .logo-shine {
+      animation: solarShine 3s infinite;
+    }
+    
+    @keyframes solarShine {
+      0% {
+        left: -150%;
+        background: linear-gradient(90deg, 
+          rgba(255, 255, 255, 0) 0%, 
+          rgba(255, 85, 0, 0.4) 50%, 
+          rgba(255, 255, 255, 0) 100%);
+      }
+      100% {
+        left: 150%;
+        background: linear-gradient(90deg, 
+          rgba(255, 255, 255, 0) 0%, 
+          rgba(255, 170, 0, 0.4) 50%, 
+          rgba(255, 255, 255, 0) 100%);
       }
     }
   }
 }
 
-// Update button styling to look like the previous star container
-button.animated-star-container {
-  position: relative;
+// Left side with logo and navigation
+.header-left {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin-right: 0.5em;
-  z-index: 10;
-  padding: 0;
-  min-width: 0;
-  background: transparent;
-  border: none;
-  box-shadow: none;
+  flex: 1;
+  overflow: hidden;
+}
+
+// Logo section
+.logo-section {
+  display: flex;
+  align-items: center;
+  margin-right: 2em;
+  position: relative;
   
-  &::after {
-    display: none; // Remove any button after effects
-  }
-  
-  &:hover {
-    background: transparent;
-    transform: none; // Let the star animations handle hover effects
-  }
-  
-  &:focus {
-    outline: none;
+  .logo-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 50%;
+    width: 2.8em;
+    height: 2.8em;
     
-    .animated-star {
-      text-shadow: 0 0 15px var(--md-sys-color-tertiary), 0 0 30px var(--md-sys-color-tertiary);
+    .logo-image {
+      height: 100%;
+      width: 100%;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+    
+    .logo-shine {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0) 0%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        rgba(255, 255, 255, 0) 100%);
+      transform: skewX(-25deg);
+      animation: shine 4s infinite;
+    }
+    
+    @keyframes shine {
+      0% {
+        left: -150%;
+      }
+      50%, 100% {
+        left: 150%;
+      }
     }
   }
   
-  // ...existing hover effects for animated-star-container can remain...
+  .logo-text {
+    font-size: 1.5em;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    margin: 0 0 0 0.5em;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(to right, white, #e0e0e0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    // Different text styles for themes
+    .vibrant1-theme & {
+      background: linear-gradient(to right, white, #d4a0ff);
+      text-shadow: 0 0 8px rgba(255, 0, 204, 0.5);
+    }
+    
+    .vibrant2-theme & {
+      background: linear-gradient(to right, white, #ffcc80);
+      text-shadow: 0 0 8px rgba(255, 85, 0, 0.5);
+    }
+  }
 }
 
-.animated-star {
-  animation: starSpin 2s linear infinite;
-  font-size: 1.5em;
-  color: var(--md-sys-color-tertiary); 
+// Navigation section
+.nav-section {
+  display: flex;
+  gap: 0.5em;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+  
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+    padding: 0.4em 1em;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    &.active-link {
+      background-color: rgba(255, 255, 255, 0.15);
+      position: relative;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 15%;
+        width: 70%;
+        height: 3px;
+        background: white;
+        border-radius: 3px;
+        animation: slideInFromBottom 0.3s ease-out;
+      }
+      
+      @keyframes slideInFromBottom {
+        0% {
+          transform: scaleX(0);
+        }
+        100% {
+          transform: scaleX(1);
+        }
+      }
+    }
+    
+    .nav-icon {
+      font-size: 1.5em;
+      height: 1.5em;
+      width: 1.5em;
+      margin-bottom: 0.2em;
+    }
+    
+    .nav-text {
+      font-size: 0.8em;
+      white-space: nowrap;
+      transition: transform 0.3s ease;
+    }
+    
+    &:hover .nav-text {
+      transform: scale(1.05);
+    }
+  }
+}
+
+// Right side with system menu, user menu, etc.
+.header-right {
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 1.5em;
-  z-index: 2;
-  position: relative;
-  transition: text-shadow 0.3s ease;
-}
-
-.progress-circle {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transform: scale(0.8);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  z-index: 1;
+  gap: 0.8em;
   
-  .progress-background {
-    fill: transparent;
-    stroke: rgba(255, 215, 0, 0.2);
-    stroke-width: 2;
-  }
-  
-  .progress-indicator {
-    fill: transparent;
-    stroke: var(--md-sys-color-tertiary);
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-dasharray: 113; /* 2 * PI * r (where r is 18) */
-    stroke-dashoffset: 113; /* Start from full offset (invisible) */
-    transform-origin: center;
-    transform: rotate(-90deg); /* Start from the top */
-  }
-}
-
-.animated-star {
-  animation: starSpin 2s linear infinite;
-  font-size: 1.5em;
-  margin-right: 0.5em;
-  color: var(--md-sys-color-tertiary); // Use global CSS variable for gold color
-  display: flex; /* Add this for proper flexbox alignment */
-  align-items: center; /* Add this for proper vertical alignment */
-  justify-content: center; /* Add this for proper horizontal alignment */
-  height: 1.5em; /* Match height for consistency */
-}
-
-@keyframes neonPulse {
-  0% { 
-    box-shadow: 
-      0 0 5px #00f7ff,
-      0 0 10px #00f7ff,
-      0 0 20px #00f7ff;
-  }
-  50% { 
-    box-shadow: 
-      0 0 10px #ff00ff,
-      0 0 20px #ff00ff,
-      0 0 40px #ff00ff;
-  }
-  100% { 
-    box-shadow: 
-      0 0 5px #00f7ff,
-      0 0 10px #00f7ff,
-      0 0 20px #00f7ff;
-  }
-}
-
-@keyframes neonRotate {
-  from { 
-    transform: rotate(0deg); 
-    box-shadow: 0 0 20px #00ff00;
-  }
-  to { 
-    transform: rotate(360deg);
-    box-shadow: 0 0 40px #00ff00;
-  }
-}
-
-@keyframes starSpin {
-  0%   { transform: rotate(0deg) scale(1); }
-  50%  { transform: rotate(180deg) scale(1.2); }
-  100% { transform: rotate(360deg) scale(1); }
-}
-
-@keyframes starSpinWithPause {
-  0% { transform: rotate(0deg) scale(1); }
-  80% { transform: rotate(340deg) scale(1.1); }
-  90% { transform: rotate(350deg) scale(1.05); }
-  100% { transform: rotate(360deg) scale(1); }
-}
-
-@keyframes starGlowEnhanced {
-  0%, 100% {
-    color: var(--md-sys-color-tertiary);
-    text-shadow: 0 0 10px var(--md-sys-color-tertiary);
-  }
-  50% {
-    color: #ffffff;
-    text-shadow: 0 0 20px var(--md-sys-color-tertiary), 0 0 40px var(--md-sys-color-tertiary);
-  }
-}
-
-@keyframes starGrow {
-  0% {
-    transform: scale(0.5);
-    color: #ffd700;
-    text-shadow: none;
-  }
-  25% {
-    transform: scale(1);
-    text-shadow: none;
-  }
-  50% {
-    transform: scale(1.2);
-    text-shadow: 0 0 10px gold;
-  }
-  75% {
-    transform: scale(1);
-    text-shadow: 0 0 5px gold;
-  }
-  100% {
-    transform: scale(1);
-    text-shadow: none;
-  }
-}
-
-::ng-deep .user-menu {
-  transform-origin: top right;
-  animation: slideIn 0.2s ease-out;
-
-  .mat-mdc-menu-panel {
-    background: linear-gradient(135deg, 
-      rgba(0, 0, 102, 0.98) 0%,  // Increased opacity
-      rgba(139, 0, 0, 0.98) 50%, // Increased opacity
-      rgba(0, 0, 102, 0.98) 100% // Increased opacity
-    ) !important;
-    border: 2px solid #ff0000;
-    box-shadow: 
-      0 0 25px rgba(255, 255, 255, 0.4),
-      inset 0 0 20px rgba(0, 0, 255, 0.3);
-    border-radius: 14px !important;
-    overflow: hidden;
-    margin: 2px !important;
-    padding: 4px !important;
-    background-color: rgba(0, 0, 0, 0.5) !important; // Semi-transparent container background
-  }
-
-  .mat-mdc-menu-content {
-    padding: 6px !important;
-    background: transparent !important;
-    border-radius: 12px;
-    box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.1);
-  }
-
-  .mat-mdc-menu-item, .menu-button {
-    height: 40px !important;
-    line-height: 40px !important;
-    margin: 2px !important;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: linear-gradient(45deg,
-      rgba(0, 40, 104, 0.6) 0%,  // Increased opacity
-      rgba(191, 10, 48, 0.6) 100% // Increased opacity
-    ) !important;
+  .system-menu-button, .user-menu-button, .notification-button, .search-button {
     position: relative;
-    overflow: hidden;
+    margin-left: 0.3em;
     transition: all 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.1);
+    }
+    
+    .button-ripple {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(0);
+      opacity: 0;
+    }
+    
+    &:active .button-ripple {
+      animation: buttonRipple 0.6s ease-out;
+    }
+    
+    @keyframes buttonRipple {
+      0% {
+        transform: scale(0);
+        opacity: 0.5;
+      }
+      100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+  }
+  
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    
+    /* Default background for avatar if no image is provided */
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.2);
+      z-index: -1;
+    }
+    
+    /* Special styling for guest users */
+    &.guest-avatar {
+      background-image: url('/assets/images/default-avatar.png') !important;
+      
+      /* Add a subtle pattern overlay */
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, 
+                          transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, 
+                          transparent 75%, transparent);
+        background-size: 4px 4px;
+        z-index: 1;
+      }
+    }
+    
+    /* Animation on hover */
+    &:hover {
+      transform: scale(1.1);
+      border-color: rgba(255, 255, 255, 1);
+      box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+    }
+    
+    /* Status indicator */
+    .avatar-status {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid white;
+      
+      &.online {
+        background-color: #4caf50; /* Green for online */
+        box-shadow: 0 0 8px rgba(76, 175, 80, 0.8);
+      }
+      
+      &.offline {
+        background-color: #9e9e9e; /* Gray for offline/guest */
+        box-shadow: 0 0 8px rgba(158, 158, 158, 0.5);
+      }
+    }
+  }
+  
+  .user-avatar-large {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    margin-right: 1rem;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  // Add animation for notification badge pulse
+  ::ng-deep .mat-badge-content {
+    animation: badgePulse 2s infinite;
+    
+    @keyframes badgePulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+  }
+}
+
+// Styling for dropdown menus
+::ng-deep {
+  .user-dropdown-menu .mat-menu-content, 
+  .system-dropdown-menu .mat-menu-content {
+    padding: 0 !important;
+  }
+  
+  .menu-header {
+    padding: 12px 16px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    
+    .menu-title {
+      font-weight: 500;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+  
+  .user-info-header {
     display: flex;
     align-items: center;
-
+    padding: 16px;
+    background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
+    color: white;
+    
+    .user-details {
+      display: flex;
+      flex-direction: column;
+      
+      .user-name {
+        font-weight: bold;
+        font-size: 16px;
+        margin-bottom: 4px;
+      }
+      
+      .user-email {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+    }
+  }
+  
+  // Menu item hover effects
+  .mat-menu-item {
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+      
+      .vibrant1-theme & {
+        background-color: rgba(255, 0, 204, 0.1);
+      }
+      
+      .vibrant2-theme & {
+        background-color: rgba(255, 85, 0, 0.1);
+      }
+    }
+    
+    .mat-icon {
+      margin-right: 12px;
+    }
+  }
+  
+  .menu-item-animated {
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.3s;
+    
     &::before {
       content: '';
       position: absolute;
@@ -405,609 +501,108 @@ button.animated-star-container {
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.4),
-        transparent
-      );
-      transition: 0.5s;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
     }
-
-    &:hover {
-      background: linear-gradient(45deg,
-        rgba(255, 0, 0, 0.4) 0%,
-        rgba(0, 0, 255, 0.4) 100%
-      ) !important;
-      transform: translateX(4px);
-      box-shadow: 
-        0 0 15px rgba(255, 255, 255, 0.3),
-        inset 0 0 10px rgba(255, 0, 0, 0.3);
-
-      &::before {
-        left: 100%;
-      }
-    }
-  }
-
-  .mat-mdc-menu-item {
-    .mat-icon {
-      color: #ffffff;
-      margin-right: 12px;
-      transition: all 0.3s ease;
-      text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
-
-      &:hover {
-        transform: scale(1.2) rotate(10deg);
-        color: #ff0000;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-      }
-    }
-
-    span {
-      color: #ffffff;
-      font-weight: 500;
-      letter-spacing: 1px;
-      text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+    
+    &:hover::before {
+      left: 100%;
     }
   }
 }
 
-.theme-menu {
-  animation: slideIn 0.2s ease-out;
-
-  .theme-option {
-    transition: all 0.3s ease;
-    &:hover {
-      background-color: #ff00ff;
-      color: #000;
-      transform: scale(1.05);
-      box-shadow: 0 0 10px #fff;
-    }
-  }
-
-  .active-theme {
-    border: 2px solid #fff200;
-    background-color: #333;
-  }
-}
-
-.theme-sub-menu {
-  animation: slideIn 0.2s ease-out;
-
-  .theme-sub-option {
-    transition: all 0.3s ease;
-    &:hover {
-      background-color: #ff33cc;
-      color: #000;
-      transform: scale(1.05);
-      box-shadow: 0 0 10px #ffe600;
-    }
-  }
-
-  .active-theme {
-    border: 2px solid #33ff33;
-    background-color: #333;
-  }
-}
-
-// Override Material's default styles
-::ng-deep .mat-mdc-menu-content,
-::ng-deep .mat-mdc-menu-panel {
-  background: transparent !important;
-  color: white !important;
+// Login and register buttons with enhanced styling
+.login-button {
+  background-color: rgba(25, 118, 210, 0.1);
   
-  // Make sure the menu doesn't close when clicking inside the theme flip section
-  .theme-flip {
-    pointer-events: all;  // Ensure click events are captured
+  &:hover {
+    background-color: rgba(25, 118, 210, 0.2);
+  }
+  
+  .mat-icon {
+    color: #1976d2;
   }
 }
 
-// Add custom positioning for the overlay
-::ng-deep .cdk-overlay-connected-position-bounding-box {
-  top: 4em !important;
+.register-button {
+  background-color: rgba(76, 175, 80, 0.1);
+  
+  &:hover {
+    background-color: rgba(76, 175, 80, 0.2);
+  }
+  
+  .mat-icon {
+    color: #4caf50;
+  }
 }
 
-@keyframes slideIn {
+// Animations
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-20px) scale(0.95);
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-/* Vibrant switch styles */
-.vibrant-switch {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  margin-right: 0.75em;
-  animation: pulseVibrant 2s infinite;
-  mat-icon {
-    color: #ff7700; // Vibrant2 as default
-    transition: all 0.3s ease;
+// Responsive adjustments
+@include responsive.sm-down {
+  .header-container {
+    padding: 0 0.5em;
+    height: 3.5rem;
   }
-  &:hover mat-icon {
-    color: #ff007f; // Vibrant1
-    transform: scale(1.2) rotate(10deg);
-  }
-}
-
-@keyframes pulseVibrant {
-  0%, 100% { box-shadow: 0 0 10px #ff007f; }
-  50%      { box-shadow: 0 0 10px #ff7700; }
-}
-
-.theme-flip {
-  animation: flipDown 0.4s ease forwards;
-  background: linear-gradient(45deg,
-    rgba(0, 40, 104, 0.5) 0%,    // Increased opacity
-    rgba(191, 10, 48, 0.5) 100%  // Increased opacity
-  );
-  margin: 0;
-  padding: 12px;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
-  transform-origin: top center;
-  border: 1px solid rgba(255,215,0,0.3);
-  border-top: none;
-  overflow: hidden;
-  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3);
-  width: 100%; // Match width to parent
-}
-
-.theme-radio-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   
-  .theme-radio-option {
-    color: white;
-    transition: all 0.2s ease;
+  .logo-section {
+    margin-right: 1em;
     
-    &:hover {
-      transform: translateX(4px);
-    }
-  }
-}
-
-.theme-options-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%; // Ensure full width
-}
-
-.theme-section {
-  position: relative;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  margin: 2px 0;
-  width: 100%; // Ensure full width
-}
-
-// Make spacing between items consistent
-.theme-section + button {
-  margin-top: 2px !important; // Consistent spacing with other items
-}
-
-.theme-radio-button {
-  margin-bottom: 8px;
-  
-  &:last-child {
-    margin-bottom: 0;
-  }
-  
-  ::ng-deep .mdc-form-field {
-    width: 100%;
-  }
-  
-  ::ng-deep .mdc-radio {
-    padding: 8px;
-  }
-  
-  ::ng-deep .mdc-radio__background {
-    border-color: gold;
-  }
-  
-  ::ng-deep .mdc-radio__inner-circle {
-    background-color: gold;
-  }
-  
-  .theme-option-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 4px 0;
-  }
-  
-  .theme-color-preview {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
-    transition: transform 0.2s ease;
-  }
-  
-  // Theme color preview styles with enhanced gradients
-  .light-preview {
-    background: radial-gradient(circle, #fff 0%, #eee 100%);
-  }
-  
-  .dark-preview {
-    background: radial-gradient(circle, #333 0%, #111 100%);
-  }
-  
-  .vibrant1-preview {
-    background: linear-gradient(135deg, #ff00cc 0%, #3300ff 50%, #00ffcc 100%); // Cosmic Glow colors
-  }
-  
-  .vibrant2-preview {
-    background: linear-gradient(135deg, #ff9500 0%, #ffcc00 50%, #ff5500 100%); // Solar Flare colors
-  }
-  
-  .theme-label {
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
-  }
-  
-  &:hover {
-    .theme-color-preview {
-      transform: scale(1.2);
-      box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+    .logo-text {
+      display: none; // Hide text on small screens
     }
     
-    .theme-label {
-      color: gold;
-      text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-    }
-  }
-}
-
-.theme-options-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.theme-radio-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.theme-radio-button {
-  margin-bottom: 8px;
-  
-  ::ng-deep .mdc-form-field {
-    width: 100%;
-  }
-  
-  ::ng-deep .mdc-radio {
-    padding: 8px;
-  }
-  
-  ::ng-deep .mdc-radio__background {
-    border-color: gold;
-  }
-  
-  ::ng-deep .mdc-radio__inner-circle {
-    background-color: gold;
-  }
-  
-  .theme-option-content {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .theme-color-preview {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-  
-  .light-preview {
-    background: linear-gradient(135deg, #fff 0%, #eee 100%);
-  }
-  
-  .dark-preview {
-    background: linear-gradient(135deg, #333 0%, #111 100%);
-  }
-  
-  .vibrant1-preview {
-    background: linear-gradient(135deg, #ff00cc 0%, #3300ff 50%, #00ffcc 100%); // Cosmic Glow colors
-  }
-  
-  .vibrant2-preview {
-    background: linear-gradient(135deg, #ff9500 0%, #ffcc00 50%, #ff5500 100%); // Solar Flare colors
-  }
-  
-  .theme-label {
-    color: white;
-    font-size: 14px;
-  }
-  
-  &:focus {
-    outline: none;  // Prevent blue outline when clicking
-  }
-}
-
-.theme-section {
-  position: relative;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  margin: 2px 0;
-}
-
-@keyframes flipDown {
-  0% {
-    transform: rotateX(-90deg);
-    opacity: 0;
-  }
-  100% {
-    transform: rotateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes flipUp {
-  0% {
-    transform: rotateX(0);
-    opacity: 1;
-  }
-  100% {
-    transform: rotateX(-90deg);
-    opacity: 0;
-  }
-}
-
-@keyframes shimmer {
-  0% { background-position: -100% 0; }
-  100% { background-position: 200% 0; }
-}
-
-// Fix for all menu buttons to use proper flex layout
-::ng-deep .user-menu .mat-mdc-menu-item {
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: flex-start !important;
-  align-items: center !important;
-  width: 100% !important;
-}
-
-// Theme-specific header styles - modify these to remove flicker
-.vibrant1-theme .header-card {
-  background: var(--header-gradient) !important;
-  background-size: 400% 400% !important;
-  // Slow down animation to reduce flicker
-  animation: cosmicBackgroundPulse 30s ease infinite !important;
-  
-  &::before {
-    content: none; // Remove flicker-causing highlight
-  }
-  
-  .header-title {
-    color: var(--md-sys-color-tertiary) !important;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6) !important;
-    
-    // Keep the wave animation
-    animation: textWave 2s ease-in-out 0s, textWave 2s ease-in-out 15s infinite;
-  }
-  
-  .animated-star {
-    color: var(--md-sys-color-tertiary) !important;
-    animation: starSpin 2s linear infinite, starPulse 3s infinite !important; // Keep spinning animation
-  }
-}
-
-.vibrant2-theme .header-card {
-  background: var(--header-gradient) !important;
-  background-size: 400% 400% !important;
-  animation: solarBackgroundPulse 12s ease infinite !important;
-  
-  &::before {
-    content: none; // Remove flicker-causing highlight
-  }
-  
-  .header-title {
-    color: var(--md-sys-color-tertiary) !important;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6) !important;
-    
-    // Keep the wave animation
-    animation: textWave 2s ease-in-out 0s, textWave 2s ease-in-out 15s infinite;
-  }
-  
-  .animated-star {
-    color: var(--md-sys-color-tertiary) !important;
-    animation: starSpin 2s linear infinite, starPulse 3s infinite !important; // Keep spinning animation
-  }
-}
-
-.vibrant1-theme .animated-star-container:hover {
-  .animated-star {
-    animation: starSpin 0.8s linear infinite, cosmicTextGlow 1.5s infinite;
-  }
-  
-  .progress-circle .progress-indicator {
-    stroke: #ff00cc;
-  }
-}
-
-.vibrant2-theme .animated-star-container:hover {
-  .animated-star {
-    animation: starSpin 0.8s linear infinite, solarTextGlow 1.5s infinite;
-  }
-  
-  .progress-circle .progress-indicator {
-    stroke: #ff5500;
-  }
-}
-
-// Enhanced menu styling for vibrant themes
-.vibrant1-theme ::ng-deep {
-  .user-menu .mat-mdc-menu-panel {
-    background: linear-gradient(135deg, 
-      rgba(34, 0, 56, 0.98) 0%,
-      rgba(51, 0, 255, 0.92) 50%,
-      rgba(34, 0, 56, 0.98) 100%
-    ) !important;
-    border: 2px solid #ff00cc !important;
-    box-shadow: 0 0 30px rgba(255, 0, 204, 0.4) !important;
-  }
-  
-  .mat-mdc-menu-item, .menu-button {
-    background: linear-gradient(45deg,
-      rgba(51, 0, 255, 0.4) 0%,
-      rgba(255, 0, 204, 0.4) 100%
-    ) !important;
-    
-    &:hover {
-      background: linear-gradient(45deg,
-        rgba(255, 0, 204, 0.6) 0%,
-        rgba(51, 0, 255, 0.6) 100%
-      ) !important;
-      transform: translateX(6px) !important;
-      box-shadow: 0 0 20px rgba(255, 0, 204, 0.5) !important;
-    }
-    
-    .mat-icon {
-      color: #00ffcc !important;
-      text-shadow: 0 0 8px #00ffcc !important;
+    .logo-wrapper {
+      width: 2.2em;
+      height: 2.2em;
     }
   }
   
-  .theme-color-preview {
-    box-shadow: 0 0 8px currentColor !important;
-    transform: scale(1.1) !important;
-  }
-  
-  .vibrant1-preview {
-    animation: cosmicBorderGlow 6s infinite !important;
-  }
-  
-  .vibrant2-preview {
-    animation: solarBorderGlow 6s infinite !important;
-  }
-}
-
-.vibrant2-theme ::ng-deep {
-  .user-menu .mat-mdc-menu-panel {
-    background: linear-gradient(135deg, 
-      rgba(255, 85, 0, 0.92) 0%,
-      rgba(255, 170, 0, 0.85) 50%,
-      rgba(255, 85, 0, 0.92) 100%
-    ) !important;
-    border: 2px solid #0088ff !important;
-    box-shadow: 0 0 30px rgba(0, 136, 255, 0.4) !important;
-  }
-  
-  .mat-mdc-menu-item, .menu-button {
-    background: linear-gradient(45deg,
-      rgba(255, 85, 0, 0.6) 0%,
-      rgba(255, 170, 0, 0.6) 100%
-    ) !important;
-    border: 1px solid rgba(0, 136, 255, 0.3) !important;
-    
-    &:hover {
-      background: linear-gradient(45deg,
-        rgba(0, 136, 255, 0.6) 0%,
-        rgba(255, 85, 0, 0.6) 100%
-      ) !important;
-      transform: translateX(6px) !important;
-      box-shadow: 0 0 20px rgba(0, 136, 255, 0.5) !important;
-    }
-    
-    .mat-icon {
-      color: #ffffff !important;
-      text-shadow: 0 0 8px #0088ff !important;
-    }
-  }
-  
-  .theme-color-preview {
-    box-shadow: 0 0 8px currentColor !important;
-    transform: scale(1.1) !important;
-  }
-  
-  .vibrant1-preview {
-    animation: cosmicBorderGlow 6s infinite !important;
-  }
-  
-  .vibrant2-preview {
-    animation: solarBorderGlow 6s infinite !important;
-  }
-}
-
-// Enhanced theme flip animation for vibrant themes
-.vibrant1-theme .theme-flip {
-  background: linear-gradient(45deg,
-    rgba(34, 0, 56, 0.7) 0%,
-    rgba(51, 0, 255, 0.5) 100%
-  ) !important;
-  border: 1px solid rgba(255, 0, 204, 0.5) !important;
-  box-shadow: inset 0 0 20px rgba(255, 0, 204, 0.3) !important;
-}
-
-.vibrant2-theme .theme-flip {
-  background: linear-gradient(45deg,
-    rgba(255, 85, 0, 0.7) 0%,
-    rgba(255, 170, 0, 0.5) 100%
-  ) !important;
-  border: 1px solid rgba(0, 136, 255, 0.5) !important;
-  box-shadow: inset 0 0 20px rgba(0, 136, 255, 0.3) !important;
-}
-
-.header-container {
-  @include layout.header; // Apply the enhanced header mixin
-  
-  .header-logo {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-    
-    img {
-      height: 2.5em;
-      width: auto;
-    }
-    
-    .title {
-      font-size: 1.2em;
-      font-weight: 500;
-      color: var(--md-sys-color-on-surface);
-    }
-  }
-  
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 1em;
-    
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
+  .nav-section {
+    .nav-item {
+      padding: 0.3em 0.6em;
       
-      .mat-icon {
-        color: var(--md-sys-color-on-surface);
+      .nav-text {
+        display: none; // Hide text on small screens
+      }
+      
+      .nav-icon {
+        margin-bottom: 0;
       }
     }
   }
   
-  @include responsive.sm-down {
-    padding: 0.5em;
+  .header-right {
+    gap: 0.4em;
     
-    .header-logo {
-      .title {
-        display: none;
-      }
+    .search-button {
+      display: none; // Hide search on small screens
     }
+  }
+}
+
+// RTL support
+html[dir="rtl"] {
+  .logo-section {
+    margin-right: 0;
+    margin-left: 2em;
+  }
+  
+  .logo-text {
+    margin: 0 0.5em 0 0;
+  }
+  
+  .header-right {
+    flex-direction: row-reverse;
   }
 }

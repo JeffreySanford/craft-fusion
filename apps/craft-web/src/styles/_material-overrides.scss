@@ -275,3 +275,37 @@
 .mat-mdc-list-item {
   height: auto !important;
 }
+
+// Replace deprecated -ms-high-contrast with modern forced-colors-mode
+@media (forced-colors: active) {
+  .mat-button,
+  .mat-raised-button,
+  .mat-icon-button,
+  .mat-stroked-button,
+  .mat-flat-button,
+  .mat-fab,
+  .mat-mini-fab {
+    // Force buttons to have proper contrast in high contrast mode
+    border: 1px solid currentColor;
+  }
+  
+  // Add other high contrast overrides needed
+  .mat-tab-label {
+    opacity: 1 !important;
+  }
+}
+
+// Fix tab content container to ensure proper display
+.tab-content-container {
+  position: relative;
+  height: calc(100vh - 240px);
+  overflow-y: auto;
+  padding: 16px;
+  
+  // Add nested scrolling behavior
+  app-dashboard, app-logs, app-performance, app-security, app-api-monitor {
+    display: block;
+    height: 100%;
+    overflow-y: auto;
+  }
+}

@@ -1,0 +1,17 @@
+IMPORTANT ARCHITECTURE NOTES:
+
+1. This project uses the traditional module-based Angular architecture, NOT the standalone component approach.
+
+2. Always ensure that all components have `standalone: false` in their @Component decorator.
+   Example:
+   @Component({
+     selector: 'app-example',
+     templateUrl: './example.component.html',
+     styleUrls: ['./example.component.scss'],
+     standalone: false  // MUST BE FALSE for this project
+   })
+
+3. The application uses NgModules to organize and load components, not standalone imports.
+
+4. When creating new components, always ensure they are properly registered in their respective module's
+   declarations array instead of using standalone component imports.

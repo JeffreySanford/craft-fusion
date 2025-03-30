@@ -1,29 +1,55 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, of, Subject, debounceTime } from 'rxjs';
+import { Injectable, Inject, forwardRef } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError, of, Subject, BehaviorSubject, debounceTime } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { ApiService } from './api.service';
 import { UserState as IUserState, LoginDateTimeDTO, UserState } from '../interfaces/user-state.interface';
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
+import { HttpClientWrapperService } from './http-client-wrapper.service';
+import { HttpClient } from '@angular/common/http';
 
 interface Document {
   name: string;
   color: string;
 }
 
-export class User {
-  username = '';
+export interface User {
+  // Define any existing properties here
 }
 
-export class UserStateModel extends User implements IUserState {
-  loginDateTime: Date | null = null;
-  visitLength: number | null = 0;
-  visitedPages: string[] = [];
-  username = '';
-}
+// UserStateModel implementing the UserState interface
+export class UserStateModel implements UserState {
+  // Required properties from UserState
+  id: string = '';
+  username: string = '';
+  isAdmin: boolean = false;
+  roles: string[] = [];
+  isAuthenticated: boolean = false;
+  
+  // Optional properties
+  email?: string;
+  preferences?: any;
+  name?: string;
+  displayName?: string;
+  isGuest?: boolean;
+  permissions?: string[];
+  avatarUrl?: string;
 
-// Removed duplicate UserState class declaration
+  constructor(data: Partial<UserState> = {}) {
+    this.id = data.id || '';
+    this.username = data.username || '';
+    this.email = data.email || '';
+    this.isAdmin = data.isAdmin || false;
+    this.name = data.name || '';
+    this.displayName = data.displayName || '';
+    this.isAuthenticated = data.isAuthenticated || false;
+    this.roles = data.roles || [];
+    this.isGuest = data.isGuest;
+    this.preferences = data.preferences || {};
+    this.permissions = data.permissions || [];
+    this.avatarUrl = data.avatarUrl || '';
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -55,10 +81,16 @@ export class UserStateService {
   private lastSavedTime = 0;
   private readonly DEBOUNCE_TIME = 1000; // 1 second debounce
 
+  // Internal subject for user state
+  private userStateSubject = new BehaviorSubject<UserState | null>(null);
+
+  // Observable stream of user state
+  public userState$ = this.userStateSubject.asObservable();
+
   constructor(
-    private api: ApiService, 
-    private http: HttpClient,
-    private logger: LoggerService
+    private httpClient: HttpClientWrapperService,
+    private logger: LoggerService,
+    private http: HttpClient
   ) {
     this.logger.registerService('UserStateService');
     this.logger.info('UserStateService initialized');
@@ -73,26 +105,26 @@ export class UserStateService {
 
   saveStateData(key: string, value: string): Observable<void> {
     this.logger.debug(`Saving state data - ${key}: ${value}`);
-    return this.http.post<void>(`${this.apiUrl}/saveStateData`, { key, value }).pipe(
+    return this.httpClient.post<void>(`${this.apiUrl}/saveStateData`, { key, value }).pipe(
       catchError(this.handleError.bind(this))
     );
   }
 
   loadStateData(key: string): Observable<string> {
     this.logger.debug(`Loading state data - ${key}`);
-    return this.http.get<string>(`${this.apiUrl}/loadStateData/${key}`).pipe(
+    return this.httpClient.get<string>(`${this.apiUrl}/loadStateData/${key}`).pipe(
       catchError(this.handleError.bind(this))
     );
   }
   loadUserState(): Observable<UserState> {
     this.logger.debug('Loading user state');
-    return this.http.get<UserState>(`${this.apiUrl}/loadUserState`).pipe(
+    return this.httpClient.get<UserState>(`${this.apiUrl}/loadUserState`).pipe(
       catchError(this.handleError.bind(this))
     );
   }
   setUserState(state: UserState): Observable<void> {
     this.logger.debug('Setting user state', { state });
-    return this.http.post<void>(`${this.apiUrl}/setUserState`, state).pipe(
+    return this.httpClient.post<void>(`${this.apiUrl}/setUserState`, state).pipe(
       catchError(this.handleError.bind(this))
     );
   }
@@ -137,8 +169,12 @@ export class UserStateService {
   }
 
   setLoginDateTime(dateTime: Date): Observable<void> {
-    const dto: LoginDateTimeDTO = { dateTime: dateTime.toISOString() };
-    return this.http.post<void>(`${this.apiUrl}/saveLoginDateTime`, dto);
+    const dto: LoginDateTimeDTO = { 
+      timestamp: dateTime.toISOString(),
+      formatted: dateTime.toLocaleString(),
+      timeAgo: 'Just now'
+    };
+    return this.httpClient.post<void>(`${this.apiUrl}/saveLoginDateTime`, dto);
   }
 
   getLoginDateTime(): Date | null {
@@ -166,7 +202,7 @@ export class UserStateService {
   }
 
   setVisitedPage(pageName: string): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/saveVisitedPage/${pageName}`, null);
+    return this.httpClient.post<void>(`${this.apiUrl}/saveVisitedPage/${pageName}`, null);
   }
 
   getVisitedPages(): string[] {
@@ -181,7 +217,7 @@ export class UserStateService {
     this.logger.debug('Saving opened documents', { count: this.openedDocuments.length });
     const callId = this.logger.startServiceCall('UserStateService', 'POST', '/api/files/saveOpenedDocuments');
     
-    return this.api.post<Document[], void>('/api/files/saveOpenedDocuments', this.openedDocuments).pipe(
+    return this.httpClient.post<void>('/api/files/saveOpenedDocuments', this.openedDocuments).pipe(
       map(response => {
         this.logger.endServiceCall(callId, 200);
         return response;
@@ -195,7 +231,7 @@ export class UserStateService {
 
   private loadOpenedDocuments(): Observable<string[]> {
     console.log('STATE: Loading opened documents');
-    return this.api.get<string[]>('/api/files/getOpenedDocuments').pipe(
+    return this.httpClient.get<string[]>('/api/files/getOpenedDocuments').pipe(
       catchError(error => {
       if (error.status === 404) {
         console.log('STATE: No opened documents found, returning empty array.');
@@ -212,42 +248,42 @@ export class UserStateService {
 
   private saveLoginDateTime(): Observable<void> {
     console.log('STATE: Saving login date/time:', this.loginDateTime);
-    return this.api.post<{ dateTime: string | undefined }, void>('/api/user/saveLoginDateTime', { dateTime: this.loginDateTime?.toISOString() }).pipe(
+    return this.httpClient.post<void>('/api/user/saveLoginDateTime', { dateTime: this.loginDateTime?.toISOString() }).pipe(
       catchError(this.handleError)
     );
   }
 
   private loadLoginDateTime(): Observable<Date> {
     console.log('STATE: Loading login date/time');
-    return this.api.get<Date>('/api/user/getLoginDateTime').pipe(
+    return this.httpClient.get<Date>('/api/user/getLoginDateTime').pipe(
       catchError(this.handleError)
     );
   }
 
   private saveVisitLength(): Observable<void> {
     console.log('STATE: Saving visit length:', this.visitLength);
-    return this.api.post<{ length: number | null }, void>('/api/user/saveVisitLength', { length: this.visitLength }).pipe(
+    return this.httpClient.post<void>('/api/user/saveVisitLength', { length: this.visitLength }).pipe(
       catchError(this.handleError)
     );
   }
 
   private loadVisitLength(): Observable<number> {
     console.log('STATE: Loading visit length');
-    return this.api.get<number>('/api/user/getVisitLength').pipe(
+    return this.httpClient.get<number>('/api/user/getVisitLength').pipe(
       catchError(this.handleError)
     );
   }
 
   private saveVisitedPages(): Observable<void> {
     console.log('STATE: Saving visited pages:', this.visitedPages);
-    return this.api.post<string[], void>('/api/user/saveVisitedPages', this.visitedPages).pipe(
+    return this.httpClient.post<void>('/api/user/saveVisitedPages', this.visitedPages).pipe(
       catchError(this.handleError)
     );
   }
 
   private loadVisitedPages(): Observable<string[]> {
     console.log('STATE: Loading visited pages');
-    return this.api.get<string[]>('/api/user/getVisitedPages').pipe(
+    return this.httpClient.get<string[]>('/api/user/getVisitedPages').pipe(
       catchError(this.handleError)
     );
   }
@@ -262,7 +298,7 @@ export class UserStateService {
   }
 
   getCurrentUser(): Observable<UserState> {
-    return this.api.get<UserState>('/users/getCurrentUser').pipe(
+    return this.httpClient.get<UserState>('/api/users/getCurrentUser').pipe(
       catchError(this.handleError.bind(this))
     );
   }
@@ -272,8 +308,7 @@ export class UserStateService {
    * @returns Observable<User[]> - Array of users
    */
   getAllUsers(): Observable<User[]> {
-    // Remove the 'api/' prefix since ApiService already adds '/api/'
-    return this.api.get<User[]>('users').pipe(
+    return this.httpClient.get<User[]>('/api/users').pipe(
       catchError(this.handleError.bind(this))
     );
   }

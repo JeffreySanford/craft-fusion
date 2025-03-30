@@ -1,0 +1,204 @@
+<div class="api-monitor-container" [ngClass]="themeClass">
+  <div class="header">
+    <div class="title-section">
+      <h2>API Monitor</h2>
+      <p class="subtitle">Real-time API call tracking and debugging</p>
+    </div>
+    
+    <div class="controls">
+      <div class="search-box">
+        <mat-form-field appearance="outline">
+          <mat-label>Search API calls</mat-label>
+          <input matInput [(ngModel)]="searchTerm" (keyup)="applyFilters()" placeholder="Search by URL or method...">
+          <mat-icon matPrefix>search</mat-icon>
+          <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''; applyFilters()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      
+      <div class="filter-buttons">
+        <button mat-stroked-button 
+                [class.active]="showSuccessRequests" 
+                (click)="toggleFilter('success')" 
+                class="success-filter">
+          <mat-icon>check_circle</mat-icon>
+          Success
+        </button>
+        
+        <button mat-stroked-button 
+                [class.active]="showWarningRequests" 
+                (click)="toggleFilter('warning')" 
+                class="warning-filter">
+          <mat-icon>help</mat-icon>
+          Redirects
+        </button>
+        
+        <button mat-stroked-button 
+                [class.active]="showErrorRequests" 
+                (click)="toggleFilter('error')" 
+                class="error-filter">
+          <mat-icon>error</mat-icon>
+          Errors
+        </button>
+        
+        <button mat-stroked-button (click)="toggleSort()">
+          <mat-icon>{{ sortNewestFirst ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+          {{ sortNewestFirst ? 'Newest First' : 'Oldest First' }}
+        </button>
+      </div>
+      
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" (click)="refreshLogs()">
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
+        
+        <button mat-raised-button color="warn" (click)="clearLogs()">
+          <mat-icon>delete</mat-icon>
+          Clear Logs
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="content" [class.has-selected-call]="selectedApiCall !== null">
+    <!-- Stats Cards -->
+    <div class="stats-section">
+      <div class="stat-card total">
+        <div class="stat-value">{{ totalRequests }}</div>
+        <div class="stat-label">Total Requests</div>
+      </div>
+      
+      <div class="stat-card success">
+        <div class="stat-value">{{ successfulRequests }}</div>
+        <div class="stat-label">Successful</div>
+      </div>
+      
+      <div class="stat-card error">
+        <div class="stat-value">{{ failedRequests }}</div>
+        <div class="stat-label">Failed</div>
+      </div>
+      
+      <div class="stat-card time">
+        <div class="stat-value">{{ averageResponseTime }}ms</div>
+        <div class="stat-label">Avg Response Time</div>
+      </div>
+    </div>
+    
+    <!-- API Calls List -->
+    <div class="api-calls-list" [class.with-details]="selectedApiCall">
+      <div *ngFor="let log of filteredLogs" 
+           class="api-call-item"
+           [class.active]="selectedApiCall === log"
+           (click)="viewApiCallDetails(log)">
+        <div class="status-indicator" [ngClass]="getStatusClass(log.response.status)">
+          <span class="status-code">{{ log.response.status || 'N/A' }}</span>
+        </div>
+        
+        <div class="request-method" [ngClass]="log.request.method.toLowerCase()">
+          {{ log.request.method }}
+        </div>
+        
+        <div class="request-url">
+          {{ log.request.url }}
+        </div>
+        
+        <div class="response-time">
+          {{ log.responseTime }}ms
+        </div>
+        
+        <div class="timestamp">
+          {{ formatTimeAgo(log.timestamp) }}
+        </div>
+      </div>
+      
+      <div *ngIf="filteredLogs.length === 0" class="empty-logs-message">
+        <mat-icon>search_off</mat-icon>
+        <span>No API calls found matching your criteria</span>
+        <button mat-raised-button color="primary" (click)="generateSampleLogs()">Generate Sample Data</button>
+      </div>
+    </div>
+    
+    <!-- API Call Details -->
+    <div class="api-call-details" *ngIf="selectedApiCall">
+      <div class="details-header">
+        <h3>API Call Details</h3>
+        <button mat-icon-button (click)="closeDetails()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <div class="details-content">
+        <div class="details-section">
+          <h4>Request</h4>
+          <div class="details-grid">
+            <div class="detail-row">
+              <div class="detail-label">Method:</div>
+              <div class="detail-value method" [ngClass]="selectedApiCall.request.method.toLowerCase()">
+                {{ selectedApiCall.request.method }}
+              </div>
+            </div>
+            
+            <div class="detail-row">
+              <div class="detail-label">URL:</div>
+              <div class="detail-value url">{{ selectedApiCall.request.url }}</div>
+            </div>
+            
+            <div class="detail-row" *ngIf="selectedApiCall.request.headers">
+              <div class="detail-label">Headers:</div>
+              <div class="detail-value code">
+                <pre>{{ formatJson(selectedApiCall.request.headers) }}</pre>
+              </div>
+            </div>
+            
+            <div class="detail-row" *ngIf="selectedApiCall.request.body">
+              <div class="detail-label">Body:</div>
+              <div class="detail-value code">
+                <pre>{{ formatJson(selectedApiCall.request.body) }}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="details-section">
+          <h4>Response</h4>
+          <div class="details-grid">
+            <div class="detail-row">
+              <div class="detail-label">Status:</div>
+              <div class="detail-value status" [ngClass]="getStatusClass(selectedApiCall.response.status)">
+                {{ selectedApiCall.response.status || 'N/A' }}
+              </div>
+            </div>
+            
+            <div class="detail-row">
+              <div class="detail-label">Time:</div>
+              <div class="detail-value">{{ selectedApiCall.responseTime }}ms</div>
+            </div>
+            
+            <div class="detail-row" *ngIf="selectedApiCall.response.headers">
+              <div class="detail-label">Headers:</div>
+              <div class="detail-value code">
+                <pre>{{ formatJson(selectedApiCall.response.headers) }}</pre>
+              </div>
+            </div>
+            
+            <div class="detail-row" *ngIf="selectedApiCall.response.body">
+              <div class="detail-label">Body:</div>
+              <div class="detail-value code">
+                <pre>{{ formatJson(selectedApiCall.response.body) }}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="details-section" *ngIf="selectedApiCall.error">
+          <h4>Error</h4>
+          <div class="detail-value error-message">
+            <pre>{{ formatJson(selectedApiCall.error) }}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

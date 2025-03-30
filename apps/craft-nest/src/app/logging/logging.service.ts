@@ -1,120 +1,120 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { createWriteStream, existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
+import { WriteStream } from 'fs';
+import { Observable, of } from 'rxjs';
 
 export interface LogEntry {
-  timestamp: string;
   level: string;
   message: string;
+  timestamp: string;
+  context?: string;
   metadata?: any;
-  source: 'backend';
+  trace?: string;
 }
 
 @Injectable()
 export class LoggingService {
+  private readonly logger = new Logger(LoggingService.name);
+  private logStream: WriteStream | undefined;
   private logs: LogEntry[] = [];
-  private readonly MAX_LOGS = 1000; // Prevent memory issues
+  private readonly maxLogs = 1000; // Keep at most 1000 logs in memory
 
   constructor() {
-    // Capture console methods
-    this.interceptConsole();
+    this.logger.log('LoggingService initialized');
+    this.setupLogFile();
   }
 
-  debug(message: string, metadata?: any): void {
-    this.addLog('debug', message, metadata);
+  private setupLogFile(): void {
+    try {
+      const logDir = join(process.cwd(), 'logs');
+      if (!existsSync(logDir)) {
+        mkdirSync(logDir, { recursive: true });
+      }
+      
+      const logFile = join(logDir, `app-${new Date().toISOString().split('T')[0]}.log`);
+      this.logStream = createWriteStream(logFile, { flags: 'a' });
+      this.logger.log(`Log file created at: ${logFile}`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to set up log file: ${errorMessage}`);
+    }
   }
 
-  info(message: string, metadata?: any): void {
-    this.addLog('info', message, metadata);
+  log(message: string, context?: string, metadata?: any): void {
+    this.addLogEntry('info', message, context, metadata);
+    this.logger.log(message, context);
+  }
+  
+  info(message: string, context?: string, metadata?: any): void {
+    this.log(message, context, metadata);
   }
 
-  warn(message: string, metadata?: any): void {
-    this.addLog('warn', message, metadata);
+  error(message: string, trace?: string, context?: string, metadata?: any): void {
+    this.addLogEntry('error', message, context, metadata, trace);
+    this.logger.error(message, trace, context);
   }
 
-  error(message: string, metadata?: any): void {
-    this.addLog('error', message, metadata);
+  warn(message: string, context?: string, metadata?: any): void {
+    this.addLogEntry('warn', message, context, metadata);
+    this.logger.warn(message, context);
   }
 
-  private addLog(level: string, message: string, metadata?: any): void {
+  debug(message: string, context?: string, metadata?: any): void {
+    this.addLogEntry('debug', message, context, metadata);
+    this.logger.debug(message, context);
+  }
+
+  verbose(message: string, context?: string, metadata?: any): void {
+    this.addLogEntry('verbose', message, context, metadata);
+    this.logger.verbose(message, context);
+  }
+
+  private addLogEntry(level: string, message: string, context?: string, metadata?: any, trace?: string): void {
+    const timestamp = new Date().toISOString();
     const logEntry: LogEntry = {
-      timestamp: new Date().toISOString(),
       level,
       message,
+      timestamp,
+      context,
       metadata,
-      source: 'backend'
+      trace,
     };
 
+    // Add to in-memory logs (with size limit)
     this.logs.push(logEntry);
+    if (this.logs.length > this.maxLogs) {
+      this.logs.shift(); // Remove oldest log when limit is reached
+    }
 
-    // Trim logs if they exceed the maximum
-    if (this.logs.length > this.MAX_LOGS) {
-      this.logs = this.logs.slice(-this.MAX_LOGS);
+    // Write to log file
+    if (this.logStream) {
+      try {
+        this.logStream.write(`${JSON.stringify(logEntry)}\n`);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        this.logger.error(`Failed to write to log file: ${errorMessage}`);
+      }
     }
   }
 
-  getLogs(level?: string, limit = 100): LogEntry[] {
-    if (!level || level === 'all') {
-      return this.logs.slice(-limit);
+  getLogs(limit: number = 100, level?: string): Observable<LogEntry[]> {
+    let filteredLogs = [...this.logs];
+    
+    if (level) {
+      filteredLogs = filteredLogs.filter(log => log.level === level);
     }
-    return this.logs.filter(log => log.level === level).slice(-limit);
+    
+    const result = filteredLogs
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, limit);
+      
+    return of(result);
   }
 
-  clearLogs(): void {
+  clearLogs(): Observable<boolean> {
+    this.logger.log('Clearing in-memory logs');
     this.logs = [];
-  }
-
-  private interceptConsole(): void {
-    // Save original console methods
-    const originalConsole = {
-      log: console.log,
-      info: console.info,
-      warn: console.warn,
-      error: console.error,
-      debug: console.debug,
-    };
-
-    // Override console.log
-    console.log = (...args: any[]) => {
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-      ).join(' ');
-      this.addLog('log', message);
-      originalConsole.log.apply(console, args);
-    };
-
-    // Override console.info
-    console.info = (...args: any[]) => {
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-      ).join(' ');
-      this.addLog('info', message);
-      originalConsole.info.apply(console, args);
-    };
-
-    // Override console.warn
-    console.warn = (...args: any[]) => {
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-      ).join(' ');
-      this.addLog('warn', message);
-      originalConsole.warn.apply(console, args);
-    };
-
-    // Override console.error
-    console.error = (...args: any[]) => {
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-      ).join(' ');
-      this.addLog('error', message);
-      originalConsole.error.apply(console, args);
-    };
-
-    // Override console.debug
-    console.debug = (...args: any[]) => {
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-      ).join(' ');
-      this.addLog('debug', message);
-      originalConsole.debug.apply(console, args);
-    };
+    return of(true);
   }
 }

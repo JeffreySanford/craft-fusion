@@ -107,6 +107,51 @@ $content-padding: 1.5em;
   }
 }
 
+// Header container mixin
+@mixin header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--md-sys-header-height, 4rem);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  color: white;
+  
+  @include responsive.sm-down {
+    padding: 0 0.5rem;
+    height: var(--md-sys-header-height-mobile, 3.5rem);
+  }
+}
+
+// Logo container mixin
+@mixin logo-container {
+  display: flex;
+  align-items: center;
+  margin-right: 2rem;
+}
+
+// Navigation links mixin
+@mixin nav-links {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 1.5rem;
+}
+
+// Header actions mixin
+@mixin header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
 /* ===== Sidebar Layout ===== */
 @mixin sidebar {
   width: var(--md-sys-sidebar-width, 250px);
@@ -278,15 +323,72 @@ $content-padding: 1.5em;
 
 /* Simple main stage mixin without cloud effects */
 @mixin main-stage {
-  flex: 1;
-  background: rgba(0, 0, 0, 0.7);
-  color: var(--md-sys-color-on-surface);
+  border-radius: 8px;
+  margin: 0 0.5em;
   padding: 1em;
-  margin: 0 0.25em;
-  border-radius: var(--md-sys-shape-corner-medium);
+  
+  // Use variables for color with transparency
+  background-color: rgba(var(--content-bg-rgb, 255, 255, 255), 0.95);
+  color: rgba(var(--text-color-rgb, 0, 0, 0), 0.87);
+  
+  // Add smooth transitions for animations
+  transition: 
+    background-color 0.3s ease,
+    color 0.3s ease,
+    opacity 0.3s ease;
+  
+  // Box shadow with slight transparency
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  
+  // Ensure inner content can have animations
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// Container with transparency support
+@mixin transparent-container {
+  background-color: transparent;
   position: relative;
-  overflow: auto;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(var(--container-bg-rgb, 255, 255, 255), 0.6);
+    z-index: -1;
+    border-radius: inherit;
+    transition: background-color 0.3s ease;
+  }
+}
+
+// Animation-friendly panel
+@mixin animation-panel {
+  position: relative;
+  overflow: hidden;
+  
+  // Create a layer for animations
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    background-color: transparent;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  
+  &.animate::after {
+    opacity: 0.2;
+  }
 }
 
 .mainstage {
@@ -299,18 +401,24 @@ $content-padding: 1.5em;
  */
 @mixin content-container {
   width: 100%;
-  height: auto;
-  padding: 1em;
+  max-width: 1200px;
+  margin: 0 auto;
   box-sizing: border-box;
-  background-color: rgba(0, 0, 0, 0.4);
-  border-radius: var(--md-sys-shape-corner-medium);
-  position: relative;
-  overflow: auto;
-  margin-bottom: 1em;
+}
 
-  @media (max-width: map.get(vars.$breakpoints, 'md')) {
-    padding: 0.5em;
-  }
+/* Responsive grid mixin */
+@mixin responsive-grid($min-width, $fraction) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax($min-width, $fraction));
+  grid-gap: 1rem;
+}
+
+/* Main stage mixin for content area */
+@mixin main-stage {
+  padding: 1rem;
+  background-color: var(--md-sys-color-surface);
+  border-radius: 8px;
+  box-shadow: var(--md-sys-elevation-level1);
 }
 
 /* ===== Footer Layout ===== */

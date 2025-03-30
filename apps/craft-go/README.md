@@ -13,6 +13,70 @@ This is the Go implementation of the Craft Fusion API.
 > - **DO NOT** create a package.json file in this directory
 > - Any Node.js tooling needed for this application must be added to the root package.json
 
+## Dependency Management
+
+Go's dependency injection is handled differently than Angular, but we follow similar principles to avoid circular imports:
+
+### Interface-based Design
+
+- Define interfaces in separate packages to break import cycles
+- Implement interfaces in the consuming packages
+
+### Dependency Inversion
+
+- Higher-level packages define interfaces that lower-level packages implement
+- Avoid direct references between packages at the same level
+
+### Wire Package Pattern
+
+- Use a dedicated "wire" package for dependency initialization
+- Separates the dependency graph from business logic
+
+These patterns complement the frontend's `HttpClientWrapperService` approach by ensuring clean dependency management throughout the stack.
+
+## Health Monitoring
+
+Craft-Go implements robust health monitoring endpoints compatible with the frontend monitoring system and other backend services:
+
+### Health Endpoints
+
+The application exposes several health check endpoints:
+
+- **`/health`**: Primary health endpoint that requires no authentication
+- **`/api/health`**: API-prefixed version of the health endpoint
+- **`/status`**: Simplified status information
+- **`/api/status`**: API-prefixed status endpoint
+
+### Health Response Format
+
+Health endpoints return a standardized JSON response that matches the NestJS implementation:
+
+```go
+type HealthStatus struct {
+    Status      string `json:"status"`       // "online", "degraded", or "offline"
+    Uptime      int64  `json:"uptime"`       // Milliseconds since start
+    Timestamp   int64  `json:"timestamp"`    // Current Unix timestamp
+    Hostname    string `json:"hostname"`     // Server hostname
+    Version     string `json:"version"`      // Application version
+    Environment string `json:"environment"`  // Deployment environment
+    Memory      struct {
+        Free  int64 `json:"free"`            // Free memory in bytes
+        Total int64 `json:"total"`           // Total memory in bytes
+        Usage int   `json:"usage"`           // Usage percentage
+    } `json:"memory"`
+    Services struct {
+        Database string `json:"database"`     // "up", "down", or "degraded"
+        Cache    string `json:"cache"`        // "up", "down", or "degraded"
+    } `json:"services"`
+}
+```
+
+### Implementation Details
+
+- **No Authentication Required**: Health endpoints are exempt from authentication middleware
+- **Multiple Entry Points**: Multiple URL paths are supported for maximum compatibility with various clients
+- **Low Overhead**: Health checks are designed to be lightweight and have minimal performance impact
+
 ## Getting Started
 
 ### Craft-Go: Go Backend Service
@@ -367,13 +431,13 @@ Enhance readability using red, white, and blue (🇺🇸) color coding:
 ```ascii
 Monorepo Adoption
 | Features Added (In Red)
-| 10 -----------
-|  8 ----------
-|  6 ----------
-|  4 ----------
-|  2 ----------
-|_______________
-   Q1   Q2   Q3
+| 10 -----------  
+|  8 ----------  
+|  6 ----------  
+|  4 ----------  
+|  2 ----------  
+|_______________  
+   Q1   Q2   Q3  
       (In Blue)
 ```
 

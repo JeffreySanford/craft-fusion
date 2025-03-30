@@ -1,71 +1,48 @@
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from './app/app.module'; // Ensure this path is correct
 import { Logger } from '@nestjs/common';
-import helmet from 'helmet';
-import * as fs from 'fs';
-import { ConfigService } from '@nestjs/config';
+import { AppModule } from './app/app.module';
+import { Request, Response } from 'express';
 
 async function bootstrap() {
-  const appInstance = await NestFactory.create(AppModule);
-  const configService = appInstance.get(ConfigService);
-
-  const NODE_ENV = configService.get<string>('NODE_ENV') || 'development';
-  const isProduction = NODE_ENV === 'production';
-  const HOST = isProduction ? 'jeffreysanford.us' : 'localhost';
-  const PORT = configService.get<number>('NEST_PORT') || 3000;
-  const protocol = isProduction ? 'https' : 'http';
-
-  Logger.log(`Starting server in ${NODE_ENV} mode`);
-  Logger.log(`Host: ${HOST}, Port: ${PORT}`);
-
-  let httpsOptions;
-  if (isProduction) {
-    const keyPath = '/etc/letsencrypt/live/jeffreysanford.us/privkey.pem';
-    const certPath = '/etc/letsencrypt/live/jeffreysanford.us/fullchain.pem';
-    if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
-      try {
-        httpsOptions = {
-          key: fs.readFileSync(keyPath),
-          cert: fs.readFileSync(certPath),
-        };
-      } catch (error) {
-        Logger.error('Error reading SSL files, running without HTTPS', error);
-      }
-    } else {
-      Logger.error('SSL files not found, running without HTTPS');
-    }
-  }
-
-  const app = await NestFactory.create(AppModule, { httpsOptions });
-
-  // Set global prefix for all routes
-  app.setGlobalPrefix('api');
-
+  const logger = new Logger('Bootstrap');
+  logger.log('Starting Craft Fusion NestJS application...');
+  
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+  });
+  
+  // Enable CORS
   app.enableCors({
-    origin: ['http://localhost:4200', 'https://jeffreysanford.us', 'https://www.jeffreysanford.us'],
+    origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    exposedHeaders: ['Content-Range', 'X-Content-Range'],
-    maxAge: 3600
   });
-
-  app.use(helmet());
-
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('API Documentation')
-    .setDescription('API description')
-    .setVersion('1.0')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/api-docs', app, document);
-
-  Logger.log('Swagger is set up at /api/api-docs');
-
-  await app.listen(PORT, '0.0.0.0');
-  Logger.log(`Server running on ${protocol}://${HOST}:${PORT}`);
+  logger.log('CORS enabled for all origins');
+  
+  // Add global prefix for API endpoints
+  app.setGlobalPrefix('api');
+  logger.log('Global API prefix set to /api');
+  
+  // Create a special route for health checks that doesn't use the global prefix
+  app.use('/health', (req: Request, res: Response) => {
+    logger.log('Direct health check endpoint accessed');
+    const healthData = {
+      status: 'online',
+      timestamp: new Date().toISOString(),
+      message: 'Service is healthy',
+    };
+    res.json(healthData);
+  });
+  
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+  logger.log(`Application is running on: http://localhost:${port}`);
+  logger.log(`Health check available at: http://localhost:${port}/health`);
+  logger.log(`API endpoints available at: http://localhost:${port}/api/*`);
 }
 
-bootstrap();
+bootstrap().catch(err => {
+  const logger = new Logger('Bootstrap');
+  logger.error('Failed to start application', err);
+  process.exit(1);
+});

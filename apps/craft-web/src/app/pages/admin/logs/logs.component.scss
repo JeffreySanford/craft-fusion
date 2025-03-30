@@ -81,6 +81,48 @@
       overflow: auto;
     }
   }
+  
+  .hit-count-cell {
+    width: 70px;
+    text-align: center;
+  }
+}
+
+.hit-counter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  background-color: rgba(var(--md-sys-color-surface-variant-rgb), 0.5);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.85em;
+  font-weight: 500;
+  padding: 0 8px;
+  transition: all 0.3s ease;
+  
+  &.multiple {
+    background-color: rgba(var(--md-sys-color-tertiary-rgb), 0.2);
+    color: var(--md-sys-color-tertiary);
+    font-weight: 700;
+    animation: pulse-count 2s infinite;
+  }
+}
+
+@keyframes pulse-count {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(var(--md-sys-color-tertiary-rgb), 0.5);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(var(--md-sys-color-tertiary-rgb), 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(var(--md-sys-color-tertiary-rgb), 0);
+  }
 }
 
 // Log level styling
@@ -109,4 +151,41 @@
   transform: translate(-50%, -50%);
   color: var(--md-sys-color-on-surface-variant);
   font-style: italic;
+}
+
+.category-pill {
+  display: inline-block;
+  padding: 0.25em 0.5em;
+  border-radius: 4px;
+  background-color: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.expanded-row {
+  transition: all 0.3s ease;
+  &.expanded {
+    background-color: rgba(var(--md-sys-color-secondary-rgb), 0.1);
+  }
+
+  .expanded-content {
+    padding: 1em 0.5em;
+    animation: expand 0.3s ease;
+  }
+}
+
+@keyframes expand {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dark-theme {
+  // Dark theme overrides go here
 }

@@ -1,601 +1,690 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { catchError, tap } from 'rxjs/operators';
+import { v4 as uuidv4 } from 'uuid';
 
+/**
+ * Log levels in increasing verbosity
+ */
 export enum LogLevel {
-  DEBUG = 0,
-  INFO = 1,
-  WARN = 2,
-  ERROR = 3
+  ERROR = 0,
+  WARNING = 1,
+  INFO = 2,
+  DEBUG = 3,
+  PERFORMANCE = 4
 }
 
-export interface LogEntry {
+/**
+ * Performance metric format for detailed performance logging
+ */
+export interface PerformanceMetric {
+  action: string;
+  duration: number;
   timestamp: Date;
-  level: LogLevel;
+  category?: string;
+}
+
+/**
+ * Enhanced Log Entry format with detailed metadata
+ */
+export interface LogEntry {
+  level: string;
   message: string;
-  component?: string;
+  timestamp: Date;
+  data?: any;
+  step?: string;
+  stepNumber?: number;
+  context?: string;
+  category?: string;
+  source?: string;
+  serviceName?: string;
+  metrics?: Array<{name: string, value: any, unit?: string}>;
+  content?: any;
   details?: any;
 }
 
-export interface ServiceCallMetric {
+/**
+ * Step tracking information
+ */
+export interface StepInfo {
   id: string;
-  timestamp: Date;
-  serviceName: string;
-  method: string;
-  url: string;
-  status?: number;
-  duration?: number;
-  error?: any;
-  // Additional properties needed by admin component
-  errorRate?: number;
-  authAttempts?: number;
-  securityEvents?: number;
-  activeUsers?: number;
-  averageLatency?: number;
-  lastIncident?: Date;
+  name: string;
+  startTime: number;
+  endTime?: number;
+  status: 'running' | 'completed' | 'failed';
+  parentId?: string;
+  children: string[];
+  data?: any;
+}
+
+/**
+ * Log level info for styling
+ */
+export interface LogLevelInfo {
+  color: string;
+  icon: string;
+  label: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoggerService {
-  private logs: LogEntry[] = [];
-  private logLimit = 1000; // Maximum number of logs to store
-  private loggerLevel = LogLevel.DEBUG; // Current log level
-  private logSubject = new Subject<LogEntry>();
+  private readonly logLevel = environment.logLevel || 'info';
+  private logHistory: LogEntry[] = [];
+  private performanceMetrics: PerformanceMetric[] = [];
+  private activeServices = new Set<string>();
+  private logToConsole = true;
   
-  // Service call tracking
-  private serviceMetrics: ServiceCallMetric[] = [];
-  private serviceMetricsLimit = 100;
-  private serviceCallsSubject = new BehaviorSubject<ServiceCallMetric[]>([]);
-  private registeredServices: Set<string> = new Set();
-  private serviceCallsInProgress: Map<string, ServiceCallMetric> = new Map();
-  
-  // Observable that components can subscribe to for log updates
-  logAdded$ = this.logSubject.asObservable();
-  logStream$ = this.logSubject.asObservable(); // Alias for compatibility
-  serviceCalls$ = this.serviceCallsSubject.asObservable();
+  // Explicit type signature for color mapping
+  private colorMapping: Record<string, string> = {
+    error: '#BF0A30', // Red
+    warn: '#FFC107',  // Yellow/Gold
+    info: '#002868',  // Navy Blue
+    debug: '#8A2BE2', // Blue Violet
+    trace: '#4CAF50',  // Green
+    performance: '#4CAF50' // Performance
+  };
 
-  constructor() {
-    // Check for stored log level preference
-    const storedLevel = localStorage.getItem('loggerLevel');
-    if (storedLevel !== null) {
-      this.loggerLevel = parseInt(storedLevel, 10);
-    }
-    
-    this.info('LoggerService initialized', { level: this.loggerLevel });
-  }
+  // Logs observable for components that need to subscribe to log updates
+  private logsSubject = new BehaviorSubject<LogEntry[]>([]);
+  public logs$ = this.logsSubject.asObservable();
 
-  setLevel(level: LogLevel) {
-    this.loggerLevel = level;
-    localStorage.setItem('loggerLevel', level.toString());
-  }
+  // Step tracking
+  private steps = new Map<string, StepInfo>();
+  private currentSteps$ = new BehaviorSubject<StepInfo[]>([]);
+  private stepCounter = 0;
+  private flowId = this.generateFlowId();
 
-  getLevel(): LogLevel {
-    return this.loggerLevel;
-  }
+  // For service call tracking
+  private serviceCallStartTimes = new Map<string, number>();
 
-  debug(message: string, details?: any, component: string = this.getCallerComponent()) {
-    this.log(LogLevel.DEBUG, message, details, component);
-  }
+  constructor(private http: HttpClient) {
+    console.log('%c📋 Logger Service Initialized 📋', 'background: #002868; color: white; padding: 4px; border-radius: 4px; font-weight: bold;');
 
-  info(message: string, details?: any, component: string = this.getCallerComponent()) {
-    this.log(LogLevel.INFO, message, details, component);
+    // Print logger configuration
+    console.log(
+      `%cLogger Configuration:\n` +
+      `Log Level: ${this.logLevel}\n` +
+      `Environment: ${environment.production ? 'Production' : 'Development'}\n` +
+      `Console Output: ${this.logToConsole ? 'Enabled' : 'Disabled'}`,
+      'background: #333; color: #bada55; padding: 4px; border-radius: 4px;'
+    );
   }
 
-  warn(message: string, details?: any, component: string = this.getCallerComponent()) {
-    this.log(LogLevel.WARN, message, details, component);
-  }
-
-  error(message: string, details?: any, component: string = this.getCallerComponent()) {
-    this.log(LogLevel.ERROR, message, details, component);
-  }
-  
-  highlight(message: string, details?: any, component: string = this.getCallerComponent()) {
-    // Special highlighted log - treat as INFO level
-    this.log(LogLevel.INFO, `⭐ ${message} ⭐`, details, component);
-  }
-  
-  // Service call tracking methods
+  /**
+   * Register a service with the logger
+   * @param serviceName Name of the service to register
+   */
   registerService(serviceName: string): void {
-    if (!this.registeredServices.has(serviceName)) {
-      this.registeredServices.add(serviceName);
-      this.debug(`Service registered: ${serviceName}`);
-    }
+    this.activeServices.add(serviceName);
+    this.info(`Service registered: ${serviceName}`, {
+      category: 'SERVICE_REGISTRY',
+      source: 'LoggerService'
+    });
   }
-  
-  startServiceCall(serviceName: string, method: string, url: string): string {
-    const callId = `${serviceName}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    const metric: ServiceCallMetric = {
-      id: callId,
-      timestamp: new Date(),
-      serviceName,
+
+  /**
+   * Log a message at the info level with USA-themed styling
+   * @param message Message to log
+   * @param data Optional data to include in the log
+   */
+  info(message: string, data?: any): void {
+    this.log('info', message, data);
+  }
+
+  /**
+   * Log a message at the debug level
+   * @param message Message to log
+   * @param data Optional data to include in the log
+   */
+  debug(message: string, data?: any): void {
+    this.log('debug', message, data);
+  }
+
+  /**
+   * Log a message at the error level
+   * @param message Message to log
+   * @param data Optional data to include in the log
+   */
+  error(message: string, data?: any): void {
+    this.log('error', message, data);
+  }
+
+  /**
+   * Log a message at the warn level
+   * @param message Message to log
+   * @param data Optional data to include in the log
+   */
+  warn(message: string, data?: any): void {
+    this.log('warn', message, data);
+  }
+
+  /**
+   * Log a message at the trace level
+   * @param message Message to log
+   * @param data Optional data to include in the log
+   */
+  trace(message: string, data?: any): void {
+    this.log('trace', message, data);
+  }
+
+  /**
+   * Log performance metrics
+   * @param message Message describing the performance metrics
+   * @param metrics Array of performance metrics
+   * @param metadata Optional additional metadata
+   */
+  performance(message: string, metrics: Array<{name: string, value: any, unit?: string}>, metadata?: any): void {
+    // Merge metrics and additional metadata
+    const data = {
+      metrics,
+      ...(metadata || {}) // Spread metadata if provided, otherwise empty object
+    };
+    this.log('performance', message, data);
+  }
+
+  /**
+   * Start tracking a service call
+   * @param service Service making the call
+   * @param method HTTP method
+   * @param url URL being called
+   * @returns Call ID to use with endServiceCall
+   */
+  startServiceCall(service: string, method: string, url: string): string {
+    const callId = `${service}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    this.serviceCallStartTimes.set(callId, performance.now());
+
+    this.debug(`🚀 API Call Started: ${method} ${url}`, {
+      category: 'API_CALL',
+      source: service,
+      callId,
       method,
       url
-    };
-    
-    this.serviceCallsInProgress.set(callId, metric);
-    this.debug(`Service call started: ${serviceName}`, { method, url, callId });
-    
+    });
+
     return callId;
   }
-  
-  endServiceCall(callId: string, status: number, error?: any): void {
-    const startMetric = this.serviceCallsInProgress.get(callId);
-    
-    if (startMetric) {
-      const endTime = new Date();
-      const duration = endTime.getTime() - startMetric.timestamp.getTime();
-      
-      const completedMetric: ServiceCallMetric = {
-        ...startMetric,
-        status,
-        duration,
-        error
-      };
-      
-      // Remove from in-progress map
-      this.serviceCallsInProgress.delete(callId);
-      
-      // Add to metrics history
-      this.serviceMetrics.unshift(completedMetric);
-      
-      // Limit number of stored metrics
-      if (this.serviceMetrics.length > this.serviceMetricsLimit) {
-        this.serviceMetrics.pop();
-      }
-      
-      // Notify subscribers
-      this.serviceCallsSubject.next([...this.serviceMetrics]);
-      
-      // Log appropriate message
-      if (status >= 200 && status < 300) {
-        this.debug(`Service call completed: ${startMetric.serviceName}`, 
-          { method: startMetric.method, url: startMetric.url, status, duration: `${duration}ms` });
+
+  /**
+   * End tracking a service call
+   * @param callId Call ID from startServiceCall
+   * @param statusCode HTTP status code
+   */
+  endServiceCall(callId: string, statusCode: number): void {
+    const startTime = this.serviceCallStartTimes.get(callId);
+    if (!startTime) {
+      this.warn(`Cannot end service call with unknown ID: ${callId}`);
+      return;
+    }
+
+    const duration = Math.round(performance.now() - startTime);
+    this.serviceCallStartTimes.delete(callId);
+
+    // Log at different levels based on response code
+    const level = statusCode >= 400 ? 'error' : (statusCode >= 300 ? 'warn' : 'debug');
+
+    this[level](`🏁 API Call Completed: Status ${statusCode}, Duration: ${duration}ms`, {
+      category: 'API_CALL',
+      duration,
+      statusCode,
+      callId
+    });
+
+    // Track performance metric
+    this.performanceMetrics.push({
+      action: `API Call ${callId}`,
+      duration,
+      timestamp: new Date(),
+      category: 'API_CALL'
+    });
+  }
+
+  /**
+   * Start a new step in a workflow
+   * @param name Step name
+   * @param data Optional data for the step
+   * @param parentId Optional parent step ID
+   * @returns Step ID
+   */
+  startStep(name: string, data?: any, parentId?: string): string {
+    const stepNumber = ++this.stepCounter;
+    const stepId = `${this.flowId}-step-${stepNumber}`;
+
+    const stepInfo: StepInfo = {
+      id: stepId,
+      name,
+      startTime: Date.now(),
+      status: 'running',
+      parentId,
+      children: [],
+      data
+    };
+
+    this.steps.set(stepId, stepInfo);
+
+    // If this is a child step, update parent
+    if (parentId && this.steps.has(parentId)) {
+      const parent = this.steps.get(parentId)!;
+      parent.children.push(stepId);
+      this.steps.set(parentId, parent);
+    }
+
+    // Update current steps
+    this.updateCurrentSteps();
+
+    // Log the step start
+    this.info(`📋 STEP ${stepNumber}: ${name} started`, {
+      step: name,
+      stepNumber,
+      stepId,
+      parentId,
+      category: 'STEP',
+      data
+    });
+
+    return stepId;
+  }
+
+  /**
+   * Complete a step in a workflow
+   * @param stepId Step ID from startStep
+   * @param data Optional result data
+   */
+  completeStep(stepId: string, data?: any): void {
+    if (!this.steps.has(stepId)) {
+      this.warn(`Cannot complete unknown step: ${stepId}`);
+      return;
+    }
+
+    const step = this.steps.get(stepId)!;
+    step.endTime = Date.now();
+    step.status = 'completed';
+    if (data) {
+      step.data = { ...step.data, ...data };
+    }
+
+    this.steps.set(stepId, step);
+
+    // Update current steps
+    this.updateCurrentSteps();
+
+    // Calculate duration
+    const duration = step.endTime - step.startTime;
+
+    // Log the step completion
+    this.info(`✅ STEP ${this.getStepNumberFromId(stepId)}: ${step.name} completed in ${duration}ms`, {
+      step: step.name,
+      stepId,
+      duration,
+      category: 'STEP',
+      data: step.data
+    });
+  }
+
+  /**
+   * Fail a step in a workflow
+   * @param stepId Step ID from startStep
+   * @param error Error information
+   */
+  failStep(stepId: string, error: any): void {
+    if (!this.steps.has(stepId)) {
+      this.warn(`Cannot fail unknown step: ${stepId}`);
+      return;
+    }
+
+    const step = this.steps.get(stepId)!;
+    step.endTime = Date.now();
+    step.status = 'failed';
+    step.data = { ...step.data, error };
+
+    this.steps.set(stepId, step);
+
+    // Update current steps
+    this.updateCurrentSteps();
+
+    // Calculate duration
+    const duration = step.endTime - step.startTime;
+
+    // Log the step failure
+    this.error(`❌ STEP ${this.getStepNumberFromId(stepId)}: ${step.name} failed after ${duration}ms`, {
+      step: step.name,
+      stepId,
+      duration,
+      category: 'STEP',
+      error
+    });
+  }
+
+  /**
+   * Start a new flow with a unique ID
+   */
+  startFlow(flowName: string): string {
+    this.flowId = this.generateFlowId();
+    this.stepCounter = 0;
+
+    this.info(`🌊 FLOW: ${flowName} started`, {
+      flowId: this.flowId,
+      flowName,
+      category: 'FLOW'
+    });
+
+    return this.flowId;
+  }
+
+  /**
+   * Get the current active steps
+   */
+  getCurrentSteps(): Observable<StepInfo[]> {
+    return this.currentSteps$.asObservable();
+  }
+
+  /**
+   * Core log method - processes all log messages
+   * @param level Log level
+   * @param message Message to log
+   * @param data Optional data to include in the log
+   */
+  private log(level: string, message: string, data?: any): void {
+    // Skip logging if the level is below the configured level
+    if (!this.shouldLog(level)) {
+      return;
+    }
+
+    // Create the log entry
+    const entry: LogEntry = {
+      level,
+      message,
+      timestamp: new Date(),
+      data
+    };
+
+    // Extract metadata from data if present
+    if (data) {
+      if (data.category) entry.category = data.category;
+      if (data.context) entry.context = data.context;
+      if (data.source) entry.source = data.source;
+      if (data.step) entry.step = data.step;
+      if (data.stepNumber) entry.stepNumber = data.stepNumber;
+      if (data.serviceName) entry.serviceName = data.serviceName;
+      if (data.metrics) entry.metrics = data.metrics;
+      if (data.content) entry.content = data.content;
+      if (data.details) entry.details = data.details;
+    }
+
+    // Add to history
+    this.logHistory.push(entry);
+
+    // Notify subscribers
+    this.logsSubject.next([...this.logHistory]);
+
+    // Trim history if it gets too large
+    if (this.logHistory.length > 1000) {
+      this.logHistory.shift();
+    }
+
+    // Log to console if enabled
+    if (this.logToConsole) {
+      this.logToConsoleWithStyling(entry);
+    }
+
+    // Optional: Send log to server
+    this.sendLogToServer(entry).subscribe();
+  }
+
+  /**
+   * Log to console with patriotic styling
+   */
+  private logToConsoleWithStyling(entry: LogEntry): void {
+    const color = this.colorMapping[entry.level] || '#333333';
+    const emoji = this.getEmojiForLevel(entry.level);
+
+    // Construct message prefix
+    let prefix = `%c${emoji} ${this.formatTimestamp(entry.timestamp)}`;
+    if (entry.serviceName) prefix += ` [${entry.serviceName}]`;
+    if (entry.category) prefix += ` [${entry.category}]`;
+
+    // Style parameters for console log
+    const styles = `color: ${color}; font-weight: bold;`;
+
+    // Format data if present
+    if (entry.data && Object.keys(entry.data).length > 0) {
+      if (Object.keys(entry.data).some(key => ['category', 'context', 'source', 'step', 'stepNumber', 'serviceName'].includes(key))) {
+        // Create a new object without metadata fields for cleaner logging
+        const displayData = { ...entry.data };
+        ['category', 'context', 'source', 'step', 'stepNumber', 'serviceName'].forEach(key => {
+          delete displayData[key];
+        });
+
+        // Only log data if there are remaining properties
+        if (Object.keys(displayData).length > 0) {
+          console[entry.level === 'error' ? 'error' : 'log'](
+            `${prefix}: ${entry.message}`, styles, displayData
+          );
+        } else {
+          console[entry.level === 'error' ? 'error' : 'log'](
+            `${prefix}: ${entry.message}`, styles
+          );
+        }
       } else {
-        this.error(`Service call failed: ${startMetric.serviceName}`, 
-          { method: startMetric.method, url: startMetric.url, status, duration: `${duration}ms`, error });
+        console[entry.level === 'error' ? 'error' : 'log'](
+          `${prefix}: ${entry.message}`, styles, entry.data
+        );
       }
     } else {
-      this.warn(`Attempted to end unknown service call: ${callId}`);
-    }
-  }
-  
-  getServiceMetrics(): ServiceCallMetric[] {
-    return [...this.serviceMetrics];
-  }
-  
-  clearMetrics(): void {
-    this.serviceMetrics = [];
-    this.serviceCallsSubject.next([]);
-    this.info('Service metrics cleared');
-  }
-
-  private log(level: LogLevel, message: string, details?: any, component?: string) {
-    // Only log if the level is greater than or equal to the logger level
-    if (level >= this.loggerLevel) {
-      // If component not provided, try to determine it
-      if (!component) {
-        component = this.getCallerComponent();
-      }
-      
-      // Sanitize sensitive information in details
-      const sanitizedDetails = this.sanitizeLogDetails(details);
-      
-      // Create log entry
-      const entry: LogEntry = {
-        timestamp: new Date(),
-        level,
-        message,
-        component,
-        details: sanitizedDetails
-      };
-
-      // Add to logs array
-      this.logs.unshift(entry);
-      
-      // Limit the number of logs stored
-      if (this.logs.length > this.logLimit) {
-        this.logs.pop();
-      }
-      
-      // Notify subscribers
-      this.logSubject.next(entry);
-      
-      // Still send to console for development visibility
-      this.outputToConsole(level, message, sanitizedDetails, component);
+      console[entry.level === 'error' ? 'error' : 'log'](
+        `${prefix}: ${entry.message}`, styles
+      );
     }
   }
 
-  private outputToConsole(level: LogLevel, message: string, details?: any, component: string = '') {
-    const componentPrefix = component ? `[${component}] ` : '';
-    
-    // Enhanced color definitions for different log categories
-    const styles = {
-      // Core log levels - Updated for patriotic theme
-      debug: 'color: #3b82f6; font-weight: normal;',      // blue
-      info: 'color: #0052B4; font-weight: normal;',       // more vibrant blue for info (patriotic blue)
-      warn: 'color: #FF8C00; font-weight: bold;',         // more vibrant orange for warnings
-      error: 'color: #BF0A30; font-weight: bold;',        // patriotic red for errors
-      
-      // Special categories with patriotic colors
-      highlight: 'color: #3C3B6E; font-weight: bold; text-decoration: underline;', // patriotic navy blue
-      security: 'color: #BF0A30; font-weight: bold; background-color: rgba(191, 10, 48, 0.1); padding: 2px 4px;', // patriotic red
-      performance: 'color: #3C3B6E; font-weight: normal; font-style: italic;', // patriotic navy
-      user: 'color: #BF0A30; font-weight: normal;',       // patriotic red
-      api: 'color: #0052B4; font-weight: normal;',        // patriotic blue
-      navigation: 'color: #FF8C00; font-weight: normal;', // vibrant orange
-      data: 'color: #0052B4; font-weight: normal;',       // patriotic blue
-      storage: 'color: #BF0A30; font-weight: normal;',    // patriotic red
-      rendering: 'color: #0052B4; font-weight: normal;',  // patriotic blue
-      initialization: 'color: #3C3B6E; font-weight: normal;', // patriotic navy blue
-      lifecycle: 'color: #3C3B6E; font-weight: normal;',  // patriotic navy blue
-      usa: 'background: linear-gradient(90deg, #BF0A30, #0052B4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;', // enhanced patriotic gradient
-      system: 'color: #3C3B6E; font-weight: normal;',     // patriotic navy blue
-      
-      // Component styling
-      component: 'color: #FFFFFF; font-style: italic; background-color: rgba(60, 59, 110, 0.5); padding: 2px 4px; border-radius: 2px;'    // white on navy background for component name
+  /**
+   * Get logs filtered by level and/or category
+   * @param level Optional log level to filter by
+   * @param category Optional category to filter by
+   * @returns Filtered log entries
+   */
+  getLogs(level?: string, category?: string): LogEntry[] {
+    let filtered = [...this.logHistory];
+
+    if (level) {
+      filtered = filtered.filter(entry => entry.level === level);
+    }
+
+    if (category) {
+      filtered = filtered.filter(entry => entry.category === category);
+    }
+
+    return filtered;
+  }
+
+  /**
+   * Get logs by numeric log level
+   * @param level Numeric log level (from LogLevel enum)
+   * @returns Filtered log entries
+   */
+  getLogsByLevel(level: LogLevel): LogEntry[] {
+    // Map numeric levels to string levels
+    const levelMap = {
+      [LogLevel.ERROR]: 'error',
+      [LogLevel.WARNING]: 'warn',
+      [LogLevel.INFO]: 'info',
+      [LogLevel.DEBUG]: 'debug',
+      [LogLevel.PERFORMANCE]: 'performance'
     };
     
-    // Format component prefix with style
-    const styledPrefix = component ? `%c[${component}]%c ` : '';
-    const styledMessage = `${styledPrefix}%c${message}`;
-    
-    // Prepare style arguments
-    const styleArgs = [];
-    if (component) {
-      styleArgs.push(styles.component, ''); // Reset after component
-    }
-    
-    // Determine message category for special styling
-    let messageStyle = '';
-    
-    // Order matters here - check in order of most to least specific
-    
-    // Check for special categories first
-    if (message.includes('⭐') || message.includes('IMPORTANT')) {
-      messageStyle = styles.highlight;
-    } 
-    // Check for security-related messages
-    else if (this.isSecurityRelated(message, component, details)) {
-      messageStyle = styles.security;
-    }
-    // Authentication-related messages
-    else if (this.isAuthRelated(message, component)) {
-      messageStyle = styles.security; // Use security style for auth as well
-    }
-    // Performance-related messages
-    else if (this.isPerformanceRelated(message, component, details)) {
-      messageStyle = styles.performance;
-    }
-    // User-related messages
-    else if (this.isUserRelated(message, component)) {
-      messageStyle = styles.user;
-    }
-    // API-related messages
-    else if (this.isApiRelated(message, component)) {
-      messageStyle = styles.api;
-    }
-    // Navigation/routing related messages
-    else if (this.isNavigationRelated(message, component)) {
-      messageStyle = styles.navigation;
-    }
-    // Data handling/state related messages
-    else if (this.isDataRelated(message, component)) {
-      messageStyle = styles.data;
-    }
-    // Storage/caching related messages
-    else if (this.isStorageRelated(message, component)) {
-      messageStyle = styles.storage;
-    }
-    // Rendering/view related messages
-    else if (this.isRenderingRelated(message, component)) {
-      messageStyle = styles.rendering;
-    }
-    // Initialization related messages
-    else if (this.isInitializationRelated(message, component)) {
-      messageStyle = styles.initialization;
-    }
-    // Component lifecycle related messages
-    else if (this.isLifecycleRelated(message, component)) {
-      messageStyle = styles.lifecycle;
-    }
-    // USA/patriotic related messages
-    else if (this.isUSARelated(message, component)) {
-      messageStyle = styles.usa;
-    }
-    // System-related messages
-    else if (this.isSystemRelated(message, component)) {
-      messageStyle = styles.system;
-    }
-    else {
-      // Default styling based on log level
-      switch (level) {
-        case LogLevel.DEBUG:
-          messageStyle = styles.debug;
-          break;
-        case LogLevel.INFO:
-          messageStyle = styles.info;
-          break;
-        case LogLevel.WARN:
-          messageStyle = styles.warn;
-          break;
-        case LogLevel.ERROR:
-          messageStyle = styles.error;
-          break;
+    return this.getLogs(levelMap[level as keyof typeof levelMap]);
+  }
+
+  /**
+   * Get logs by category
+   * @param category Category name
+   * @returns Filtered log entries
+   */
+  getLogsByCategory(category: string): LogEntry[] {
+    return this.getLogs(undefined, category);
+  }
+
+  /**
+   * Get logs by tag/keyword
+   * @param tag Tag or keyword to search for
+   * @returns Filtered log entries
+   */
+  getLogsByTag(tag: string): LogEntry[] {
+    return this.logHistory.filter(entry => {
+      // Search in message
+      if (entry.message && entry.message.toLowerCase().includes(tag.toLowerCase())) {
+        return true;
       }
-    }
-    
-    // Add the detected style
-    styleArgs.push(messageStyle);
-    
-    // Output to console with appropriate styling
-    switch (level) {
-      case LogLevel.DEBUG:
-        console.debug(styledMessage, ...styleArgs, details || '');
-        break;
-      case LogLevel.INFO:
-        console.info(styledMessage, ...styleArgs, details || '');
-        break;
-      case LogLevel.WARN:
-        console.warn(styledMessage, ...styleArgs, details || '');
-        break;
-      case LogLevel.ERROR:
-        console.error(styledMessage, ...styleArgs, details || '');
-        break;
-    }
-  }
-
-  // Helper methods for categorizing log messages
-  private isSecurityRelated(message: string, component: string = '', details?: any): boolean {
-    const securityTerms = [
-      'security', 'permission', 'access', 'credential', 'protect', 'firewall',
-      'encrypt', 'decrypt', 'hash', 'salt', 'csrf', 'xss', 'injection', 'vulnerability'
-    ];
-    return Boolean(this.containsTerms(securityTerms, message) || 
-           (component && this.containsTerms(securityTerms, component)) ||
-           (component && ['AuthService', 'SecurityService', 'AuthGuard', 'PermissionService'].includes(component)));
-  }
-
-  private isAuthRelated(message: string, component: string = ''): boolean {
-    const authTerms = [
-      'auth', 'login', 'logout', 'signin', 'signout', 'register', 'password',
-      'token', 'jwt', 'authenticate', 'identity', 'oauth', 'session', 'user'
-    ];
-    return Boolean(this.containsTerms(authTerms, message) || 
-           (component && this.containsTerms(authTerms, component)) ||
-           (component && ['AuthService', 'LoginComponent', 'AuthGuard'].includes(component)));
-  }
-
-  private isPerformanceRelated(message: string, component: string = '', details?: any): boolean {
-    const perfTerms = [
-      'performance', 'latency', 'speed', 'slow', 'fast', 'metrics', 'benchmark',
-      'timeout', 'memory', 'cpu', 'load', 'resource', 'optimize', 'render time'
-    ];
-    return Boolean(this.containsTerms(perfTerms, message) || 
-           (component && this.containsTerms(perfTerms, component)) ||
-           (details && JSON.stringify(details).toLowerCase().includes('performance')));
-  }
-
-  private isUserRelated(message: string, component: string = ''): boolean {
-    const userTerms = [
-      'user', 'account', 'profile', 'logged in', 'logged out', 'signup', 'register',
-      'preference', 'settings', 'avatar', 'role', 'permission'
-    ];
-    return Boolean(this.containsTerms(userTerms, message) || 
-           (component && this.containsTerms(userTerms, component)) ||
-           (component && ['UserService', 'ProfileComponent', 'AccountComponent'].includes(component)));
-  }
-
-  private isApiRelated(message: string, component: string = ''): boolean {
-    const apiTerms = [
-      'api', 'endpoint', 'request', 'response', 'http', 'service call', 'fetch', 
-      'xhr', 'rest', 'graphql', 'post', 'get', 'put', 'delete', 'patch'
-    ];
-    return Boolean(this.containsTerms(apiTerms, message) || 
-           (component && this.containsTerms(apiTerms, component)) ||
-           (component && ['ApiService', 'HttpClient', 'ApiLoggerService', 'DataService'].includes(component)) ||
-           message.includes('/api/'));
-  }
-
-  private isNavigationRelated(message: string, component: string = ''): boolean {
-    const navTerms = [
-      'navigate', 'routing', 'route', 'path', 'url', 'link', 'redirect',
-      'forward', 'back', 'page', 'view', 'location'
-    ];
-    return Boolean(this.containsTerms(navTerms, message) || 
-           (component && this.containsTerms(navTerms, component)) ||
-           (component && ['Router', 'NavigationService', 'RouteGuard'].includes(component)));
-  }
-
-  private isDataRelated(message: string, component: string = ''): boolean {
-    const dataTerms = [
-      'data', 'model', 'entity', 'object', 'json', 'parse', 'serialize', 
-      'store', 'state', 'update', 'change', 'mutation'
-    ];
-    return Boolean(this.containsTerms(dataTerms, message) || 
-           (component && this.containsTerms(dataTerms, component)) ||
-           (component && ['StoreService', 'DataService', 'StateService'].includes(component)));
-  }
-
-  private isStorageRelated(message: string, component: string = ''): boolean {
-    const storageTerms = [
-      'storage', 'cache', 'persist', 'save', 'load', 'local', 'session',
-      'cookie', 'indexdb', 'database', 'db'
-    ];
-    return Boolean(this.containsTerms(storageTerms, message) || 
-           (component && this.containsTerms(storageTerms, component)) ||
-           (component && ['StorageService', 'CacheService', 'PersistenceService'].includes(component)));
-  }
-
-  private isRenderingRelated(message: string, component: string = ''): boolean {
-    const renderTerms = [
-      'render', 'view', 'template', 'component', 'ui', 'interface', 'dom',
-      'element', 'layout', 'style', 'css', 'html'
-    ];
-    return Boolean(this.containsTerms(renderTerms, message) || 
-           (component && this.containsTerms(renderTerms, component)) ||
-           (message.toLowerCase().includes('render') || message.toLowerCase().includes('template')));
-  }
-
-  private isInitializationRelated(message: string, component: string = ''): boolean {
-    const initTerms = [
-      'init', 'start', 'bootstrap', 'launch', 'setup', 'config', 'load',
-      'ready', 'create', 'instantiate'
-    ];
-    return Boolean(this.containsTerms(initTerms, message) || 
-           (component && this.containsTerms(initTerms, component)) || 
-           message.toLowerCase().includes('initialized'));
-  }
-
-  private isLifecycleRelated(message: string, component: string = ''): boolean {
-    const lifecycleTerms = [
-      'lifecycle', 'oninit', 'onchanges', 'ondestroy', 'afterviewinit',
-      'mount', 'unmount', 'construct', 'destroy'
-    ];
-    return Boolean(this.containsTerms(lifecycleTerms, message) ||
-           (component && this.containsTerms(lifecycleTerms, component)));
-  }
-
-  private isUSARelated(message: string, component: string = ''): boolean {
-    const usaTerms = [
-      'usa', 'patriotic', 'america', 'united states', 'flag', 'military',
-      'veteran', 'patriot', 'freedom', 'liberty', 'independence', 'eagle'
-    ];
-    return Boolean(this.containsTerms(usaTerms, message) ||
-           (component && this.containsTerms(usaTerms, component)));
-  }
-
-  private isSystemRelated(message: string, component: string = ''): boolean {
-    const systemTerms = [
-      'system', 'core', 'framework', 'platform', 'infrastructure'
-    ];
-    
-    const systemComponents = [
-      'SystemService', 
-      'ConfigService', 
-      'InitializationService', 
-      'AppComponent',
-      'CoreModule'
-    ];
-    
-    return Boolean(this.containsTerms(systemTerms, message) ||
-           (component && this.containsTerms(systemTerms, component)) ||
-           (component && systemComponents.includes(component)));
-  }
-
-  // Helper method to check if a message contains any terms from an array
-  private containsTerms(terms: string[], text: string, component: string = ''): boolean {
-    if (!text) return false;
-    
-    const lowerText = text.toLowerCase();
-    const lowerComponent = component ? component.toLowerCase() : '';
-    
-    return Boolean(terms.some(term => 
-      lowerText.includes(term.toLowerCase()) || 
-      (component && lowerComponent.includes(term.toLowerCase()))
-    ));
-  }
-
-  private getCallerComponent(): string {
-    try {
-      const err = new Error();
-      const stackLines = err.stack?.split('\n') || [];
       
-      // Look for class name in stack trace - improved detection pattern
-      for (let i = 3; i < Math.min(10, stackLines.length); i++) { // Check more lines but limit for performance
-        const line = stackLines[i];
-        
-        // Enhanced pattern matching to detect components and services
-        const componentMatch = line.match(/at\s+(\w+(?:Component|Service|Guard|Directive|Pipe|Resolver))\./);
-        if (componentMatch && componentMatch[1]) {
-          return componentMatch[1];
-        }
-        
-        // Try to match class methods with 'this' context
-        const methodMatch = line.match(/at\s+([A-Z]\w*)\.((?:\w+))/);
-        if (methodMatch && methodMatch[1]) {
-          return methodMatch[1]; // Return class name if found
-        }
-        
-        // Last resort: Try to extract file name for context
-        const fileMatch = line.match(/\((.+?)(?:\.ts|\.[jt]sx?):(\d+):(\d+)\)$/);
-        if (fileMatch && fileMatch[1]) {
-          const fileName = fileMatch[1].split(/[/\\]/).pop() || '';
-          if (fileName && !fileName.includes('logger.service') && !fileName.includes('node_modules')) {
-            return fileName.replace(/\.component$/, 'Component')
-                          .replace(/\.service$/, 'Service')
-                          .replace(/\.guard$/, 'Guard')
-                          .replace(/\.[jt]s$/, '');
-          }
-        }
+      // Search in category
+      if (entry.category && entry.category.toLowerCase().includes(tag.toLowerCase())) {
+        return true;
       }
-    } catch (error) {
-      // Silently fail if cannot determine component
-      console.error('Error determining component:', error);
-    }
-    
-    // Default fallbacks based on common patterns
-    if (typeof window !== 'undefined') {
-      const url = window.location.pathname;
-      if (url.includes('/admin')) return 'AdminComponent';
-      if (url.includes('/login')) return 'LoginComponent';
-      if (url.includes('/auth')) return 'AuthComponent';
-      // Add more URL-based fallbacks as needed
-    }
-    
-    return 'Unknown';
-  }
-  
-  // Add a log sanitizer helper to avoid sensitive info in logs
-  private sanitizeLogDetails(details: any): any {
-    if (!details) return details;
-    
-    try {
-      // Make a copy to avoid modifying the original object
-      let sanitized = JSON.parse(JSON.stringify(details));
       
-      // List of sensitive field names to mask
-      const sensitiveFields = ['password', 'token', 'secret', 'key', 'authorization', 'auth'];
+      // Search in data if it's a string
+      if (entry.data && typeof entry.data === 'string' && 
+          entry.data.toLowerCase().includes(tag.toLowerCase())) {
+        return true;
+      }
       
-      // Helper to sanitize an object recursively
-      const sanitizeObject = (obj: any) => {
-        if (!obj || typeof obj !== 'object') return;
-        
-        Object.keys(obj).forEach(key => {
-          const lowerKey = key.toLowerCase();
-          
-          // If sensitive field, mask the value
-          if (sensitiveFields.some(field => lowerKey.includes(field))) {
-            obj[key] = '[REDACTED]';
-          } 
-          // Recurse if object or array
-          else if (typeof obj[key] === 'object' && obj[key] !== null) {
-            sanitizeObject(obj[key]);
-          }
-        });
-      };
-      
-      sanitizeObject(sanitized);
-      return sanitized;
-      
-    } catch (error) {
-      // If any error during sanitization, return original but add warning
-      return { original: details, warning: 'Could not sanitize log details' };
-    }
-  }
-  
-  getLogs(): LogEntry[] {
-    return [...this.logs];
-  }
-  
-  clearLogs() {
-    this.logs = [];
-    this.logSubject.next({
-      timestamp: new Date(),
-      level: LogLevel.INFO,
-      message: 'Logs cleared',
-      component: 'LoggerService'
+      return false;
     });
+  }
+
+  /**
+   * Get log level info for styling
+   */
+  getLogLevelInfo(level: LogLevel | string): LogLevelInfo {
+    // Map numeric levels to string levels if needed
+    let levelStr: string;
+    
+    if (typeof level === 'number') {
+      const levelMap = {
+        [LogLevel.ERROR]: 'error',
+        [LogLevel.WARNING]: 'warn',
+        [LogLevel.INFO]: 'info',
+        [LogLevel.DEBUG]: 'debug',
+        [LogLevel.PERFORMANCE]: 'performance'
+      };
+      levelStr = levelMap[level as keyof typeof levelMap] || 'info';
+    } else {
+      levelStr = level || 'info';
+    }
+
+    switch (levelStr) {
+      case 'error':
+        return { color: '#BF0A30', icon: 'error', label: 'Error' };
+      case 'warn':
+        return { color: '#FFC107', icon: 'warning', label: 'Warning' };
+      case 'info':
+        return { color: '#002868', icon: 'info', label: 'Info' };
+      case 'debug':
+        return { color: '#8A2BE2', icon: 'code', label: 'Debug' };
+      case 'performance':
+        return { color: '#4CAF50', icon: 'speed', label: 'Performance' };
+      default:
+        return { color: '#607D8B', icon: 'help', label: 'Unknown' };
+    }
+  }
+
+  /**
+   * Clear all logs
+   */
+  clearLogs(): void {
+    this.logHistory = [];
+    this.logsSubject.next([]);
+    this.info('Logs cleared', { category: 'SYSTEM' });
+  }
+
+  /**
+   * Get the latest performance metrics
+   */
+  getPerformanceMetrics(): PerformanceMetric[] {
+    return [...this.performanceMetrics];
+  }
+
+  /**
+   * Send a log entry to the server
+   */
+  private sendLogToServer(entry: LogEntry): Observable<any> {
+    // Skip server logging in development
+    if (!environment.production) {
+      return of(null);
+    }
+
+    return this.http.post('/api/logs', entry).pipe(
+      catchError(err => {
+        // Only log to console, don't retry to avoid infinite loop
+        console.error('Failed to send log to server:', err);
+        return of(null);
+      })
+    );
+  }
+
+  /**
+   * Check if a log level should be logged based on configured level
+   */
+  private shouldLog(level: string): boolean {
+    const levels = ['error', 'warn', 'info', 'debug', 'trace', 'performance'];
+    const configLevelIndex = levels.indexOf(this.logLevel);
+    const messageLevelIndex = levels.indexOf(level);
+
+    return messageLevelIndex <= configLevelIndex;
+  }
+
+  /**
+   * Format timestamp for console output
+   */
+  private formatTimestamp(date: Date): string {
+    return date.toLocaleTimeString([], { hour12: false });
+  }
+
+  /**
+   * Get emoji for log level
+   */
+  private getEmojiForLevel(level: string): string {
+    switch (level) {
+      case 'error': return '🔴';
+      case 'warn':  return '🟠';
+      case 'info':  return '🔵';
+      case 'debug': return '🟣';
+      case 'trace': return '⚪';
+      case 'performance': return '⚡';
+      default:      return '📋';
+    }
+  }
+
+  /**
+   * Generate a flow ID
+   */
+  private generateFlowId(): string {
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 10);
+    return `flow-${timestamp}-${random}`;
+  }
+
+  /**
+   * Update the current steps observable
+   */
+  private updateCurrentSteps(): void {
+    const currentSteps: StepInfo[] = [];
+    this.steps.forEach(step => {
+      if (step.status === 'running') {
+        currentSteps.push(step);
+      }
+    });
+
+    this.currentSteps$.next(currentSteps);
+  }
+
+  /**
+   * Extract step number from step ID
+   */
+  private getStepNumberFromId(stepId: string): number {
+    const match = stepId.match(/-step-(\d+)$/);
+    return match ? parseInt(match[1], 10) : 0;
   }
 }

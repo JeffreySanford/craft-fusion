@@ -1,0 +1,23 @@
+<div class="video-background-container" [ngClass]="themeClass">
+  <video 
+    #videoElement
+    class="background-video"
+    [ngClass]="{ 'loading': isLoading, 'error': hasError }"
+    autoplay
+    loop
+    muted
+    playsinline>
+  </video>
+  
+  <div class="video-overlay"></div>
+  
+  <div class="loading-indicator" *ngIf="isLoading">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Loading background...</p>
+  </div>
+  
+  <div class="error-message" *ngIf="hasError">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <p>{{ errorMessage || 'Failed to load video background' }}</p>
+  </div>
+</div>

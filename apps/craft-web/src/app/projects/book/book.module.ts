@@ -8,14 +8,17 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { FileUploadService } from '../../common/services/file-upload.service';
 import { MatIconModule } from '@angular/material/icon';
-import { SafeHtmlPipe } from '../../common/pipes/safe-html.pipe';
+import { SharedPipesModule } from '../../common/pipes/shared-pipes.module';
+import { MaterialModule } from '../../material.module';
 
 const routes: Routes = [
   { path: '', component: BookComponent }
 ];
 
 @NgModule({
-  declarations: [BookComponent, SafeHtmlPipe],
+  declarations: [
+    BookComponent
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -24,7 +27,9 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     MatSidenavModule,
     MatListModule,
-    MatIconModule
+    MatIconModule,
+    SharedPipesModule,
+    MaterialModule
   ],
   providers: [
     {
@@ -33,5 +38,8 @@ const routes: Routes = [
     },
     FileUploadService
   ],
+  exports: [
+    BookComponent
+  ]
 })
 export class BookModule {}

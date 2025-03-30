@@ -2,9 +2,12 @@
 export interface MenuItem {
   icon: string;
   label: string;
-  routerLink: string;
-  active: boolean;
-  isAdmin?: boolean; // Add optional property to identify admin items
+  route: string;        // Route path
+  routerLink?: string;  // Legacy support for routerLink - add this property
+  isAdminFeature?: boolean;
+  children?: MenuItem[];
+  badge?: string;
+  active?: boolean;     // Whether this item is currently active - add this property
 }
 
 export interface MenuGroup {

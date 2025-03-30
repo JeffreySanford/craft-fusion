@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { HttpModule } from '@nestjs/axios';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -13,11 +14,17 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { AuthorizationModule } from './authorization/authorization.module';
 import { AuditingModule } from './auditing/auditing.module';
 import { LoggingModule } from './logging/logging.module';
+import { OAuthModule } from './oauth/oauth.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    HttpModule.register({
+      timeout: 5000,
+      maxRedirects: 5,
     }),
     UsersModule,
     RecordsModule,
@@ -29,7 +36,9 @@ import { LoggingModule } from './logging/logging.module';
     AuthenticationModule,
     AuthorizationModule,
     AuditingModule,
-    LoggingModule
+    LoggingModule,
+    OAuthModule,
+    HealthModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,7 +1,15 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://jeffreysanford.us/api',
-  host: 'jeffreysanford.us',
+  apiUrl: 'https://api.jeffreysanford.us',
+  host: 'api.jeffreysanford.us',
+  
+  // Add API URLs for production
+  nestApiUrl: 'https://api.jeffreysanford.us',
+  goApiUrl: 'https://api.jeffreysanford.us/api-go',
+  
+  // Disable mock metrics in production
+  useMockMetrics: false,
+
   finnhubApiKey: 'cu8gbkpr01qt63vgue4gcu8gbkpr01qt63vgue50',
   finnHubAPI: 'https://finnhub.io/api/v1',
   mapbox: {
@@ -22,5 +30,13 @@ export const environment = {
   yahooFinance: {
     url: 'https://yfapi.net/',
     apiKey: 'uANiNS5imM7YUDOxZNpu3qrmLEYkoqu2r6OzqCW8' // Replace with your Yahoo Finance API key
-  }
+  },
+  nestAPIURL: 'https://api.nest.com',
+  nestClientId: 'craft-nest-client-id',
+  nestClientSecret: 'craft-nest-client-secret',
+
+  GoAPIURL: 'https://api.gocraft.com',
+  GoClientId: 'craft-go-client-id',
+  GoClientSecret: 'craft-go-client-secret',
+  GoRedirectUri: 'https://jeffreysanford.us/go/callback'
 };

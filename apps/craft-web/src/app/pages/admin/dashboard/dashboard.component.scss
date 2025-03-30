@@ -1,0 +1,859 @@
+@use 'sass:color';
+@use '../../../../styles/_responsive.scss' as responsive;
+@use '../../../../styles/_layout.scss' as layout;
+@use '../../../../styles/variables' as vars;
+@use '../../../../styles/utilities';
+
+.dashboard-container {
+  padding: 1rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  // Apply common container styling from layout
+  @include layout.content-container;
+
+  // Server Overview styling
+  .server-overview {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    @include responsive.md-down {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .server-card {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+
+      &.nest-server {
+        border-left: 4px solid #E0234E; // NestJS color
+      }
+
+      &.go-server {
+        border-left: 4px solid #00ADD8; // Go color
+      }
+
+      .server-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        .server-title {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 500;
+          font-size: 1.1rem;
+
+          mat-icon {
+            color: #E0234E; // NestJS color for Nest server icon
+          }
+        }
+
+        .go-server .server-title mat-icon {
+          color: #00ADD8; // Go color for Go server icon
+        }
+
+        .server-status {
+          padding: 0.25rem 0.75rem;
+          border-radius: 16px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          text-transform: uppercase;
+
+          &.status-success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+          }
+
+          &.status-warning {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+          }
+
+          &.status-error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+          }
+
+          &.status-offline {
+            background: rgba(158, 158, 158, 0.2);
+            color: #9e9e9e;
+          }
+        }
+      }
+
+      .server-metrics {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+
+        @include responsive.sm-down {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .server-metric {
+          display: flex;
+          flex-direction: column;
+
+          .metric-label {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 0.25rem;
+          }
+
+          .metric-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+
+            &.excellent {
+              color: #4caf50;
+            }
+
+            &.good {
+              color: #8bc34a;
+            }
+
+            &.fair {
+              color: #ffeb3b;
+            }
+
+            &.poor {
+              color: #ff9800;
+            }
+
+            &.critical {
+              color: #f44336;
+            }
+
+            &.tol {
+              font-size: 0.9rem;
+              opacity: 0.8;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 500;
+
+      &::after {
+        content: '';
+        display: block;
+        width: 40%;
+        height: 3px;
+        margin-top: 8px;
+        background: linear-gradient(90deg, #7b68ee, #3f51b5);
+        border-radius: 3px;
+      }
+    }
+  }
+
+  // System Status Card
+  .status-card {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+
+    .status-overview {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+      @include responsive.md-down {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 30px;
+        font-weight: 500;
+
+        mat-icon {
+          width: 24px;
+          height: 24px;
+          font-size: 24px;
+        }
+
+        &.status-success {
+          color: #4caf50;
+          border-left: 4px solid #4caf50;
+        }
+
+        &.status-warning {
+          color: #ff9800;
+          border-left: 4px solid #ff9800;
+        }
+
+        &.status-error {
+          color: #f44336;
+          border-left: 4px solid #f44336;
+        }
+
+        &.status-offline {
+          color: #9e9e9e;
+          border-left: 4px solid #9e9e9e;
+        }
+      }
+
+      .performance-score {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+
+        .score-ring {
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 1;
+          }
+
+          .score-value {
+            position: relative;
+            z-index: 2;
+            font-size: 2rem;
+            font-weight: 700;
+          }
+        }
+
+        .score-label {
+          font-size: 0.9rem;
+          opacity: 0.8;
+        }
+      }
+    }
+
+    .status-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+
+      .metric-tile {
+        background: rgba(30, 41, 59, 0.5);
+        border-radius: 10px;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .metric-icon {
+          width: 50px;
+          height: 50px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 12px;
+
+          mat-icon {
+            width: 30px;
+            height: 30px;
+            font-size: 30px;
+          }
+        }
+
+        .metric-details {
+          .metric-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.2;
+          }
+
+          .metric-label {
+            opacity: 0.7;
+            font-size: 0.85rem;
+          }
+        }
+
+        // User tile styling
+        &.user-tile .metric-icon {
+          background: rgba(76, 175, 80, 0.15);
+          color: #4caf50;
+        }
+
+        // Page view tile styling
+        &.pageview-tile .metric-icon {
+          background: rgba(33, 150, 243, 0.15);
+          color: #2196f3;
+        }
+
+        // API call tile styling
+        &.api-tile .metric-icon {
+          background: rgba(156, 39, 176, 0.15);
+          color: #9c27b0;
+        }
+
+        // Uptime tile styling
+        &.uptime-tile .metric-icon {
+          background: rgba(255, 193, 7, 0.15);
+          color: #ffc107;
+        }
+      }
+    }
+  }
+
+  // Metrics Row
+  .metrics-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+
+    @include responsive.lg-down {
+      grid-template-columns: 1fr;
+    }
+
+    // System Metrics Card
+    .metrics-card {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+
+      mat-card-header {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+        mat-card-title {
+          margin: 0;
+          font-size: 1.2rem;
+          font-weight: 500;
+        }
+      }
+
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        padding: 0.5rem;
+
+        .metric-card {
+          background: rgba(30, 41, 59, 0.5);
+          border-radius: 10px;
+          padding: 1rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+
+          .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .metric-title {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              font-weight: 500;
+
+              mat-icon {
+                opacity: 0.8;
+              }
+            }
+
+            .trend-indicator {
+              padding: 0.25rem;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              &.trend-positive {
+                background: rgba(76, 175, 80, 0.15);
+                color: #4caf50;
+              }
+
+              &.trend-negative {
+                background: rgba(244, 67, 54, 0.15);
+                color: #f44336;
+              }
+
+              &.trend-neutral {
+                background: rgba(158, 158, 158, 0.15);
+                color: #9e9e9e;
+              }
+            }
+          }
+
+          .metric-value-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+
+            .gauge-container {
+              width: 100%;
+              height: 24px;
+              background: rgba(0, 0, 0, 0.2);
+              border-radius: 5px;
+              overflow: hidden;
+              position: relative;
+
+              .gauge {
+                height: 100%;
+                width: var(--gauge-value, 0%);
+                position: relative;
+                transition: width 0.5s ease-in-out;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                .percentage {
+                  position: absolute;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  font-weight: 600;
+                  font-size: 14px;
+                  color: white;
+                  mix-blend-mode: difference;
+                }
+              }
+            }
+
+            .latency-indicator {
+              font-size: 2rem;
+              font-weight: 600;
+
+              &.excellent {
+                color: #4caf50;
+              }
+
+              &.good {
+                color: #8bc34a;
+              }
+
+              &.fair {
+                color: #ffeb3b;
+              }
+
+              &.poor {
+                color: #ff9800;
+              }
+
+              &.critical {
+                color: #f44336;
+              }
+            }
+
+            &.api-rate-value {
+              flex-direction: column;
+              align-items: center;
+
+              .rate-value {
+                font-size: 2rem;
+                font-weight: 600;
+              }
+
+              .rate-unit {
+                opacity: 0.7;
+                font-size: 0.8rem;
+              }
+            }
+          }
+
+          // Specific metric card styling
+          &.cpu .gauge {
+            background: linear-gradient(90deg, #4caf50, #ffeb3b, #f44336);
+            background-size: 200% 100%;
+            background-position: calc(var(--gauge-value, 0%) * 2) 0;
+          }
+
+          &.memory .gauge {
+            background: linear-gradient(90deg, #2196f3, #9c27b0, #f44336);
+            background-size: 200% 100%;
+            background-position: calc(var(--gauge-value, 0%) * 2) 0;
+          }
+
+          &.network {
+            // Network specific styles
+          }
+
+          &.api-rate {
+            // API rate specific styles
+            color: #2196f3;
+          }
+        }
+      }
+    }
+
+    // Error Stats Card
+    .error-stats-card {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+
+      mat-card-header {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+        mat-card-title {
+          margin: 0;
+          font-size: 1.2rem;
+          font-weight: 500;
+        }
+      }
+
+      .errors-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 0.75rem;
+
+        .error-metric {
+          background: rgba(30, 41, 59, 0.5);
+          border-radius: 10px;
+          padding: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+
+          .error-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(244, 67, 54, 0.1);
+
+            mat-icon {
+              color: rgba(244, 67, 54, 0.8);
+
+              &.critical {
+                color: #f44336;
+                animation: pulse 2s infinite;
+              }
+
+              &.warning {
+                color: #ff9800;
+              }
+
+              &.slow {
+                color: #ff9800;
+              }
+            }
+          }
+
+          .error-details {
+            .error-value {
+              font-size: 1.5rem;
+              font-weight: 600;
+              line-height: 1.2;
+            }
+
+            .error-label {
+              opacity: 0.7;
+              font-size: 0.85rem;
+            }
+          }
+
+          // Different styles for each error metric
+          &.error-count .error-icon {
+            background: rgba(244, 67, 54, 0.15);
+            color: #f44336;
+          }
+
+          &.warning-count .error-icon {
+            background: rgba(255, 152, 0, 0.15);
+            color: #ff9800;
+          }
+
+          &.avg-response .error-icon {
+            background: rgba(33, 150, 243, 0.15);
+            color: #2196f3;
+          }
+        }
+      }
+    }
+  }
+
+  // Logs Row
+  .logs-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+
+    @include responsive.md-down {
+      grid-template-columns: 1fr;
+    }
+
+    // Logs Card common styles
+    .logs-card {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+
+      mat-card-header {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+        mat-card-title {
+          margin: 0;
+          font-size: 1.2rem;
+          font-weight: 500;
+        }
+      }
+
+      .logs-list {
+        max-height: 350px;
+        overflow-y: auto;
+
+        .log-item {
+          display: flex;
+          padding: 0.75rem 1rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          gap: 1rem;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          .log-icon,
+          .api-method {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+          }
+
+          .log-icon mat-icon {
+            color: #f44336;
+          }
+
+          .api-method {
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            min-width: 60px;
+            text-align: center;
+
+            &.get {
+              background: rgba(33, 150, 243, 0.2);
+              color: #2196f3;
+            }
+
+            &.post {
+              background: rgba(76, 175, 80, 0.2);
+              color: #4caf50;
+            }
+
+            &.put {
+              background: rgba(255, 152, 0, 0.2);
+              color: #ff9800;
+            }
+
+            &.delete {
+              background: rgba(244, 67, 54, 0.2);
+              color: #f44336;
+            }
+          }
+
+          .log-details {
+            flex: 1;
+
+            .log-message {
+              margin-bottom: 0.25rem;
+              word-break: break-word;
+            }
+
+            .log-meta {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              opacity: 0.7;
+              font-size: 0.8rem;
+              flex-wrap: wrap;
+              gap: 0.5rem;
+
+              .api-status {
+                padding: 0.1rem 0.5rem;
+                border-radius: 10px;
+                font-size: 0.75rem;
+
+                &.status-success {
+                  background: rgba(76, 175, 80, 0.2);
+                  color: #4caf50;
+                }
+
+                &.status-warning {
+                  background: rgba(255, 152, 0, 0.2);
+                  color: #ff9800;
+                }
+
+                &.status-error {
+                  background: rgba(244, 67, 54, 0.2);
+                  color: #f44336;
+                }
+              }
+
+              .api-response-time {
+                color: #8bc34a;
+              }
+            }
+          }
+        }
+
+        .empty-list-message {
+          padding: 2rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+          opacity: 0.6;
+
+          mat-icon {
+            font-size: 32px;
+            height: 32px;
+            width: 32px;
+          }
+        }
+      }
+    }
+  }
+
+  // Activity Card
+  .activity-card {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+
+    mat-card-header {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+      mat-card-title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+      }
+    }
+
+    .activity-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+
+      .activity-metric {
+        background: rgba(30, 41, 59, 0.5);
+        border-radius: 10px;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        .activity-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(156, 39, 176, 0.15);
+          color: #9c27b0;
+
+          &:nth-child(4n+1) {
+            background: rgba(76, 175, 80, 0.15);
+            color: #4caf50;
+          }
+
+          &:nth-child(4n+2) {
+            background: rgba(33, 150, 243, 0.15);
+            color: #2196f3;
+          }
+
+          &:nth-child(4n+3) {
+            background: rgba(255, 152, 0, 0.15);
+            color: #ff9800;
+          }
+
+          mat-icon {
+            font-size: 24px;
+            height: 24px;
+            width: 24px;
+          }
+        }
+
+        .activity-details {
+          .activity-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            line-height: 1.2;
+          }
+
+          .activity-label {
+            opacity: 0.7;
+            font-size: 0.85rem;
+          }
+        }
+      }
+    }
+  }
+
+  // Animations
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.6;
+      transform: scale(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
