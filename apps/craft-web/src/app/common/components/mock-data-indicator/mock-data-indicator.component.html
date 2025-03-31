@@ -1,0 +1,34 @@
+<div class="mock-data-container" [ngClass]="[position, { transparent: transparent }]">
+  <div class="mock-indicator" 
+       [class.with-details]="showDetails"
+       (click)="toggleDetails()" 
+       [@pulse]="pulseState">
+    <mat-icon class="mock-icon">data_object</mat-icon>
+    <span class="mock-label">Mock Data</span>
+  </div>
+  
+  <div class="mock-details" *ngIf="detailsVisible && showDetails" [@fadeInOut]>
+    <div class="mock-details-header">
+      <span>Mock Data Details</span>
+      <button mat-icon-button (click)="toggleDetails()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="mock-details-content">
+      <div class="mock-detail-item">
+        <strong>Source:</strong> {{ source }}
+      </div>
+      <div class="mock-detail-item">
+        <strong>Type:</strong> {{ dataType }}
+      </div>
+      <div class="mock-detail-item">
+        <strong>Time:</strong> {{ timeGenerated | date:'short' }}
+      </div>
+    </div>
+    
+    <div class="mock-details-footer">
+      <small>This data is generated for demonstration purposes only.</small>
+    </div>
+  </div>
+</div>

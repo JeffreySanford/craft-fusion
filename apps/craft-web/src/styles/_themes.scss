@@ -2,6 +2,7 @@
 @use 'sass:color';
 @use 'sass:string';
 @use './variables' as vars;
+@use '@angular/material' as mat;
 
 // Core theme definitions - all themes should be defined here
 // and then applied in _theme.scss
@@ -193,6 +194,116 @@ $solar-flare-theme: (
   header-gradient: linear-gradient(-45deg, #ff2d00, #ffaa00, #0066ff, #ff0055),
   menu-gradient: linear-gradient(135deg, rgba(255, 45, 0, 0.97), rgba(255, 170, 0, 0.92) 50%, rgba(255, 45, 0, 0.97))
 );
+
+// Theme color maps for different themes
+$light-theme-colors: (
+  primary: #002868,
+  secondary: #BF0A30,
+  tertiary: #0057B7,
+  surface: rgba(255, 255, 255, 0.85),
+  background: rgba(249, 250, 251, 0.7),
+  error: #B00020
+);
+
+$dark-theme-colors: (
+  primary: #5C92FF,
+  secondary: #FF616D,
+  tertiary: #66B2FF,
+  surface: rgba(33, 33, 33, 0.85),
+  background: rgba(18, 18, 18, 0.75),
+  error: #CF6679
+);
+
+$vibrant1-theme-colors: (
+  primary: #BB86FC,
+  secondary: #FF00CC,
+  tertiary: #03DAC5,
+  surface: rgba(30, 10, 60, 0.85),
+  background: rgba(15, 5, 30, 0.7),
+  error: #FF4081
+);
+
+$vibrant2-theme-colors: (
+  primary: #FFB74D,
+  secondary: #FF5722,
+  tertiary: #FFECB3,
+  surface: rgba(30, 20, 10, 0.85),
+  background: rgba(25, 15, 5, 0.7),
+  error: #FF6E40
+);
+
+// Mixin to create theme classes with transparency for flag animation visibility
+@mixin create-theme($theme-name, $colors) {
+  .#{$theme-name} {
+    // Set CSS variables for theme colors
+    --md-sys-color-primary: #{map.get($colors, 'primary')};
+    --md-sys-color-primary-rgb: #{color.channel(map.get($colors, 'primary'), "red", $space: rgb)}, 
+                               #{color.channel(map.get($colors, 'primary'), "green", $space: rgb)}, 
+                               #{color.channel(map.get($colors, 'primary'), "blue", $space: rgb)};
+    --md-sys-color-on-primary: #{if(color.channel(map.get($colors, 'primary'), "lightness", $space: hsl) > 50, #000, #fff)};
+    
+    --md-sys-color-secondary: #{map.get($colors, 'secondary')};
+    --md-sys-color-secondary-rgb: #{color.channel(map.get($colors, 'secondary'), "red", $space: rgb)}, 
+                                 #{color.channel(map.get($colors, 'secondary'), "green", $space: rgb)}, 
+                                 #{color.channel(map.get($colors, 'secondary'), "blue", $space: rgb)};
+    --md-sys-color-on-secondary: #{if(color.channel(map.get($colors, 'secondary'), "lightness", $space: hsl) > 50, #000, #fff)};
+    
+    --md-sys-color-tertiary: #{map.get($colors, 'tertiary')};
+    --md-sys-color-on-tertiary: #{if(color.channel(map.get($colors, 'tertiary'), "lightness", $space: hsl) > 50, #000, #fff)};
+    
+    --md-sys-color-error: #{map.get($colors, 'error')};
+    --md-sys-color-error-rgb: #{color.channel(map.get($colors, 'error'), "red", $space: rgb)}, 
+                             #{color.channel(map.get($colors, 'error'), "green", $space: rgb)}, 
+                             #{color.channel(map.get($colors, 'error'), "blue", $space: rgb)};
+    --md-sys-color-on-error: #{if(color.channel(map.get($colors, 'error'), "lightness", $space: hsl) > 50, #000, #fff)};
+    
+    // Surface with transparency for background visibility
+    --md-sys-color-surface: #{map.get($colors, 'surface')};
+    --md-sys-color-surface-rgb: #{color.channel(map.get($colors, 'surface'), "red", $space: rgb)}, 
+                               #{color.channel(map.get($colors, 'surface'), "green", $space: rgb)}, 
+                               #{color.channel(map.get($colors, 'surface'), "blue", $space: rgb)};
+    --md-sys-color-on-surface: #{if(color.channel(map.get($colors, 'surface'), "lightness", $space: hsl) > 50, #000, #fff)};
+    --md-sys-color-on-surface-rgb: #{if(color.channel(map.get($colors, 'surface'), "lightness", $space: hsl) > 50, '0, 0, 0', '255, 255, 255')};
+    
+    // Surface variant (slightly different shade)
+    --md-sys-color-surface-variant: #{if(color.channel(map.get($colors, 'surface'), "lightness", $space: hsl) > 50, 
+      rgba(0, 0, 0, 0.05), 
+      rgba(255, 255, 255, 0.05))};
+    --md-sys-color-on-surface-variant: #{if(color.channel(map.get($colors, 'surface'), "lightness", $space: hsl) > 50, #000, #fff)};
+    
+    // Background with transparency for flag visibility
+    --md-sys-color-background: #{map.get($colors, 'background')};
+    --md-sys-color-on-background: #{if(color.channel(map.get($colors, 'background'), "lightness", $space: hsl) > 50, #000, #fff)};
+    
+    // Container colors (for cards, dialogs, etc.)
+    --md-sys-color-primary-container: #{rgba(map.get($colors, 'primary'), 0.15)};
+    --md-sys-color-on-primary-container: #{map.get($colors, 'primary')};
+    
+    --md-sys-color-secondary-container: #{rgba(map.get($colors, 'secondary'), 0.15)};
+    --md-sys-color-on-secondary-container: #{map.get($colors, 'secondary')};
+  }
+}
+
+// Create theme classes
+@include create-theme('light-theme', $light-theme-colors);
+@include create-theme('dark-theme', $dark-theme-colors);
+@include create-theme('vibrant1-theme', $vibrant1-theme-colors);
+@include create-theme('vibrant2-theme', $vibrant2-theme-colors);
+
+// Additional theme-specific styles
+.vibrant1-theme {
+  // Cosmic theme special effects
+  --theme-shadow-color: rgba(187, 134, 252, 0.3);
+  --theme-glow-effect: 0 0 15px rgba(187, 134, 252, 0.5);
+  --theme-gradient: linear-gradient(135deg, rgba(187, 134, 252, 0.5), rgba(255, 0, 204, 0.5));
+}
+
+.vibrant2-theme {
+  // Solar theme special effects
+  --theme-shadow-color: rgba(255, 183, 77, 0.3);
+  --theme-glow-effect: 0 0 15px rgba(255, 87, 34, 0.5);
+  --theme-gradient: linear-gradient(135deg, rgba(255, 183, 77, 0.5), rgba(255, 87, 34, 0.5));
+}
 
 // Function to extract theme value with fallback
 @function theme-value($theme, $key, $fallback: null) {

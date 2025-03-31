@@ -8,20 +8,7 @@
       <h1 class="logo-text">Craft Fusion</h1>
     </div>
     
-    <div class="nav-section" [@navItemsAnimation]="navItems.length">
-      <ng-container *ngFor="let item of navItems; let i = index">
-        <a mat-button 
-           [routerLink]="item.route" 
-           routerLinkActive="active-link"
-           class="nav-item" 
-           [attr.data-index]="i"
-           (mouseenter)="animateNavItem(i)"
-           [@fadeInOut]>
-          <mat-icon class="nav-icon" [ngClass]="{'animated-icon': navItemsState[i] === 'active'}">{{item.icon}}</mat-icon>
-          <span class="nav-text">{{item.label}}</span>
-        </a>
-      </ng-container>
-    </div>
+    <!-- Navigation section removed as it's handled by the sidebar -->
   </div>
   
   <div class="header-right">

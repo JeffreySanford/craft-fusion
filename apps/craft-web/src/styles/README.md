@@ -429,6 +429,66 @@ For components not covered by Angular Material, we provide custom implementation
 </button>
 ```
 
+## Video Background Implementation
+
+The application features a responsive video background system that works seamlessly with our theming architecture:
+
+### Key Features
+
+1. **Theme-aware videos**: Background videos can be configured per theme
+2. **Responsive behavior**: Videos adapt to different screen sizes
+3. **Performance optimizations**:
+   - Videos are muted by default
+   - Low opacity overlays allow UI elements to remain readable
+   - Can be disabled via environment configuration for low-performance devices
+
+### Usage
+
+The video background can be added to any component:
+
+```html
+<!-- Add video background to a component -->
+<app-video-background></app-video-background>
+```
+
+Video sources are managed through the VideoBackgroundService:
+
+```typescript
+// Set video dynamically
+this.videoService.setVideo({
+  src: 'assets/videos/flag-background.mp4',
+  type: 'video/mp4'
+});
+```
+
+### Patriotic Theme
+
+The default video for our patriotic theme is a gently waving American flag that serves as a subtle backdrop for the application. The flag video:
+
+1. Creates movement in the background without distracting users
+2. Reinforces the application's theme and identity
+3. Has been optimized for performance (compressed, scaled appropriately)
+
+### Customization
+
+Developers can customize the video background behavior:
+
+```typescript
+// In environment.ts
+export const environment = {
+  production: false,
+  performance: {
+    disableVideoBackgrounds: false // Set to true to disable video backgrounds
+  }
+}
+```
+
+### Accessibility Considerations
+
+- All videos are decorative and don't contain essential content
+- Video elements include the appropriate ARIA attributes
+- UI remains fully functional if videos fail to load
+
 ## Component Alignment Standards
 
 To ensure consistency across the application, all components should follow these alignment guidelines:

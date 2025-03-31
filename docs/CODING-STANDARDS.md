@@ -10,9 +10,10 @@ This document outlines the key technical standards and patterns to be followed a
 2. [Angular Guidelines](#angular-guidelines)
 3. [Styling Standards](#styling-standards)
 4. [Component Layout Standards](#component-layout-standards)
-5. [Testing Requirements](#testing-requirements)
-6. [Documentation Requirements](#documentation-requirements)
-7. [Service Dependency Guidelines](#service-dependency-guidelines)
+5. [Component Organization Standards](#component-organization-standards)
+6. [Testing Requirements](#testing-requirements)
+7. [Documentation Requirements](#documentation-requirements)
+8. [Service Dependency Guidelines](#service-dependency-guidelines)
 
 ## General Guidelines
 
@@ -157,6 +158,49 @@ All components in the application should follow a consistent layout approach. Th
    - Example: `@include utilities.performance-chart(5em);`
 
 For more detailed guidelines, see the [Component Alignment Standards](apps/craft-web/src/styles/README.md#component-alignment-standards) in the styles documentation.
+
+## Component Organization Standards
+
+### Module Structure
+
+1. **Component Modules**: 
+   - Each reusable component should have its own module file
+   - Example: `theme-switcher.component.ts` + `theme-switcher.module.ts`
+
+2. **Required Imports**:
+   - Always include `CommonModule` for core Angular directives (ngIf, ngFor, ngClass)
+   - Import Material modules only as needed (prefer specific modules over MatCommonModule)
+   - Include any dependency component modules
+
+3. **Module Example**:
+
+```typescript
+@NgModule({
+  declarations: [MyComponent],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    // Other necessary modules
+  ],
+  exports: [MyComponent]
+})
+export class MyComponentModule { }
+```
+
+### Component Configuration
+
+Components should follow this organization:
+
+1. **Metadata Properties**:
+   - selector: Kebab-case prefixed with 'app-'
+   - templateUrl/styleUrls: Use external files for non-trivial components
+   - standalone: Explicitly set to false for NgModule-based components
+   - animations: Define in the component metadata
+
+2. **Component Class**:
+   - Implement appropriate lifecycle interfaces (OnInit, OnDestroy, etc.)
+   - Use private subjects for cleanup (destroy$)
+   - Follow input/output naming conventions
 
 ## Testing Requirements
 

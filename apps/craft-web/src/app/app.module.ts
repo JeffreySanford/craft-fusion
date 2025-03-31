@@ -42,7 +42,7 @@ import { PerformanceMetricsService } from './common/services/performance-metrics
 import { ApiLoggerService } from './common/services/api-logger.service';
 import { UserFacadeService } from './common/facades/user-facade.service';
 import { HealthService } from './common/services/health.service';
-import { AppInitializationService } from './common/services/app-initialization.service';
+import { AppInitializationService, initializeApp } from './common/services/app-initialization.service';
 import { VideoBackgroundService } from './common/services/video-background.service';
 import { UiStateFacade } from './common/facades/ui-state.facade';
 import { EnvironmentService } from './common/services/environment.service';
@@ -51,13 +51,12 @@ import { AuthenticationService } from './common/services/authentication.service'
 // Import video background component from its proper module
 import { VideoBackgroundModule } from './common/components/video-background/video-background.module';
 
-/**
- * Factory function for APP_INITIALIZER
- * This allows us to perform initialization tasks before the app is ready
- */
-export function initializeApp(appInitService: AppInitializationService) {
-  return () => appInitService.initializeApp().toPromise();
-}
+// Common imports
+import { ThemeSwitcherComponent } from './common/components/theme-switcher/theme-switcher.component';
+import { NotificationService } from './common/services/notification.service';
+import { UserState } from './common/interfaces/user-state.interface';
+import { ThemeService } from './common/services/theme.service';
+
 
 @NgModule({
   declarations: [

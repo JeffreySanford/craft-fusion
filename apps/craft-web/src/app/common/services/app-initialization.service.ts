@@ -1,133 +1,72 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { LoggerService } from './logger.service';
-import { ApiService } from './api.service';
-import { UserTrackingService } from './user-tracking.service';
-import { PerformanceMetricsService } from './performance-metrics.service';
-import { UserFacadeService } from '../facades/user-facade.service';
-import { AuthenticationService } from './authentication.service';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, tap, map } from 'rxjs/operators';
-import { NotificationService } from './notification.service';
+import { ThemeService } from './theme.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppInitializationService {
+  private renderer: Renderer2;
+  
   constructor(
+    private rendererFactory: RendererFactory2,
     private logger: LoggerService,
-    private apiService: ApiService,
-    private userTrackingService: UserTrackingService,
-    private performanceMetricsService: PerformanceMetricsService,
-    private userFacade: UserFacadeService,
-    private authService: AuthenticationService,
-    private http: HttpClient,
-    private notification: NotificationService
+    private themeService: ThemeService
   ) {
+    this.renderer = this.rendererFactory.createRenderer(null, null);
     this.logger.registerService('AppInitializationService');
   }
 
-  /**
-   * Initialize application - called by APP_INITIALIZER
-   */
-  initializeApp(): Observable<boolean> {
-    this.logger.info('Initializing application', {
-      startupTime: new Date(),
-      userAgent: navigator.userAgent,
-      url: window.location.href,
-      referrer: document.referrer || 'direct'
-    });
-    
-    // Log detailed application startup information
-    this.logApplicationStartup();
-    
-    // Start performance metrics tracking
-    this.performanceMetricsService.startMetricsSimulation();
-    this.performanceMetricsService.startFramerateSampling();
-    
-    // Check API server status
-    return this.checkApiStatus();
-  }
-
-  /**
-   * Log detailed application startup information
-   */
-  private logApplicationStartup(): void {
-    // Get authentication status
-    const hasToken = !!this.authService.getAccessToken();
-
-    this.logger.info('Application startup', {
-      authenticated: hasToken,
-      timestamp: new Date(),
-      url: window.location.href,
-      userAgent: navigator.userAgent,
-      language: navigator.language,
-      screenSize: {
-        width: window.innerWidth,
-        height: window.innerHeight
-      },
-      devicePixelRatio: window.devicePixelRatio,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
-    });
-
-    // Log performance metrics
-    if (window.performance) {
-      const perfData = window.performance.timing;
-      const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-      const domReadyTime = perfData.domComplete - perfData.domLoading;
-
-      this.logger.info('Application performance metrics', {
-        pageLoadTime: `${pageLoadTime}ms`,
-        domReadyTime: `${domReadyTime}ms`,
-        timestamp: new Date()
-      });
-    }
-
-    // Check if this is the first visit
-    const isFirstVisit = !localStorage.getItem('app_visited');
-    if (isFirstVisit) {
-      localStorage.setItem('app_visited', 'true');
-      this.logger.info('First application visit detected', {
-        timestamp: new Date()
-      });
+  // Initialize application settings and configurations
+  initialize(): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      this.logger.info('Initializing application...');
       
-      // Can perform first-visit specific actions here
-    }
-    
-    // Track page load in tracking service
-    this.userTrackingService.track({
-      type: 'pageView',
-      details: { 
-        path: window.location.pathname,
-        referrer: document.referrer || 'direct'
-      }
+      // Apply saved theme
+      this.loadSavedTheme();
+      
+      // Here you would add other initialization tasks like:
+      // - Loading user settings
+      // - Checking authentication status
+      // - Preloading critical data
+      // - Setting up global event listeners
+      
+      this.logger.info('Application initialization completed successfully');
+      resolve(true);
     });
   }
-
-  /**
-   * Check API connectivity
-   */
-  private checkApiStatus(): Observable<boolean> {
-    return this.apiService.checkApiStatus().pipe(
-      tap(status => {
-        this.logger.info('API status check completed', { 
-          status: status.status,
-          timestamp: new Date()
-        });
-        
-        if (status.status === 'offline') {
-          this.notification.showWarning('Backend server is currently unavailable. Using offline mode.');
-        }
-      }),
-      map(() => true),
-      catchError(error => {
-        this.logger.error('API status check failed', { 
-          error: error.message || 'Unknown error',
-          timestamp: new Date()
-        });
-        // Continue initialization even if API check fails
-        return of(true);
-      })
-    );
+  
+  // Load and apply the saved theme from localStorage
+  private loadSavedTheme(): void {
+    try {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        this.themeService.setTheme(savedTheme);
+        this.logger.debug('Applied saved theme', { theme: savedTheme });
+      } else {
+        // No theme in storage, use system preference or default
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        this.themeService.setTheme(prefersDark ? 'dark-theme' : 'light-theme');
+      }
+    } catch (error) {
+      this.logger.error('Failed to load saved theme', { error });
+      // Fall back to light theme
+      this.themeService.setTheme('light-theme');
+    }
   }
+  
+  // Utility method to safely add a class to the document body
+  addClassToBody(className: string): void {
+    this.renderer.addClass(document.body, className);
+  }
+  
+  // Utility method to safely remove a class from the document body
+  removeClassFromBody(className: string): void {
+    this.renderer.removeClass(document.body, className);
+  }
+}
+
+// Factory function for APP_INITIALIZER
+export function initializeApp(appInitService: AppInitializationService) {
+  return () => appInitService.initialize();
 }

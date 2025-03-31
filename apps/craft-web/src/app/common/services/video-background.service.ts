@@ -75,6 +75,16 @@ export class VideoBackgroundService {
   private videoSourceSubject = new BehaviorSubject<VideoSource | null>(null);
   public videoSource$ = this.videoSourceSubject.asObservable();
 
+  // Video loading events as Subjects
+  private videoLoadStartedSubject = new Subject<void>();
+  public videoLoadStarted$ = this.videoLoadStartedSubject.asObservable();
+
+  private videoLoadCompletedSubject = new Subject<void>();
+  public videoLoadCompleted$ = this.videoLoadCompletedSubject.asObservable();
+
+  private videoLoadErrorSubject = new Subject<string>();
+  public videoLoadError$ = this.videoLoadErrorSubject.asObservable();
+
   private destroy$ = new Subject<void>();
   private allowVideoBackground: boolean = true;
 
@@ -148,6 +158,13 @@ export class VideoBackgroundService {
   }
 
   /**
+   * Clear the current video
+   */
+  clearVideo(): void {
+    this.videoSourceSubject.next(null);
+  }
+
+  /**
    * Set video based on current theme
    * @param theme Current theme name
    */
@@ -165,6 +182,7 @@ export class VideoBackgroundService {
    */
   videoLoadStarted(): void {
     this.updateState({ isLoading: true });
+    this.videoLoadStartedSubject.next();
     
     this.logger.info('Video background loading started', {
       category: 'UI',
@@ -181,6 +199,7 @@ export class VideoBackgroundService {
       isPlaying: true,
       isPaused: false
     });
+    this.videoLoadCompletedSubject.next();
     
     this.logger.info('Video background loaded successfully', {
       category: 'UI',
@@ -200,6 +219,7 @@ export class VideoBackgroundService {
       isPlaying: false,
       isPaused: true
     });
+    this.videoLoadErrorSubject.next(errorMessage);
     
     this.logger.error('Video background load error', {
       error,

@@ -12,13 +12,16 @@ import { NotificationService } from '../../common/services/notification.service'
 import { UserFacadeService } from '../../common/facades/user-facade.service';
 import { UserState } from '../../common/interfaces/user-state.interface';
 import { MatDialog } from '@angular/material/dialog';
-import { trigger, state, style, animate, transition, query, stagger } from '@angular/animations';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
+
+// Import animation definitions from core animation file
+import { rotateAnimation } from '../../../styles/_animations';
 
 @Component({
   selector: 'app-header',
@@ -39,16 +42,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       state('normal', style({ transform: 'scale(1)' })),
       state('hovered', style({ transform: 'scale(1.1)' })),
       transition('normal <=> hovered', animate('0.2s ease-in-out'))
-    ]),
-    trigger('navItemsAnimation', [
-      transition('* => *', [
-        query(':enter', [
-          style({ opacity: 0, transform: 'translateY(-10px)' }),
-          stagger(80, [
-            animate('0.3s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-          ])
-        ], { optional: true })
-      ])
     ]),
     trigger('themeTransition', [
       transition('* => *', [
@@ -80,20 +73,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   // System health
   systemHealth: 'online' | 'degraded' | 'offline' = 'online';
 
-  // Navigation options
-  navItems = [
-    { icon: 'home', label: 'Home', route: '/home' },
-    { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' },
-    { icon: 'chat', label: 'Chat', route: '/chat' },
-    { icon: 'admin_panel_settings', label: 'Admin', route: '/admin', requiresAdmin: true },
-    { path: '/projects', label: 'Projects', icon: 'work' },
-    { path: '/reports', label: 'Reports', icon: 'assessment' }
-  ];
-
   // Animation state variables
   logoState = 'normal';
   rippleState = 'inactive';
-  navItemsState: any = {};
 
   private destroy$ = new Subject<void>();
 
@@ -128,6 +110,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
         // Trigger ripple animation
         this.triggerRippleAnimation();
+        
+        // Additional logging for vibrant themes
+        if (theme.includes('vibrant')) {
+          this.logger.info('Vibrant theme activated', { theme });
+        }
       });
 
     // Check initial login state
@@ -182,11 +169,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
           });
         }
       });
-
-    // Initialize each nav item animation state
-    this.navItems.forEach((item, index) => {
-      this.navItemsState[index] = 'ready';
-    });
 
     this.logger.info('Header component initialized');
   }
@@ -298,12 +280,5 @@ export class HeaderComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.rippleState = 'inactive';
     }, 700);
-  }
-
-  animateNavItem(index: number): void {
-    this.navItemsState[index] = 'active';
-    setTimeout(() => {
-      this.navItemsState[index] = 'ready';
-    }, 300);
   }
 }

@@ -10,142 +10,23 @@
 
 // Base Header Container
 .header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 1.2em;
-  width: 100%;
-  height: 4rem;
-  color: white;
-  position: relative;
-  overflow: hidden;
-  z-index: 10;
-  background: linear-gradient(
-    to right,
-    rgba(191, 10, 48, 0.95) 0%,
-    rgba(0, 40, 104, 0.95) 70%,
-    rgba(0, 40, 104, 1) 100%
-  );
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+  @include layout.header;
   
-  // Theme variations
-  &.dark-theme {
-    background: linear-gradient(
-      to right,
-      rgba(140, 10, 35, 0.95) 0%,
-      rgba(0, 25, 65, 0.95) 70%,
-      rgba(0, 25, 65, 1) 100%
-    );
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
-  }
-
-  &.vibrant1-theme {
-    background: linear-gradient(
-      135deg,
-      rgba(15, 5, 30, 0.95) 0%,
-      rgba(255, 0, 204, 0.8) 50%,
-      rgba(51, 0, 255, 0.95) 100%
-    );
-    box-shadow: 0 0 25px rgba(255, 0, 204, 0.4);
-    
-    // Subtle animation for cosmic glow theme
-    animation: cosmicPulse 8s infinite alternate;
-    
-    @keyframes cosmicPulse {
-      0% {
-        box-shadow: 0 0 25px rgba(255, 0, 204, 0.4);
-      }
-      50% {
-        box-shadow: 0 0 25px rgba(51, 0, 255, 0.4);
-      }
-      100% {
-        box-shadow: 0 0 25px rgba(255, 0, 204, 0.4);
-      }
-    }
-    
-    .logo-shine {
-      animation: cosmicShine 4s infinite;
-    }
-    
-    @keyframes cosmicShine {
-      0% {
-        left: -150%;
-        background: linear-gradient(90deg, 
-          rgba(255, 255, 255, 0) 0%, 
-          rgba(255, 0, 204, 0.4) 50%, 
-          rgba(255, 255, 255, 0) 100%);
-      }
-      100% {
-        left: 150%;
-        background: linear-gradient(90deg, 
-          rgba(255, 255, 255, 0) 0%, 
-          rgba(51, 0, 255, 0.4) 50%, 
-          rgba(255, 255, 255, 0) 100%);
-      }
-    }
-  }
-
-  &.vibrant2-theme {
-    background: linear-gradient(
-      135deg,
-      rgba(25, 10, 5, 0.95) 0%,
-      rgba(255, 85, 0, 0.8) 50%,
-      rgba(255, 170, 0, 0.95) 100%
-    );
-    box-shadow: 0 0 25px rgba(255, 85, 0, 0.4);
-    
-    // Subtle animation for solar flare theme
-    animation: solarPulse 8s infinite alternate;
-    
-    @keyframes solarPulse {
-      0% {
-        box-shadow: 0 0 25px rgba(255, 85, 0, 0.4);
-      }
-      50% {
-        box-shadow: 0 0 25px rgba(255, 170, 0, 0.4);
-      }
-      100% {
-        box-shadow: 0 0 25px rgba(255, 85, 0, 0.4);
-      }
-    }
-    
-    .logo-shine {
-      animation: solarShine 3s infinite;
-    }
-    
-    @keyframes solarShine {
-      0% {
-        left: -150%;
-        background: linear-gradient(90deg, 
-          rgba(255, 255, 255, 0) 0%, 
-          rgba(255, 85, 0, 0.4) 50%, 
-          rgba(255, 255, 255, 0) 100%);
-      }
-      100% {
-        left: 150%;
-        background: linear-gradient(90deg, 
-          rgba(255, 255, 255, 0) 0%, 
-          rgba(255, 170, 0, 0.4) 50%, 
-          rgba(255, 255, 255, 0) 100%);
-      }
-    }
-  }
+  // Use animation variables from core styles
+  transition: all animations.$base-duration animations.$ease-standard;
 }
 
-// Left side with logo and navigation
+// Left side with logo only (navigation removed)
 .header-left {
   display: flex;
   align-items: center;
-  flex: 1;
-  overflow: hidden;
+  // Adjust styles now that we only have the logo
+  padding-left: 1rem;
 }
 
 // Logo section
 .logo-section {
-  display: flex;
-  align-items: center;
-  margin-right: 2em;
-  position: relative;
+  @include layout.logo-container;
   
   .logo-wrapper {
     position: relative;
@@ -209,81 +90,10 @@
   }
 }
 
-// Navigation section
-.nav-section {
-  display: flex;
-  gap: 0.5em;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-  
-  &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
-  }
-  
-  .nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    opacity: 0;
-    animation: fadeIn 0.5s forwards;
-    padding: 0.4em 1em;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      transform: translateY(-2px);
-    }
-    
-    &.active-link {
-      background-color: rgba(255, 255, 255, 0.15);
-      position: relative;
-      
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 15%;
-        width: 70%;
-        height: 3px;
-        background: white;
-        border-radius: 3px;
-        animation: slideInFromBottom 0.3s ease-out;
-      }
-      
-      @keyframes slideInFromBottom {
-        0% {
-          transform: scaleX(0);
-        }
-        100% {
-          transform: scaleX(1);
-        }
-      }
-    }
-    
-    .nav-icon {
-      font-size: 1.5em;
-      height: 1.5em;
-      width: 1.5em;
-      margin-bottom: 0.2em;
-    }
-    
-    .nav-text {
-      font-size: 0.8em;
-      white-space: nowrap;
-      transition: transform 0.3s ease;
-    }
-    
-    &:hover .nav-text {
-      transform: scale(1.05);
-    }
-  }
-}
-
 // Right side with system menu, user menu, etc.
 .header-right {
+  @include layout.header-actions;
+  
   display: flex;
   align-items: center;
   gap: 0.8em;
@@ -332,7 +142,8 @@
     position: relative;
     border: 2px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
+    @include animations.apply-animation('pulse', 2s, animations.$ease-standard, infinite);
+    transition: all animations.$base-duration animations.$ease-standard;
     overflow: hidden;
     
     /* Default background for avatar if no image is provided */
@@ -375,7 +186,7 @@
     }
     
     /* Status indicator */
-    .avatar-status {
+    & .avatar-status {
       position: absolute;
       bottom: 0;
       right: 0;
@@ -406,26 +217,9 @@
     border: 3px solid rgba(255, 255, 255, 0.8);
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   }
-  
-  // Add animation for notification badge pulse
-  ::ng-deep .mat-badge-content {
-    animation: badgePulse 2s infinite;
-    
-    @keyframes badgePulse {
-      0% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.2);
-      }
-      100% {
-        transform: scale(1);
-      }
-    }
-  }
 }
 
-// Styling for dropdown menus
+// Styling for dropdown menus - leverage existing theme variables
 ::ng-deep {
   .user-dropdown-menu .mat-menu-content, 
   .system-dropdown-menu .mat-menu-content {
@@ -468,12 +262,12 @@
     }
   }
   
-  // Menu item hover effects
+  // Menu item hover effects - use theme variables
   .mat-menu-item {
-    transition: background-color 0.2s ease;
+    transition: background-color animations.$fast-duration animations.$ease-standard;
     
     &:hover {
-      background-color: rgba(0, 0, 0, 0.04);
+      background-color: var(--md-sys-color-surface-variant);
       
       .vibrant1-theme & {
         background-color: rgba(255, 0, 204, 0.1);
@@ -548,7 +342,7 @@
   }
 }
 
-// Responsive adjustments
+// Use responsive mixins consistently
 @include responsive.sm-down {
   .header-container {
     padding: 0 0.5em;
@@ -565,20 +359,6 @@
     .logo-wrapper {
       width: 2.2em;
       height: 2.2em;
-    }
-  }
-  
-  .nav-section {
-    .nav-item {
-      padding: 0.3em 0.6em;
-      
-      .nav-text {
-        display: none; // Hide text on small screens
-      }
-      
-      .nav-icon {
-        margin-bottom: 0;
-      }
     }
   }
   
