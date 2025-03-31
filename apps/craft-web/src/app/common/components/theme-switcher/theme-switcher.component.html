@@ -1,0 +1,37 @@
+<div class="theme-switcher-container">
+  <!-- Theme toggle button -->
+  <button mat-icon-button 
+          class="theme-button"
+          [matTooltip]="'Current theme: ' + getCurrentThemeName()"
+          (click)="toggleThemeMenu()">
+    <mat-icon>{{ getCurrentThemeIcon() }}</mat-icon>
+  </button>
+
+  <!-- Theme menu -->
+  <div *ngIf="showThemeMenu"
+       class="theme-menu"
+       [class.mini-mode]="mini">
+       
+    <div class="theme-menu-header">
+      <span class="theme-menu-title">Select Theme</span>
+      <button mat-icon-button (click)="toggleThemeMenu()" class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="theme-options">
+      <div *ngFor="let theme of themes" 
+           class="theme-option"
+           [class.active]="currentTheme === theme.value"
+           (click)="selectTheme(theme.value)"
+           [attr.aria-selected]="currentTheme === theme.value">
+        
+        <div class="theme-preview" [ngClass]="'theme-preview-' + theme.value">
+          <mat-icon>{{ theme.icon }}</mat-icon>
+        </div>
+        <span class="theme-name">{{ theme.label }}</span>
+        <mat-icon *ngIf="currentTheme === theme.value" class="check-icon">check</mat-icon>
+      </div>
+    </div>
+  </div>
+</div>
