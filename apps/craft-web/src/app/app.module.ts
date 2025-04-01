@@ -10,7 +10,6 @@ import { appRoutes } from './app.routes';
 import { CommonModule } from '@angular/common';
 
 import { AppComponent } from './app.component';
-import { LandingModule } from './pages/landing/landing.module';
 import { SidebarModule } from './pages/sidebar/sidebar.module';
 import { HeaderModule } from './pages/header/header.module';
 import { FooterModule } from './pages/footer/footer.module';
@@ -24,6 +23,7 @@ import { BusyService } from './common/services/busy.service';
 import { ResumeComponent } from './pages/resume/resume.component';
 import { BookModule } from './projects/book/book.module';
 import { SharedPipesModule } from './common/pipes/shared-pipes.module';
+import { UserMenuModule } from './common/components/user-menu/user-menu.module';
 
 // Import interceptors
 import { UserStateInterceptor } from './common/interceptors/user-state.interceptor';
@@ -56,12 +56,17 @@ import { ThemeSwitcherComponent } from './common/components/theme-switcher/theme
 import { NotificationService } from './common/services/notification.service';
 import { UserState } from './common/interfaces/user-state.interface';
 import { ThemeService } from './common/services/theme.service';
+import { LayoutService } from './common/services/layout.service';
 
+// Import LandingModule
+import { LandingModule } from './pages/landing/landing.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ResumeComponent
+    ResumeComponent,
+    ThemeSwitcherComponent,
+    ThemeSwitcherComponent
   ],
   imports: [
     BrowserModule,
@@ -70,7 +75,7 @@ import { ThemeService } from './common/services/theme.service';
     RouterModule.forRoot(appRoutes),
     MaterialModule,
     FormsModule,
-    LandingModule,
+    LandingModule, // Replace LandingModule with LandingComponent
     SidebarModule,
     HeaderModule,
     DataVisualizationsModule,
@@ -88,7 +93,8 @@ import { ThemeService } from './common/services/theme.service';
     RouterModule,
     ReactiveFormsModule,
     BookModule,
-    SharedPipesModule
+    SharedPipesModule,
+    UserMenuModule // Import the UserMenuModule
   ],
   exports: [
     MaterialModule,
@@ -100,6 +106,8 @@ import { ThemeService } from './common/services/theme.service';
     ApiService,
     BusyService,
     ToastrService,
+    LayoutService,
+    ThemeService,
     UserFacadeService,
     VideoBackgroundService,
     UiStateFacade,

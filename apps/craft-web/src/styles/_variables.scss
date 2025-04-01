@@ -32,6 +32,12 @@ $patriot-red: #BF0A30;
 $patriot-navy: #041E42;
 $patriot-gold: #FFD700;
 
+/* Patriotic theme colors */
+$red: #B22234;
+$navy: #002868;
+$gold: #FFD700;
+$white: #FFFFFF;
+
 /* Semantic Colors */
 $success-green: #10B981;
 $error-red: #EF4444;
@@ -42,6 +48,22 @@ $info-blue: #3B82F6;
 $silver-star: #C0C0C0;
 $dark-bg: #1A1A2E;
 $card-bg: #27293d;
+
+/* Footer variables */
+$footer-height: 3em;
+$footer-expanded-height: 12em;
+$footer-transition-duration: 0.3s;
+$footer-transition-timing: ease-in-out;
+
+/* Chart colors */
+$chart-red: $red;
+$chart-navy: $navy;
+$chart-gold: $gold;
+
+/* Status colors */
+$status-online: #4caf50;
+$status-warning: #ff9800;
+$status-error: #f44336;
 
 /* MD3 Color System Tokens */
 $md-sys-color: (

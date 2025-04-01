@@ -8,6 +8,8 @@
 @use 'sass:map';
 @use 'sass:math';
 @use 'variables' as vars;
+@use 'mixins' as mixins;
+@use 'responsive' as responsive;
 
 /* ===== Core Layout Variables ===== */
 $header-height: vars.$header-height;
@@ -53,56 +55,31 @@ $content-padding: 1.5em;
   width: 100%;
   height: 4em;
   margin: 0.5em;
-  background: linear-gradient(
-    to right,
-    rgba(191, 10, 48, 0.8) 0%,
-    rgba(0, 40, 104, 0.8) 70%,
-    rgba(0, 40, 104, 0.9) 100%
-  );
+  background: linear-gradient(to right, rgba(191, 10, 48, 0.8) 0%, rgba(0, 40, 104, 0.8) 70%, rgba(0, 40, 104, 0.9) 100%);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   border-radius: 0.5em;
   position: relative;
   overflow: hidden;
   z-index: map.get(vars.$z-layers, header);
-  
+
   &.light-theme {
-    background: linear-gradient(
-      to right,
-      rgba(191, 10, 48, 0.9) 0%,
-      rgba(0, 40, 104, 0.9) 70%,
-      rgba(0, 40, 104, 1) 100%
-    );
+    background: linear-gradient(to right, rgba(191, 10, 48, 0.9) 0%, rgba(0, 40, 104, 0.9) 70%, rgba(0, 40, 104, 1) 100%);
   }
-  
+
   &.dark-theme {
-    background: linear-gradient(
-      to right,
-      rgba(140, 10, 35, 0.9) 0%,
-      rgba(0, 25, 65, 0.9) 70%,
-      rgba(0, 25, 65, 1) 100%
-    );
+    background: linear-gradient(to right, rgba(140, 10, 35, 0.9) 0%, rgba(0, 25, 65, 0.9) 70%, rgba(0, 25, 65, 1) 100%);
   }
-  
+
   &.vibrant1-theme {
-    background: linear-gradient(
-      135deg,
-      rgba(15, 5, 30, 0.85) 0%,
-      rgba(255, 0, 204, 0.7) 50%,
-      rgba(51, 0, 255, 0.85) 100%
-    );
+    background: linear-gradient(135deg, rgba(15, 5, 30, 0.85) 0%, rgba(255, 0, 204, 0.7) 50%, rgba(51, 0, 255, 0.85) 100%);
     box-shadow: 0 0 25px rgba(255, 0, 204, 0.5);
   }
-  
+
   &.vibrant2-theme {
-    background: linear-gradient(
-      135deg,
-      rgba(25, 10, 5, 0.85) 0%,
-      rgba(255, 85, 0, 0.7) 50%,
-      rgba(255, 170, 0, 0.85) 100%
-    );
+    background: linear-gradient(135deg, rgba(25, 10, 5, 0.85) 0%, rgba(255, 85, 0, 0.7) 50%, rgba(255, 170, 0, 0.85) 100%);
     box-shadow: 0 0 25px rgba(255, 85, 0, 0.5);
   }
 }
@@ -122,7 +99,7 @@ $content-padding: 1.5em;
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   color: white;
-  
+
   @include responsive.sm-down {
     padding: 0 0.5rem;
     height: var(--md-sys-header-height-mobile, 3.5rem);
@@ -166,7 +143,7 @@ $content-padding: 1.5em;
   flex-direction: column;
   align-items: stretch;
   transition: width 0.3s ease;
-  
+
   &.collapsed {
     width: var(--md-sys-sidebar-collapsed-width, 7em);
   }
@@ -216,8 +193,7 @@ $content-padding: 1.5em;
   outline: 0.1em solid var(--md-sys-color-outline-variant);
   background-color: var(--md-sys-color-surface-variant);
   color: var(--md-sys-color-on-surface);
-  transition: transform var(--md-sys-motion-duration-medium) ease, 
-              box-shadow var(--md-sys-motion-duration-medium) ease;
+  transition: transform var(--md-sys-motion-duration-medium) ease, box-shadow var(--md-sys-motion-duration-medium) ease;
 
   &:hover {
     transform: scale(1.1);
@@ -268,9 +244,7 @@ $content-padding: 1.5em;
   border: 1px solid var(--md-sys-color-secondary);
   font-size: var(--md-sys-typescale-body-medium-font-size);
   cursor: pointer;
-  transition: color var(--md-sys-motion-duration-short) ease, 
-              transform var(--md-sys-motion-duration-short) ease, 
-              background-color var(--md-sys-motion-duration-short) ease;
+  transition: color var(--md-sys-motion-duration-short) ease, transform var(--md-sys-motion-duration-short) ease, background-color var(--md-sys-motion-duration-short) ease;
   padding: 0.35em;
   height: 2.5em;
   width: 2.5em;
@@ -308,6 +282,19 @@ $content-padding: 1.5em;
   }
 }
 
+// Main stage mixin definition for direct usage
+@mixin main-stage {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  border-left: 2px solid var(--md-sys-color-primary);
+  background-color: var(--md-sys-color-background);
+  transition: padding 0.3s ease;
+  border-radius: 8px;
+  margin: 0 0.5em;
+  padding: 1em;
+}
+
 .main-content {
   @include main-content;
 
@@ -315,35 +302,9 @@ $content-padding: 1.5em;
   .has-sidebar & {
     margin-left: $sidebar-width;
   }
-  
+
   .has-sidebar.sidebar-collapsed & {
     margin-left: $sidebar-collapsed-width;
-  }
-}
-
-/* Simple main stage mixin without cloud effects */
-@mixin main-stage {
-  border-radius: 8px;
-  margin: 0 0.5em;
-  padding: 1em;
-  
-  // Use variables for color with transparency
-  background-color: rgba(var(--content-bg-rgb, 255, 255, 255), 0.95);
-  color: rgba(var(--text-color-rgb, 0, 0, 0), 0.87);
-  
-  // Add smooth transitions for animations
-  transition: 
-    background-color 0.3s ease,
-    color 0.3s ease,
-    opacity 0.3s ease;
-  
-  // Box shadow with slight transparency
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  
-  // Ensure inner content can have animations
-  > * {
-    position: relative;
-    z-index: 1;
   }
 }
 
@@ -351,7 +312,7 @@ $content-padding: 1.5em;
 @mixin transparent-container {
   background-color: transparent;
   position: relative;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -370,7 +331,7 @@ $content-padding: 1.5em;
 @mixin animation-panel {
   position: relative;
   overflow: hidden;
-  
+
   // Create a layer for animations
   &::after {
     content: '';
@@ -385,7 +346,7 @@ $content-padding: 1.5em;
     opacity: 0;
     transition: opacity 0.5s ease;
   }
-  
+
   &.animate::after {
     opacity: 0.2;
   }
@@ -413,20 +374,12 @@ $content-padding: 1.5em;
   grid-gap: 1rem;
 }
 
-/* Main stage mixin for content area */
-@mixin main-stage {
-  padding: 1rem;
-  background-color: var(--md-sys-color-surface);
-  border-radius: 8px;
-  box-shadow: var(--md-sys-elevation-level1);
-}
-
 /* ===== Footer Layout ===== */
 @mixin footer {
   width: calc(100% - 0.5em); // Account for left and right margin
   min-height: var(--md-sys-footer-height, 3em);
-  margin: 0.25em auto 0 auto; 
-  position: relative; 
+  margin: 0.25em auto 0 auto;
+  position: relative;
   bottom: 0;
   left: 0;
   right: 0;
@@ -437,8 +390,236 @@ $content-padding: 1.5em;
   border-radius: var(--md-sys-shape-corner-medium);
   z-index: map.get(vars.$z-layers, footer);
   transition: background-color 0.3s ease, min-height 0.3s ease;
-  
+
   &.expanded {
     min-height: var(--md-sys-footer-expanded-height, 12em);
+  }
+}
+
+/* ===== Enhanced Layout Utilities ===== */
+
+// Layout container classes
+.container {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 1rem;
+  padding-left: 1rem;
+
+  @include responsive.sm-up {
+    max-width: map.get(vars.$container-max-widths, sm);
+  }
+
+  @include responsive.md-up {
+    max-width: map.get(vars.$container-max-widths, md);
+  }
+
+  @include responsive.lg-up {
+    max-width: map.get(vars.$container-max-widths, lg);
+  }
+
+  @include responsive.xl-up {
+    max-width: map.get(vars.$container-max-widths, xl);
+  }
+}
+
+// Horizontal layout with sidebar - supports the app layout
+.horizontal-layout {
+  display: flex;
+  height: 100%;
+
+  &.with-gutter {
+    gap: 1em; // Standard gutter
+  }
+
+  .sidebar-container {
+    height: 100%;
+    flex-shrink: 0;
+    overflow-y: auto;
+    transition: width 0.3s ease;
+
+    &.auto-width {
+      width: auto;
+    }
+
+    &.fixed-width {
+      width: 250px;
+    }
+
+    &.collapsed {
+      width: 64px !important;
+    }
+  }
+
+  .content-container {
+    flex: 1;
+    overflow: auto;
+    height: 100%;
+  }
+}
+
+// Vertical stack layout
+.vertical-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &.with-gutter {
+    gap: 1em;
+  }
+
+  .header-container {
+    flex-shrink: 0;
+  }
+
+  .content-container {
+    flex: 1;
+    overflow: auto;
+  }
+
+  .footer-container {
+    flex-shrink: 0;
+  }
+}
+
+// Grid layout system
+.grid {
+  display: grid;
+  gap: 1rem;
+
+  &.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+
+    @include responsive.sm-down {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+
+    @include responsive.md-down {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include responsive.sm-down {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+
+    @include responsive.lg-down {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include responsive.sm-down {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Card layout styles
+.card-container {
+  background-color: var(--md-sys-color-surface);
+  border-radius: 8px;
+  box-shadow: var(--md-sys-elevation-level1);
+  padding: 1rem;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: var(--md-sys-elevation-level2);
+  }
+
+  &.with-patriotic-accent {
+    @include mixins.patriotic-border;
+  }
+}
+
+// Section layout
+.section {
+  margin-bottom: 2rem;
+
+  .section-header {
+    margin-bottom: 1rem;
+
+    h2 {
+      color: var(--md-sys-color-primary);
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin: 0;
+    }
+  }
+
+  // Content styling
+  .section-content {
+    padding: 1rem;
+    background-color: var(--md-sys-color-surface-variant);
+    border-radius: 8px;
+    box-shadow: var(--md-sys-elevation-level1);
+  }
+}
+
+// Helper layout classes
+.full-width {
+  width: 100%;
+}
+
+.full-height {
+  height: 100%;
+}
+
+.center-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// Gap utilities
+.gap-xs {
+  gap: 0.25rem;
+}
+.gap-sm {
+  gap: 0.5rem;
+}
+.gap-md {
+  gap: 1rem;
+}
+.gap-lg {
+  gap: 1.5rem;
+}
+.gap-xl {
+  gap: 2rem;
+}
+
+.layout-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; // changed from height to min-height
+
+  .layout-main {
+    flex: 1 1 auto;
+  }
+
+  .layout-footer {
+    flex-shrink: 0;
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    padding: 1rem;
+    border-top: 1px solid var(--md-sys-color-outline);
+    box-shadow: var(--md-sys-elevation-level1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    z-index: 10;
   }
 }

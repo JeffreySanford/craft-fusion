@@ -5,99 +5,105 @@
  * responsive behavior across the application.
  */
 
-@use './_variables' as vars;
+@use 'sass:map';
+@use 'variables' as vars;
 
-// Standard breakpoints
-$breakpoint-xs: 0;
-$breakpoint-sm: 600px;
-$breakpoint-md: 960px;
-$breakpoint-lg: 1280px;
-$breakpoint-xl: 1920px;
-
-// Mixins for media queries
-@mixin xs {
-  @media (max-width: #{$breakpoint-sm - 1px}) {
+// Breakpoint mixins
+@mixin xs-up {
+  @media (min-width: map.get(vars.$breakpoints, "xs")) {
     @content;
   }
 }
 
-@mixin sm {
-  @media (min-width: #{$breakpoint-sm}) and (max-width: #{$breakpoint-md - 1px}) {
-    @content;
-  }
-}
-
-@mixin md {
-  @media (min-width: #{$breakpoint-md}) and (max-width: #{$breakpoint-lg - 1px}) {
-    @content;
-  }
-}
-
-@mixin lg {
-  @media (min-width: #{$breakpoint-lg}) and (max-width: #{$breakpoint-xl - 1px}) {
-    @content;
-  }
-}
-
-@mixin xl {
-  @media (min-width: #{$breakpoint-xl}) {
-    @content;
-  }
-}
-
-// Up mixins (from breakpoint and up)
 @mixin sm-up {
-  @media (min-width: #{$breakpoint-sm}) {
+  @media (min-width: map.get(vars.$breakpoints, "sm")) {
     @content;
   }
 }
 
 @mixin md-up {
-  @media (min-width: #{$breakpoint-md}) {
+  @media (min-width: map.get(vars.$breakpoints, "md")) {
     @content;
   }
 }
 
 @mixin lg-up {
-  @media (min-width: #{$breakpoint-lg}) {
+  @media (min-width: map.get(vars.$breakpoints, "lg")) {
     @content;
   }
 }
 
-// Down mixins (from breakpoint and down)
+@mixin xl-up {
+  @media (min-width: map.get(vars.$breakpoints, "xl")) {
+    @content;
+  }
+}
+
+@mixin xs-down {
+  @media (max-width: (map.get(vars.$breakpoints, "xs") - 1px)) {
+    @content;
+  }
+}
+
 @mixin sm-down {
-  @media (max-width: #{$breakpoint-md - 1px}) {
+  @media (max-width: (map.get(vars.$breakpoints, "sm") - 1px)) {
     @content;
   }
 }
 
 @mixin md-down {
-  @media (max-width: #{$breakpoint-lg - 1px}) {
+  @media (max-width: (map.get(vars.$breakpoints, "md") - 1px)) {
     @content;
   }
 }
 
 @mixin lg-down {
-  @media (max-width: #{$breakpoint-xl - 1px}) {
+  @media (max-width: (map.get(vars.$breakpoints, "lg") - 1px)) {
+    @content;
+  }
+}
+
+@mixin xl-down {
+  @media (max-width: (map.get(vars.$breakpoints, "xl") - 1px)) {
+    @content;
+  }
+}
+
+// Between breakpoints
+@mixin between($min, $max) {
+  @media (min-width: $min) and (max-width: $max) {
+    @content;
+  }
+}
+
+// Custom breakpoint
+@mixin custom-min($width) {
+  @media (min-width: $width) {
+    @content;
+  }
+}
+
+@mixin custom-max($width) {
+  @media (max-width: $width) {
     @content;
   }
 }
 
 // Special device type mixins
 @mixin mobile-only {
-  @media (max-width: #{$breakpoint-md - 1px}) and (hover: none) {
+  @media (max-width: (map.get(vars.$breakpoints, "md") - 1px)) and (hover: none) {
     @content;
   }
 }
 
 @mixin tablet-only {
-  @media (min-width: #{$breakpoint-sm}) and (max-width: #{$breakpoint-lg - 1px}) and (hover: none) and (pointer: coarse) {
+  @media (min-width: map.get(vars.$breakpoints, "sm")) and (max-width: (map.get(vars.$breakpoints, "lg") - 1px)) and (hover: none) and (pointer: coarse) {
     @content;
   }
 }
 
 @mixin desktop-only {
-  @media (min-width: #{$breakpoint-md}) and (hover: hover) {
+  @media (min-width: map.get(vars.$breakpoints, "md")) and (hover: hover) {
     @content;
   }
 }
@@ -142,9 +148,9 @@ $breakpoint-xl: 1920px;
   }
 }
 
-// Dynamic spacing that scales with viewport
-@function fluid-calc($min-size, $max-size, $min-width: $breakpoint-sm, $max-width: $breakpoint-lg) {
-  @return clamp(#{$min-size}, #{$min-size} + (#{$max-size} - #{$min-size}) * ((100vw - #{$min-width}) / (#{$max-width} - #{$min-width})), #{$max-size});
+// Fluid sizing for responsive typography and spacing
+@function fluid-calc($min-size, $max-size, $min-width: map.get(vars.$breakpoints, "sm"), $max-width: map.get(vars.$breakpoints, "lg")) {
+  @return clamp(#{$min-size}, #{$min-size} + ((#{$max-size} - #{$min-size}) * ((100vw - #{$min-width}) / (#{$max-width} - #{$min-width}))), #{$max-size});
 }
 
 // Responsive typography system
@@ -153,11 +159,11 @@ $breakpoint-xl: 1920px;
     // Default font size (16px)
     font-size: 100%;
 
-    @include xs {
+    @include xs-down {
       font-size: 87.5%; // 14px
     }
 
-    @include sm {
+    @include sm-up {
       font-size: 93.75%; // 15px
     }
 
@@ -205,11 +211,37 @@ $breakpoint-xl: 1920px;
   }
 }
 
-// Responsive app shell with consistent alignment
-@mixin responsive-app-shell {
+// Responsive container classes
+@mixin responsive-container {
   .container {
     width: 100%;
     margin-right: auto;
-    height: vars.$footer-expanded-height;
+    margin-left: auto;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    
+    @include sm-up {
+      max-width: map.get(vars.$container-max-widths, "sm");
+    }
+    
+    @include md-up {
+      max-width: map.get(vars.$container-max-widths, "md");
+    }
+    
+    @include lg-up {
+      max-width: map.get(vars.$container-max-widths, "lg");
+    }
+    
+    @include xl-up {
+      max-width: map.get(vars.$container-max-widths, "xl");
+    }
+  }
+
+  .container-fluid {
+    width: 100%;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    margin-right: auto;
+    margin-left: auto;
   }
 }

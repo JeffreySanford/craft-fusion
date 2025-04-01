@@ -1,0 +1,151 @@
+@use '../../../../styles/_variables.scss' as vars;
+@use '../../../../styles/_animations.scss' as animations;
+@use '../../../../styles/_mixins.scss' as mixins;
+@use '../../../../styles/_responsive.scss' as responsive;
+@use 'sass:map';
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  background-color: var(--md-sys-color-surface);
+  border-radius: 8px;
+  overflow: hidden;
+  
+  // Add subtle patriotic accent border
+  border: 1px solid rgba(vars.$navy, 0.2);
+  box-shadow: var(--md-sys-elevation-level1);
+  transition: box-shadow 0.3s ease;
+  
+  &:hover {
+    box-shadow: var(--md-sys-elevation-level2);
+  }
+  
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  // Loading state
+  &.loading canvas {
+    opacity: 0.3;
+  }
+  
+  // Error state
+  &.error canvas {
+    opacity: 0.2;
+    filter: grayscale(100%);
+  }
+}
+
+// Loading spinner
+.chart-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.5);
+  
+  .dark-theme & {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+// Error display
+.chart-error {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.7);
+  
+  .dark-theme & {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+  
+  mat-icon {
+    font-size: 40px;
+    height: 40px;
+    width: 40px;
+    margin-bottom: 16px;
+    color: vars.$red;
+  }
+  
+  p {
+    color: var(--md-sys-color-error);
+    text-align: center;
+    max-width: 80%;
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+// Chart legend
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 16px;
+  margin-top: 8px;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      margin-right: 4px;
+    }
+    
+    .legend-label {
+      color: var(--md-sys-color-on-surface-variant);
+    }
+  }
+}
+
+// Responsive adjustments
+@include responsive.sm-down {
+  .chart-container {
+    min-height: 150px;
+  }
+  
+  .chart-legend {
+    padding: 4px 8px;
+    
+    .legend-item {
+      font-size: 10px;
+    }
+  }
+}
+
+// Print media styling
+@media print {
+  .chart-container {
+    border: 1px solid #ccc;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+}

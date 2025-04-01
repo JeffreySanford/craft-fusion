@@ -127,6 +127,14 @@ export class LoggerService {
   }
 
   /**
+   * Register a component for logging
+   * @param componentName The name of the component to register
+   */
+  registerComponent(componentName: string): void {
+    this.registerService(componentName); // Reuse the existing method as internal implementation
+  }
+
+  /**
    * Log a message at the info level with USA-themed styling
    * @param message Message to log
    * @param data Optional data to include in the log

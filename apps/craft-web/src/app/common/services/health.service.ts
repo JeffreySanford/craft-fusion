@@ -22,6 +22,15 @@ export interface HealthStatus {
   services?: Record<string, 'up' | 'degraded' | 'down'>;
 }
 
+export interface ServiceHealth {
+  name: string;
+  status: 'Healthy' | 'Degraded' | 'Unavailable';
+  healthPercentage: number;
+  lastChecked: Date;
+  uptime: number;
+  responseTime: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -32,6 +41,18 @@ export class HealthService {
     timestamp: Date.now()
   });
   
+  private healthDataSubject = new BehaviorSubject<ServiceHealth[]>([]);
+  public servicesHealth$ = this.healthDataSubject.asObservable();
+  
+  private mockServices = [
+    { name: 'API Gateway', baseHealth: 98 },
+    { name: 'Authentication Service', baseHealth: 96 },
+    { name: 'Data Processing Service', baseHealth: 92 },
+    { name: 'Storage Service', baseHealth: 94 },
+    { name: 'Reporting Engine', baseHealth: 89 },
+    { name: 'User Management Service', baseHealth: 95 }
+  ];
+
   // Track connection failures and adjust polling frequency
   private connectionFailures = 0;
   private pollingStopSignal = new Subject<void>();
@@ -62,6 +83,8 @@ export class HealthService {
     
     // Start polling for health status (delayed start)
     setTimeout(() => this.startHealthPolling(), 5000);
+
+    this.initializeHealthChecks();
   }
   
   private startHealthPolling(): void {
@@ -204,5 +227,56 @@ export class HealthService {
   
   getCurrentStatus(): 'online' | 'degraded' | 'offline' {
     return this.healthStatus$.getValue().status;
+  }
+
+  private initializeHealthChecks(): void {
+    // Initialize with mock data
+    this.updateMockHealthData();
+    
+    // Update mock data every 15 seconds
+    timer(0, 15000).subscribe(() => {
+      this.updateMockHealthData();
+    });
+  }
+
+  private updateMockHealthData(): void {
+    const healthData: ServiceHealth[] = this.mockServices.map(service => {
+      // Random variance of ±5% from base health
+      const variance = (Math.random() * 10) - 5;
+      const healthPercentage = Math.min(100, Math.max(0, service.baseHealth + variance));
+      
+      // Determine status based on health percentage
+      let status: 'Healthy' | 'Degraded' | 'Unavailable' = 'Healthy';
+      if (healthPercentage < 80) {
+        status = 'Unavailable';
+      } else if (healthPercentage < 90) {
+        status = 'Degraded';
+      }
+      
+      // Generate response time between 50ms and 500ms
+      const responseTime = 50 + Math.random() * 450;
+      
+      // Generate random uptime between 95% and 100%
+      const uptime = 95 + Math.random() * 5;
+      
+      return {
+        name: service.name,
+        status,
+        healthPercentage,
+        lastChecked: new Date(),
+        uptime,
+        responseTime
+      };
+    });
+    
+    this.healthDataSubject.next(healthData);
+    this.logger.info('Health data updated', { serviceCount: healthData.length });
+  }
+
+  // Method to get health data for a specific service
+  getServiceHealth(serviceName: string): Observable<ServiceHealth | null> {
+    return this.servicesHealth$.pipe(
+      map(services => services.find(s => s.name === serviceName) || null)
+    );
   }
 }

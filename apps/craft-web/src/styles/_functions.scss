@@ -1,0 +1,54 @@
+/**
+ * Sass Functions
+ * 
+ * Utility functions for calculations, color manipulation, and other operations
+ * used throughout the application's styling system.
+ */
+
+// Color manipulation functions
+@function lighten-color($color, $percentage) {
+  @return mix(white, $color, $percentage);
+}
+
+@function darken-color($color, $percentage) {
+  @return mix(black, $color, $percentage);
+}
+
+// Convert px to rem
+@function rem($pixels, $context: 16) {
+  @return ($pixels / $context) * 1rem;
+}
+
+// Calculate aspect ratio
+@function aspect-ratio($width, $height) {
+  @return ($height / $width) * 100%;
+}
+
+// Z-index management
+@function z($name, $layers: $z-layers) {
+  @if map-has-key($layers, $name) {
+    @return map-get($layers, $name);
+  }
+  
+  @warn 'No layer found for `#{$name}` in $z-layers map.';
+  @return null;
+}
+
+// Fluid typography calculation
+@function fluid-type($min-font-size, $max-font-size, $min-viewport-width, $max-viewport-width) {
+  $viewport-width-diff: $max-viewport-width - $min-viewport-width;
+  $font-size-diff: $max-font-size - $min-font-size;
+  $factor: $font-size-diff / $viewport-width-diff;
+  
+  @return calc(#{$min-font-size} + (#{strip-unit($font-size-diff)} * ((100vw - #{$min-viewport-width}) / #{strip-unit($viewport-width-diff)})));
+}
+
+// Remove units from a value
+@function strip-unit($value) {
+  @return $value / ($value * 0 + 1);
+}
+
+// Apply alpha to color
+@function with-alpha($color, $alpha) {
+  @return rgba($color, $alpha);
+}

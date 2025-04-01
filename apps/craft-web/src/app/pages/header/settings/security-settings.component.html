@@ -1,87 +1,279 @@
-<div class="security-settings-container">
-  <div class="settings-header">
-    <h3 class="section-title">Security Settings</h3>
-    <div *ngIf="!isAdmin" class="admin-warning">
-      <mat-icon>lock</mat-icon>
-      <span>These settings can only be modified by administrators.</span>
-    </div>
-  </div>
-
-  <div *ngIf="!isServerOnline" class="server-offline-warning">
-    <mat-icon>cloud_off</mat-icon>
-    <span>Server appears to be offline. Settings cannot be saved until connection is restored.</span>
-  </div>
-
-  <form [formGroup]="securityForm" class="security-form" (ngSubmit)="saveSettings()" novalidate>
-    <!-- Security Level Setting -->
-    <div class="form-section">
-      <h4>Security Level</h4>
-      
-      <div class="security-levels">
-        <mat-radio-group formControlName="securityLevel" class="security-level-group">
-          <div *ngFor="let level of securityLevels" class="security-level-option">
-            <mat-radio-button [value]="level.value" [disabled]="!isAdmin">
-              <div class="level-content">
-                <div class="level-header">
-                  <mat-icon>{{level.icon}}</mat-icon>
-                  <span class="level-name">{{level.label}}</span>
-                </div>
-                <div class="level-description">{{level.description}}</div>
-              </div>
-            </mat-radio-button>
+<div class="security-settings-container" [ngClass]="currentTheme">
+  <!-- Security Level Card -->
+  <mat-card appearance="outlined" class="settings-card">
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title>
+          <div class="card-title-with-icon">
+            <mat-icon color="primary">security</mat-icon>
+            <span>Account Security Level</span>
           </div>
-        </mat-radio-group>
-      </div>
+        </mat-card-title>
+        <mat-card-subtitle>Set your desired security protection level</mat-card-subtitle>
+      </mat-card-title-group>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <form [formGroup]="securityForm" (ngSubmit)="saveSecuritySettings()">
+        <!-- Security Level Selection -->
+        <div class="form-section">
+          <p class="section-description">
+            Choose the security level that matches your needs. Higher security provides more protection but may require additional steps during authentication.
+          </p>
+          
+          <mat-form-field appearance="outline" class="full-width no-flicker-dropdown">
+            <mat-label>Security Level</mat-label>
+            <mat-select formControlName="securityLevel">
+              <mat-select-trigger class="select-trigger">
+                <mat-icon *ngIf="securityForm.get('securityLevel')?.value === 'high'">security</mat-icon>
+                <mat-icon *ngIf="securityForm.get('securityLevel')?.value === 'medium'">shield</mat-icon>
+                <mat-icon *ngIf="securityForm.get('securityLevel')?.value === 'low'">lock_open</mat-icon>
+                <span>{{ getLevelLabel(securityForm.get('securityLevel')?.value) }}</span>
+              </mat-select-trigger>
+              
+              <mat-option *ngFor="let level of securityLevels" [value]="level.value" class="security-option">
+                <div class="security-option-content">
+                  <mat-icon [color]="getIconColor(level.value)">
+                    {{ getIconForLevel(level.value) }}
+                  </mat-icon>
+                  <div class="security-option-text">
+                    <div class="security-option-label">{{ level.label }}</div>
+                    <div class="security-option-description">{{ level.description }}</div>
+                  </div>
+                </div>
+              </mat-option>
+            </mat-select>
+            <mat-hint>Select the appropriate security level for your needs</mat-hint>
+          </mat-form-field>
+          
+          <!-- Security Level Description Panel -->
+          <div class="security-level-panel" [ngClass]="securityForm.get('securityLevel')?.value">
+            <div class="level-icon">
+              <mat-icon>{{ getIconForLevel(securityForm.get('securityLevel')?.value) }}</mat-icon>
+            </div>
+            
+            <div class="level-description">
+              <h4>{{ getLevelLabel(securityForm.get('securityLevel')?.value) }}</h4>
+              <p>{{ getLevelDescription(securityForm.get('securityLevel')?.value) }}</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Security Options -->
+        <div class="form-section">
+          <h3 class="section-title">Security Features</h3>
+          
+          <div class="options-grid">
+            <mat-checkbox formControlName="emailNotifications" color="primary">
+              Email notifications for account changes
+            </mat-checkbox>
+            
+            <mat-checkbox formControlName="loginAlerts" color="primary">
+              Alert me about new logins
+            </mat-checkbox>
+            
+            <mat-checkbox formControlName="activityMonitoring" color="primary">
+              Monitor account activity
+            </mat-checkbox>
+            
+            <mat-checkbox formControlName="deviceTracking" color="primary">
+              Track authorized devices
+            </mat-checkbox>
+            
+            <mat-checkbox formControlName="ipFiltering" color="primary">
+              IP address filtering
+            </mat-checkbox>
+          </div>
+          
+          <div class="auto-logout-field">
+            <mat-form-field appearance="outline">
+              <mat-label>Auto logout after (minutes)</mat-label>
+              <input matInput type="number" formControlName="autoLogout" min="5" max="120">
+              <mat-error *ngIf="securityForm.get('autoLogout')?.hasError('required')">
+                Auto logout time is required
+              </mat-error>
+              <mat-error *ngIf="securityForm.get('autoLogout')?.hasError('min')">
+                Minimum value is 5 minutes
+              </mat-error>
+              <mat-error *ngIf="securityForm.get('autoLogout')?.hasError('max')">
+                Maximum value is 120 minutes
+              </mat-error>
+              <mat-hint>Inactive sessions will be logged out after this period</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="resetToDefaults()">
+            <mat-icon>restore</mat-icon>
+            Reset to Defaults
+          </button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="securityForm.invalid || isLoading">
+            <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+            <span *ngIf="!isLoading">
+              <mat-icon>save</mat-icon>
+              Save Security Settings
+            </span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+  
+  <!-- Two-Factor Authentication -->
+  <mat-card appearance="outlined" class="settings-card mfa-card">
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title>
+          <div class="card-title-with-icon">
+            <mat-icon [color]="mfaEnabled ? 'primary' : 'warn'">{{ mfaEnabled ? 'verified_user' : 'gpp_maybe' }}</mat-icon>
+            <span>Two-Factor Authentication (2FA)</span>
+          </div>
+        </mat-card-title>
+      </mat-card-title-group>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <mat-chip-set>
+        <mat-chip [color]="mfaEnabled ? 'primary' : 'warn'" selected>
+          {{ mfaEnabled ? 'Enabled' : 'Disabled' }}
+        </mat-chip>
+      </mat-chip-set>
       
-      <div *ngIf="securityForm.get('securityLevel')?.value" class="current-level-info">
-        <div class="info-box" [ngClass]="securityForm.get('securityLevel')?.value">
-          <mat-icon>{{getSecurityLevelInfo(securityForm.get('securityLevel')?.value)?.icon}}</mat-icon>
-          <div class="info-content">
-            <div class="info-title">Current Security Level: <strong>{{getSecurityLevelInfo(securityForm.get('securityLevel')?.value)?.label}}</strong></div>
-            <div class="info-text">{{getSecurityLevelInfo(securityForm.get('securityLevel')?.value)?.description}}</div>
+      <p class="feature-description">
+        Two-factor authentication adds an extra layer of security to your account by requiring
+        a verification code in addition to your password when you sign in.
+      </p>
+      
+      <div class="mfa-status">
+        <div *ngIf="!mfaEnabled" class="status-panel warning">
+          <mat-icon color="warn">warning</mat-icon>
+          <div class="status-message">
+            <span class="status-title">Not Protected</span>
+            <span class="status-description">Your account is vulnerable to password-based attacks</span>
+          </div>
+        </div>
+        <div *ngIf="mfaEnabled" class="status-panel success">
+          <mat-icon color="primary">verified_user</mat-icon>
+          <div class="status-message">
+            <span class="status-title">Protected</span>
+            <span class="status-description">Your account is protected with an additional security layer</span>
           </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Additional Security Settings -->
-    <div class="form-section">
-      <h4>Additional Security Options</h4>
       
-      <div class="form-row">
-        <mat-slide-toggle formControlName="enableAuditLogs" color="primary" [disabled]="!isAdmin">
-          Enable security audit logs
-        </mat-slide-toggle>
-      </div>
-      
-      <div class="form-row">
-        <mat-slide-toggle formControlName="enforceStrongPasswords" color="primary" [disabled]="!isAdmin">
-          Enforce strong password policy
-        </mat-slide-toggle>
-      </div>
-      
-      <div class="form-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Session timeout (minutes)</mat-label>
-          <input matInput type="number" formControlName="sessionTimeout" [disabled]="!isAdmin">
-          <mat-icon matPrefix>timer</mat-icon>
-          <mat-hint>Time until user is automatically logged out due to inactivity</mat-hint>
-        </mat-form-field>
-      </div>
-      
-      <div class="form-row">
-        <mat-slide-toggle formControlName="requireMfa" color="primary" [disabled]="!isAdmin">
-          Require multi-factor authentication (MFA)
-        </mat-slide-toggle>
-      </div>
-    </div>
-    
-    <!-- Action Buttons -->
-    <div class="action-buttons" *ngIf="isAdmin">
-      <button mat-raised-button color="primary" type="submit" [disabled]="!isServerOnline">
-        <mat-icon>save</mat-icon>
-        Save Security Settings
+      <button mat-raised-button color="accent" (click)="enableTwoFactor()" [disabled]="mfaEnabled || isLoading" class="action-button">
+        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+        <span *ngIf="!isLoading">
+          <mat-icon>security</mat-icon>
+          Enable Two-Factor Authentication
+        </span>
       </button>
-    </div>
-  </form>
+    </mat-card-content>
+  </mat-card>
+  
+  <!-- Password Change Card -->
+  <mat-card appearance="outlined" class="settings-card password-card">
+    <mat-card-header>
+      <mat-card-title-group>
+        <mat-card-title>
+          <div class="card-title-with-icon">
+            <mat-icon color="primary">password</mat-icon>
+            <span>Change Password</span>
+          </div>
+        </mat-card-title>
+        <mat-card-subtitle>Update your account password</mat-card-subtitle>
+      </mat-card-title-group>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <p class="feature-description">
+        Strong passwords are essential for account security. Your password should be at least 8 characters 
+        and include uppercase letters, lowercase letters, numbers, and special characters.
+      </p>
+      
+      <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="password-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Current Password</mat-label>
+          <input matInput [type]="isPasswordVisible ? 'text' : 'password'" formControlName="currentPassword">
+          <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button">
+            <mat-icon>{{ isPasswordVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('required')">
+            Current password is required
+          </mat-error>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>New Password</mat-label>
+          <input matInput [type]="isPasswordVisible ? 'text' : 'password'" formControlName="newPassword">
+          <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button">
+            <mat-icon>{{ isPasswordVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('required')">
+            New password is required
+          </mat-error>
+          <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">
+            Password must be at least 8 characters
+          </mat-error>
+          <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('pattern')">
+            Password must include uppercase, lowercase, number and special character
+          </mat-error>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirm New Password</mat-label>
+          <input matInput [type]="isPasswordVisible ? 'text' : 'password'" formControlName="confirmPassword">
+          <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('required')">
+            Please confirm your password
+          </mat-error>
+          <mat-error *ngIf="passwordForm.hasError('mismatch')">
+            Passwords don't match
+          </mat-error>
+          <mat-hint align="end">Make sure passwords match</mat-hint>
+        </mat-form-field>
+        
+        <div class="password-requirements mat-elevation-z1">
+          <h4>Password Requirements</h4>
+          <div class="requirements-list">
+            <div class="requirement-item" [class.met]="!passwordForm.get('newPassword')?.hasError('minlength')">
+              <mat-icon>{{ !passwordForm.get('newPassword')?.hasError('minlength') ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+              <span>At least 8 characters</span>
+            </div>
+            
+            <div class="requirement-item" [class.met]="hasUppercase(passwordForm.get('newPassword')?.value)">
+              <mat-icon>{{ hasUppercase(passwordForm.get('newPassword')?.value) ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+              <span>At least one uppercase letter</span>
+            </div>
+            
+            <div class="requirement-item" [class.met]="hasLowercase(passwordForm.get('newPassword')?.value)">
+              <mat-icon>{{ hasLowercase(passwordForm.get('newPassword')?.value) ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+              <span>At least one lowercase letter</span>
+            </div>
+            
+            <div class="requirement-item" [class.met]="hasNumber(passwordForm.get('newPassword')?.value)">
+              <mat-icon>{{ hasNumber(passwordForm.get('newPassword')?.value) ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+              <span>At least one number</span>
+            </div>
+            
+            <div class="requirement-item" [class.met]="hasSpecialCharacter(passwordForm.get('newPassword')?.value)">
+              <mat-icon>{{ hasSpecialCharacter(passwordForm.get('newPassword')?.value) ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+              <span>At least one special character</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" 
+            [disabled]="passwordForm.invalid || isLoading" class="action-button">
+            <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+            <span *ngIf="!isLoading">
+              <mat-icon>vpn_key</mat-icon>
+              Change Password
+            </span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
 </div>

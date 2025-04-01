@@ -135,6 +135,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
           metrics.networkLatencyRaw
         );
       });
+
+    // Fix: Use getCurrentMetrics as a property (getter), not a method
+    const metrics = this.performanceService.getCurrentMetrics;
+    // Now subscribe to the Observable
+    metrics.subscribe(data => {
+      // Handle metrics data
+    });
   }
 
   ngOnDestroy(): void {
@@ -169,10 +176,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     // Get latest system metrics
-    const metrics = this.performanceService.getCurrentMetrics();
-    this.cpuUsage = metrics.cpuLoadRaw;
-    this.memoryUsage = metrics.memoryUsageRaw;
-    this.networkLatency = metrics.networkLatencyRaw;
+    const metrics = this.performanceService.getCurrentMetrics;
+    metrics.subscribe(data => {
+      this.cpuUsage = data.cpuLoadRaw;
+      this.memoryUsage = data.memoryUsageRaw;
+      this.networkLatency = data.networkLatencyRaw;
+    });
 
     // Calculate trends
     this.calculateTrends();

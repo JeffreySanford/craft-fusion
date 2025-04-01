@@ -2,6 +2,9 @@
 @use '../../../../styles/_themes' as themes;
 @use '../../../../styles/_animations' as animations;
 @use '../../../../styles/_responsive' as responsive;
+@use '../../../../styles/variables' as vars;
+@use '../../../../styles/mixins' as mixins;
+@use '../../../../styles/_layout.scss' as layout;
 
 :host {
   display: block;
@@ -13,52 +16,215 @@
 }
 
 .settings-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+  @include layout.content-container;
+  padding: 2rem 1rem;
   min-height: 100%;
   position: relative;
-  padding: 24px;
   background-color: var(--md-sys-color-surface);
   color: var(--md-sys-color-on-surface);
-  
-  // Themed variations
+
+  // Patriotic gradient text for header
+  .patriotic-gradient-text {
+    @include mixins.patriotic-gradient;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent; 
+    font-size: 2rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+  }
+
+  .header-subtitle {
+    color: var(--md-sys-color-on-surface-variant);
+    margin: 0 0 2rem 0;
+  }
+
+  .settings-header {
+    margin-bottom: 2rem;
+
+    h1 {
+      color: var(--md-sys-color-primary);
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 500;
+    }
+  }
+
+  .settings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    // Tab navigation styling - prevent flickering
+    .settings-nav {
+      background-color: var(--md-sys-color-surface);
+      border-radius: var(--md-sys-shape-corner-medium);
+      box-shadow: var(--md-sys-elevation-level1);
+      overflow: hidden;
+      will-change: transform; // Prevent flickering
+      transform: translateZ(0); // Force GPU acceleration
+      
+      // No flicker on tabs
+      .no-flicker-tabs {
+        display: flex;
+        overflow-x: auto;
+        position: relative;
+        
+        &::before {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background-color: var(--md-sys-color-outline-variant);
+          z-index: 0;
+        }
+        
+        .tab-link {
+          height: 48px;
+          padding: 0 1.5rem;
+          opacity: 1 !important;
+          transition: color 0.3s ease, background-color 0.3s ease;
+          position: relative;
+          text-decoration: none;
+          flex-shrink: 0;
+          color: var(--md-sys-color-on-surface-variant);
+
+          &.active {
+            color: var(--md-sys-color-primary);
+            font-weight: 500;
+            
+            &::after {
+              content: '';
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              height: 2px;
+              background-color: var(--md-sys-color-primary);
+              z-index: 1;
+            }
+          }
+
+          mat-icon {
+            margin-right: 0.5rem;
+          }
+          
+          .link-text {
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+
+    // Content area
+    .settings-view {
+      background-color: var(--md-sys-color-surface);
+      border-radius: var(--md-sys-shape-corner-medium);
+      padding: 1.5rem;
+      box-shadow: var(--md-sys-elevation-level1);
+      transition: box-shadow 0.3s ease;
+      min-height: 500px;
+      
+      &:hover {
+        box-shadow: var(--md-sys-elevation-level2);
+      }
+    }
+  }
+
+  @include responsive.lg-up {
+    .settings-content {
+      flex-direction: row;
+
+      .settings-nav {
+        width: 250px;
+        align-self: flex-start;
+        
+        .no-flicker-tabs {
+          flex-direction: column;
+          overflow-x: visible;
+          
+          &::before {
+            width: 2px;
+            height: auto;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: auto;
+          }
+          
+          .tab-link {
+            width: 100%;
+            text-align: left;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            padding: 0.75rem 1.5rem;
+            
+            &.active::after {
+              width: 2px;
+              height: auto;
+              top: 0;
+              bottom: 0;
+              right: 0;
+              left: auto;
+            }
+          }
+        }
+      }
+
+      .settings-view {
+        flex: 1;
+      }
+    }
+  }
+
+  // Theme specific styles
   &.dark-theme {
     background: linear-gradient(to bottom, rgba(15, 15, 25, 0.95), rgba(30, 30, 50, 0.9));
+
+    .settings-view {
+      background-color: var(--md-sys-color-surface-variant);
+    }
+    
+    .no-flicker-tabs .tab-link.active {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
   }
-  
+
   &.light-theme {
     background: linear-gradient(to bottom, rgba(245, 245, 255, 0.95), rgba(230, 240, 255, 0.9));
   }
-  
+
   &.vibrant1-theme {
     background: linear-gradient(135deg, rgba(15, 5, 30, 0.9), rgba(80, 0, 120, 0.8));
-    
+
     .settings-group {
       border-left-color: #ff00cc;
-      
+
       .group-icon {
         color: #ff00cc;
       }
     }
-    
+
     .section-title {
       color: #ff00cc;
       text-shadow: 0 0 10px rgba(255, 0, 204, 0.5);
     }
   }
-  
+
   &.vibrant2-theme {
     background: linear-gradient(135deg, rgba(25, 10, 5, 0.9), rgba(50, 25, 10, 0.8));
-    
+
     .settings-group {
       border-left-color: #ff5500;
-      
+
       .group-icon {
         color: #ff5500;
       }
     }
-    
+
     .section-title {
       color: #ff5500;
       text-shadow: 0 0 10px rgba(255, 85, 0, 0.5);
@@ -71,36 +237,36 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 24px;
-  
+
   @include responsive.md-up {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
   }
-  
+
   h2 {
     margin: 0;
     font-size: 28px;
     font-weight: 500;
     color: var(--md-sys-color-primary);
   }
-  
+
   .settings-actions {
     display: flex;
     flex-direction: column;
     gap: 16px;
     margin-top: 16px;
-    
+
     @include responsive.md-up {
       flex-direction: row;
       align-items: center;
       margin-top: 0;
     }
-    
+
     .advanced-toggle {
       margin-right: 16px;
     }
-    
+
     .header-actions {
       display: flex;
       gap: 12px;
@@ -117,50 +283,50 @@
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
-  
+
   &.light-theme {
     background: linear-gradient(to right, rgba(245, 245, 255, 0.95), rgba(230, 240, 255, 0.9));
   }
-  
+
   &.dark-theme {
     background: linear-gradient(to right, rgba(30, 30, 50, 0.9), rgba(15, 15, 25, 0.95));
   }
-  
+
   &.vibrant1-theme {
     background: linear-gradient(135deg, rgba(15, 5, 30, 0.9), rgba(80, 0, 120, 0.8), rgba(255, 0, 204, 0.7));
   }
-  
+
   &.vibrant2-theme {
     background: linear-gradient(135deg, rgba(25, 10, 5, 0.9), rgba(50, 25, 10, 0.8), rgba(255, 85, 0, 0.7));
   }
-  
+
   .theme-preview-content {
     display: flex;
     flex-direction: column;
     height: 100%;
     padding: 16px;
-    
+
     .theme-preview-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
-      
+
       .theme-name {
         font-size: 18px;
         font-weight: 500;
         color: var(--md-sys-color-on-surface);
       }
-      
+
       mat-icon {
         color: var(--md-sys-color-on-surface);
       }
     }
-    
+
     .theme-preview-elements {
       display: flex;
       gap: 12px;
-      
+
       .preview-button {
         min-width: 100px;
       }
@@ -171,25 +337,25 @@
 // Settings content
 .settings-content {
   flex: 1;
-  
+
   .settings-groups {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    
+
     .settings-group {
       border-left: 4px solid var(--md-sys-color-primary);
-      
+
       .group-icon {
         color: var(--md-sys-color-primary);
         margin-right: 12px;
       }
-      
+
       .group-title {
         font-weight: 500;
       }
     }
-    
+
     .settings-list {
       display: flex;
       flex-direction: column;
@@ -203,16 +369,16 @@
 .setting-item {
   display: flex;
   flex-direction: column;
-  
+
   @include responsive.md-up {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
   }
-  
+
   &.advanced-setting {
     position: relative;
-    
+
     &::after {
       content: '';
       position: absolute;
@@ -226,30 +392,30 @@
       z-index: -1;
     }
   }
-  
+
   &.hidden {
     display: none;
   }
-  
+
   .setting-header {
     flex: 1;
     margin-bottom: 12px;
-    
+
     @include responsive.md-up {
       margin-bottom: 0;
       margin-right: 24px;
     }
-    
+
     .setting-label {
       display: flex;
       align-items: center;
       font-weight: 500;
-      
+
       .setting-badges {
         display: flex;
         margin-left: 8px;
         gap: 4px;
-        
+
         .badge {
           display: flex;
           align-items: center;
@@ -257,24 +423,24 @@
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          
+
           mat-icon {
             font-size: 14px;
             width: 14px;
             height: 14px;
             line-height: 14px;
           }
-          
+
           &.restart-badge {
             background-color: rgba(255, 152, 0, 0.2);
             color: #FF9800;
           }
-          
+
           &.experimental-badge {
             background-color: rgba(156, 39, 176, 0.2);
             color: #9C27B0;
           }
-          
+
           &.advanced-badge {
             background-color: rgba(25, 118, 210, 0.2);
             color: #1976D2;
@@ -282,7 +448,7 @@
         }
       }
     }
-    
+
     .setting-description {
       margin-top: 4px;
       font-size: 14px;
@@ -290,53 +456,53 @@
       max-width: 600px;
     }
   }
-  
+
   .setting-control {
     min-width: 200px;
-    
+
     // Input field
     mat-form-field {
       width: 100%;
     }
-    
+
     // Radio group
     .radio-group {
       display: flex;
       flex-direction: column;
       gap: 8px;
-      
+
       @include responsive.md-up {
         flex-direction: row;
       }
-      
+
       mat-radio-button {
         margin-right: 16px;
       }
     }
-    
+
     // Slider
     .slider-control {
       display: flex;
       align-items: center;
       gap: 16px;
-      
+
       mat-slider {
         flex: 1;
         min-width: 150px;
       }
-      
+
       .slider-value {
         min-width: 40px;
         text-align: right;
         font-weight: 500;
       }
     }
-    
+
     // Select with icons
     .select-option-with-icon {
       display: flex;
       align-items: center;
-      
+
       mat-icon {
         margin-right: 8px;
         font-size: 18px;
@@ -345,11 +511,11 @@
         line-height: 18px;
       }
     }
-    
+
     // Custom control
     .custom-control {
       width: 100%;
-      
+
       .custom-control-wrapper {
         width: 100%;
       }
@@ -360,7 +526,7 @@
 // Animation effects
 .settings-group {
   transition: all 0.3s ease;
-  
+
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
@@ -388,7 +554,7 @@
     color: white;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
-  
+
   .setting-description {
     color: rgba(255, 255, 255, 0.8) !important;
   }
@@ -403,7 +569,7 @@
 .new-setting {
   animation: highlightNew 2s ease-out;
   position: relative;
-  
+
   &::after {
     content: 'NEW';
     position: absolute;

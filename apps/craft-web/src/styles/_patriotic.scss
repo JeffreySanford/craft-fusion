@@ -1,38 +1,226 @@
 @use 'variables' as vars;
+@use 'animations' as animations;
+@use 'sass:map';
 
+// USA Flag colors
+$usa-red: #B22234;
+$usa-blue: #002868;
+$usa-white: #FFFFFF;
+$usa-gold: #FFD700;
+
+// Patriotic theme colors
+$patriot-red: $usa-red;
+$patriot-blue: $usa-blue;
+$patriot-white: $usa-white;
+$patriot-gold: $usa-gold;
+
+// Add CSS variables for use in components
+:root {
+  --usa-red: #{$usa-red};
+  --usa-blue: #{$usa-blue};
+  --usa-white: #{$usa-white};
+  --usa-gold: #{$usa-gold};
+  
+  // Generate gradients as CSS variables
+  --patriotic-gradient: linear-gradient(135deg,
+    var(--usa-blue) 0%,
+    var(--usa-red) 100%);
+    
+  --star-gradient: radial-gradient(
+    circle at center,
+    var(--usa-white) 0%,
+    var(--usa-gold) 50%,
+    rgba(255, 215, 0, 0.5) 100%
+  );
+}
+
+// Utility classes for patriotic styling
+.patriotic-text {
+  background: var(--patriotic-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.patriotic-bg {
+  background: var(--patriotic-gradient);
+}
+
+.patriotic-border {
+  border: 2px solid;
+  border-image: var(--patriotic-gradient) 1;
+}
+
+// Patriotic button styling
+@mixin patriotic-button {
+  display: inline-block;
+  padding: 0.75em 1.5em;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: vars.$white;
+  background: linear-gradient(135deg, vars.$navy 0%, vars.$red 100%);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(30deg) translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    
+    &::after {
+      transform: rotate(30deg) translateX(100%);
+    }
+  }
+  
+  &:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// Patriotic gradient background
+@mixin patriotic-gradient($angle: 135deg) {
+  background: linear-gradient($angle, rgba(0, 40, 104, 0.9), rgba(191, 10, 48, 0.9));
+}
+
+// Card with hover effect
+@mixin card-with-hover {
+  background-color: vars.$white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// Patriotic card style
+@mixin patriotic-card {
+  background-color: vars.$white;
+  border-left: 4px solid vars.$red;
+  border-right: 4px solid vars.$navy;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+  }
+}
+
+// Star button style
+@mixin star-button {
+  position: relative;
+  padding: 0.5em 1em 0.5em 2.5em;
+  background-color: vars.$navy;
+  color: vars.$white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  
+  &::before {
+    content: '★';
+    position: absolute;
+    left: 1em;
+    top: 50%;
+    transform: translateY(-50%);
+    color: vars.$gold;
+  }
+  
+  &:hover {
+    background-color: lighten(vars.$navy, 10%);
+  }
+}
+
+// USA Flag background
+@mixin flag-background {
+  background-image: linear-gradient(
+    0deg,
+    vars.$red 10%,
+    vars.$white 10%,
+    vars.$white 20%,
+    vars.$red 20%,
+    vars.$red 30%,
+    vars.$white 30%,
+    vars.$white 40%,
+    vars.$red 40%,
+    vars.$red 50%,
+    vars.$white 50%,
+    vars.$white 60%,
+    vars.$red 60%,
+    vars.$red 70%,
+    vars.$white 70%,
+    vars.$white 80%,
+    vars.$red 80%,
+    vars.$red 90%,
+    vars.$white 90%,
+    vars.$white 100%
+  );
+  background-size: 100% 100%;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 35%;
+    height: 54%;
+    background-color: vars.$navy;
+  }
+}
+
+// Patriotic text style
+@mixin patriotic-text {
+  color: vars.$navy;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, vars.$red, vars.$navy);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+  }
+  
+  &:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+// Apply patriotic colors
 @mixin apply-patriotic-colors() {
-  :root {
-    --usa-red: #{vars.$usa-red};
-    --usa-blue: #{vars.$usa-blue};
-    --usa-white: #{vars.$usa-white};
-    --usa-gold: #{vars.$usa-gold};
-    
-    --patriotic-gradient: linear-gradient(135deg, 
-      var(--usa-blue) 0%,
-      var(--usa-white) 50%,
-      var(--usa-red) 100%);
-    
-    --star-gradient: radial-gradient(
-      circle at center,
-      var(--usa-white) 0%,
-      var(--usa-gold) 50%,
-      rgba(255, 215, 0, 0.5) 100%
-    );
-  }
-  
-  .patriotic-text {
-    background: var(--patriotic-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  .patriotic-bg {
-    background: var(--patriotic-gradient);
-  }
-  
-  .patriotic-border {
-    border: 2px solid;
-    border-image: var(--patriotic-gradient) 1;
-  }
+  background-color: $patriot-blue;
+  color: $patriot-white;
+  // Adjust other properties as needed
 }

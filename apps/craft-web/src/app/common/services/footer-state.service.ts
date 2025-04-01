@@ -17,4 +17,32 @@ export class FooterStateService {
   setExpanded(expanded: boolean): void {
     this.expandedSubject.next(expanded);
   }
+
+  /**
+   * Get the current footer expansion state
+   * @returns - Current expansion state
+   */
+  getExpanded(): boolean {
+    
+    return this.expandedSubject.getValue();
+  }
+
+  /**
+   * Toggle the footer expansion state
+   */
+  toggleExpanded(): void {
+    this.expandedSubject.next(!this.expandedSubject.getValue());
+  }
+
+  isCollapsed$(): boolean {
+    return !this.expandedSubject.getValue();
+  }
+
+  setCollapsed(collapsed: boolean): void {
+    this.expandedSubject.next(!collapsed);
+  }
+  
+  isExpanded$(): boolean {
+    return this.expandedSubject.getValue();
+  }
 }

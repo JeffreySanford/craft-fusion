@@ -1,1160 +1,320 @@
 /**
- * Craft Fusion Animation System
- * Version: 1.2.0
- *
- * This file contains all application-wide animations, organized by type.
- * All animations respect the prefers-reduced-motion media query.
+ * Animation System
+ * 
+ * This file defines animations, transitions, and motion patterns for the application.
+ * It provides both standard animations and reduced motion alternatives.
  */
 
-@use 'transition-variables' as transitions;
+@use 'sass:map';
+@use 'sass:list';
+@use 'variables' as vars;
 
-/* ----- Variables ----- */
-$base-duration: 0.3s;
-$fast-duration: 0.2s;
-
-$ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
-$ease-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
-$ease-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
-$ease-patriotic: cubic-bezier(0.6, 0.0, 0.2, 1);
-
-$md-elevation1: 0 2px 1px -1px rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 1px 3px 0 rgba(0,0,0,.12);
-$md-elevation2: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);
-$md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 10px 0 rgba(0,0,0,.12);
-
-// ----- Respecting Prefers-Reduced-Motion ----- //
-// This media query wrapper is used in each animation class
-@mixin respect-motion-preferences {
-  @media (prefers-reduced-motion: no-preference) {
-    @content;
-  }
-}
-
-// Enhanced mixin to apply animations only when appropriate
-@mixin apply-animation($animation-name, $duration, $easing, $other...) {
-  @media (prefers-reduced-motion: no-preference) {
-    animation: $animation-name $duration $easing $other;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    transition: none !important;
-  }
-}
-
-.prefers-reduced-motion * {
-  animation-duration: 0.001s !important;
-  transition-duration: 0.001s !important;
-}
-
-// Add this class to your components that should animate on scroll
-.animate-on-scroll {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-  
-  &.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  
-  @media (prefers-reduced-motion: reduce) {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
-
-// ----- Keyframe Animations ----- //
-
-// 1. Entrance Animations
-@keyframes fadeIn {
+// Define keyframes for reusable animations
+@keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes slideInRight {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
-
-@keyframes slideInLeft {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
-}
-
-@keyframes slideInUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes slideInDown {
-  from { transform: translateY(-30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes flyInLeft {
-  0% {
-    transform: translateX(-150%);
-    opacity: 0;
-  }
-  75% {
-    transform: translateX(10%);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes flyOutRight {
-  0% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  25% {
-    transform: translateX(-5%);
-  }
-  100% {
-    transform: translateX(150%);
-    opacity: 0;
-  }
-}
-
-// 2. Exit Animations
-@keyframes fadeOut {
+@keyframes fade-out {
   from { opacity: 1; }
   to { opacity: 0; }
 }
 
-@keyframes slideOutRight {
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slide-out-right {
   from { transform: translateX(0); }
   to { transform: translateX(100%); }
 }
 
-@keyframes slideOutLeft {
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slide-out-left {
   from { transform: translateX(0); }
   to { transform: translateX(-100%); }
 }
 
-@keyframes slideOutUp {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(-30px); opacity: 0; }
+@keyframes slide-in-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
-@keyframes slideOutDown {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(30px); opacity: 0; }
+@keyframes slide-out-up {
+  from { transform: translateY(0); }
+  to { transform: translateY(-100%); }
 }
 
-// 3. Attention Seeking & Patriotic Animations
+@keyframes slide-in-down {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes slide-out-down {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}
+
 @keyframes pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
   100% { transform: scale(1); }
 }
 
-@keyframes patrioticPulse {
-  0% { box-shadow: 0 0 0 0 rgba(191, 10, 48, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(191, 10, 48, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(191, 10, 48, 0); }
-}
-
-@keyframes flagWave {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(2deg); }
-  50% { transform: rotate(0deg); }
-  75% { transform: rotate(-2deg); }
-  100% { transform: rotate(0deg); }
-}
-
-@keyframes starTwinkle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(0.9); }
-}
-
-@keyframes patrioticShimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-@keyframes shimmer {
-  0% { transform: rotate(30deg) translateX(-100%); }
-  100% { transform: rotate(30deg) translateX(100%); }
-}
-
-// Pulse variations (consolidated)
-@keyframes pulse-colored {
-  0% { box-shadow: 0 0 0 0 var(--pulse-color, rgba(16, 185, 129, 0.4)); }
-  70% { box-shadow: 0 0 0 6px var(--pulse-color, rgba(16, 185, 129, 0)); }
-  100% { box-shadow: 0 0 0 0 var(--pulse-color, rgba(16, 185, 129, 0)); }
-}
-
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-5px); }
-  100% { transform: translateY(0px); }
-}
-
-// Enhanced star animation
-@keyframes starEnhanced {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.4;
-    color: white;
-    text-shadow: 0 0 5px white;
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(5);
-    opacity: 1;
-    color: gold;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.4);
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.4;
-    color: white;
-    text-shadow: 0 0 5px white;
-  }
-}
-
-// Wave animation for text that runs every 15 seconds
-@keyframes textWave {
-  0% { transform: translateY(0); }
-  20% { transform: translateY(-6px); }
-  40% { transform: translateY(4px); }
-  60% { transform: translateY(-2px); }
-  80% { transform: translateY(1px); }
-  100% { transform: translateY(0); }
-}
-
-// Enhanced star pulse animation
-@keyframes starPulse {
-  0%, 100% {
-    filter: brightness(1) drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
-  }
-  50% {
-    filter: brightness(1.5) drop-shadow(0 0 12px rgba(255, 215, 0, 0.8));
-  }
-}
-
-// 4. Loading Animations
-@keyframes spin {
+@keyframes rotate {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-@keyframes starStripes {
-  0% { background-position: 0 0; }
-  100% { background-position: 50px 0; }
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
 }
 
-// 5. Interactive Feedback Animations
-@keyframes expandRipple {
-  0% {
-    transform: scale(0);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0;
-  }
+// New animations for security settings
+@keyframes icon-pulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
 }
 
-@keyframes elevationTransition {
+@keyframes elevation-rise {
+  from { transform: translateY(0); box-shadow: var(--md-sys-elevation-level1); }
+  to { transform: translateY(-2px); box-shadow: var(--md-sys-elevation-level3); }
+}
+
+@keyframes check-mark-appear {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+// Fade in from bottom
+@keyframes fade-in-up {
   from { 
-    box-shadow: $md-elevation1;
-    transform: translateY(0);
+    opacity: 0;
+    transform: translateY(20px);
   }
   to { 
-    box-shadow: $md-elevation4;
-    transform: translateY(-2px);
-  }
-}
-
-// Header-specific animations
-@keyframes neonPulse {
-  0%, 100% {
     opacity: 1;
-    text-shadow: 0 0 10px currentColor;
-  }
-  50% {
-    opacity: 0.7;
-    text-shadow: 0 0 20px currentColor;
-  }
-}
-
-@keyframes pulse-colored {
-  0% {
-    box-shadow: 0 0 5px var(--pulse-color);
-  }
-  50% {
-    box-shadow: 0 0 15px var(--pulse-color);
-  }
-  100% {
-    box-shadow: 0 0 5px var(--pulse-color);
-  }
-}
-
-@keyframes neonRotate {
-  0% {
-    transform: rotate(-10deg) scale(0.8);
-    opacity: 0.5;
-  }
-  100% {
-    transform: rotate(0deg) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes patrioticSpin {
-  0% {
-    transform: rotate(0deg);
-    box-shadow: 0 0 10px rgba(0, 40, 104, 0.8);
-  }
-  33% {
-    box-shadow: 0 0 15px rgba(191, 10, 48, 0.8);
-  }
-  66% {
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
-  }
-  100% {
-    transform: rotate(360deg);
-    box-shadow: 0 0 10px rgba(0, 40, 104, 0.8);
-  }
-}
-
-@keyframes zoomIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(-10px);
-    opacity: 0;
-  }
-  to {
     transform: translateY(0);
-    opacity: 1;
   }
 }
 
-@keyframes loading {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(200%);
-  }
+// Patriotic shimmer animation
+@keyframes patriotic-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
-@keyframes eagleShine {
-  0% {
-    transform: translateX(-100%) translateY(-100%) rotate(45deg);
-  }
-  100% {
-    transform: translateX(100%) translateY(100%) rotate(45deg);
-  }
+// Spin animation
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-// Cosmic Glow Animation Keyframes
-@keyframes cosmicPulse {
-  0% {
-    box-shadow: 0 0 5px rgba(255, 0, 204, 0.7), 0 0 10px rgba(255, 0, 204, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(255, 0, 204, 0.9), 0 0 40px rgba(51, 0, 255, 0.5);
-  }
-  100% {
-    box-shadow: 0 0 5px rgba(255, 0, 204, 0.7), 0 0 10px rgba(255, 0, 204, 0.3);
-  }
+// Loading dots animation
+@keyframes loading-dots {
+  0% { content: '.'; }
+  33% { content: '..'; }
+  66% { content: '...'; }
 }
 
-@keyframes cosmicTextGlow {
-  0% {
-    text-shadow: 0 0 5px rgba(255, 0, 204, 0.7), 0 0 10px rgba(51, 0, 255, 0.3);
-  }
-  50% {
-    text-shadow: 0 0 10px rgba(255, 0, 204, 0.9), 0 0 20px rgba(51, 0, 255, 0.7);
-  }
-  100% {
-    text-shadow: 0 0 5px rgba(255, 0, 204, 0.7), 0 0 10px rgba(51, 0, 255, 0.3);
-  }
+// Skeleton loading animation
+@keyframes skeleton-loading {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
-@keyframes cosmicBackgroundPulse {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+// Export animations for use in components
+$fade-in: fade-in;
+$fade-out: fade-out;
+$slide-in-right: slide-in-right;
+$slide-out-right: slide-out-right;
+$slide-in-left: slide-in-left;
+$slide-out-left: slide-out-left;
+$slide-in-up: slide-in-up;
+$slide-out-up: slide-out-up;
+$slide-in-down: slide-in-down;
+$slide-out-down: slide-out-down;
+$pulse: pulse;
+$rotate: rotate;
+$shimmer: shimmer;
+$icon-pulse: icon-pulse;
+$elevation-rise: elevation-rise;
+$check-mark-appear: check-mark-appear;
+
+// Animation duration defaults
+$duration-short: 150ms;
+$duration-medium: 300ms;
+$duration-long: 500ms;
+
+// Animation timing defaults
+$timing-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+$timing-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
+$timing-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
+
+// Animation mixin helpers
+@mixin animate($animation, $duration: $duration-medium, $timing: $timing-standard, $delay: 0s, $iterations: 1) {
+  animation-name: $animation;
+  animation-duration: $duration;
+  animation-timing-function: $timing;
+  animation-delay: $delay;
+  animation-iteration-count: $iterations;
+  animation-fill-mode: both;
 }
 
-@keyframes cosmicRotate {
-  from {
-    transform: rotate(0deg) scale(1);
-  }
-  to {
-    transform: rotate(360deg) scale(1.1);
-  }
+@mixin transition($properties: all, $duration: $duration-medium, $timing: $timing-standard, $delay: 0s) {
+  transition-property: $properties;
+  transition-duration: $duration;
+  transition-timing-function: $timing;
+  transition-delay: $delay;
 }
 
-@keyframes cosmicBorderGlow {
-  0%, 100% {
-    border-color: #ff00cc;
-    box-shadow: 0 0 10px #ff00cc;
-  }
-  33% {
-    border-color: #3300ff;
-    box-shadow: 0 0 15px #3300ff;
-  }
-  66% {
-    border-color: #00ffcc;
-    box-shadow: 0 0 20px #00ffcc;
-  }
-}
-
-// Solar Flare Animation Keyframes
-@keyframes solarPulse {
-  0% {
-    box-shadow: 0 0 5px rgba(255, 85, 0, 0.7), 0 0 10px rgba(255, 170, 0, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(255, 85, 0, 0.9), 0 0 40px rgba(255, 170, 0, 0.5);
-  }
-  100% {
-    box-shadow: 0 0 5px rgba(255, 85, 0, 0.7), 0 0 10px rgba(255, 170, 0, 0.3);
-  }
-}
-
-@keyframes solarTextGlow {
-  0% {
-    text-shadow: 0 0 5px rgba(255, 85, 0, 0.7), 0 0 10px rgba(255, 170, 0, 0.3);
-  }
-  50% {
-    text-shadow: 0 0 10px rgba(255, 85, 0, 0.9), 0 0 20px rgba(255, 170, 0, 0.7);
-  }
-  100% {
-    text-shadow: 0 0 5px rgba(255, 85, 0, 0.7), 0 0 10px rgba(255, 170, 0, 0.3);
-  }
-}
-
-@keyframes solarBackgroundPulse {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes solarRotate {
-  from {
-    transform: rotate(0deg) scale(1);
-  }
-  to {
-    transform: rotate(360deg) scale(1.15);
-  }
-}
-
-@keyframes solarBorderGlow {
-  0%, 100% {
-    border-color: #ff5500;
-    box-shadow: 0 0 10px #ff5500;
-  }
-  33% {
-    border-color: #ffaa00;
-    box-shadow: 0 0 15px #ffaa00;
-  }
-  66% {
-    border-color: #0088ff;
-    box-shadow: 0 0 20px #0088ff;
-  }
-}
-
-@keyframes cosmicHoverEffect {
-  0% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-6px) scale(1.03);
-  }
-  100% {
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes solarHoverEffect {
-  0% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-4px) scale(1.05);
-  }
-  100% {
-    transform: translateY(0) scale(1);
-  }
-}
-
-// Enhanced Solar Flare animations
-@keyframes solarPulseEnhanced {
-  0% {
-    box-shadow: 0 0 10px rgba(255, 51, 0, 0.8), 0 0 20px rgba(255, 170, 0, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(255, 51, 0, 0.9), 0 0 60px rgba(255, 170, 0, 0.6);
-  }
-  100% {
-    box-shadow: 0 0 10px rgba(255, 51, 0, 0.8), 0 0 20px rgba(255, 170, 0, 0.4);
-  }
-}
-
-@keyframes solarTextGlowEnhanced {
-  0% {
-    text-shadow: 0 0 8px rgba(255, 51, 0, 0.8), 0 0 15px rgba(255, 170, 0, 0.4);
-  }
-  50% {
-    text-shadow: 0 0 15px rgba(255, 51, 0, 0.9), 0 0 30px rgba(255, 170, 0, 0.7);
-  }
-  100% {
-    text-shadow: 0 0 8px rgba(255, 51, 0, 0.8), 0 0 15px rgba(255, 170, 0, 0.4);
-  }
-}
-
-@keyframes solarBackgroundPulseEnhanced {
-  0% {
-    background-position: 0% 50%;
-    background-size: 100% 100%;
-  }
-  50% {
-    background-position: 100% 50%;
-    background-size: 150% 150%;
-  }
-  100% {
-    background-position: 0% 50%;
-    background-size: 100% 100%;
-  }
-}
-
-@keyframes solarRotateEnhanced {
-  0% {
-    transform: rotate(0deg) scale(1);
-    filter: hue-rotate(0deg);
-  }
-  50% {
-    transform: rotate(180deg) scale(1.2);
-    filter: hue-rotate(30deg);
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
-    filter: hue-rotate(0deg);
-  }
-}
-
-@keyframes solarFlare {
-  0%, 100% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes solarFlameEffect {
-  0% {
-    opacity: 0;
-    transform: translateY(0) scale(1);
-  }
-  10% {
-    opacity: 0.9;
-    transform: translateY(-15px) scale(1.1);
-  }
-  20% {
-    opacity: 0.3;
-    transform: translateY(-25px) scale(0.9);
-  }
-  30% {
-    opacity: 0.8;
-    transform: translateY(-35px) scale(1.05);
-  }
-  40% {
-    opacity: 0.4;
-    transform: translateY(-45px) scale(0.95);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-60px) scale(0.5);
-  }
-}
-
-@keyframes solarRadiateEffect {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 45, 0, 0.8);
-  }
-  70% {
-    box-shadow: 0 0 0 20px rgba(255, 45, 0, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 45, 0, 0);
-  }
-}
-
-@keyframes solarRippleStrong {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(255, 45, 0, 0.8);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 15px rgba(255, 45, 0, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(255, 45, 0, 0);
-  }
-}
-
-@keyframes solarGlowIntense {
-  0%, 100% { 
-    text-shadow: 0 0 10px #ff2d00, 0 0 20px #ffaa00;
-    opacity: 1;
-  }
-  50% { 
-    text-shadow: 0 0 20px #ff2d00, 0 0 40px #ffaa00, 0 0 60px #ff2d00;
-    opacity: 0.95;
-  }
-}
-
-// Export the rotate animation for use in components
-@mixin rotate-animation {
-  @keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-}
-
-// Animation for icon rotation
-.rotate {
-  animation: rotate 1s ease-in-out;
-}
-
-/* Theme-specific animation classes */
-.vibrant1-theme {
-  .cosmic-animated-element {
-    animation: cosmicPulse 3s infinite;
-  }
-  
-  .cosmic-text {
-    animation: cosmicTextGlow 3s infinite;
-  }
-  
-  .cosmic-rotate {
-    animation: cosmicRotate 8s linear infinite;
-  }
-  
-  .cosmic-border {
-    animation: cosmicBorderGlow 6s infinite;
-  }
-  
-  // Enhance standard UI elements
-  .mat-mdc-button, .mat-mdc-raised-button {
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    
-    &::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transform: rotate(30deg);
-      transition: all 0.5s;
-      opacity: 0;
-    }
-    
-    &:hover {
-      box-shadow: var(--cosmic-glow-shadow);
-      transform: translateY(-3px);
-      
-      &::after {
-        opacity: 1;
-        left: 100%;
-        transition: all 0.7s ease;
-      }
-    }
-    
-    &:active {
-      transform: translateY(1px);
-    }
-  }
-  
-  .header-card {
-    background-size: 300% 300% !important;
-    animation: cosmicBackgroundPulse 10s ease infinite !important;
-  }
-  
-  .profile-icon {
-    animation: cosmicPulse 3s infinite !important;
-  }
-  
-  .animated-star {
-    animation: starSpin 4s linear infinite, cosmicTextGlow 3s infinite !important;
-  }
-}
-
-.vibrant2-theme {
-  .solar-animated-element {
-    animation: solarPulse 3s infinite;
-  }
-  
-  .solar-text {
-    animation: solarTextGlow 3s infinite;
-  }
-  
-  .solar-rotate {
-    animation: solarRotate 10s linear infinite;
-  }
-  
-  .solar-border {
-    animation: solarBorderGlow 6s infinite;
-  }
-  
-  // Enhance standard UI elements
-  .mat-mdc-button, .mat-mdc-raised-button {
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    
-    &::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-      transform: rotate(-30deg);
-      transition: all 0.5s;
-      opacity: 0;
-    }
-    
-    &:hover {
-      box-shadow: var(--solar-glow-shadow);
-      transform: translateY(-3px) rotate(1deg);
-      
-      &::after {
-        opacity: 1;
-        left: 100%;
-        transition: all 0.7s ease;
-      }
-    }
-    
-    &:active {
-      transform: translateY(1px) rotate(-1deg);
-    }
-  }
-  
-  .header-card {
-    background-size: 300% 300% !important;
-    animation: solarBackgroundPulse 8s ease infinite !important;
-  }
-  
-  .profile-icon {
-    animation: solarPulse 3s infinite !important;
-  }
-  
-  .animated-star {
-    animation: starSpin 3s linear infinite, solarTextGlow 3s infinite !important;
-  }
-  
-  // Enhanced animations for major components
-  .solar-animated-element-enhanced {
-    animation: solarPulseEnhanced 4s infinite;
-  }
-  
-  .solar-text-enhanced {
-    animation: solarTextGlowEnhanced 4s infinite;
-  }
-  
-  .solar-rotate-enhanced {
-    animation: solarRotateEnhanced 8s linear infinite;
-  }
-  
-  .solar-flare-effect {
-    position: relative;
-    overflow: hidden;
-    
-    &::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      right: -50%;
-      bottom: -50%;
-      background: radial-gradient(ellipse at center, rgba(255, 170, 0, 0.7) 0%, rgba(255, 51, 0, 0.5) 30%, transparent 70%);
-      z-index: 0;
-      opacity: 0;
-      animation: solarFlare 5s infinite;
-      pointer-events: none;
-    }
-  }
-  
-  // Enhanced flame effect for hoverable elements
-  .flame-effect {
-    position: relative;
-    overflow: hidden;
-    
-    &:hover::before {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background: linear-gradient(to top, rgba(255, 45, 0, 0.7), rgba(255, 170, 0, 0.5), rgba(255, 221, 0, 0.2), transparent);
-      transform-origin: bottom;
-      z-index: 1;
-      pointer-events: none;
-      animation: solarFlameEffect 1.2s infinite;
-    }
-  }
-  
-  // Radiate effect for buttons and interactive elements
-  .radiate-effect {
-    animation: solarRadiateEffect 1.5s infinite;
-  }
-  
-  // Strong ripple effect
-  .ripple-strong {
-    animation: solarRippleStrong 2s infinite;
-  }
-  
-  // Intense text glow
-  .glow-intense {
-    animation: solarGlowIntense 2s infinite;
-  }
-}
-
-// Common theme-specific enhancements
-:root {
-  .vibrant1-theme, .vibrant2-theme {
-    // Card hover animations are enhanced in vibrant themes
-    .mat-mdc-card {
-      transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-      
-      &:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-      }
-    }
-    
-    // Links get special effects
-    a:not(.mat-mdc-button):not(.mat-mdc-raised-button) {
-      position: relative;
-      transition: all 0.3s ease;
-      
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 100%;
-        height: 1px;
-        background: currentColor;
-        transform: scaleX(0);
-        transform-origin: right;
-        transition: transform 0.5s ease;
-      }
-      
-      &:hover::after {
-        transform: scaleX(1);
-        transform-origin: left;
-      }
-    }
-    
-    // Headers get subtle motion effect
-    h1, h2, h3 {
-      transition: transform 0.3s ease-out;
-      
-      &:hover {
-        transform: skewX(-1deg);
-      }
-    }
-  }
-}
-
-// ----- Animation Utility Classes ----- //
-
-// 1. Entrance Animations
-.fade-in {
-  @include respect-motion-preferences {
-    animation: fadeIn $base-duration $ease-standard forwards;
-  }
-}
-
-.slide-in-right {
-  @include respect-motion-preferences {
-    animation: slideInRight $base-duration $ease-decelerate forwards;
-  }
-}
-
-.slide-in-left {
-  @include respect-motion-preferences {
-    animation: slideInLeft $base-duration $ease-decelerate forwards;
-  }
-}
-
-.slide-in-up {
-  @include respect-motion-preferences {
-    animation: slideInUp $base-duration $ease-decelerate forwards;
-  }
-}
-
-.slide-in-down {
-  @include respect-motion-preferences {
-    animation: slideInDown $base-duration $ease-decelerate forwards;
-  }
-}
-
-.fly-in-out-in {
-  animation: flyInLeft 1s ease-in-out forwards;
-}
-
-.fly-in-out-out {
-  animation: flyOutRight 1s ease-in-out forwards;
-}
-
-// 2. Exit Animations
-.fade-out {
-  @include respect-motion-preferences {
-    animation: fadeOut $base-duration $ease-standard forwards;
-  }
-}
-
-.slide-out-right {
-  @include respect-motion-preferences {
-    animation: slideOutRight $base-duration $ease-accelerate forwards;
-  }
-}
-
-.slide-out-left {
-  @include respect-motion-preferences {
-    animation: slideOutLeft $base-duration $ease-accelerate forwards;
-  }
-}
-
-.slide-out-up {
-  @include respect-motion-preferences {
-    animation: slideOutUp $base-duration $ease-accelerate forwards;
-  }
-}
-
-.slide-out-down {
-  @include respect-motion-preferences {
-    animation: slideOutDown $base-duration $ease-accelerate forwards;
-  }
-}
-
-// 3. Attention Seeking & Patriotic Animations
-.pulse {
-  @include respect-motion-preferences {
-    animation: pulse 2s $ease-standard infinite;
-  }
-}
-
-.patriotic-pulse {
-  @include respect-motion-preferences {
-    animation: patrioticPulse 2s infinite;
-  }
-}
-
-.flag-wave {
-  @include respect-motion-preferences {
-    animation: flagWave 6s ease-in-out infinite;
-    transform-origin: center left;
-  }
-}
-
-.star-twinkle {
-  @include respect-motion-preferences {
-    animation: starTwinkle 2s ease-in-out infinite;
-  }
-}
-
-.patriotic-shimmer {
-  @include respect-motion-preferences {
-    background-image: linear-gradient(
-      90deg, 
-      rgba(0, 40, 104, 0) 0%,
-      rgba(0, 40, 104, 0.3) 25%, 
-      rgba(191, 10, 48, 0.3) 50%, 
-      rgba(255, 255, 255, 0.3) 75%, 
-      rgba(255, 255, 255, 0) 100%
-    );
-    background-size: 200% 100%;
-    animation: patrioticShimmer 4s linear infinite;
-  }
-}
-
-// 4. Loading Animations
-.loading-spin {
-  @include respect-motion-preferences {
-    animation: spin 1.2s linear infinite;
-  }
-}
-
-.loading-stars-stripes {
-  @include respect-motion-preferences {
-    background-image: repeating-linear-gradient(
-      45deg,
-      rgba(191, 10, 48, 0.3),
-      rgba(191, 10, 48, 0.3) 10px,
-      rgba(255, 255, 255, 0.3) 10px,
-      rgba(255, 255, 255, 0.3) 20px,
-      rgba(0, 40, 104, 0.3) 20px,
-      rgba(0, 40, 104, 0.3) 30px
-    );
-    background-size: 150px 100%;
-    animation: starStripes 3s linear infinite;
-  }
-}
-
-// 5. Interactive Feedback Animations
-.ripple {
-  position: relative;
-  overflow: hidden;
-  
-  &::after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 120%;
-    height: 120%;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    pointer-events: none;
-  }
-  
-  &:active::after {
-    @include respect-motion-preferences {
-      animation: expandRipple 0.4s $ease-patriotic;
-    }
-  }
-}
-
-.elevate-on-hover {
-  transition: transform $base-duration $ease-standard, 
-              box-shadow $base-duration $ease-standard;
-  box-shadow: $md-elevation1;
-  
-  &:hover {
-    @include respect-motion-preferences {
-      transform: translateY(-2px);
-      box-shadow: $md-elevation4;
-    }
-  }
-}
-
-// 6. Route Transition Animations
-.route-enter {
-  position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(to right, #BF0A30, #002868, #FFFFFF);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform transitions.$slow-duration transitions.$ease-patriotic;
-  }
-  
-  &.active::before {
-    @include respect-motion-preferences {
-      transform: scaleX(1);
-    }
-  }
-}
-
-// Add animation utility classes for the keyframes
-.zoom-in {
-  @include respect-motion-preferences {
-    animation: zoomIn 0.2s $ease-decelerate forwards;
-  }
-}
-
-.slide-in {
-  @include respect-motion-preferences {
-    animation: slideIn 0.2s $ease-decelerate forwards;
-  }
-}
-
-// ----- Mixin Library ----- //
-
-// Single-property transitions
-@mixin animate-property($property, $duration: $base-duration, $easing: $ease-standard) {
-  transition: $property $duration $easing;
-}
-
-// Multi-property transitions
-@mixin animate-properties($properties, $duration: $base-duration, $easing: $ease-standard) {
-  $transitions: ();
+// Standard transition mixin that can be applied to multiple properties
+@mixin transition-standard($properties...) {
+  $transition-list: ();
   @each $property in $properties {
-    $transitions: append($transitions, $property $duration $easing, comma);
+    $transition-list: list.append($transition-list, $property 0.3s cubic-bezier(0.4, 0, 0.2, 1), comma);
   }
-  transition: $transitions;
+  // Use list.length instead of global length() function
+  @if list.length($transition-list) > 0 {
+    transition: $transition-list;
+  } @else {
+    // Default transition if no properties specified
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 }
 
-// Staggered animation for multiple children
-@mixin staggered-animation($animation-name, $items, $stagger-delay: 0.1s) {
-  @for $i from 1 through $items {
-    &:nth-child(#{$i}) {
-      animation-delay: $i * $stagger-delay;
+// Direct transition property for common cases
+@mixin standard-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Security settings specific animations
+@mixin icon-pulse {
+  animation: icon-pulse 1.5s ease infinite alternate;
+}
+
+@mixin elevation-transition {
+  transition: box-shadow 0.3s ease;
+  &:hover {
+    box-shadow: var(--md-sys-elevation-level3);
+  }
+}
+
+// Button hover effect
+@mixin button-hover-effect {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover:not([disabled]) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  &:active:not([disabled]) {
+    transform: translateY(0);
+  }
+}
+
+// Loading spinner animation
+@mixin loading-spin {
+  animation: spin 1s linear infinite;
+}
+
+// Loading dot animation
+@mixin loading-dots {
+  position: relative;
+  &::after {
+    content: '...';
+    animation: loading-dots 1.5s infinite;
+    display: inline-block;
+    width: 1em;
+    text-align: left;
+  }
+}
+
+// Loading skeleton animation
+@mixin skeleton-loading {
+  background: linear-gradient(90deg, 
+    var(--md-sys-color-surface-variant) 25%, 
+    var(--md-sys-color-surface) 50%,
+    var(--md-sys-color-surface-variant) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+// Content fade-in animation
+@mixin fade-in-animation {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+// Content slide-in animation
+@mixin slide-in-animation($direction: 'right') {
+  @if $direction == 'right' {
+    animation: slide-in-right 0.3s ease-out forwards;
+  } @else if $direction == 'up' {
+    animation: fade-in-up 0.3s ease-out forwards;
+  }
+}
+
+// Utility classes
+.fade {
+  &-enter {
+    opacity: 0;
+    &-active {
+      @include animate($fade-in);
+    }
+  }
+  &-exit {
+    opacity: 1;
+    &-active {
+      @include animate($fade-out);
     }
   }
 }
 
-// Patriotic gradient background
-@mixin patriotic-gradient($angle: 135deg) {
-  background: linear-gradient($angle, rgba(0, 40, 104, 0.9), rgba(191, 10, 48, 0.9));
+.slide-right {
+  &-enter {
+    transform: translateX(100%);
+    &-active {
+      @include animate($slide-in-right);
+    }
+  }
+  &-exit {
+    transform: translateX(0);
+    &-active {
+      @include animate($slide-out-right);
+    }
+  }
 }
 
-// ----- Angular Animation Snippets ----- //
-// These are for reference when implementing Angular animations
+.slide-left {
+  &-enter {
+    transform: translateX(-100%);
+    &-active {
+      @include animate($slide-in-left);
+    }
+  }
+  &-exit {
+    transform: translateX(0);
+    &-active {
+      @include animate($slide-out-left);
+    }
+  }
+}
 
-// Example: fadeInOut animation trigger for Angular
-/*
-import { trigger, transition, style, animate } from '@angular/animations';
-
-export const fadeInOut = trigger('fadeInOut', [
-  transition(':enter', [
-    style({ opacity: 0 }),
-    animate('{{duration}} {{easing}}', style({ opacity: 1 }))
-  ], { params: { duration: '0.3s', easing: 'ease' } }),
-  
-  transition(':leave', [
-    animate('{{duration}} {{easing}}', style({ opacity: 0 }))
-  ], { params: { duration: '0.3s', easing: 'ease' } })
-]);
-*/
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

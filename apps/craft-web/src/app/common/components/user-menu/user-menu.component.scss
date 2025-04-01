@@ -1,0 +1,18 @@
+.user-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  button {
+    color: var(--md-sys-color-on-surface);
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: var(--md-sys-color-primary);
+    }
+  }
+
+  mat-icon {
+    font-size: 24px;
+  }
+}

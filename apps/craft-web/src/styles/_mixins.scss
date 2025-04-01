@@ -1,0 +1,228 @@
+/**
+ * Core Mixins for Craft Fusion
+ * 
+ * This file contains reusable mixins for consistent styling across components.
+ */
+
+// Import variables first to ensure they're available to all mixins
+@forward 'variables';
+@use 'sass:map';
+@use 'sass:color';
+@use 'variables' as vars;
+
+// Typography mixins
+@mixin heading-1 {
+  font-family: var(--md-sys-typescale-headline-large-font-family-name);
+  font-size: var(--md-sys-typescale-headline-large-font-size);
+  font-weight: var(--md-sys-typescale-headline-large-font-weight);
+  line-height: var(--md-sys-typescale-headline-large-line-height);
+  letter-spacing: var(--md-sys-typescale-headline-large-letter-spacing);
+}
+
+@mixin heading-2 {
+  font-family: var(--md-sys-typescale-headline-medium-font-family-name);
+  font-size: var(--md-sys-typescale-headline-medium-font-size);
+  font-weight: var(--md-sys-typescale-headline-medium-font-weight);
+  line-height: var(--md-sys-typescale-headline-medium-line-height);
+  letter-spacing: var(--md-sys-typescale-headline-medium-letter-spacing);
+}
+
+@mixin body-text {
+  font-family: var(--md-sys-typescale-body-medium-font-family-name);
+  font-size: var(--md-sys-typescale-body-medium-font-size);
+  font-weight: var(--md-sys-typescale-body-medium-font-weight);
+  line-height: var(--md-sys-typescale-body-medium-line-height);
+  letter-spacing: var(--md-sys-typescale-body-medium-letter-spacing);
+}
+
+// Display mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+@mixin absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+// Text mixins
+@mixin truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin text-shadow {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+// Element mixins
+@mixin card-shadow {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+@mixin patriotic-border {
+  border-left: 3px solid vars.$navy;
+  border-bottom: 3px solid vars.$red;
+}
+
+@mixin patriotic-gradient {
+  background: linear-gradient(135deg, vars.$navy, vars.$red);
+  background-clip: padding-box;
+}
+
+// Accessibility mixins
+@mixin focus-outline {
+  outline: 2px solid vars.$navy;
+  outline-offset: 2px;
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+// Animation mixins
+@mixin transition-all($duration: 0.3s) {
+  transition: all $duration ease;
+}
+
+@mixin fade-in($duration: 0.3s) {
+  animation: fadeIn $duration ease forwards;
+}
+
+// Layout mixins
+@mixin centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Card styling mixins
+@mixin card-base {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--md-sys-elevation-level1);
+  background-color: var(--md-sys-color-surface);
+}
+
+// Responsive mixins
+@mixin responsive($breakpoint) {
+  @if $breakpoint == xs {
+    @media (max-width: (map-get(vars.$breakpoints, 'sm') - 1)) {
+      @content;
+    }
+  } @else if $breakpoint == sm {
+    @media (min-width: map-get(vars.$breakpoints, 'sm')) and (max-width: (map-get(vars.$breakpoints, 'md') - 1)) {
+      @content;
+    }
+  } @else if $breakpoint == md {
+    @media (min-width: map-get(vars.$breakpoints, 'md')) and (max-width: (map-get(vars.$breakpoints, 'lg') - 1)) {
+      @content;
+    }
+  } @else if $breakpoint == lg {
+    @media (min-width: map-get(vars.$breakpoints, 'lg')) and (max-width: (map-get(vars.$breakpoints, 'xl') - 1)) {
+      @content;
+    }
+  } @else if $breakpoint == xl {
+    @media (min-width: map-get(vars.$breakpoints, 'xl')) {
+      @content;
+    }
+  }
+}
+
+// Media query helpers
+@mixin sm-down {
+  @media (max-width: (map-get(vars.$breakpoints, 'sm') - 1)) {
+    @content;
+  }
+}
+
+@mixin md-up {
+  @media (min-width: map-get(vars.$breakpoints, 'md')) {
+    @content;
+  }
+}
+
+// Patriotic theme mixins
+@mixin patriotic-card {
+  @include card-base;
+  border-left: 4px solid vars.$red;
+  border-right: 4px solid vars.$navy;
+}
+
+// Status indicators
+@mixin status-indicator($color) {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: $color;
+  margin-right: 8px;
+}
+
+// Elevation helpers
+@mixin elevation($level: 1) {
+  box-shadow: var(--md-sys-elevation-level#{$level});
+  transition: box-shadow 0.3s ease;
+}
+
+// Animation mixins
+@mixin transition-standard($property: all) {
+  transition: $property 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+@mixin zoom-hover($scale: 1.5, $z-index: 10) {
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: scale($scale);
+    z-index: $z-index;
+  }
+}
+
+// Header specific mixins
+@mixin header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: vars.$header-height;
+  padding: 0 1em;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: map-get(vars.$z-layers, header);
+  background-color: var(--md-sys-color-surface);
+  box-shadow: var(--md-sys-elevation-level2);
+}
+
+@mixin logo-container {
+  display: flex;
+  align-items: center;
+  margin-right: 2em;
+}
+
+@mixin header-actions {
+  margin-left: auto;
+}

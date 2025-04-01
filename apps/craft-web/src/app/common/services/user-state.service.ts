@@ -55,6 +55,7 @@ export class UserStateModel implements UserState {
   providedIn: 'root'
 })
 export class UserStateService {
+  private currentUser: UserState | null = null;
   private openedDocuments: Document[] = [];
   private loginDateTime: Date | null = null;
   private visitLength: number | null = null;
@@ -101,6 +102,28 @@ export class UserStateService {
     ).subscribe(length => {
       this.saveStateData('visitLength', length.toString());
     });
+    
+    // Initialize currentUser with default values
+    this.initializeCurrentUser();
+  }
+
+  private initializeCurrentUser(): void {
+    this.currentUser = new UserStateModel();
+    
+    // Try to load user state from storage
+    this.loadUserState().subscribe(
+      userState => {
+        this.currentUser = userState;
+        this.userStateSubject.next(userState);
+      },
+      error => {
+        this.logger.warn('Failed to load user state', { error });
+      }
+    );
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.currentUser?.isAuthenticated;
   }
 
   saveStateData(key: string, value: string): Observable<void> {
@@ -213,6 +236,87 @@ export class UserStateService {
     return this.visitedPages;
   }
 
+  /**
+   * Set a user preference with persistence
+   * @param key Preference key
+   * @param value Preference value
+   */
+  setUserPreference(key: string, value: string): void {
+    if (!this.currentUser) {
+      // Store in localStorage if no user is logged in
+      localStorage.setItem(`pref_${key}`, value);
+      return;
+    }
+
+    // Otherwise, store with the user account
+    const preferences = this.getUserPreferences() || {};
+    preferences[key] = value;
+    
+    // Update preferences in user state
+    if (this.currentUser && this.currentUser.preferences) {
+      this.currentUser.preferences = {
+        ...this.currentUser.preferences,
+        ...preferences
+      };
+      
+      // Persist the change to backend if authenticated
+      if (this.isAuthenticated()) {
+        this.saveUserPreferences(preferences);
+      }
+    }
+  }
+
+  /**
+   * Get a user preference
+   * @param key Preference key
+   * @returns Preference value or null
+   */
+  getUserPreference(key: string): string | null {
+    // Check user preferences first
+    if (this.currentUser && this.currentUser.preferences) {
+      const value = this.currentUser.preferences[key];
+      if (value !== undefined) {
+        return value;
+      }
+    }
+    
+    // Fallback to localStorage
+    return localStorage.getItem(`pref_${key}`);
+  }
+
+  /**
+   * Get all user preferences
+   * @returns User preferences object
+   */
+  getUserPreferences(): Record<string, string> {
+    if (this.currentUser && this.currentUser.preferences) {
+      return { ...this.currentUser.preferences };
+    }
+    
+    // If no user is logged in, try to get preferences from localStorage
+    const preferences: Record<string, string> = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('pref_')) {
+        const preferenceName = key.substring(5);
+        preferences[preferenceName] = localStorage.getItem(key) || '';
+      }
+    }
+    
+    return preferences;
+  }
+
+  /**
+   * Save user preferences to backend
+   */
+  private saveUserPreferences(preferences: Record<string, string>): void {
+    // Add API call here to save preferences to backend
+    // For now, just update local storage as backup
+    Object.keys(preferences).forEach(key => {
+      localStorage.setItem(`pref_${key}`, preferences[key]);
+    });
+  }
+
   private saveOpenedDocuments(): Observable<void> {
     this.logger.debug('Saving opened documents', { count: this.openedDocuments.length });
     const callId = this.logger.startServiceCall('UserStateService', 'POST', '/api/files/saveOpenedDocuments');
@@ -298,7 +402,15 @@ export class UserStateService {
   }
 
   getCurrentUser(): Observable<UserState> {
+    if (this.currentUser) {
+      return of(this.currentUser);
+    }
+    
     return this.httpClient.get<UserState>('/api/users/getCurrentUser').pipe(
+      map(user => {
+        this.currentUser = user;
+        return user;
+      }),
       catchError(this.handleError.bind(this))
     );
   }

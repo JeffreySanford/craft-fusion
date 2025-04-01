@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, interval } from 'rxjs';
+import { BehaviorSubject, Observable, interval, Subject, of, timer } from 'rxjs';
 import { LoggerService } from './logger.service';
+import { map } from 'rxjs/operators';
 
 export interface PerformanceMetrics {
   cpuLoad: string;
@@ -9,6 +10,7 @@ export interface PerformanceMetrics {
   cpuLoadRaw: number;
   memoryUsageRaw: number;
   networkLatencyRaw: number;
+  fps?: number; // Add fps property to match SystemMetrics
 }
 
 export interface ApiMetrics {
@@ -63,12 +65,13 @@ export interface ApiCallMetric {
 })
 export class PerformanceMetricsService {
   private metricsSubject = new BehaviorSubject<PerformanceMetrics>({
-    cpuLoad: '0.00%',
-    memoryUsage: '0.00%',
-    networkLatency: '0.00 ms',
+    cpuLoad: '0%',
+    memoryUsage: '0 MB',
+    networkLatency: '0 ms',
     cpuLoadRaw: 0,
     memoryUsageRaw: 0,
-    networkLatencyRaw: 0
+    networkLatencyRaw: 0,
+    fps: 0
   });
 
   // Expose as Observable
@@ -94,6 +97,17 @@ export class PerformanceMetricsService {
 
   public apiMetrics$ = this.apiMetricsSubject.asObservable();
   public apiPerformance$ = this.apiPerformanceSubject.asObservable();
+
+  // Mock performance data
+  private mockData = [
+    { label: 'CPU', value: 45 },
+    { label: 'Memory', value: 62 },
+    { label: 'Network', value: 28 },
+    { label: 'Disk', value: 15 },
+    { label: 'API', value: 70 },
+    { label: 'Render', value: 55 },
+    { label: 'Response', value: 40 }
+  ];
 
   constructor(private logger: LoggerService) {
     this.logger.registerService('PerformanceMetricsService');
@@ -160,7 +174,8 @@ export class PerformanceMetricsService {
       networkLatency: `${networkLatencyRaw.toFixed(2)} ms`,
       cpuLoadRaw,
       memoryUsageRaw,
-      networkLatencyRaw
+      networkLatencyRaw,
+      fps: this._fpsSubject.getValue() // Include the fps value
     };
     
     this.metricsSubject.next(metrics);
@@ -176,18 +191,20 @@ export class PerformanceMetricsService {
     this.logger.performance('System performance metrics updated', [
       { name: 'CPU Load', value: metrics.cpuLoad, unit: '%' },
       { name: 'Memory Usage', value: metrics.memoryUsage, unit: '%' },
-      { name: 'Network Latency', value: metrics.networkLatency, unit: 'ms' }
+      { name: 'Network Latency', value: metrics.networkLatency, unit: 'ms' },
+      { name: 'FPS', value: this._fpsSubject.getValue(), unit: 'fps' }
     ], {
       type: 'SYSTEM_METRICS',
       category: 'system:performance:metrics'
     });
   }
 
+
   /**
    * Get current metrics value
    */
-  getCurrentMetrics(): PerformanceMetrics {
-    return this.metricsSubject.getValue();
+  get getCurrentMetrics(): Observable<PerformanceMetrics> {
+    return this.metricsSubject.asObservable();
   }
 
   /**
@@ -377,5 +394,49 @@ export class PerformanceMetricsService {
       // If URL parsing fails, return as is
       return url;
     }
+  }
+
+  /**
+   * Get current performance metrics data
+   * In a real app, this would fetch from an actual monitoring service
+   */
+  getPerformanceData(): Observable<any[]> {
+    // Simulate real-time data by varying values slightly
+    return timer(0, 10000).pipe(
+      map(() => {
+        return this.mockData.map(item => ({
+          label: item.label,
+          value: this.getRandomValue(item.value)
+        }));
+      })
+    );
+  }
+
+  /**
+   * Generate a value that varies slightly from the base value
+   * to simulate changing performance metrics
+   */
+  private getRandomValue(baseValue: number): number {
+    const variance = Math.floor(Math.random() * 20) - 10; // -10 to +10
+    const newValue = baseValue + variance;
+    return Math.max(0, Math.min(100, newValue)); // Keep between 0 and 100
+  }
+
+  /**
+   * Get historical performance data by time period
+   * (Just a mock implementation)
+   */
+  getHistoricalData(days: number = 7): Observable<any[]> {
+    const labels = Array(days).fill(0).map((_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (days - i - 1));
+      return date.toLocaleDateString();
+    });
+    
+    // Generate some mock historical data
+    return of(labels.map(label => ({
+      label,
+      value: Math.floor(Math.random() * 60) + 20 // 20-80
+    })));
   }
 }

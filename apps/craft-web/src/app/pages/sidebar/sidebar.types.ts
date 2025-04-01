@@ -15,3 +15,14 @@ export interface MenuGroup {
   icon?: string;
   items: MenuItem[];
 }
+
+export interface NavItem {
+  text: string;
+  route?: string;
+  icon: string;
+  visible: boolean;
+  children?: NavItem[];
+  expanded?: boolean;
+  badge?: string | number;
+  badgeColor?: string;
+}

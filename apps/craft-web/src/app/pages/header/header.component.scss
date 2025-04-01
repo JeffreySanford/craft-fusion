@@ -3,386 +3,275 @@
 @use '../../../styles/_themes' as themes;
 @use '../../../styles/_responsive' as responsive;
 @use '../../../styles/_layout' as layout;
-@use '../../../styles/_animations' as animations;
-@use '../../../styles/_variables' as vars;
+@use '../../../styles/_animations.scss' as animations;
+@use '../../../styles/_variables.scss' as vars;
+@use '../../../styles/_mixins.scss' as mixins;
+@use '../../../styles/_patriotic.scss' as patriotic;
 @use 'sass:map';
 @use 'sass:color';
 
+:host {
+  display: block;
+  height: 64px; // Fixed header height
+}
+
 // Base Header Container
 .header-container {
-  @include layout.header;
-  
-  // Use animation variables from core styles
-  transition: all animations.$base-duration animations.$ease-standard;
-}
-
-// Left side with logo only (navigation removed)
-.header-left {
+  position: relative;
+  height: 100%;
+  background: var(--header-gradient);
+  color: var(--md-sys-color-on-primary);
   display: flex;
   align-items: center;
-  // Adjust styles now that we only have the logo
-  padding-left: 1rem;
-}
+  padding: 0 16px;
+  box-shadow: var(--md-sys-elevation-level2);
+  z-index: 10;
 
-// Logo section
-.logo-section {
-  @include layout.logo-container;
-  
-  .logo-wrapper {
-    position: relative;
-    overflow: hidden;
+  // Add subtle patriotic stars
+  &::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    width: 2.8em;
-    height: 2.8em;
-    
-    .logo-image {
-      height: 100%;
-      width: 100%;
-      object-fit: contain;
-      transition: transform 0.3s ease;
-    }
-    
-    .logo-shine {
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 50%;
-      height: 100%;
-      background: linear-gradient(90deg, 
-        rgba(255, 255, 255, 0) 0%, 
-        rgba(255, 255, 255, 0.3) 50%, 
-        rgba(255, 255, 255, 0) 100%);
-      transform: skewX(-25deg);
-      animation: shine 4s infinite;
-    }
-    
-    @keyframes shine {
-      0% {
-        left: -150%;
-      }
-      50%, 100% {
-        left: 150%;
-      }
-    }
+    background-color: var(--md-sys-color-tertiary);
+    box-shadow: 0 0 10px var(--md-sys-color-tertiary);
+    opacity: 0.8;
+    animation: star-sparkle 3s infinite;
   }
-  
-  .logo-text {
-    font-size: 1.5em;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    white-space: nowrap;
-    margin: 0 0 0 0.5em;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(to right, white, #e0e0e0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    
-    // Different text styles for themes
-    .vibrant1-theme & {
-      background: linear-gradient(to right, white, #d4a0ff);
-      text-shadow: 0 0 8px rgba(255, 0, 204, 0.5);
-    }
-    
-    .vibrant2-theme & {
-      background: linear-gradient(to right, white, #ffcc80);
-      text-shadow: 0 0 8px rgba(255, 85, 0, 0.5);
-    }
+
+  // Add patriotic stripe
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--patriotic-gradient);
   }
 }
 
-// Right side with system menu, user menu, etc.
-.header-right {
-  @include layout.header-actions;
-  
+// Menu button
+.menu-button {
+  margin-right: 12px;
+
+  // Rotate animation for toggle
+  .menu-icon {
+    transition: transform 0.3s ease;
+  }
+
+  &.active .menu-icon {
+    transform: rotate(90deg);
+  }
+}
+
+// Logo and title
+.header-logo {
   display: flex;
   align-items: center;
-  gap: 0.8em;
-  
-  .system-menu-button, .user-menu-button, .notification-button, .search-button {
-    position: relative;
-    margin-left: 0.3em;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      transform: scale(1.1);
-    }
-    
-    .button-ripple {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.3);
-      transform: scale(0);
-      opacity: 0;
-    }
-    
-    &:active .button-ripple {
-      animation: buttonRipple 0.6s ease-out;
-    }
-    
-    @keyframes buttonRipple {
-      0% {
-        transform: scale(0);
-        opacity: 0.5;
-      }
-      100% {
-        transform: scale(2);
-        opacity: 0;
-      }
-    }
-  }
-  
-  .user-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    border: 2px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    @include animations.apply-animation('pulse', 2s, animations.$ease-standard, infinite);
-    transition: all animations.$base-duration animations.$ease-standard;
-    overflow: hidden;
-    
-    /* Default background for avatar if no image is provided */
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.2);
-      z-index: -1;
-    }
-    
-    /* Special styling for guest users */
-    &.guest-avatar {
-      background-image: url('/assets/images/default-avatar.png') !important;
-      
-      /* Add a subtle pattern overlay */
-      &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-image: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, 
-                          transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, 
-                          transparent 75%, transparent);
-        background-size: 4px 4px;
-        z-index: 1;
-      }
-    }
-    
-    /* Animation on hover */
-    &:hover {
-      transform: scale(1.1);
-      border-color: rgba(255, 255, 255, 1);
-      box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
-    }
-    
-    /* Status indicator */
-    & .avatar-status {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      border: 2px solid white;
-      
-      &.online {
-        background-color: #4caf50; /* Green for online */
-        box-shadow: 0 0 8px rgba(76, 175, 80, 0.8);
-      }
-      
-      &.offline {
-        background-color: #9e9e9e; /* Gray for offline/guest */
-        box-shadow: 0 0 8px rgba(158, 158, 158, 0.5);
-      }
-    }
-  }
-  
-  .user-avatar-large {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    margin-right: 1rem;
-    border: 3px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  margin-right: 16px;
+
+  img {
+    height: 36px;
+    margin-right: 8px;
   }
 }
 
-// Styling for dropdown menus - leverage existing theme variables
-::ng-deep {
-  .user-dropdown-menu .mat-menu-content, 
-  .system-dropdown-menu .mat-menu-content {
-    padding: 0 !important;
-  }
-  
-  .menu-header {
-    padding: 12px 16px;
-    background-color: rgba(0, 0, 0, 0.05);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-    
-    .menu-title {
-      font-weight: 500;
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.87);
-    }
-  }
-  
-  .user-info-header {
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    background: linear-gradient(135deg, #1a237e 0%, #4a148c 100%);
-    color: white;
-    
-    .user-details {
-      display: flex;
-      flex-direction: column;
-      
-      .user-name {
-        font-weight: bold;
-        font-size: 16px;
-        margin-bottom: 4px;
-      }
-      
-      .user-email {
-        font-size: 14px;
-        opacity: 0.9;
-      }
-    }
-  }
-  
-  // Menu item hover effects - use theme variables
-  .mat-menu-item {
-    transition: background-color animations.$fast-duration animations.$ease-standard;
-    
-    &:hover {
-      background-color: var(--md-sys-color-surface-variant);
-      
-      .vibrant1-theme & {
-        background-color: rgba(255, 0, 204, 0.1);
-      }
-      
-      .vibrant2-theme & {
-        background-color: rgba(255, 85, 0, 0.1);
-      }
-    }
-    
-    .mat-icon {
-      margin-right: 12px;
-    }
-  }
-  
-  .menu-item-animated {
-    position: relative;
-    overflow: hidden;
-    transition: background-color 0.3s;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s;
-    }
-    
-    &:hover::before {
-      left: 100%;
-    }
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  // Apply patriotic text effect
+  background: linear-gradient(
+    90deg,
+    var(--md-sys-color-tertiary) 0%,
+    var(--md-sys-color-on-primary) 50%,
+    var(--md-sys-color-tertiary) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: text-shimmer 5s linear infinite;
+
+  @include responsive.sm-down {
+    display: none;
   }
 }
 
-// Login and register buttons with enhanced styling
-.login-button {
-  background-color: rgba(25, 118, 210, 0.1);
-  
+.header-subtitle {
+  font-size: 0.875rem;
+  opacity: 0.7;
+  margin-left: 8px;
+
+  @include responsive.md-down {
+    display: none;
+  }
+}
+
+// Navigation
+.header-nav {
+  display: flex;
+  align-items: center;
+  margin-left: 24px;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -ms-overflow-style: none;  // IE and Edge
+  scrollbar-width: none;  // Firefox
+
+  &::-webkit-scrollbar {
+    display: none; // Chrome, Safari and Opera
+  }
+
+  @include responsive.sm-down {
+    display: none;
+  }
+}
+
+.nav-link {
+  padding: 0 16px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  color: var(--md-sys-color-on-primary);
+  text-decoration: none;
+  position: relative;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+
   &:hover {
-    background-color: rgba(25, 118, 210, 0.2);
-  }
-  
-  .mat-icon {
-    color: #1976d2;
-  }
-}
-
-.register-button {
-  background-color: rgba(76, 175, 80, 0.1);
-  
-  &:hover {
-    background-color: rgba(76, 175, 80, 0.2);
-  }
-  
-  .mat-icon {
-    color: #4caf50;
-  }
-}
-
-// Animations
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
     opacity: 1;
-    transform: translateY(0);
   }
-}
 
-// Use responsive mixins consistently
-@include responsive.sm-down {
-  .header-container {
-    padding: 0 0.5em;
-    height: 3.5rem;
-  }
-  
-  .logo-section {
-    margin-right: 1em;
-    
-    .logo-text {
-      display: none; // Hide text on small screens
-    }
-    
-    .logo-wrapper {
-      width: 2.2em;
-      height: 2.2em;
-    }
-  }
-  
-  .header-right {
-    gap: 0.4em;
-    
-    .search-button {
-      display: none; // Hide search on small screens
+  &.active {
+    opacity: 1;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 16px;
+      right: 16px;
+      height: 3px;
+      background-color: var(--md-sys-color-tertiary);
+      animation: badge-pulse 2s infinite;
     }
   }
 }
 
-// RTL support
-html[dir="rtl"] {
-  .logo-section {
-    margin-right: 0;
-    margin-left: 2em;
+// Actions container
+.header-actions {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  gap: 8px;
+}
+
+// Theme switcher
+.theme-switcher {
+  margin: 0 8px;
+}
+
+// Notification badge
+.notification-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background-color: var(--md-sys-color-secondary);
+  color: var(--md-sys-color-on-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: badge-pulse 2s infinite;
+}
+
+// Search box
+.search-container {
+  position: relative;
+  margin: 0 8px;
+  width: 200px;
+
+  @include responsive.md-down {
+    width: 160px;
   }
-  
-  .logo-text {
-    margin: 0 0.5em 0 0;
+
+  @include responsive.sm-down {
+    display: none;
   }
-  
-  .header-right {
-    flex-direction: row-reverse;
+
+  .search-input {
+    width: 100%;
+    height: 36px;
+    border-radius: 18px;
+    border: none;
+    padding: 0 36px 0 16px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--md-sys-color-on-primary);
+
+    &::placeholder {
+      color: var(--md-sys-color-on-primary);
+      opacity: 0.7;
+    }
+
+    &:focus {
+      outline: none;
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  .search-icon {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    color: var(--md-sys-color-on-primary);
+    opacity: 0.7;
+  }
+}
+
+// Animations for theme ripple effect
+.ripple-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.theme-ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 0.5;
+  background: radial-gradient(
+    circle,
+    var(--md-sys-color-primary) 0%,
+    var(--md-sys-color-surface) 60%,
+    transparent 100%
+  );
+
+  &.animate {
+    animation: theme-ripple 0.8s ease-out forwards;
+  }
+}
+
+@keyframes theme-ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
   }
 }

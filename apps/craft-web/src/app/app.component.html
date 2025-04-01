@@ -3,17 +3,20 @@
   <app-video-background></app-video-background>
 
   <!-- Main application layout -->
-  <div class="content-wrapper">
+  <div class="page-container">
     <!-- Header -->
     <app-header></app-header>
     
     <!-- Main content area with sidebar -->
-    <div class="main-content-area">
+    <div class="layout-container">
       <!-- Sidebar -->
-      <app-sidebar></app-sidebar>
+      <aside class="sidebar" [ngClass]="{'collapsed': !layoutService.isSidebarExpanded()}" 
+             [style.width.px]="layoutService.isSidebarExpanded() ? sidebarWidth : null">
+        <app-sidebar></app-sidebar>
+      </aside>
       
       <!-- Main content -->
-      <main class="main-content">
+      <main class="main-stage">
         <router-outlet></router-outlet>
       </main>
     </div>

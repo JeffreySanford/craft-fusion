@@ -1,220 +1,523 @@
 @use 'sass:map';
+@use 'sass:color';
 @use '../../../styles/_themes' as themes;
 @use '../../../styles/_responsive' as responsive;
 @use '../../../styles/_layout' as layout;
+@use '../../../styles/_animations.scss' as animations;
+@use '../../../styles/_variables.scss' as vars;
+@use '../../../styles/_mixins.scss' as mixins;
+@use '../../../styles/_patriotic.scss' as patriotic;
 
-// Main sidebar container
+:host {
+  display: block;
+  height: 100%;
+}
+
 .sidebar-container {
-  @include layout.sidebar; // Apply the sidebar mixin
-  width: 100%; // Ensure it takes the full width of its container
-  height: 100%; // Ensure it takes the full height of its container
+  position: relative;
   display: flex;
   flex-direction: column;
-  position: relative;
+  height: 100%;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  border-right: 3px solid vars.$red; // More vibrant patriotic border
+  transition: width 0.3s ease, transform 0.3s ease;
+  box-shadow: var(--md-sys-elevation-level1);
+  z-index: 10;
+  width: 250px;
+  overflow: hidden;
 
-  @include responsive.sm-down {
-    margin: 0; // Remove margins for small screens
-    padding: 0.25em; // Reduce padding for small screens
-  }
-
-  .collapse-toggle {
+  // Add subtle patriotic accent
+  &::before {
+    content: '';
     position: absolute;
-    bottom: 1rem;
-    right: 1rem;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--patriotic-gradient);
+    opacity: 0.8;
+    z-index: 1;
   }
-}
 
-// Menu container
-.sidebar-menu-container {
-  @include layout.sidebar-menu-container;
-  flex: 1; // Take available space
-}
+  &.collapsed {
+    width: 64px;
 
-// Menu group
-.menu-group {
-  @include layout.menu-group;
-}
-
-// Menu items
-.menu-item {
-  @include layout.menu-item;
-  // Background and border styles
-  background-color: rgba(0, 150, 255, 0.1) !important;
-  border: 1px solid rgba(0, 150, 255, 0.5) !important;
-  
-  // REDUCED: Make buttons much more compact
-  padding: 0.2em 0.6em !important; // Significantly reduced padding
-  min-height: 1.8em !important; // Reduced from 3.2em to 1.8em (about 50% reduction)
-  margin-bottom: 0.15em !important; // Tighter spacing between buttons
-  
-  // Adjust flex layout for left alignment
-  display: flex !important;
-  justify-content: flex-start !important; // Explicitly align content to left
-  align-items: center !important;
-  
-  // Adjust icon styling - make even larger
-  .mat-icon {
-    font-size: 24px !important; // Smaller than before but still visible
-    width: 24px !important;
-    height: 24px !important;
-    line-height: 24px !important;
-    margin: 0.1em 0.4em 0.1em 0.1em !important; // More compact margins, more space on right for text separation
-    align-self: center !important;
-  }
-  
-  // Adjust text for better alignment with icon
-  .menu-text {
-    font-size: 1em !important; // Slightly reduced
-    font-weight: 500 !important;
-    padding-top: 0.05em !important; // Small adjustment to vertically align with icon
-    margin-left: 0.2em !important; // Reduced spacing between icon and text
-  }
-  
-  // Add a subtle transition for a "fancy" effect
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  
-  &:hover {
-    transform: translateX(3px) !important; // Shift slightly right on hover instead of scaling
-    background-color: rgba(0, 150, 255, 0.2) !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important; // Add subtle shadow on hover
-  }
-  
-  // Admin-specific styling (more specific selector for better targeting)
-  &.admin-button, &[routerLink="/admin"] {
-    background-color: rgba(255, 0, 0, 0.1) !important; // Light red transparent background
-    border: 1px solid rgba(255, 0, 0, 0.5) !important; // Thin red border
-
-    &:hover {
-      transform: scale(1.1);
-      outline-color: rgba(255, 0, 0, 0.8);
-      box-shadow: var(--md-sys-elevation-level2);
-      background-color: rgba(255, 0, 0, 0.2) !important; // Slightly darker on hover
+    .nav-item-text,
+    .sidebar-header-text,
+    .sidebar-footer-text {
+      display: none;
     }
 
-    &.active {
-      outline-color: rgba(255, 0, 0, 0.9);
-      box-shadow: var(--md-sys-elevation-level3);
-      background-color: rgba(255, 0, 0, 0.25) !important;
-      color: var(--md-sys-color-on-error);
+    .nav-item {
+      padding: 16px 0;
+      justify-content: center;
+    }
 
-      .mat-icon,
-      .menu-text {
-        color: var(--md-sys-color-on-error);
+    .sidebar-group-title {
+      height: 0;
+      margin: 0;
+      overflow: hidden;
+      opacity: 0;
+    }
+
+    .sidebar-header,
+    .sidebar-footer {
+      justify-content: center;
+    }
+
+    .sidebar-header-icon {
+      margin-right: 0;
+    }
+
+    mat-expansion-panel-header {
+      padding: 0 16px;
+      justify-content: center;
+    }
+
+    .nav-text, .expand-icon {
+      display: none;
+    }
+
+    .sidebar-header {
+      justify-content: center;
+
+      .logo-container {
+        justify-content: center;
       }
     }
   }
-  
-  // Active state icon/text colors
-  &.active {
-    background-color: rgba(0, 150, 255, 0.25) !important; // Darker blue background when active
-    
-    .mat-icon,
-    .menu-text {
-      color: var(--md-sys-color-on-secondary);
+
+  &.mobile {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
+
+    &.collapsed {
+      transform: translateX(-100%);
+    }
+  }
+
+  &.resizing {
+    transition: none;
+    user-select: none;
+  }
+
+  &.hover-expanded {
+    border-right: 3px solid vars.$gold; // Gold border on hover
+  }
+}
+
+// Sidebar header
+.sidebar-header {
+  height: 64px;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  background: var(--patriotic-gradient);
+
+  .sidebar-header-icon {
+    font-size: 24px;
+    height: 24px;
+    width: 24px;
+    margin-right: 16px;
+    color: var(--md-sys-color-primary);
+    animation: star-sparkle 3s infinite;
+  }
+
+  .sidebar-header-text {
+    font-size: 16px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    // Apply patriotic text effect
+    background: linear-gradient(
+      90deg,
+      var(--md-sys-color-primary) 0%,
+      var(--md-sys-color-secondary) 50%,
+      var(--md-sys-color-primary) 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: text-shimmer 5s linear infinite;
+  }
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    overflow: hidden;
+
+    .logo {
+      height: 32px;
+      max-width: 160px;
+      object-fit: contain;
+    }
+
+    .icon {
+      height: 32px;
+      width: 32px;
+      object-fit: contain;
+      margin: 0 auto;
+    }
+  }
+
+  .collapse-button {
+    color: var(--md-sys-color-on-primary);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
     }
   }
 }
 
-// Admin item styling
-.admin-item {
-  position: relative;
-  background: linear-gradient(90deg, rgba(191, 10, 48, 0.1), rgba(0, 40, 104, 0.1));
-  border-left: 3px solid #BF0A30;
-  
-  &:hover {
-    background: linear-gradient(90deg, rgba(191, 10, 48, 0.2), rgba(0, 40, 104, 0.2));
+// Sidebar content with navigation
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-sys-color-outline) transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
   }
-  
-  mat-icon {
-    color: #BF0A30;
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--md-sys-color-outline);
+    border-radius: 4px;
   }
 }
 
-// Admin-specific button styling
-.admin-button {
-  background-color: rgba(191, 10, 48, 0.1) !important; // Light red transparent background
-  border: 1px solid rgba(191, 10, 48, 0.5) !important; // Red border
-  position: relative;
-  
-  &:hover {
-    background-color: rgba(191, 10, 48, 0.2) !important;
-    border-color: rgba(191, 10, 48, 0.7) !important;
+.sidebar-group {
+  margin-bottom: 24px;
+}
+
+.sidebar-group-title {
+  padding: 0 24px;
+  margin: 8px 0;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--md-sys-color-on-surface-variant);
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.sidebar-nav {
+  .nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
   }
-  
-  &.active {
-    background-color: rgba(191, 10, 48, 0.3) !important;
-    border-color: rgba(191, 10, 48, 0.9) !important;
-    
-    &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
-      background-color: #BF0A30;
+
+  .nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    text-decoration: none;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: var(--md-sys-color-surface-variant); // Use theme variable
+      color: var(--md-sys-color-on-surface);
+    }
+
+    &.active {
+      color: var(--md-sys-color-primary);
+      background-color: color-mix(in srgb, var(--md-sys-color-primary) 10%, transparent);
+
+      .nav-item-icon {
+        color: var(--md-sys-color-primary);
+      }
+
+      // Active indicator
+      &::after {
+        content: '';
+        position: absolute;
+        top: 8px;
+        bottom: 8px;
+        left: 0;
+        width: 3px;
+        background-color: var(--md-sys-color-primary);
+        border-radius: 0 4px 4px 0;
+      }
+
+      // Star decoration for active item
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: 16px;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background-color: var(--md-sys-color-tertiary);
+        transform: translateY(-50%);
+        box-shadow: 0 0 4px var(--md-sys-color-tertiary);
+        animation: star-sparkle 2s infinite;
+      }
     }
   }
-  
-  .mat-icon {
-    color: #BF0A30 !important;
+
+  .nav-item-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+    margin-right: 16px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+
+    .nav-item:hover & {
+      transform: scale(1.1);
+    }
   }
-  
-  .menu-text {
-    color: #BF0A30;
+
+  .nav-item-text {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .nav-item-badge {
+    margin-left: auto;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    background-color: var(--md-sys-color-tertiary);
+    color: var(--md-sys-color-on-tertiary);
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: badge-pulse 2s infinite;
   }
 }
 
-.admin-badge {
-  position: absolute;
-  right: 8px;
-  top: 4px;
-  font-size: 8px;
-  background-color: #BF0A30;
-  color: white;
-  padding: 1px 4px;
+// Nested navigation
+mat-expansion-panel {
+  background-color: transparent;
+  box-shadow: none !important;
+
+  &::ng-deep .mat-expansion-panel-body {
+    padding: 0 0 0 24px;
+  }
+}
+
+mat-expansion-panel-header {
+  padding: 0 24px;
+  height: 52px !important;
+
+  &::ng-deep .mat-expansion-indicator {
+    color: var(--md-sys-color-tertiary);
+  }
+}
+
+.nav-parent {
+  margin: 0 8px;
   border-radius: 4px;
-  line-height: 1;
-}
+  overflow: hidden;
 
-// Toggle button
-.toggle {
-  @include layout.sidebar-toggle-button;
-}
+  .nav-parent-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    color: var(--md-sys-color-on-surface);
+    transition: background-color 0.2s ease;
 
-// Handle collapsed state for deep nested elements
-:host ::ng-deep .collapsed {
-  .menu-item.mdc-button {
-    padding: 0.3em !important; // REDUCED from 0.6em
-    min-height: 2.8em !important; // REDUCED from 3.5em
-    justify-content: center !important; // Keep centered when collapsed
-    
-    .mat-icon {
-      margin: auto !important; // Center icon in collapsed state
-      font-size: 28px !important; // Keep larger in collapsed state
-      width: 28px !important;
-      height: 28px !important;
+    .nav-icon {
+      margin-right: 16px;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
     }
-    
-    .menu-text {
-      display: none !important; // Hide text in collapsed state
+
+    .nav-text {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .expand-icon {
+      font-size: 18px;
+      transition: transform 0.3s ease;
+    }
+
+    &:hover {
+      background-color: var(--md-sys-color-surface-variant);
+      color: var(--md-sys-color-primary);
+    }
+  }
+
+  &.active {
+    > .nav-parent-header {
+      background-color: rgba(vars.$navy, 0.15); // Semi-transparent navy
+      color: var(--md-sys-color-primary);
+      border-left: 3px solid vars.$gold; // Gold accent for parent items
+      padding-left: 13px; // Compensate for border
+    }
+  }
+
+  &.expanded {
+    > .nav-parent-header .expand-icon {
+      transform: rotate(180deg);
+    }
+  }
+
+  .nav-children {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background-color: rgba(vars.$navy, 0.05); // Very light navy
+
+    .dark-theme & {
+      background-color: rgba(70, 130, 180, 0.05); // Adjusted for dark theme
+    }
+
+    &.expanded {
+      max-height: 500px; // Arbitrary height for animation
+    }
+
+    .nav-child-item {
+      .nav-link {
+        padding-left: 48px;
+        font-size: 0.9em;
+
+        &.active {
+          background-color: rgba(vars.$red, 0.1); // Semi-transparent red
+          color: var(--md-sys-color-secondary); // Use secondary color (red)
+          border-left: 3px solid vars.$gold; // Gold accent
+        }
+
+        &:hover:not(.active) {
+          background-color: var(--md-sys-color-surface-variant);
+        }
+      }
     }
   }
 }
 
-// Animation keyframes
-@keyframes ripple {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
+// Sidebar footer
+.sidebar-footer {
+  height: 48px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 16px;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+
+  .sidebar-footer-text {
+    font-size: 12px;
+    color: var(--md-sys-color-on-surface-variant);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  100% {
-    box-shadow: 0 0 0 20px rgba(255, 255, 255, 0);
+
+  button {
+    color: var(--md-sys-color-on-surface);
+
+    &:hover {
+      color: var(--md-sys-color-primary);
+      background-color: var(--md-sys-color-surface-variant);
+    }
   }
 }
 
-// Fix for sidebar collapsed icons in any theme
-.collapsed .menu-item {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+// Sidebar resize handle
+.sidebar-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: ew-resize;
+  z-index: 10;
+
+  &:hover {
+    background-color: var(--md-sys-color-primary);
+    opacity: 0.3;
+  }
+
+  &:active {
+    background-color: var(--md-sys-color-primary);
+    opacity: 0.5;
+  }
+}
+
+.resize-handle {
+  position: absolute;
+  top: 0;
+  right: -3px; // Place on the border
+  width: 6px; // Wider touch area
+  height: 100%;
+  cursor: ew-resize;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+  z-index: 1000;
+
+  &:hover, &:active {
+    background-color: vars.$gold; // Gold highlight when hovering
+  }
+}
+
+// Mobile version
+:host-context(.mobile) {
+  .sidebar-resize-handle {
+    display: none;
+  }
+}
+
+// Responsive behavior
+@include responsive.sm-down {
+  .sidebar-container {
+    width: 280px; // Slightly wider on mobile
+
+    &.collapsed {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+// Animation for hover expand
+@keyframes expandSidebar {
+  from {
+    width: 64px;
+  }
+  to {
+    width: 240px;
+  }
+}
+
+// Animation for the active indicator
+@keyframes fadeInBorder {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

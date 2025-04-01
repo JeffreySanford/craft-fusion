@@ -1,16 +1,22 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { FooterComponent } from './footer.component';
-import { MaterialModule } from '../../material.module';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { LineChartModule } from '../../common/components/line-chart/line-chart.module';
 
 @NgModule({
-  declarations: [FooterComponent],
+  declarations: [
+    FooterComponent
+  ],
   imports: [
     CommonModule,
-    MaterialModule,
-    MatSlideToggleModule, // Add MatSlideToggleModule here
+    MatIconModule,
+    MatButtonModule,
+    LineChartModule
   ],
-  exports: [FooterComponent]
+  exports: [
+    FooterComponent
+  ]
 })
 export class FooterModule { }

@@ -1,0 +1,124 @@
+@use 'variables' as vars;
+@use 'sass:map';
+
+// Breakpoint mixins
+@mixin xs-up {
+  @media (min-width: map.get(vars.$breakpoints, "xs")) {
+    @content;
+  }
+}
+
+@mixin sm-up {
+  @media (min-width: map.get(vars.$breakpoints, "sm")) {
+    @content;
+  }
+}
+
+@mixin md-up {
+  @media (min-width: map.get(vars.$breakpoints, "md")) {
+    @content;
+  }
+}
+
+@mixin lg-up {
+  @media (min-width: map.get(vars.$breakpoints, "lg")) {
+    @content;
+  }
+}
+
+@mixin xl-up {
+  @media (min-width: map.get(vars.$breakpoints, "xl")) {
+    @content;
+  }
+}
+
+@mixin xs-down {
+  @media (max-width: (map.get(vars.$breakpoints, "xs") - 1px)) {
+    @content;
+  }
+}
+
+@mixin sm-down {
+  @media (max-width: (map.get(vars.$breakpoints, "sm") - 1px)) {
+    @content;
+  }
+}
+
+@mixin md-down {
+  @media (max-width: (map.get(vars.$breakpoints, "md") - 1px)) {
+    @content;
+  }
+}
+
+@mixin lg-down {
+  @media (max-width: (map.get(vars.$breakpoints, "lg") - 1px)) {
+    @content;
+  }
+}
+
+@mixin xl-down {
+  @media (max-width: (map.get(vars.$breakpoints, "xl") - 1px)) {
+    @content;
+  }
+}
+
+// Helper mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+@mixin absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin card-shadow {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+@mixin patriotic-border {
+  border-left: 3px solid vars.$navy;
+  border-bottom: 3px solid vars.$red;
+}
+
+@mixin patriotic-gradient {
+  background: linear-gradient(135deg, vars.$navy, vars.$red);
+  background-clip: padding-box;
+}
+
+// Accessibility mixins
+@mixin focus-outline {
+  outline: 2px solid vars.$navy;
+  outline-offset: 2px;
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

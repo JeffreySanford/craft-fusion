@@ -62,18 +62,18 @@ export class ThemeSwitcherComponent implements OnInit {
       description: 'Dark theme with patriotic accents'
     },
     {
-      id: 'vibrant1-theme',
-      name: 'Cosmic',
-      icon: 'auto_awesome',
-      color: '#9c27b0',
-      description: 'Vibrant cosmic theme with purple accents'
+      id: 'patriotic-bold-theme',
+      name: 'Bold Patriot',
+      icon: 'flag',
+      color: '#0A3161',
+      description: 'Vibrant patriotic theme with bold colors'
     },
     {
-      id: 'vibrant2-theme',
-      name: 'Solar',
-      icon: 'flare',
-      color: '#ff7043',
-      description: 'Vibrant solar theme with orange accents'
+      id: 'patriotic-vintage-theme',
+      name: 'Vintage',
+      icon: 'brightness_5',
+      color: '#19477F',
+      description: 'Classic vintage patriotic theme'
     }
   ];
 

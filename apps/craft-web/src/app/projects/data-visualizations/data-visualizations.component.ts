@@ -25,6 +25,9 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   expandedTileIndex: number | null = null;
   fullExpandedTileIndex: number | null = null; // New property for full-screen expansion
   
+  // Add missing property to fix the error
+  chartData: ChartData[] = [];
+  
   // Track displayed and available charts
   displayedCharts: ExtendedChartData[] = [];
   availableCharts: ExtendedChartData[] = [];
@@ -91,6 +94,9 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
 
   // Add new property to track the maximum number of tiles allowed
   readonly MAX_TILES = 5;
+
+  // Add flag to track component destruction
+  private isDestroyed = false;
 
   constructor(
     private breakpointObserver: BreakpointObserver, 
@@ -163,6 +169,8 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.isDestroyed = true;
+
     if (this.sidebarSubscription) {
       this.sidebarSubscription.unsubscribe();
     }
@@ -814,6 +822,48 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     }
     
     return classes.join(' ');
+  }
+
+  private updateChartData(): void {
+    // Wrap in a try-catch block to handle any errors
+    try {
+      // Wrap in setTimeout to ensure this runs outside of Angular's change detection cycle
+      setTimeout(() => {
+        try {
+          // Generate new chart data
+          const newData = this.generateChartData();
+          
+          // Safety check before updating
+          if (newData && Array.isArray(newData)) {
+            this.chartData = [...newData];
+            
+            // Only detect changes if component is still alive
+            if (!this.isDestroyed) {
+              this.cdr.detectChanges();
+            }
+          }
+        } catch (error) {
+          console.error('Error in updateChartData setTimeout:', error);
+        }
+      });
+    } catch (error) {
+      console.error('Error in updateChartData:', error);
+    }
+  }
+
+  generateChartData(): ChartData[] {
+    return this.allCharts.map(chart => {
+      const chartData: ChartData = {
+        name: chart.name,
+        component: chart.component,
+        color: chart.color,
+        data: chart.data,
+        size: chart.size,
+      };
+      
+      // Add any additional properties or transformations needed
+      return chartData;
+    });
   }
 }
 

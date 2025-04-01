@@ -1,88 +1,364 @@
+@use '../../../../styles/variables' as vars;
+@use '../../../../styles/mixins' as mixins;
+@use '../../../../styles/responsive' as responsive;
+@use '../../../../styles/layout' as layout;
+@use '../../../../styles/animations' as animations;
+@use 'sass:map';
+
+:host {
+  display: block;
+  width: 100%;
+}
+
 .security-settings-container {
-  padding: 16px;
-}
+  @include layout.content-container;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
 
-.settings-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
+  // Page Header Styling
+  .page-header {
+    margin-bottom: 2rem;
+    
+    h2 {
+      @include mixins.patriotic-gradient;
+      font-size: 2rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent; 
+      display: inline-block;
+    }
 
-.security-form {
-  margin-top: 16px;
-}
-
-.form-section {
-  margin-bottom: 24px;
-}
-
-.admin-warning {
-  color: #ff5252;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.server-offline-warning {
-  background-color: #fff3e0;
-  border: 1px solid #ffcc80;
-  border-radius: 4px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #e65100;
-  
-  mat-icon {
-    color: #ff9800;
+    .header-subtitle {
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: 1rem;
+    }
   }
-}
 
-.info-box {
-  border: 1px solid #ccc;
-  padding: 8px;
-  border-radius: 4px;
-}
+  // Card Styling
+  .settings-card {
+    margin-bottom: 2rem;
+    border-radius: var(--md-sys-shape-corner-medium);
+    background-color: var(--md-sys-color-surface);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
 
-.security-levels {
-  margin-bottom: 16px;
-}
+    &:hover {
+      @include animations.elevation-transition;
+    }
 
-.security-level-option {
-  margin-bottom: 12px;
-  padding: 8px;
-  border-radius: 4px;
-  
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.04);
+    &.mfa-card {
+      border-left: 4px solid var(--md-sys-color-tertiary);
+    }
+
+    &.password-card {
+      border-left: 4px solid var(--md-sys-color-secondary);
+    }
+
+    mat-card-title-group {
+      align-items: center;
+    }
+
+    .card-title-with-icon {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      mat-icon {
+        @include animations.icon-pulse;
+      }
+    }
+
+    mat-card-content {
+      padding-top: 1rem;
+    }
   }
-}
 
-.level-content {
-  display: flex;
-  flex-direction: column;
-  padding-left: 8px;
-}
+  // Form Section Styling
+  .form-section {
+    margin-bottom: 2rem;
 
-.level-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.form-row {
-  margin-bottom: 16px;
-  
-  &:last-child {
-    margin-bottom: 0;
+    .section-title {
+      color: var(--md-sys-color-primary);
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
   }
-}
 
-.action-buttons {
-  margin-top: 24px;
-  display: flex;
-  justify-content: flex-end;
+  // Security Level Panel Styling
+  .security-level-panel {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: var(--md-sys-shape-corner-medium);
+    margin: 1rem 0;
+    background-color: var(--md-sys-color-surface-variant);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 4px;
+    }
+
+    &.high {
+      &::before {
+        background-color: var(--md-sys-color-tertiary);
+      }
+
+      .level-icon mat-icon {
+        color: var(--md-sys-color-tertiary);
+      }
+
+      h4 {
+        color: var(--md-sys-color-tertiary);
+      }
+    }
+
+    &.medium {
+      &::before {
+        background-color: var(--md-sys-color-primary);
+      }
+
+      .level-icon mat-icon {
+        color: var(--md-sys-color-primary);
+      }
+
+      h4 {
+        color: var(--md-sys-color-primary);
+      }
+    }
+
+    &.low {
+      &::before {
+        background-color: var(--md-sys-color-error);
+      }
+
+      .level-icon mat-icon {
+        color: var(--md-sys-color-error);
+      }
+
+      h4 {
+        color: var(--md-sys-color-error);
+      }
+    }
+
+    .level-icon {
+      display: flex;
+      align-items: flex-start;
+
+      mat-icon {
+        font-size: 2rem;
+        height: 2rem;
+        width: 2rem;
+        @include animations.icon-pulse;
+      }
+    }
+
+    .level-description {
+      flex: 1;
+
+      h4 {
+        margin: 0 0 0.5rem 0;
+        font-weight: 500;
+      }
+
+      p {
+        margin: 0;
+        color: var(--md-sys-color-on-surface-variant);
+      }
+    }
+  }
+
+  // Security Options Styling
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    mat-checkbox {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .auto-logout-field {
+    max-width: 300px;
+    margin-bottom: 1rem;
+
+    mat-form-field {
+      width: 100%;
+    }
+
+    mat-hint {
+      margin-top: 0.25rem;
+      display: block;
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: 0.75rem;
+    }
+  }
+
+  // Form Actions
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    button {
+      @include animations.button-hover-effect;
+      min-width: 160px;
+    }
+  }
+
+  // MFA Status Styling
+  .mfa-status {
+    margin: 1.5rem 0;
+
+    .status-panel {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-radius: var(--md-sys-shape-corner-small);
+
+      &.warning {
+        background-color: rgba(var(--md-sys-color-error-rgb), 0.1);
+        border-left: 4px solid var(--md-sys-color-error);
+      }
+
+      &.success {
+        background-color: rgba(var(--md-sys-color-primary-rgb), 0.1);
+        border-left: 4px solid var(--md-sys-color-primary);
+      }
+
+      mat-icon {
+        font-size: 2rem;
+        height: 2rem;
+        width: 2rem;
+      }
+
+      .status-message {
+        display: flex;
+        flex-direction: column;
+
+        .status-title {
+          font-weight: 500;
+        }
+
+        .status-description {
+          font-size: 0.9rem;
+          color: var(--md-sys-color-on-surface-variant);
+        }
+      }
+    }
+  }
+
+  // Feature Description
+  .feature-description {
+    color: var(--md-sys-color-on-surface);
+    margin: 1rem 0;
+    line-height: 1.5;
+  }
+
+  // Password Requirements Styling
+  .password-requirements {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    border-radius: var(--md-sys-shape-corner-medium);
+    background-color: var(--md-sys-color-surface-variant);
+
+    h4 {
+      margin: 0 0 1rem 0;
+      color: var(--md-sys-color-primary);
+      font-weight: 500;
+    }
+
+    mat-list {
+      padding: 0;
+    }
+
+    mat-list-item {
+      height: auto;
+      margin-bottom: 0.5rem;
+
+      &.met {
+        mat-icon {
+          color: var(--md-sys-color-primary);
+        }
+
+        div[matListItemTitle] {
+          color: var(--md-sys-color-on-surface);
+          font-weight: 500;
+        }
+      }
+
+      &:not(.met) {
+        mat-icon {
+          color: var(--md-sys-color-outline);
+        }
+
+        div[matListItemTitle] {
+          color: var(--md-sys-color-on-surface-variant);
+        }
+      }
+    }
+  }
+
+  // Full width helpers
+  .full-width {
+    width: 100%;
+  }
+
+  // Action Button
+  .action-button {
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+
+  // Chip styles
+  mat-chip-set {
+    margin-bottom: 1rem;
+  }
+
+  // Responsive Adjustments
+  @include responsive.sm-down {
+    .form-actions {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+
+    .security-level-panel {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+
+      .level-icon {
+        margin-bottom: 1rem;
+      }
+    }
+  }
+
+  // Theme Specific Styles
+  &.dark-theme {
+    .security-level-panel {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .password-requirements {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+  }
 }

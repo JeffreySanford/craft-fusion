@@ -1,38 +1,31 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ThemeService } from '../../common/services/theme.service';
 import { VideoBackgroundService } from '../../common/services/video-background.service';
 import { LoggerService } from '../../common/services/logger.service';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { trigger, state, style, animate, transition } from '@angular/animations';
+import { AnimationService } from '../../common/services/animation.service';
+import { LayoutService } from '../../common/services/layout.service';
+
+interface Star {
+  top: number;
+  left: number;
+  delay: number;
+}
 
 @Component({
   selector: 'app-landing',
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss'],
-  standalone: false,
-  animations: [
-    trigger('fadeIn', [
-      state('void', style({ opacity: 0, transform: 'translateY(20px)' })),
-      transition(':enter', [
-        animate('0.6s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ]),
-    trigger('slideIn', [
-      state('void', style({ opacity: 0, transform: 'translateX(-30px)' })),
-      transition(':enter', [
-        animate('0.8s 0.3s ease-out', style({ opacity: 1, transform: 'translateX(0)' }))
-      ])
-    ])
-  ]
+  standalone: false
 })
 export class LandingComponent implements OnInit, OnDestroy {
-  items = ['Architect', 'Developer', 'Designer'];
   themeClass = 'light-theme';
   videoLoaded = false;
   videoError = false;
   showMockDataIndicator = true;
+  stars: Star[] = [];
   
   private destroy$ = new Subject<void>();
   
@@ -40,12 +33,16 @@ export class LandingComponent implements OnInit, OnDestroy {
     private router: Router,
     private themeService: ThemeService,
     private videoService: VideoBackgroundService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private animationService: AnimationService,
+    private layoutService: LayoutService
   ) { }
 
   ngOnInit(): void {
     this.logger.info('Landing component initialized');
-    this.logger.debug('Landing setup complete');
+    
+    // Generate stars for background
+    this.generateStars();
 
     // Subscribe to theme changes
     this.themeService.currentTheme$
@@ -61,32 +58,32 @@ export class LandingComponent implements OnInit, OnDestroy {
       type: 'video/mp4'
     });
     
-    // Listen for video events using the observables provided by the service
-    this.videoService.videoLoadCompleted$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.videoLoaded = true;
-        this.logger.debug('Background video loaded');
-      });
-      
-    this.videoService.videoLoadError$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((errorMessage: string) => {
-        this.videoError = true;
-        this.logger.error('Background video error', { error: errorMessage });
-      });
+    // Ensure sidebar is collapsed on mobile for better landing experience
+    this.layoutService.isMobile().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(isMobile => {
+      if (isMobile) {
+        this.layoutService.collapseSidebar();
+      }
+    });
   }
-
+  
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
   
-  navigateToDashboard(): void {
-    this.router.navigate(['/dashboard']);
+  navigateToFeature(feature: string): void {
+    this.router.navigate(['/projects', feature]);
   }
   
-  onThemeChanged(theme: string): void {
-    this.logger.info('Theme changed from landing page', { theme });
+  private generateStars(): void {
+    // Generate random stars for the background
+    const starCount = 50;
+    this.stars = Array.from({ length: starCount }).map(() => ({
+      top: Math.random() * 100,
+      left: Math.random() * 100,
+      delay: Math.random() * 3 // Random delay between 0-3s
+    }));
   }
 }

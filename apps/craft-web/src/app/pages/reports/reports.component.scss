@@ -1,0 +1,17 @@
+@use '../../../styles/_variables.scss' as vars;
+
+.reports-container {
+  padding: 1rem;
+  
+  h1 {
+    color: vars.$navy;
+    margin-bottom: 1rem;
+  }
+  
+  .reports-content {
+    padding: 1rem;
+    background-color: var(--md-sys-color-surface);
+    border-radius: 8px;
+    box-shadow: var(--md-sys-elevation-level1);
+  }
+}

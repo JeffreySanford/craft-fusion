@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError, timer } from 'rxjs';
-import { tap, catchError, map, switchMap, filter } from 'rxjs/operators';
+import { tap, catchError, map, switchMap, filter, delay } from 'rxjs/operators';
 import { LoggerService } from './logger.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { JwtSecurityUtil } from '../utils/jwt-security.util';
@@ -28,6 +28,10 @@ export class AuthenticationService {
   currentUser$ = this.currentUserSubject.asObservable().pipe(
     filter(user => user !== undefined)
   );
+
+  // Add the missing isAuthenticated$ property
+  private authSubject = new BehaviorSubject<boolean>(false);
+  isAuthenticated$: Observable<boolean> = this.authSubject.asObservable();
 
   // Token refresh timer
   private tokenRefreshTimer: any;
@@ -301,5 +305,22 @@ export class AuthenticationService {
     const user = this.currentUserSubject.getValue();
     if (!user || !user.roles) return false;
     return roles.some(role => user.roles.includes(role));
+  }
+
+  // Method to set authentication state
+  setAuthenticated(isAuthenticated: boolean): void {
+    this.authSubject.next(isAuthenticated);
+  }
+
+  // Method to check if user is authenticated
+  isAuthenticated(): boolean {
+    return this.authSubject.getValue();
+  }
+
+  // Add changePassword method
+  changePassword(currentPassword: string, newPassword: string): Observable<any> {
+    // Normally, this would be an HTTP request to an API
+    // For this example, just simulate success
+    return of({ success: true }).pipe(delay(1000));
   }
 }
