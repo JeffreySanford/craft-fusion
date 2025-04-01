@@ -78,4 +78,8 @@ For special patriotic emphasis:
 - Include proper ARIA attributes where typography conveys meaning
 - Ensure text remains legible when zoomed up to 200%
 
+## Additional Notes
+- Note regarding recommended font pairs
+- Minor adjustments for digital readability
+
 Last Updated: March 26, 2025

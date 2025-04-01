@@ -146,6 +146,10 @@ We've implemented our patriotic theme using MD3 color utilities:
 - [Angular Material Documentation](https://material.angular.io/)
 - [Theme Builder](https://m3.material.io/theme-builder)
 
+## Additional Notes
+- Add reference to official Material 3 migration docs
+- Include tips for color tokens and typography
+
 ## Next Steps
 
 1. Complete migration for remaining components

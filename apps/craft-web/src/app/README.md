@@ -1,85 +1,157 @@
-# Craft Fusion Web App
+# Craft Fusion Web Application
 
-This README provides information about the structure and components of the Craft Fusion web application.
+## Architecture Overview
 
-## Application Structure
+Craft Fusion is built using Angular with a focus on maintainable, component-based architecture following Material Design 3 principles with a vibrant patriotic theme.
 
-The app follows a modular architecture with these key directories:
+## Core Layout Pattern
 
-### Common Directory (`/common`)
+The application follows a classic four-component layout pattern:
 
-Contains shared code used throughout the application:
+```
+┌─────────────────────────────────────────────┐
+│                  HEADER                     │
+├────────────┬────────────────────────────────┤
+│            │                                │
+│            │                                │
+│  SIDEBAR   │           MAINSTAGE            │
+│            │                                │
+│            │                                │
+│            │                                │
+├────────────┴────────────────────────────────┤
+│                  FOOTER                     │
+└─────────────────────────────────────────────┘
+```
 
-- **Components**: Reusable UI elements
-  - `video-background`: Manages background video rendering with theme support
-  - Other shared components
+### Key Layout Features
 
-- **Directives**: Custom attribute directives
-  - `highlight`: Element highlighting effects
-  - `pop`: Animation effects for elements
-  - `sparkle`: Visual enhancement effects
+- **1em Gutter** between sidebar and mainstage for clear visual separation
+- **Sidebar** width is based on content (longest button + icon)
+- **Mainstage** uses flex-grow to fill remaining horizontal space
+- **Responsive Design** adapts layout for different screen sizes
 
-- **Facades**: Simplified interfaces to complex subsystems
-  - `ui-state.facade`: Centralizes UI state management
-  - `user-facade`: Simplifies user-related operations
+## Component Structure
 
-- **Guards**: Route protection logic
-  - `admin.guard`: Restricts admin route access
+### App Component
 
-- **Interceptors**: HTTP request/response processing
-  - `api-logger`: Logs API interactions
-  - `auth`: Handles authentication headers
-  - `logging`: General HTTP logging
-  - `metrics`: Performance tracking
-  - `user-state`: User context management
+The app component (`app.component.ts`) serves as the layout container for the entire application:
 
-- **Services**: Core business logic
-  - `api`: Data access and API communication
-  - `authentication`: User login/logout functionality
-  - `environment`: Environment configuration access
-  - `logger`: Application logging with categories and levels
-  - `theme`: Theme management with support for multiple themes
-  - `video-background`: Background video management
+```html
+<div class="app-container">
+  <!-- Background video component -->
+  <app-video-background></app-video-background>
 
-### Pages Directory (`/pages`)
+  <!-- Main application layout -->
+  <div class="page-container">
+    <!-- Header -->
+    <app-header></app-header>
+    
+    <!-- Main content area with sidebar -->
+    <div class="layout-container">
+      <!-- Sidebar -->
+      <aside class="sidebar" [ngClass]="{'collapsed': !layoutService.isSidebarExpanded()}" 
+             [style.width.px]="layoutService.isSidebarExpanded() ? sidebarWidth : null">
+        <app-sidebar></app-sidebar>
+      </aside>
+      
+      <!-- Main content with 1em gutter from sidebar -->
+      <main class="main-stage">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+    
+    <!-- Footer -->
+    <app-footer></app-footer>
+  </div>
+</div>
+```
 
-Contains top-level pages and layout components:
+### Layout Management
 
-- **admin**: Administrative control panel
-- **footer**: Site footer with expandable features
-- **header**: Navigation header with theme controls and user menu
-- **landing**: Main landing page with feature showcases
-- **resume**: Professional resume display
-- **sidebar**: Navigation sidebar with collapsible menu
+The layout is managed primarily through the `LayoutService`, which provides:
 
-### Projects Directory (`/projects`)
+- Control of sidebar expanded/collapsed state
+- Management of sidebar width
+- Footer expanded/collapsed state
+- Mobile detection and responsive behavior
 
-Contains distinct feature modules, each demonstrating different capabilities:
+## Styling System
 
-- **book**: Interactive book viewer
-- **chat**: Real-time messaging application
-- **data-visualizations**: Advanced data visualization components
-- **peasant-kitchen**: Recipe management system
-- **space-video**: Custom video player with space theme
-- **table**: Data management with sorting and filtering
+The application uses a comprehensive SCSS architecture with:
 
-## Key Features
+- Design tokens based on Material Design 3
+- Vibrant patriotic color theme with navy blue, red, and gold
+- Responsive utilities for adapting to different device sizes
+- Animation system for smooth transitions between states
 
-1. **Theme System**: Multiple themes with smooth transitions
-2. **Video Backgrounds**: Theme-aware video backgrounds
-3. **Responsive Design**: Works on mobile and desktop
-4. **Animation System**: Custom animations for enhanced UX
-5. **Module Structure**: Lazy-loaded modules for better performance
-6. **Component Architecture**: Reusable, well-encapsulated components
-7. **Service Layer**: Clean separation of concerns
-8. **Material Design**: Consistent UI with Material components
+Key colors used throughout the layout:
 
-## Development Guidelines
+- Primary (Navy): #002868
+- Secondary (Red): #B22234
+- Tertiary (Gold): #FFD700
 
-- New features should be added as modules in the appropriate directory
-- Shared code should be placed in the common directory
-- Follow Angular best practices for component design
-- Ensure all components work with the theme system
-- Write unit tests for services and components
-- Document complex logic with inline comments
-- Update this README when adding new directories or major features
+## Navigation Flow
+
+1. The application starts with the landing page as the entry point
+2. The sidebar provides navigation to primary application features
+3. The mainstage displays the active component based on route
+4. The header provides global actions and theme switching
+5. The footer displays system status and expandable information
+
+## Key Services
+
+### LayoutService
+
+Manages the application layout, particularly sidebar width and states:
+
+```typescript
+// Example usage in a component
+constructor(private layoutService: LayoutService) {}
+
+ngOnInit(): void {
+  this.layoutService.sidebarExpanded$.subscribe(expanded => {
+    // React to sidebar expanded/collapsed state
+  });
+  
+  this.layoutService.sidebarWidth$.subscribe(width => {
+    // React to sidebar width changes
+  });
+}
+```
+
+### ThemeService
+
+Controls theming across all layout components:
+
+```typescript
+// Example usage in a component
+constructor(private themeService: ThemeService) {}
+
+ngOnInit(): void {
+  this.themeService.currentTheme$.subscribe(theme => {
+    // Apply theme-specific styling
+  });
+}
+```
+
+## Performance Considerations
+
+1. The layout components are optimized for minimal re-rendering
+2. Lazy-loaded modules reduce initial load time
+3. CSS variables enable efficient theme switching without DOM manipulation
+4. Animations are hardware-accelerated where possible
+
+## Integration Guidelines
+
+When creating new components to display in the mainstage:
+
+1. Respect the layout containers' dimensions and constraints
+2. Use the theming system for consistent appearance
+3. Support responsive layouts for different screen sizes
+4. Implement proper animations for transitions
+
+## Related Documentation
+
+- [Layout Patterns](../../../docs/LAYOUT-PATTERNS.md) - Detailed layout structure documentation
+- [Theme System](../../../docs/THEME-SYSTEM.md) - Comprehensive theme documentation 
+- [Style Guide](../../styles/README.md) - Styling architecture and patterns

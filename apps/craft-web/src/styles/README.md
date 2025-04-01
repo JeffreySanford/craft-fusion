@@ -14,34 +14,53 @@ This document provides a comprehensive guide to the styling architecture used in
 ## Table of Contents
 
 ### Foundation & Architecture
+
 1. [Architecture Overview](#architecture-overview)
+
 2. [Design Token System](#design-token-system)
+
 3. [File Structure](#file-structure)
+
 4. [Core Files Explained](#core-files-explained)
 
 ### Styling Standards
+
 1. [Documentation Standards](#documentation-standards)
+
 2. [Stylelint Integration](#stylelint-integration)
+
 3. [Units and Sizing Standards](#units-and-sizing-standards)
+
 4. [Container Guidelines](#container-guidelines)
+
 5. [Implementation Guidelines](#implementation-guidelines)
 
 ### Material Design & Theming
+
 1. [Material Design 3 Integration](#material-design-3-integration)
+
 2. [Theming System](#theming-system)
+
 3. [Patriotic Theme Implementation](#patriotic-theme-implementation)
 
 ### Animation & Motion
+
 1. [Animation System](#animation-system)
 
 ### Angular Integration
+
 1. [Angular Styling Patterns](#angular-styling-patterns)
+
 2. [Component Alignment Standards](#component-alignment-standards)
+
 3. [Component Configuration Standards](#component-configuration-standards)
 
 ### Development & Maintenance
+
 1. [Testing Roadmap](#testing-roadmap)
+
 2. [Refactoring Plans](#refactoring-plans)
+
 3. [Generating Styles with AI](#generating-styles-with-ai)
 
 ## Architecture Overview
@@ -51,10 +70,15 @@ Our styling system is built with modularity, maintainability, and performance in
 ### Key Features
 
 - **CSS Variables**: For runtime theming capabilities
+
 - **SCSS Modules**: For compilation-time code organization
+
 - **Material Design 3**: Following the latest Google design system principles
+
 - **Utility Classes**: For rapid development and consistent styling
+
 - **Responsive Design**: Mobile-first approach with flexible breakpoints
+
 - **Patriotic Theme**: Consistent use of red, white, and blue color scheme
 
 ## Documentation Standards
@@ -80,7 +104,9 @@ This is another paragraph.
 #### Heading Structure
 
 - Use proper heading hierarchy (don't skip levels)
+
 - Leave a space after the hash marks
+
 - Capitalize first letter of headings
 
 ```markdown
@@ -104,6 +130,7 @@ Next paragraph after the code block.
 #### Tables
 
 - Use proper table formatting with headers
+
 - Align columns consistently
 
 ```markdown
@@ -116,7 +143,9 @@ Next paragraph after the code block.
 #### Document Structure
 
 - Include a table of contents for documents longer than 3 sections
+
 - Use relative links for cross-references within the repository
+
 - Include a "Last Updated" date at the bottom of significant documents
 
 ### Documentation Best Practices
@@ -171,12 +200,19 @@ Our Stylelint configuration is defined in `.stylelintrc.json` at the project roo
 ### Key Stylelint Rules
 
 1. **Property Order**: Properties should be ordered alphabetically for consistency
+
 2. **BEM Naming Exemption**: We allow for various selector naming patterns (including BEM)
+
 3. **SCSS Variable Pattern**: No restrictions on SCSS variable naming
+
 4. **Import Extensions**: Allow importing partials with or without extensions
+
 5. **Vendor Prefixes**: Allowed when needed for browser compatibility
+
 6. **Color Functions**: Using legacy notation for broader compatibility
+
 7. **Alpha Values**: Using number notation (e.g., 0.5 instead of 50%)
+
 8. **Angular Deep Selector**: Allow `::ng-deep` for Angular-specific style penetration
 
 ### Running Stylelint
@@ -196,9 +232,13 @@ npx stylelint "apps/craft-web/src/styles/_variables.scss"
 ### Stylelint Best Practices
 
 1. **Run Before Committing**: Always run Stylelint before committing changes
+
 2. **Fix Warnings**: Treat warnings as errors to maintain code quality
+
 3. **No Disabling**: Avoid disabling Stylelint rules unless absolutely necessary
+
 4. **Document Exceptions**: If you must disable a rule, add a comment explaining why
+
 5. **Custom Project Rules**: Create project-specific rules that align with design requirements
 
 ## Material Design 3 Integration
@@ -206,10 +246,15 @@ npx stylelint "apps/craft-web/src/styles/_variables.scss"
 ### Benefits of Material Design 3 (MD3)
 
 1. **Personalized Design System**: MD3 allows for greater customization and expression through dynamic color system
+
 2. **Improved Accessibility**: Enhanced contrast ratios and touch targets
+
 3. **Cohesive Cross-Platform Experience**: Consistent design language across all platforms
+
 4. **Adaptive Layouts**: Better responsive behaviors for different screen sizes
+
 5. **Simplified Component Structure**: More intuitive component architecture
+
 6. **Performance Improvements**: More efficient rendering and animations
 
 ### Angular Material 3 Implementation
@@ -219,7 +264,9 @@ We use the latest Angular Material implementation which uses MDC (Material Compo
 #### Component Usage
 
 - Components are prefixed with `mat-mdc-` instead of just `mat-`
+
 - Example: `<mat-mdc-button>` rather than `<mat-button>`
+
 - These components offer improved accessibility, customization, and performance
 
 #### Component Patterns
@@ -362,8 +409,11 @@ When working with component styling, follow these guidelines:
 When adding new styles, follow these guidelines:
 
 1. If it's a global token, add it to `_variables.scss`
+
 2. If it's a utility class, add it to `_utilities.scss`
+
 3. If it's a custom component style, add it to `_md3-components.scss`
+
 4. If it's an Angular Material override, add it to `_material-overrides.scss`
 
 ### Responsive Design
@@ -395,7 +445,9 @@ Always design with mobile-first approach using percentage-based widths and flexb
 Angular encourages a component-based architecture, and our styling system aligns with this principle:
 
 1. **Encapsulation**: Use `ViewEncapsulation.Emulated` (default) to scope styles to components.
+
 2. **Component-Specific SCSS**: Each component should have its own SCSS file for maintainability.
+
 3. **Host Styling**: Use the `:host` selector for styling the component's root element.
 
 ```scss
@@ -436,10 +488,15 @@ The application features a responsive video background system that works seamles
 ### Key Features
 
 1. **Theme-aware videos**: Background videos can be configured per theme
+
 2. **Responsive behavior**: Videos adapt to different screen sizes
+
 3. **Performance optimizations**:
+
    - Videos are muted by default
+
    - Low opacity overlays allow UI elements to remain readable
+
    - Can be disabled via environment configuration for low-performance devices
 
 ### Usage
@@ -466,7 +523,9 @@ this.videoService.setVideo({
 The default video for our patriotic theme is a gently waving American flag that serves as a subtle backdrop for the application. The flag video:
 
 1. Creates movement in the background without distracting users
+
 2. Reinforces the application's theme and identity
+
 3. Has been optimized for performance (compressed, scaled appropriately)
 
 ### Customization
@@ -486,7 +545,9 @@ export const environment = {
 ### Accessibility Considerations
 
 - All videos are decorative and don't contain essential content
+
 - Video elements include the appropriate ARIA attributes
+
 - UI remains fully functional if videos fail to load
 
 ## Component Alignment Standards
@@ -506,5 +567,11 @@ To ensure consistency and maintainability across the application, all components
 Craft Fusion now implements a comprehensive theming system with both light and dark modes.
 
 <!-- Continue with the theming system content -->
+
+## Additional Notes
+
+- Overview of style folder structure
+
+- Link to theming instructions in MD3 docs
 
 ### Last Updated: March 27, 2025

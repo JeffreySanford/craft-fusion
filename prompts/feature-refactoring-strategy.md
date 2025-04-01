@@ -1,16 +1,20 @@
 # Feature Refactoring Strategy Using Prompt Files
 
 ## Overview
+
 This document outlines a consistent approach for using prompt files to track feature implementation and refactoring efforts within the Craft Fusion project. The prompt-driven development approach provides a centralized location for planning, tracking, and documenting changes to specific features or components.
 
 ## Vibrant Patriotic Color Usage
+
 In our prompt-driven approach, all refactorings now emphasize a more vivid patriotic palette:
+
 - Red: #B22234
 - Navy: #002868
 - Gold: #FFD700
 - White: #FFFFFF
 
 ## Benefits of Prompt-Driven Development
+
 - **Historical Context**: Preserves the thinking and rationale behind design decisions
 - **Progress Tracking**: Clear visualization of completed and remaining tasks
 - **Knowledge Sharing**: Helps new team members understand feature implementation
@@ -34,6 +38,7 @@ Each feature or refactoring effort should have a dedicated prompt file following
 ## Using Prompt Files Effectively
 
 ### When to Create a Prompt File
+
 - For major component refactoring
 - When implementing new complex features
 - For architectural changes
@@ -41,6 +46,7 @@ Each feature or refactoring effort should have a dedicated prompt file following
 - When migrating patterns across multiple components
 
 ### Prompt File Lifecycle
+
 1. **Creation**: Initial planning and task breakdown
 2. **Refinement**: Team review and adjustments
 3. **Implementation**: Regular updates as tasks are completed
@@ -48,11 +54,13 @@ Each feature or refactoring effort should have a dedicated prompt file following
 5. **Archiving**: Keep as documentation after completion
 
 ### Task Tracking Syntax
+
 - [ ] - Not started
 - [~] - In progress
 - [x] - Completed
 
 ### Integration with Project Management
+
 - Reference ticket/issue numbers in task lists
 - Link to design documents or specifications
 - Update sprint planning based on prompt file progress
@@ -87,7 +95,7 @@ The following prompt files should be maintained for the Craft Fusion project:
 
 ## Folder Structure
 
-```
+```plaintext
 prompts/
 ├── core/ - System-wide architectural patterns
 │   ├── style-refactoring-plan.md
@@ -107,11 +115,17 @@ prompts/
     └── internationalization.md
 ```
 
+## Additional Notes
+
+- Summaries of in-progress feature rollouts
+- Link to unit testing guidelines if applicable
+
 ## Coding Standards
+
 Refer to [CODING-STANDARDS.md](../CODING-STANDARDS.md) for updated development guidelines.
 
 ## Conclusion
 
 The prompt-driven development approach provides a structured way to plan, implement, and document features and refactoring efforts. By maintaining these living documents, we ensure consistency, preserve context, and promote collaboration across the team.
 
-Last Updated: 2025-03-25
+_Last Updated: 2025-03-25_

@@ -1,9 +1,11 @@
 # Header Component Refactoring Plan
 
 ## Overview
+
 This document outlines the plan to refactor the application header component to follow Material Design 3 principles and better integrate with the core styling system.
 
 ## Current State Analysis
+
 - Header contains navigation, branding, and action elements
 - Uses a mix of custom styling and Angular Material components
 - Has search functionality and notification system
@@ -11,6 +13,7 @@ This document outlines the plan to refactor the application header component to 
 - Has custom responsive behavior implementation
 
 ## Goals
+
 - Full adherence to Material Design 3 principles
 - Migration of component-specific styles to core style modules
 - Improved accessibility and semantic markup
@@ -18,6 +21,7 @@ This document outlines the plan to refactor the application header component to 
 - Streamlined state management
 
 ## ✅ Step 1: Analyze Current Implementation
+
 - Review current HTML structure and component organization
 - Document all styles and their sources (inline, component, global)
 - Catalog all functionality and behavior requirements
@@ -25,6 +29,7 @@ This document outlines the plan to refactor the application header component to 
 - Document current animation and transition patterns
 
 ## [ ] Step 2: Plan Component Architecture
+
 - Implement container/presentation pattern
 - Create subcomponents for logical sections
 - Establish proper event communication patterns
@@ -32,6 +37,7 @@ This document outlines the plan to refactor the application header component to 
 - Plan state management approach
 
 ## [ ] Step 3: Apply MD3 Styling
+
 - Replace custom styling with MD3 tokens
 - Implement proper typography scale
 - Apply correct elevation and surface styles
@@ -39,13 +45,16 @@ This document outlines the plan to refactor the application header component to 
 - Ensure patriotic theme integration
 
 ### Vibrant Patriotic Colors
+
 Use our refreshed palette for the header:
+
 - Red: #B22234
 - Navy: #002868
 - Gold: #FFD700
 - White: #FFFFFF
 
 ## [ ] Step 4: Improve Navigation
+
 - Implement a11y-compliant navigation patterns
 - Create proper mobile navigation solution
 - Add proper keyboard navigation support
@@ -53,6 +62,7 @@ Use our refreshed palette for the header:
 - Implement route highlighting
 
 ## [ ] Step 5: Enhance Search and Notification
+
 - Create MD3-styled search component
 - Implement improved notification system
 - Add proper badge styling for counters
@@ -60,6 +70,7 @@ Use our refreshed palette for the header:
 - Improve search results display
 
 ## [ ] Step 6: Optimize User Profile Section
+
 - Create MD3-styled user menu
 - Implement proper dropdown behavior
 - Add accessibility for menu items
@@ -67,6 +78,7 @@ Use our refreshed palette for the header:
 - Improve avatar presentation
 
 ## [ ] Step 7: Testing and Documentation
+
 - Create comprehensive test suite
 - Document component usage
 - Add examples to component library
@@ -76,12 +88,14 @@ Use our refreshed palette for the header:
 ## Detailed Task List
 
 ### Component Architecture Tasks
+
 - [x] Create HeaderContainer components (Completed)
 - [x] Create NavigationComponent, SearchComponent, NotificationComponent (Completed)
 - [~] Define interfaces for component inputs/outputs (In Progress, 75% complete)
 - [x] Establish proper event communication patterns (Completed)
 
 ### Styling Tasks
+
 - [x] Remove all inline styles (Completed)
 - [~] Apply MD3 tokens from core styles (In Progress, 80% complete)
 - [~] Implement responsive styles using core breakpoints (50% complete)
@@ -89,6 +103,7 @@ Use our refreshed palette for the header:
 - [x] Implement patriotic theme integration (Completed)
 
 ### Navigation Tasks
+
 - [ ] Create accessible navigation structure
 - [ ] Implement keyboard navigation support
 - [ ] Create mobile navigation menu
@@ -96,6 +111,7 @@ Use our refreshed palette for the header:
 - [ ] Implement navigation state persistence
 
 ### Search and Notification Tasks
+
 - [ ] Create MD3-styled search input
 - [ ] Implement search results component
 - [ ] Create notification counter with proper styling
@@ -103,6 +119,7 @@ Use our refreshed palette for the header:
 - [ ] Add notification grouping and filtering
 
 ### User Profile Tasks
+
 - [ ] Create MD3-styled user menu
 - [ ] Implement avatar component
 - [ ] Add user status indicators
@@ -121,11 +138,13 @@ The following component-specific styles should be moved to core style modules:
 6. Header animations → `_animations.scss`
 
 ## Responsive Behavior
+
 - 0-599px: Collapsed navigation with menu button
 - 600-904px: Limited navigation items visible
 - 905px+: Full navigation bar with all items
 
 ## Testing Criteria
+
 - Header renders correctly in all themes
 - All interactions work as expected
 - Responsive behavior functions across devices
@@ -134,6 +153,7 @@ The following component-specific styles should be moved to core style modules:
 - All animations respect reduced motion preferences
 
 ## Done Criteria
+
 - All component-specific styles moved to core styles
 - Component fully follows MD3 specifications
 - All tests passing
@@ -141,4 +161,10 @@ The following component-specific styles should be moved to core style modules:
 - Fully documented in the style guide
 
 ## Coding Standards
+
 Refer to [CODING-STANDARDS.md](../CODING-STANDARDS.md) for updated development guidelines.
+
+## Additional Notes
+
+- Reference updated styling tokens for top-bar
+- Note about potential search bar layout changes

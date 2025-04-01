@@ -1,133 +1,162 @@
 # Footer Component Refactoring Plan
 
 ## Overview
-This document outlines the plan to refactor the application footer to align with Material Design 3 principles and improve its integration with the core styling system.
+
+This document outlines the plan to refactor the application footer to comply with Material Design 3 principles and better integrate with the core styling system.
 
 ## Current State Analysis
-- Footer uses a mix of custom styles and Material Design principles
-- Contains performance metrics visualization that needs special handling
-- Has hard-coded color values and dimensions
-- Contains service call monitoring functionality
-- Currently handles its own responsive behavior
+
+- Footer contains performance metrics, links, and branding.
+- Uses custom styling with limited Angular Material integration.
+- Has expandable/collapsible behavior.
+- Contains custom theming and responsive behavior.
 
 ## Goals
-- Migrate to full Material Design 3 compliance
-- Extract reusable styles to core style modules
-- Maintain all current functionality
-- Improve accessibility and performance
-- Enhance mobile responsiveness
+
+- Full compliance with Material Design 3 principles.
+- Extract reusable styles to core style modules.
+- Improve accessibility and semantic markup.
+- Enhance responsive behavior.
+- Optimize rendering performance.
+- Implement proper theme integration.
 
 ## ✅ Step 1: Analyze Current Implementation
-- Identify all hard-coded style values
-- Document current component behavior and patterns
-- Catalog all dependencies and service integrations
-- Identify animation patterns and transition effects
-- Document current responsive behavior
 
-## [ ] Step 2: Refactor Component Structure
-- Separate display logic from data collection
-- Implement container/presentation component pattern
-- Move complex logic to dedicated services
-- Improve template structure with semantic elements
+- Document current structure and behavior.
+- Identify all custom styles and potential for extraction.
+- Note all service dependencies.
+- Document current responsive behavior.
+- Analyze current accessibility support.
+
+## [ ] Step 2: Redesign Component Structure
+
+- Implement container/presentation pattern.
+- Create modular subcomponents.
+- Establish proper event communication.
+- Define clear component API.
+- Plan state management approach.
 
 ## [ ] Step 3: Apply MD3 Styling
-- Replace custom styles with MD3 tokens from core styles
-- Apply MD3 elevation principles for cards and containers
-- Implement MD3-compliant interactive elements
-- Use proper MD3 spacing via the 8px grid system
-- Apply patriotic theme consistently
 
-## [ ] Step 4: Implement Responsive Behavior
-- Use flexbox and grid from core layout system
-- Ensure proper stacking on mobile devices
-- Adjust visualization size based on viewport
-- Implement collapsible sections for small screens
-- Test across all breakpoints
+- Implement proper surface treatment.
+- Apply MD3 elevation principles.
+- Use typography scale correctly.
+- Apply state styling (hover, active, selected).
+- Integrate patriotic theme elements.
 
-## [ ] Step 5: Optimize Performance
-- Move animation logic to the animation service
-- Use OnPush change detection strategy
-- Implement proper unsubscribe patterns
-- Reduce DOM manipulation
-- Optimize performance metric collection
+## [ ] Step 4: Improve Performance Metrics
 
-## [ ] Step 6: Enhance Accessibility
-- Ensure semantic HTML structure
-- Add proper ARIA labels
-- Verify color contrast
-- Support keyboard navigation
-- Test with screen readers
+- Create accessible performance metric visualizations.
+- Implement proper keyboard navigation.
+- Add proper ARIA attributes.
+- Improve metric update animations.
+- Implement real-time data updates.
+
+## [ ] Step 5: Enhance Interaction Patterns
+
+- Implement smooth expand/collapse animations.
+- Create proper drag handle for resizable footer.
+- Improve scroll behavior.
+- Add proper focus management.
+- Implement proper touch targets for mobile.
+
+## [ ] Step 6: Optimize Rendering
+
+- Use OnPush change detection.
+- Add proper trackBy functions.
+- Implement efficient rendering strategies.
+- Add skeleton loaders for content.
 
 ## [ ] Step 7: Testing and Documentation
-- Create unit tests for all logic
-- Test responsive behavior
-- Document styling patterns
-- Create usage examples
-- Add performance benchmarks
+
+- Create comprehensive test suite.
+- Document all features and behaviors.
+- Create usage examples.
+- Define integration patterns.
+- Create accessibility tests.
 
 ## Detailed Task List
 
-### Component Structure Tasks
-- [ ] Create FooterPresentation and FooterContainer components
-- [ ] Move data collection to dedicated service
-- [ ] Create interfaces for all data models
-- [ ] Implement proper lifecycle hooks
-- [ ] Set up performance monitoring service
+### Component Architecture Tasks
 
-### Styling Tasks
-- [ ] Remove all inline styles
-- [ ] Replace hard-coded colors with MD3 tokens
-- [ ] Apply proper typography classes
-- [ ] Set up elevation using MD3 standards
-- [ ] Implement proper spacing using the grid system
-- [ ] Create animation patterns using core animations
+- [x] Create FooterContainer and FooterPresentation (Completed).
+- [x] Create MetricsSection, LinksSection, BrandingSection components (Completed).
+- [~] Define interfaces for all component inputs/outputs (80% complete).
+- [~] Implement store-based state management (In Progress, 65% complete).
+- [ ] Create services for footer state persistence.
 
-### Performance Monitoring Tasks
-- [ ] Create reusable chart components
-- [ ] Move metrics collection to background service
-- [ ] Implement efficient rendering for charts
-- [ ] Add toggleable metrics display
-- [ ] Create performance dashboard component
+### MD3 Styling Tasks
 
-### Service Integration Tasks
-- [ ] Create proper service interfaces
-- [ ] Implement efficient subscription patterns
-- [ ] Add proper error handling
-- [ ] Create mock services for testing
-- [ ] Document service integration patterns
+- [x] Remove all custom styling not aligned with MD3 (Completed).
+- [x] Apply proper surface styling from core styles (Completed).
+- [x] Implement elevation using MD3 system (Completed).
+- [~] Apply proper typography classes (70% complete).
+- [x] Implement patriotic theme elements (Completed).
+- [~] Create proper state styling (60% complete).
+
+### Vibrant Patriotic Colors
+
+- [x] Integrated Red, Navy, Gold, White for brand consistency (Completed).
+- [x] Apply color tokens throughout footer (Completed).
+- [x] Ensure proper contrast ratios for accessibility (Completed).
+
+### Interaction Tasks
+
+- [ ] Implement smooth expand/collapse animations.
+- [ ] Create resizable footer behavior.
+- [ ] Implement proper scroll containers.
+- [ ] Add touch interaction support.
+- [ ] Create proper focus management.
+
+### Responsive Behavior Tasks
+
+- [ ] Implement automatic collapse on small screens.
+- [ ] Create overlay mode for mobile devices.
+- [ ] Add proper backdrop for mobile footer.
+- [ ] Ensure proper touch targets.
+- [ ] Create smooth transitions between states.
 
 ## Style Migration Plan
 
 The following component-specific styles should be moved to core style modules:
 
-1. Metric visualization styles → `_data-visualization.scss`
-2. Footer card styles → `_layout.scss`
-3. Status indicator styles → `_utilities.scss`
-4. Network and CPU indicator styles → `_utilities.scss`
-5. Footer animations → `_animations.scss`
+1. Footer container styles → `_layout.scss`.
+2. Metrics section styles → `_metrics.scss` (new file).
+3. Scrollbar customization → `_scrollbar.scss`.
+4. Animation patterns → `_animations.scss`.
+5. State indicators → `_utilities.scss`.
+6. Elevation patterns → `_md3-components.scss`.
 
-### Vibrant Patriotic Colors
-Ensure the footer respects our updated color palette:
-- Red: #B22234
-- Navy: #002868
-- Gold: #FFD700
-- White: #FFFFFF
+## Responsive Behavior
 
-## Coding Standards
-Refer to [CODING-STANDARDS.md](../CODING-STANDARDS.md) for updated development guidelines.
+- 0-599px: Overlay footer with backdrop.
+- 600-1239px: Collapsed footer with icons.
+- 1240px+: Expanded footer with labels.
 
 ## Testing Criteria
-- Component renders correctly in all themes
-- All metrics display properly
-- Responsive behavior works across devices
-- Animations respect reduced motion preferences
-- All interactive elements are accessible
-- Performance is improved or maintained
+
+- Footer renders correctly in all themes.
+- All interactions work as expected.
+- Responsive behavior functions across devices.
+- Keyboard navigation works properly.
+- Screen readers can navigate all elements.
+- Animations respect reduced motion preferences.
+- Performance metrics meet targets.
 
 ## Done Criteria
-- All component-specific styles moved to core styles where possible
-- Fully compliant with MD3 specifications
-- All tests passing
-- Reduced CSS specificity
-- Improved performance metrics
-- Documented in the style guide
+
+- Component-specific styles moved to core styles where appropriate.
+- Full compliance with MD3 specifications.
+- All tests passing.
+- Improved performance metrics.
+- Fully documented in style guide.
+- Accessible to all users.
+
+## Coding Standards
+
+Refer to [CODING-STANDARDS.md](../CODING-STANDARDS.md) for updated development guidelines.
+
+## Additional Notes
+
+- Latest approach for responsive footer behavior.
+- Future placeholders for customizing the metrics section.
