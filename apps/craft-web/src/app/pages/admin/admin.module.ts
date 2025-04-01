@@ -10,6 +10,14 @@ import { ApiMonitorComponent } from './api-monitor/api-monitor.component';
 
 // Import Material modules
 import { MaterialModule } from '../../material.module';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule } from '@angular/material/chips';
 
 // Import form modules
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -22,13 +30,18 @@ import { ApiService } from '../../common/services/api.service';
 import { HttpClientModule } from '@angular/common/http';
 import { LoggerHelperService } from '../../common/services/logger-helper.service';
 
+// Import custom modules
+import { LineChartModule } from '../../common/components/line-chart/line-chart.module';
+
 // Define routes for lazy loading child components
 const routes: Routes = [
   {
     path: '',
     component: AdminComponent,
   },
-  { path: ':tab', component: AdminComponent }
+  { path: ':tab', component: AdminComponent },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
 ];
 
 @NgModule({
@@ -46,14 +59,26 @@ const routes: Routes = [
     ReactiveFormsModule,
     RouterModule.forChild(routes),
     MaterialModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatTabsModule,
+    MatSelectModule,
+    MatChipsModule,
     SharedPipesModule,
-    HttpClientModule
+    HttpClientModule,
+    LineChartModule
   ],
   providers: [
     ThemeService,
     LayoutService,
     ApiService,
     LoggerHelperService
+  ],
+  exports: [
+    RouterModule
   ]
 })
 export class AdminModule { }

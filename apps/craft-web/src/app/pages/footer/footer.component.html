@@ -1,64 +1,156 @@
-<footer class="footer" [class.expanded]="isExpanded" [ngClass]="currentTheme">
-  <!-- Collapsed Footer Section -->
-  <div class="footer-content">
-    <div class="footer-branding">
-      <div class="star-container">
-        <i class="material-icons animated-star">star</i>
+<footer class="app-footer" [ngClass]="{'expanded': isExpanded, 'light-theme': currentTheme === 'light-theme', 'dark-theme': currentTheme === 'dark-theme'}" aria-label="Application footer">
+  <!-- Footer Toggle Button -->
+  <button mat-icon-button class="expand-toggle" (click)="toggleFooter()" 
+      matTooltip="{{isExpanded ? 'Collapse footer' : 'Expand footer'}}"
+      [attr.aria-label]="isExpanded ? 'Collapse footer' : 'Expand footer'">
+    <mat-icon>{{isExpanded ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}}</mat-icon>
+  </button>
+
+  <!-- Simple Footer (Non-expanded state) -->
+  <div class="footer-content basic-footer" *ngIf="!isExpanded">
+    <div class="left-content">
+      <span class="copyright">© {{currentYear}} Craft Fusion</span>
+      <span class="version">v{{appVersion}}</span>
+    </div>
+    <div class="middle-content">
+      <div class="system-status" [ngClass]="getStatusClass()">
+        <span class="status-icon" [ngClass]="getIconClass()"></span>
+        <span class="status-text">{{systemStatus}}</span>
       </div>
-      <span class="branding-text">Jeffrey Sanford</span>
     </div>
-    
-    <div class="footer-center">
-      <span>&copy; 2025 Craft Fusion</span>
+    <div class="right-content">
+      <a href="#" class="footer-link">Terms</a>
+      <a href="#" class="footer-link">Privacy</a>
+      <a href="#" class="footer-link">Help</a>
     </div>
-    
-    <button mat-icon-button (click)="toggleExpand()" aria-label="Toggle Footer" class="expand-toggle">
-      <mat-icon>{{ isExpanded ? 'expand_more' : 'expand_less' }}</mat-icon>
-    </button>
   </div>
-  
-  <!-- Expanded Footer Section -->
-  <div class="footer-expanded" *ngIf="isExpanded">
-    <!-- Row 1: Contact and Logo Containers -->
-    <div class="expanded-row logos-row">
-      <!-- Contact Container -->
-      <div class="contact-container">
-        <h3>Contact Us</h3>
-        <div class="contact-info">
-          <p><mat-icon>email</mat-icon> info&#64;example.com</p>
-          <p><mat-icon>phone</mat-icon> (555) 123-4567</p>
-          <p><mat-icon>location_on</mat-icon> Washington, D.C.</p>
+
+  <!-- Expanded Footer Content -->
+  <div class="expanded-footer" *ngIf="isExpanded">
+    <div class="footer-details">
+      <!-- First row of expanded content -->
+      <div class="footer-row">
+        <!-- System Statistics -->
+        <div class="footer-panel stats-panel">
+          <h3 class="panel-title">System Statistics</h3>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-label">Uptime</span>
+              <span class="stat-value">{{uptimeDisplay}}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Users</span>
+              <span class="stat-value">{{activeUsers}}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">CPU</span>
+              <span class="stat-value">{{cpuLoad}}%</span>
+              <mat-progress-bar mode="determinate" [value]="cpuLoad" 
+                [color]="cpuLoad > 80 ? 'warn' : cpuLoad > 50 ? 'accent' : 'primary'">
+              </mat-progress-bar>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Memory</span>
+              <span class="stat-value">{{memoryUsage}}%</span>
+              <mat-progress-bar mode="determinate" [value]="memoryUsage"
+                [color]="memoryUsage > 80 ? 'warn' : memoryUsage > 50 ? 'accent' : 'primary'">
+              </mat-progress-bar>
+            </div>
+          </div>
         </div>
-      </div>
-      
-      <!-- Industry Logos Container -->
-      <div class="logos-container industry-logos">
-        <h3>Industry Partners</h3>
-        <div class="logos-grid">
-          <div *ngFor="let logo of industryLogos" class="logo-item" (click)="navigateToPartnerSite(logo)">
-            <img [src]="logo.imageUrl" [alt]="logo.name" class="partner-logo">
-            <span class="logo-name">{{ logo.name }}</span>
+        
+        <!-- Performance Graphs -->
+        <div class="footer-panel graph-panel">
+          <h3 class="panel-title">Performance</h3>
+          <div class="graph-container">
+            <div class="mini-chart">
+              <canvas #cpuChart width="180" height="80"></canvas>
+              <div class="chart-label">CPU</div>
+            </div>
+            <div class="mini-chart">
+              <canvas #memoryChart width="180" height="80"></canvas>
+              <div class="chart-label">Memory</div>
+            </div>
+            <div class="mini-chart">
+              <canvas #networkChart width="180" height="80"></canvas>
+              <div class="chart-label">Network</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Technology/Partner Logos -->
+        <div class="footer-panel logos-panel">
+          <h3 class="panel-title">Powered By</h3>
+          <div class="logo-grid">
+            <img src="assets/images/logos/angular.png" alt="Angular" class="tech-logo">
+            <img src="assets/logos/typescript-logo.svg" alt="TypeScript" class="tech-logo">
+            <img src="assets/logos/nestjs-logo.svg" alt="NestJS" class="tech-logo">
+            <img src="assets/logos/material-design.png" alt="Material Design" class="tech-logo">
+            <img src="assets/logos/rxjs-logo.svg" alt="RxJS" class="tech-logo">
+            <img src="assets/logos/go-logo.svg" alt="Go" class="tech-logo">
           </div>
         </div>
       </div>
       
-      <!-- Federal Agencies Logos Container -->
-      <div class="logos-container federal-logos">
-        <h3>Federal Agencies</h3>
-        <div class="logos-grid">
-          <div *ngFor="let logo of federalLogos" class="logo-item" (click)="navigateToPartnerSite(logo)">
-            <img [src]="logo.imageUrl" [alt]="logo.name" class="partner-logo">
-            <span class="logo-name">{{ logo.name }}</span>
+      <!-- Second row with additional details -->
+      <div class="footer-row">
+        <div class="footer-panel contact-panel">
+          <h3 class="panel-title">Contact</h3>
+          <div class="contact-details">
+            <div class="contact-item">
+              <mat-icon>email</mat-icon>
+              <span>support&#64;craftfusion.com</span>
+            </div>
+            <div class="contact-item">
+              <mat-icon>phone</mat-icon>
+              <span>(555) 123-4567</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="footer-panel links-panel">
+          <h3 class="panel-title">Quick Links</h3>
+          <div class="link-grid">
+            <a href="#" class="quick-link">Documentation</a>
+            <a href="#" class="quick-link">API Reference</a>
+            <a href="#" class="quick-link">Support</a>
+            <a href="#" class="quick-link">Features</a>
+            <a href="#" class="quick-link">Status Page</a>
+            <a href="#" class="quick-link">Release Notes</a>
+          </div>
+        </div>
+        
+        <div class="footer-panel version-panel">
+          <h3 class="panel-title">System Details</h3>
+          <div class="version-details">
+            <div class="version-item">
+              <span class="version-label">App Version</span>
+              <span class="version-value">{{appVersion}}</span>
+            </div>
+            <div class="version-item">
+              <span class="version-label">API Version</span>
+              <span class="version-value">{{apiVersion}}</span>
+            </div>
+            <div class="version-item">
+              <span class="version-label">Last Updated</span>
+              <span class="version-value">{{lastUpdated | date:'medium'}}</span>
+            </div>
+            <div class="version-item">
+              <span class="version-label">Environment</span>
+              <span class="version-value">{{environment}}</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Row 2: Full-width Graph -->
-    <div class="expanded-row graph-row">
-      <div class="graph-container">
-        <h3>Performance Metrics</h3>
-        <app-line-chart [data]="performanceData" [options]="chartOptions"></app-line-chart>
+      
+      <!-- Copyright section at the bottom -->
+      <div class="footer-copyright">
+        <span>© {{currentYear}} Craft Fusion - All Rights Reserved</span>
+        <div class="legal-links">
+          <a href="#" class="legal-link">Terms of Service</a>
+          <a href="#" class="legal-link">Privacy Policy</a>
+          <a href="#" class="legal-link">Accessibility</a>
+        </div>
       </div>
     </div>
   </div>

@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-import { catchError, tap } from 'rxjs/operators';
-import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Log levels in increasing verbosity

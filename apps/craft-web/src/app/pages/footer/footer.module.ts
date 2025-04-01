@@ -1,22 +1,20 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { FooterComponent } from './footer.component';
-import { LineChartModule } from '../../common/components/line-chart/line-chart.module';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @NgModule({
-  declarations: [
-    FooterComponent
-  ],
+  declarations: [FooterComponent],
   imports: [
     CommonModule,
-    MatIconModule,
     MatButtonModule,
-    LineChartModule
+    MatIconModule,
+    MatTooltipModule,
+    MatProgressBarModule
   ],
-  exports: [
-    FooterComponent
-  ]
+  exports: [FooterComponent]
 })
 export class FooterModule { }

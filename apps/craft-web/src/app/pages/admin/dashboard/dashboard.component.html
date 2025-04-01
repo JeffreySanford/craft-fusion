@@ -1,372 +1,189 @@
-<div class="dashboard-container" [ngClass]="themeClass">
+<div class="dashboard-container" [ngClass]="currentTheme">
   <div class="dashboard-header">
-    <h2>Admin Dashboard</h2>
-    <button mat-raised-button color="primary" (click)="refreshData()">
-      <mat-icon>refresh</mat-icon>
-      Refresh Data
-    </button>
+    <div class="header-title">
+      <h1>System Dashboard</h1>
+      <p class="header-subtitle">Real-time performance monitoring</p>
+    </div>
+    
+    <div class="header-actions">
+      <button mat-button (click)="toggleTimeFormat()">
+        <mat-icon>schedule</mat-icon>
+        {{ timeFormat === 'relative' ? 'Show Absolute Time' : 'Show Relative Time' }}
+      </button>
+      
+      <button mat-raised-button color="primary" (click)="refreshData()">
+        <mat-icon>refresh</mat-icon>
+        Refresh Data
+      </button>
+    </div>
   </div>
-
-  <!-- Server Status Overview -->
-  <div class="server-overview">
-    <mat-card class="server-card nest-server">
-      <mat-card-content>
-        <div class="server-header">
-          <div class="server-title">
-            <mat-icon>dns</mat-icon>
-            <span>Nest Server</span>
-          </div>
-          <div class="server-status" [ngClass]="getSystemStatusClass(nestServer?.status)">
-            {{ nestServer?.status || 'offline' | uppercase }}
-          </div>
+  
+  <!-- System Status Overview -->
+  <div class="status-card mat-elevation-z2" [ngClass]="getStatusClass(systemStatus)">
+    <mat-icon>{{ getStatusIcon(systemStatus) }}</mat-icon>
+    <div class="status-info">
+      <h2>System Status: {{ systemStatus | titlecase }}</h2>
+      <p>{{ statusMessage }}</p>
+      <p class="last-updated">Last updated: {{ lastRefreshTime | date:'medium' }}</p>
+    </div>
+  </div>
+  
+  <!-- Server Status Cards -->
+  <div class="server-cards">
+    <!-- NestJS Server Card -->
+    <div class="server-card mat-elevation-z2">
+      <div class="card-header" [ngClass]="getStatusClass(nestServer?.status)">
+        <div class="server-title">
+          <mat-icon>{{ getStatusIcon(nestServer?.status) }}</mat-icon>
+          <h3>NestJS Server</h3>
         </div>
-        <div class="server-metrics">
-          <div class="server-metric">
+        <span class="server-status">{{ nestServer?.status || 'Unknown' | titlecase }}</span>
+      </div>
+      
+      <div class="card-content">
+        <!-- Performance Metrics -->
+        <div class="metrics-grid">
+          <div class="metric">
             <span class="metric-label">Latency</span>
             <span class="metric-value" [ngClass]="getLatencyClass(nestServer?.latency || 0)">
               {{ nestServer?.latency || 0 }}ms
             </span>
           </div>
-          <div class="server-metric">
-            <span class="metric-label">CPU</span>
-            <span class="metric-value">{{ nestServer?.serverMetrics?.cpu || 0 }}%</span>
+          
+          <div class="metric">
+            <span class="metric-label">CPU Usage</span>
+            <span class="metric-value">{{ nestServer?.cpuUsage || 0 }}%</span>
+            <mat-progress-bar [value]="nestServer?.cpuUsage || 0" [color]="getCpuClass(nestServer?.cpuUsage || 0) === 'danger' ? 'warn' : 'primary'"></mat-progress-bar>
           </div>
-          <div class="server-metric">
-            <span class="metric-label">Memory</span>
-            <span class="metric-value">{{ nestServer?.serverMetrics?.memory || 0 }}%</span>
+          
+          <div class="metric">
+            <span class="metric-label">Memory Usage</span>
+            <span class="metric-value">{{ nestServer?.memoryUsage || 0 }}%</span>
+            <mat-progress-bar [value]="nestServer?.memoryUsage || 0" [color]="getMemoryClass(nestServer?.memoryUsage || 0) === 'danger' ? 'warn' : 'primary'"></mat-progress-bar>
           </div>
-          <div class="server-metric">
-            <span class="metric-label">Last Update</span>
-            <span class="metric-value tol">
-              <!-- Use the OnPush detection strategy compatible formatTimeAgo -->
-              {{ formatTimeAgo(nestServer?.tol ?? 0) }}
+          
+          <div class="metric">
+            <span class="metric-label">Uptime</span>
+            <span class="metric-value">
+              {{ formatTimeAgo(nestServer?.uptime || 0) }}
             </span>
           </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="server-card go-server">
-      <mat-card-content>
-        <div class="server-header">
-          <div class="server-title">
-            <mat-icon>memory</mat-icon>
-            <span>Go Server</span>
+          
+          <div class="metric">
+            <span class="metric-label">Active Connections</span>
+            <span class="metric-value">{{ nestServer?.activeConnections || 0 }}</span>
           </div>
-          <div class="server-status" [ngClass]="getSystemStatusClass(goServer?.status)">
-            {{ goServer?.status || 'offline' | uppercase }}
+          
+          <div class="metric">
+            <span class="metric-label">Requests/min</span>
+            <span class="metric-value">{{ nestServer?.requestsPerMinute || 0 }}</span>
           </div>
         </div>
-        <div class="server-metrics">
-          <div class="server-metric">
+      </div>
+    </div>
+    
+    <!-- Go Server Card -->
+    <div class="server-card mat-elevation-z2">
+      <div class="card-header" [ngClass]="getStatusClass(goServer?.status)">
+        <div class="server-title">
+          <mat-icon>{{ getStatusIcon(goServer?.status) }}</mat-icon>
+          <h3>Go Server</h3>
+        </div>
+        <span class="server-status">{{ goServer?.status || 'Unknown' | titlecase }}</span>
+      </div>
+      
+      <div class="card-content">
+        <!-- Performance Metrics -->
+        <div class="metrics-grid">
+          <div class="metric">
             <span class="metric-label">Latency</span>
             <span class="metric-value" [ngClass]="getLatencyClass(goServer?.latency || 0)">
               {{ goServer?.latency || 0 }}ms
             </span>
           </div>
-          <div class="server-metric">
-            <span class="metric-label">CPU</span>
-            <span class="metric-value">{{ goServer?.serverMetrics?.cpu || 0 }}%</span>
+          
+          <div class="metric">
+            <span class="metric-label">CPU Usage</span>
+            <span class="metric-value">{{ goServer?.cpuUsage || 0 }}%</span>
+            <mat-progress-bar [value]="goServer?.cpuUsage || 0" [color]="getCpuClass(goServer?.cpuUsage || 0) === 'danger' ? 'warn' : 'primary'"></mat-progress-bar>
           </div>
-          <div class="server-metric">
-            <span class="metric-label">Memory</span>
-            <span class="metric-value">{{ goServer?.serverMetrics?.memory || 0 }}%</span>
+          
+          <div class="metric">
+            <span class="metric-label">Memory Usage</span>
+            <span class="metric-value">{{ goServer?.memoryUsage || 0 }}%</span>
+            <mat-progress-bar [value]="goServer?.memoryUsage || 0" [color]="getMemoryClass(goServer?.memoryUsage || 0) === 'danger' ? 'warn' : 'primary'"></mat-progress-bar>
           </div>
-          <div class="server-metric">
-            <span class="metric-label">Last Update</span>
-            <span class="metric-value tol">
-              <!-- Use the OnPush detection strategy compatible formatTimeAgo -->
-              {{ formatTimeAgo(goServer?.tol ?? 0) }}
+          
+          <div class="metric">
+            <span class="metric-label">Uptime</span>
+            <span class="metric-value">
+              {{ formatTimeAgo(goServer?.uptime || 0) }}
             </span>
           </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
-
-  <!-- System Status Overview -->
-  <mat-card class="status-card">
-    <mat-card-content>
-      <div class="status-overview">
-        <div class="status-indicator" [ngClass]="getSystemStatusClass()">
-          <mat-icon>{{ systemStatus === 'online' ? 'check_circle' : systemStatus === 'warning' ? 'warning' : systemStatus === 'degraded' ? 'info' : 'error' }}</mat-icon>
-          <span>System Status: <strong>{{ systemStatus | uppercase }}</strong></span>
-        </div>
-        <div class="performance-score">
-          <div class="score-ring" [style.background]="'conic-gradient(' + getScoreColor(performanceScore) + ' ' + performanceScore + '%, transparent ' + performanceScore + '%)'">
-            <div class="score-value">{{ performanceScore }}</div>
+          
+          <div class="metric">
+            <span class="metric-label">Active Connections</span>
+            <span class="metric-value">{{ goServer?.activeConnections || 0 }}</span>
           </div>
-          <span class="score-label">Performance Score</span>
-        </div>
-      </div>
-
-      <div class="status-metrics">
-        <div class="metric-tile user-tile">
-          <div class="metric-icon">
-            <mat-icon>people</mat-icon>
-          </div>
-          <div class="metric-details">
-            <div class="metric-value">{{ activeUsers }}</div>
-            <div class="metric-label">Active Users</div>
-          </div>
-        </div>
-        
-        <div class="metric-tile pageview-tile">
-          <div class="metric-icon">
-            <mat-icon>visibility</mat-icon>
-          </div>
-          <div class="metric-details">
-            <div class="metric-value">{{ pageViews }}</div>
-            <div class="metric-label">Page Views</div>
-          </div>
-        </div>
-        
-        <div class="metric-tile api-tile">
-          <div class="metric-icon">
-            <mat-icon>api</mat-icon>
-          </div>
-          <div class="metric-details">
-            <div class="metric-value">{{ apiCalls }}</div>
-            <div class="metric-label">API Calls</div>
-          </div>
-        </div>
-        
-        <div class="metric-tile uptime-tile">
-          <div class="metric-icon">
-            <mat-icon>access_time</mat-icon>
-          </div>
-          <div class="metric-details">
-            <div class="metric-value">{{ formatUptime(systemUptime) }}</div>
-            <div class="metric-label">System Uptime</div>
+          
+          <div class="metric">
+            <span class="metric-label">Requests/min</span>
+            <span class="metric-value">{{ goServer?.requestsPerMinute || 0 }}</span>
           </div>
         </div>
       </div>
-    </mat-card-content>
-  </mat-card>
-
-  <!-- System Metrics -->
-  <div class="metrics-row">
-    <mat-card class="metrics-card">
-      <mat-card-header>
-        <mat-card-title>System Metrics</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="metrics-grid">
-          <div class="metric-card cpu">
-            <div class="metric-header">
-              <div class="metric-title">
-                <mat-icon>memory</mat-icon>
-                CPU Usage
-              </div>
-              <div class="trend-indicator" [ngClass]="getTrendClass(cpuTrend)">
-                <mat-icon>{{ getTrendIcon(cpuTrend) }}</mat-icon>
-              </div>
-            </div>
-            <div class="metric-value-container">
-              <div class="gauge-container">
-                <div class="gauge" [style.--gauge-value]="cpuUsage + '%'">
-                  <div class="percentage">{{ cpuUsage }}%</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="metric-card memory">
-            <div class="metric-header">
-              <div class="metric-title">
-                <mat-icon>sd_card</mat-icon>
-                Memory Usage
-              </div>
-              <div class="trend-indicator" [ngClass]="getTrendClass(memoryTrend)">
-                <mat-icon>{{ getTrendIcon(memoryTrend) }}</mat-icon>
-              </div>
-            </div>
-            <div class="metric-value-container">
-              <div class="gauge-container">
-                <div class="gauge" [style.--gauge-value]="memoryUsage + '%'">
-                  <div class="percentage">{{ memoryUsage }}%</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="metric-card network">
-            <div class="metric-header">
-              <div class="metric-title">
-                <mat-icon>network_check</mat-icon>
-                Network Latency
-              </div>
-              <div class="trend-indicator" [ngClass]="getTrendClass(networkTrend, false)">
-                <mat-icon>{{ getTrendIcon(networkTrend) }}</mat-icon>
-              </div>
-            </div>
-            <div class="metric-value-container">
-              <div class="latency-indicator" [ngClass]="getLatencyClass(networkLatency)">
-                {{ networkLatency }}ms
-              </div>
-            </div>
-          </div>
-          
-          <div class="metric-card api-rate">
-            <div class="metric-header">
-              <div class="metric-title">
-                <mat-icon>sync</mat-icon>
-                API Call Rate
-              </div>
-            </div>
-            <div class="metric-value-container api-rate-value">
-              <span class="rate-value">{{ apiCallRate }}</span>
-              <span class="rate-unit">requests/min</span>
-            </div>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Error Stats -->
-    <mat-card class="error-stats-card">
-      <mat-card-header>
-        <mat-card-title>Error Statistics</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="errors-grid">
-          <div class="error-metric error-count">
-            <div class="error-icon">
-              <mat-icon [class.critical]="totalErrors > 5">error</mat-icon>
-            </div>
-            <div class="error-details">
-              <div class="error-value">{{ totalErrors }}</div>
-              <div class="error-label">Total Errors</div>
-            </div>
-          </div>
-          
-          <div class="error-metric warning-count">
-            <div class="error-icon">
-              <mat-icon [class.warning]="totalWarnings > 10">warning</mat-icon>
-            </div>
-            <div class="error-details">
-              <div class="error-value">{{ totalWarnings }}</div>
-              <div class="error-label">Total Warnings</div>
-            </div>
-          </div>
-
-          <div class="error-metric avg-response">
-            <div class="error-icon">
-              <mat-icon [class.slow]="avgResponseTime > 300">timer</mat-icon>
-            </div>
-            <div class="error-details">
-              <div class="error-value">{{ avgResponseTime }}ms</div>
-              <div class="error-label">Avg Response Time</div>
-            </div>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
+    </div>
   </div>
-
-  <!-- Activity Logs -->
-  <div class="logs-row">
-    <!-- Recent Errors -->
-    <mat-card class="logs-card errors-card">
-      <mat-card-header>
-        <mat-card-title>Recent Errors</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="logs-list">
-          <div *ngFor="let error of recentErrors; trackBy: trackByTimestamp" class="log-item error-item">
-            <div class="log-icon">
-              <mat-icon>error_outline</mat-icon>
-            </div>
-            <div class="log-details">
-              <div class="log-message">{{ error.message }}</div>
-              <div class="log-meta">
-                <span class="log-source">{{ error.source }}</span>
-                <span class="log-time">{{ formatTimeAgo(error.timestamp) }}</span>
-              </div>
-            </div>
-          </div>
-          <div *ngIf="recentErrors.length === 0" class="empty-list-message">
-            <mat-icon>done_all</mat-icon>
-            <span>No errors logged</span>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Recent API Calls -->
-    <mat-card class="logs-card api-calls-card">
-      <mat-card-header>
-        <mat-card-title>Recent API Calls</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="logs-list">
-          <div *ngFor="let call of recentApiCalls; trackBy: trackByTimestamp" class="log-item api-item">
-            <div class="api-method" [ngClass]="call.method.toLowerCase()">{{ call.method }}</div>
-            <div class="log-details">
-              <div class="log-message">{{ call.url }}</div>
-              <div class="log-meta">
-                <span class="api-status" [ngClass]="getStatusClass(call.status)">{{ call.status }}</span>
-                <span class="api-response-time">{{ call.time }}ms</span>
-                <span class="log-time">{{ formatTimeAgo(call.timestamp) }}</span>
-              </div>
-            </div>
-          </div>
-          <div *ngIf="recentApiCalls.length === 0" class="empty-list-message">
-            <mat-icon>api</mat-icon>
-            <span>No API calls logged</span>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
-
-  <!-- User Activity -->
-  <mat-card class="activity-card">
-    <mat-card-header>
-      <mat-card-title>User Activity</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="activity-metrics">
-        <div class="activity-metric">
-          <div class="activity-icon">
-            <mat-icon>mouse</mat-icon>
-          </div>
-          <div class="activity-details">
-            <div class="activity-value">{{ userActivitySummary.clicks || 0 }}</div>
-            <div class="activity-label">Clicks</div>
-          </div>
-        </div>
-        
-        <div class="activity-metric">
-          <div class="activity-icon">
-            <mat-icon>edit</mat-icon>
-          </div>
-          <div class="activity-details">
-            <div class="activity-value">{{ userActivitySummary.inputs || 0 }}</div>
-            <div class="activity-label">Form Inputs</div>
-          </div>
-        </div>
-        
-        <div class="activity-metric">
-          <div class="activity-icon">
-            <mat-icon>timer</mat-icon>
-          </div>
-          <div class="activity-details">
-            <div class="activity-value">{{ formatSessionDuration(userActivitySummary.sessionDuration || 0) }}</div>
-            <div class="activity-label">Session Duration</div>
-          </div>
-        </div>
-        
-        <div class="activity-metric">
-          <div class="activity-icon">
-            <mat-icon>visibility</mat-icon>
-          </div>
-          <div class="activity-details">
-            <div class="activity-value">{{ userActivitySummary.pageViews || 0 }}</div>
-            <div class="activity-label">Page Views</div>
-          </div>
-        </div>
+  
+  <!-- Charts Section -->
+  <div class="charts-section">
+    <h2>Performance Metrics</h2>
+    
+    <div class="charts-grid">
+      <!-- CPU Usage Chart -->
+      <div class="chart-card mat-elevation-z2">
+        <h3>CPU Usage</h3>
+        <app-line-chart
+          [data]="cpuChartData"
+          yAxisLabel="CPU %"
+          [showLegend]="true"
+          [animate]="true">
+        </app-line-chart>
       </div>
-    </mat-card-content>
-  </mat-card>
+      
+      <!-- Memory Usage Chart -->
+      <div class="chart-card mat-elevation-z2">
+        <h3>Memory Usage</h3>
+        <app-line-chart
+          [data]="memoryChartData"
+          yAxisLabel="Memory %"
+          [showLegend]="true"
+          [animate]="true">
+        </app-line-chart>
+      </div>
+      
+      <!-- Requests Chart -->
+      <div class="chart-card mat-elevation-z2">
+        <h3>Requests per Minute</h3>
+        <app-line-chart
+          [data]="requestsChartData"
+          yAxisLabel="Requests"
+          [showLegend]="true"
+          [animate]="true">
+        </app-line-chart>
+      </div>
+      
+      <!-- User Activity Chart -->
+      <div class="chart-card mat-elevation-z2">
+        <h3>User Activity (Last 7 Days)</h3>
+        <app-line-chart
+          [data]="userActivityData"
+          yAxisLabel="Active Users"
+          xAxisLabel="Date"
+          [showLegend]="false"
+          [animate]="true">
+        </app-line-chart>
+      </div>
+    </div>
+  </div>
 </div>

@@ -122,7 +122,11 @@ export class RecordListComponent implements OnInit, OnDestroy {
     const server = this.servers[0];
     this.server = server;
 
-    this.apiURL = this.recordService.setServerResource(server.name);
+    this.recordService.setServerResource(server.name).subscribe(() => {
+      this.apiURL = server.name; // Store the server name as the URL string
+      // Additional logic after server resource is set
+    });
+
     this.fetchData(100);
 
     // Set up paginator and sort
@@ -174,7 +178,10 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
     if (server) {
       console.log('Found server:', server);
-      this.apiURL = this.recordService.setServerResource(server.name);
+      this.recordService.setServerResource(server.name).subscribe(() => {
+        this.apiURL = server.name;
+        // Additional logic after server resource is set
+      });
       this.clearDataSource();
       this.server = server;
       console.log('Server: Selected server updated to:', this.server.name);

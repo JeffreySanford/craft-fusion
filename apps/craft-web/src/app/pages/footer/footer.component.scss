@@ -1,428 +1,412 @@
 @use 'sass:map';
-@use '../../../styles/_animations.scss' as animations;
-@use '../../../styles/_variables.scss' as vars;
-@use '../../../styles/_mixins.scss' as mixins;
-@use '../../../styles/_responsive.scss' as responsive;
-@use '../../../styles/_patriotic.scss' as patriotic;
-@use '../../../styles/_layout.scss' as layout;
+@use '../../../styles/variables' as vars;
+@use '../../../styles/mixins' as mixins;
+@use '../../../styles/responsive' as responsive;
 
-:host {
-  display: block;
-}
-
-// Base Footer Styling
-.footer-container {
-  @include layout.content-container;
-  position: fixed;
-  bottom: 0;
+// Footer Container
+.app-footer {
   width: 100%;
-  z-index: 1000;
   background-color: var(--md-sys-color-surface);
-
-  @include responsive.sm-down {
-    padding: 1rem 0.5rem;
-  }
-
-  @include responsive.md-up {
-    padding: 1rem 2rem;
-  }
-
-  & {
-    border-top: 3px solid vars.$navy; // Vibrant navy border
-    transition: height 0.3s ease;
-    overflow: hidden;
-  }
-
+  color: var(--md-sys-color-on-surface);
+  min-height: 48px;
+  position: relative;
+  transition: min-height 0.3s ease, background-color 0.3s ease;
+  border-top: 1px solid var(--md-sys-color-outline);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
   z-index: 10;
-
-  // Create a subtle patriotic gradient overlay
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--patriotic-gradient);
-    z-index: 1;
+  
+  // Expanded Footer
+  &.expanded {
+    min-height: 300px;
+    
+    @include responsive.sm-down {
+      min-height: 500px; // Taller on mobile to accommodate stacked content
+    }
+  }
+  
+  // Theme Variations
+  &.light-theme {
+    background-color: var(--md-sys-color-surface);
+  }
+  
+  &.dark-theme {
+    background-color: var(--md-sys-color-surface-variant);
   }
 }
 
-// Collapsed footer styles
-.footer-collapsed {
-  height: 48px;
+// Footer Toggle Button
+.expand-toggle {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  z-index: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: none;
+  outline: none;
+  
+  &:hover {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+  }
+  
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    line-height: 18px;
+  }
+}
+
+// Basic Footer Content (collapsed state)
+.basic-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  box-shadow: var(--md-sys-elevation-level1);
-  position: relative;
-  z-index: 2;
-
-  .footer-left {
+  height: 48px;
+  
+  .left-content, .right-content, .middle-content {
     display: flex;
     align-items: center;
-
-    .star-icon {
-      color: var(--md-sys-color-tertiary);
-      margin-right: 8px;
-      animation: star-sparkle 3s infinite;
+  }
+  
+  .left-content {
+    .copyright {
+      margin-right: 16px;
     }
-
-    .footer-author {
-      font-weight: 500;
-      color: var(--md-sys-color-tertiary);
-
-      // Gold shimmer effect
-      background: linear-gradient(
-        90deg,
-        var(--md-sys-color-tertiary) 0%,
-        #FFFFFF 50%,
-        var(--md-sys-color-tertiary) 100%
-      );
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      animation: text-shimmer 5s linear infinite;
+    
+    .version {
+      font-size: 12px;
+      opacity: 0.7;
     }
   }
-
-  .footer-right {
-    display: flex;
-    align-items: center;
+  
+  .middle-content {
+    .system-status {
+      display: flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 14px;
+      color: var(--md-sys-color-on-surface);
+      
+      &.status-healthy {
+        background-color: rgba(76, 175, 80, 0.2);
+      }
+      
+      &.status-warning {
+        background-color: rgba(255, 193, 7, 0.2);
+      }
+      
+      &.status-critical {
+        background-color: rgba(244, 67, 54, 0.2);
+      }
+      
+      .status-icon {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 8px;
+        
+        &.status-icon-healthy {
+          background-color: #4CAF50; // Green
+        }
+        
+        &.status-icon-warning {
+          background-color: #FFC107; // Amber
+        }
+        
+        &.status-icon-critical {
+          background-color: #F44336; // Red
+        }
+      }
+    }
+  }
+  
+  .right-content {
+    .footer-link {
+      color: var(--md-sys-color-on-surface);
+      text-decoration: none;
+      margin-left: 16px;
+      font-size: 14px;
+      opacity: 0.8;
+      
+      &:hover {
+        opacity: 1;
+        text-decoration: underline;
+      }
+    }
+  }
+  
+  @include responsive.sm-down {
+    flex-direction: column;
+    height: auto;
+    padding: 12px 16px;
+    
+    .left-content, .right-content, .middle-content {
+      width: 100%;
+      justify-content: center;
+      margin: 4px 0;
+    }
+    
+    .right-content {
+      margin-top: 8px;
+    }
   }
 }
 
-// Expanded footer styles
-.footer-expanded {
-  height: 300px;
-  display: grid;
-  grid-template-rows: 1fr auto;
-
-  @include responsive.sm-down {
-    height: auto;
+// Expanded Footer Content
+.expanded-footer {
+  padding: 20px 16px 8px;
+  
+  .footer-details {
+    max-width: 1200px;
+    margin: 0 auto;
   }
-
-  .footer-content {
-    display: grid;
-    grid-template-columns: 20% 40% 40%;
-    padding: 24px 16px;
-
+  
+  .footer-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+    
     @include responsive.md-down {
-      grid-template-columns: 30% 70%;
-    }
-
-    @include responsive.sm-down {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto auto;
-      gap: 24px;
+      flex-direction: column;
     }
   }
-
-  .footer-contact {
-    padding: 0 16px;
-
-    h3 {
+  
+  .footer-panel {
+    flex: 1;
+    min-width: 250px;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: var(--md-sys-color-surface-variant);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
+    @include responsive.md-down {
+      width: 100%;
+    }
+    
+    .panel-title {
       font-size: 16px;
       font-weight: 500;
+      margin-top: 0;
       margin-bottom: 16px;
       color: var(--md-sys-color-primary);
-    }
-
-    ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    li {
-      display: flex;
-      align-items: center;
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-
-    .contact-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      margin-right: 8px;
-      color: var(--md-sys-color-tertiary);
+      border-bottom: 1px solid var(--md-sys-color-outline);
+      padding-bottom: 8px;
     }
   }
-
-  .footer-logos {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    padding: 0 16px;
-
-    .logo-container {
-      padding: 16px;
-      transition: transform 0.3s ease;
-
-      &:hover {
-        transform: scale(1.2);
-      }
-
-      img {
-        height: 40px;
-        max-width: 100px;
-        opacity: 0.7;
-        transition: opacity 0.3s ease;
-
-        &:hover {
-          opacity: 1;
+  
+  // Stats Panel Styling
+  .stats-panel {
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+        
+        .stat-label {
+          font-size: 12px;
+          opacity: 0.7;
+          margin-bottom: 4px;
+        }
+        
+        .stat-value {
+          font-size: 16px;
+          font-weight: 500;
+        }
+        
+        mat-progress-bar {
+          margin-top: 4px;
+          height: 4px;
         }
       }
     }
   }
-
-  .footer-agencies {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    padding: 0 16px;
-
-    .agency-logo {
-      padding: 16px;
-      transition: transform 0.3s ease;
-
-      &:hover {
-        transform: scale(1.2);
-      }
-
-      img {
-        height: 50px;
-        max-width: 120px;
-        opacity: 0.7;
-        transition: opacity 0.3s ease;
-
-        &:hover {
-          opacity: 1;
-        }
-      }
-    }
-  }
-
-  .footer-graph {
-    grid-column: 1 / -1;
-    height: 80px;
-    padding: 0 16px;
-    border-top: 1px solid var(--md-sys-color-outline-variant);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
+  
+  // Graph Panel Styling
+  .graph-panel {
     .graph-container {
-      width: 100%;
-      height: 100%;
       display: flex;
-      align-items: center;
-      position: relative;
-
-      .graph-line {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 50%;
-        height: 1px;
-        background-color: var(--md-sys-color-outline-variant);
-      }
-
-      .graph-point {
-        position: absolute;
-        width: 4px;
-        height: 4px;
-        border-radius: 50%;
-        background-color: var(--md-sys-color-primary);
-        top: 50%;
-        transform: translateY(-50%);
-
-        &::after {
-          content: '';
-          position: absolute;
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background-color: transparent;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          border: 1px solid var(--md-sys-color-primary);
-          opacity: 0.5;
-        }
-
-        &.active {
-          background-color: var(--md-sys-color-tertiary);
-
-          &::after {
-            border-color: var(--md-sys-color-tertiary);
-            animation: badge-pulse 2s infinite;
-          }
-        }
-      }
-
-      .graph-bar {
-        flex: 1;
-        height: 40px;
-        margin: 0 1px;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      
+      .mini-chart {
         position: relative;
-
-        &::before {
-          content: '';
+        width: 180px;
+        height: 90px;
+        
+        canvas {
+          width: 100%;
+          height: 100%;
+        }
+        
+        .chart-label {
           position: absolute;
           bottom: 0;
           left: 0;
           right: 0;
-          height: var(--bar-height, 20%);
-          background-color: var(--md-sys-color-primary);
-          opacity: 0.5;
-          border-radius: 2px 2px 0 0;
-          transition: height 0.3s ease;
+          text-align: center;
+          font-size: 12px;
+          opacity: 0.7;
         }
-
-        &:hover::before {
-          opacity: 0.8;
+      }
+    }
+  }
+  
+  // Logos Panel Styling
+  .logos-panel {
+    .logo-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      
+      .tech-logo {
+        height: 40px;
+        width: auto;
+        filter: grayscale(20%);
+        transition: filter 0.3s ease, transform 0.3s ease;
+        
+        &:hover {
+          filter: grayscale(0%);
+          transform: scale(1.1);
         }
+      }
+    }
+  }
+  
+  // Contact Panel Styling
+  .contact-panel {
+    .contact-details {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      
+      .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        mat-icon {
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
+          color: var(--md-sys-color-primary);
+        }
+      }
+    }
+  }
+  
+  // Links Panel Styling
+  .links-panel {
+    .link-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      
+      .quick-link {
+        color: var(--md-sys-color-on-surface);
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.2s ease;
+        
+        &:hover {
+          color: var(--md-sys-color-primary);
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+  
+  // Version Panel Styling
+  .version-panel {
+    .version-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      
+      .version-item {
+        display: flex;
+        flex-direction: column;
+        
+        .version-label {
+          font-size: 12px;
+          opacity: 0.7;
+        }
+        
+        .version-value {
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+  
+  // Copyright Section
+  .footer-copyright {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--md-sys-color-outline);
+    font-size: 14px;
+    opacity: 0.8;
+    
+    .legal-links {
+      display: flex;
+      gap: 16px;
+      
+      .legal-link {
+        color: var(--md-sys-color-on-surface);
+        text-decoration: none;
+        
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+    
+    @include responsive.sm-down {
+      flex-direction: column;
+      gap: 12px;
+      text-align: center;
+      
+      .legal-links {
+        justify-content: center;
       }
     }
   }
 }
 
-// Health indicator
-.health-indicator {
-  display: flex;
-  align-items: center;
-  margin-left: 16px;
-
-  .health-status {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    margin-right: 8px;
-
-    &.status-online {
-      background-color: #4caf50;
-      box-shadow: 0 0 5px #4caf50;
-      animation: badge-pulse 2s infinite;
-    }
-
-    &.status-degraded {
-      background-color: #ff9800;
-      box-shadow: 0 0 5px #ff9800;
-      animation: badge-pulse 1s infinite;
-    }
-
-    &.status-offline {
-      background-color: #f44336;
-      box-shadow: 0 0 5px #f44336;
-      animation: badge-pulse 0.5s infinite;
-    }
-  }
-
-  .health-text {
-    font-size: 12px;
-    font-weight: 500;
-  }
+// Status icon colors
+.status-icon-healthy {
+  background-color: #4CAF50 !important; // Green
 }
 
-// Theme-specific styles
-:host-context(.dark-theme) {
-  .footer-expanded .graph-bar::before {
-    opacity: 0.6;
-  }
-
-  .footer-logos img,
-  .footer-agencies img {
-    filter: brightness(1.2);
-  }
+.status-icon-warning {
+  background-color: #FFC107 !important; // Amber
 }
 
-:host-context(.patriotic-bold-theme) {
-  .star-icon {
-    color: #FFBF00;
-  }
-
-  .footer-author {
-    background: linear-gradient(
-      90deg,
-      #FFBF00 0%,
-      #FFFFFF 50%,
-      #FFBF00 100%
-    );
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-  }
-}
-
-:host-context(.patriotic-vintage-theme) {
-  .footer-container::before {
-    opacity: 0.7;
-  }
-
-  .footer-logos img,
-  .footer-agencies img {
-    filter: sepia(0.3);
-  }
-}
-
-// Animations
-@keyframes star-sparkle {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(1.3);
-    color: vars.$red; // Pulse between gold and red
-  }
-}
-
-@keyframes text-shimmer {
-  0% {
-    background-position: 200% center;
-  }
-  100% {
-    background-position: -200% center;
-  }
-}
-
-@keyframes badge-pulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.5);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-// Responsive adjustments
-@include responsive.sm-down {
-  .footer-collapsed {
-    .footer-right {
-      .footer-link {
-        display: none;
-      }
-    }
-  }
-
-  .footer-expanded {
-    &.active {
-      max-height: 800px; // Allow more space for stacked content on mobile
-    }
-  }
-
-  .footer-top-row {
-    flex-direction: column;
-  }
+.status-icon-critical {
+  background-color: #F44336 !important; // Red
 }

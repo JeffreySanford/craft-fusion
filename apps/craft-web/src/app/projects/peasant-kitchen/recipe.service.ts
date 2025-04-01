@@ -98,7 +98,7 @@ export class RecipeService {
    */
   addRecipe(recipe: Recipe): Observable<Recipe> {
     console.log('Adding new recipe:', recipe);
-    return this.apiService.post<Recipe, Recipe>(this.endpoint, recipe).pipe(
+    return this.apiService.post<Recipe>(this.endpoint, recipe).pipe(
       tap(newRecipe => console.log('Created recipe:', newRecipe.id)),
       catchError((error: any) => {
         console.error('Error creating recipe:', error);
@@ -134,6 +134,21 @@ export class RecipeService {
       tap(() => console.log('Deleted recipe:', id)),
       catchError((error: any) => {
         console.error('Error deleting recipe:', error);
+        throw error;
+      })
+    );
+  }
+
+  /**
+   * Saves a recipe
+   * @param recipe - Recipe data to save
+   * @returns Observable<Recipe>
+   */
+  saveRecipe(recipe: Recipe): Observable<Recipe> {
+    return this.apiService.post<Recipe>(this.endpoint, recipe).pipe(
+      tap(savedRecipe => console.log('Saved recipe:', savedRecipe.id)),
+      catchError((error: any) => {
+        console.error('Error saving recipe:', error);
         throw error;
       })
     );

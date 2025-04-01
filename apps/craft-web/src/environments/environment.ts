@@ -1,53 +1,99 @@
+// Development environment configuration
 // This file can be replaced during build by using the `fileReplacements` array.
-// `ng build` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
+
+import { loadEnvironmentVariables } from './environment.loader';
+
+// Load variables from .env file
+const envVars = loadEnvironmentVariables();
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000',
-  useMockMetrics: false, // Enable to use mock metrics for development
-  useMockApiWhenUnavailable: true, // Enable to automatically use mock data when backend is unavailable
-  maxConnectionRetries: 3, // Number of retries before fallback to mock data
-  logLevel: 'debug', // debug, info, warn, error
+  apiUrl: envVars.API_URL || 'http://localhost:3000/api',
+  useMockMetrics: true,
+  useMockApiWhenUnavailable: true,
+  maxConnectionRetries: 3,
+  logLevel: 'debug',
   host: 'localhost',
   authProvider: 'firebase',
-  firebaseConfig: {
-    // Add your Firebase configuration here
+  
+  // API Keys loaded from .env file
+  finnhub: {
+    apiKey: envVars.FINNHUB_API_KEY || '',
+    baseUrl: 'https://finnhub.io/api/v1'
   },
-  nestApiUrl: 'http://localhost:3000',
-  goApiUrl: 'http://localhost:4000/api-go',
-  finnhubApiKey: 'cu8gbkpr01qt63vgue4gcu8gbkpr01qt63vgue50',
-  finnHubAPI: 'https://finnhub.io/api/v1',
   mapbox: {
-    accessToken: 'pk.eyJ1IjoiamVmZnJleXNhbmZvcmQiLCJhIjoiY201c2psaW8yMG1vMDJrcTJ4ZzNic3YxbyJ9.7e5Pub4Ub0v-tHK9uzIuEA',
+    accessToken: envVars.MAPBOX_ACCESS_TOKEN || '',
+    style: 'mapbox://styles/mapbox/streets-v11'
   },
-  nasaFirms: {
-    apiKey: 'your-development-nasa-firms-api-key-here',
-    endpoint: 'https://firms.modaps.eosdis.nasa.gov/api/area/csv/',
+  flightAware: {
+    username: envVars.FLIGHT_AWARE_USER || '',
+    apiKey: envVars.FLIGHT_AWARE_API_KEY || '',
+    baseUrl: 'https://aeroapi.flightaware.com/aeroapi'
   },
-  calFire: {
-    endpoint: 'https://incidents.fire.ca.gov/umbraco/api/IncidentApi/',
+  huggingFace: {
+    apiKey: envVars.HUGGING_FACE_AFP || '',
+    baseUrl: 'https://api-inference.huggingface.co/models'
   },
+  
+  // Adding missing API configurations
   flightRadar24: {
-    apiKey: '9df1bdd8-b573-4e99-9b23-ff47fab4c035|PxsBdnqI1p0vbt3PiAi079zIDoq8TK01PTi3ZITYd19a63d7',
-    endpoint: 'https://example.com/api/fr24', // Placeholder
+    endpoint: 'https://api.flightradar24.com/v1',
+    apiKey: envVars.FLIGHT_RADAR24_API_KEY || ''
   },
-  alphaVantageApiKey: '3EP39QPLULHFVD7Y',
   yahooFinance: {
-    url: 'https://yfapi.net/',
-    apiKey: 'uANiNS5imM7YUDOxZNpu3qrmLEYkoqu2r6OzqCW8', // Replace with your Yahoo Finance API key
-    endpoint: 'https://example.com/api/yahoo-finance', // Placeholder
+    url: 'https://yfapi.net',
+    apiKey: envVars.YAHOO_FINANCE_API_KEY || ''
   },
-  performance: {
-    disableVideoBackgrounds: false
-  }
-};
+  alphaVantageApiKey: envVars.ALPHA_VANTAGE_API_KEY || '',
 
-/*
- * For easier debugging in development mode, you can import the following file
- * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
- *
- * This import should be commented out in production mode because it will have a negative impact
- * on performance if an error is thrown.
- */
-// import 'zone.js/plugins/zone-error';  // Included with Angular CLI.
+  // AI Model Configuration
+  aiModels: {
+    deepseekEnabled: envVars.DEEPSEEK_ENABLED === 'true',
+    mistralEnabled: envVars.MISTRAL_ENABLED === 'true',
+    openaiEnabled: envVars.OPENAI_ENABLED === 'true',
+    openaiApiKey: envVars.OPENAI_API_KEY || ''
+  },
+  
+  firebaseConfig: {
+    apiKey: "AIzaSyA1234567890abcdefghijklmnopqrstuv",
+    authDomain: "craft-fusion-dev.firebaseapp.com",
+    projectId: "craft-fusion-dev",
+    storageBucket: "craft-fusion-dev.appspot.com",
+    messagingSenderId: "123456789012",
+    appId: "1:123456789012:web:abc123def456ghi789jkl",
+    measurementId: "G-ABCDEF1234"
+  },
+  
+  featureFlags: {
+    enablePerformanceMonitoring: true,
+    enableApiLogs: true,
+    enableExperimentalFeatures: true,
+    useNewDashboard: false,
+    enableAiAssistant: true
+  },
+  
+  branding: {
+    productName: 'Craft Fusion',
+    logoPath: '/assets/logo.svg',
+    colors: {
+      primary: '#002868',
+      secondary: '#BF0A30',
+      accent: '#FFD700'
+    }
+  },
+  
+  analytics: {
+    enabled: false,
+    provider: 'google-analytics',
+    trackingId: 'UA-XXXXXXXX-X'
+  },
+  
+  performance: {
+    minFps: 30,
+    targetFps: 60,
+    maxInitTime: 3000,
+    disableVideoBackgrounds: false
+  },
+  
+  appVersion: '1.0.0-beta.3'
+};

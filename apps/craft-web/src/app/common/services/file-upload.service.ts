@@ -10,7 +10,7 @@ export class FileUploadService {
 
   uploadFile(file: File): Observable<void> {
     const formData = new FormData();
-    formData.append('file', file, file.name);
-    return this.api.post<FormData, void>('/api/files/upload', formData);
+    formData.append('file', file);
+    return this.api.post<void>('/api/files/upload', formData);
   }
 }

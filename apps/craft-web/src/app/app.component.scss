@@ -139,7 +139,9 @@
         }
 
         // Add subtle animation when becoming active
-        animation: fadeInContent 0.3s ease-out forwards;
+        & {
+          animation: fadeInContent 0.3s ease-out forwards;
+        }
       }
 
       // Dashboard content container
@@ -504,6 +506,5 @@
   .layout-main {
     height: calc(100vh - 200px);
     transition: height 0.3s ease;
-    // ...existing code...
   }
 }

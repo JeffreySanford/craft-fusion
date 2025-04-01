@@ -1,19 +1,17 @@
-<div class="chart-container" [ngClass]="{'loading': loading, 'error': error}">
-  <div *ngIf="loading" class="chart-loader">
-    <mat-spinner diameter="40"></mat-spinner>
+<div class="line-chart-container" [ngClass]="currentTheme">
+  <div class="chart-header" *ngIf="xAxisLabel || yAxisLabel">
+    <div class="axis-labels">
+      <span *ngIf="yAxisLabel" class="y-axis-label">{{ yAxisLabel }}</span>
+      <span *ngIf="xAxisLabel" class="x-axis-label">{{ xAxisLabel }}</span>
+    </div>
   </div>
   
-  <div *ngIf="error" class="chart-error">
-    <mat-icon color="warn">error_outline</mat-icon>
-    <p>{{ errorMessage || 'Failed to load chart data' }}</p>
-  </div>
-  
-  <canvas #chartCanvas></canvas>
+  <div #chartContainer class="chart-body" [style.height.px]="height"></div>
   
   <div class="chart-legend" *ngIf="showLegend && data?.length">
-    <div *ngFor="let item of data" class="legend-item">
-      <div class="legend-color" [style.backgroundColor]="item.color || generateColor(item.label)"></div>
-      <span class="legend-label">{{ item.label }}</span>
+    <div class="legend-item" *ngFor="let item of data">
+      <div class="legend-color" [style.backgroundColor]="item.color || generateColor(item.name)"></div>
+      <span class="legend-label">{{ item.name }}</span>
     </div>
   </div>
 </div>

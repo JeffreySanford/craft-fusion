@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { ThemeService } from './common/services/theme.service';
 import { LayoutService } from './common/services/layout.service';
 import { Subject } from 'rxjs';
@@ -10,7 +10,7 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./app.component.scss'],
   standalone: false
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   title = 'craft-fusion';
   isDarkTheme = false;
   isMobile = false;
@@ -52,6 +52,25 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe(width => {
         this.sidebarWidth = width;
       });
+  }
+  
+  ngAfterViewInit(): void {
+    // After view is initialized, measure actual header and footer heights
+    setTimeout(() => {
+      const headerElement = document.querySelector('.layout-header') as HTMLElement;
+      const footerElement = document.querySelector('.layout-footer') as HTMLElement;
+      
+      if (headerElement) {
+        this.layoutService.setHeaderHeight(headerElement.offsetHeight);
+      }
+      
+      if (footerElement) {
+        this.layoutService.setFooterHeight(footerElement.offsetHeight);
+      }
+      
+      // Set gutter size in pixels (1em is typically 16px)
+      this.layoutService.setGutterSize(16);
+    });
   }
   
   ngOnDestroy(): void {

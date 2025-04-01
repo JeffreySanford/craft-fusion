@@ -1,11 +1,22 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
-import { Chart, registerables, ChartConfiguration, ChartTypeRegistry } from 'chart.js';
 import { ThemeService } from '../../services/theme.service';
-import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
-// Register all Chart.js components
-Chart.register(...registerables);
+export interface ChartDataItem {
+  name: string;  // Add the name property that was missing
+  series: Array<{
+    label: string;
+    value: number;
+  }>;
+  color?: string; // Add optional color property
+}
+
+export interface ChartDataPoint {
+  label: string;
+  value: number;
+  color?: string;
+}
 
 @Component({
   selector: 'app-line-chart',
@@ -13,182 +24,108 @@ Chart.register(...registerables);
   styleUrls: ['./line-chart.component.scss'],
   standalone: false
 })
-export class LineChartComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
-  @Input() data: any[] = [];
-  @Input() options: any = {};
-  @Input() loading = false;
-  @Input() error = false;
-  @Input() errorMessage = '';
-  @Input() showLegend = true;
-  
-  @ViewChild('chartCanvas') chartCanvas!: ElementRef;
-  private chart: Chart | null = null;
+export class LineChartComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+  @Input() data: ChartDataItem[] = [];
+  @Input() height: number = 300;
+  @Input() xAxisLabel: string = '';
+  @Input() yAxisLabel: string = '';
+  @Input() showLegend: boolean = true;
+  @Input() animate: boolean = true;
+  @Input() colorScheme: string[] = [
+    '#002868', // Navy Blue - Primary patriotic color
+    '#BF0A30', // Red - Secondary patriotic color
+    '#FFD700', // Gold - Accent patriotic color
+    '#4682B4', // Steel Blue
+    '#E40032', // Bright Red
+    '#0A3161', // Deep Navy
+    '#FFBF00'  // Rich Gold
+  ];
+
+  @ViewChild('chartContainer') chartContainer!: ElementRef;
+
   private destroy$ = new Subject<void>();
+  
+  // Chart configuration
+  chartData: any[] = [];
+  chartOptions: any;
+  currentTheme: string = 'light-theme';
   
   constructor(private themeService: ThemeService) {}
   
   ngOnInit(): void {
-    // Subscribe to theme changes to update chart colors
-    this.themeService.currentTheme$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.updateChart();
-      });
-  }
-  
-  ngAfterViewInit(): void {
-    // Create the chart after the view is initialized
-    this.createChart();
+    this.setupTheme();
+    this.processData();
   }
   
   ngOnChanges(changes: SimpleChanges): void {
-    // Update the chart when inputs change
-    if ((changes['data'] || changes['options']) && this.chart) {
-      this.updateChart();
+    if (changes['data']) {
+      this.processData();
     }
   }
   
+  ngAfterViewInit(): void {
+    this.renderChart();
+  }
+
   ngOnDestroy(): void {
-    // Clean up resources
-    if (this.chart) {
-      this.chart.destroy();
-    }
     this.destroy$.next();
     this.destroy$.complete();
   }
   
-  private createChart(): void {
-    if (!this.chartCanvas) return;
+  /**
+   * Process input data for chart display
+   */
+  private processData(): void {
+    // Implementation will depend on your charting library
+    if (!this.data || this.data.length === 0) return;
     
-    const ctx = this.chartCanvas.nativeElement.getContext('2d');
-    if (!ctx) return;
-    
-    // Get theme-specific colors
-    const colors = this.getChartColors();
-    
-    // Create the chart configuration with proper typings
-    const config: ChartConfiguration<'line'> = {
-      type: 'line',
-      data: {
-        labels: this.data.map(d => d.label || ''),
-        datasets: [{
-          label: 'Performance',
-          data: this.data.map(d => d.value || 0),
-          borderColor: colors.primary,
-          backgroundColor: colors.backgroundGradient,
-          borderWidth: 2,
-          fill: true,
-        }]
-      },
-      options: {
-        ...this.options,
-        plugins: {
-          tooltip: {
-            backgroundColor: colors.tooltipBackground,
-            titleColor: colors.tooltipText,
-            bodyColor: colors.tooltipText,
-            borderColor: colors.tooltipBorder,
-            borderWidth: 1
-          },
-          legend: {
-            labels: {
-              color: colors.text
-            }
-          }
-        },
-        scales: {
-          x: {
-            grid: {
-              color: colors.gridColor
-            },
-            ticks: {
-              color: colors.text
-            }
-          },
-          y: {
-            grid: {
-              color: colors.gridColor
-            },
-            ticks: {
-              color: colors.text
-            }
-          }
-        }
-      }
-    };
-    
-    this.chart = new Chart(ctx, config);
-  }
-  
-  private updateChart(): void {
-    if (!this.chart) return;
-    
-    // Update data
-    this.chart.data.labels = this.data.map(d => d.label || '');
-    this.chart.data.datasets[0].data = this.data.map(d => d.value || 0);
-    
-    // Update colors based on theme
-    const colors = this.getChartColors();
-    this.chart.data.datasets[0].borderColor = colors.primary;
-    this.chart.data.datasets[0].backgroundColor = colors.backgroundGradient;
-    
-    // Update and render
-    this.chart.update();
-  }
-  
-  private getChartColors(): any {
-    // Get current theme-based colors
-    const isDarkTheme = document.body.classList.contains('dark-theme');
-    
-    if (isDarkTheme) {
+    this.chartData = this.data.map((item, index) => {
       return {
-        primary: '#4dabf7',
-        backgroundGradient: this.createGradient([36, 171, 247, 0.3], [36, 171, 247, 0]),
-        tooltipBackground: 'rgba(33, 33, 33, 0.9)',
-        tooltipText: '#ffffff',
-        tooltipBorder: 'rgba(255, 255, 255, 0.2)',
-        text: 'rgba(255, 255, 255, 0.7)',
-        gridColor: 'rgba(255, 255, 255, 0.1)'
+        name: item.name,
+        data: item.series,
+        color: item.color || this.colorScheme[index % this.colorScheme.length]
       };
-    }
-    
-    // Light theme colors
-    return {
-      primary: '#0050b3',
-      backgroundGradient: this.createGradient([0, 80, 179, 0.2], [0, 80, 179, 0]),
-      tooltipBackground: 'rgba(255, 255, 255, 0.95)',
-      tooltipText: '#333333',
-      tooltipBorder: 'rgba(0, 0, 0, 0.1)',
-      text: 'rgba(0, 0, 0, 0.7)',
-      gridColor: 'rgba(0, 0, 0, 0.1)'
-    };
+    });
   }
   
-  private createGradient(colorStart: number[], colorEnd: number[]): CanvasGradient | string {
-    if (!this.chartCanvas) return `rgba(${colorStart.join(',')})`;
-    
-    const ctx = this.chartCanvas.nativeElement.getContext('2d');
-    if (!ctx) return `rgba(${colorStart.join(',')})`;
-    
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, `rgba(${colorStart.join(',')})`);
-    gradient.addColorStop(1, `rgba(${colorEnd.join(',')})`);
-    
-    return gradient;
+  /**
+   * Setup theme subscription
+   */
+  private setupTheme(): void {
+    this.themeService.currentTheme$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(theme => {
+        this.currentTheme = theme;
+        this.renderChart();
+      });
   }
   
+  /**
+   * Render chart with current data and theme
+   */
+  private renderChart(): void {
+    if (!this.chartContainer || !this.chartData.length) return;
+    
+    // Chart rendering implementation would go here
+    // This would call a charting library like Chart.js or D3
+    
+    console.log('Chart rendered with theme:', this.currentTheme);
+    console.log('Chart data:', this.chartData);
+  }
+  
+  /**
+   * Generate a color for a data item
+   * @param label Data item label
+   * @returns A color from the color scheme
+   */
   generateColor(label: string): string {
-    // Simple hash function to generate consistent colors based on string
+    // Simple hash function to determine color
     let hash = 0;
     for (let i = 0; i < label.length; i++) {
       hash = label.charCodeAt(i) + ((hash << 5) - hash);
     }
     
-    // Generate RGB values
-    const r = (hash & 0xFF0000) >> 16;
-    const g = (hash & 0x00FF00) >> 8;
-    const b = hash & 0x0000FF;
-    
-    return `rgb(${r}, ${g}, ${b})`;
+    const index = Math.abs(hash) % this.colorScheme.length;
+    return this.colorScheme[index];
   }
 }

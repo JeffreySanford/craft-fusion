@@ -56,18 +56,18 @@ export class RecordService {
 
   /**
    * Creates a new record in the system
+   * @param url - The API endpoint URL
    * @param record - The record data to be created
    * @returns Observable<Record> - The newly created record
    * @example
    * const newRecord: Record = { ... };
-   * recordService.addRecord(newRecord).subscribe(created => {
+   * recordService.addRecord('api/records', newRecord).subscribe(created => {
    *   console.log('Created:', created);
    * });
    */
-  addRecord(record: Record): Observable<Record> {
-    const url = 'api/records';
+  addRecord(url: string, record: Record): Observable<Record> {
     console.log(`Adding record to URL: ${this.apiService.getApiUrl()}/${url}`);
-    return this.apiService.post<Record, Record>(url, record);
+    return this.apiService.post<Record>(url, record);
   }
 
   // sets the currently selected user to prepare to user detail presentation
@@ -106,9 +106,8 @@ export class RecordService {
     );
   }
 
-  setServerResource(resource: string): string {
+  setServerResource(resource: string): Observable<void> {
     console.log(`Setting server resource: ${resource}`);
-
     return this.apiService.setApiUrl(resource);
   }
 }

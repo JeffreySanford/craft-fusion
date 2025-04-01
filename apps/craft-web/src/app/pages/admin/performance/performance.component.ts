@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ThemeService } from '../../../common/services/theme.service';
 import { Subject, interval } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { PerformanceMetricsService } from '../../../common/services/performance-metrics.service';
+import { PerformanceMetricsService, SystemMetrics } from '../../../common/services/performance-metrics.service';
 import { LoggerService } from '../../../common/services/logger.service';
 import { UserActivityService } from '../../../common/services/user-activity.service';
 
@@ -115,16 +115,16 @@ export class PerformanceComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(metrics => {
         // Update CPU metrics
-        const cpuRaw = metrics.cpuLoadRaw;
-        this.updateMetric(this.cpuMetric, cpuRaw, metrics.cpuLoad);
+        const cpuRaw = metrics.cpuLoadRaw || 0; // Provide default value to avoid undefined
+        this.updateMetric(this.cpuMetric, cpuRaw, metrics.cpuLoad || '0%');
         
         // Update Memory metrics
-        const memoryRaw = metrics.memoryUsageRaw;
-        this.updateMetric(this.memoryMetric, memoryRaw, metrics.memoryUsage);
+        const memoryRaw = metrics.memoryUsageRaw || 0; // Provide default value to avoid undefined
+        this.updateMetric(this.memoryMetric, memoryRaw, metrics.memoryUsage?.toString() || '0%');
         
         // Update Network metrics
-        const networkRaw = metrics.networkLatencyRaw;
-        this.updateMetric(this.networkMetric, networkRaw, metrics.networkLatency);
+        const networkRaw = metrics.networkLatencyRaw || 0; // Provide default value to avoid undefined
+        this.updateMetric(this.networkMetric, networkRaw, metrics.networkLatency || '0ms');
         
         console.log('Updated metrics:', {
           cpu: this.cpuMetric.value,
@@ -152,7 +152,7 @@ export class PerformanceComponent implements OnInit, OnDestroy {
     this.performanceMetricsService.getFramerate$()
       .pipe(takeUntil(this.destroy$))
       .subscribe(fps => {
-        this.fps = Math.round(fps);
+        this.fps = fps; // Now returns a number directly
       });
   }
   
@@ -173,7 +173,7 @@ export class PerformanceComponent implements OnInit, OnDestroy {
     }
   }
   
-  private updateMetric(metric: MetricItem, rawValue: number, formattedValue: string): void {
+  private updateMetric(metric: MetricItem, rawValue: number, formattedValue: string | number): void {
     // Add to history (keep last 20 values)
     metric.history.push(rawValue);
     if (metric.history.length > 20) {
@@ -197,7 +197,10 @@ export class PerformanceComponent implements OnInit, OnDestroy {
     
     // Update current value
     metric.rawValue = rawValue;
-    metric.value = formattedValue.replace('%', '').replace('ms', '').trim();
+    // Handle both string and number inputs
+    metric.value = typeof formattedValue === 'string' 
+      ? formattedValue.replace('%', '').replace('ms', '').trim() 
+      : formattedValue.toString();
   }
   
   private logPerformanceMetrics(): void {

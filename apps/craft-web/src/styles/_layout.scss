@@ -606,14 +606,61 @@ $content-padding: 1.5em;
 .layout-root {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; // changed from height to min-height
+  min-height: 100vh; // Use min-height instead of height
+
+  .layout-header {
+    flex: 0 0 auto;
+    z-index: map.get(vars.$z-layers, header);
+    // Add gutter below header
+    margin-bottom: 1em;
+  }
 
   .layout-main {
+    display: flex;
     flex: 1 1 auto;
+    // Allow layout-main to shrink when needed
+    min-height: 0;
+    // Add gutters for layout-main
+    margin: 0 1em;
+
+    .sidebar {
+      width: var(--md-sys-sidebar-width, 250px);
+      height: auto;
+      overflow-y: auto;
+      margin-right: 1em; // 1em gutter between sidebar and mainstage
+      background: rgba(0, 0, 0, 0.8);
+      color: var(--md-sys-color-on-surface);
+      padding: 0.5em;
+      border-radius: var(--md-sys-shape-corner-medium);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      transition: width 0.3s ease;
+
+      &.collapsed {
+        width: var(--md-sys-sidebar-collapsed-width, 7em);
+      }
+    }
+
+    .mainstage {
+      flex: 1 1 auto;
+      height: auto;
+      overflow-y: auto;
+      border-left: 2px solid var(--md-sys-color-primary);
+      background-color: var(--md-sys-color-background);
+      transition: padding 0.3s ease;
+      border-radius: 8px;
+      margin: 0 0.5em;
+      padding: 1em;
+    }
   }
 
   .layout-footer {
-    flex-shrink: 0;
+    flex: 0 0 auto;
+    z-index: map.get(vars.$z-layers, footer);
+    // Add gutter above footer
+    margin-top: 1em;
     background-color: var(--md-sys-color-surface);
     color: var(--md-sys-color-on-surface);
     padding: 1rem;
@@ -621,5 +668,9 @@ $content-padding: 1.5em;
     box-shadow: var(--md-sys-elevation-level1);
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     z-index: 10;
+
+    &.expanded {
+      min-height: var(--md-sys-footer-expanded-height, 12em);
+    }
   }
 }

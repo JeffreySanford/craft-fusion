@@ -1,442 +1,686 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, interval, Subject, of, timer } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Observable, of, interval, timer, Subject, fromEvent } from 'rxjs';
+import { startWith, switchMap, map, takeUntil, tap, scan, buffer, filter, share } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
-import { map } from 'rxjs/operators';
 
-export interface PerformanceMetrics {
-  cpuLoad: string;
-  memoryUsage: string;
-  networkLatency: string;
-  cpuLoadRaw: number;
-  memoryUsageRaw: number;
-  networkLatencyRaw: number;
-  fps?: number; // Add fps property to match SystemMetrics
-}
-
-export interface ApiMetrics {
-  url: string;
-  method: string;
-  duration: number;
-  requestSize: number;
-  responseSize: number;
-  status: number;
-  timestamp: number;
-  success: boolean;
-  errorType?: string;
-}
-
-export interface ApiPerformanceSummary {
-  avgResponseTime: number;
-  maxResponseTime: number;
-  totalRequests: number;
-  successfulRequests: number;
-  failedRequests: number;
-  totalDataTransferred: number;
-  endpointStats: Map<string, EndpointStats>;
-}
-
-export interface EndpointStats {
-  url: string;
-  callCount: number;
-  avgDuration: number;
-  successRate: number;
-}
-
+/**
+ * System metrics data interface
+ */
 export interface SystemMetrics {
-  cpuLoad: string;
-  cpuLoadRaw: number;
-  memoryUsage: string;
-  memoryUsageRaw: number;
-  networkLatency: string;
-  networkLatencyRaw: number;
-  fps: number;
+  cpuUsage: number;
+  memoryUsage: number;
+  networkUtilization: number;
+  diskUsage: number;
+  activeUsers: number;
+  requestsPerMinute: number;
+  uptime: number; // in seconds
+  systemStatus: string;
+  timestamp: Date;
+  // Add missing properties needed by Performance component
+  cpuLoadRaw?: number;
+  cpuLoad?: string;
+  memoryUsageRaw?: number;
+  networkLatencyRaw?: number;
+  networkLatency?: string;
 }
 
-export interface ApiCallMetric {
-  endpoint: string;
+/**
+ * API call details for tracking performance
+ */
+export interface ApiCall {
+  url: string;
   method: string;
   duration: number;
-  success: boolean;
-  timestamp?: number;
+  statusCode: number;
+  timestamp: Date;
+  size?: number;
+  error?: boolean;
+}
+
+/**
+ * API performance summary
+ */
+export interface ApiPerformanceSummary {
+  totalCalls: number;
+  successfulCalls: number;
+  failedCalls: number;
+  failedRequests: number;
+  totalRequests: number;
+  avgResponseTime: number;
+  minResponseTime: number;
+  maxResponseTime: number;
+  errorRate: number;
+  byMethod: Record<string, number>;
+  byEndpoint: Record<string, number>;
+  slowestEndpoints: Array<{url: string, avgTime: number, calls: number}>;
+  recentCalls: ApiCall[];
+}
+
+/**
+ * Frame rate data
+ */
+export interface FrameRateData {
+  fps: number;
+  avgFps: number;
+  minFps: number;
+  maxFps: number;
+  frameDrops: number;
+  timestamp: Date;
+}
+
+/**
+ * Historical data point
+ */
+export interface HistoricalDataPoint {
+  timestamp: Date;
+  cpuUsage: number;
+  memoryUsage: number;
+  networkUtilization: number;
+  activeUsers: number;
+  requestsPerMinute: number;
+  // Add missing properties needed by Reports component
+  label?: string;
+  value?: number;
+}
+
+/**
+ * Resource usage metrics
+ */
+export interface ResourceUsage {
+  name: string;
+  value: number;
+  unit: string;
+  threshold?: number;
+  critical?: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class PerformanceMetricsService {
-  private metricsSubject = new BehaviorSubject<PerformanceMetrics>({
-    cpuLoad: '0%',
-    memoryUsage: '0 MB',
-    networkLatency: '0 ms',
-    cpuLoadRaw: 0,
-    memoryUsageRaw: 0,
-    networkLatencyRaw: 0,
-    fps: 0
+export class PerformanceMetricsService implements OnDestroy {
+  private refreshInterval = 10000; // 10 seconds
+  private metrics = new BehaviorSubject<SystemMetrics>({
+    cpuUsage: 0,
+    memoryUsage: 0,
+    networkUtilization: 0,
+    diskUsage: 0,
+    activeUsers: 0,
+    requestsPerMinute: 0,
+    uptime: 0,
+    systemStatus: 'Operational',
+    timestamp: new Date()
   });
-
-  // Expose as Observable
-  public metrics$ = this.metricsSubject.asObservable();
-  private updateInterval: any = null;
-  private simulationActive = false;
-
-  private _frameId: number | null = null;
-  private _lastFrameTime: number | null = null;
-  private _fpsSubject = new BehaviorSubject<number>(0);
-
-  private apiMetrics: ApiMetrics[] = [];
-  private apiMetricsSubject = new BehaviorSubject<ApiMetrics[]>([]);
-  private apiPerformanceSubject = new BehaviorSubject<ApiPerformanceSummary>({
-    avgResponseTime: 0,
-    maxResponseTime: 0,
-    totalRequests: 0,
-    successfulRequests: 0,
+  
+  // System metrics observable
+  public metrics$ = this.metrics.asObservable();
+  
+  // API calls tracking
+  private apiCalls = new BehaviorSubject<ApiCall[]>([]);
+  private apiPerformanceSummarySubject = new BehaviorSubject<ApiPerformanceSummary>({
+    totalCalls: 0,
+    successfulCalls: 0,
+    failedCalls: 0,
     failedRequests: 0,
-    totalDataTransferred: 0,
-    endpointStats: new Map<string, EndpointStats>()
+    totalRequests: 0,
+    avgResponseTime: 0,
+    minResponseTime: 0,
+    maxResponseTime: 0,
+    errorRate: 0,
+    byMethod: {},
+    byEndpoint: {},
+    slowestEndpoints: [],
+    recentCalls: []
   });
-
-  public apiMetrics$ = this.apiMetricsSubject.asObservable();
-  public apiPerformance$ = this.apiPerformanceSubject.asObservable();
-
-  // Mock performance data
-  private mockData = [
-    { label: 'CPU', value: 45 },
-    { label: 'Memory', value: 62 },
-    { label: 'Network', value: 28 },
-    { label: 'Disk', value: 15 },
-    { label: 'API', value: 70 },
-    { label: 'Render', value: 55 },
-    { label: 'Response', value: 40 }
-  ];
-
-  constructor(private logger: LoggerService) {
-    this.logger.registerService('PerformanceMetricsService');
-    this.logger.info('Performance metrics service initialized');
+  
+  // API performance observable
+  public apiPerformance$ = this.apiPerformanceSummarySubject.asObservable();
+  
+  // Frame rate monitoring
+  private frameRateSubject = new BehaviorSubject<FrameRateData>({
+    fps: 0,
+    avgFps: 0,
+    minFps: 60,
+    maxFps: 0,
+    frameDrops: 0,
+    timestamp: new Date()
+  });
+  private frameRateHistory: number[] = [];
+  private frameSamplingActive = false;
+  private rafId: number | null = null;
+  private lastFrameTime = 0;
+  
+  // Historical data storage
+  private historicalData: HistoricalDataPoint[] = [];
+  private readonly MAX_HISTORY_LENGTH = 1000;
+  
+  // Cleanup
+  private destroy$ = new Subject<void>();
+  private simulationActive = false;
+  private systemUptime = 0;
+  private uptimeInterval: any;
+  
+  constructor(
+    private http: HttpClient,
+    private logger: LoggerService
+  ) {
+    this.initMetricsPolling();
+    this.startUptimeCounter();
     
-    // Start simulation by default
-    this.startMetricsSimulation();
+    // Set initial simulated values in development
+    if (!environment.production) {
+      this.setSimulatedMetrics();
+    }
+    
+    // Start collecting metrics history
+    this.startHistoricalDataCollection();
   }
-
+  
   /**
-   * Start simulating performance metrics
+   * Get metrics updates as observable
+   * @returns Observable that emits system metrics on change
+   */
+  getMetricsUpdates(): Observable<SystemMetrics> {
+    return this.metrics.asObservable();
+  }
+  
+  /**
+   * Get current metrics snapshot
+   * @returns Current system metrics
+   */
+  getCurrentMetrics(): SystemMetrics {
+    return this.metrics.getValue();
+  }
+  
+  /**
+   * Record an API call for performance tracking
+   * @param call API call details
+   */
+  recordApiCall(call: ApiCall): void {
+    const currentCalls = this.apiCalls.getValue();
+    
+    // Keep only the most recent 100 calls
+    const updatedCalls = [...currentCalls, call].slice(-100);
+    this.apiCalls.next(updatedCalls);
+    
+    // Update the API performance summary
+    this.updateApiPerformanceSummary(updatedCalls);
+    
+    // Log the call
+    this.logger.debug(`API Call: ${call.method} ${call.url} - ${call.duration}ms`, {
+      category: 'API_PERFORMANCE',
+      duration: call.duration,
+      statusCode: call.statusCode
+    });
+  }
+  
+  /**
+   * Start metrics simulation for testing/demo purposes
    */
   startMetricsSimulation(): void {
-    if (this.simulationActive) return;
-    
-    this.simulationActive = true;
-    this.logger.info('Starting performance metrics simulation');
-    
-    // Update metrics every 2 seconds
-    this.updateInterval = interval(2000).subscribe(() => {
-      this.updateSimulatedMetrics();
-    });
-    
-    // Initial update
-    this.updateSimulatedMetrics();
-  }
-
-  /**
-   * Stop simulating performance metrics
-   */
-  stopMetricsSimulation(): void {
-    if (this.updateInterval) {
-      this.updateInterval.unsubscribe();
-      this.updateInterval = null;
-    }
-    this.simulationActive = false;
-    this.logger.info('Stopped performance metrics simulation');
-  }
-
-  /**
-   * Update the performance metrics with simulated values
-   */
-  private updateSimulatedMetrics(): void {
-    // Generate realistic fluctuating values
-    const now = Date.now();
-    
-    // CPU load fluctuates between 30% and 70% with occasional spikes
-    const cpuBase = 30 + Math.sin(now / 10000) * 20;
-    const cpuSpike = Math.random() > 0.8 ? Math.random() * 30 : 0;
-    const cpuLoadRaw = Math.min(100, cpuBase + cpuSpike);
-    
-    // Memory tends to gradually increase over time
-    const memBase = 50 + Math.sin(now / 50000) * 30;
-    const memoryUsageRaw = Math.min(100, memBase + (Math.random() * 20));
-    
-    // Network latency fluctuates with occasional spikes
-    const latencyBase = 2 + Math.sin(now / 5000);
-    const latencySpike = Math.random() > 0.9 ? Math.random() * 10 : 0;
-    const networkLatencyRaw = Math.max(0.5, latencyBase + latencySpike);
-    
-    const metrics: PerformanceMetrics = {
-      cpuLoad: `${cpuLoadRaw.toFixed(2)}%`,
-      memoryUsage: `${memoryUsageRaw.toFixed(2)}%`,
-      networkLatency: `${networkLatencyRaw.toFixed(2)} ms`,
-      cpuLoadRaw,
-      memoryUsageRaw,
-      networkLatencyRaw,
-      fps: this._fpsSubject.getValue() // Include the fps value
-    };
-    
-    this.metricsSubject.next(metrics);
-    
-    this.logMetrics();
-  }
-  
-  /**
-   * Log performance metrics
-   */
-  private logMetrics(): void {
-    const metrics = this.metricsSubject.getValue();
-    this.logger.performance('System performance metrics updated', [
-      { name: 'CPU Load', value: metrics.cpuLoad, unit: '%' },
-      { name: 'Memory Usage', value: metrics.memoryUsage, unit: '%' },
-      { name: 'Network Latency', value: metrics.networkLatency, unit: 'ms' },
-      { name: 'FPS', value: this._fpsSubject.getValue(), unit: 'fps' }
-    ], {
-      type: 'SYSTEM_METRICS',
-      category: 'system:performance:metrics'
-    });
-  }
-
-
-  /**
-   * Get current metrics value
-   */
-  get getCurrentMetrics(): Observable<PerformanceMetrics> {
-    return this.metricsSubject.asObservable();
-  }
-
-  /**
-   * Start sampling the browser's framerate
-   */
-  startFramerateSampling(): void {
-    if (this._frameId) { return; }
-    this._lastFrameTime = performance.now();
-    this.recordFrame();
-  }
-
-  /**
-   * Record a frame and calculate FPS
-   */
-  private recordFrame(): void {
-    this._frameId = requestAnimationFrame((latestTimestamp) => {
-      if (this._lastFrameTime !== null) {
-        const delta = latestTimestamp - this._lastFrameTime;
-        const fps = 1000 / delta;
-        this._fpsSubject.next(fps);
-      }
-      this._lastFrameTime = latestTimestamp;
-      this.recordFrame();
-    });
-  }
-
-  /**
-   * Stop sampling the browser's framerate
-   */
-  stopFramerateSampling(): void {
-    if (this._frameId) {
-      cancelAnimationFrame(this._frameId);
-      this._frameId = null;
-      this._lastFrameTime = null;
-    }
-  }
-
-  /**
-   * Get the framerate as an observable
-   */
-  getFramerate$(): Observable<number> {
-    return this._fpsSubject.asObservable();
-  }
-
-  /**
-   * Record metrics from an API call
-   */
-  recordApiMetrics(metrics: ApiMetrics): void {
-    // Keep only the latest 100 API metrics
-    if (this.apiMetrics.length >= 100) {
-      this.apiMetrics.shift();
-    }
-    
-    this.apiMetrics.push(metrics);
-    this.apiMetricsSubject.next([...this.apiMetrics]);
-    
-    // Update summary statistics
-    this.updateApiPerformanceSummary();
-  }
-  
-  /**
-   * Record an API call metric
-   */
-  recordApiCall(metric: ApiCallMetric): void {
-    const apiMetrics = [...this.apiMetricsSubject.value];
-    const timestamp = metric.timestamp || Date.now();
-
-    // Convert ApiCallMetric -> ApiMetrics
-    const converted: ApiMetrics = {
-      url: metric.endpoint,
-      method: metric.method,
-      duration: metric.duration,
-      requestSize: 0,
-      responseSize: 0,
-      status: metric.success ? 200 : 500,
-      timestamp,
-      success: metric.success
-    };
-
-    apiMetrics.push(converted);
-
-    // Keep only recent metrics (last 100 or last 5 minutes)
-    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-    const recentMetrics = apiMetrics
-      .filter(m => m.timestamp > fiveMinutesAgo)
-      .slice(-100);
-
-    this.apiMetricsSubject.next(recentMetrics);
-
-    // Call the correct method
-    this.updateApiPerformanceSummary();
-  }
-
-  /**
-   * Get the latest API metrics
-   */
-  getApiMetrics(): ApiMetrics[] {
-    return [...this.apiMetrics];
-  }
-  
-  /**
-   * Calculate and update API performance summary
-   */
-  private updateApiPerformanceSummary(): void {
-    if (this.apiMetrics.length === 0) {
+    if (this.simulationActive) {
       return;
     }
     
-    // Calculate overall stats
-    const totalRequests = this.apiMetrics.length;
-    const successfulRequests = this.apiMetrics.filter(m => m.success).length;
-    const failedRequests = totalRequests - successfulRequests;
+    this.logger.info('Starting metrics simulation');
+    this.simulationActive = true;
     
-    // Calculate response times
-    const durations = this.apiMetrics.map(m => m.duration);
-    const avgResponseTime = durations.reduce((sum, val) => sum + val, 0) / durations.length;
-    const maxResponseTime = Math.max(...durations);
+    interval(2000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        if (!this.simulationActive) {
+          return;
+        }
+        
+        const randomMetrics: SystemMetrics = {
+          cpuUsage: this.generateRandomValue(10, 90, 10),
+          memoryUsage: this.generateRandomValue(30, 85, 5),
+          networkUtilization: this.generateRandomValue(5, 80, 15),
+          diskUsage: this.generateRandomValue(40, 95, 2),
+          activeUsers: Math.floor(Math.random() * 200) + 50,
+          requestsPerMinute: Math.floor(Math.random() * 1000) + 100,
+          uptime: this.systemUptime,
+          systemStatus: this.determineSystemStatus(this.generateRandomValue(0, 100, 30)),
+          timestamp: new Date()
+        };
+        
+        this.metrics.next(randomMetrics);
+        this.addToHistoricalData(randomMetrics);
+      });
+  }
+  
+  /**
+   * Stop metrics simulation
+   */
+  stopMetricsSimulation(): void {
+    this.logger.info('Stopping metrics simulation');
+    this.simulationActive = false;
+  }
+  
+  /**
+   * Start framerate sampling to measure UI performance
+   */
+  startFramerateSampling(): void {
+    if (this.frameSamplingActive) {
+      return;
+    }
     
-    // Calculate data transfer
-    const totalDataTransferred = this.apiMetrics.reduce(
-      (sum, m) => sum + m.requestSize + m.responseSize, 0
-    );
+    this.logger.info('Starting framerate sampling');
+    this.frameSamplingActive = true;
+    this.frameRateHistory = [];
+    this.lastFrameTime = performance.now();
     
-    // Calculate per-endpoint stats
-    const endpointMap = new Map<string, EndpointStats>();
-    
-    // Group by URL pattern (remove query params and IDs)
-    this.apiMetrics.forEach(metric => {
-      const urlPattern = this.normalizeUrl(metric.url);
+    // Use requestAnimationFrame to measure frame rate
+    const measureFrameRate = (timestamp: number) => {
+      if (!this.frameSamplingActive) {
+        return;
+      }
       
-      if (!endpointMap.has(urlPattern)) {
-        endpointMap.set(urlPattern, {
-          url: urlPattern,
-          callCount: 0,
-          avgDuration: 0,
-          successRate: 0
+      const now = performance.now();
+      const delta = now - this.lastFrameTime;
+      this.lastFrameTime = now;
+      
+      // Only count frames that are rendered
+      if (delta > 0) {
+        const fps = 1000 / delta;
+        this.frameRateHistory.push(fps);
+        
+        // Keep a reasonable history size
+        if (this.frameRateHistory.length > 60) {
+          this.frameRateHistory.shift();
+        }
+        
+        // Calculate stats
+        const avgFps = this.frameRateHistory.reduce((sum, fps) => sum + fps, 0) / this.frameRateHistory.length;
+        const minFps = Math.min(...this.frameRateHistory);
+        const maxFps = Math.max(...this.frameRateHistory);
+        const frameDrops = this.frameRateHistory.filter(fps => fps < 30).length;
+        
+        this.frameRateSubject.next({
+          fps: Math.round(fps),
+          avgFps: Math.round(avgFps),
+          minFps: Math.round(minFps),
+          maxFps: Math.round(maxFps),
+          frameDrops,
+          timestamp: new Date()
         });
       }
       
-      const stats = endpointMap.get(urlPattern)!;
-      stats.callCount++;
-      
-      // Update running average: newAvg = oldAvg + (newValue - oldAvg) / newCount
-      stats.avgDuration = stats.avgDuration + (metric.duration - stats.avgDuration) / stats.callCount;
-      
-      // Update success rate
-      const successCount = this.apiMetrics
-        .filter(m => this.normalizeUrl(m.url) === urlPattern && m.success)
-        .length;
-        
-      stats.successRate = (successCount / stats.callCount) * 100;
-    });
+      this.rafId = requestAnimationFrame(measureFrameRate);
+    };
     
-    // Update the subject with new summary
-    this.apiPerformanceSubject.next({
-      avgResponseTime,
-      maxResponseTime,
-      totalRequests,
-      successfulRequests,
-      failedRequests,
-      totalDataTransferred,
-      endpointStats: endpointMap
+    this.rafId = requestAnimationFrame(measureFrameRate);
+  }
+  
+  /**
+   * Stop framerate sampling
+   */
+  stopFramerateSampling(): void {
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+    
+    this.logger.info('Stopping framerate sampling');
+    this.frameSamplingActive = false;
+  }
+  
+  /**
+   * Get current framerate data
+   */
+  getFramerate$(): Observable<number> {
+    return this.frameRateSubject.asObservable().pipe(
+      map(data => data.fps)
+    );
+  }
+  
+  /**
+   * Get historical performance data for a specific time range
+   * @param days Number of days to look back
+   * @param interval Interval in minutes between data points
+   */
+  getHistoricalData(days: number = 7, interval: number = 60): Observable<HistoricalDataPoint[]> {
+    // In production, we would call an API
+    if (environment.production) {
+      return this.http.get<HistoricalDataPoint[]>(`/api/metrics/history?days=${days}&interval=${interval}`);
+    }
+    
+    // In development, generate realistic historical data
+    const endDate = new Date();
+    const startDate = new Date(endDate);
+    startDate.setDate(startDate.getDate() - days);
+    
+    const dataPoints: HistoricalDataPoint[] = [];
+    const minutesPerPoint = interval;
+    const pointsCount = (days * 24 * 60) / minutesPerPoint;
+    
+    for (let i = 0; i < pointsCount; i++) {
+      const timestamp = new Date(startDate);
+      timestamp.setMinutes(timestamp.getMinutes() + i * minutesPerPoint);
+      
+      // Generate more realistic patterns
+      const hour = timestamp.getHours();
+      const isBusinessHour = hour >= 9 && hour <= 17;
+      const isWeekend = [0, 6].includes(timestamp.getDay());
+      
+      // More active during business hours on weekdays
+      const activityMultiplier = isWeekend ? 0.4 : (isBusinessHour ? 1 : 0.6);
+      
+      // Add some weekly patterns
+      const dayOfWeek = timestamp.getDay();
+      const dayMultiplier = 0.8 + (dayOfWeek * 0.05);
+      
+      // Add some random variation but maintain trends
+      const baseValue = activityMultiplier * dayMultiplier;
+      
+      dataPoints.push({
+        timestamp,
+        cpuUsage: this.generateTrendValue(20, 80, baseValue, i),
+        memoryUsage: this.generateTrendValue(30, 90, baseValue, i),
+        networkUtilization: this.generateTrendValue(10, 70, baseValue, i),
+        activeUsers: Math.floor(this.generateTrendValue(20, 500, baseValue, i)),
+        requestsPerMinute: Math.floor(this.generateTrendValue(50, 2000, baseValue, i))
+      });
+    }
+    
+    return of(dataPoints);
+  }
+  
+  /**
+   * Clean up resources on service destroy
+   */
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    
+    if (this.uptimeInterval) {
+      clearInterval(this.uptimeInterval);
+    }
+    
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+    }
+  }
+  
+  /**
+   * Initialize metrics polling from API
+   */
+  private initMetricsPolling(): void {
+    // Use interval to poll metrics regularly
+    interval(this.refreshInterval)
+      .pipe(
+        startWith(0), // Start immediately
+        takeUntil(this.destroy$),
+        switchMap(() => {
+          // In production, get real metrics
+          if (environment.production) {
+            return this.http.get<SystemMetrics>('/api/metrics/system');
+          } else {
+            // In development, create simulated metrics
+            return this.getSimulatedMetrics();
+          }
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          this.updateMetrics(data);
+          this.logger.debug('Updated system metrics', { metrics: data });
+        },
+        error: (error) => {
+          this.logger.error('Failed to fetch system metrics', { error });
+          
+          // On error, update status to degraded
+          const currentMetrics = this.metrics.getValue();
+          this.metrics.next({
+            ...currentMetrics,
+            systemStatus: 'Degraded'
+          });
+        }
+      });
+  }
+  
+  /**
+   * Update metrics with new data
+   */
+  private updateMetrics(data: SystemMetrics): void {
+    const updatedMetrics: SystemMetrics = {
+      cpuUsage: data.cpuUsage || 0,
+      memoryUsage: data.memoryUsage || 0,
+      networkUtilization: data.networkUtilization || 0,
+      diskUsage: data.diskUsage || 0,
+      activeUsers: data.activeUsers || 0,
+      requestsPerMinute: data.requestsPerMinute || 0,
+      uptime: data.uptime || this.systemUptime,
+      systemStatus: data.systemStatus || 'Operational',
+      timestamp: new Date(),
+      // Add additional properties for performance component compatibility
+      cpuLoadRaw: data.cpuUsage || 0,
+      cpuLoad: `${data.cpuUsage || 0}%`,
+      memoryUsageRaw: data.memoryUsage || 0,
+      networkLatencyRaw: data.networkUtilization || 0,
+      networkLatency: `${data.networkUtilization || 0}ms`,
+    };
+    
+    this.metrics.next(updatedMetrics);
+    this.addToHistoricalData(updatedMetrics);
+  }
+  
+  /**
+   * Start internal uptime counter for simulated data
+   */
+  private startUptimeCounter(): void {
+    this.uptimeInterval = setInterval(() => {
+      this.systemUptime += 1;
+      
+      // Update uptime in metrics
+      const currentMetrics = this.metrics.getValue();
+      this.metrics.next({
+        ...currentMetrics,
+        uptime: this.systemUptime
+      });
+    }, 1000);
+  }
+  
+  /**
+   * Set simulated metrics for development
+   */
+  private setSimulatedMetrics(): void {
+    const simulatedMetrics: SystemMetrics = {
+      cpuUsage: Math.floor(Math.random() * 40) + 20, // 20-60%
+      memoryUsage: Math.floor(Math.random() * 30) + 40, // 40-70%
+      networkUtilization: Math.floor(Math.random() * 50) + 20, // 20-70%
+      diskUsage: 45, // Static for now
+      activeUsers: Math.floor(Math.random() * 50) + 20, // 20-70 users
+      requestsPerMinute: Math.floor(Math.random() * 100) + 50, // 50-150 RPM
+      uptime: this.systemUptime,
+      systemStatus: 'Operational',
+      timestamp: new Date()
+    };
+    
+    this.metrics.next(simulatedMetrics);
+  }
+  
+  /**
+   * Get simulated metrics for development environment
+   */
+  private getSimulatedMetrics(): Observable<SystemMetrics> {
+    return new Observable(observer => {
+      const metrics: SystemMetrics = {
+        cpuUsage: this.generateRandomValue(20, 60, 10),
+        memoryUsage: this.generateRandomValue(40, 70, 5),
+        networkUtilization: this.generateRandomValue(20, 70, 15),
+        diskUsage: this.generateRandomValue(40, 60, 2),
+        activeUsers: Math.floor(Math.random() * 50) + 20, // 20-70 users
+        requestsPerMinute: Math.floor(Math.random() * 100) + 50, // 50-150 RPM
+        uptime: this.systemUptime,
+        systemStatus: this.determineSystemStatus(Math.random() * 100),
+        timestamp: new Date()
+      };
+      
+      observer.next(metrics);
+      observer.complete();
     });
   }
   
   /**
-   * Normalize URL to group similar endpoints
-   * e.g. /api/users/123 and /api/users/456 become /api/users/{id}
+   * Generate random value with some fluctuation
    */
-  private normalizeUrl(url: string): string {
-    try {
-      // Parse the URL to get the pathname
-      const parsedUrl = new URL(url, window.location.origin);
-      const pathParts = parsedUrl.pathname.split('/');
-      
-      // Replace numeric IDs with {id} placeholder
-      const normalizedParts = pathParts.map(part => {
-        // If part is numeric or looks like an ID (UUID, etc.), replace with {id}
-        if (/^\d+$/.test(part) || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(part)) {
-          return '{id}';
-        }
-        return part;
-      });
-      
-      return normalizedParts.join('/');
-    } catch (e) {
-      // If URL parsing fails, return as is
-      return url;
+  private generateRandomValue(min: number, max: number, fluctuation: number): number {
+    const baseValue = this.metrics.getValue()[Object.keys(this.metrics.getValue())[0] as keyof SystemMetrics] as number || min;
+    const change = (Math.random() * fluctuation * 2) - fluctuation;
+    const newValue = baseValue + change;
+    return Math.min(Math.max(newValue, min), max);
+  }
+  
+  /**
+   * Generate trend value for historical data
+   */
+  private generateTrendValue(min: number, max: number, multiplier: number, step: number): number {
+    // Use sine wave to create natural-looking patterns
+    const sinValue = Math.sin(step / 10) * 0.5 + 0.5;
+    const range = max - min;
+    const baseValue = min + (range * multiplier * sinValue);
+    
+    // Add random noise
+    const noise = (Math.random() * 0.2 - 0.1) * range;
+    return Math.min(Math.max(baseValue + noise, min), max);
+  }
+  
+  /**
+   * Determine system status based on performance values
+   */
+  private determineSystemStatus(value: number): string {
+    if (value > 95) return 'Critical';
+    if (value > 80) return 'Degraded';
+    if (value > 60) return 'Warning';
+    return 'Operational';
+  }
+  
+  /**
+   * Update API performance summary from collected calls
+   */
+  private updateApiPerformanceSummary(calls: ApiCall[]): void {
+    if (calls.length === 0) {
+      return;
     }
-  }
-
-  /**
-   * Get current performance metrics data
-   * In a real app, this would fetch from an actual monitoring service
-   */
-  getPerformanceData(): Observable<any[]> {
-    // Simulate real-time data by varying values slightly
-    return timer(0, 10000).pipe(
-      map(() => {
-        return this.mockData.map(item => ({
-          label: item.label,
-          value: this.getRandomValue(item.value)
-        }));
-      })
-    );
-  }
-
-  /**
-   * Generate a value that varies slightly from the base value
-   * to simulate changing performance metrics
-   */
-  private getRandomValue(baseValue: number): number {
-    const variance = Math.floor(Math.random() * 20) - 10; // -10 to +10
-    const newValue = baseValue + variance;
-    return Math.max(0, Math.min(100, newValue)); // Keep between 0 and 100
-  }
-
-  /**
-   * Get historical performance data by time period
-   * (Just a mock implementation)
-   */
-  getHistoricalData(days: number = 7): Observable<any[]> {
-    const labels = Array(days).fill(0).map((_, i) => {
-      const date = new Date();
-      date.setDate(date.getDate() - (days - i - 1));
-      return date.toLocaleDateString();
+    
+    // Calculate basic stats
+    const totalCalls = calls.length;
+    const successfulCalls = calls.filter(call => call.statusCode < 400).length;
+    const failedCalls = totalCalls - successfulCalls;
+    const errorRate = failedCalls / totalCalls * 100;
+    
+    // Calculate response times
+    const responseTimes = calls.map(call => call.duration);
+    const avgResponseTime = responseTimes.reduce((sum, time) => sum + time, 0) / totalCalls;
+    const minResponseTime = Math.min(...responseTimes);
+    const maxResponseTime = Math.max(...responseTimes);
+    
+    // Group by method
+    const byMethod: Record<string, number> = {};
+    calls.forEach(call => {
+      const method = call.method.toUpperCase();
+      byMethod[method] = (byMethod[method] || 0) + 1;
     });
     
-    // Generate some mock historical data
-    return of(labels.map(label => ({
-      label,
-      value: Math.floor(Math.random() * 60) + 20 // 20-80
-    })));
+    // Group by endpoint
+    const byEndpoint: Record<string, number> = {};
+    calls.forEach(call => {
+      // Extract base endpoint pattern (e.g., /api/users/:id -> /api/users)
+      const path = new URL(call.url, window.location.origin).pathname;
+      const segments = path.split('/');
+      
+      // Try to identify URL pattern by looking for ID-like segments
+      const patternSegments = segments.map(segment => {
+        // If segment looks like an ID, replace with :id
+        return /^\d+$|^[0-9a-f]{8,}$/i.test(segment) ? ':id' : segment;
+      });
+      
+      const endpoint = patternSegments.join('/');
+      byEndpoint[endpoint] = (byEndpoint[endpoint] || 0) + 1;
+    });
+    
+    // Calculate slowest endpoints
+    const endpointPerformance: Record<string, {totalTime: number, calls: number}> = {};
+    calls.forEach(call => {
+      const path = new URL(call.url, window.location.origin).pathname;
+      const segments = path.split('/');
+      const patternSegments = segments.map(segment => {
+        return /^\d+$|^[0-9a-f]{8,}$/i.test(segment) ? ':id' : segment;
+      });
+      const endpoint = patternSegments.join('/');
+      
+      if (!endpointPerformance[endpoint]) {
+        endpointPerformance[endpoint] = { totalTime: 0, calls: 0 };
+      }
+      
+      endpointPerformance[endpoint].totalTime += call.duration;
+      endpointPerformance[endpoint].calls += 1;
+    });
+    
+    const slowestEndpoints = Object.entries(endpointPerformance)
+      .map(([url, stats]) => ({
+        url,
+        avgTime: stats.totalTime / stats.calls,
+        calls: stats.calls
+      }))
+      .sort((a, b) => b.avgTime - a.avgTime)
+      .slice(0, 5);
+    
+    // Create summary
+    const summary: ApiPerformanceSummary = {
+      totalCalls,
+      successfulCalls,
+      failedCalls,
+      failedRequests: failedCalls,
+      totalRequests: totalCalls,
+      avgResponseTime,
+      minResponseTime,
+      maxResponseTime,
+      errorRate,
+      byMethod,
+      byEndpoint,
+      slowestEndpoints,
+      recentCalls: calls.slice(-10) // Keep last 10 calls for display
+    };
+    
+    this.apiPerformanceSummarySubject.next(summary);
+  }
+  
+  /**
+   * Add current metrics to historical data
+   */
+  private addToHistoricalData(metrics: SystemMetrics): void {
+    const dataPoint: HistoricalDataPoint = {
+      timestamp: new Date(),
+      cpuUsage: metrics.cpuUsage,
+      memoryUsage: metrics.memoryUsage,
+      networkUtilization: metrics.networkUtilization,
+      activeUsers: metrics.activeUsers,
+      requestsPerMinute: metrics.requestsPerMinute
+    };
+    
+    this.historicalData.push(dataPoint);
+    
+    // Keep history to a reasonable size
+    if (this.historicalData.length > this.MAX_HISTORY_LENGTH) {
+      this.historicalData.shift();
+    }
+  }
+  
+  /**
+   * Start collecting historical data
+   */
+  private startHistoricalDataCollection(): void {
+    // Store metrics every minute for historical data
+    interval(60000)
+      .pipe(
+        startWith(0),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.addToHistoricalData(this.metrics.getValue());
+      });
   }
 }

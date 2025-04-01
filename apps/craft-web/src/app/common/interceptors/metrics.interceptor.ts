@@ -1,45 +1,84 @@
-import { Injectable, Injector } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import {
+  HttpRequest,
+  HttpHandler,
+  HttpEvent,
+  HttpInterceptor,
+  HttpResponse,
+  HttpErrorResponse
+} from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, finalize } from 'rxjs/operators';
 import { PerformanceMetricsService } from '../services/performance-metrics.service';
-import { LoggerService } from '../services/logger.service';
 
+/**
+ * Interceptor to track API call performance metrics
+ */
 @Injectable()
 export class MetricsInterceptor implements HttpInterceptor {
-  constructor(
-    private performanceMetricsService: PerformanceMetricsService,
-    private injector: Injector
-  ) {}
+  constructor(private performanceMetricsService: PerformanceMetricsService) {}
 
-  private get logger(): LoggerService {
-    return this.injector.get(LoggerService);
-  }
-
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    // Skip non-API requests or metrics requests (to avoid infinite loops)
+    if (!request.url.includes('/api/') || request.url.includes('/api/metrics')) {
+      return next.handle(request);
+    }
+    
     const startTime = performance.now();
     
-    return next.handle(req).pipe(
-      tap(event => {
-        if (event instanceof HttpResponse) {
-          const duration = performance.now() - startTime;
-          
-          // Log performance metrics for this API call
-          this.performanceMetricsService.recordApiCall({
-            endpoint: req.url,
-            method: req.method,
-            duration: Math.round(duration),
-            success: event.status >= 200 && event.status < 400
-          });
-          
-          this.logger.debug('MetricsInterceptor: Recorded API call metrics', {
-            url: req.url,
-            method: req.method,
-            duration: Math.round(duration),
-            status: event.status
-          });
+    return next.handle(request).pipe(
+      tap(
+        event => {
+          if (event instanceof HttpResponse) {
+            const endTime = performance.now();
+            const duration = endTime - startTime;
+            const size = this.getResponseSize(event);
+            
+            this.performanceMetricsService.recordApiCall({
+              url: request.url,
+              method: request.method,
+              duration,
+              statusCode: event.status,
+              timestamp: new Date(),
+              size,
+              error: false
+            });
+          }
+        },
+        error => {
+          if (error instanceof HttpErrorResponse) {
+            const endTime = performance.now();
+            const duration = endTime - startTime;
+            
+            this.performanceMetricsService.recordApiCall({
+              url: request.url,
+              method: request.method,
+              duration,
+              statusCode: error.status,
+              timestamp: new Date(),
+              error: true
+            });
+          }
         }
-      })
+      )
     );
+  }
+  
+  /**
+   * Estimate response size in bytes
+   */
+  private getResponseSize(response: HttpResponse<any>): number {
+    let size = 0;
+    
+    try {
+      if (response.body) {
+        size = new TextEncoder().encode(JSON.stringify(response.body)).length;
+      }
+    } catch (e) {
+      // Fallback if we can't calculate size
+      size = 0;
+    }
+    
+    return size;
   }
 }

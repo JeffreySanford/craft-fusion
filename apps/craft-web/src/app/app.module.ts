@@ -144,10 +144,10 @@ import { LandingModule } from './pages/landing/landing.module';
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useFactory: (performanceMetricsService: PerformanceMetricsService, injector: Injector) => {
-        return new MetricsInterceptor(performanceMetricsService, injector);
+      useFactory: (performanceMetricsService: PerformanceMetricsService) => {
+        return new MetricsInterceptor(performanceMetricsService);
       },
-      deps: [PerformanceMetricsService, Injector],
+      deps: [PerformanceMetricsService],
       multi: true
     },
     {

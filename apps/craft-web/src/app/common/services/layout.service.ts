@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { UserStateService } from './user-state.service';
@@ -31,6 +31,30 @@ export class LayoutService {
   // Mobile detection
   private isMobileSubject = new BehaviorSubject<boolean>(false);
   public isMobile$ = this.isMobileSubject.asObservable();
+
+  // Layout dimensions to properly calculate available space
+  private headerHeightSource = new BehaviorSubject<number>(64); // Default header height in px
+  public headerHeight$ = this.headerHeightSource.asObservable();
+  
+  private footerHeightSource = new BehaviorSubject<number>(48); // Default footer height in px
+  public footerHeight$ = this.footerHeightSource.asObservable();
+  
+  private gutterSizeSource = new BehaviorSubject<number>(16); // Default gutter size (1em ≈ 16px)
+  public gutterSize$ = this.gutterSizeSource.asObservable();
+  
+  // Available content height (calculated based on header, footer, gutters)
+  public availableContentHeight$ = combineLatest([
+    this.headerHeight$, 
+    this.footerHeight$, 
+    this.footerExpanded$,
+    this.gutterSize$
+  ]).pipe(
+    map(([headerHeight, footerHeight, isFooterExpanded, gutterSize]) => {
+      const expandedFooterHeight = isFooterExpanded ? 192 : footerHeight; // 192px when expanded
+      // Calculate available height accounting for header, footer and two gutters (top and bottom)
+      return `calc(100vh - ${headerHeight}px - ${expandedFooterHeight}px - ${gutterSize * 2}px)`;
+    })
+  );
 
   constructor(
     private breakpointObserver: BreakpointObserver,
@@ -159,8 +183,35 @@ export class LayoutService {
     this.userStateService.setUserPreference(this.SIDEBAR_WIDTH_KEY, width.toString());
   }
 
-  // Toggle footer expansion state
-  toggleFooterExpansion(isExpanded: boolean): void {
-    this.footerExpandedSubject.next(isExpanded);
+  /**
+   * Sets the header height
+   * @param height Height in pixels
+   */
+  setHeaderHeight(height: number): void {
+    this.headerHeightSource.next(height);
+  }
+
+  /**
+   * Sets the footer height
+   * @param height Height in pixels
+   */
+  setFooterHeight(height: number): void {
+    this.footerHeightSource.next(height);
+  }
+
+  /**
+   * Sets the gutter size
+   * @param size Size in pixels
+   */
+  setGutterSize(size: number): void {
+    this.gutterSizeSource.next(size);
+  }
+
+  /**
+   * Toggle footer expanded state
+   * @param expanded Whether footer should be expanded
+   */
+  toggleFooterExpansion(expanded: boolean): void {
+    this.footerExpandedSubject.next(expanded);
   }
 }
