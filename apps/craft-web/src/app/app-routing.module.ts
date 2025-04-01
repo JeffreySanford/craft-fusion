@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PreloadAllModules } from '@angular/router';
+import { AuthGuard } from './common/guards/auth.guard';
+import { AdminGuard } from './common/guards/admin.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -10,7 +12,9 @@ const routes: Routes = [
   },
   { 
     path: 'admin', 
-    loadChildren: () => import('./pages/admin/admin.module').then(m => m.AdminModule) 
+    loadChildren: () => import('./pages/admin/admin.module').then(m => m.AdminModule),
+    canActivate: [AuthGuard, AdminGuard],
+    data: { title: 'Admin Dashboard' }
   },
   {
     path: 'profile',

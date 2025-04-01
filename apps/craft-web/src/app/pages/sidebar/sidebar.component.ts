@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { LayoutService } from '../../common/services/layout.service';
 import { ThemeService } from '../../common/services/theme.service';
+import { AuthenticationService } from '../../common/services/authentication.service';
 import { NavItem } from './sidebar.types';
 
 @Component({
@@ -86,6 +87,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
   resizeStartX = 0;
   currentWidth = 250; // Default sidebar width
   isMobile = false;
+  isResizing = false;
+  isMobileView = false;
+  isAdmin = false;
+  currentTheme: string = 'light-theme'; // Initialize the property with a default value
 
   private destroy$ = new Subject<void>();
 
@@ -93,10 +98,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private router: Router,
     private layoutService: LayoutService,
     private themeService: ThemeService,
-    private el: ElementRef
+    private authService: AuthenticationService,
+    private el: ElementRef,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+
+    this.currentTheme = this.themeService.getCurrentTheme();
     // Track sidebar collapsed state from LayoutService
     this.layoutService.sidebarExpanded$
       .pipe(takeUntil(this.destroy$))
@@ -118,6 +127,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
         this.resizing = resizing;
       });
 
+    // Subscribe to sidebar resize events
+    this.layoutService.sidebarResizing$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((resizing: boolean) => {
+        this.isResizing = resizing;
+      });
+
     // Track mobile state
     this.layoutService.isMobile()
       .pipe(takeUntil(this.destroy$))
@@ -128,6 +144,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
         if (isMobile && !this.collapsed) {
           this.toggleSidebar();
         }
+      });
+
+    // Subscribe to mobile state changes
+    this.layoutService.isMobile()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((isMobile: boolean) => {
+        this.isMobileView = isMobile;
+        this.changeDetectorRef.markForCheck();
       });
 
     // Track active route for highlighting
@@ -146,6 +170,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
             projectsItem.expanded = true;
           }
         }
+      });
+
+    // Check if user has admin rights
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        this.isAdmin = !!user && !!user.roles && user.roles.includes('admin');
+        this.changeDetectorRef.markForCheck();
       });
   }
 
@@ -181,11 +213,17 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Toggle sidebar expanded/collapsed state
+   */
   toggleSidebar(): void {
     this.layoutService.toggleSidebarExpanded();
   }
 
-  // Resize functionality
+  /**
+   * Start sidebar resize
+   * @param event Mouse event
+   */
   startResize(event: MouseEvent): void {
     event.preventDefault();
     this.resizeStartX = event.clientX;
@@ -194,6 +232,24 @@ export class SidebarComponent implements OnInit, OnDestroy {
     // Add event listeners for drag and release
     document.addEventListener('mousemove', this.onDragMove);
     document.addEventListener('mouseup', this.onDragEnd);
+  }
+
+  /**
+   * End sidebar resize
+   */
+  endResize(): void {
+    if (this.resizing) {
+      // Get computed width after drag
+      const computedWidth = this.el.nativeElement.getBoundingClientRect().width;
+      
+      // Update service with final width
+      this.layoutService.setSidebarWidth(computedWidth);
+      this.layoutService.endSidebarResize();
+      
+      // Remove event listeners
+      document.removeEventListener('mousemove', this.onDragMove);
+      document.removeEventListener('mouseup', this.onDragEnd);
+    }
   }
 
   @HostListener('document:mousemove', ['$event'])
@@ -210,18 +266,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   @HostListener('document:mouseup')
   onDragEnd = () => {
-    if (this.resizing) {
-      // Get computed width after drag
-      const computedWidth = this.el.nativeElement.getBoundingClientRect().width;
-      
-      // Update service with final width
-      this.layoutService.setSidebarWidth(computedWidth);
-      this.layoutService.endSidebarResize();
-      
-      // Remove event listeners
-      document.removeEventListener('mousemove', this.onDragMove);
-      document.removeEventListener('mouseup', this.onDragEnd);
-    }
+    this.endResize();
   }
 
   // Expand sidebar when hovered in collapsed state on desktop

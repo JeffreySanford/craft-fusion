@@ -1,36 +1,46 @@
+/**
+ * This file includes polyfills needed by Angular and is loaded before the app.
+ * You can add your own extra polyfills to this file.
+ *
+ * This file is divided into 2 sections:
+ *   1. Browser polyfills. These are applied before loading ZoneJS and are sorted by browsers.
+ *   2. Application imports. Files imported after ZoneJS that should be loaded before your main file.
+ *
+ * The current setup is for so-called "evergreen" browsers; the last versions of browsers that
+ * automatically update themselves. This includes recent versions of Safari, Chrome (including
+ * Opera), Edge, and Firefox.
+ *
+ * Learn more in https://angular.io/guide/browser-support
+ */
+
 /***************************************************************************************************
- * Zone JS is required by Angular itself.
+ * Zone JS is required by default for Angular itself.
  */
 import 'zone.js';  // Included with Angular CLI.
 
 /***************************************************************************************************
- * Polyfills for older browsers.
+ * APPLICATION IMPORTS
  */
 
-// Modern Array Methods (if targeting very old browsers)
-if (!Array.prototype.includes) {
-  Array.prototype.includes = function (searchElement: any, fromIndex?: number): boolean {
-    return this.indexOf(searchElement, fromIndex) !== -1;
-  };
+// Import web animations module for smoother animations
+import 'web-animations-js';
+
+// Import intersection observer for better scroll detection
+import 'intersection-observer';
+
+// Polyfill for older browsers that don't support the Internationalization API
+if (!Intl.PluralRules) {
+  require('@formatjs/intl-pluralrules/polyfill');
+  require('@formatjs/intl-pluralrules/locale-data/en');
 }
 
-// Modern localStorage Polyfill (if targeting very old browsers)
-if (!('localStorage' in window)) {
-  const storage = new Map<string, string>();
-  Object.defineProperty(window, 'localStorage', {
-    value: {
-      getItem: (key: string) => storage.get(key) || null,
-      setItem: (key: string, value: string) => storage.set(key, value),
-      removeItem: (key: string) => storage.delete(key),
-      clear: () => storage.clear(),
-      key: (index: number) => Array.from(storage.keys())[index] || null,
-      length: storage.size
-    },
-    writable: false
-  });
-}
+// Added for custom elements support if needed
+import '@webcomponents/custom-elements/custom-elements.min.js';
 
-/***************************************************************************************************
- * Other Browser Compatibility Features.
- * Add any other specific polyfills you need here.
- */
+// Polyfill for CSS variables in IE11 if needed
+// import 'css-vars-ponyfill';
+
+// For IE11 support (if needed)
+// import 'classlist.js';
+// import 'core-js/features/array/includes';
+// import 'core-js/features/string/includes';

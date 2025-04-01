@@ -7,11 +7,13 @@ A comprehensive web application with responsive layout, interactive data visuali
 ## 🚀 Features
 
 - **Patriotic Design System** - Navy blue, red, and gold theme with elegant UI components
-- **Responsive Layout** - Header, Sidebar, Mainstage (with 1em gutter), and Footer
+- **Fixed Header/Footer Layout** - Modern layout with fixed navigation elements
+- **Responsive Content Area** - Flexible mainstage with collapsible sidebar
 - **Data Visualizations** - Performance metrics and health monitoring dashboards
 - **Security Settings** - User security preferences and password management
 - **Theme Switcher** - Multiple patriotic themes (Light, Dark, Bold, Vintage)
 - **Performance Metrics** - Real-time system monitoring and reporting
+- **Admin Dashboard** - Protected admin section for authorized users
 
 ## 📋 Project Structure
 
@@ -23,10 +25,13 @@ craft-fusion/
 │   │   ├── src/
 │   │   │   ├── app/        # Application code
 │   │   │   │   ├── common/       # Shared services, utilities, components
+│   │   │   │   │   ├── guards/   # Auth and admin guards
+│   │   │   │   │   ├── services/ # Core services including layout
+│   │   │   │   │   └── ...
 │   │   │   │   ├── pages/        # Main application pages
-│   │   │   │   │   ├── header/   # Header components
-│   │   │   │   │   ├── footer/   # Footer components
-│   │   │   │   │   ├── sidebar/  # Sidebar components
+│   │   │   │   │   ├── header/   # Fixed header components
+│   │   │   │   │   ├── footer/   # Fixed footer components
+│   │   │   │   │   ├── sidebar/  # Collapsible sidebar components
 │   │   │   │   │   └── ...
 │   │   │   │   └── projects/     # Project-specific feature modules
 │   │   │   └── styles/          # Global styles
@@ -41,7 +46,7 @@ craft-fusion/
 │   └── ...
 │
 └── prompts/                # Project planning and status
-    ├── STATUS-AND-VISUALIZATION.md
+    ├── layout-refactoring-plan.md
     └── ...
 ```
 
@@ -56,11 +61,11 @@ The application implements a comprehensive theming architecture based on Materia
 
 ## 🧩 Layout Components
 
-The layout follows a fixed structure:
+The layout follows a fixed structure with header and footer anchored to the viewport:
 
 ```plaintext
 ┌─────────────────────────────────────────────┐
-│                  HEADER                     │
+│                  HEADER                     │ <- Fixed to top
 ├────────────┬────────────────────────────────┤
 │            │                                │
 │            │                                │
@@ -70,7 +75,7 @@ The layout follows a fixed structure:
 │            │                                │
 │            │                                │
 ├────────────┴────────────────────────────────┤
-│                  FOOTER                     │
+│                  FOOTER                     │ <- Fixed to bottom
 └─────────────────────────────────────────────┘
 ```
 

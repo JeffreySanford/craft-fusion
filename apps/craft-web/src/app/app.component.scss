@@ -1,510 +1,87 @@
-@use '../styles/variables' as vars;
+@use '../styles/mixins';
+@use '../styles/variables';
 @use '../styles/animations';
-@use '../styles/mixins' as mixins;
 @use '../styles/responsive' as responsive;
 @use '../styles/layout';
 @use 'sass:map';
 
 :host {
-  display: block;
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* Page container styling */
-.page-container {
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  font-size: 0.8em;
-  max-height: 100vh; /* Limit height to viewport to prevent scrolling */
-  position: relative;
-  z-index: 1;
-  // Enable background transparency
-  background-color: transparent;
-
-  // Add padding at the bottom to compensate for overlapping footer
-  padding-bottom: calc(var(--md-sys-footer-height, 3em) / 2);
-
-  &.footer-expanded {
-    // Adjust padding when footer is expanded
-    padding-bottom: calc(var(--md-sys-footer-expanded-height, 12em) / 2);
-  }
-
-  /* Debug border for layout visualization */
-  &.debug-layout {
-    border: 2px dashed red;
-  }
-
-  .layout-container {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-    gap: 1em; // Add 1em gutter between sidebar and mainstage
-    flex-direction: row; /* Arrange children in a row */
-    width: 100%;
-    flex: 1 0 auto; /* grow, don't shrink, use auto basis */
-    margin: 0 0.25em 0.25em 0.25em; /* Add left, right, and bottom margins */
-    transition: all 0.3s ease;
-
-    &.footer-expanded {
-      margin-bottom: var(--md-sys-footer-expanded-height, 12rem); /* Adjust based on expanded footer height */
-      padding-bottom: 0; /* Remove bottom padding to prevent overlap */ 
-      height: calc(100vh - var(--md-sys-footer-expanded-height, 12rem)); /* Adjust height to fit expanded footer */
-      /* Ensure the layout doesn't overflow */
-      overflow: hidden; /* Prevent overflow when footer is expanded */
-      /* Adjust height to fit expanded footer */
-      height: calc(100vh - var(--md-sys-footer-expanded-height, 12rem)); /* Adjust height to fit expanded footer */
-    }
-
-    /* Debug border for layout visualization */
-    &.debug-layout {
-      border: 2px dashed purple;
-    }
-
-    aside.sidebar {
-      height: 100%;
-      width: auto; // Let content determine width instead of fixed width
-      max-width: 250px; // Maximum width for sidebar
-      min-width: 200px; // Minimum width to ensure buttons fit
-      border-right: 2px solid var(--md-sys-color-secondary);
-      z-index: 2;
-      transition: width 0.3s ease;
-      overflow: hidden;
-      flex-shrink: 0; // Prevent sidebar from shrinking
-
-      &.collapsed {
-        width: 64px !important;
-        min-width: 64px; // Override min-width when collapsed
-      }
-
-      &.footer-expanded {
-        margin-bottom: var(--md-sys-footer-expanded-height, 12rem);
-      }
-
-      /* Debug border for layout visualization */
-      &.debug-border {
-        border: 3px solid blue;
-        box-shadow: 0 0 0 1px white;
-      }
-
-      // Apply responsive behavior using the mixins
-      @include responsive.sm-down {
-        min-width: 180px; // Slightly smaller on small screens when expanded
-      }
-    }
-
-    main.main-stage {
-      @include layout.main-stage; /* Apply the main stage mixin */
-      flex: 1; // Take up remaining space
-      display: flex;
-      flex-direction: column;
-      justify-content: stretch;
-      align-items: stretch;
-      box-sizing: border-box;
-      overflow: auto;
-      position: relative;
-      padding: 2rem;
-      background-color: var(--md-sys-color-background);
-      transition: padding 0.3s ease;
-      border-left: 2px solid var(--md-sys-color-primary);
-
-      @include responsive.sm-down {
-        padding: 1rem;
-      }
-
-      &.footer-expanded {
-        padding-bottom: 300px; // Adjust based on expanded footer height
-
-        @include responsive.sm-down {
-          padding-bottom: 500px; // More room on mobile
-        }
-      }
-
-      /* Debug border for layout visualization */
-      &.debug-border {
-        border: 3px solid green;
-        box-shadow: 0 0 0 1px white;
-      }
-
-      // Add dashboard styling
-      &.dashboard-active {
-        padding: 2rem;
-
-        // Responsive padding adjustment
-        @include responsive.sm-down {
-          padding: 1rem;
-        }
-
-        // Add subtle animation when becoming active
-        & {
-          animation: fadeInContent 0.3s ease-out forwards;
-        }
-      }
-
-      // Dashboard content container
-      .dashboard-content {
-        max-width: 1200px;
-        margin: 0 auto;
-        animation: fade-in 0.3s ease-out forwards;
-      }
-
-      // Apply gradient border
-      &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: var(--patriotic-gradient);
-        z-index: 1;
-      }
-    }
-  }
-
-  app-footer {
-    flex-shrink: 0;
-    width: 100%;
-    display: block;
-    margin-top: auto; /* Push footer to bottom of flex container */
-    // Remove any padding or extra containers
-    padding: 0;
-    border: none;
-    background: transparent;
-  }
-}
-
-/* Background video styling */
-#background-video {
-  position: fixed;
-  top: 0; /* Ensure the video covers the entire viewport */
-  left: 0;
-  width: 100vw;
   height: 100vh;
-  z-index: -100; /* Ensure it stays behind all content */
-  object-fit: cover;
-  background-size: cover;
+  width: 100vw;
   overflow: hidden;
-  filter: contrast(1.1) brightness(0.8) grayscale(30%) blur(2px);
-  opacity: 0.3;
 }
 
 .app-container {
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  transition: background-color 0.3s ease;
-
-  &.dark-theme {
-    background-color: var(--md-sys-color-background);
-  }
-
-  &::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: radial-gradient(circle at 20% 30%, rgba(vars.$navy, 0.03) 2px, transparent 2px),
-      radial-gradient(circle at 50% 60%, rgba(vars.$red, 0.03) 4px, transparent 4px), radial-gradient(circle at 80% 40%, rgba(vars.$gold, 0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
-    z-index: -1;
-  }
-}
-
-.app-content {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  margin-top: vars.$header-height;
-}
-
-.main-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-  height: var(--mainstage-height, calc(100vh - vars.$header-height - vars.$footer-height));
-  margin-left: var(--sidebar-width-actual, vars.$sidebar-width);
-  @include animations.transition-standard(margin-left, height);
-
-  &.sidebar-collapsed {
-    margin-left: var(--md-sys-sidebar-collapsed-width, vars.$sidebar-collapsed-width);
-  }
-
-  @include responsive.sm-down {
-    margin-left: 0 !important;
-    padding: 0.5rem;
-  }
-}
-
-// Overlay for mobile sidebar
-.sidebar-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: map.get(vars.$z-layers, overlay);
-  opacity: 0;
-  pointer-events: none;
-  @include animations.transition-standard;
-
-  &.visible {
-    opacity: 1;
-    pointer-events: all;
-    animation: fade-in 0.3s ease-out forwards;
-  }
-}
-
-// Apply patriotic theme to loading spinner
-.app-loading {
-  @include mixins.centered;
-  height: 100vh;
-  width: 100vw;
-  background: linear-gradient(135deg, rgba(vars.$navy, 0.95), rgba(vars.$red, 0.8));
-
-  .loading-spinner {
-    @include animations.loading-spin;
-    width: 80px;
-    height: 80px;
-    border: 8px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    border-top-color: vars.$gold;
-
-    &:before {
-      content: '';
-      position: absolute;
-      top: -8px;
-      left: -8px;
-      right: -8px;
-      bottom: -8px;
-      border-radius: 50%;
-      border: 8px solid transparent;
-      border-top-color: vars.$white;
-      opacity: 0.7;
-      animation: spin 1s linear infinite reverse;
-    }
-  }
-
-  .app-logo {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-  }
-}
-
-// Dark theme styling
-.dark-theme {
-  // Use RGB values for colors to enable alpha channel adjustments
-  --background-color-rgb: 18, 18, 18;
-  --text-color-rgb: 255, 255, 255;
-  --content-bg-rgb: 30, 30, 30;
-
-  .content-wrapper {
-    background-color: rgba(var(--background-color-rgb), 0.7);
-  }
-
-  .main-content {
-    background-color: rgba(var(--content-bg-rgb), 0.85);
-    color: rgba(var(--text-color-rgb), 0.9);
-  }
-
-  .main-stage {
-    border-left-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .sidebar {
-    border-right-color: rgba(255, 255, 255, 0.1);
-  }
-}
-
-// Mobile layout adjustments
-.mobile {
-  .main-content-area {
-    flex-direction: column;
-
-    .main-content {
-      margin-left: 0;
-    }
-  }
-
-  .sidebar {
-    position: absolute;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: 999;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-
-    &.expanded {
-      transform: translateX(0);
-    }
-  }
-
-  .sidebar-backdrop {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 998;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-
-    &.visible {
-      opacity: 1;
-      visibility: visible;
-      animation: fade-in 0.3s ease-out forwards;
-    }
-  }
-
-  // Remove gap in mobile view to maximize space
-  .layout-container {
-    gap: 0;
-  }
-}
-
-// Adjustments when footer is expanded
-.footer-expanded {
-  .main-content-area {
-    padding-bottom: 16rem; // Add space for expanded footer
-    // Gradually reduce opacity to blend with expanded footer
-    opacity: 0.95;
-    transition: opacity 0.3s ease, padding-bottom 0.3s ease;
-  }
-}
-
-// Animation support - ensure flag animations can shine through
-.animation-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
   height: 100%;
-  pointer-events: none; // Allow clicks to pass through
-  z-index: 0; // Between background and content
-  // Don't add background-color here, keep transparent
-}
-
-// Add fade-in animation for dashboard content
-@keyframes fadeInContent {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// Responsive adjustments
-@include responsive.md-down {
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    z-index: 100;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-
-    &.sidebar-open {
-      transform: translateX(0);
-    }
-  }
-
-  .sidebar-backdrop {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  
+  // Apply proper layout with fixed header/footer
+  .app-header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
+    z-index: 1000;
+    width: 100%;
+  }
+  
+  .app-body {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    padding-top: var(--header-height, 64px);
+    padding-bottom: var(--footer-height, 48px);
+    
+    .app-sidebar {
+      position: fixed;
+      top: var(--header-height, 64px);
+      left: 0;
+      bottom: var(--footer-height, 48px);
+      width: var(--sidebar-width, 250px);
+      z-index: 100;
+      overflow-y: auto;
+      overflow-x: hidden;
+      transition: width 0.3s ease;
+      
+      &.collapsed {
+        width: 64px;
+      }
+    }
+    
+    .app-mainstage {
+      flex: 1;
+      margin-left: var(--sidebar-width, 250px);
+      padding: var(--gutter-size, 16px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      transition: margin-left 0.3s ease, padding 0.3s ease;
+      
+      &.no-sidebar {
+        margin-left: 0;
+      }
+      
+      &.sidebar-collapsed {
+        margin-left: 64px;
+      }
+      
+      &.no-padding {
+        padding: 0;
+      }
+    }
+  }
+  
+  .app-footer {
+    position: fixed;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 90;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-
-    &.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-  }
-}
-
-// Mobile specific adjustments
-@include responsive.sm-down {
-  .main-stage {
-    padding: 1rem;
-  }
-}
-
-// Patriotic themes
-.patriotic-bold-theme {
-  .main-stage {
-    border-left-color: var(--md-sys-color-tertiary);
-  }
-
-  .sidebar {
-    border-right-color: var(--md-sys-color-secondary);
-  }
-}
-
-.patriotic-vintage-theme {
-  .main-stage {
-    border-left-color: var(--md-sys-color-tertiary);
-    border-width: 1px;
-  }
-
-  .sidebar {
-    border-right-color: var(--md-sys-color-secondary);
-    border-width: 1px;
-  }
-}
-
-// Add fade-in animation
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.content-container {
-  .main-content {
-    padding: 2rem;
-    background-color: var(--md-sys-color-background);
-    border-radius: 8px;
-    box-shadow: var(--md-sys-elevation-level1);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    animation: fadeInContent 0.3s ease-out forwards;
-  }
-
-  & {
-    & {
-      animation: fadeInContent 0.3s ease-out forwards;
-    }
-  }
-}
-
-.layout-root.footer-expanded {
-  .layout-main {
-    height: calc(100vh - 200px);
-    transition: height 0.3s ease;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    width: 100%;
   }
 }

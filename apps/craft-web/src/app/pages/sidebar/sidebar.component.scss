@@ -313,6 +313,30 @@
   }
 }
 
+// Add admin button styling
+.admin-item {
+  margin-top: 1rem;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  padding-top: 1rem;
+  
+  .nav-link {
+    background-color: rgba(var(--md-sys-color-error-rgb), 0.1);
+    
+    &:hover {
+      background-color: rgba(var(--md-sys-color-error-rgb), 0.2);
+    }
+    
+    &.active {
+      background-color: rgba(var(--md-sys-color-error-rgb), 0.3);
+      border-left-color: var(--md-sys-color-error);
+      
+      .nav-icon {
+        color: var(--md-sys-color-error);
+      }
+    }
+  }
+}
+
 // Nested navigation
 mat-expansion-panel {
   background-color: transparent;

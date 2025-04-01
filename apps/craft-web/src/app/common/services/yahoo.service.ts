@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError, retry } from 'rxjs/operators';
-import { environment } from 'apps/craft-web/src/environments/environment';
+import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
 
 @Injectable({

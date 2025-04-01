@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environment } from 'apps/craft-web/src/environments/environment';
+import { environment } from '../../../environments/environment';
 import mapboxgl from 'mapbox-gl';
 
 @Injectable({

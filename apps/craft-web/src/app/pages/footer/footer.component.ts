@@ -98,10 +98,9 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     // Destroy charts
     this.destroyCharts();
   }
-  
-  toggleFooter() {
+  toggleFooter(): void {
     this.isExpanded = !this.isExpanded;
-    this.layoutService.toggleFooterExpansion(this.isExpanded);
+    this.layoutService.setFooterExpansion(this.isExpanded);
     
     // Initialize or destroy charts based on expanded state
     if (this.isExpanded) {
@@ -109,6 +108,16 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       this.destroyCharts();
     }
+  }
+  
+  toggleExpansion(): void {
+    this.isExpanded = !this.isExpanded;
+    this.layoutService.setFooterExpansion(this.isExpanded);
+  }
+  
+  onExpandClick(): void {
+    this.isExpanded = !this.isExpanded;
+    this.layoutService.setFooterExpansion(this.isExpanded);
   }
   
   getStatusClass() {

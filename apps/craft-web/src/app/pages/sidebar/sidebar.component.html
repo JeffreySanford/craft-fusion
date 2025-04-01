@@ -1,5 +1,4 @@
-<div class="sidebar-container" 
-     [class.collapsed]="collapsed"
+<aside class="sidebar-container" [ngClass]="[currentTheme, !collapsed ? 'expanded' : 'collapsed']" 
      [class.mobile]="isMobile"
      [class.resizing]="resizing"
      [style.width.px]="collapsed ? 64 : currentWidth"
@@ -60,6 +59,19 @@
             </ul>
           </div>
         </li>
+        
+        <!-- Admin section with auth guard -->
+        <li class="nav-item admin-item" *ngIf="isAdmin">
+          <a 
+            class="nav-link" 
+            [routerLink]="['/admin']" 
+            routerLinkActive="active"
+            [attr.title]="!collapsed ? '' : 'Admin Dashboard'"
+          >
+            <mat-icon class="nav-icon">admin_panel_settings</mat-icon>
+            <span class="nav-label" *ngIf="!collapsed">Admin</span>
+          </a>
+        </li>
       </ul>
     </nav>
   </div>
@@ -79,4 +91,4 @@
        *ngIf="!collapsed && !isMobile" 
        (mousedown)="startResize($event)">
   </div>
-</div>
+</aside>

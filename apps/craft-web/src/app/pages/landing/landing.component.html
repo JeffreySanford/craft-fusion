@@ -1,72 +1,49 @@
-<div class="landing-container" [ngClass]="themeClass">
-  <!-- Video background is handled by app-video-background in app.component -->
-  <div class="landing-content">
-    <!-- Header with animated name -->
-    <div class="landing-header">
-      <h1 class="name-title">
-        <span class="name-part name-fireworks patriotic-shimmer">Jeffrey</span>
-        <span class="name-part name-fireworks patriotic-shimmer">Sanford</span>
-      </h1>
-      <div class="tagline">
-        <div class="animated-words">
-          <span class="word word-animate-1">Innovator</span>
-          <span class="word word-animate-2">Developer</span>
-          <span class="word word-animate-3">Designer</span>
-          <span class="word word-animate-4">Visionary</span>
-        </div>
+<div class="landing-page" [ngClass]="currentTheme">
+  <!-- Particle animation background -->
+  <div #particleContainer class="particle-container"></div>
+  
+  <!-- Hero section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title" @fadeIn>CRAFT FUSION</h1>
+      <div class="hero-subtitle" @slideIn>Powerful tools with a patriotic spirit</div>
+      
+      <div class="hero-cta-container" @slideIn>
+        <button mat-raised-button color="primary" class="hero-cta" (click)="navigateTo('/dashboard')">
+          <mat-icon>arrow_forward</mat-icon>
+          Get Started
+        </button>
+        
+        <button mat-stroked-button class="hero-cta secondary" (click)="navigateTo('/about')">
+          Learn More
+        </button>
       </div>
     </div>
+  </section>
+  
+  <!-- Features section -->
+  <section class="features-section" @scaleIn>
+    <h2 class="section-title">Our Features</h2>
     
-    <!-- Main content with cards -->
-    <div class="feature-cards">
-      <div class="feature-card animate-fadeIn" [style.animation-delay]="'0.2s'">
-        <div class="card-icon">
-          <mat-icon aria-hidden="false" aria-label="Dashboard" color="primary">dashboard</mat-icon>
-        </div>
-        <h3>Interactive Dashboard</h3>
-        <p>Explore data with powerful, customizable visualizations.</p>
-      </div>
-      
-      <div class="feature-card animate-fadeIn" [style.animation-delay]="'0.4s'">
-        <div class="card-icon">
-          <mat-icon aria-hidden="false" aria-label="Data" color="accent">bar_chart</mat-icon>
-        </div>
-        <h3>Data Visualization</h3>
-        <p>Transform complex data into clear, actionable insights.</p>
-      </div>
-      
-      <div class="feature-card animate-fadeIn" [style.animation-delay]="'0.6s'">
-        <div class="card-icon">
-          <mat-icon aria-hidden="false" aria-label="Video" color="warn">videocam</mat-icon>
-        </div>
-        <h3>Space Video</h3>
-        <p>Journey through space with immersive video experiences.</p>
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let feature of features; let i = index" 
+           [@stagger]="getAnimationDelay(i)">
+        <mat-icon class="feature-icon">{{feature.icon}}</mat-icon>
+        <h3 class="feature-title">{{feature.title}}</h3>
+        <p class="feature-description">{{feature.description}}</p>
       </div>
     </div>
-    
-    <!-- Call to action -->
-    <div class="landing-cta animate-fadeIn" [style.animation-delay]="'0.8s'">
-      <button mat-raised-button color="primary" (click)="navigateToFeature('dashboard')">
-        Explore Dashboard
-      </button>
-      <button mat-raised-button color="accent" (click)="navigateToFeature('data-visualizations')">
-        View Visualizations
+  </section>
+  
+  <!-- Call to action section -->
+  <section class="cta-section" @scaleIn>
+    <div class="cta-content">
+      <h2 class="cta-title">Ready to get started?</h2>
+      <p class="cta-subtitle">Join thousands of organizations using Craft Fusion today.</p>
+      
+      <button mat-raised-button color="accent" class="cta-button" (click)="navigateTo('/register')">
+        Create Account
       </button>
     </div>
-    
-    <!-- Stars background decoration -->
-    <div class="stars-container">
-      <div *ngFor="let star of stars" class="star" 
-           [ngStyle]="{'top': star.top + '%', 'left': star.left + '%', 'animation-delay': star.delay + 's'}"></div>
-    </div>
-    
-    <!-- Flag stripes background decoration -->
-    <div class="flag-stripes">
-      <div class="stripe red-stripe"></div>
-      <div class="stripe white-stripe"></div>
-      <div class="stripe red-stripe"></div>
-      <div class="stripe white-stripe"></div>
-      <div class="stripe red-stripe"></div>
-    </div>
-  </div>
+  </section>
 </div>
