@@ -1,114 +1,105 @@
-# Craft Fusion Refactoring Overview
+# Craft Fusion Refactoring Guide
 
-This document consolidates all major refactoring efforts taking place within the Craft Fusion project, detailing objectives, progress, and next steps. Refer to individual prompt files for deeper technical plans and tasks.
+This document provides guidelines for refactoring code within the Craft Fusion project.
 
-## Table of Contents
+## Refactoring Principles
 
-- [Craft Fusion Refactoring Overview](#craft-fusion-refactoring-overview)
-  - [Table of Contents](#table-of-contents)
-  - [Scope \& Purpose](#scope--purpose)
-  - [Refactoring Efforts](#refactoring-efforts)
-    - [Style Refactoring](#style-refactoring)
-    - [Footer Refactoring](#footer-refactoring)
-    - [Header Refactoring](#header-refactoring)
-    - [Sidebar Refactoring](#sidebar-refactoring)
-    - [Data Visualization System](#data-visualization-system)
-    - [Feature Refactoring Strategy](#feature-refactoring-strategy)
-    - [Circular Dependency Refactoring](#circular-dependency-refactoring)
-  - [Primary Goals](#primary-goals)
-  - [Current Status Summary](#current-status-summary)
-  - [Additional References](#additional-references)
+1. **Incremental Changes**: Make small, focused changes rather than large rewrites
+2. **Maintain Tests**: Ensure tests pass before and after refactoring
+3. **Code Coverage**: Add tests for untested code before refactoring
+4. **One Concern at a Time**: Separate refactoring from feature work
+5. **Documentation**: Update documentation to reflect architectural changes
 
-## Scope & Purpose
+## Common Refactoring Patterns
 
-Refactoring efforts mainly focus on the frontend (craft-web) for Material Design 3 compliance, consistent patriotic theming, component architecture improvements, and performance optimizations.
+### Angular Frontend
 
-## Refactoring Efforts
+#### Circular Dependencies
 
-### Style Refactoring
+Circular dependencies are a common issue, particularly between services. Here's how to resolve them:
 
-- Guided by [style-refactoring-plan.md](./prompts/style-refactoring-plan.md)
-- Objective: Adopt MD3 tokens, create a unified SCSS structure, and test across components
-- Status: In Testing (60%) — finalizing responsive checks and accessibility compliance
+1. **Identify the cycle**: Use tools like Madge to find circular dependencies
+2. **Apply Mediator Pattern**: Create an intermediary service that both dependencies use
+3. **Use Injection Tokens**: For complex cases, use injection tokens and factories
+4. **Forward References**: As a last resort, use `forwardRef()` in Angular DI system
 
-### Footer Refactoring
+Example:
 
-- Guided by [footer-refactoring-plan.md](./prompts/footer-refactoring-plan.md)
-- Objective: Align footer with MD3 and unify performance metrics display
-- Status: Analysis Complete (15%) — preparing new service-based architecture
+```typescript
+// Before: Circular dependency between ServiceA and ServiceB
 
-### Header Refactoring
+// After: Using an intermediary service
+@Injectable({ providedIn: 'root' })
+export class MediatorService {
+  // Shared functionality
+}
 
-- Guided by [header-refactoring-plan.md](./prompts/header-refactoring-plan.md)
-- Objective: Modernize header layout, search/notification features, and MD3 integration
-- Status: Analysis Complete (15%) — building container/presentation components
+@Injectable({ providedIn: 'root' })
+export class ServiceA {
+  constructor(private mediator: MediatorService) {}
+}
 
-### Sidebar Refactoring
+@Injectable({ providedIn: 'root' })
+export class ServiceB {
+  constructor(private mediator: MediatorService) {}
+}
+```
 
-- Guided by [sidebar-refactoring-plan.md](./prompts/sidebar-refactoring-plan.md)
-- Objective: Make navigation consistent with MD3, add multi-level navigation, improve responsiveness
-- Status: Analysis Complete (15%) — subcomponent design underway
+#### Component Decomposition
 
-### Data Visualization System
+When components grow too large:
 
-- Guided by [data-visualization-plan.md](./prompts/data-visualization-plan.md)
-- Objective: Standardize chart components with a patriotic theme and MD3 norms
-- Status: Planning (5%) — evaluating library options and designing core chart APIs
+1. Extract reusable parts into separate components
+2. Move complex logic to services
+3. Use presentation/container component pattern
+4. Consider using facade services to simplify component logic
 
-### Feature Refactoring Strategy
+### NestJS Backend
 
-- Guided by [feature-refactoring-strategy.md](./prompts/feature-refactoring-strategy.md)
-- Objective: Promote a prompt-driven approach to track major features, decisions, and status
-- Status: Complete (100%) — used as the framework for all new prompt files
+#### Module Restructuring
 
-### Circular Dependency Refactoring
+To improve maintainability:
 
-#### Overview
-A critical circular dependency was identified between `ApiService` and `UserStateService`, causing runtime errors (NG0200). This refactoring introduces a service intermediary pattern to break the cycle.
+1. Group related functionality into feature modules
+2. Use shared modules for common functionality
+3. Ensure each module has a single responsibility
+4. Use providers properly for better dependency injection
 
-#### Approach
-- Created `HttpClientWrapperService` as a mediator for HTTP operations
-- Removed direct dependencies between circular services
-- Used `forwardRef()` for remaining necessary cross-references
-- Ensured proper initialization order through the dependency hierarchy
+#### Performance Optimization
 
-#### Implementation Details
-1. `HttpClientWrapperService` now handles all HTTP operations, wrapping Angular's HttpClient
-2. `ApiService` depends on the wrapper instead of HttpClient directly
-3. `UserStateService` now uses the wrapper service rather than ApiService
-4. Remaining circular references use `@Inject(forwardRef(() => Service))`
+1. Add caching for expensive operations
+2. Use streams for large data transfers
+3. Implement proper error handling and retry mechanisms
 
-#### Rollback Plan
-If this refactoring causes new issues, the following rollback steps are prepared:
+## Refactoring Workflow
 
-1. Revert to previous service implementation with direct dependencies
-2. Temporarily use the Injector pattern as a workaround for circular dependencies
-3. Consider separating services into smaller responsibility areas
+1. **Identify**: Use metrics and code analysis to identify areas needing refactoring
+2. **Plan**: Document the current architecture and planned changes
+3. **Test**: Ensure adequate test coverage before starting
+4. **Implement**: Make incremental changes with frequent commits
+5. **Verify**: Run tests after each significant change
+6. **Document**: Update documentation to reflect new architecture
+7. **Review**: Have team members review the changes
 
-#### Next Steps
-- Further refine service boundaries for cleaner separation of concerns
-- Replace remaining Injector patterns with proper DI
-- Create comprehensive tests for service initialization order
+## Tools
 
-## Primary Goals
+- **Code Analysis**: SonarQube, ESLint
+- **Dependency Analysis**: Madge, npm-check
+- **Performance Testing**: Lighthouse, WebPageTest
+- **Visualization**: Angular Compiler Visualization, NestJS graph
 
-1. Ensure full Material Design 3 compliance
-2. Maintain a cohesive, patriotic color theme
-3. Improve core component architecture
-4. Enhance performance and accessibility
-5. Provide clear prompt-driven documentation for each effort
+## Examples
 
-## Current Status Summary
+See the `examples/refactoring/` directory for sample refactorings:
 
-• Style System: 60% complete — nearing animation system integration  
-• Footer, Header, Sidebar: Each 15% complete — moving from analysis to implementation phases  
-• Data Visualization: 5% complete — library selection and early planning  
-• Feature Refactoring Strategy: 100% — established as standard practice  
+- Converting to reactive forms
+- Implementing repository pattern
+- Optimizing change detection
+- Breaking down monolithic services
 
-Last Updated: 2025-03-24
+## Additional Resources
 
-## Additional References
-
-- [Master Prompt Tracking System](./prompts/prompts-tracking.md)  
-- [CODING-STANDARDS.md](./CODING-STANDARDS.md)  
-- [apps/craft-web/src/styles/README.md](./apps/craft-web/src/styles/README.md)
+- [Angular Style Guide](https://angular.io/guide/styleguide)
+- [NestJS Documentation](https://docs.nestjs.com/)
+- [Effective Go](https://golang.org/doc/effective_go)
+- [Refactoring: Improving the Design of Existing Code](https://martinfowler.com/books/refactoring.html) by Martin Fowler

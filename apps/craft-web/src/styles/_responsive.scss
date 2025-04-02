@@ -108,6 +108,7 @@
   }
 }
 
+
 // Touch vs. pointer device detection
 @mixin touch-device {
   @media (hover: none) {
@@ -243,5 +244,41 @@
     padding-left: 1rem;
     margin-right: auto;
     margin-left: auto;
+  }
+}
+
+// Breakpoints mixin
+@mixin respond-to($breakpoint) {
+  @if map.has-key(vars.$breakpoints, $breakpoint) {
+    @media (max-width: map.get(vars.$breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @warn "No such breakpoint: #{$breakpoint}";
+  }
+}
+
+// Common responsive utilities
+@mixin hide-on-mobile {
+  @include respond-to('mobile') {
+    display: none !important;
+  }
+}
+
+// Responsive grid helpers
+@mixin responsive-grid($columns-mobile: 1, $columns-tablet: 2, $columns-desktop: 4, $gap: 1rem) {
+  display: grid;
+  gap: $gap;
+  
+  @include respond-to('mobile') {
+    grid-template-columns: repeat($columns-mobile, 1fr);
+  }
+  
+  @include respond-to('tablet') {
+    grid-template-columns: repeat($columns-tablet, 1fr);
+  }
+  
+  @include desktop-only {
+    grid-template-columns: repeat($columns-desktop, 1fr);
   }
 }

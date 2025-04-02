@@ -1,26 +1,9 @@
-<div class="app-container" [ngClass]="{
-  'footer-expanded': (layoutService.footerExpanded$ | async)
-}">
-  <!-- Header -->
-  <app-header *ngIf="layoutService.headerVisible$ | async"></app-header>
+<div class="app-container" [class.footer-expanded]="isFooterExpanded">
+  <app-header></app-header>
   
-  <!-- Main Content Area -->
-  <div class="content-container">
-    <!-- Sidebar -->
-    <app-sidebar 
-      *ngIf="layoutService.sidebarVisible$ | async"
-      [style.height]="sidebarHeight">
-    </app-sidebar>
-    
-    <!-- Gutter between sidebar and main content -->
-    <div class="gutter" *ngIf="layoutService.sidebarVisible$ | async"></div>
-    
-    <!-- Mainstage -->
-    <div class="mainstage" [style.height]="mainstageHeight">
-      <router-outlet></router-outlet>
-    </div>
-  </div>
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
   
-  <!-- Footer -->
-  <app-footer *ngIf="layoutService.footerVisible$ | async"></app-footer>
+  <app-footer></app-footer>
 </div>

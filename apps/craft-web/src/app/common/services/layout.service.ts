@@ -1,315 +1,205 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ThemeService } from './theme.service';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { distinctUntilChanged } from 'rxjs/operators';
+import { LoggerService } from './logger.service';
 
+/**
+ * Layout configuration interface
+ */
 export interface LayoutConfig {
-  header?: boolean;
-  footer?: boolean;
-  sidebar?: boolean;
-  sidebarExpanded?: boolean;
-  mainPadding?: boolean;
-  transparentHeader?: boolean;
-  fullscreen?: boolean;
+  hideHeader?: boolean;
+  hideFooter?: boolean;
+  hideSidebar?: boolean;
+  customClass?: string;
 }
 
-export interface LayoutDimensions {
-  headerHeight: number;
-  footerHeight: number;
-  footerMaxHeight?: number;
-  sidebarWidth: number;
-  contentTop: number;
-  contentBottom: number;
-  contentLeft: number;
-  gutterSize: number;
-}
-
+/**
+ * Layout Service
+ * Manages application layout state including sidebar, header and footer visibility
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class LayoutService {
-  private sidebarExpandedSubject = new BehaviorSubject<boolean>(true);
-  sidebarExpanded$ = this.sidebarExpandedSubject.asObservable().pipe(distinctUntilChanged());
+  // State subjects with exposed observables
+  private sidebarCollapsedSubject = new BehaviorSubject<boolean>(false);
+  public sidebarCollapsed$ = this.sidebarCollapsedSubject.pipe(distinctUntilChanged());
 
   private sidebarVisibleSubject = new BehaviorSubject<boolean>(true);
-  sidebarVisible$ = this.sidebarVisibleSubject.asObservable().pipe(distinctUntilChanged());
+  public sidebarVisible$ = this.sidebarVisibleSubject.pipe(distinctUntilChanged());
+
+  private sidebarWidthSubject = new BehaviorSubject<number>(240);
+  public sidebarWidth$ = this.sidebarWidthSubject.pipe(distinctUntilChanged());
 
   private headerVisibleSubject = new BehaviorSubject<boolean>(true);
-  headerVisible$ = this.headerVisibleSubject.asObservable().pipe(distinctUntilChanged());
+  public headerVisible$ = this.headerVisibleSubject.pipe(distinctUntilChanged());
 
   private footerVisibleSubject = new BehaviorSubject<boolean>(true);
-  footerVisible$ = this.footerVisibleSubject.asObservable().pipe(distinctUntilChanged());
+  public footerVisible$ = this.footerVisibleSubject.pipe(distinctUntilChanged());
 
   private footerExpandedSubject = new BehaviorSubject<boolean>(false);
-  footerExpanded$ = this.footerExpandedSubject.asObservable().pipe(distinctUntilChanged());
+  public footerExpanded$ = this.footerExpandedSubject.pipe(distinctUntilChanged());
 
-  private transparentHeaderSubject = new BehaviorSubject<boolean>(false);
-  transparentHeader$ = this.transparentHeaderSubject.asObservable().pipe(distinctUntilChanged());
+  private isSmallScreenSubject = new BehaviorSubject<boolean>(false);
+  public isSmallScreen$ = this.isSmallScreenSubject.pipe(distinctUntilChanged());
 
-  private fullscreenSubject = new BehaviorSubject<boolean>(false);
-  fullscreen$ = this.fullscreenSubject.asObservable().pipe(distinctUntilChanged());
-
-  private mainPaddingSubject = new BehaviorSubject<boolean>(true);
-  mainPadding$ = this.mainPaddingSubject.asObservable().pipe(distinctUntilChanged());
-
-  private sidebarWidthSubject = new BehaviorSubject<number>(250);
-  sidebarWidth$ = this.sidebarWidthSubject.asObservable().pipe(distinctUntilChanged());
-
-  private isMobileSubject = new BehaviorSubject<boolean>(false);
-  isMobile$ = this.isMobileSubject.asObservable().pipe(distinctUntilChanged());
-
-  private headerHeightSubject = new BehaviorSubject<number>(64);
-  headerHeight$ = this.headerHeightSubject.asObservable().pipe(distinctUntilChanged());
-
-  private footerHeightSubject = new BehaviorSubject<number>(48);
-  footerHeight$ = this.footerHeightSubject.asObservable().pipe(distinctUntilChanged());
-
-  private gutterSizeSubject = new BehaviorSubject<number>(16);
-  gutterSize$ = this.gutterSizeSubject.asObservable().pipe(distinctUntilChanged());
-
-  private sidebarResizingSubject = new BehaviorSubject<boolean>(false);
-  sidebarResizing$ = this.sidebarResizingSubject.asObservable().pipe(distinctUntilChanged());
-
-  private layoutDimensionsSubject = new BehaviorSubject<LayoutDimensions>({
-    headerHeight: 64,
-    footerHeight: 48,
-    sidebarWidth: 250,
-    contentTop: 64,
-    contentBottom: 48,
-    contentLeft: 250,
-    gutterSize: 16
-  });
-  layoutDimensions$ = this.layoutDimensionsSubject.asObservable().pipe(distinctUntilChanged((prev, curr) =>
-    JSON.stringify(prev) === JSON.stringify(curr)
-  ));
-
-  // Add missing dimensions$ (alias for layoutDimensions$)
-  dimensions$ = this.layoutDimensions$;
-
-  constructor(private themeService: ThemeService) {
-    this.checkIfMobile();
-    window.addEventListener('resize', () => this.checkIfMobile());
+  constructor(private logger: LoggerService) {
+    this.logger.registerService('LayoutService');
+    this.initScreenSizeDetection();
   }
 
   /**
-   * Configure the layout based on the given config
+   * Toggle sidebar collapsed state
    */
-  configureLayout(config: LayoutConfig): void {
-    if (config.header !== undefined) this.headerVisibleSubject.next(config.header);
-    if (config.footer !== undefined) this.footerVisibleSubject.next(config.footer);
-    if (config.sidebar !== undefined) this.sidebarVisibleSubject.next(config.sidebar);
-    if (config.sidebarExpanded !== undefined) this.sidebarExpandedSubject.next(config.sidebarExpanded);
-    if (config.mainPadding !== undefined) this.mainPaddingSubject.next(config.mainPadding);
-    if (config.transparentHeader !== undefined) this.transparentHeaderSubject.next(config.transparentHeader);
-    if (config.fullscreen !== undefined) this.fullscreenSubject.next(config.fullscreen);
-    this.updateLayoutDimensions();
+  public toggleSidebar(): void {
+    this.sidebarCollapsedSubject.next(!this.sidebarCollapsedSubject.value);
   }
 
   /**
-   * Reset layout to default settings
+   * Set sidebar collapsed state
    */
-  resetLayout(): void {
-    this.configureLayout({
-      header: true,
-      footer: true,
-      sidebar: true,
-      sidebarExpanded: true,
-      mainPadding: true,
-      transparentHeader: false,
-      fullscreen: false
-    });
+  public setSidebarCollapsed(collapsed: boolean): void {
+    this.sidebarCollapsedSubject.next(collapsed);
+    this.logger.info(`Sidebar collapsed state set to: ${collapsed}`);
   }
-
-  toggleSidebar(): void {
-    this.sidebarExpandedSubject.next(!this.sidebarExpandedSubject.value);
-    this.updateLayoutDimensions();
-  }
-
-  expandSidebar(): void {
-    this.sidebarExpandedSubject.next(true);
-    this.updateLayoutDimensions();
-  }
-
-  collapseSidebar(): void {
-    this.sidebarExpandedSubject.next(false);
-    this.updateLayoutDimensions();
-  }
-
-  toggleFooter(): void {
-    this.footerExpandedSubject.next(!this.footerExpandedSubject.value);
-  }
-
-  expandFooter(): void {
-    this.footerExpandedSubject.next(true);
-  }
-
-  collapseFooter(): void {
-    this.footerExpandedSubject.next(false);
-  }
-
-  setSidebarWidth(width: number): void {
-    this.sidebarWidthSubject.next(width);
-    this.updateLayoutDimensions();
-    this.logger.debug(`Sidebar width set to ${width}px`);
-  }
-
-  isSidebarExpanded(): boolean {
-    return this.sidebarExpandedSubject.value;
-  }
-
-  isHeaderVisible(): boolean {
-    return this.headerVisibleSubject.value;
-  }
-
-  isFooterVisible(): boolean {
-    return this.footerVisibleSubject.value;
-  }
-
-  isSidebarVisible(): boolean {
-    return this.sidebarVisibleSubject.value;
+  
+  /**
+   * Toggle footer expanded state
+   */
+  public toggleFooterExpanded(): void {
+    const expanded = !this.footerExpandedSubject.value;
+    this.footerExpandedSubject.next(expanded);
+    this.adjustLayoutForFooterExpansion(expanded);
+    this.logger.info(`Footer expanded state set to: ${expanded}`);
   }
 
   /**
-   * Set header height in pixels and update layout dimensions
-   * @param height Header height in pixels
+   * Set layout visibility properties
    */
-  setHeaderHeight(height: number): void {
-    this.headerHeightSubject.next(height);
-    this.updateLayoutDimensions();
-    this.logger.debug(`Header height set to ${height}px`);
-  }
-
-  /**
-   * Set footer height in pixels and update layout dimensions
-   * @param height Footer height in pixels
-   */
-  setFooterHeight(height: number): void {
-    this.footerHeightSubject.next(height);
-    this.updateLayoutDimensions();
-    this.logger.debug(`Footer height set to ${height}px`);
-  }
-
-  /**
-   * Set gutter size in pixels and update layout dimensions
-   * @param size Gutter size in pixels
-   */
-  setGutterSize(size: number): void {
-    this.gutterSizeSubject.next(size);
-    this.updateLayoutDimensions();
-    this.logger.debug(`Gutter size set to ${size}px`);
-  }
-
-  /**
-   * Toggle footer expansion state
-   */
-  toggleFooterExpansion(): void {
-    this.footerExpandedSubject.next(!this.footerExpandedSubject.value);
-  }
-
-  /**
-   * Set footer expansion state explicitly
-   * @param isExpanded Whether the footer should be expanded
-   */
-  setFooterExpansion(isExpanded: boolean): void {
-    this.footerExpandedSubject.next(isExpanded);
-  }
-
-  /**
-   * Get current layout dimensions
-   * @returns Current layout dimensions
-   */
-  getLayoutDimensions(): LayoutDimensions {
-    return this.layoutDimensionsSubject.value;
-  }
-
-  /**
-   * Calculate the available height for the mainstage
-   * @returns Available height for mainstage in pixels
-   */
-  calculateMainstageHeight(): number {
-    const { headerHeight, footerHeight } = this.layoutDimensionsSubject.value;
-    const windowHeight = window.innerHeight;
-
-    return windowHeight - headerHeight - footerHeight;
-  }
-
-  /**
-   * Toggle sidebar expanded state
-   */
-  toggleSidebarExpanded(): void {
-    this.toggleSidebar();
-  }
-
-  /**
-   * Start sidebar resize operation
-   */
-  startSidebarResize(): void {
-    this.sidebarResizingSubject.next(true);
-  }
-
-  /**
-   * End sidebar resize operation
-   */
-  endSidebarResize(): void {
-    this.sidebarResizingSubject.next(false);
-  }
-
-  /**
-   * Check if the viewport is in mobile mode
-   * @returns Observable<boolean> True if in mobile mode
-   */
-  isMobile(): Observable<boolean> {
-    return this.isMobile$;
-  }
-
-  private checkIfMobile(): void {
-    this.isMobileSubject.next(window.innerWidth < 768);
-    if (window.innerWidth < 768) {
-      this.sidebarExpandedSubject.next(false);
+  public setVisibility(config: {
+    header?: boolean,
+    footer?: boolean,
+    sidebar?: boolean
+  }): void {
+    if (config.header !== undefined) {
+      this.headerVisibleSubject.next(config.header);
+      this.logger.info(`Header visibility set to: ${config.header}`);
     }
-    this.updateLayoutDimensions();
-  }
-
-  // Call this on application startup to ensure responsive layout is set
-  setInitialResponsiveState(): void {
-    this.checkIfMobile();
+    
+    if (config.footer !== undefined) {
+      this.footerVisibleSubject.next(config.footer);
+      this.logger.info(`Footer visibility set to: ${config.footer}`);
+    }
+    
+    if (config.sidebar !== undefined) {
+      // Don't allow hiding sidebar completely
+      if (!config.sidebar) {
+        this.setSidebarCollapsed(true);
+      } else {
+        this.sidebarVisibleSubject.next(config.sidebar);
+        this.logger.info(`Sidebar visibility set to: ${config.sidebar}`);
+      }
+    }
   }
 
   /**
-   * Update layout dimensions based on current component sizes
+   * Sidebar methods
    */
-  private updateLayoutDimensions(): void {
-    const headerVisible = this.headerVisibleSubject.value;
-    const footerVisible = this.footerVisibleSubject.value;
-    const sidebarVisible = this.sidebarVisibleSubject.value;
-    const sidebarExpanded = this.sidebarExpandedSubject.value;
-
-    const headerHeight = headerVisible ? this.headerHeightSubject.value : 0;
-    const footerHeight = footerVisible ? this.footerHeightSubject.value : 0;
-    const sidebarWidth = sidebarVisible
-      ? (sidebarExpanded ? this.sidebarWidthSubject.value : 64)
-      : 0;
-
-    const contentTop = headerHeight;
-    const contentBottom = footerHeight;
-    const contentLeft = sidebarWidth;
-    const gutterSize = this.gutterSizeSubject.value;
-
-    this.layoutDimensionsSubject.next({
-      headerHeight,
-      footerHeight,
-      sidebarWidth,
-      contentTop,
-      contentBottom,
-      contentLeft,
-      gutterSize
-    });
+  public setSidebarWidth(width: number): void {
+    this.sidebarWidthSubject.next(width);
+    this.logger.info(`Sidebar width set to: ${width}px`);
   }
 
-  private logger = {
-    debug: (message: string) => console.log(`[LayoutService] ${message}`),
-    info: (message: string) => console.info(`[LayoutService] ${message}`),
-    warn: (message: string) => console.warn(`[LayoutService] ${message}`),
-    error: (message: string) => console.error(`[LayoutService] ${message}`)
-  };
+  /**
+   * Configure layout with specific settings
+   */
+  public configureLayout(config: LayoutConfig): void {
+    this.setVisibility({
+      header: config.hideHeader === undefined ? undefined : !config.hideHeader,
+      footer: config.hideFooter === undefined ? undefined : !config.hideFooter,
+      sidebar: config.hideSidebar === undefined ? undefined : !config.hideSidebar
+    });
+    this.logger.info('Layout configured with custom settings', { config });
+  }
+
+  /**
+   * Reset layout to default configuration
+   */
+  public resetLayout(): void {
+    this.setVisibility({ header: true, footer: true, sidebar: true });
+    this.setSidebarCollapsed(false);
+    this.footerExpandedSubject.next(false);
+    this.adjustLayoutForFooterExpansion(false);
+    this.logger.info('Layout reset to defaults');
+  }
+  
+  /**
+   * State accessor methods - avoid redundancy by providing these
+   * instead of multiple individual methods
+   */
+  public getState(): {
+    sidebarCollapsed: boolean,
+    sidebarVisible: boolean,
+    headerVisible: boolean,
+    footerVisible: boolean,
+    footerExpanded: boolean,
+    isSmallScreen: boolean
+  } {
+    return {
+      sidebarCollapsed: this.sidebarCollapsedSubject.value,
+      sidebarVisible: this.sidebarVisibleSubject.value,
+      headerVisible: this.headerVisibleSubject.value,
+      footerVisible: this.footerVisibleSubject.value,
+      footerExpanded: this.footerExpandedSubject.value,
+      isSmallScreen: this.isSmallScreenSubject.value
+    };
+  }
+
+  /**
+   * Adjust layout elements (sidebar and mainstage) for footer expansion
+   */
+  private adjustLayoutForFooterExpansion(footerExpanded: boolean): void {
+    if (typeof document !== 'undefined') {
+      const footerHeight = footerExpanded 
+        ? parseInt(getComputedStyle(document.documentElement).getPropertyValue('--footer-expanded-height'), 10) || 300
+        : parseInt(getComputedStyle(document.documentElement).getPropertyValue('--footer-height'), 10) || 60;
+      
+      document.documentElement.style.setProperty('--main-content-height', 
+        `calc(100vh - var(--header-height) - ${footerHeight}px)`);
+      this.logger.debug(`Adjusted layout for footer expansion: ${footerExpanded}`);
+    }
+  }
+
+  /**
+   * Initialize screen size detection
+   */
+  private initScreenSizeDetection(): void {
+    // Check initial screen size
+    this.checkScreenSize();
+
+    // Listen for window resize events
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', () => this.checkScreenSize());
+    }
+  }
+
+  /**
+   * Check screen size and update isSmallScreen state
+   */
+  private checkScreenSize(): void {
+    if (typeof window !== 'undefined') {
+      const isSmall = window.innerWidth < 768;
+      
+      if (isSmall !== this.isSmallScreenSubject.value) {
+        this.isSmallScreenSubject.next(isSmall);
+        
+        // Auto-collapse sidebar on small screens
+        if (isSmall && !this.sidebarCollapsedSubject.value) {
+          this.setSidebarCollapsed(true);
+        }
+        
+        this.logger.debug(`Screen size changed, isSmallScreen: ${isSmall}`);
+      }
+    }
+  }
 }

@@ -51,6 +51,7 @@ Thumbs.db
 **/environments/environment.*.ts
 !**/environments/environment.ts
 !**/environments/environment.prod.ts
+**/environments/environment.*.local.ts
 
 # Keys and certificates
 *.pem

@@ -1,20 +1,33 @@
-import { Directive, ElementRef, OnInit, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/core';
 
+/**
+ * Directive that adds a "pop" effect when an element is clicked
+ * Usage: <button appPop [popScale]="1.1"></button>
+ */
 @Directive({
   selector: '[appPop]',
-  standalone: false // Ensure standalone is false
+  standalone: false
 })
-export class PopDirective implements OnInit {
+export class PopDirective {
+  @Input() popScale: number = 1.05;
+  @Input() popDuration: number = 200; // milliseconds
+
   constructor(private el: ElementRef, private renderer: Renderer2) {}
-  
-  ngOnInit() {
-    this.renderer.setStyle(this.el.nativeElement, 'opacity', '0');
-    this.renderer.setStyle(this.el.nativeElement, 'transform', 'scale(0.95)');
-    this.renderer.setStyle(this.el.nativeElement, 'transition', 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)');
+
+  @HostListener('click') onClick(): void {
+    this.pop();
+  }
+
+  private pop(): void {
+    // Add transition
+    this.renderer.setStyle(this.el.nativeElement, 'transition', `transform ${this.popDuration}ms ease-out`);
     
+    // Scale up
+    this.renderer.setStyle(this.el.nativeElement, 'transform', `scale(${this.popScale})`);
+    
+    // Scale back after duration
     setTimeout(() => {
-      this.renderer.setStyle(this.el.nativeElement, 'opacity', '1');
       this.renderer.setStyle(this.el.nativeElement, 'transform', 'scale(1)');
-    }, 100);
+    }, this.popDuration);
   }
 }

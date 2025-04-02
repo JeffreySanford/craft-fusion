@@ -1,96 +1,85 @@
-import { Directive, ElementRef, OnInit, Renderer2, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/core';
 
+/**
+ * Directive that adds a sparkle effect when hovered
+ * Usage: <div appSparkle [sparkleColor]="'gold'"></div>
+ */
 @Directive({
   selector: '[appSparkle]',
-  standalone: false // Ensure standalone is false
+  standalone: false
 })
-export class SparkleDirective implements OnInit, OnDestroy {
+export class SparkleDirective {
+  @Input() sparkleColor: string = 'gold';
+  @Input() sparkleCount: number = 5;
   private sparkles: HTMLElement[] = [];
-  private intervalId: any;
-  
+
   constructor(private el: ElementRef, private renderer: Renderer2) {}
-  
-  ngOnInit() {
-    // Make the parent element position relative
-    this.renderer.setStyle(this.el.nativeElement, 'position', 'relative');
-    
-    // Add a subtle initial animation to draw attention
-    this.renderer.setStyle(this.el.nativeElement, 'animation', 'pulse 2s infinite');
-    this.renderer.setStyle(this.el.nativeElement, 'transform-origin', 'center');
-    
-    // Add keyframe animation definition
-    const style = document.createElement('style');
-    style.innerHTML = `
-      @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.03); }
-        100% { transform: scale(1); }
-      }
-      
-      @keyframes sparkle {
-        0% { transform: translate(0, 0) scale(0); opacity: 0; }
-        50% { opacity: 1; }
-        100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
-      }
-    `;
-    document.head.appendChild(style);
-    
-    // Create occasional sparkles
-    this.intervalId = setInterval(() => this.createSparkle(), 2000);
+
+  @HostListener('mouseenter') onMouseEnter(): void {
+    this.createSparkles();
   }
-  
-  ngOnDestroy() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
+
+  @HostListener('mouseleave') onMouseLeave(): void {
+    this.removeSparkles();
+  }
+
+  private createSparkles(): void {
+    // Get element dimensions and position
+    const rect = this.el.nativeElement.getBoundingClientRect();
     
-    // Clean up sparkle elements
+    // Create sparkles
+    for (let i = 0; i < this.sparkleCount; i++) {
+      setTimeout(() => {
+        // Create a sparkle element
+        const sparkle = this.renderer.createElement('div');
+        
+        // Style the sparkle
+        this.renderer.setStyle(sparkle, 'position', 'absolute');
+        this.renderer.setStyle(sparkle, 'width', '10px');
+        this.renderer.setStyle(sparkle, 'height', '10px');
+        this.renderer.setStyle(sparkle, 'background-color', this.sparkleColor);
+        this.renderer.setStyle(sparkle, 'borderRadius', '50%');
+        this.renderer.setStyle(sparkle, 'pointerEvents', 'none');
+        this.renderer.setStyle(sparkle, 'opacity', '0');
+        this.renderer.setStyle(sparkle, 'zIndex', '1000');
+        
+        // Random position within element
+        const x = Math.random() * rect.width;
+        const y = Math.random() * rect.height;
+        this.renderer.setStyle(sparkle, 'left', `${x}px`);
+        this.renderer.setStyle(sparkle, 'top', `${y}px`);
+        
+        // Append to element
+        this.renderer.appendChild(this.el.nativeElement, sparkle);
+        this.sparkles.push(sparkle);
+        
+        // Animate sparkle
+        this.renderer.setStyle(sparkle, 'transition', 'all 0.5s ease-out');
+        
+        // Delay slightly to create staggered effect
+        setTimeout(() => {
+          this.renderer.setStyle(sparkle, 'opacity', '1');
+          this.renderer.setStyle(sparkle, 'transform', 'translate(0, -20px) scale(1.5)');
+        }, 10);
+        
+        // Remove sparkle after animation
+        setTimeout(() => {
+          if (sparkle.parentNode) {
+            this.renderer.removeChild(sparkle.parentNode, sparkle);
+          }
+          this.sparkles = this.sparkles.filter(s => s !== sparkle);
+        }, 500);
+      }, i * 100); // Stagger creation
+    }
+  }
+
+  private removeSparkles(): void {
+    // Remove all existing sparkles
     this.sparkles.forEach(sparkle => {
       if (sparkle.parentNode) {
-        sparkle.parentNode.removeChild(sparkle);
+        this.renderer.removeChild(sparkle.parentNode, sparkle);
       }
     });
-  }
-  
-  private createSparkle() {
-    const element = this.el.nativeElement;
-    const rect = element.getBoundingClientRect();
-    
-    // Create a sparkle element
-    const sparkle = document.createElement('div');
-    
-    // Random position within the element
-    const x = Math.random() * rect.width;
-    const y = Math.random() * rect.height;
-    
-    // Random direction for animation
-    const tx = (Math.random() - 0.5) * 20;
-    const ty = (Math.random() - 0.5) * 20;
-    
-    // Style the sparkle
-    sparkle.style.position = 'absolute';
-    sparkle.style.left = `${x}px`;
-    sparkle.style.top = `${y}px`;
-    sparkle.style.width = '4px';
-    sparkle.style.height = '4px';
-    sparkle.style.borderRadius = '50%';
-    sparkle.style.backgroundColor = Math.random() > 0.5 ? '#BF0A30' : '#002868';
-    sparkle.style.boxShadow = '0 0 3px 1px rgba(255,255,255,0.8)';
-    sparkle.style.pointerEvents = 'none';
-    sparkle.style.setProperty('--tx', `${tx}px`);
-    sparkle.style.setProperty('--ty', `${ty}px`);
-    sparkle.style.animation = 'sparkle 1.5s forwards';
-    
-    // Add to element
-    element.appendChild(sparkle);
-    this.sparkles.push(sparkle);
-    
-    // Remove sparkle after animation
-    setTimeout(() => {
-      if (sparkle.parentNode) {
-        sparkle.parentNode.removeChild(sparkle);
-      }
-      this.sparkles = this.sparkles.filter(s => s !== sparkle);
-    }, 1500);
+    this.sparkles = [];
   }
 }

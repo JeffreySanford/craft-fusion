@@ -1,4 +1,14 @@
-import { trigger, state, style, animate, transition, keyframes } from '@angular/animations';
+import { 
+  trigger, 
+  state, 
+  style, 
+  animate, 
+  transition, 
+  keyframes, 
+  query, 
+  stagger, 
+  animation
+} from '@angular/animations';
 
 /**
  * Rotate animation for icons and other elements
@@ -17,4 +27,16 @@ export const rotateAnimation = trigger('rotateAnimation', [
   ])
 ]);
 
-// ...existing animations...
+/**
+ * Patriotic elements stagger animation
+ */
+export const patrioticElementsStagger = trigger('patrioticElementsStagger', [
+  transition('* => *', [
+    query(':enter', [
+      style({ opacity: 0, transform: 'translateY(20px)' }),
+      stagger('100ms', [
+        animate('600ms ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+      ]),
+    ], { optional: true }),
+  ]),
+]);

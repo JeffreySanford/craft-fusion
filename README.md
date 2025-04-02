@@ -1,130 +1,126 @@
 # Craft Fusion
 
-A comprehensive web application with responsive layout, interactive data visualizations, and patriotic theming.
+![Project Status](https://img.shields.io/badge/status-active-brightgreen)
+![Version](https://img.shields.io/badge/version-1.1.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-![Craft Fusion](https://placehold.co/600x400?text=Craft+Fusion)
+Craft Fusion is a modern web application framework that combines Angular, NestJS, and Go microservices to provide a robust foundation for building sophisticated web applications with a focus on performance, scalability, and developer experience.
 
 ## 🚀 Features
 
-- **Patriotic Design System** - Navy blue, red, and gold theme with elegant UI components
-- **Fixed Header/Footer Layout** - Modern layout with fixed navigation elements
-- **Responsive Content Area** - Flexible mainstage with collapsible sidebar
-- **Data Visualizations** - Performance metrics and health monitoring dashboards
-- **Security Settings** - User security preferences and password management
-- **Theme Switcher** - Multiple patriotic themes (Light, Dark, Bold, Vintage)
-- **Performance Metrics** - Real-time system monitoring and reporting
-- **Admin Dashboard** - Protected admin section for authorized users
+- **Angular Frontend**: Modern Angular application with Material Design
+- **NestJS Backend**: Type-safe API with dependency injection
+- **Go Microservices**: High-performance auxiliary services
+- **Nx Workspace**: Monorepo management with efficient caching
+- **Integrated Testing**: Comprehensive testing setup with Jest
+- **Design System**: Consistent design tokens and styling
+- **Health Monitoring**: System-wide health checks and diagnostics
 
-## 📋 Project Structure
-
-```plaintext
-craft-fusion/
-│
-├── apps/                   # Application code
-│   ├── craft-web/          # Frontend Angular application
-│   │   ├── src/
-│   │   │   ├── app/        # Application code
-│   │   │   │   ├── common/       # Shared services, utilities, components
-│   │   │   │   │   ├── guards/   # Auth and admin guards
-│   │   │   │   │   ├── services/ # Core services including layout
-│   │   │   │   │   └── ...
-│   │   │   │   ├── pages/        # Main application pages
-│   │   │   │   │   ├── header/   # Fixed header components
-│   │   │   │   │   ├── footer/   # Fixed footer components
-│   │   │   │   │   ├── sidebar/  # Collapsible sidebar components
-│   │   │   │   │   └── ...
-│   │   │   │   └── projects/     # Project-specific feature modules
-│   │   │   └── styles/          # Global styles
-│   │   │       ├── _variables.scss
-│   │   │       ├── _animations.scss
-│   │   │       └── ...
-│   └── craft-nest/         # Backend NestJS application
-│
-├── docs/                   # Documentation
-│   ├── LAYOUT-PATTERNS.md  # Layout documentation
-│   ├── THEME-SYSTEM.md     # Theme system documentation
-│   └── ...
-│
-└── prompts/                # Project planning and status
-    ├── layout-refactoring-plan.md
-    └── ...
-```
-
-## 🎨 Design System
-
-The application implements a comprehensive theming architecture based on Material Design 3 principles with vibrant patriotic color schemes:
-
-- **Light Theme**: Navy (#002868), Red (#B22234), Gold (#FFD700)
-- **Dark Theme**: Navy (#4682B4), Red (#FF6B6B), Gold (#FFD700)
-- **Bold Patriotic**: Deep Navy (#0A3161), Bright Red (#E40032), Rich Gold (#FFBF00)
-- **Vintage Patriotic**: Muted Navy (#19477F), Muted Red (#A81B31), Antique Gold (#DEB841)
-
-## 🧩 Layout Components
-
-The layout follows a fixed structure with header and footer anchored to the viewport:
-
-```plaintext
-┌─────────────────────────────────────────────┐
-│                  HEADER                     │ <- Fixed to top
-├────────────┬────────────────────────────────┤
-│            │                                │
-│            │                                │
-│  SIDEBAR   │           MAINSTAGE            │ <- 1em gutter between
-│            │                                │    sidebar and mainstage
-│            │                                │
-│            │                                │
-│            │                                │
-├────────────┴────────────────────────────────┤
-│                  FOOTER                     │ <- Fixed to bottom
-└─────────────────────────────────────────────┘
-```
-
-## 🛠️ Development
-
-### Prerequisites
+## 📋 Prerequisites
 
 - Node.js (v18 or later)
-- npm (v8 or later)
-- Angular CLI
+- Go (v1.21 or later) - for Go microservices
+- Docker (optional, for containerized development)
 
-### Setup
+## 🔧 Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/craft-fusion.git
+   cd craft-fusion
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Create environment files:
+   ```bash
+   cp .env.template .env
+   ```
+
+4. Update the `.env` file with your credentials and API keys.
+
+## 📊 Development
+
+### Start the Angular frontend:
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-org/craft-fusion.git
-cd craft-fusion
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run start
+nx serve craft-web
 ```
 
-### Building
+Access the application at `http://localhost:4200/`
+
+### Start the NestJS API:
 
 ```bash
-# Build for production
-npm run build
-
-# Run tests
-npm run test
+nx serve craft-nest
 ```
 
-## 📊 Current Status
+API will be running at `http://localhost:3000/`
 
-See [STATUS-AND-VISUALIZATION.md](./prompts/STATUS-AND-VISUALIZATION.md) for detailed project status and visualizations.
+### Run Go service:
 
-## 📑 Documentation
+```bash
+nx serve craft-go
+```
 
-- [Layout Patterns](./docs/LAYOUT-PATTERNS.md)
-- [Theme System](./docs/THEME-SYSTEM.md)
+## 🧪 Testing
 
-## 🔗 Related Projects
+### Run tests for all projects:
 
-- **craft-design-system** - Component library for the Craft UI system
-- **craft-analytics** - Analytics dashboard for user metrics
+```bash
+nx run-many --target=test --all
+```
+
+### Run tests for a specific project:
+
+```bash
+nx test craft-web
+nx test craft-nest
+```
+
+### Run end-to-end tests:
+
+```bash
+nx e2e craft-web-e2e
+```
+
+## 📚 Project Structure
+
+The project follows a monorepo structure managed by Nx. See [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) for detailed information about the codebase organization.
+
+## 🏗️ Building for Production
+
+```bash
+# Build all projects
+nx run-many --target=build --all --prod
+
+# Build specific project
+nx build craft-web --prod
+nx build craft-nest --prod
+```
+
+Production builds output to `./dist/` directory.
+
+## 🔍 Code Quality
+
+- **Linting**: `nx lint craft-web`
+- **Formatting**: `nx format:check` or `nx format:write`
+- **Type checking**: `nx workspace-lint`
+
+## 📋 Contributing
+
+Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
 ## 📝 License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE.md](./LICENSE.md) file for details.
+
+## 🙏 Acknowledgments
+
+- Angular team for the amazing frontend framework
+- NestJS team for the elegant backend framework
+- Go team for their high-performance language
+- Nx team for the powerful monorepo tooling

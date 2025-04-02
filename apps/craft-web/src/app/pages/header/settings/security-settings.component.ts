@@ -22,6 +22,7 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
   isPasswordVisible = false;
   mfaEnabled = false;
   currentTheme = '';
+  isSidebarExpanded = true;
   
   private destroy$ = new Subject<void>();
   
@@ -106,12 +107,12 @@ export class SecuritySettingsComponent implements OnInit, OnDestroy {
         this.logger.debug('Security form values changed', { values });
       });
       
-    // Check if the sidebar is expanded to optimize layout
-    this.layoutService.sidebarExpanded$
+    // Check if the sidebar is collapsed to optimize layout
+    this.layoutService.sidebarCollapsed$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(expanded => {
-        // Could use this for responsive adjustments
-        this.logger.debug('Sidebar state in security settings', { expanded });
+      .subscribe(collapsed => {
+        this.isSidebarExpanded = !collapsed;
+        this.logger.debug('Sidebar state in security settings', { collapsed });
       });
   }
   

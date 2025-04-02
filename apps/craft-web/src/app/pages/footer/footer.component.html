@@ -1,156 +1,35 @@
-<footer class="app-footer" [ngClass]="{'expanded': isExpanded, 'light-theme': currentTheme === 'light-theme', 'dark-theme': currentTheme === 'dark-theme'}" aria-label="Application footer">
-  <!-- Footer Toggle Button -->
-  <button mat-icon-button class="expand-toggle" (click)="toggleFooter()" 
-      matTooltip="{{isExpanded ? 'Collapse footer' : 'Expand footer'}}"
-      [attr.aria-label]="isExpanded ? 'Collapse footer' : 'Expand footer'">
-    <mat-icon>{{isExpanded ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}}</mat-icon>
-  </button>
-
-  <!-- Simple Footer (Non-expanded state) -->
-  <div class="footer-content basic-footer" *ngIf="!isExpanded">
-    <div class="left-content">
-      <span class="copyright">© {{currentYear}} Craft Fusion</span>
-      <span class="version">v{{appVersion}}</span>
-    </div>
-    <div class="middle-content">
-      <div class="system-status" [ngClass]="getStatusClass()">
-        <span class="status-icon" [ngClass]="getIconClass()"></span>
-        <span class="status-text">{{systemStatus}}</span>
-      </div>
-    </div>
-    <div class="right-content">
-      <a href="#" class="footer-link">Terms</a>
-      <a href="#" class="footer-link">Privacy</a>
-      <a href="#" class="footer-link">Help</a>
+<footer class="footer" [@expandFooter]="footerState" (click)="toggleFooter($event)">
+  <div class="footer-header">
+    <div class="footer-toggle-indicator">
+      <mat-icon>{{ isExpanded ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon>
+      <span class="footer-toggle-text">{{ isExpanded ? 'Collapse' : 'Expand' }} Footer</span>
     </div>
   </div>
-
-  <!-- Expanded Footer Content -->
-  <div class="expanded-footer" *ngIf="isExpanded">
-    <div class="footer-details">
-      <!-- First row of expanded content -->
-      <div class="footer-row">
-        <!-- System Statistics -->
-        <div class="footer-panel stats-panel">
-          <h3 class="panel-title">System Statistics</h3>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <span class="stat-label">Uptime</span>
-              <span class="stat-value">{{uptimeDisplay}}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Users</span>
-              <span class="stat-value">{{activeUsers}}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">CPU</span>
-              <span class="stat-value">{{cpuLoad}}%</span>
-              <mat-progress-bar mode="determinate" [value]="cpuLoad" 
-                [color]="cpuLoad > 80 ? 'warn' : cpuLoad > 50 ? 'accent' : 'primary'">
-              </mat-progress-bar>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">Memory</span>
-              <span class="stat-value">{{memoryUsage}}%</span>
-              <mat-progress-bar mode="determinate" [value]="memoryUsage"
-                [color]="memoryUsage > 80 ? 'warn' : memoryUsage > 50 ? 'accent' : 'primary'">
-              </mat-progress-bar>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Performance Graphs -->
-        <div class="footer-panel graph-panel">
-          <h3 class="panel-title">Performance</h3>
-          <div class="graph-container">
-            <div class="mini-chart">
-              <canvas #cpuChart width="180" height="80"></canvas>
-              <div class="chart-label">CPU</div>
-            </div>
-            <div class="mini-chart">
-              <canvas #memoryChart width="180" height="80"></canvas>
-              <div class="chart-label">Memory</div>
-            </div>
-            <div class="mini-chart">
-              <canvas #networkChart width="180" height="80"></canvas>
-              <div class="chart-label">Network</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Technology/Partner Logos -->
-        <div class="footer-panel logos-panel">
-          <h3 class="panel-title">Powered By</h3>
-          <div class="logo-grid">
-            <img src="assets/images/logos/angular.png" alt="Angular" class="tech-logo">
-            <img src="assets/logos/typescript-logo.svg" alt="TypeScript" class="tech-logo">
-            <img src="assets/logos/nestjs-logo.svg" alt="NestJS" class="tech-logo">
-            <img src="assets/logos/material-design.png" alt="Material Design" class="tech-logo">
-            <img src="assets/logos/rxjs-logo.svg" alt="RxJS" class="tech-logo">
-            <img src="assets/logos/go-logo.svg" alt="Go" class="tech-logo">
-          </div>
-        </div>
+  
+  <div class="footer-content">
+    <!-- This content will be shown/hidden based on the expanded state -->
+    <div class="footer-sections">
+      <div class="footer-section" *ngFor="let section of footerLinks">
+        <h4>{{ section.category }}</h4>
+        <ul>
+          <li *ngFor="let link of section.links">
+            <a [routerLink]="link.url">{{ link.title }}</a>
+          </li>
+        </ul>
       </div>
-      
-      <!-- Second row with additional details -->
-      <div class="footer-row">
-        <div class="footer-panel contact-panel">
-          <h3 class="panel-title">Contact</h3>
-          <div class="contact-details">
-            <div class="contact-item">
-              <mat-icon>email</mat-icon>
-              <span>support&#64;craftfusion.com</span>
-            </div>
-            <div class="contact-item">
-              <mat-icon>phone</mat-icon>
-              <span>(555) 123-4567</span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="footer-panel links-panel">
-          <h3 class="panel-title">Quick Links</h3>
-          <div class="link-grid">
-            <a href="#" class="quick-link">Documentation</a>
-            <a href="#" class="quick-link">API Reference</a>
-            <a href="#" class="quick-link">Support</a>
-            <a href="#" class="quick-link">Features</a>
-            <a href="#" class="quick-link">Status Page</a>
-            <a href="#" class="quick-link">Release Notes</a>
-          </div>
-        </div>
-        
-        <div class="footer-panel version-panel">
-          <h3 class="panel-title">System Details</h3>
-          <div class="version-details">
-            <div class="version-item">
-              <span class="version-label">App Version</span>
-              <span class="version-value">{{appVersion}}</span>
-            </div>
-            <div class="version-item">
-              <span class="version-label">API Version</span>
-              <span class="version-value">{{apiVersion}}</span>
-            </div>
-            <div class="version-item">
-              <span class="version-label">Last Updated</span>
-              <span class="version-value">{{lastUpdated | date:'medium'}}</span>
-            </div>
-            <div class="version-item">
-              <span class="version-label">Environment</span>
-              <span class="version-value">{{environment}}</span>
-            </div>
-          </div>
-        </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <div class="copyright">
+        © {{ currentYear }} Craft Fusion. All rights reserved.
       </div>
-      
-      <!-- Copyright section at the bottom -->
-      <div class="footer-copyright">
-        <span>© {{currentYear}} Craft Fusion - All Rights Reserved</span>
-        <div class="legal-links">
-          <a href="#" class="legal-link">Terms of Service</a>
-          <a href="#" class="legal-link">Privacy Policy</a>
-          <a href="#" class="legal-link">Accessibility</a>
-        </div>
+      <div class="social-links">
+        <a *ngFor="let social of socialLinks" 
+           [href]="social.url" 
+           target="_blank" 
+           [attr.aria-label]="social.label">
+          <mat-icon>{{ social.icon }}</mat-icon>
+        </a>
       </div>
     </div>
   </div>

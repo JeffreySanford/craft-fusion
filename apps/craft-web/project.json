@@ -1,43 +1,10 @@
 {
   "name": "craft-web",
   "projectType": "application",
-  "prefix": "app",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/craft-web/src",
-  "tags": [],
-  "schematics": {
-    "@schematics/angular:component": {
-      "standalone": false
-    }
-  },
-  "implicitDependencies": ["craft-nest"],
-  "generators": {
-    "@nx/angular:component": {
-      "style": "scss",
-      "changeDetection": "OnPush",
-      "skipTests": true,
-      "export": false
-    },
-    "@nx/angular:application": {
-      "style": "scss",
-      "routing": true,
-      "linter": "eslint",
-      "unitTestRunner": "jest",
-      "e2eTestRunner": "playwright"
-    }
-  },
+  "prefix": "app",
   "targets": {
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "options": {
-        "lintFilePatterns": ["apps/craft-web/**/*.ts", "apps/craft-web/**/*.html", "apps/craft-web/**/*.scss", "apps/craft-web/**/*.css"]
-      }
-    },
-    "stylelint": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx stylelint 'apps/craft-web/**/*.scss' 'apps/craft-web/**/*.css'"
-      }
-    },
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
@@ -45,95 +12,99 @@
         "outputPath": "dist/apps/craft-web",
         "index": "apps/craft-web/src/index.html",
         "main": "apps/craft-web/src/main.ts",
-        "polyfills": "apps/craft-web/src/polyfills.ts",
+        "polyfills": ["zone.js"],
         "tsConfig": "apps/craft-web/tsconfig.app.json",
-        "assets": [
-          "apps/craft-web/src/assets",
-          { "glob": "**/*", "input": "node_modules/tinymce", "output": "/tinymce/" },
-          {
-            "glob": "**/*",
-            "input": "apps/craft-web/src/assets/documents",
-            "output": "/assets/documents"
-          }
-        ],
-        "styles": [
-          "apps/craft-web/src/styles/styles.scss",
-          "apps/craft-web/src/styles/_variables.scss",
-          "node_modules/ngx-toastr/toastr.css",
-          "node_modules/mapbox-gl/dist/mapbox-gl.css",
-          "node_modules/flag-icon-css/css/flag-icons.min.css"
-        ],
-        "stylePreprocessorOptions": {
-          "includePaths": ["apps/craft-web/src/styles"]
-        },
-        "scripts": ["node_modules/tinymce/tinymce.min.js"],
-        "allowedCommonJsDependencies": [
-          "jszip",
-          "moment",
-          "moment-timezone",
-          "tinymce",
-          "xlsx",
-          "mapbox-gl",
-          "mapbox-gl-geocoder",
-          "mapbox-gl-directions",
-          "mapbox-gl-draw",
-          "mapbox-gl-geolocate-control",
-          "mapbox-gl-language",
-          "mapbox-gl-traffic",
-          "mapbox-gl-traffic",
-          "turndown",
-          "turndown-plugin-gfm",
-          "crypto-js"
-        ]
+        "inlineStyleLanguage": "scss",
+        "assets": ["apps/craft-web/src/favicon.ico", "apps/craft-web/src/assets"],
+        "styles": ["apps/craft-web/src/styles.scss"],
+        "scripts": []
       },
       "configurations": {
         "production": {
-          "fileReplacements": [
+          "budgets": [
             {
-              "replace": "apps/craft-web/src/environments/environment.ts",
-              "with": "apps/craft-web/src/environments/environment.prod.ts"
+              "type": "initial",
+              "maximumWarning": "2mb",
+              "maximumError": "5mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
             }
           ],
-          "optimization": true,
           "outputHashing": "all",
-          "sourceMap": false,
-          "namedChunks": false,
-          "aot": true,
-          "extractLicenses": true,
-          "vendorChunk": false,
-          "serviceWorker": false
+          "sourceMap": {
+            "scripts": false,
+            "buildOptimizer": false,
+            "optimization": false,
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "sourceMap": true,
+            "namedChunks": true
+          }
         },
-        "development": {
-          "optimization": false,
-          "sourceMap": true,
-          "namedChunks": true,
-          "extractLicenses": false,
-          "vendorChunk": true
+        "defaultConfiguration": "production"
+      },
+      "serve": {
+        "executor": "@angular-devkit/build-angular:dev-server",
+        "configurations": {
+          "production": {
+            "buildTarget": "craft-web:build:production"
+          },
+          "development": {
+            "buildTarget": "craft-web:build:development"
+          }
+        },
+        "defaultConfiguration": "development",
+        "options": {
+          "proxyConfig": "apps/craft-web/proxy.conf.json",
+          "host": "0.0.0.0",
+          "port": 4200,
+          "poll": 1000
+        }
+      },
+      "extract-i18n": {
+        "executor": "@angular-devkit/build-angular:extract-i18n",
+        "options": {
+          "buildTarget": "craft-web:build"
+        }
+      },
+      "lint": {
+        "executor": "@nx/eslint:lint",
+        "outputs": ["{options.outputFile}"],
+        "options": {
+          "lintFilePatterns": ["apps/craft-web/**/*.ts", "apps/craft-web/**/*.html"]
+        }
+      },
+      "test": {
+        "executor": "@nx/jest:jest",
+        "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+        "options": {
+          "jestConfig": "apps/craft-web/jest.config.ts"
+        }
+      },
+      "docs": {
+        "executor": "nx:run-commands",
+        "options": {
+          "commands": ["echo 'Generating docs...'"]
+        }
+      },
+      "deploy": {
+        "executor": "nx:run-commands",
+        "options": {
+          "commands": ["echo 'Deploying craft-web...'"]
         }
       }
     },
-    "serve": {
-      "executor": "@nx/angular:dev-server",
-      "options": {
-        "buildTarget": "craft-web:build"
-      },
-      "configurations": {
-        "production": {
-          "buildTarget": "craft-web:build:production",
-          "proxyConfig": "apps/craft-web/src/proxy.config.prod.json"
-        },
-        "development": {
-          "buildTarget": "craft-web:build:development",
-          "proxyConfig": "apps/craft-web/src/proxy.config.json"
-        }
-      },
-      "defaultConfiguration": "development"
+    "tags": []
+  },
+  "generators": {
+    "@nrwl/angular:component": {
+      "standalone": false
     },
-    "extract-i18n": {
-      "executor": "@nx/angular:extract-i18n",
-      "options": {
-        "buildTarget": "craft-web:build"
-      }
+    "@nrwl/angular:directive": {
+      "standalone": false
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef, ChangeDetectorRef, Input, Renderer2 } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
@@ -14,6 +14,8 @@ import { NavItem } from './sidebar.types';
   standalone: false
 })
 export class SidebarComponent implements OnInit, OnDestroy {
+  @Input() collapsed = false;
+
   // Navigation items
   navItems: NavItem[] = [
     {
@@ -28,6 +30,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
       expanded: false,
       children: [
         {
+          text: 'Material Table',
+          route: '/projects/table',
+          icon: 'table_chart',
+          visible: true
+        },
+        {
           text: 'Data Visualizations',
           route: '/projects/data-visualizations',
           icon: 'insights',
@@ -40,19 +48,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
           visible: true
         },
         {
-          text: 'Table Demo',
-          route: '/projects/table',
-          icon: 'table_chart',
-          visible: true
-        },
-        {
           text: 'Peasant Kitchen',
           route: '/projects/peasant-kitchen',
           icon: 'restaurant',
           visible: true
         },
         {
-          text: 'Book Viewer',
+          text: 'Document AI Parsing',
           route: '/projects/book',
           icon: 'menu_book',
           visible: true
@@ -76,22 +78,18 @@ export class SidebarComponent implements OnInit, OnDestroy {
       text: 'Admin',
       route: '/admin',
       icon: 'admin_panel_settings',
-      visible: true
+      visible: false
     }
   ];
 
   // UI State
-  collapsed = false;
   activeRoute = '';
-  resizing = false;
   resizeStartX = 0;
   currentWidth = 250; // Default sidebar width
-  isMobile = false;
-  isResizing = false;
   isMobileView = false;
   isAdmin = false;
   currentTheme: string = 'light-theme'; // Initialize the property with a default value
-
+  public isSidebarExpanded = true;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -99,59 +97,40 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private layoutService: LayoutService,
     private themeService: ThemeService,
     private authService: AuthenticationService,
+    private renderer: Renderer2,
     private el: ElementRef,
     private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-
     this.currentTheme = this.themeService.getCurrentTheme();
+
     // Track sidebar collapsed state from LayoutService
-    this.layoutService.sidebarExpanded$
+    this.layoutService.sidebarCollapsed$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(expanded => {
-        this.collapsed = !expanded;
+      .subscribe((collapsed: boolean) => {
+        this.isSidebarExpanded = !collapsed;
+        this.collapsed = collapsed;
       });
 
     // Track sidebar width from LayoutService
     this.layoutService.sidebarWidth$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(width => {
+      .subscribe((width: number) => {
         this.currentWidth = width;
-      });
-    
-    // Track resizing state from LayoutService
-    this.layoutService.sidebarResizing$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(resizing => {
-        this.resizing = resizing;
-      });
-
-    // Subscribe to sidebar resize events
-    this.layoutService.sidebarResizing$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((resizing: boolean) => {
-        this.isResizing = resizing;
       });
 
     // Track mobile state
-    this.layoutService.isMobile()
+    this.layoutService.isSmallScreen$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(isMobile => {
-        this.isMobile = isMobile;
-        
+      .subscribe((isSmall: boolean) => {
+        this.isMobileView = isSmall;
+        this.changeDetectorRef.markForCheck();
+
         // Auto-collapse on mobile
-        if (isMobile && !this.collapsed) {
+        if (isSmall && !this.collapsed) {
           this.toggleSidebar();
         }
-      });
-
-    // Subscribe to mobile state changes
-    this.layoutService.isMobile()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((isMobile: boolean) => {
-        this.isMobileView = isMobile;
-        this.changeDetectorRef.markForCheck();
       });
 
     // Track active route for highlighting
@@ -162,7 +141,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       )
       .subscribe((event: NavigationEnd) => {
         this.activeRoute = event.urlAfterRedirects;
-        
+
         // Automatically expand the projects section if a project route is active
         if (this.activeRoute.includes('/projects/')) {
           const projectsItem = this.navItems.find(item => item.text === 'Projects');
@@ -176,7 +155,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe(user => {
-        this.isAdmin = !!user && !!user.roles && user.roles.includes('admin');
         this.changeDetectorRef.markForCheck();
       });
   }
@@ -205,9 +183,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   navigate(route: string): void {
     if (route) {
       this.router.navigate([route]);
-      
+
       // Auto-collapse sidebar on mobile after navigation
-      if (this.isMobile && !this.collapsed) {
+      if (this.isMobileView && !this.collapsed) {
         this.toggleSidebar();
       }
     }
@@ -217,7 +195,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
    * Toggle sidebar expanded/collapsed state
    */
   toggleSidebar(): void {
-    this.layoutService.toggleSidebarExpanded();
+    this.layoutService.toggleSidebar();
   }
 
   /**
@@ -225,62 +203,49 @@ export class SidebarComponent implements OnInit, OnDestroy {
    * @param event Mouse event
    */
   startResize(event: MouseEvent): void {
-    event.preventDefault();
     this.resizeStartX = event.clientX;
-    this.layoutService.startSidebarResize();
-    
+
     // Add event listeners for drag and release
-    document.addEventListener('mousemove', this.onDragMove);
-    document.addEventListener('mouseup', this.onDragEnd);
+    this.renderer.listen('document', 'mousemove', this.onResizeMove);
+    this.renderer.listen('document', 'mouseup', this.onResizeEnd);
   }
 
   /**
    * End sidebar resize
    */
-  endResize(): void {
-    if (this.resizing) {
-      // Get computed width after drag
-      const computedWidth = this.el.nativeElement.getBoundingClientRect().width;
-      
-      // Update service with final width
-      this.layoutService.setSidebarWidth(computedWidth);
-      this.layoutService.endSidebarResize();
-      
-      // Remove event listeners
-      document.removeEventListener('mousemove', this.onDragMove);
-      document.removeEventListener('mouseup', this.onDragEnd);
-    }
-  }
+  onResizeEnd = (): void => {
+    // Remove event listeners
+    this.renderer.listen('document', 'mousemove', this.onResizeMove);
+    this.renderer.listen('document', 'mouseup', this.onResizeEnd);
 
-  @HostListener('document:mousemove', ['$event'])
-  onDragMove = (event: MouseEvent) => {
-    if (this.resizing) {
-      const deltaX = event.clientX - this.resizeStartX;
-      const newWidth = this.currentWidth + deltaX;
-      
-      // Apply width directly during drag for responsive feel
-      this.el.nativeElement.style.width = `${newWidth}px`;
-      this.resizeStartX = event.clientX;
-    }
-  }
+    // Get computed width after drag - must use native element for measurement
+    const computedWidth = this.el.nativeElement.getBoundingClientRect().width;
 
-  @HostListener('document:mouseup')
-  onDragEnd = () => {
-    this.endResize();
-  }
+    // Update service with final width
+    this.layoutService.setSidebarWidth(computedWidth);
+  };
+
+  onResizeMove = (event: MouseEvent) => {
+    const deltaX = event.clientX - this.resizeStartX;
+    const newWidth = this.currentWidth + deltaX;
+
+    // Apply width using Renderer2
+    this.renderer.setStyle(this.el.nativeElement, 'width', `${newWidth}px`);
+    this.resizeStartX = event.clientX;
+  };
 
   // Expand sidebar when hovered in collapsed state on desktop
   onMouseEnter(): void {
-    if (this.collapsed && !this.isMobile) {
+    if (this.collapsed && !this.isMobileView) {
       // Temporarily expand sidebar for hover preview
-      this.el.nativeElement.classList.add('hover-expanded');
+      this.renderer.addClass(this.el.nativeElement, 'hover-expanded');
     }
   }
 
   onMouseLeave(): void {
-    if (this.collapsed && !this.isMobile) {
+    if (this.collapsed && !this.isMobileView) {
       // Remove temporary expanded state
-      this.el.nativeElement.classList.remove('hover-expanded');
+      this.renderer.removeClass(this.el.nativeElement, 'hover-expanded');
     }
   }
 }

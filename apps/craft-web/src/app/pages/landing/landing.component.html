@@ -1,49 +1,68 @@
-<div class="landing-page" [ngClass]="currentTheme">
-  <!-- Particle animation background -->
-  <div #particleContainer class="particle-container"></div>
-  
-  <!-- Hero section -->
+<div class="landing-container" [ngClass]="currentTheme" [@fadeInContent]>
   <section class="hero-section">
     <div class="hero-content">
-      <h1 class="hero-title" @fadeIn>CRAFT FUSION</h1>
-      <div class="hero-subtitle" @slideIn>Powerful tools with a patriotic spirit</div>
-      
-      <div class="hero-cta-container" @slideIn>
-        <button mat-raised-button color="primary" class="hero-cta" (click)="navigateTo('/dashboard')">
-          <mat-icon>arrow_forward</mat-icon>
-          Get Started
-        </button>
-        
-        <button mat-stroked-button class="hero-cta secondary" (click)="navigateTo('/about')">
-          Learn More
-        </button>
+      <h1 class="app-title">Craft Fusion</h1>
+      <p class="app-subtitle">A comprehensive web application with responsive layout, interactive data visualizations, and patriotic theming</p>
+      <div class="cta-buttons">
+        <a mat-raised-button color="primary" routerLink="/projects">
+          <mat-icon>explore</mat-icon>
+          Explore Projects
+        </a>
+        <a mat-raised-button color="accent" routerLink="/admin">
+          <mat-icon>dashboard</mat-icon>
+          View Dashboard
+        </a>
       </div>
     </div>
   </section>
-  
-  <!-- Features section -->
-  <section class="features-section" @scaleIn>
-    <h2 class="section-title">Our Features</h2>
-    
+
+  <section class="features-section">
+    <h2>Key Features</h2>
     <div class="features-grid">
-      <div class="feature-card" *ngFor="let feature of features; let i = index" 
-           [@stagger]="getAnimationDelay(i)">
-        <mat-icon class="feature-icon">{{feature.icon}}</mat-icon>
-        <h3 class="feature-title">{{feature.title}}</h3>
-        <p class="feature-description">{{feature.description}}</p>
+      <div class="feature-card">
+        <mat-icon color="primary">palette</mat-icon>
+        <h3>Patriotic Design System</h3>
+        <p>Navy blue, red, and gold theme with elegant UI components</p>
+      </div>
+
+      <div class="feature-card">
+        <mat-icon color="primary">view_quilt</mat-icon>
+        <h3>Responsive Layout</h3>
+        <p>Flexible mainstage with collapsible sidebar</p>
+      </div>
+
+      <div class="feature-card">
+        <mat-icon color="primary">insert_chart</mat-icon>
+        <h3>Data Visualizations</h3>
+        <p>Performance metrics and health monitoring dashboards</p>
+      </div>
+
+      <div class="feature-card">
+        <mat-icon color="primary">security</mat-icon>
+        <h3>Security Settings</h3>
+        <p>User security preferences and password management</p>
+      </div>
+
+      <div class="feature-card">
+        <mat-icon color="primary">style</mat-icon>
+        <h3>Theme Switcher</h3>
+        <p>Multiple patriotic themes (Light, Dark, Bold, Vintage)</p>
+      </div>
+
+      <div class="feature-card">
+        <mat-icon color="primary">speed</mat-icon>
+        <h3>Performance Metrics</h3>
+        <p>Real-time system monitoring and reporting</p>
       </div>
     </div>
   </section>
-  
-  <!-- Call to action section -->
-  <section class="cta-section" @scaleIn>
-    <div class="cta-content">
-      <h2 class="cta-title">Ready to get started?</h2>
-      <p class="cta-subtitle">Join thousands of organizations using Craft Fusion today.</p>
-      
-      <button mat-raised-button color="accent" class="cta-button" (click)="navigateTo('/register')">
-        Create Account
-      </button>
-    </div>
+
+  <section class="about-section">
+    <h2>About Craft Fusion</h2>
+    <p>
+      Craft Fusion is a comprehensive web application showcasing modern Angular development practices.
+      With its responsive layout system, interactive data visualizations, and patriotic theming,
+      it provides a robust foundation for building enterprise-grade applications.
+    </p>
   </section>
 </div>

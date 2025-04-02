@@ -1,6 +1,13 @@
-# Craft Fusion Project Structure
+# Project Structure
 
-This document provides an overview of the project's folder structure and explains the purpose of each directory.
+This document outlines the structure of the Craft Fusion project to help developers navigate and understand the codebase.
+
+## Overview
+
+Craft Fusion is a monorepo managed with Nx that includes:
+- Angular frontend application
+- NestJS backend API service
+- Go microservices
 
 ## Top-Level Structure
 

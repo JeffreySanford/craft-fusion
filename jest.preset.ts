@@ -6,16 +6,19 @@ export default {
   rootDir: '.',
   testMatch: ['**/+(*.)+(spec|test).+(ts|js)?(x)'],
   transform: {
-    '^.+\\.(ts|js|html)$': [
-      'jest-preset-angular',
-      {
-        tsconfig: '<rootDir>/tsconfig.json',
-        stringifyContentPathRegex: '\\.(html|svg)$'
-      }
-    ]
+    '^.+\\.(ts|js|html)$': ['ts-jest', {
+      tsconfig: '<rootDir>/tsconfig.json',
+      stringifyContentPathRegex: '\\.(html|svg)$'
+    }]
   },
   resolver: '@nx/jest/plugins/resolver',
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/test-setup.ts'],
+  globals: {
+    'ts-jest': {
+      tsconfig: '<rootDir>/tsconfig.spec.json',
+      isolatedModules: true,
+    },
+  },
 };

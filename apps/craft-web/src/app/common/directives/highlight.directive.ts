@@ -1,27 +1,34 @@
-import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, HostListener, Input, OnInit, Renderer2 } from '@angular/core';
 
+/**
+ * Directive that highlights an element when hovered over
+ * Usage: <div appHighlight [highlightColor]="'rgba(255, 0, 0, 0.2)'"></div>
+ */
 @Directive({
   selector: '[appHighlight]',
-  standalone: false // Make sure standalone is false since we're using NgModule
+  standalone: false
 })
-export class HighlightDirective {
-  @Input() highlightColor = 'rgba(191, 10, 48, 0.1)';
-  @Input() textColor = '#BF0A30';
-  
+export class HighlightDirective implements OnInit {
+  @Input() highlightColor: string = 'rgba(0, 0, 255, 0.1)';
+  private originalBackgroundColor: string = '';
+
   constructor(private el: ElementRef, private renderer: Renderer2) {}
-  
-  @HostListener('mouseenter') onMouseEnter() {
-    this.highlight(this.highlightColor, this.textColor);
+
+  ngOnInit(): void {
+    // Store the original background color for restoration when not hovered
+    this.originalBackgroundColor = this.el.nativeElement.style.backgroundColor || '';
   }
-  
-  @HostListener('mouseleave') onMouseLeave() {
-    this.highlight(null, null);
+
+  @HostListener('mouseenter') onMouseEnter(): void {
+    this.highlight(this.highlightColor);
   }
-  
-  private highlight(backgroundColor: string | null, textColor: string | null) {
-    this.renderer.setStyle(this.el.nativeElement, 'transition', 'all 0.3s ease-in-out');
-    this.renderer.setStyle(this.el.nativeElement, 'background-color', backgroundColor);
-    this.renderer.setStyle(this.el.nativeElement, 'color', textColor || 'inherit');
-    this.renderer.setStyle(this.el.nativeElement, 'transform', backgroundColor ? 'scale(1.05)' : 'scale(1)');
+
+  @HostListener('mouseleave') onMouseLeave(): void {
+    this.highlight(this.originalBackgroundColor);
+  }
+
+  private highlight(color: string): void {
+    this.renderer.setStyle(this.el.nativeElement, 'backgroundColor', color);
+    this.renderer.setStyle(this.el.nativeElement, 'transition', 'background-color 0.3s ease');
   }
 }

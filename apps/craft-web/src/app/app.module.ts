@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { AppComponent } from './app.component';
 import { SidebarModule } from './pages/sidebar/sidebar.module';
 import { HeaderModule } from './pages/header/header.module';
-import { FooterModule } from './pages/footer/footer.module';
+import { FooterModule } from './pages/footer/footer.module'; // Ensure FooterModule is imported
 
 // Import other modules
 import { DataVisualizationsModule } from './projects/data-visualizations/data-visualizations.module';
@@ -82,7 +82,7 @@ import { LandingModule } from './pages/landing/landing.module';
     PeasantKitchenModule,
     SpaceVideoModule,
     TableModule,
-    FooterModule,
+    FooterModule, // Ensure FooterModule is included in imports
     HttpClientModule,
     VideoBackgroundModule, // Import the VideoBackgroundModule
     ToastrModule.forRoot({

@@ -1,71 +1,66 @@
-// Production environment configuration
+import { EnvironmentConfig } from './environment.base';
 
-import { loadEnvironmentVariables } from './environment.loader';
-
-// Load variables from .env file
-const envVars = loadEnvironmentVariables();
-
-export const environment = {
+export const environment: EnvironmentConfig = {
   production: true,
-  apiUrl: envVars.API_URL || 'https://api.craftfusion.com/api',
+  apiUrl: 'https://api.craftfusion.com/api',
   useMockMetrics: false,
   useMockApiWhenUnavailable: false,
-  maxConnectionRetries: 3,
+  maxConnectionRetries: 5,
   logLevel: 'error',
   host: 'craftfusion.com',
   authProvider: 'firebase',
   
-  // API Keys loaded from .env file
+  // API Keys - will be injected during build
   finnhub: {
-    apiKey: envVars.FINNHUB_API_KEY || '',
+    apiKey: '',  // Injected during CI/CD
     baseUrl: 'https://finnhub.io/api/v1'
   },
   mapbox: {
-    accessToken: envVars.MAPBOX_ACCESS_TOKEN || '',
+    accessToken: '', // Injected during CI/CD
     style: 'mapbox://styles/mapbox/streets-v11'
   },
   flightAware: {
-    username: envVars.FLIGHT_AWARE_USER || '',
-    apiKey: envVars.FLIGHT_AWARE_API_KEY || '',
+    username: '', // Injected during CI/CD
+    apiKey: '', // Injected during CI/CD
     baseUrl: 'https://aeroapi.flightaware.com/aeroapi'
   },
   huggingFace: {
-    apiKey: envVars.HUGGING_FACE_AFP || '',
+    apiKey: '', // Injected during CI/CD
     baseUrl: 'https://api-inference.huggingface.co/models'
   },
   
-  // Adding missing API configurations
   flightRadar24: {
     endpoint: 'https://api.flightradar24.com/v1',
-    apiKey: envVars.FLIGHT_RADAR24_API_KEY || ''
+    apiKey: '' // Injected during CI/CD
   },
   yahooFinance: {
     url: 'https://yfapi.net',
-    apiKey: envVars.YAHOO_FINANCE_API_KEY || ''
+    apiKey: '' // Injected during CI/CD
   },
-  alphaVantageApiKey: envVars.ALPHA_VANTAGE_API_KEY || '',
+  alphaVantageApiKey: '',
 
   // AI Model Configuration
   aiModels: {
-    deepseekEnabled: envVars.DEEPSEEK_ENABLED === 'true',
-    mistralEnabled: envVars.MISTRAL_ENABLED === 'true',
-    openaiEnabled: envVars.OPENAI_ENABLED === 'true',
-    openaiApiKey: envVars.OPENAI_API_KEY || ''
+    deepseekEnabled: false,
+    mistralEnabled: true,
+    openaiEnabled: true,
+    openaiApiKey: '' // Injected during CI/CD
   },
   
+  // Production Firebase config
   firebaseConfig: {
-    apiKey: "AIzaSyA1234567890abcdefghijklmnopqrstuv",
-    authDomain: "craft-fusion-prod.firebaseapp.com",
-    projectId: "craft-fusion-prod",
-    storageBucket: "craft-fusion-prod.appspot.com",
-    messagingSenderId: "234567890123",
-    appId: "1:234567890123:web:abc123def456ghi789jkl",
-    measurementId: "G-ABCDEF1235"
+    apiKey: "AIzaSyBProdConfig123456789ProdConfig",
+    authDomain: "craft-fusion.firebaseapp.com",
+    projectId: "craft-fusion",
+    storageBucket: "craft-fusion.appspot.com",
+    messagingSenderId: "987654321098",
+    appId: "1:987654321098:web:prod123config456prod",
+    measurementId: "G-PRODCONFIG"
   },
   
   featureFlags: {
     enablePerformanceMonitoring: true,
-    enableApiLogs: false,  // Disable verbose logging in production
+    enableApiLogs: false,
     enableExperimentalFeatures: false,
     useNewDashboard: true,
     enableAiAssistant: true
@@ -84,15 +79,15 @@ export const environment = {
   analytics: {
     enabled: true,
     provider: 'google-analytics',
-    trackingId: 'UA-REAL-TRACKING-ID'  // Actual tracking ID in production
+    trackingId: 'UA-PRODUCTION-ID'
   },
   
   performance: {
-    minFps: 24,  // Lower minimum for wider device support
+    minFps: 24,
     targetFps: 60,
-    maxInitTime: 5000,  // Allow more time for initialization in production
+    maxInitTime: 2000,
     disableVideoBackgrounds: true
   },
   
-  appVersion: '1.0.0'  // Production version without beta tag
+  appVersion: '1.1.0'
 };

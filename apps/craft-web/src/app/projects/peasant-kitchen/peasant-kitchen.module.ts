@@ -4,7 +4,8 @@ import { PeasantKitchenComponent } from './peasant-kitchen.component';
 import { RecipeComponent } from './recipe/recipe.component';
 import { RecipesComponent } from './recipes/recipes.component';
 import { MaterialModule } from '../../material.module';
-import { AnimatedDirectivesModule } from '../../animated-directives.module';
+// Import AppAnimatedDirectivesModule instead of AnimatedDirectivesModule
+import { AppAnimatedDirectivesModule } from './directives/app-animated-directives.module';
 
 import { RecipeService } from './recipe.service';
 import { RouterModule } from '@angular/router';
@@ -16,11 +17,12 @@ import { MatCardModule } from '@angular/material/card';
   declarations: [
     PeasantKitchenComponent,
     RecipesComponent,
+    RecipeComponent
   ],
   imports: [
     CommonModule,
     MaterialModule,
-    AnimatedDirectivesModule,
+    AppAnimatedDirectivesModule, // Use AppAnimatedDirectivesModule here
     RouterModule,
     MatIconModule,
     MatProgressSpinnerModule,

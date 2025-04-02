@@ -21,7 +21,6 @@ import { MatListModule } from '@angular/material/list'; // Add this for mat-list
 import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
-import { AnimatedDirectivesModule } from '../../animated-directives.module';
 import { KatexModule } from "./quantum-fisher-information/katex/katex.module";
 import { MapboxService } from '../../common/services/mapbox.service'; // Update import path
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -29,6 +28,9 @@ import { ChartLayoutService } from './services/chart-layout.service';
 import { TileLimitDialogComponent } from './dialogs/tile-limit-dialog.component';
 import { FinanceModule } from './financial/finance.module';
 import { MatGridListModule } from '@angular/material/grid-list'; // Add MatGridListModule for grid layouts
+
+// Import AppAnimatedDirectivesModule instead of AnimatedDirectivesModule
+import { AppAnimatedDirectivesModule } from './directives/app-animated-directives.module';
 
 // Define routes for the data visualizations module
 const dataVisualizationsRoutes: Routes = [
@@ -79,10 +81,10 @@ const dataVisualizationsRoutes: Routes = [
     MatTabsModule,
     MatCardModule,
     MatGridListModule, // Add MatGridListModule for grid layouts
-    AnimatedDirectivesModule,
     KatexModule,
     MatTooltipModule,
-    FinanceModule
+    FinanceModule,
+    AppAnimatedDirectivesModule, // Use AppAnimatedDirectivesModule here
   ],
   exports: [
     DataVisualizationsComponent,

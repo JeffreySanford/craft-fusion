@@ -1,94 +1,76 @@
-<aside class="sidebar-container" [ngClass]="[currentTheme, !collapsed ? 'expanded' : 'collapsed']" 
-     [class.mobile]="isMobile"
-     [class.resizing]="resizing"
-     [style.width.px]="collapsed ? 64 : currentWidth"
+<div class="sidebar-container" 
+     [class.collapsed]="collapsed" 
+     [ngStyle]="{'width': collapsed ? '64px' : currentWidth + 'px'}"
      (mouseenter)="onMouseEnter()" 
      (mouseleave)="onMouseLeave()">
-     
-  <!-- Sidebar header with logo -->
-  <div class="sidebar-header">
-    <div class="logo-container">
-      <img src="assets/images/logo.svg" alt="Craft Fusion Logo" class="logo" *ngIf="!collapsed" />
-      <img src="assets/images/icon.svg" alt="Craft Fusion Icon" class="icon" *ngIf="collapsed" />
-    </div>
-    <button mat-icon-button class="collapse-button" (click)="toggleSidebar()" aria-label="Toggle sidebar">
-      <mat-icon>{{ collapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
-    </button>
-  </div>
   
-  <!-- Sidebar content -->
-  <div class="sidebar-content">
-    <nav class="sidebar-nav">
-      <ul class="nav-list">
-        <!-- Regular navigation items -->
-        <li *ngFor="let item of navItems" class="nav-item" [class.has-children]="!!item.children">
-          <!-- Parent items with no children -->
-          <a *ngIf="!item.children" 
-             [routerLink]="item.route" 
-             routerLinkActive="active"
-             [class.active]="isActive(item.route)" 
-             class="nav-link">
-            <mat-icon class="nav-icon">{{item.icon}}</mat-icon>
-            <span class="nav-text" *ngIf="!collapsed">{{item.text}}</span>
-          </a>
-          
-          <!-- Parent items with children (expandable) -->
-          <div *ngIf="item.children" 
-               class="nav-parent"
-               [class.expanded]="item.expanded"
-               [class.active]="isChildActive(item)">
-            <div class="nav-parent-header" (click)="toggleExpand(item)">
-              <mat-icon class="nav-icon">{{item.icon}}</mat-icon>
-              <span class="nav-text" *ngIf="!collapsed">{{item.text}}</span>
+  <div class="sidebar-header">
+    <div class="logo-container" [class.collapsed]="collapsed">
+      <img *ngIf="!collapsed" src="assets/images/logos/logo.svg" alt="Craft Fusion Logo" class="logo">
+      <img *ngIf="collapsed" src="assets/images/logos/logo-icon.svg" alt="Craft Fusion Icon" class="logo-icon">
+    </div>
+  </div>
+
+  <div class="sidebar-menu">
+    <!-- Navigation Items -->
+    <div class="nav-items">
+      <ng-container *ngFor="let item of navItems">
+        <!-- Only show visible items -->
+        <ng-container *ngIf="item.visible">
+          <!-- Items with children -->
+          <div *ngIf="item.children" class="nav-item-group">
+            <div class="nav-item" 
+                [class.active]="isChildActive(item)"
+                [class.collapsed]="collapsed"
+                (click)="toggleExpand(item)">
+              <mat-icon class="nav-item-icon">{{ item.icon }}</mat-icon>
+              <span class="nav-item-text" *ngIf="!collapsed">{{ item.text }}</span>
               <mat-icon class="expand-icon" *ngIf="!collapsed">
-                {{item.expanded ? 'expand_less' : 'expand_more'}}
+                {{ item.expanded ? 'expand_less' : 'expand_more' }}
               </mat-icon>
             </div>
             
-            <!-- Child items (projects) -->
-            <ul class="nav-children" [class.expanded]="item.expanded" *ngIf="!collapsed || (collapsed && item.expanded)">
-              <li *ngFor="let child of item.children" class="nav-child-item">
-                <a [routerLink]="child.route" 
-                   routerLinkActive="active"
-                   [class.active]="isActive(child.route)" 
-                   class="nav-link child-link">
-                  <mat-icon class="nav-icon">{{child.icon}}</mat-icon>
-                  <span class="nav-text" *ngIf="!collapsed">{{child.text}}</span>
-                </a>
-              </li>
-            </ul>
+            <!-- Child items -->
+            <div class="nav-item-children" 
+                *ngIf="item.expanded && !collapsed" 
+                [@expandCollapse]="item.expanded ? 'expanded' : 'collapsed'">
+              <div *ngFor="let child of item.children" 
+                   class="nav-child-item"
+                   [class.active]="isActive(child.route)"
+                   [class.collapsed]="collapsed"
+                   (click)="navigate(child.route)"
+                   *ngIf="child.visible">
+                <mat-icon class="nav-item-icon">{{ child.icon }}</mat-icon>
+                <span class="nav-item-text" *ngIf="!collapsed">{{ child.text }}</span>
+              </div>
+            </div>
           </div>
-        </li>
-        
-        <!-- Admin section with auth guard -->
-        <li class="nav-item admin-item" *ngIf="isAdmin">
-          <a 
-            class="nav-link" 
-            [routerLink]="['/admin']" 
-            routerLinkActive="active"
-            [attr.title]="!collapsed ? '' : 'Admin Dashboard'"
-          >
-            <mat-icon class="nav-icon">admin_panel_settings</mat-icon>
-            <span class="nav-label" *ngIf="!collapsed">Admin</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
+          
+          <!-- Items without children -->
+          <div *ngIf="!item.children" 
+              class="nav-item"
+              [class.active]="isActive(item.route)"
+              [class.collapsed]="collapsed"
+              (click)="navigate(item.route)">
+            <mat-icon class="nav-item-icon">{{ item.icon }}</mat-icon>
+            <span class="nav-item-text" *ngIf="!collapsed">{{ item.text }}</span>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
   </div>
   
-  <!-- Sidebar footer -->
-  <div class="sidebar-footer">
-    <button mat-icon-button aria-label="Settings">
-      <mat-icon>settings</mat-icon>
-    </button>
-    <button mat-icon-button aria-label="Account">
-      <mat-icon>account_circle</mat-icon>
-    </button>
-  </div>
-  
-  <!-- Resize handle -->
+  <!-- Sidebar resize handle -->
   <div class="resize-handle" 
-       *ngIf="!collapsed && !isMobile" 
+       *ngIf="!collapsed && !isMobileView"
        (mousedown)="startResize($event)">
+    <div class="handle-line"></div>
   </div>
-</aside>
+  
+  <!-- Toggle button -->
+  <button class="sidebar-toggle" 
+          (click)="toggleSidebar()"
+          [attr.aria-label]="collapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+    <mat-icon>{{ collapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+  </button>
+</div>

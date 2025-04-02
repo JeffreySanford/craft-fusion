@@ -1,23 +1,41 @@
 module.exports = {
   extends: [
-    "stylelint-config-standard-scss",
-    "stylelint-config-prettier",
     'stylelint-config-standard',
+    'stylelint-config-standard-scss',
+    'stylelint-config-prettier'
   ],
   plugins: [
-    "stylelint-order",
-    "stylelint-scss",
+    'stylelint-order'
   ],
   rules: {
-    "order/properties-alphabetical-order": true,
-    "scss/at-extend-no-missing-placeholder": true,
-    "scss/selector-no-redundant-nesting-selector": true,
-    "scss/dollar-variable-pattern": "^\\$[a-z0-9-]+",
-    "scss/at-rule-no-unknown": [true, {
-      ignoreAtRules: ["include", "mixin", "use"]
-    }],
-    "scss/no-duplicate-dollar-variables": true,
-    "scss/at-mixin-pattern": "^mat-"
-  },
-  ignoreFiles: ["node_modules/**", "dist/**"]
+    'color-hex-case': 'lower',
+    'color-hex-length': 'short',
+    'max-nesting-depth': 4,
+    'selector-max-compound-selectors': 4,
+    'selector-class-pattern': null,
+    'scss/dollar-variable-pattern': null,
+    'order/properties-alphabetical-order': true,
+    'no-empty-source': null,
+    'selector-type-no-unknown': [
+      true,
+      {
+        ignore: ['custom-elements']
+      }
+    ],
+    'at-rule-no-unknown': [
+      true,
+      {
+        ignoreAtRules: [
+          'tailwind',
+          'apply',
+          'variants',
+          'responsive',
+          'screen',
+          'include',
+          'mixin',
+          'extend'
+        ]
+      }
+    ]
+  }
 };

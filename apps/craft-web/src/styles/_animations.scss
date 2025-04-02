@@ -130,6 +130,110 @@
   100% { background-position: 200% 0; }
 }
 
+// Common animations
+
+// Fade in
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+// Fade out
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.fade-out {
+  animation: fadeOut 0.3s ease-in-out forwards;
+}
+
+// Slide in from bottom
+@keyframes slideInBottom {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.slide-in-bottom {
+  animation: slideInBottom 0.4s ease-out forwards;
+}
+
+// Slide in from top
+@keyframes slideInTop {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.slide-in-top {
+  animation: slideInTop 0.4s ease-out forwards;
+}
+
+// Slide in from left
+@keyframes slideInLeft {
+  from { transform: translateX(-30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.4s ease-out forwards;
+}
+
+// Slide in from right
+@keyframes slideInRight {
+  from { transform: translateX(30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.4s ease-out forwards;
+}
+
+// Expand collapse animations
+@keyframes expand {
+  from { max-height: 0; opacity: 0; }
+  to { max-height: 1000px; opacity: 1; }
+}
+
+.expand {
+  animation: expand 0.5s ease-out forwards;
+  overflow: hidden;
+}
+
+@keyframes collapse {
+  from { max-height: 1000px; opacity: 1; }
+  to { max-height: 0; opacity: 0; }
+}
+
+.collapse {
+  animation: collapse 0.5s ease-in forwards;
+  overflow: hidden;
+}
+
+// Pulse animation
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+// Staggered animations for list items
+@mixin staggered-animation($animation, $duration: 0.3s, $delay-increment: 0.1s, $max-items: 10) {
+  @for $i from 1 through $max-items {
+    &:nth-child(#{$i}) {
+      animation: $animation $duration ease-out forwards;
+      animation-delay: $delay-increment * $i;
+    }
+  }
+}
+
 // Export animations for use in components
 $fade-in: fade-in;
 $fade-out: fade-out;

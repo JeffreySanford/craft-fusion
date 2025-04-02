@@ -33,6 +33,5 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": false,
     "strictTemplates": true
-  },
-  "exclude": ["node_modules", "dist", "tmp", "**/*.spec.ts"]
+  }
 }

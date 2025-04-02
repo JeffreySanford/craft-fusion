@@ -50,8 +50,8 @@ $dark-bg: #1A1A2E;
 $card-bg: #27293d;
 
 /* Footer variables */
-$footer-height: 3em;
-$footer-expanded-height: 12em;
+$footer-height: 60px; // Updated to match the collapsed height in the component
+$footer-expanded-height: 300px; // Increased to provide more space when expanded
 $footer-transition-duration: 0.3s;
 $footer-transition-timing: ease-in-out;
 
@@ -131,6 +131,13 @@ $spacing: (
   8: $spacing-unit * 8  /* 64px */
 );
 
+// Spacing
+$spacing-xs: 0.5rem;
+$spacing-sm: 1rem;
+$spacing-md: 1.5rem;
+$spacing-lg: 2rem;
+$spacing-xl: 2.5rem;
+
 /* Responsive Breakpoints */
 $breakpoints: (
   sm: 576px,   /* Small devices */
@@ -138,6 +145,13 @@ $breakpoints: (
   lg: 992px,   /* Large devices */
   xl: 1200px,  /* Extra large devices */
   xxl: 1400px  /* Extra extra large devices */
+);
+
+$breakpoints: (
+  'mobile': 576px,
+  'tablet': 768px,
+  'desktop': 1024px,
+  'large-desktop': 1440px
 );
 
 /* Z-index Layers */
@@ -282,4 +296,44 @@ $log-system-color: #9333ea;      /* purple */
   @each $size, $value in $md-radii {
     --md-sys-radius-#{$size}: #{$value};
   }
+
+  // Light theme
+  --color-primary: #002868;
+  --color-secondary: #BF0A30;
+  --color-accent: #FFD700;
+  
+  --color-background: #ffffff;
+  --color-background-dark: #1a1a1a;
+  --color-background-darker: #111111;
+  
+  --color-text: #333333;
+  --color-text-light: #ffffff;
+  --color-text-muted: #767676;
+  
+  --color-border: #e0e0e0;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+
+  // Layout dimensions
+  --header-height: 64px;
+  --footer-height: 60px;
+  --footer-expanded-height: 300px;
+  --sidebar-width: 260px;
+  --sidebar-width-collapsed: 80px;
+  --content-padding: 2rem;
+  --main-content-height: calc(100vh - var(--header-height) - var(--footer-height));
+  --mainstage-margin-left: var(--sidebar-width);
+  --mainstage-margin-left-collapsed: var(--sidebar-width-collapsed);
+}
+
+// Dark theme override
+.dark-theme {
+  --color-background: #121212;
+  --color-background-dark: #1e1e1e;
+  --color-background-darker: #000000;
+  
+  --color-text: #e0e0e0;
+  --color-text-muted: #a0a0a0;
+  
+  --color-border: #333333;
+  --color-shadow: rgba(0, 0, 0, 0.4);
 }

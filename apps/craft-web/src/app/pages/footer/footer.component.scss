@@ -1,412 +1,160 @@
-@use 'sass:map';
 @use '../../../styles/variables' as vars;
-@use '../../../styles/mixins' as mixins;
+@use '../../../styles/layout' as layout;
 @use '../../../styles/responsive' as responsive;
+@use '../../../styles/animations' as animations;
 
-// Footer Container
-.app-footer {
-  width: 100%;
-  background-color: var(--md-sys-color-surface);
-  color: var(--md-sys-color-on-surface);
-  min-height: 48px;
+.footer {
   position: relative;
-  transition: min-height 0.3s ease, background-color 0.3s ease;
-  border-top: 1px solid var(--md-sys-color-outline);
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  background-color: var(--color-background-dark);
+  color: var(--color-text-light);
+  width: 100%;
+  cursor: pointer;
   z-index: 10;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, height 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  min-height: var(--footer-height);
+  max-height: var(--footer-height);
   
-  // Expanded Footer
   &.expanded {
-    min-height: 300px;
-    
-    @include responsive.sm-down {
-      min-height: 500px; // Taller on mobile to accommodate stacked content
+    max-height: var(--footer-expanded-height);
+  }
+  
+  // When collapsed, show only the header
+  &:not(.expanded) {
+    .footer-content {
+      opacity: 0;
+      transform: translateY(20px);
     }
   }
   
-  // Theme Variations
-  &.light-theme {
-    background-color: var(--md-sys-color-surface);
+  // When expanded, show the footer content with fade-in
+  &.expanded {
+    .footer-content {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.3s ease 0.1s, transform 0.3s ease;
+    }
   }
   
-  &.dark-theme {
-    background-color: var(--md-sys-color-surface-variant);
+  // Add hover effect
+  &:hover {
+    background-color: var(--color-background-darker);
+    
+    .footer-toggle-indicator {
+      color: var(--color-accent);
+    }
   }
 }
 
-// Footer Toggle Button
-.expand-toggle {
-  position: absolute;
-  top: -16px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  line-height: 32px;
-  z-index: 1;
-  cursor: pointer;
+.footer-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+  padding: 0 1rem; // Use direct value instead of variable
+}
+
+.footer-toggle-indicator {
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  border: none;
-  outline: none;
-  
-  &:hover {
-    background-color: var(--md-sys-color-primary);
-    color: var(--md-sys-color-on-primary);
-  }
+  transition: color 0.2s ease;
   
   mat-icon {
-    font-size: 18px;
-    height: 18px;
-    width: 18px;
-    line-height: 18px;
+    margin-right: 0.5rem; // Use direct value instead of variable
+    transition: transform 0.3s ease;
+  }
+  
+  .footer-toggle-text {
+    font-size: 0.9rem;
+    font-weight: 500;
   }
 }
 
-// Basic Footer Content (collapsed state)
-.basic-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  height: 48px;
+.footer-content {
+  padding: 0.5rem 1rem 2rem;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(var(--footer-expanded-height) - 60px);
+}
+
+.footer-sections {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem; // Use direct value instead of variable
   
-  .left-content, .right-content, .middle-content {
-    display: flex;
-    align-items: center;
+  @include responsive.respond-to(tablet) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem; // Use direct value instead of variable
   }
   
-  .left-content {
-    .copyright {
-      margin-right: 16px;
-    }
-    
-    .version {
-      font-size: 12px;
-      opacity: 0.7;
-    }
-  }
-  
-  .middle-content {
-    .system-status {
-      display: flex;
-      align-items: center;
-      padding: 4px 12px;
-      border-radius: 16px;
-      font-size: 14px;
-      color: var(--md-sys-color-on-surface);
-      
-      &.status-healthy {
-        background-color: rgba(76, 175, 80, 0.2);
-      }
-      
-      &.status-warning {
-        background-color: rgba(255, 193, 7, 0.2);
-      }
-      
-      &.status-critical {
-        background-color: rgba(244, 67, 54, 0.2);
-      }
-      
-      .status-icon {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        margin-right: 8px;
-        
-        &.status-icon-healthy {
-          background-color: #4CAF50; // Green
-        }
-        
-        &.status-icon-warning {
-          background-color: #FFC107; // Amber
-        }
-        
-        &.status-icon-critical {
-          background-color: #F44336; // Red
-        }
-      }
-    }
-  }
-  
-  .right-content {
-    .footer-link {
-      color: var(--md-sys-color-on-surface);
-      text-decoration: none;
-      margin-left: 16px;
-      font-size: 14px;
-      opacity: 0.8;
-      
-      &:hover {
-        opacity: 1;
-        text-decoration: underline;
-      }
-    }
-  }
-  
-  @include responsive.sm-down {
-    flex-direction: column;
-    height: auto;
-    padding: 12px 16px;
-    
-    .left-content, .right-content, .middle-content {
-      width: 100%;
-      justify-content: center;
-      margin: 4px 0;
-    }
-    
-    .right-content {
-      margin-top: 8px;
-    }
+  @include responsive.respond-to(mobile) {
+    grid-template-columns: 1fr;
+    gap: 1rem; // Use direct value instead of variable
   }
 }
 
-// Expanded Footer Content
-.expanded-footer {
-  padding: 20px 16px 8px;
-  
-  .footer-details {
-    max-width: 1200px;
-    margin: 0 auto;
+.footer-section {
+  h4 {
+    color: var(--color-accent);
+    margin-bottom: 1rem; // Use direct value instead of variable
+    font-size: 1.1rem;
+    font-weight: 500;
   }
   
-  .footer-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 16px;
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     
-    @include responsive.md-down {
-      flex-direction: column;
-    }
-  }
-  
-  .footer-panel {
-    flex: 1;
-    min-width: 250px;
-    padding: 16px;
-    border-radius: 8px;
-    background-color: var(--md-sys-color-surface-variant);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    
-    @include responsive.md-down {
-      width: 100%;
-    }
-    
-    .panel-title {
-      font-size: 16px;
-      font-weight: 500;
-      margin-top: 0;
-      margin-bottom: 16px;
-      color: var(--md-sys-color-primary);
-      border-bottom: 1px solid var(--md-sys-color-outline);
-      padding-bottom: 8px;
-    }
-  }
-  
-  // Stats Panel Styling
-  .stats-panel {
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
+    li {
+      margin-bottom: 0.5rem; // Use direct value instead of variable
       
-      .stat-item {
-        display: flex;
-        flex-direction: column;
-        
-        .stat-label {
-          font-size: 12px;
-          opacity: 0.7;
-          margin-bottom: 4px;
-        }
-        
-        .stat-value {
-          font-size: 16px;
-          font-weight: 500;
-        }
-        
-        mat-progress-bar {
-          margin-top: 4px;
-          height: 4px;
-        }
-      }
-    }
-  }
-  
-  // Graph Panel Styling
-  .graph-panel {
-    .graph-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: space-between;
-      
-      .mini-chart {
-        position: relative;
-        width: 180px;
-        height: 90px;
-        
-        canvas {
-          width: 100%;
-          height: 100%;
-        }
-        
-        .chart-label {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          text-align: center;
-          font-size: 12px;
-          opacity: 0.7;
-        }
-      }
-    }
-  }
-  
-  // Logos Panel Styling
-  .logos-panel {
-    .logo-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-      align-items: center;
-      
-      .tech-logo {
-        height: 40px;
-        width: auto;
-        filter: grayscale(20%);
-        transition: filter 0.3s ease, transform 0.3s ease;
-        
-        &:hover {
-          filter: grayscale(0%);
-          transform: scale(1.1);
-        }
-      }
-    }
-  }
-  
-  // Contact Panel Styling
-  .contact-panel {
-    .contact-details {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      
-      .contact-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        
-        mat-icon {
-          font-size: 18px;
-          height: 18px;
-          width: 18px;
-          color: var(--md-sys-color-primary);
-        }
-      }
-    }
-  }
-  
-  // Links Panel Styling
-  .links-panel {
-    .link-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      
-      .quick-link {
-        color: var(--md-sys-color-on-surface);
+      a {
+        color: var(--color-text-light);
         text-decoration: none;
-        font-size: 14px;
         transition: color 0.2s ease;
         
         &:hover {
-          color: var(--md-sys-color-primary);
-          text-decoration: underline;
+          color: var(--color-accent);
         }
       }
     }
   }
+}
+
+.footer-bottom {
+  margin-top: 2.5rem; // Use direct value instead of variable
+  padding-top: 1.5rem; // Use direct value instead of variable
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   
-  // Version Panel Styling
-  .version-panel {
-    .version-details {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      
-      .version-item {
-        display: flex;
-        flex-direction: column;
-        
-        .version-label {
-          font-size: 12px;
-          opacity: 0.7;
-        }
-        
-        .version-value {
-          font-size: 14px;
-          font-weight: 500;
-        }
-      }
-    }
+  @include responsive.respond-to(mobile) {
+    flex-direction: column;
+    gap: 1.5rem; // Use direct value instead of variable
   }
   
-  // Copyright Section
-  .footer-copyright {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid var(--md-sys-color-outline);
-    font-size: 14px;
+  .copyright {
+    font-size: 0.9rem;
     opacity: 0.8;
+  }
+  
+  .social-links {
+    display: flex;
+    gap: 1.5rem; // Use direct value instead of variable
     
-    .legal-links {
-      display: flex;
-      gap: 16px;
+    a {
+      color: var(--color-text-light);
+      transition: color 0.2s ease;
       
-      .legal-link {
-        color: var(--md-sys-color-on-surface);
-        text-decoration: none;
-        
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-    }
-    
-    @include responsive.sm-down {
-      flex-direction: column;
-      gap: 12px;
-      text-align: center;
-      
-      .legal-links {
-        justify-content: center;
+      &:hover {
+        color: var(--color-accent);
       }
     }
   }
-}
-
-// Status icon colors
-.status-icon-healthy {
-  background-color: #4CAF50 !important; // Green
-}
-
-.status-icon-warning {
-  background-color: #FFC107 !important; // Amber
-}
-
-.status-icon-critical {
-  background-color: #F44336 !important; // Red
 }

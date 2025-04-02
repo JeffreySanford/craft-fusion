@@ -2,16 +2,7 @@ import { getJestProjects } from '@nx/jest';
 
 export default {
   projects: getJestProjects(),
-  transform: {
-    '^.+\\.[tj]sx?$': 'ts-jest',
-  },
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.spec.json',
-      useESM: true,
-    },
-  },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  testEnvironment: 'node',
-  extensionsToTreatAsEsm: ['.ts'],
+  preset: './jest.preset.js',
+  setupFilesAfterEnv: ['<rootDir>/test-setup.ts'],
+  globalSetup: 'jest-preset-angular/global-setup'
 };

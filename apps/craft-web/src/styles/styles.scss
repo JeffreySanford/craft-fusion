@@ -1,39 +1,37 @@
 /**
- * Main Styles Entry Point
- * 
- * This file imports all other style modules and defines global styles.
- * The import order is important for proper cascade and dependency resolution.
+ * Main styles entry file
+ * Imports all style modules
  */
 
-// 1. Configuration and helpers
-@use 'variables';
-@use 'functions';
-@use 'mixins';
-@use 'responsive';
-@use 'animations';
-@use 'theme';
+// Base styles
+@use './reset';
+@use './variables';
+@use './mixins';
+@use './functions';
+@use './typography';
+@use './animations';
+@use './base';
 
-// 2. Base styles
-@use 'reset';
-@use 'typography';
-@use 'base';
-@use 'scrollbar';
-@use 'accessibility';
+// Layout styles
+@use './layout';
+@use './responsive';
+@use './scrollbar';
 
-// 3. Layout
-@use 'layout';
-@use 'patriotic';
-@use 'utilities';
+// Theme styles
+@use './themes';
+@use './theme';
+@use './theme-components';
+@use './md3-tokens';
+@use './md3-components';
+@use './material-overrides';
 
-// 4. Components
-@use 'md3-components';
-@use 'md3-tokens';
-@use 'theme-components';
-@use 'component-animations';
+// Special styles
+@use './patriotic';
+@use './patriotic-overrides';
+@use './accessibility';
 
-// 5. Overrides
-@use 'material-overrides';
-@use 'patriotic-overrides';
+// Import utility classes last to ensure proper cascade order
+@use './utilities';
 
 /* Define custom patriotic colors */
 $usa-red: variables.$usa-red;
