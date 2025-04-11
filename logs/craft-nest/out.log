@@ -2694,3 +2694,475 @@
 2025-01-13T08:09:32: Received request to generate records with count: 100
 2025-01-13T08:09:32: Generated 100 records
 2025-01-13T08:09:32: Received request to get creation time
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+2025-03-25T20:58:42: Files in storage/documents/book: [
+2025-03-25T20:58:42:   'Chapter 1 - Enki.docx',
+2025-03-25T20:58:42:   'Chapter 2 - Enlil.docx',
+2025-03-25T20:58:42:   'Chapter 3 - The Cities.docx'
+2025-03-25T20:58:42: ]
+2025-03-25T20:58:42: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T20:58:42: Files in storage/documents/book: [
+2025-03-25T20:58:42:   'Chapter 1 - Enki.docx',
+2025-03-25T20:58:42:   'Chapter 2 - Enlil.docx',
+2025-03-25T20:58:42:   'Chapter 3 - The Cities.docx'
+2025-03-25T20:58:42: ]
+2025-03-25T20:58:42: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHttpModule dependencies initialized[39m[38;5;3m +114ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFileModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthenticationModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthorizationModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuditingModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLoggingModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUserModule dependencies initialized[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecipesModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAlphaVantageModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOpenSkyModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [32mStarting server in development mode[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [32mHost: localhost, Port: 3000[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:42: Files in storage/documents/book: [
+2025-03-25T20:58:42:   'Chapter 1 - Enki.docx',
+2025-03-25T20:58:42:   'Chapter 2 - Enlil.docx',
+2025-03-25T20:58:42:   'Chapter 3 - The Cities.docx'
+2025-03-25T20:58:42: ]
+2025-03-25T20:58:42: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T20:58:42: Files in storage/documents/book: [
+2025-03-25T20:58:42:   'Chapter 1 - Enki.docx',
+2025-03-25T20:58:42:   'Chapter 2 - Enlil.docx',
+2025-03-25T20:58:42:   'Chapter 3 - The Cities.docx'
+2025-03-25T20:58:42: ]
+2025-03-25T20:58:42: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHttpModule dependencies initialized[39m[38;5;3m +38ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecordsModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFileModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthenticationModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuditingModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLoggingModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUserModule dependencies initialized[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecipesModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAlphaVantageModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOpenSkyModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [32mSwagger is set up at /api/api-docs[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/api}:[39m[38;5;3m +22ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api, GET} route[39m[38;5;3m +24ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRecordsController {/api/records}:[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records, GET} route[39m[38;5;3m +6ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/generate, GET} route[39m[38;5;3m +9ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/total-income/:UID, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/time, GET} route[39m[38;5;3m +7ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/:UID, GET} route[39m[38;5;3m +6ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRecipesController {/api/recipes}:[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/recipes, GET} route[39m[38;5;3m +5ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/recipes/:url, GET} route[39m[38;5;3m +9ms[39m
+2025-03-25T20:58:42: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mOpenSkyController {/api/opensky}:[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/flightParams, GET} route[39m[38;5;3m +11ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/fetchflightdata, GET} route[39m[38;5;3m +7ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/airports, GET} route[39m[38;5;3m +11ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/flights/airline/:airline, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/flights/aircraft/:aircraft, GET} route[39m[38;5;3m +6ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAlphaVantageController {/api/alphaVantage}:[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/alphaVantage/stock/:symbol, GET} route[39m[38;5;3m +8ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/alphaVantage/crypto/:symbol, GET} route[39m[38;5;3m +6ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mFileController {/api/files}:[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/document/:path(*), GET} route[39m[38;5;3m +5ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/:filename, GET} route[39m[38;5;3m +5ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/upload, POST} route[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/saveOpenedDocuments, POST} route[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/getOpenedDocuments, GET} route[39m[38;5;3m +5ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUserStateController {/api/user}:[39m[38;5;3m +5ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveLoginDateTime, POST} route[39m[38;5;3m +3ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getLoginDateTime, GET} route[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitLength, POST} route[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitLength, GET} route[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitedPage/:page, POST} route[39m[38;5;3m +7ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitedPages, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthenticationController {/api/auth}:[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/login, POST} route[39m[38;5;3m +5ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthorizationController {/api/authorize}:[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/authorize/check, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuditingController {/api/audit}:[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/audit/event, POST} route[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLoggingController {/api/logs}:[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/logs, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/logs, DELETE} route[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +25ms[39m
+2025-03-25T20:58:43: [32m[Nest] 679927  - [39m03/25/2025, 8:58:43 PM [32m    LOG[39m [32mServer running on http://localhost:3000[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+2025-03-25T20:58:50: Files in storage/documents/book: [
+2025-03-25T20:58:50:   'Chapter 1 - Enki.docx',
+2025-03-25T20:58:50:   'Chapter 2 - Enlil.docx',
+2025-03-25T20:58:50:   'Chapter 3 - The Cities.docx'
+2025-03-25T20:58:50: ]
+2025-03-25T20:58:50: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T20:58:50: Files in storage/documents/book: [
+2025-03-25T20:58:50:   'Chapter 1 - Enki.docx',
+2025-03-25T20:58:50:   'Chapter 2 - Enlil.docx',
+2025-03-25T20:58:50:   'Chapter 3 - The Cities.docx'
+2025-03-25T20:58:50: ]
+2025-03-25T20:58:50: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHttpModule dependencies initialized[39m[38;5;3m +103ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFileModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthenticationModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuditingModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLoggingModule dependencies initialized[39m[38;5;3m +3ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUserModule dependencies initialized[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +3ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecipesModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAlphaVantageModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOpenSkyModule dependencies initialized[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [32mStarting server in development mode[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [32mHost: localhost, Port: 3000[39m
+2025-03-25T20:58:50: [32m[Nest] 679960  - [39m03/25/2025, 8:58:50 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:51: Files in storage/documents/book: [
+2025-03-25T20:58:51:   'Chapter 1 - Enki.docx',
+2025-03-25T20:58:51:   'Chapter 2 - Enlil.docx',
+2025-03-25T20:58:51:   'Chapter 3 - The Cities.docx'
+2025-03-25T20:58:51: ]
+2025-03-25T20:58:51: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T20:58:51: Files in storage/documents/book: [
+2025-03-25T20:58:51:   'Chapter 1 - Enki.docx',
+2025-03-25T20:58:51:   'Chapter 2 - Enlil.docx',
+2025-03-25T20:58:51:   'Chapter 3 - The Cities.docx'
+2025-03-25T20:58:51: ]
+2025-03-25T20:58:51: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHttpModule dependencies initialized[39m[38;5;3m +40ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +3ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFileModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthenticationModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthorizationModule dependencies initialized[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuditingModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLoggingModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUserModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +3ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecipesModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAlphaVantageModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOpenSkyModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [32mSwagger is set up at /api/api-docs[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/api}:[39m[38;5;3m +11ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api, GET} route[39m[38;5;3m +12ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRecordsController {/api/records}:[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/generate, GET} route[39m[38;5;3m +7ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/total-income/:UID, GET} route[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/time, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/:UID, GET} route[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRecipesController {/api/recipes}:[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/recipes, GET} route[39m[38;5;3m +7ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/recipes/:url, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mOpenSkyController {/api/opensky}:[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/flightParams, GET} route[39m[38;5;3m +7ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/fetchflightdata, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/airports, GET} route[39m[38;5;3m +6ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/flights/airline/:airline, GET} route[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/flights/aircraft/:aircraft, GET} route[39m[38;5;3m +5ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAlphaVantageController {/api/alphaVantage}:[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/alphaVantage/stock/:symbol, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/alphaVantage/crypto/:symbol, GET} route[39m[38;5;3m +5ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mFileController {/api/files}:[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/document/:path(*), GET} route[39m[38;5;3m +6ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/:filename, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/upload, POST} route[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/saveOpenedDocuments, POST} route[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/getOpenedDocuments, GET} route[39m[38;5;3m +5ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUserStateController {/api/user}:[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveLoginDateTime, POST} route[39m[38;5;3m +3ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getLoginDateTime, GET} route[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitLength, POST} route[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitLength, GET} route[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitedPage/:page, POST} route[39m[38;5;3m +3ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitedPages, GET} route[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthenticationController {/api/auth}:[39m[38;5;3m +5ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/login, POST} route[39m[38;5;3m +3ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthorizationController {/api/authorize}:[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/authorize/check, GET} route[39m[38;5;3m +0ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuditingController {/api/audit}:[39m[38;5;3m +1ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/audit/event, POST} route[39m[38;5;3m +4ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLoggingController {/api/logs}:[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/logs, GET} route[39m[38;5;3m +2ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/logs, DELETE} route[39m[38;5;3m +3ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +23ms[39m
+2025-03-25T20:58:51: [32m[Nest] 679960  - [39m03/25/2025, 8:58:51 PM [32m    LOG[39m [32mServer running on http://localhost:3000[39m
+2025-03-25T20:59:06: STATE: Saving login date/time: 2025-03-25T20:59:07.195Z
+2025-03-25T20:59:06: STATE: Setting login date/time: 2025-03-25T20:59:07.195Z
+2025-03-25T20:59:06: STATE: Saving state data: [ 'loginDateTime', '2025-03-25T20:59:07.195Z' ]
+2025-03-25T20:59:36: STATE: Fetching document: book/Chapter 1 - Enki.docx
+2025-03-25T20:59:36: STATE: Getting file: book/Chapter 1 - Enki.docx
+2025-03-25T20:59:36: Full resolved path: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage/documents/book/Chapter 1 - Enki.docx
+2025-03-25T20:59:36: Parent directory: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage/documents/book
+2025-03-25T20:59:36: File name: Chapter 1 - Enki.docx
+2025-03-25T20:59:36: Attempting to access: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage/documents/book/Chapter 1 - Enki.docx
+2025-03-25T20:59:36: Directory exists: true
+2025-03-25T20:59:36: File exists: true
+2025-03-25T20:59:36: Successfully read file: book/Chapter 1 - Enki.docx size: 106733
+2025-03-25T20:59:36: STATE: Fetching document: book/Chapter 2 - Enlil.docx
+2025-03-25T20:59:36: STATE: Getting file: book/Chapter 2 - Enlil.docx
+2025-03-25T20:59:36: Full resolved path: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage/documents/book/Chapter 2 - Enlil.docx
+2025-03-25T20:59:36: Parent directory: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage/documents/book
+2025-03-25T20:59:36: File name: Chapter 2 - Enlil.docx
+2025-03-25T20:59:36: Attempting to access: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage/documents/book/Chapter 2 - Enlil.docx
+2025-03-25T20:59:36: Directory exists: true
+2025-03-25T20:59:36: File exists: true
+2025-03-25T20:59:36: Successfully read file: book/Chapter 2 - Enlil.docx size: 43734
+2025-03-25T20:59:36: STATE: Fetching document: book/Chapter 3 - The Cities.docx
+2025-03-25T20:59:36: STATE: Getting file: book/Chapter 3 - The Cities.docx
+2025-03-25T20:59:36: Full resolved path: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage/documents/book/Chapter 3 - The Cities.docx
+2025-03-25T20:59:36: Parent directory: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage/documents/book
+2025-03-25T20:59:36: File name: Chapter 3 - The Cities.docx
+2025-03-25T20:59:36: Attempting to access: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage/documents/book/Chapter 3 - The Cities.docx
+2025-03-25T20:59:36: Directory exists: true
+2025-03-25T20:59:36: File exists: true
+2025-03-25T20:59:36: Successfully read file: book/Chapter 3 - The Cities.docx size: 47329
+2025-03-25T21:01:37: STATE: Saving login date/time: 2025-03-25T21:01:38.266Z
+2025-03-25T21:01:37: STATE: Setting login date/time: 2025-03-25T21:01:38.266Z
+2025-03-25T21:01:37: STATE: Saving state data: [ 'loginDateTime', '2025-03-25T21:01:38.266Z' ]
+2025-03-25T21:10:03: STATE: Saving login date/time: 2025-03-25T21:10:04.117Z
+2025-03-25T21:10:03: STATE: Setting login date/time: 2025-03-25T21:10:04.117Z
+2025-03-25T21:10:03: STATE: Saving state data: [ 'loginDateTime', '2025-03-25T21:10:04.117Z' ]
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+2025-03-25T21:12:27: Files in storage/documents/book: [
+2025-03-25T21:12:27:   'Chapter 1 - Enki.docx',
+2025-03-25T21:12:27:   'Chapter 2 - Enlil.docx',
+2025-03-25T21:12:27:   'Chapter 3 - The Cities.docx'
+2025-03-25T21:12:27: ]
+2025-03-25T21:12:27: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T21:12:27: Files in storage/documents/book: [
+2025-03-25T21:12:27:   'Chapter 1 - Enki.docx',
+2025-03-25T21:12:27:   'Chapter 2 - Enlil.docx',
+2025-03-25T21:12:27:   'Chapter 3 - The Cities.docx'
+2025-03-25T21:12:27: ]
+2025-03-25T21:12:27: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHttpModule dependencies initialized[39m[38;5;3m +131ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +5ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecordsModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFileModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthenticationModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuditingModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLoggingModule dependencies initialized[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUserModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecipesModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAlphaVantageModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOpenSkyModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [32mStarting server in production mode[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [32mHost: jeffreysanford.us, Port: 3000[39m
+2025-03-25T21:12:27: [32m[Nest] 680108  - [39m03/25/2025, 9:12:27 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m[38;5;3m +7ms[39m
+2025-03-25T21:12:28: Files in storage/documents/book: [
+2025-03-25T21:12:28:   'Chapter 1 - Enki.docx',
+2025-03-25T21:12:28:   'Chapter 2 - Enlil.docx',
+2025-03-25T21:12:28:   'Chapter 3 - The Cities.docx'
+2025-03-25T21:12:28: ]
+2025-03-25T21:12:28: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T21:12:28: Files in storage/documents/book: [
+2025-03-25T21:12:28:   'Chapter 1 - Enki.docx',
+2025-03-25T21:12:28:   'Chapter 2 - Enlil.docx',
+2025-03-25T21:12:28:   'Chapter 3 - The Cities.docx'
+2025-03-25T21:12:28: ]
+2025-03-25T21:12:28: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHttpModule dependencies initialized[39m[38;5;3m +42ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecordsModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFileModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthenticationModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthorizationModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuditingModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLoggingModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUserModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecipesModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAlphaVantageModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOpenSkyModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [32mSwagger is set up at /api/api-docs[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/api}:[39m[38;5;3m +25ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api, GET} route[39m[38;5;3m +19ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRecordsController {/api/records}:[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/generate, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/total-income/:UID, GET} route[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/time, GET} route[39m[38;5;3m +5ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/:UID, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRecipesController {/api/recipes}:[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/recipes, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/recipes/:url, GET} route[39m[38;5;3m +5ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mOpenSkyController {/api/opensky}:[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/flightParams, GET} route[39m[38;5;3m +6ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/fetchflightdata, GET} route[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/airports, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/flights/airline/:airline, GET} route[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/flights/aircraft/:aircraft, GET} route[39m[38;5;3m +7ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAlphaVantageController {/api/alphaVantage}:[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/alphaVantage/stock/:symbol, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/alphaVantage/crypto/:symbol, GET} route[39m[38;5;3m +6ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mFileController {/api/files}:[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/document/:path(*), GET} route[39m[38;5;3m +13ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/:filename, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/upload, POST} route[39m[38;5;3m +5ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/saveOpenedDocuments, POST} route[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/getOpenedDocuments, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUserStateController {/api/user}:[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveLoginDateTime, POST} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getLoginDateTime, GET} route[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitLength, POST} route[39m[38;5;3m +6ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitLength, GET} route[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitedPage/:page, POST} route[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitedPages, GET} route[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthenticationController {/api/auth}:[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/login, POST} route[39m[38;5;3m +5ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthorizationController {/api/authorize}:[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/authorize/check, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuditingController {/api/audit}:[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/audit/event, POST} route[39m[38;5;3m +5ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLoggingController {/api/logs}:[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/logs, GET} route[39m[38;5;3m +6ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/logs, DELETE} route[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +14ms[39m
+2025-03-25T21:12:28: [32m[Nest] 680108  - [39m03/25/2025, 9:12:28 PM [32m    LOG[39m [32mServer running on https://jeffreysanford.us:3000[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+2025-03-25T21:12:42: Files in storage/documents/book: [
+2025-03-25T21:12:42:   'Chapter 1 - Enki.docx',
+2025-03-25T21:12:42:   'Chapter 2 - Enlil.docx',
+2025-03-25T21:12:42:   'Chapter 3 - The Cities.docx'
+2025-03-25T21:12:42: ]
+2025-03-25T21:12:42: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T21:12:42: Files in storage/documents/book: [
+2025-03-25T21:12:42:   'Chapter 1 - Enki.docx',
+2025-03-25T21:12:42:   'Chapter 2 - Enlil.docx',
+2025-03-25T21:12:42:   'Chapter 3 - The Cities.docx'
+2025-03-25T21:12:42: ]
+2025-03-25T21:12:42: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHttpModule dependencies initialized[39m[38;5;3m +99ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFileModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthenticationModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthorizationModule dependencies initialized[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuditingModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLoggingModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUserModule dependencies initialized[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecipesModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAlphaVantageModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOpenSkyModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [32mStarting server in production mode[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [32mHost: jeffreysanford.us, Port: 3000[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:42: Files in storage/documents/book: [
+2025-03-25T21:12:42:   'Chapter 1 - Enki.docx',
+2025-03-25T21:12:42:   'Chapter 2 - Enlil.docx',
+2025-03-25T21:12:42:   'Chapter 3 - The Cities.docx'
+2025-03-25T21:12:42: ]
+2025-03-25T21:12:42: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T21:12:42: Files in storage/documents/book: [
+2025-03-25T21:12:42:   'Chapter 1 - Enki.docx',
+2025-03-25T21:12:42:   'Chapter 2 - Enlil.docx',
+2025-03-25T21:12:42:   'Chapter 3 - The Cities.docx'
+2025-03-25T21:12:42: ]
+2025-03-25T21:12:42: Storage path initialized: /home/jeffrey/repos/craft-fusion/apps/craft-nest/storage
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHttpModule dependencies initialized[39m[38;5;3m +33ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUsersModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecordsModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFileModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthenticationModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthorizationModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuditingModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLoggingModule dependencies initialized[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUserModule dependencies initialized[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecipesModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAlphaVantageModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOpenSkyModule dependencies initialized[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [32mSwagger is set up at /api/api-docs[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/api}:[39m[38;5;3m +14ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api, GET} route[39m[38;5;3m +11ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUsersController {/api/users}:[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/users, GET} route[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRecordsController {/api/records}:[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/generate, GET} route[39m[38;5;3m +5ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/total-income/:UID, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/time, GET} route[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/:UID, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRecipesController {/api/recipes}:[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/recipes, GET} route[39m[38;5;3m +6ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/recipes/:url, GET} route[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mOpenSkyController {/api/opensky}:[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/flightParams, GET} route[39m[38;5;3m +7ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/fetchflightdata, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/airports, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/flights/airline/:airline, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/opensky/flights/aircraft/:aircraft, GET} route[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAlphaVantageController {/api/alphaVantage}:[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/alphaVantage/stock/:symbol, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/alphaVantage/crypto/:symbol, GET} route[39m[38;5;3m +5ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mFileController {/api/files}:[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/document/:path(*), GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/:filename, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/upload, POST} route[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/saveOpenedDocuments, POST} route[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/getOpenedDocuments, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUserStateController {/api/user}:[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveLoginDateTime, POST} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:42: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getLoginDateTime, GET} route[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitLength, POST} route[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitLength, GET} route[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitedPage/:page, POST} route[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitedPages, GET} route[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:42 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthenticationController {/api/auth}:[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/login, POST} route[39m[38;5;3m +4ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:43 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthorizationController {/api/authorize}:[39m[38;5;3m +1ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/authorize/check, GET} route[39m[38;5;3m +2ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:43 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuditingController {/api/audit}:[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/audit/event, POST} route[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:43 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLoggingController {/api/logs}:[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/logs, GET} route[39m[38;5;3m +3ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:43 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/logs, DELETE} route[39m[38;5;3m +0ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:43 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +13ms[39m
+2025-03-25T21:12:43: [32m[Nest] 680139  - [39m03/25/2025, 9:12:43 PM [32m    LOG[39m [32mServer running on https://jeffreysanford.us:3000[39m
+2025-03-25T21:27:19: Received request to generate records with count: 100
+2025-03-25T21:27:19: Generated 100 records
+2025-03-25T21:27:19: Received request to get creation time
+2025-03-25T21:51:18: Received request to generate records with count: 100
+2025-03-25T21:51:18: Generated 100 records
+2025-03-25T21:51:18: Received request to get creation time
+2025-03-25T21:51:22: Received request to get record by UID: 603543204
+2025-03-25T21:51:22: Processed UID: 603543204
+2025-03-25T21:56:40: Received request to generate records with count: 100
+2025-03-25T21:56:40: Generated 100 records
+2025-03-25T21:56:41: Received request to get creation time
+2025-03-25T21:56:49: Received request to get record by UID: 236313568
+2025-03-25T21:56:49: Processed UID: 236313568
+2025-03-25T21:57:01: Received request to generate records with count: 100
+2025-03-25T21:57:01: Generated 100 records
+2025-03-25T21:57:01: Received request to get creation time

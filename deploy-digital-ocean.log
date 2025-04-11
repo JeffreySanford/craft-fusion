@@ -1,0 +1,594 @@
+2024-12-26 00:07:08 [INFO] 📝 Deployment log reset due to --full-clean.
+2024-12-26 00:07:08 UTC [INFO] init_log completed in 12 ms (Cumulative: 12 ms)
+2024-12-26 00:07:08 [INFO] 🕒 Deployment Started: Thu Dec 26 12:07:08 AM UTC 2024
+2024-12-26 00:07:08 [INFO] 👤 Logged-in User: root
+2024-12-26 00:07:08 [INFO] 🖥️ Hostname: fedora-s-1vcpu-2gb-sfo3-01
+2024-12-26 00:07:08 [INFO] 🔗 Server IP: 146.190.157.59
+2024-12-26 00:07:08 [INFO] 📦 Operating System: "Fedora Linux 40 (Cloud Edition)"
+2024-12-26 00:07:08 UTC [INFO] show_start_info completed in 107 ms (Cumulative: 119 ms)
+2024-12-26 00:07:08 [INFO] 📡 Checking if the server is up to date...
+2024-12-26 00:07:13 UTC [INFO] sudo completed in 4449 ms (Cumulative: 4568 ms)
+2024-12-26 00:07:13 UTC [INFO] check_server_status completed in 4463 ms (Cumulative: 9031 ms)
+2024-12-26 00:07:13 [INFO] 🔑 Adding Available SSH Identities...
+2024-12-26 00:07:13 UTC [INFO] ssh-add completed in 9 ms (Cumulative: 9040 ms)
+2024-12-26 00:07:13 [INFO] ✅ SSH Key added successfully from /home/jeffrey/.ssh/id_ed25519
+2024-12-26 00:07:13 UTC [INFO] ssh-add completed in 11 ms (Cumulative: 9051 ms)
+2024-12-26 00:07:13 [INFO] 😄 ✅ Special Key containing 'Jeffrey' or 'jeffreysanford@gmail.com' added successfully from /home/jeffrey/.ssh/id_ed25519.pub
+2024-12-26 00:07:13 UTC [INFO] setup_ssh_identity completed in 121 ms (Cumulative: 9172 ms)
+2024-12-26 00:07:13 [INFO] 🌐 Checking NestJS API Status...
+2024-12-26 00:07:13 [INFO] 🌐 Checking Go API Status...
+2024-12-26 00:07:13 [INFO] 📜 Swagger Endpoints:
+2024-12-26 00:07:13 [INFO] 🔗 NestJS: http://localhost:3000/api/swagger
+2024-12-26 00:07:13 [INFO] 🔗 Go: http://localhost:4000/api/swagger
+2024-12-26 00:07:13 UTC [INFO] check_services completed in 177 ms (Cumulative: 9349 ms)
+2024-12-26 00:07:13 [INFO] 🛠️ Building Backend (NestJS)...
+2024-12-26 00:07:31 UTC [INFO] npx completed in 17873 ms (Cumulative: 27222 ms)
+2024-12-26 00:07:33 UTC [INFO] pm2 completed in 1384 ms (Cumulative: 28606 ms)
+2024-12-26 00:07:33 UTC [INFO] build_nestjs completed in 19283 ms (Cumulative: 47889 ms)
+2024-12-26 00:07:33 [INFO] 🛠️ Building Backend (Go)...
+2024-12-26 00:07:33 UTC [INFO] go completed in 63 ms (Cumulative: 47952 ms)
+2024-12-26 00:07:34 UTC [INFO] pm2 completed in 1251 ms (Cumulative: 49203 ms)
+2024-12-26 00:07:34 UTC [INFO] build_go completed in 1334 ms (Cumulative: 50537 ms)
+2024-12-26 00:07:34 [INFO] 🎉 Deployment completed successfully in 26 seconds.
+2024-12-26 00:12:16 UTC [INFO] init_log completed in 3 ms (Cumulative: 3 ms)
+2024-12-26 00:12:16 [INFO] 🕒 Deployment Started: Thu Dec 26 12:12:16 AM UTC 2024
+2024-12-26 00:12:16 [INFO] 🌐 Checking Server Health...
+2024-12-26 00:12:16 [INFO] ✅ NestJS Server is UP. Status Code: 200
+2024-12-26 00:12:16 [INFO] 🔗 Swagger: http://localhost:3000/api/swagger
+2024-12-26 00:12:16 [INFO] ❌ Go Server DOWN. Restarting...
+2024-12-26 00:12:17 UTC [INFO] pm2 completed in 1312 ms (Cumulative: 1315 ms)
+2024-12-26 00:12:17 UTC [INFO] check_server_health completed in 1385 ms (Cumulative: 2700 ms)
+2024-12-26 00:12:17 [INFO] 📄 Collecting Logs for All Systems...
+2024-12-26 00:12:17 [INFO] 📝 Tail NGINX Access Logs:
+78.153.140.147 - - [26/Dec/2024:00:01:36 +0000] "GET /.env HTTP/1.1" 301 169 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.140 Safari/537.36" "-"
+78.153.140.147 - - [26/Dec/2024:00:01:36 +0000] "POST / HTTP/1.1" 301 169 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.140 Safari/537.36" "-"
+216.218.206.66 - - [26/Dec/2024:00:04:58 +0000] "\x16\x03\x01\x00{\x01\x00\x00w\x03\x03{O\xDF\xBA\xF0\x1D\x9A\x19V\xC8RNH\x02\xAA\x81h2\x927!\xA0\x08g\x18^\x07\x93\x80R\xF6\xB8\x00\x00\x1A\xC0/\xC0+\xC0\x11\xC0\x07\xC0\x13\xC0\x09\xC0\x14\xC0" 400 157 "-" "-" "-"
+2024-12-26 00:12:17 [INFO] 📝 Tail NGINX Error Logs:
+2024-12-26 00:12:17 [INFO] 📝 Tail NestJS PM2 Logs:
+2024-12-26 00:12:17 [INFO] 📝 Tail Go PM2 Logs:
+2024-12-26 00:12:17 UTC [INFO] collect_logs completed in 150 ms (Cumulative: 2850 ms)
+2024-12-26 00:12:17 [INFO] 🎉 Deployment completed successfully in 1 seconds.
+2024-12-26 00:20:58 UTC [INFO] init_log completed in 4 ms (Cumulative: 4 ms)
+2024-12-26 00:20:58 [INFO] 🕒 Deployment Started: Thu Dec 26 12:20:58 AM UTC 2024
+2024-12-26 00:20:58 UTC [INFO] log_info completed in 8 ms (Cumulative: 12 ms)
+2024-12-26 00:20:58 [INFO] 🕒 Fetching Server Uptime...
+2024-12-26 00:20:58 [INFO] 🕒 Server Uptime: up 2 weeks, 2 days, 5 hours, 38 minutes
+2024-12-26 00:20:58 [INFO] 🚀 Last Boot Time: 2024-12-09 18:42
+2024-12-26 00:20:58 UTC [INFO] server_uptime completed in 36 ms (Cumulative: 48 ms)
+2024-12-26 00:20:58 [INFO] 🌐 Gathering VPS Information...
+2024-12-26 00:20:58 [INFO] ⚙️ OS: "Fedora Linux 40 (Cloud Edition)"
+2024-12-26 00:20:58 [INFO] 🧠 CPU Cores: 1
+2024-12-26 00:20:58 [INFO] 💾 Total RAM: 1.9Gi
+2024-12-26 00:20:58 [INFO] 📁 Disk Usage: 6.8G/49G (15% used)
+2024-12-26 00:20:58 [INFO] 🏢 Provider: DigitalOcean
+2024-12-26 00:20:58 [INFO] 💻 Product: Droplet
+2024-12-26 00:20:58 UTC [INFO] vps_information completed in 105 ms (Cumulative: 153 ms)
+2024-12-26 00:20:58 UTC [INFO] restart_pm2_process completed in 5 ms (Cumulative: 158 ms)
+2024-12-26 00:20:58 UTC [INFO] restart_pm2_process completed in 4 ms (Cumulative: 162 ms)
+2024-12-26 00:20:58 UTC [INFO] check_server_health completed in 4 ms (Cumulative: 166 ms)
+2024-12-26 00:20:58 UTC [INFO] collect_logs completed in 4 ms (Cumulative: 170 ms)
+2024-12-26 00:20:58 [INFO] 🎉 Deployment completed successfully in 0 seconds.
+2024-12-26 00:29:51 [INFO] 📝 Deployment log initialized.
+2024-12-26 00:29:51 UTC [INFO] init_log completed in 5134 ms (Cumulative: 5134 ms)
+2024-12-26 00:29:51 [INFO] 🛠️ Node Version: v20.18.1
+2024-12-26 00:29:52 [INFO] 📦 NPM Version: 11.0.0
+2024-12-26 00:33:16 [INFO] 📝 Deployment log initialized.
+2024-12-26 00:33:16 UTC [INFO] init_log completed in 5804 ms (Cumulative: 5804 ms)
+2024-12-26 00:33:16 [INFO] 🛠️ Node Version: v20.18.1
+2024-12-26 00:33:16 [INFO] 📦 NPM Version: 11.0.0
+2024-12-26 00:33:29 [INFO] 🌐 NX Version: 
+ NX   Cannot find configuration for task @craft-fusion/source:version
+
+Pass --verbose to see the stacktrace.
+2024-12-26 00:33:32 [INFO] 🅰️ Angular CLI Version: Angular CLI: 18.2.12
+2024-12-26 00:33:37 [INFO] 🛡️ NestJS Version: 
+2024-12-26 00:33:37 [INFO] 🐹 Go Version: go version go1.22.10 linux/amd64
+2024-12-26 00:33:37 UTC [INFO] display_versions completed in 21048 ms (Cumulative: 26852 ms)
+2024-12-26 00:33:37 [INFO] 👤 User: jeffrey
+2024-12-26 00:33:37 [INFO] 📁 Home Directory: /home/jeffrey
+2024-12-26 00:33:37 [INFO] 🖥️ Hostname: fedora-s-1vcpu-2gb-sfo3-01
+2024-12-26 00:33:37 UTC [INFO] display_user_info completed in 186 ms (Cumulative: 27038 ms)
+2024-12-26 00:33:37 [INFO] 🕒 Server Uptime: up 1 minute
+2024-12-26 00:33:37 [INFO] 🚀 Last Boot Time: 2024-12-26 00:32
+2024-12-26 00:33:37 [INFO] 🧠 CPU Cores: 1
+2024-12-26 00:33:37 [INFO] 💾 Total RAM: 1.9Gi
+2024-12-26 00:33:37 [INFO] 📁 Disk Usage: 6.8G/49G (14% used)
+2024-12-26 00:33:37 UTC [INFO] display_server_info completed in 235 ms (Cumulative: 27273 ms)
+2024-12-26 00:33:37 [INFO] 🌐 Checking NestJS Server Health...
+2024-12-26 00:33:37 [INFO] ❌ NestJS Server is DOWN
+2024-12-26 00:33:37 UTC [INFO] check_server_health completed in 96 ms (Cumulative: 27369 ms)
+2024-12-26 00:33:37 [INFO] 📝 Collecting Logs
+2024-12-26 00:33:38 UTC [INFO] collect_logs completed in 115 ms (Cumulative: 27484 ms)
+2024-12-26 00:33:38 [INFO] 🎯 Deployment completed successfully in 28 seconds.
+2024-12-26 00:35:27 [INFO] 📝 Deployment log initialized.
+2024-12-26 00:35:27 UTC [INFO] init_log completed in 113 ms (Cumulative: 113 ms)
+2024-12-26 00:35:27 [INFO] 🛠️ Node Version: v20.18.1
+2024-12-26 00:35:28 [INFO] 📦 NPM Version: 11.0.0
+2024-12-26 00:35:30 [INFO] 🌐 NX Version: Nx Version:
+- Local: v20.1.3
+- Global: Not found
+2024-12-26 00:35:32 [INFO] 🅰️ Angular CLI Version: Angular CLI: 18.2.12
+2024-12-26 00:35:36 [INFO] 🛡️ NestJS Version: 
+2024-12-26 00:35:36 [INFO] 🐹 Go Version: go version go1.22.10 linux/amd64
+2024-12-26 00:35:36 UTC [INFO] display_versions completed in 8951 ms (Cumulative: 9064 ms)
+2024-12-26 00:35:36 [INFO] 👤 User: jeffrey
+2024-12-26 00:35:36 [INFO] 📁 Home Directory: /home/jeffrey
+2024-12-26 00:35:36 [INFO] 🖥️ Hostname: fedora-s-1vcpu-2gb-sfo3-01
+2024-12-26 00:35:36 UTC [INFO] display_user_info completed in 119 ms (Cumulative: 9183 ms)
+2024-12-26 00:35:36 [INFO] 🕒 Server Uptime: up 3 minutes
+2024-12-26 00:35:37 [INFO] 🚀 Last Boot Time: 2024-12-26 00:32
+2024-12-26 00:35:37 [INFO] 🧠 CPU Cores: 1
+2024-12-26 00:35:37 [INFO] 💾 Total RAM: 1.9Gi
+2024-12-26 00:35:37 [INFO] 📁 Disk Usage: 6.8G/49G (14% used)
+2024-12-26 00:35:37 UTC [INFO] display_server_info completed in 228 ms (Cumulative: 9411 ms)
+2024-12-26 00:35:37 [INFO] 🌐 Checking NestJS Server Health...
+2024-12-26 00:35:37 [INFO] ❌ NestJS Server is DOWN
+2024-12-26 00:35:37 UTC [INFO] check_server_health completed in 89 ms (Cumulative: 9500 ms)
+2024-12-26 00:35:37 [INFO] 📝 Collecting Logs
+2024-12-26 00:35:37 UTC [INFO] collect_logs completed in 96 ms (Cumulative: 9596 ms)
+2024-12-26 00:35:37 [INFO] 🎯 Deployment completed successfully in 10 seconds.
+2024-12-26 00:37:34 [INFO] 📝 Deployment log initialized.
+2024-12-26 00:37:35 UTC [INFO] init_log completed in 117 ms (Cumulative: 117 ms)
+2024-12-26 00:37:35 [INFO] 🛠️ Building NestJS Backend...
+2024-12-26 00:37:45 UTC [INFO] npx completed in 10271 ms (Cumulative: 10388 ms)
+2024-12-26 00:37:45 [INFO] ✅ NestJS Build Successful!
+2024-12-26 00:37:45 UTC [INFO] build_nestjs completed in 10396 ms (Cumulative: 20784 ms)
+2024-12-26 00:37:45 [INFO] 🐹 Building Go Backend...
+2024-12-26 00:37:45 UTC [INFO] go completed in 10 ms (Cumulative: 20794 ms)
+2024-12-26 00:37:45 [INFO] ✅ Go Build Successful!
+2024-12-26 00:37:45 UTC [INFO] build_go completed in 135 ms (Cumulative: 20929 ms)
+2024-12-26 00:37:47 [INFO] ❌ PM2 Process 'craft-nest' not found. Starting now...
+2024-12-26 00:37:48 UTC [INFO] pm2 completed in 962 ms (Cumulative: 21891 ms)
+2024-12-26 00:37:48 UTC [INFO] restart_pm2_process completed in 2576 ms (Cumulative: 24467 ms)
+2024-12-26 00:37:50 [INFO] ❌ PM2 Process 'craft-go' not found. Starting now...
+2024-12-26 00:37:51 UTC [INFO] pm2 completed in 1487 ms (Cumulative: 25954 ms)
+2024-12-26 00:37:51 UTC [INFO] restart_pm2_process completed in 3399 ms (Cumulative: 29353 ms)
+2024-12-26 00:37:51 [INFO] 🌐 Validating Service Health...
+2024-12-26 00:37:52 [INFO] ❌ NestJS Health Check Failed!
+2024-12-26 00:37:52 [INFO] ❌ Go Health Check Failed!
+2024-12-26 00:37:52 UTC [INFO] check_server_health completed in 513 ms (Cumulative: 29866 ms)
+2024-12-26 00:37:52 [INFO] 🎯 Deployment completed successfully in 18 seconds.
+2024-12-26 00:42:14 [INFO] 📝 Deployment log initialized.
+2024-12-26 00:42:15 UTC [INFO] init_log completed in 122 ms (Cumulative: 122 ms)
+2024-12-26 00:42:15 [INFO] 🛠️ Node Version: v20.18.1
+2024-12-26 00:42:15 [INFO] 📦 NPM Version: 11.0.0
+2024-12-26 00:42:17 [INFO] 🌐 NX Version: Nx Version:
+- Local: v20.1.3
+- Global: Not found
+2024-12-26 00:42:19 [INFO] 🅰️ Angular CLI Version: Angular CLI: 18.2.12
+2024-12-26 00:42:22 [INFO] 🛡️ NestJS Version: 
+2024-12-26 00:42:22 [INFO] 🐹 Go Version: go version go1.22.10 linux/amd64
+2024-12-26 00:42:22 UTC [INFO] display_versions completed in 7609 ms (Cumulative: 7731 ms)
+2024-12-26 00:42:22 [INFO] 🛠️ Building NestJS Backend...
+2024-12-26 00:42:32 UTC [INFO] npx completed in 9565 ms (Cumulative: 17296 ms)
+2024-12-26 00:42:32 UTC [INFO] build_nestjs completed in 9643 ms (Cumulative: 26939 ms)
+2024-12-26 00:42:32 [INFO] 🐹 Building Go Backend...
+2024-12-26 00:42:32 UTC [INFO] go completed in 7 ms (Cumulative: 26946 ms)
+2024-12-26 00:42:32 UTC [INFO] build_go completed in 90 ms (Cumulative: 27036 ms)
+2024-12-26 00:42:32 [INFO] 🔄 Restarting PM2 Process: craft-nest
+2024-12-26 00:42:33 UTC [INFO] pm2 completed in 691 ms (Cumulative: 27727 ms)
+2024-12-26 00:42:33 UTC [INFO] restart_pm2_process completed in 857 ms (Cumulative: 28584 ms)
+2024-12-26 00:42:33 [INFO] 🔄 Restarting PM2 Process: craft-go
+2024-12-26 00:42:35 UTC [INFO] pm2 completed in 1649 ms (Cumulative: 30233 ms)
+2024-12-26 00:42:35 UTC [INFO] restart_pm2_process completed in 1960 ms (Cumulative: 32193 ms)
+2024-12-26 00:42:35 [INFO] 🌐 Validating Services...
+2024-12-26 00:42:35 [INFO] ❌ NestJS Failed!
+2024-12-26 00:42:35 [INFO] ❌ Go Failed!
+2024-12-26 00:42:35 UTC [INFO] check_server_health completed in 320 ms (Cumulative: 32513 ms)
+2024-12-26 00:42:36 [INFO] 🎯 Deployment completed successfully in 22 seconds.
+2024-12-26 00:46:39 [INFO] 📝 Deployment log initialized.
+2024-12-26 00:46:39 UTC [INFO] init_log completed in 159 ms (Cumulative: 159 ms)
+2024-12-26 00:46:39 [INFO] 🛠️ Node Version: v20.18.1
+2024-12-26 00:46:39 [INFO] 📦 NPM Version: 11.0.0
+2024-12-26 00:46:41 [INFO] 🌐 NX Version: Nx Version:
+- Local: v20.1.3
+- Global: Not found
+2024-12-26 00:46:44 [INFO] 🅰️ Angular CLI Version: Angular CLI: 18.2.12
+2024-12-26 00:46:52 [INFO] 📝 Deployment log initialized.
+2024-12-26 00:46:52 UTC [INFO] init_log completed in 127 ms (Cumulative: 127 ms)
+2024-12-26 00:46:53 [INFO] 🛠️ Node Version: v20.18.1
+2024-12-26 00:46:53 [INFO] 📦 NPM Version: 11.0.0
+2024-12-26 00:46:55 [INFO] 🌐 NX Version: Nx Version:
+- Local: v20.1.3
+- Global: Not found
+2024-12-26 00:46:57 [INFO] 🅰️ Angular CLI Version: Angular CLI: 18.2.12
+2024-12-26 00:47:00 [INFO] 🛡️ NestJS Version: 
+2024-12-26 00:47:00 [INFO] 🐹 Go Version: go version go1.22.10 linux/amd64
+2024-12-26 00:47:00 UTC [INFO] display_versions completed in 7667 ms (Cumulative: 7794 ms)
+2024-12-26 00:47:00 [INFO] 🛠️ Building NestJS Backend...
+2024-12-26 00:47:12 UTC [INFO] npx completed in 11253 ms (Cumulative: 19047 ms)
+2024-12-26 00:47:12 UTC [INFO] build_nestjs completed in 11337 ms (Cumulative: 30384 ms)
+2024-12-26 00:47:12 [INFO] 🐹 Building Go Backend...
+2024-12-26 00:47:12 UTC [INFO] build_go completed in 147 ms (Cumulative: 30548 ms)
+2024-12-26 00:47:12 [INFO] 🔄 Restarting PM2 Process: craft-nest
+2024-12-26 00:47:12 UTC [INFO] pm2 completed in 655 ms (Cumulative: 31203 ms)
+2024-12-26 00:47:13 UTC [INFO] restart_pm2_process completed in 820 ms (Cumulative: 32023 ms)
+2024-12-26 00:47:13 [INFO] 🔄 Restarting PM2 Process: craft-go
+2024-12-26 00:47:14 UTC [INFO] pm2 completed in 1523 ms (Cumulative: 33546 ms)
+2024-12-26 00:47:15 UTC [INFO] restart_pm2_process completed in 1805 ms (Cumulative: 35351 ms)
+2024-12-26 00:47:15 [INFO] 🌐 Validating Services...
+2024-12-26 00:47:15 [INFO] ❌ NestJS Failed
+2024-12-26 00:47:15 [INFO] ❌ Go Failed
+2024-12-26 00:47:15 UTC [INFO] check_server_health completed in 347 ms (Cumulative: 35698 ms)
+2024-12-26 00:47:15 [INFO] 🎯 Deployment completed successfully in 23 seconds.
+2024-12-26 00:48:24 [INFO] 📝 Deployment log initialized.
+2024-12-26 00:48:24 UTC [INFO] init_log completed in 148 ms (Cumulative: 148 ms)
+2024-12-26 00:48:24 [INFO] 🛠️ Node Version: v20.18.1
+2024-12-26 00:48:25 [INFO] 📦 NPM Version: 11.0.0
+2024-12-26 00:48:26 [INFO] 🌐 NX Version: Nx Version:
+- Local: v20.1.3
+- Global: Not found
+2024-12-26 00:48:30 [INFO] 📝 Deployment log initialized.
+2024-12-26 00:48:30 UTC [INFO] init_log completed in 126 ms (Cumulative: 126 ms)
+2024-12-26 00:48:31 [INFO] 🛠️ Node Version: v20.18.1
+2024-12-26 00:48:31 [INFO] 📦 NPM Version: 11.0.0
+2024-12-26 00:48:33 [INFO] 🌐 NX Version: Nx Version:
+- Local: v20.1.3
+- Global: Not found
+2024-12-26 00:48:35 [INFO] 🅰️ Angular CLI Version: Angular CLI: 18.2.12
+2024-12-26 00:48:38 [INFO] 🛡️ NestJS Version: 
+2024-12-26 00:48:38 [INFO] 🐹 Go Version: go version go1.22.10 linux/amd64
+2024-12-26 00:48:38 UTC [INFO] display_versions completed in 7697 ms (Cumulative: 7823 ms)
+2024-12-26 00:48:38 [INFO] 🛠️ Building NestJS Backend...
+2024-12-26 00:48:48 UTC [INFO] npx completed in 9850 ms (Cumulative: 17673 ms)
+2024-12-26 00:48:48 UTC [INFO] build_nestjs completed in 9937 ms (Cumulative: 27610 ms)
+2024-12-26 00:48:48 [INFO] 🐹 Building Go Backend...
+2024-12-26 00:48:48 UTC [INFO] build_go completed in 152 ms (Cumulative: 27778 ms)
+2024-12-26 00:48:48 [INFO] 🔄 Restarting PM2 Process: craft-nest
+2024-12-26 00:48:49 UTC [INFO] pm2 completed in 530 ms (Cumulative: 28308 ms)
+2024-12-26 00:48:51 UTC [INFO] pm2 completed in 1517 ms (Cumulative: 29825 ms)
+2024-12-26 00:48:51 [INFO] 🔄 Restarting PM2 Process: craft-go
+2024-12-26 00:48:53 [INFO] ❌ PM2 Process 'craft-go' not found. Starting now...
+2024-12-26 00:48:54 UTC [INFO] pm2 completed in 1559 ms (Cumulative: 31384 ms)
+2024-12-26 00:48:56 UTC [INFO] pm2 completed in 1446 ms (Cumulative: 32830 ms)
+2024-12-26 00:48:56 [INFO] 🌐 Validating Services...
+2024-12-26 00:48:56 [INFO] ❌ NestJS Failed
+2024-12-26 00:48:56 [INFO] ❌ Go Failed
+2024-12-26 00:48:56 UTC [INFO] check_server_health completed in 305 ms (Cumulative: 33135 ms)
+2024-12-26 00:48:56 [INFO] 🎯 Deployment completed successfully in 26 seconds.
+2024-12-26 00:58:50 UTC [INFO] init_log completed in 6 ms (Cumulative: 6 ms)
+2024-12-26 00:58:57 [INFO] 🐹 Installing Go...
+2024-12-26 00:59:12 UTC [INFO] install_go completed in 14926 ms (Cumulative: 14932 ms)
+2024-12-26 00:59:12 [INFO] 🧠 CPU Cores: 1
+2024-12-26 00:59:13 [INFO] 💾 Total RAM: 1.9Gi
+2024-12-26 00:59:13 [INFO] 📁 Disk Usage: 6.8G/49G (14% used)
+2024-12-26 00:59:13 [INFO] 🕒 Server Uptime: up 26 minutes
+2024-12-26 00:59:13 UTC [INFO] system_stats completed in 426 ms (Cumulative: 15358 ms)
+2024-12-26 00:59:13 [INFO] 🛡️ Building NestJS Backend (NodeJS REST API Server)
+2024-12-26 00:59:36 UTC [INFO] npx completed in 22532 ms (Cumulative: 37890 ms)
+2024-12-26 00:59:36 UTC [INFO] build_nestjs completed in 22806 ms (Cumulative: 60696 ms)
+2024-12-26 00:59:36 [INFO] 🐹 Building Go Backend (High-performance API Server)
+2024-12-26 00:59:44 UTC [INFO] build_go completed in 7730 ms (Cumulative: 75605 ms)
+2024-12-26 00:59:44 [INFO] 🔄 Restarting PM2 Process: craft-nest
+2024-12-26 00:59:46 UTC [INFO] pm2 completed in 1891 ms (Cumulative: 77496 ms)
+2024-12-26 00:59:47 UTC [INFO] pm2 completed in 1440 ms (Cumulative: 78936 ms)
+2024-12-26 00:59:48 [INFO] 🔄 Restarting PM2 Process: craft-go
+2024-12-26 00:59:49 UTC [INFO] pm2 completed in 1377 ms (Cumulative: 80313 ms)
+2024-12-26 00:59:50 UTC [INFO] pm2 completed in 1342 ms (Cumulative: 81655 ms)
+2024-12-26 00:59:51 [INFO] 🌐 Validating Services
+2024-12-26 00:59:51 [INFO] ❌ NestJS Failed
+2024-12-26 00:59:51 [INFO] ❌ Go Failed
+2024-12-26 00:59:51 UTC [INFO] check_server_health completed in 284 ms (Cumulative: 81939 ms)
+2024-12-26 00:59:51 [INFO] 🎯 Deployment completed successfully in 61 seconds.
+2024-12-26 01:16:05 [INFO] 📝 Deployment log initialized.
+2024-12-26 01:16:05 UTC [INFO] init_log completed in 4962 ms (Cumulative: 4962 ms)
+2024-12-26 01:16:05 [INFO] 🐹 Installing Go...
+2024-12-26 01:16:14 UTC [INFO] install_go completed in 9631 ms (Cumulative: 14593 ms)
+2024-12-26 01:16:15 [INFO] 🧠 CPU Cores: 1
+2024-12-26 01:16:15 [INFO] 💾 Total RAM: 1.9Gi
+2024-12-26 01:16:15 [INFO] 📁 Disk Usage: 6.8G/49G (15% used)
+2024-12-26 01:16:15 [INFO] 🕒 Server Uptime: up 43 minutes
+2024-12-26 01:16:15 UTC [INFO] system_stats completed in 194 ms (Cumulative: 14787 ms)
+2024-12-26 01:16:15 [INFO] 🛡️ Fixing SQLite Database Permissions...
+2024-12-26 01:16:15 UTC [INFO] fix_sqlite_permissions completed in 181 ms (Cumulative: 14968 ms)
+2024-12-26 01:16:15 [INFO] 🛡️ Building NestJS Backend
+2024-12-26 01:16:27 UTC [INFO] npx completed in 11800 ms (Cumulative: 26768 ms)
+2024-12-26 01:16:27 UTC [INFO] build_nestjs completed in 11905 ms (Cumulative: 38673 ms)
+2024-12-26 01:16:27 [INFO] 🐹 Building Go Backend
+2024-12-26 01:16:30 UTC [INFO] build_go completed in 2868 ms (Cumulative: 44254 ms)
+2024-12-26 01:16:30 [INFO] 🔄 Restarting PM2 Process: craft-nest
+2024-12-26 01:16:31 UTC [INFO] pm2 completed in 641 ms (Cumulative: 44895 ms)
+2024-12-26 01:16:32 UTC [INFO] pm2 completed in 1681 ms (Cumulative: 46576 ms)
+2024-12-26 01:16:33 [INFO] 🔄 Restarting PM2 Process: craft-go
+2024-12-26 01:16:35 UTC [INFO] pm2 completed in 1971 ms (Cumulative: 48547 ms)
+2024-12-26 01:16:36 UTC [INFO] pm2 completed in 1582 ms (Cumulative: 50129 ms)
+2024-12-26 01:16:36 [INFO] 🌐 Validating Services
+2024-12-26 01:16:37 [INFO] ❌ NestJS Failed
+2024-12-26 01:16:37 [INFO] ❌ Go Failed
+2024-12-26 01:16:37 UTC [INFO] check_server_health completed in 302 ms (Cumulative: 50431 ms)
+2024-12-26 01:16:37 [INFO] 🎯 Deployment completed successfully in 37 seconds.
+2024-12-26 01:30:10 [INFO] 🚀 Starting Deployment Process...
+2024-12-26 01:30:10 [INFO] ✅ Go Version: go version go1.23.4 linux/amd64
+2024-12-26 01:30:10 [INFO] 🛡️ Fixing SQLite Database Permissions...
+2024-12-26 01:30:10 [INFO] 🛡️ Building NestJS Backend
+2024-12-26 01:30:21 [INFO] 🐹 Building Go Backend
+2024-12-26 01:30:23 [INFO] 🔄 Restarting PM2 Process: craft-nest
+2024-12-26 01:30:25 [INFO] 🔄 Restarting PM2 Process: craft-go
+2024-12-26 01:30:28 [INFO] 🌐 Validating Services
+2024-12-26 01:30:28 [INFO] ❌ NestJS Failed
+2024-12-26 01:30:28 [INFO] ❌ Go Failed
+2024-12-26 01:30:28 [INFO] 🎯 Deployment completed successfully in 18 seconds.
+2024-12-26 01:32:42 [INFO] ✅ Go Version: go version go1.23.4 linux/amd64
+2024-12-26 01:32:42 [INFO] 🛡️ Fixing SQLite Database Permissions...
+2024-12-26 01:32:42 [INFO] 🐹 Building Go Backend
+2024-12-26 01:32:45 [INFO] 🔄 Restarting PM2 Process: craft-go
+2024-12-26 01:32:46 [INFO] 🌐 Validating Services
+2024-12-26 01:32:46 [INFO] ❌ NestJS Failed
+2024-12-26 01:32:46 [INFO] ❌ Go Failed
+2024-12-26 01:34:33 [INFO] [1/50] 🧠 **System Environment Variables:**
+2024-12-26 01:34:34 [INFO] [1/50]    - User: jeffrey
+2024-12-26 01:34:34 [INFO] [1/50]    - Shell: /bin/bash
+2024-12-26 01:34:34 [INFO] [1/50]    - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin:/bin:/root/go/bin:/usr/local/go/bin:/home/jeffrey/go/bin
+2024-12-26 01:34:34 [INFO] [1/50]    - Current Directory: /home/jeffrey/repos/craft-fusion
+2024-12-26 01:34:34 [INFO] [1/50]    - Go Version: go version go1.23.4 linux/amd64
+2024-12-26 01:34:34 [INFO] [1/50]    - Node Version: v20.18.1
+2024-12-26 01:34:34 [INFO] [1/50]    - NPM Version: 11.0.0
+2024-12-26 01:34:34 [INFO] [2/50] 🐹 Verifying Go Installation
+2024-12-26 01:34:34 [INFO] [2/50] ✅ Go Version: go version go1.23.4 linux/amd64
+2024-12-26 01:34:34 [INFO] [3/50] 🛡️ Fixing SQLite Database Permissions...
+2024-12-26 01:34:34 [ERROR] [3/50] SQLite file not found
+2024-12-26 01:34:35 [INFO] [4/50] 🐹 Building Go Backend
+2024-12-26 01:34:37 [INFO] [5/50] 🔄 Restarting PM2 Process: craft-go
+2024-12-26 01:34:39 [INFO] [6/50] 🌐 Validating Services
+2024-12-26 01:34:39 [ERROR] [6/50] ❌ NestJS Failed
+2024-12-26 01:34:39 [ERROR] [6/50] ❌ Go Failed
+2024-12-26 01:34:39 [INFO] [6/50] 🎯 Deployment completed successfully in 6 seconds.
+2024-12-26 01:37:13 [INFO] [1/50] 🧠 **System Environment Variables:**
+2024-12-26 01:37:13 [INFO] [1/50]    - User: jeffrey
+2024-12-26 01:37:13 [INFO] [1/50]    - Shell: /bin/bash
+2024-12-26 01:37:13 [INFO] [1/50]    - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin:/bin:/root/go/bin:/usr/local/go/bin:/home/jeffrey/go/bin
+2024-12-26 01:37:13 [INFO] [1/50]    - Current Directory: /home/jeffrey/repos/craft-fusion
+2024-12-26 01:37:13 [INFO] [1/50]    - Go Version: go version go1.23.4 linux/amd64
+2024-12-26 01:37:13 [INFO] [1/50]    - Node Version: v20.18.1
+2024-12-26 01:37:13 [INFO] [1/50]    - NPM Version: 11.0.0
+2024-12-26 01:37:13 [INFO] [2/50] 🐹 Verifying Go Installation
+2024-12-26 01:37:14 [INFO] [2/50] ✅ Go Version: go version go1.23.4 linux/amd64
+2024-12-26 01:37:14 [INFO] [3/50] 🛡️ Fixing SQLite Database Permissions...
+2024-12-26 01:37:14 [ERROR] [3/50] SQLite file not found
+2024-12-26 01:37:14 [INFO] [4/50] 🐹 Building Go Backend
+2024-12-26 01:37:17 [INFO] [5/50] 🔄 Restarting PM2 Process: craft-go
+2024-12-26 01:37:18 [INFO] [6/50] 🌐 Validating Services
+2024-12-26 01:37:18 [ERROR] [6/50] ❌ NestJS Failed
+2024-12-26 01:37:18 [ERROR] [6/50] ❌ Go Failed
+2024-12-26 01:37:18 [INFO] [6/50] 🎯 Deployment completed successfully in 5 seconds.
+2024-12-26 01:40:05 [INFO] [1/60] 🧠 System Variables:
+2024-12-26 01:40:05 [INFO] [1/60]    - User: jeffrey
+2024-12-26 01:40:05 [INFO] [1/60]    - Go Version: go version go1.23.4 linux/amd64
+2024-12-26 01:40:05 [INFO] [1/60]    - Node Version: v20.18.1
+2024-12-26 01:40:06 [INFO] [1/60]    - NPM Version: 11.0.0
+2024-12-26 01:40:06 [INFO] [2/60] ✅ Go Version: go version go1.23.4 linux/amd64
+2024-12-26 01:40:06 [ERROR] [3/60] SQLite not found
+2024-12-26 01:40:21 [ERROR] [6/60] ❌ NestJS Failed
+2024-12-26 01:40:21 [ERROR] [6/60] ❌ Go Failed
+2024-12-26 01:40:21 [INFO] [6/60] 🎯 Deployment completed in 16 seconds.
+2024-12-26 01:44:05 [INFO] [1/60] 🧠 User: jeffrey
+2024-12-26 01:44:05 [INFO] [1/60] 🧠 Go Version: go version go1.23.4 linux/amd64
+2024-12-26 01:44:05 [INFO] [1/60] 🧠 Node Version: v20.18.1
+2024-12-26 01:44:05 [INFO] [1/60] 🧠 NPM Version: 11.0.0
+2024-12-26 01:44:05 [ERROR] [2/60] SQLite not found
+2024-12-26 01:44:17 [INFO] [3/60] ✅ Angular build deployed to /usr/www/nginx/html
+2024-12-26 01:44:20 [ERROR] [5/60] ❌ NestJS Failed
+2024-12-26 01:44:20 [ERROR] [5/60] ❌ Go Failed
+2024-12-26 01:44:20 [INFO] [5/60] 🎯 Deployment completed in 15 seconds.
+[INFO] 🧠 **System Environment Variables:**
+[INFO] - User: jeffrey
+[INFO] - Shell: /bin/bash
+[INFO] - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin:/bin:/root/go/bin:/usr/local/go/bin:/home/jeffrey/go/bin
+[INFO] - Current Directory: /home/jeffrey/repos/craft-fusion
+[INFO] - Go Version: go version go1.23.4 linux/amd64
+[INFO] - Node Version: v20.18.1
+[INFO] - NPM Version: 11.0.0
+[INFO] 🛡️ Fixing SQLite Database Permissions...
+[ERROR] SQLite file not found
+[INFO] 🌐 Building Angular Frontend (Craft-Web)
+[ERROR] Angular build failed.
+[INFO] 🛡️ Building NestJS Backend (REST API Server)
+[ERROR] NestJS build failed.
+[INFO] 🐹 **Building Go Backend (High-Performance API Server)**
+[INFO] 🔍 Verifying Go Installation...
+[INFO] ✅ Go version detected: go version go1.23.4 linux/amd64
+[INFO] 📂 Navigating to Go application directory...
+[INFO] 🔄 Restarting PM2 Process: craft-nest
+[INFO] 🔄 Restarting PM2 Process: craft-go
+[INFO] 🌐 Validating Services
+[ERROR] ❌ NestJS Health Check Failed
+[INFO] 🎯 Deployment completed successfully in 30 seconds.
+[INFO] 🚀 All services are running successfully.
+[INFO] 🧠 **System Environment Variables:**
+[INFO] - User: jeffrey
+[INFO] - Shell: /bin/bash
+[INFO] - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin:/bin:/root/go/bin:/usr/local/go/bin:/home/jeffrey/go/bin
+[INFO] - Current Directory: /home/jeffrey/repos/craft-fusion
+[INFO] - Go Version: go version go1.23.4 linux/amd64
+[INFO] - Node Version: v20.18.1
+[INFO] - NPM Version: 11.0.0
+[INFO] 🛡️ Fixing SQLite Database Permissions...
+[INFO] SQLite file not found. Creating a new one...
+[INFO] ✅ SQLite database permissions fixed.
+[INFO] 🌐 Building Angular Frontend (Craft-Web)
+[ERROR] Angular build failed. Attempting dependency reinstall...
+[INFO] 🧠 **System Environment Variables:**
+[INFO] - User: jeffrey
+[INFO] - Shell: /bin/bash
+[INFO] - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin:/bin:/root/go/bin:/usr/local/go/bin:/home/jeffrey/go/bin
+[INFO] - Current Directory: /home/jeffrey/repos/craft-fusion
+[INFO] - Go Version: go version go1.23.4 linux/amd64
+[INFO] - Node Version: v20.18.1
+[INFO] - NPM Version: 11.0.0
+[INFO] 🛡️ Fixing SQLite Database Permissions...
+[INFO] ✅ SQLite database permissions fixed.
+[INFO] 🌐 Building Angular Frontend (Craft-Web)
+[ERROR] Angular build failed. Attempting dependency reinstall...
+[INFO] 🧠 **System Environment Variables:**
+[INFO] - User: root
+[INFO] - Shell: /bin/bash
+[INFO] - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin
+[INFO] - Current Directory: /home/jeffrey/repos/craft-fusion
+[INFO] - Go Version: Not Installed
+[INFO] - Node Version: v20.18.1
+[INFO] - NPM Version: 11.0.0
+[INFO] 🛡️ Fixing SQLite Database Permissions...
+[INFO] ✅ SQLite database permissions fixed.
+[INFO] 🌐 Building Angular Frontend (Craft-Web)
+[ERROR] Angular build failed. Attempting dependency reinstall...
+[ERROR] Angular build failed again.
+[INFO] ✅ Angular build deployed to /usr/share/nginx/html
+[INFO] 🛡️ Building NestJS Backend (REST API Server)
+[ERROR] NestJS build failed.
+[INFO] 🐹 Building Go Backend (High-Performance API Server)
+[ERROR] Go mod tidy failed.
+[INFO] 🧠 **System Environment Variables:**
+[INFO] - User: root
+[INFO] - Shell: /bin/bash
+[INFO] - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin
+[INFO] - Current Directory: /home/jeffrey/repos/craft-fusion
+[INFO] - Go Version: Not Installed
+[INFO] - Node Version: v20.18.1
+[INFO] - NPM Version: 11.0.0
+[INFO] 🛡️ Fixing SQLite Database Permissions...
+[INFO] ✅ SQLite database permissions fixed.
+[INFO] 🌐 Building Angular Frontend (Craft-Web)
+[ERROR] Angular build failed. Attempting dependency reinstall...
+[INFO] 🧠 **System Environment Variables:**
+[INFO] - User: root
+[INFO] - Shell: /bin/bash
+[INFO] - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin
+[INFO] - Current Directory: /home/jeffrey/repos/craft-fusion
+[INFO] - Go Version: Not Installed
+[INFO] - Node Version: v20.18.1
+[INFO] - NPM Version: 11.0.0
+[INFO] 🛡️ Fixing SQLite Database Permissions...
+[INFO] ✅ SQLite database permissions fixed.
+[INFO] 🌐 Building Angular Frontend (Craft-Web)
+[ERROR] Angular build failed. Attempting dependency reinstall...
+[ERROR] Angular build failed again.
+[INFO] ✅ Nginx restarted successfully.
+[INFO] ✅ Angular build deployed to /usr/share/nginx/html
+[INFO] 🛡️ Building NestJS Backend (REST API Server)
+[INFO] 🐹 Building Go Backend (High-Performance API Server)
+[ERROR] Go mod tidy failed.
+[INFO] 🧠 **System Environment Variables:**
+[INFO] - User: root
+[INFO] - Shell: /bin/bash
+[INFO] - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin
+[INFO] - Current Directory: /home/jeffrey/repos/craft-fusion
+[INFO] - Go Version: Not Installed
+[INFO] - Node Version: v20.18.1
+[INFO] - NPM Version: 11.0.0
+[INFO] 🛡️ Fixing SQLite Database Permissions...
+[INFO] ✅ SQLite database permissions fixed.
+[INFO] 🌐 Building Angular Frontend (Craft-Web)
+[ERROR] Angular build failed. Attempting dependency reinstall...
+[ERROR] Angular build failed again.
+[INFO] ✅ Nginx restarted successfully.
+[INFO] ✅ Angular build deployed to /usr/share/nginx/html
+[INFO] 🛡️ Building NestJS Backend (REST API Server)
+[INFO] 🐹 Building Go Backend (High-Performance API Server)
+[ERROR] Go mod tidy failed.
+[INFO] 🧠 **System Environment Variables:**
+[INFO] - User: root
+[INFO] - Shell: /bin/bash
+[INFO] - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin
+[INFO] - Current Directory: /home/jeffrey/repos/craft-fusion
+[INFO] - Go Version: Not Installed
+[INFO] - Node Version: v20.18.1
+[INFO] - NPM Version: 11.0.0
+[INFO] 🛡️ Fixing SQLite Database Permissions...
+[INFO] ✅ SQLite database permissions fixed.
+[INFO] 🌐 Building Angular Frontend (Craft-Web)
+[ERROR] Angular build failed. Attempting dependency reinstall...
+[ERROR] Angular build failed again.
+[INFO] ✅ Nginx restarted successfully.
+[INFO] ✅ Angular build deployed to /usr/share/nginx/html
+[INFO] 🛡️ Building NestJS Backend (REST API Server)
+[INFO] 🐹 Building Go Backend (High-Performance API Server)
+[ERROR] Go mod tidy failed.
+[INFO] 🧠 **System Environment Variables:**
+[INFO] - User: root
+[INFO] - Shell: /bin/bash
+[INFO] - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin
+[INFO] - Current Directory: /home/jeffrey/repos/craft-fusion
+[INFO] - Go Version: Not Installed
+[INFO] - Node Version: v20.18.1
+[INFO] - NPM Version: 11.0.0
+[INFO] 🛡️ Fixing SQLite Database Permissions...
+[INFO] ✅ SQLite database permissions fixed.
+[INFO] 🌐 Building Angular Frontend (Craft-Web)
+[ERROR] Angular build failed. Attempting dependency reinstall...
+[INFO] 🧠 **System Environment Variables:**
+[INFO] - User: root
+[INFO] - Shell: /bin/bash
+[INFO] - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin
+[INFO] - Current Directory: /home/jeffrey/repos/craft-fusion
+[INFO] - Go Version: Not Installed
+[INFO] - Node Version: v20.18.1
+[INFO] - NPM Version: 11.0.0
+[INFO] 🛡️ Fixing SQLite Database Permissions...
+[INFO] ✅ SQLite database permissions fixed.
+[INFO] 🌐 Building Angular Frontend (Craft-Web)
+[ERROR] Angular build failed. Attempting dependency reinstall...
+[INFO] 🧠 **System Environment Variables:**
+[INFO] - User: root
+[INFO] - Shell: /bin/bash
+[INFO] - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin
+[INFO] - Current Directory: /home/jeffrey/repos/craft-fusion
+[INFO] - Go Version: go version go1.22.10 linux/amd64
+[INFO] - Node Version: v20.18.1
+[INFO] - NPM Version: 11.0.0
+[INFO] 🛡️ Fixing SQLite Database Permissions...
+[INFO] ✅ SQLite database permissions fixed.
+[INFO] 🌐 Building Angular Frontend (Craft-Web)
+[ERROR] Angular build failed. Attempting dependency reinstall...
+[ERROR] Angular build failed again.
+[INFO] ✅ Nginx restarted successfully.
+[INFO] ✅ Angular build deployed to /usr/share/nginx/html
+[INFO] 🛡️ Building NestJS Backend (REST API Server)
+[INFO] 🐹 Building Go Backend (High-Performance API Server)
+[ERROR] Go mod tidy failed.
+[INFO] 🧠 **System Environment Variables:**
+[INFO] - User: root
+[INFO] - Shell: /bin/bash
+[INFO] - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin
+[INFO] - Current Directory: /home/jeffrey/repos/craft-fusion
+[INFO] - Go Version: go version go1.22.10 linux/amd64
+[INFO] - Node Version: v20.18.1
+[INFO] - NPM Version: 11.0.0
+[INFO] 🛡️ Fixing SQLite Database Permissions...
+[INFO] ✅ SQLite database permissions fixed.
+[INFO] 🌐 Building Angular Frontend (Craft-Web)
+[ERROR] Angular build failed. Attempting dependency reinstall...
+[ERROR] Angular build failed again.
+[INFO] ✅ Nginx restarted successfully.
+[INFO] ✅ Angular build deployed to /usr/share/nginx/html
+[INFO] 🛡️ Building NestJS Backend (REST API Server)
+[INFO] 🐹 Building Go Backend (High-Performance API Server)
+[ERROR] Go mod tidy failed.
+[INFO] 🧠 **System Environment Variables:**
+[INFO] - User: root
+[INFO] - Shell: /bin/bash
+[INFO] - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin
+[INFO] - Current Directory: /home/jeffrey/repos/craft-fusion
+[INFO] - Go Version: go version go1.22.10 linux/amd64
+[INFO] - Node Version: v20.18.1
+[INFO] - NPM Version: 11.0.0
+[INFO] 🛡️ Fixing SQLite Database Permissions...
+[INFO] ✅ SQLite database permissions fixed.
+[INFO] 🌐 Building Angular Frontend (Craft-Web)
+[ERROR] Angular build failed. Attempting dependency reinstall...
+[INFO] 🧠 **System Environment Variables:**
+[INFO] - User: root
+[INFO] - Shell: /bin/bash
+[INFO] - Path: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/var/lib/snapd/snap/bin
+[INFO] - Current Directory: /home/jeffrey/repos/craft-fusion
+[INFO] - Go Version: go version go1.22.10 linux/amd64
+[INFO] - Node Version: v20.18.1
+[INFO] - NPM Version: 11.0.0
+[INFO] 🛡️ Fixing SQLite Database Permissions...
+[INFO] ✅ SQLite database permissions fixed.
+[INFO] 🌐 Building Angular Frontend (Craft-Web)
+[ERROR] Angular build failed. Attempting dependency reinstall...
+[ERROR] Angular build failed again.
+[INFO] ✅ Angular build deployed to /usr/share/nginx/html
+[INFO] 🛡️ Building NestJS Backend (REST API Server)
+[INFO] 🐹 Building Go Backend (High-Performance API Server)
+[ERROR] Go mod tidy failed.
