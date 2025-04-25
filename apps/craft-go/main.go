@@ -68,8 +68,13 @@ func main() {
 	// User Records API
 	router.GET("/api-go/records", handlers.GetRecordsHandler)
 	router.GET("/api-go/records/generate", handlers.GenerateRecordsHandler)
-	router.GET("/api-go/records/time", handlers.GetCreationTimeHandler) // Ensure the correct route
-	router.GET("/api-go/records/:UID", handlers.GetRecordByUIDHandler)  // Ensure the correct route
+	router.GET("/api-go/records/time", handlers.GetCreationTimeHandler)
+	router.GET("/api-go/records/:UID", handlers.GetRecordByUIDHandler)
+
+	// --- Add these for frontend compatibility ---
+	router.GET("/api/records/time", handlers.GetCreationTimeHandler)
+	router.GET("/api/records/generate", handlers.GenerateRecordsHandler)
+	// -------------------------------------------
 
 	// Swagger
 	router.GET("/api-go/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
