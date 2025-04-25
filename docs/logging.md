@@ -2,33 +2,32 @@
 
 ## Overview
 
-Craft Fusion features a comprehensive logging system with a flexible, interactive UI for viewing and filtering logs. The system is designed to be developer-friendly while providing robust security controls.
+The Craft Fusion Logging System provides comprehensive visibility into application behavior and performance. It captures events across the frontend and backend, providing real-time monitoring and debugging capabilities.
 
 ## Features
 
-- **Dual Layout Options**: 
-  - **Grid Layout**: Split-view with a full log stream on the left and categorized collapsible cards on the right
-  - **Inline Layout**: Traditional table view of all logs
+- **Categorized Logs**: Automatically categorizes logs by type (API, security, navigation, etc.)
+- **Color-Coded Output**: Visual distinction between log levels and categories
+- **Role-Based Access**: Different user roles have appropriate log access
+- **Real-Time Monitoring**: Live log updates in the admin interface
+- **Performance Metrics**: Tracks API response times and application performance
+- **Customizable Filters**: Filter logs by level, component, time period, etc.
 
-- **Security Levels**:
-  - Low-security access
-  - Medium-security access
-  - High-security access
+## Color Scheme
 
-- **Role-Based Access Control**:
-  - User roles: Admin, User, Testing
-  - Configurable permissions per log level
+Our logging system uses a carefully designed color scheme to help quickly identify log types:
 
-- **Log Filtering**:
-  - By log level (debug, info, warn, error)
-  - By security level
-  - By user role
-  - By content
-
-- **Log Processing**:
-  - Automated message parsing to remove boilerplate
-  - Clean and concise display of log messages
-  - Export capabilities (JSON, CSV)
+| Log Type | Color | Usage |
+|----------|-------|-------|
+| Error | Red (#BF0A30) | Reserved exclusively for actual errors |
+| Warning | Orange (#FF8C00) | For potential issues and warnings |
+| Info | Blue (#0052B4) | Standard informational messages |
+| Debug | Light Blue (#3b82f6) | Detailed debug information |
+| Security | Purple (#8B008B) | Security-related events |
+| Performance | Navy (#3C3B6E) | Performance metrics and timing |
+| User | Teal (#008080) | User-related activities |
+| API | Blue (#0052B4) | API calls and responses |
+| Storage | Green (#006400) | Storage and persistence operations |
 
 ## Logger UI Components
 
@@ -68,13 +67,14 @@ The logging system implements robust security controls:
 - Role-based access ensures logs are only visible to authorized users
 - Security levels allow for categorizing sensitive information
 - Export controls respect security settings
+- Sensitive data is automatically redacted from logs
 
 ## Usage in Components
 
 To use the logger in any component:
 
 ```typescript
-constructor(private logger: LoggingService) {
+constructor(private logger: LoggerService) {
   this.logger.registerService('MyComponent');
 }
 
@@ -90,3 +90,13 @@ Administrators can configure log permissions through the admin interface:
 - Set which roles can view each log level
 - Configure default security levels
 - Toggle public visibility options
+
+## Integration with State Management
+
+The logging system integrates with our state management solution (Ward Bell's state mechanism and Dan Wahlin's RXJS methodology) to:
+- Track state changes
+- Log state transitions
+- Provide debugging tools for state-related issues
+- Maintain an audit trail of user activities
+
+Last Updated: 2023-10-21

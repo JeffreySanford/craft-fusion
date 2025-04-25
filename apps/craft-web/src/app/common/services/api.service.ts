@@ -1,11 +1,21 @@
 import { Injectable, Inject, forwardRef } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+// Add ResponseType import for better typing
 import { Observable, tap, catchError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { environment as production } from '../../../environments/environment.prod';
 import { LoggerService } from './logger.service';
 import { User } from './user-state.service';
 
+/**
+ * API Service for interacting with backend endpoints
+ * 
+ * This service provides a standardized interface for making HTTP requests to the API.
+ * It works with Ward Bell's state mechanism and Dan Wahlin's RXJS state methodology
+ * by returning Observables that can be directly consumed by state stores.
+ * 
+ * See the STATE-MANAGEMENT.md documentation for details on the state architecture.
+ */
 export interface Server {
   name: string;
   language: string;
@@ -63,17 +73,36 @@ export class ApiService {
   }
 
   private getFullUrl(endpoint: string): string {
-    // Remove leading slash if present to avoid double slashes
+    // In development, use relative URLs so the proxy works
+    if (!this.isProduction) {
+      endpoint = endpoint.replace(/^\/+/, '');
+      return `/api/${endpoint}`;
+    }
+    // In production, use the full API URL
     endpoint = endpoint.replace(/^\/+/, '');
     return `${this.apiUrl}/${endpoint}`;
   }
 
   // 🛡️ API CRUD Operations
+  /**
+   * Creates HTTP GET request to specified endpoint
+   * 
+   * @param endpoint - API endpoint to request
+   * @param options - Optional HTTP request options
+   * @returns Observable<T> - Observable that can be subscribed to by state stores
+   */
   get<T>(endpoint: string, options?: any): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'GET', url);
     
-    return this.http.get<T>(url, { headers: this.getHeaders() }).pipe(
+    // Create options but don't allow overriding observe
+    const httpOptions = { 
+      ...options,
+      headers: this.getHeaders(), 
+    };
+    
+    // Use explicit type casting for the HTTP call
+    return this.http.get<T>(url, httpOptions).pipe(
       tap(response => {
         this.logger.endServiceCall(callId, 200);
         this.logger.debug(`GET ${endpoint} succeeded`);
@@ -86,14 +115,19 @@ export class ApiService {
         });
         throw error;
       })
-    );
+    ) as Observable<T>; // Explicitly cast the return type
   }
 
-  post<T, R>(endpoint: string, body: T): Observable<R> {
-    const url = `${this.apiUrl}/${endpoint}`;
+  post<T, R>(endpoint: string, body: T, options?: any): Observable<R> {
+    const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'POST', url);
+
+    const httpOptions = {
+      ...options,
+      headers: this.getHeaders(),
+    };
     
-    return this.http.post<R>(url, body, { headers: this.getHeaders() }).pipe(
+    return this.http.post<R>(url, body, httpOptions).pipe(
       tap(response => {
         this.logger.endServiceCall(callId, 200);
         this.logger.debug(`POST ${endpoint} succeeded`);
@@ -106,14 +140,19 @@ export class ApiService {
         });
         throw error;
       })
-    );
+    ) as Observable<R>;
   }
 
-  put<T>(endpoint: string, body: T): Observable<T> {
-    const url = `${this.apiUrl}/${endpoint}`;
+  put<T>(endpoint: string, body: T, options?: any): Observable<T> {
+    const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'PUT', url);
+
+    const httpOptions = {
+      ...options,
+      headers: this.getHeaders(),
+    };
     
-    return this.http.put<T>(url, body, { headers: this.getHeaders() }).pipe(
+    return this.http.put<T>(url, body, httpOptions).pipe(
       tap(response => {
         this.logger.endServiceCall(callId, 200);
         this.logger.debug(`PUT ${endpoint} succeeded`);
@@ -126,14 +165,19 @@ export class ApiService {
         });
         throw error;
       })
-    );
+    ) as Observable<T>;
   }
 
-  delete<T>(endpoint: string): Observable<T> {
-    const url = `${this.apiUrl}/${endpoint}`;
+  delete<T>(endpoint: string, options?: any): Observable<T> {
+    const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'DELETE', url);
+
+    const httpOptions = {
+      ...options,
+      headers: this.getHeaders(),
+    };
     
-    return this.http.delete<T>(url, { headers: this.getHeaders() }).pipe(
+    return this.http.delete<T>(url, httpOptions).pipe(
       tap(response => {
         this.logger.endServiceCall(callId, 200);
         this.logger.debug(`DELETE ${endpoint} succeeded`);
@@ -146,7 +190,7 @@ export class ApiService {
         });
         throw error;
       })
-    );
+    ) as Observable<T>;
   }
 
   /**
@@ -154,7 +198,8 @@ export class ApiService {
    * @returns An observable of the user state.
    */
   getUserState(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/users`, { headers: this.getHeaders() });
+    // Use getFullUrl for proxy compatibility
+    return this.http.get<any>(this.getFullUrl('users'), { headers: this.getHeaders() });
   }
 
   /**
@@ -163,7 +208,8 @@ export class ApiService {
    * @returns An observable of the updated user state.
    */
   updateUserState(userState: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/users`, userState, { headers: this.getHeaders() });
+    // Use getFullUrl for proxy compatibility
+    return this.http.put<any>(this.getFullUrl('users'), userState, { headers: this.getHeaders() });
   }
 
   /**
@@ -171,7 +217,8 @@ export class ApiService {
    * @returns An observable of the deletion result.
    */
   deleteUserState(): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/users`, { headers: this.getHeaders() });
+    // Use getFullUrl for proxy compatibility
+    return this.http.delete<any>(this.getFullUrl('users'), { headers: this.getHeaders() });
   }
 
   /**
@@ -189,8 +236,6 @@ export class ApiService {
       this.currentServer = server;
       const protocol = this.isProduction ? 'https' : 'http';
       const host = this.isProduction ? production.host : environment.host;
-
-      // Remove extra "/api" if Nest is already exposing "/api/logs"
       this.apiUrl = `${protocol}://${host}:${server.port}`;
       this.logger.info(`API URL set to ${this.apiUrl}`);
     } else {
@@ -266,21 +311,20 @@ export class ApiService {
 
   getLogs(limit: number, level?: string): Observable<any> {
     let params = new HttpParams().set('limit', limit.toString());
-    
-    // Only add level param if it has a value
     if (level && level.trim()) {
       params = params.set('level', level);
     }
-
-    return this.http.get(`${this.apiUrl}/logs`, { params });
+    // Use getFullUrl for proxy compatibility
+    return this.http.get(this.getFullUrl('logs'), { params });
   }
 
   getAllUsers(): Observable<User[]> {
-    // Updated endpoint from '/api/user/getAllUsers' to '/api/users'
-    return this.http.get<User[]>('/api/users');
+    // Use getFullUrl for proxy compatibility
+    return this.http.get<User[]>(this.getFullUrl('users'));
   }
 
   getUserById(id: string): Observable<User> {
-    return this.http.get<User>(`/api/users/${id}`);
+    // Use getFullUrl for proxy compatibility
+    return this.http.get<User>(this.getFullUrl(`users/${id}`));
   }
 }

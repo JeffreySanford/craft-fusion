@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, of, Subject, debounceTime } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ApiService } from './api.service';
-import { UserState as IUserState, LoginDateTimeDTO, UserState } from '../interfaces/user-state.interface';
+import { UserState as IUserState, LoginDateTimeDTO, UserState as ImportedUserState } from '../interfaces/user-state.interface';
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
 
@@ -23,8 +23,20 @@ export class UserStateModel extends User implements IUserState {
   username = '';
 }
 
-// Removed duplicate UserState class declaration
+export class AppUserState extends UserStateModel { }
 
+export class LoginDateTime implements LoginDateTimeDTO {
+  dateTime: string = '';
+}
+
+/**
+ * User State Service
+ * 
+ * Implements Ward Bell's state mechanism and Dan Wahlin's RXJS state methodology
+ * for managing user authentication and profile data.
+ * 
+ * See docs/STATE-MANAGEMENT.md for more details on our state architecture.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -84,13 +96,13 @@ export class UserStateService {
       catchError(this.handleError.bind(this))
     );
   }
-  loadUserState(): Observable<UserState> {
+  loadUserState(): Observable<ImportedUserState> {
     this.logger.debug('Loading user state');
-    return this.http.get<UserState>(`${this.apiUrl}/loadUserState`).pipe(
+    return this.http.get<ImportedUserState>(`${this.apiUrl}/loadUserState`).pipe(
       catchError(this.handleError.bind(this))
     );
   }
-  setUserState(state: UserState): Observable<void> {
+  setUserState(state: ImportedUserState): Observable<void> {
     this.logger.debug('Setting user state', { state });
     return this.http.post<void>(`${this.apiUrl}/setUserState`, state).pipe(
       catchError(this.handleError.bind(this))
@@ -261,8 +273,8 @@ export class UserStateService {
     return throwError('Something bad happened; please try again later.');
   }
 
-  getCurrentUser(): Observable<UserState> {
-    return this.api.get<UserState>('/users/getCurrentUser').pipe(
+  getCurrentUser(): Observable<ImportedUserState> {
+    return this.api.get<ImportedUserState>('/users/getCurrentUser').pipe(
       catchError(this.handleError.bind(this))
     );
   }

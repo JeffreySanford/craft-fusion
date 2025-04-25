@@ -74,6 +74,9 @@ func main() {
 	// --- Add these for frontend compatibility ---
 	router.GET("/api/records/time", handlers.GetCreationTimeHandler)
 	router.GET("/api/records/generate", handlers.GenerateRecordsHandler)
+	// Add /api/records and /api/records/:UID for Angular compatibility
+	router.GET("/api/records", handlers.GetRecordsHandler)
+	router.GET("/api/records/:UID", handlers.GetRecordByUIDHandler)
 	// -------------------------------------------
 
 	// Swagger

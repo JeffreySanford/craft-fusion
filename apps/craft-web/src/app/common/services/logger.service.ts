@@ -220,20 +220,18 @@ export class LoggerService {
       
       // Special categories with patriotic colors
       highlight: 'color: #3C3B6E; font-weight: bold; text-decoration: underline;', // patriotic navy blue
-      security: 'color: #BF0A30; font-weight: bold; background-color: rgba(191, 10, 48, 0.1); padding: 2px 4px;', // patriotic red
+      security: 'color: #8B008B; font-weight: bold; background-color: rgba(139, 0, 139, 0.1); padding: 2px 4px;', // vibrant purple
       performance: 'color: #3C3B6E; font-weight: normal; font-style: italic;', // patriotic navy
-      user: 'color: #BF0A30; font-weight: normal;',       // patriotic red
+      user: 'color: #008080; font-weight: normal;',       // vibrant teal
       api: 'color: #0052B4; font-weight: normal;',        // patriotic blue
       navigation: 'color: #FF8C00; font-weight: normal;', // vibrant orange
       data: 'color: #0052B4; font-weight: normal;',       // patriotic blue
-      storage: 'color: #BF0A30; font-weight: normal;',    // patriotic red
+      storage: 'color: #006400; font-weight: normal;',    // vibrant green
       rendering: 'color: #0052B4; font-weight: normal;',  // patriotic blue
       initialization: 'color: #3C3B6E; font-weight: normal;', // patriotic navy blue
       lifecycle: 'color: #3C3B6E; font-weight: normal;',  // patriotic navy blue
-      usa: 'background: linear-gradient(90deg, #BF0A30, #0052B4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;', // enhanced patriotic gradient
+      usa: 'background: linear-gradient(90deg, #0052B4, #3C3B6E); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;', // modified patriotic gradient (blue only)
       system: 'color: #3C3B6E; font-weight: normal;',     // patriotic navy blue
-      
-      // Component styling
       component: 'color: #FFFFFF; font-style: italic; background-color: rgba(60, 59, 110, 0.5); padding: 2px 4px; border-radius: 2px;'    // white on navy background for component name
     };
     
