@@ -13,5 +13,16 @@
   ],
   "exclude": [
     "**/*.spec.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "strictInputTypes": true,
+    "strictNullInputTypes": true,
+    "strictAttributeTypes": true,
+    "strictOutputEventTypes": true,
+    "strictDomEventTypes": true,
+    "strictDomLocalRefTypes": true,
+    "strictOutputTypeChecks": true,
+    "strictLiteralTypes": true
+  }
 }
