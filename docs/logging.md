@@ -1,102 +1,61 @@
-# Craft Fusion Logging System
+# Logging
 
-## Overview
+Logging is handled primarily by the `LoggerService` (`c:\repos\craft-fusion\apps\craft-web\src\app\common\services\logger.service.ts`), providing structured and categorized logging throughout the application.
 
-The Craft Fusion Logging System provides comprehensive visibility into application behavior and performance. It captures events across the frontend and backend, providing real-time monitoring and debugging capabilities.
+## LoggerService
 
-## Features
+### Features
 
-- **Categorized Logs**: Automatically categorizes logs by type (API, security, navigation, etc.)
-- **Color-Coded Output**: Visual distinction between log levels and categories
-- **Role-Based Access**: Different user roles have appropriate log access
-- **Real-Time Monitoring**: Live log updates in the admin interface
-- **Performance Metrics**: Tracks API response times and application performance
-- **Customizable Filters**: Filter logs by level, component, time period, etc.
+*   **Log Levels:** Supports standard log levels (`DEBUG`, `INFO`, `WARN`, `ERROR`) controlled by `setLevel()` and `getLevel()`. The current level filters which messages are processed and stored. Level is persisted in `localStorage`.
+*   **Log Entries (`LogEntry`):** Logs are stored as structured objects containing timestamp, level, message, component name, and optional details.
+*   **Log Storage:** Stores a configurable number of recent logs in memory (`logLimit`). Provides `getLogs()` and `clearLogs()`.
+*   **Log Stream:** Exposes an RxJS `Subject` (`logAdded$`, `logStream$`) for components to subscribe to real-time log updates.
+*   **Console Output:** Logs are also output to the browser console (`outputToConsole`) with enhanced color-coding and component prefixes for development visibility. Uses CSS styling for different log levels and categories.
+*   **Automatic Component Detection:** Attempts to automatically determine the calling component/service name using stack trace analysis (`getCallerComponent`). Includes fallbacks.
+*   **Log Sanitization:** Automatically redacts sensitive fields (like 'password', 'token', 'secret', 'key', 'authorization', 'auth') in the `details` object before logging (`sanitizeLogDetails`).
+*   **Categorization:** Automatically categorizes logs based on keywords and component names for enhanced console styling (`isSecurityRelated`, `isAuthRelated`, `isPerformanceRelated`, `isUserRelated`, `isApiRelated`, `isNavigationRelated`, `isDataRelated`, `isStorageRelated`, `isRenderingRelated`, `isInitializationRelated`, `isLifecycleRelated`, `isUSARelated`, `isSystemRelated`). Includes patriotic color themes.
+*   **Service Call Tracking:**
+    *   Services register themselves using `registerService()`.
+    *   Tracks the duration and status of service calls initiated via `startServiceCall()` and `endServiceCall()`. Uses a unique `callId`.
+    *   Stores metrics (`ServiceCallMetric`) for recent service calls (`serviceMetrics`, `serviceMetricsLimit`).
+    *   Exposes service call metrics via an RxJS `BehaviorSubject` (`serviceCalls$`). Provides `getServiceMetrics()` and `clearMetrics()`.
+*   **Specialized Logging:** Includes methods for specific contexts like `highlight`, `logNavigation`, and table-related events (`logTableEvent`, `logTablePerformance`, `logTableDataLoading`, `logTableMemoryUsage`).
 
-## Color Scheme
+### Usage
 
-Our logging system uses a carefully designed color scheme to help quickly identify log types:
-
-| Log Type | Color | Usage |
-|----------|-------|-------|
-| Error | Red (#BF0A30) | Reserved exclusively for actual errors |
-| Warning | Orange (#FF8C00) | For potential issues and warnings |
-| Info | Blue (#0052B4) | Standard informational messages |
-| Debug | Light Blue (#3b82f6) | Detailed debug information |
-| Security | Purple (#8B008B) | Security-related events |
-| Performance | Navy (#3C3B6E) | Performance metrics and timing |
-| User | Teal (#008080) | User-related activities |
-| API | Blue (#0052B4) | API calls and responses |
-| Storage | Green (#006400) | Storage and persistence operations |
-
-## Logger UI Components
-
-### Log Display Filter
-
-Allows users to filter logs based on multiple criteria:
-- Log level (debug, info, warn, error)
-- Security level
-- User roles
-- Entry limit
-
-### Logger Display
-
-Provides two layouts for viewing logs:
-
-1. **Grid Layout**:
-   - Left panel: Full log stream in chronological order
-   - Right panel: Categorized logs in collapsible cards (errors, warnings, info, general)
-   - Color-coded by log level for easy identification
-
-2. **Inline Layout**:
-   - Traditional table view
-   - Sortable columns
-   - Clickable rows for details
-
-## Message Parser
-
-The system includes an intelligent message parser that:
-- Removes redundant prefixes and boilerplate text
-- Makes messages more concise and readable
-- Formats technical details appropriately
-- Handles JSON data elegantly
-
-## Security Considerations
-
-The logging system implements robust security controls:
-- Role-based access ensures logs are only visible to authorized users
-- Security levels allow for categorizing sensitive information
-- Export controls respect security settings
-- Sensitive data is automatically redacted from logs
-
-## Usage in Components
-
-To use the logger in any component:
+Inject `LoggerService` and use methods like `debug()`, `info()`, `warn()`, `error()`.
 
 ```typescript
 constructor(private logger: LoggerService) {
-  this.logger.registerService('MyComponent');
+  this.logger.registerService('MyComponent'); // Optional: Register component/service
 }
 
-// Log examples
-this.logger.info('User logged in successfully');
-this.logger.warn('Connection attempt failed', { attempts: 3 });
-this.logger.error('Database connection failed', { errorCode: 500 });
+loadData() {
+  const callId = this.logger.startServiceCall('MyComponent', 'GET', '/api/data');
+  this.api.get('/data').subscribe({
+    next: (data) => {
+      this.logger.endServiceCall(callId, 200);
+      this.logger.info('Data loaded successfully', { count: data.length });
+    },
+    error: (err) => {
+      this.logger.endServiceCall(callId, err.status || 500, err); // Pass error object to endServiceCall
+      this.logger.error('Failed to load data', err);
+    }
+  });
+}
 ```
 
-## Admin Configuration
+## ApiLoggerService
 
-Administrators can configure log permissions through the admin interface:
-- Set which roles can view each log level
-- Configure default security levels
-- Toggle public visibility options
+(`c:\repos\craft-fusion\apps\craft-web\src\app\common\services\api-logger.service.ts`)
 
-## Integration with State Management
+This service specifically logs detailed information about API requests and responses made through the application. It's intended to be integrated with `ApiService` or an HTTP interceptor.
 
-The logging system integrates with our state management solution (Ward Bell's state mechanism and Dan Wahlin's RXJS methodology) to:
-- Track state changes
-- Log state transitions
-- Provide debugging tools for state-related issues
-- Maintain an audit trail of user activities
+### Features
 
-Last Updated: 2023-10-21
+*   **Detailed API Logs (`ApiLogEntry`):** Captures request (URL, method, headers, body) and response (status, body, headers) details, along with response time.
+*   **Log Storage:** Stores a configurable number of recent API logs (`maxLogs`). Provides `getLogs()` and `clearLogs()`.
+*   **Log Stream:** Provides an RxJS `Subject` (`logSubject`, exposed via `getLogStream()`) for real-time API log monitoring.
+*   **Filtering:** Allows retrieving logs for a specific endpoint path (`getLogsForEndpoint`).
+*   **Integration with `LoggerService`:** Logs summarized API call information (status, method, URL, time) to the main `LoggerService`.
+*   **Mock Log Generation:** Includes a utility (`generateMockLog`) for testing purposes.

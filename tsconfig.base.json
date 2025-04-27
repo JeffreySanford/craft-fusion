@@ -1,38 +1,26 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "esnext",
-    "lib": ["es2018", "dom"],
-    "declaration": false,
+    "rootDir": ".",
     "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
+    "target": "es2022",
+    "module": "esnext",
+    "lib": ["es2022", "dom"],
     "skipLibCheck": true,
-    "baseUrl": "./",
-    "paths": {},
-    "outDir": "./dist",
-    "rootDir": ".",
-    "forceConsistentCasingInFileNames": true,
-    "types": ["node", "jest"],
-    "typeRoots": ["node_modules/@types"],
-    "useDefineForClassFields": false
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@craft-fusion/shared/data": ["libs/shared/data/src/index.ts"],
+      "@craft-fusion/shared/ui": ["libs/shared/ui/src/index.ts"],
+      "@craft-fusion/utils": ["libs/utils/src/index.ts"]
+      // Add other library paths as needed
+    },
+    "allowSyntheticDefaultImports": true
   },
-  "angularCompilerOptions": {
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": false,
-    "strictTemplates": true
-  },
-  "exclude": ["node_modules", "dist", "tmp", "**/*.spec.ts"]
+  "exclude": ["node_modules", "tmp"]
 }

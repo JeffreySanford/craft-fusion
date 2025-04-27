@@ -1,6 +1,6 @@
 # Deploying Craft Fusion to Digital Ocean
 
-This guide provides step-by-step instructions for deploying the Craft Fusion project to a Digital Ocean Droplet running Fedora 40.
+This guide provides step-by-step instructions for deploying the Craft Fusion project to a Digital Ocean Droplet using nginx for the frontend and PM2 for the backends.
 
 ## Prerequisites
 
@@ -88,6 +88,9 @@ wget https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
 rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
 echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
 source ~/.bashrc
+
+# Install PM2 globally for process management
+npm install -g pm2
 ```
 
 ## Step 6: Set Up Firewall
@@ -100,12 +103,11 @@ dnf install -y firewalld
 systemctl start firewalld
 systemctl enable firewalld
 
-# Configure firewall
+# Configure firewall for both HTTP/HTTPS and direct access to backends
 firewall-cmd --permanent --add-service=http
 firewall-cmd --permanent --add-service=https
 firewall-cmd --permanent --add-port=3000/tcp
 firewall-cmd --permanent --add-port=4000/tcp
-firewall-cmd --permanent --add-port=11434/tcp
 
 # Apply changes
 firewall-cmd --reload
@@ -121,12 +123,10 @@ cd /opt/craft-fusion
 # Clone the repository
 git clone https://github.com/yourusername/craft-fusion.git .
 
-# Create the env file
+# Create environment file with appropriate variables
 cat > .env << EOL
 # Production environment variables
 NODE_ENV=production
-OLLAMA_API_URL=http://localhost:11434
-MODELS_TO_LOAD=deepseek:latest,mistral:latest
 DOMAIN=yourdomain.com
 EOL
 ```
@@ -137,21 +137,28 @@ EOL
 # Install Nginx
 dnf install -y nginx
 
-# Create Nginx configuration
+# Create Nginx configuration for serving Angular and proxying APIs
 cat > /etc/nginx/conf.d/craft-fusion.conf << EOL
 server {
     listen 80;
     server_name yourdomain.com www.yourdomain.com;
     
+    # Frontend - serve static Angular files
+    root /opt/craft-fusion/dist/apps/craft-web;
+    index index.html;
+    
+    # Handle Angular routes
     location / {
-        proxy_pass http://localhost:4200;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
-        proxy_cache_bypass \$http_upgrade;
+        try_files \$uri \$uri/ /index.html;
+        
+        # Add caching for static assets
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+            expires 30d;
+            add_header Cache-Control "public, max-age=2592000";
+        }
     }
     
+    # NestJS backend API
     location /api/ {
         proxy_pass http://localhost:3000/api/;
         proxy_http_version 1.1;
@@ -159,25 +166,37 @@ server {
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host \$host;
         proxy_cache_bypass \$http_upgrade;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
     
-    location /api/go/ {
+    # Go backend API
+    location /api-go/ {
         proxy_pass http://localhost:4000/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host \$host;
         proxy_cache_bypass \$http_upgrade;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+    
+    # Nginx status for monitoring (optional, restrict access appropriately)
+    location /nginx_status {
+        stub_status on;
+        allow 127.0.0.1;
+        deny all;
     }
 }
 EOL
 
-# Test Nginx configuration
+# Test Nginx configuration and start
 nginx -t
-
-# Start and enable Nginx
-systemctl start nginx
 systemctl enable nginx
+systemctl start nginx
 ```
 
 ## Step 9: Set Up SSL with Let's Encrypt (Optional but Recommended)
@@ -190,120 +209,274 @@ dnf install -y certbot python3-certbot-nginx
 certbot --nginx -d yourdomain.com -d www.yourdomain.com
 
 # Follow the prompts to complete the setup
+# This will automatically modify your nginx configuration
 ```
 
-## Step 10: Deploy Ollama using Docker
+## Step 10: Build the Application
 
 ```bash
 cd /opt/craft-fusion
 
-# Make scripts executable
-chmod +x scripts/ollama-manager.sh
-
-# Start Ollama container
-./scripts/ollama-manager.sh start
-
-# Pull AI models
-./scripts/ollama-manager.sh pull
-```
-
-## Step 11: Build and Run the Applications
-
-### Option 1: Build and Serve with PM2
-
-```bash
-# Install PM2 globally
-npm install -g pm2
-
 # Install dependencies
 npm ci
 
-# Build all applications
+# Build all applications in production mode
 npx nx run-many --target=build --all --prod
 
-# Start NestJS backend with PM2
-pm2 start dist/apps/craft-nest/main.js --name craft-nest
-
-# Start Go backend with PM2
+# Build the Go application
 cd apps/craft-go
 go build -o ../../dist/apps/craft-go/main .
 cd ../..
-pm2 start dist/apps/craft-go/main --name craft-go
+```
 
-# Serve Angular with PM2 and static files
-npm install -g serve
-pm2 start serve --name craft-web -- -s dist/apps/craft-web -l 4200
+## Step 11: Create PM2 Ecosystem File for Backends
 
-# Save PM2 configuration
+Create an ecosystem.config.js file specifically designed to expose the backends properly in production:
+
+```bash
+cat > /opt/craft-fusion/ecosystem.config.js << EOL
+module.exports = {
+  apps: [
+    {
+      name: 'craft-nest',
+      script: 'dist/apps/craft-nest/main.js',
+      env: {
+        NODE_ENV: 'production',
+        PORT: 3000,
+        HOST: '0.0.0.0', // IMPORTANT: Bind to all interfaces, not just localhost
+        EXPOSE_API: 'true', // Custom environment flag to ensure endpoints are exposed
+        API_PREFIX: '/api'  // Ensure API prefix is set correctly
+      },
+      instances: 1,
+      exec_mode: 'fork',
+      watch: false,
+      max_memory_restart: '500M',
+      env_production: {
+        NODE_ENV: 'production'
+      }
+    },
+    {
+      name: 'craft-go',
+      script: 'dist/apps/craft-go/main',
+      env: {
+        PORT: 4000,
+        GIN_MODE: 'release',
+        HOST: '0.0.0.0', // IMPORTANT: Ensure Go binds to all interfaces
+        API_BASE_PATH: '/'  // Important for correct API path handling
+      },
+      instances: 1,
+      exec_mode: 'fork',
+      watch: false
+    }
+  ]
+};
+EOL
+```
+
+## Step 12: Start the Application with PM2
+
+```bash
+cd /opt/craft-fusion
+
+# Start backends using the ecosystem file
+pm2 start ecosystem.config.js
+
+# Save PM2 process list to be restored on reboot
 pm2 save
 
-# Set PM2 to start on system boot
+# Setup PM2 to start on system startup
 pm2 startup
-# Execute the command provided by the above output
+# Execute the command provided by the above output to complete setup
 ```
 
-### Option 2: Deploy with Docker Compose (Recommended)
+## Step 13: Monitor and Check the Deployment
 
 ```bash
-# Use Docker Compose for deployment
-docker compose up -d
+# Check if backends are running properly
+pm2 status
+pm2 logs
 
-# Check container status
-docker compose ps
-```
+# Check if nginx is running properly
+systemctl status nginx
 
-## Step 12: Monitor the Deployment
+# Test backend access directly to ensure APIs are exposed properly
+curl http://localhost:3000/api/health
+curl http://localhost:4000/health
 
-```bash
-# Check application logs
-docker compose logs -f
-
-# Check individual services
-docker compose logs -f craft-nest
-docker compose logs -f craft-go
-docker compose logs -f craft-web
-docker compose logs -f ollama
-
-# Monitor the server
+# View resource usage
 htop
 ```
 
-## Step 13: Set Up Automatic Updates and Maintenance
+## Troubleshooting Backend API Exposure Issues
 
-```bash
-# Create a system update script
-cat > /opt/update-system.sh << EOL
-#!/bin/bash
-# Update system packages
-dnf update -y
+If your backend APIs are not properly exposed in production mode, check the following:
 
-# Restart services if needed
-systemctl restart nginx
-EOL
+### 1. Verify Backend Binding:
 
-# Make it executable
-chmod +x /opt/update-system.sh
+For NestJS backend, check main.ts:
 
-# Create a cron job for weekly updates
-(crontab -l 2>/dev/null; echo "0 2 * * 0 /opt/update-system.sh >> /var/log/system-update.log 2>&1") | crontab -
-
-# Create a backup script (customize as needed)
-cat > /opt/backup-craft-fusion.sh << EOL
-#!/bin/bash
-# Backup the Ollama models and application data
-DATE=\$(date +%Y-%m-%d)
-tar -czf /opt/backups/craft-fusion-\$DATE.tar.gz -C /opt/craft-fusion .
-EOL
-
-# Make it executable
-chmod +x /opt/backup-craft-fusion.sh
-
-# Create a cron job for daily backups
-mkdir -p /opt/backups
-(crontab -l 2>/dev/null; echo "0 1 * * * /opt/backup-craft-fusion.sh >> /var/log/backup.log 2>&1") | crontab -
+```typescript
+// In apps/craft-nest/src/main.ts, ensure proper host binding:
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api');
+  app.enableCors();
+  
+  // Most important part: Bind to 0.0.0.0, not localhost or 127.0.0.1
+  const port = process.env.PORT || 3000;
+  await app.listen(port, '0.0.0.0');
+  console.log(`Application is running on: http://localhost:${port}/api`);
+}
 ```
 
-## Step 14: Set Up Domain and DNS (Optional)
+For Go backend, check your main.go:
+
+```go
+// In apps/craft-go/main.go, ensure the server listens on all interfaces:
+func main() {
+  // ...
+  r := setupRouter()
+  port := os.Getenv("PORT")
+  if port == "" {
+    port = "4000"
+  }
+  r.Run("0.0.0.0:" + port) // Use 0.0.0.0 instead of localhost
+}
+```
+
+### 2. Check Network Accessibility:
+
+```bash
+# Check if backends are accessible from other machines
+# Substitute your-droplet-ip with your actual IP
+curl http://your-droplet-ip:3000/api/health
+curl http://your-droplet-ip:4000/health
+
+# Check if ports are actually listening on all interfaces (not just localhost)
+sudo ss -tulpn | grep -E ':(3000|4000)'
+# Should show 0.0.0.0:3000 and 0.0.0.0:4000, not 127.0.0.1:3000
+```
+
+### 3. Verify Nginx Configuration:
+
+```bash
+# Test Nginx configuration
+nginx -t
+
+# Check Nginx error logs
+tail -f /var/log/nginx/error.log
+
+# Test proxy pass connections
+curl -v http://localhost/api/health
+curl -v http://localhost/api-go/health
+```
+
+### 4. Environment Variables:
+
+For more persistent environment configuration, add these to your .env file:
+
+```bash
+echo "PORT=3000" >> /opt/craft-fusion/.env
+echo "HOST=0.0.0.0" >> /opt/craft-fusion/.env
+echo "EXPOSE_API=true" >> /opt/craft-fusion/.env
+```
+
+## Step 14: Set Up Automatic Updates
+
+Create a script to pull updates and redeploy:
+
+```bash
+cat > /opt/craft-fusion/update.sh << EOL
+#!/bin/bash
+set -e
+
+echo "Starting Craft Fusion update at \$(date)"
+cd /opt/craft-fusion
+
+echo "Pulling latest code from git repository"
+git pull
+
+echo "Installing dependencies"
+npm ci
+
+echo "Building all applications"
+npx nx run-many --target=build --all --prod
+
+echo "Building Go application"
+cd apps/craft-go
+go build -o ../../dist/apps/craft-go/main .
+cd ../..
+
+echo "Restarting backend services"
+pm2 restart all
+
+echo "Update completed successfully at \$(date)"
+EOL
+
+chmod +x /opt/craft-fusion/update.sh
+
+# Set up a cron job for automatic updates (weekly at 2 AM on Sunday)
+(crontab -l 2>/dev/null; echo "0 2 * * 0 /opt/craft-fusion/update.sh >> /var/log/craft-fusion-update.log 2>&1") | crontab -
+```
+
+## Step 15: Monitoring and Management
+
+```bash
+# View PM2 logs in real time
+pm2 logs
+
+# Monitor specific application
+pm2 logs craft-nest
+pm2 logs craft-go
+
+# View resource usage
+htop
+
+# Restart a specific service
+pm2 restart craft-nest
+
+# View Nginx access logs
+tail -f /var/log/nginx/access.log
+
+# View system logs for systemd services
+journalctl -u nginx -f
+```
+
+## Step 16: Backup Strategy
+
+```bash
+# Create backup script
+cat > /opt/craft-fusion/backup.sh << EOL
+#!/bin/bash
+BACKUP_DIR="/opt/craft-fusion-backups"
+TIMESTAMP=\$(date +"%Y%m%d-%H%M%S")
+
+# Create backup directory if it doesn't exist
+mkdir -p \$BACKUP_DIR
+
+# Backup application code and built files
+tar -czf \$BACKUP_DIR/craft-fusion-code-\$TIMESTAMP.tar.gz -C /opt/craft-fusion .
+
+# Backup configuration files
+mkdir -p \$BACKUP_DIR/configs-\$TIMESTAMP
+cp /etc/nginx/conf.d/craft-fusion.conf \$BACKUP_DIR/configs-\$TIMESTAMP/
+cp /opt/craft-fusion/ecosystem.config.js \$BACKUP_DIR/configs-\$TIMESTAMP/
+cp /opt/craft-fusion/.env \$BACKUP_DIR/configs-\$TIMESTAMP/
+
+# Maintain only the 10 most recent backups
+ls -tp \$BACKUP_DIR/craft-fusion-code-* | grep -v '/$' | tail -n +11 | xargs -I {} rm -- {}
+ls -tp \$BACKUP_DIR/ | grep configs | tail -n +11 | xargs -I {} rm -rf -- \$BACKUP_DIR/{}
+
+echo "Backup completed at \$(date)"
+EOL
+
+chmod +x /opt/craft-fusion/backup.sh
+
+# Set up daily backup at 1 AM
+(crontab -l 2>/dev/null; echo "0 1 * * * /opt/craft-fusion/backup.sh >> /var/log/craft-fusion-backup.log 2>&1") | crontab -
+```
+
+## Step 17: Domain and DNS Setup (Optional)
 
 1. Go to your domain registrar
 2. Point your domain to Digital Ocean's nameservers

@@ -13,6 +13,8 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { AuthorizationModule } from './authorization/authorization.module';
 import { AuditingModule } from './auditing/auditing.module';
 import { LoggingModule } from './logging/logging.module';
+import { YahooModule } from './financial/yahoo/yahoo.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -29,7 +31,9 @@ import { LoggingModule } from './logging/logging.module';
     AuthenticationModule,
     AuthorizationModule,
     AuditingModule,
-    LoggingModule
+    LoggingModule,
+    YahooModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

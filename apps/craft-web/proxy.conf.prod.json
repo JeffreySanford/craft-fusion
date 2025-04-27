@@ -16,5 +16,11 @@
     "pathRewrite": {
       "^/api-go": "/api-go"
     }
+  },
+  "/socket.io": {
+    "target": "https://jeffreysanford.us",
+    "secure": true,
+    "ws": true,
+    "changeOrigin": true
   }
 }

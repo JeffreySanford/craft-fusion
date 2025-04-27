@@ -1,26 +1,21 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "esModuleInterop": true,
-    "target": "ES2022",
     "module": "commonjs",
-    "baseUrl": "./",
-    "paths": {
-      "@craft-nest/*": ["src/*"]
-    },
-    "outDir": "../../dist/out-tsc",
-    "types": ["node"],
-    "rootDir": "../../apps/craft-nest",
-    "sourceMap": true,
+    "declaration": true,
+    "removeComments": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "../../dist/apps/craft-nest",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "typeRoots": ["../../node_modules/@types"],
+    "types": ["node"]
   },
-  "include": [
-    "**/*.ts",
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts",
-    "src/**/*.d.ts",
-    "src/ecosystem.config.js"
-  ],
-  "exclude": ["**/*.spec.ts", "node_modules"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }
