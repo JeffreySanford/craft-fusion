@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response, NextFunction } from 'express';
+import { environment } from './environments/environment';
 
 // Type guard to safely handle errors
 function isError(error: unknown): error is Error {
@@ -21,21 +22,27 @@ async function bootstrap() {
   const NODE_ENV = process.env.NODE_ENV || 'development';
   const isProduction = NODE_ENV === 'production';
   
-  if (isProduction) {
-    const keyPath = process.env.SSL_KEY_PATH;
-    const certPath = process.env.SSL_CERT_PATH;
+  if (isProduction && environment.useHttps) {
+    const keyPath = process.env.SSL_KEY_PATH || environment.sslKeyPath;
+    const certPath = process.env.SSL_CERT_PATH || environment.sslCertPath;
     
     if (keyPath && certPath) {
       try {
-        httpsOptions = {
-          key: fs.readFileSync(keyPath),
-          cert: fs.readFileSync(certPath),
-        };
+        // Check if files exist before trying to read them
+        if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+          httpsOptions = {
+            key: fs.readFileSync(keyPath),
+            cert: fs.readFileSync(certPath),
+          };
+          Logger.log('SSL certificates loaded successfully');
+        } else {
+          Logger.warn(`SSL files not found at paths: ${keyPath}, ${certPath}`);
+        }
       } catch (error: unknown) {
-        Logger.error('Error reading SSL files, running without HTTPS', isError(error) ? error : String(error));
+        Logger.warn('Error reading SSL files, running without HTTPS', isError(error) ? error.stack : String(error));
       }
     } else {
-      Logger.error('SSL files not found, running without HTTPS');
+      Logger.warn('SSL file paths not configured, running without HTTPS');
     }
   }
 

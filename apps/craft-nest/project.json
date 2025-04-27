@@ -29,19 +29,48 @@
         "main": "apps/craft-nest/src/main.ts",
         "tsConfig": "apps/craft-nest/tsconfig.app.json",
         "assets": ["apps/craft-nest/src/assets"],
+        "generatePackageJson": true,
         "fileReplacements": [
           {
             "replace": "apps/craft-nest/src/environments/environment.ts",
-            "with": "apps/craft-nest/src/environments/environment.prod.ts"
+            "with": "apps/craft-nest/src/environments/environment.ts"
           }
         ]
       },
       "configurations": {
+        "development": {
+          "optimization": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/craft-nest/src/environments/environment.ts",
+              "with": "apps/craft-nest/src/environments/environment.ts"
+            }
+          ]
+        },
         "production": {
           "optimization": true,
           "extractLicenses": true,
-          "inspect": false
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/craft-nest/src/environments/environment.ts",
+              "with": "apps/craft-nest/src/environments/environment.prod.ts"
+            }
+          ]
         }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["apps/craft-nest/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/craft-nest"],
+      "options": {
+        "jestConfig": "apps/craft-nest/jest.config.ts"
       }
     }
   }

@@ -13,6 +13,7 @@ const config = [
       '@angular-eslint': require('@angular-eslint/eslint-plugin'),
       '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
       'import': require('eslint-plugin-import'),
+      'nestjs': require('eslint-plugin-nestjs'),
     },
     rules: {
       ...require('eslint:recommended').rules,
@@ -32,6 +33,21 @@ const config = [
     },
     overrides: [],
   },
+  // Add NestJS-specific configuration
+  {
+    files: ['apps/craft-nest/**/*.ts'],
+    plugins: {
+      'nestjs': require('eslint-plugin-nestjs'),
+    },
+    extends: [
+      'plugin:nestjs/recommended',
+    ],
+    rules: {
+      'nestjs/use-validation-pipe': 'error',
+      'nestjs/use-authentication-guard': 'error',
+      'nestjs/controller-methods-should-be-public': 'error',
+    }
+  }
 ];
 
 module.exports = config;

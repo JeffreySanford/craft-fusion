@@ -1,9 +1,13 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://localhost:3000',
-  host: 'localhost',
-  port: 3000,
-  alphaVantageApiKey: '3EP39QPLULHFVD7Y',
-  YAHOO_FINANCE_URL: 'https://yfapi.net',
-  YAHOO_FINANCE_API_KEY: 'uANiNS5imM7YUDOxZNpu3qrmLEYkoqu2r6OzqCW8',
+  apiUrl: 'http://localhost:3000/api',
+  socketUrl: 'http://localhost:3000',
+  yahooFinanceUrl: 'https://yfapi.net',
+  sslKeyPath: './apps/craft-nest/src/cert/server.key',
+  sslCertPath: './apps/craft-nest/src/cert/server.cert',
+  nestPort: 3000,
+  useHttps: false,
+  // Add missing properties
+  alphaVantageApiKey: 'demo', // Default to demo key for development
+  host: 'localhost'
 };

@@ -1,41 +1,43 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { RecordsModule } from './records/records.module';
-import { RecipesModule } from './recipes/recipes.module';
-import { OpenSkyModule } from './openskies/opensky.module';
-import { AlphaVantageModule } from './financial/alpha-vantage/alpha-vantage.module';
-import { FileModule } from './documents/file.module';
-import { UserModule } from './user/user.module';
-import { AuthenticationModule } from './authentication/authentication.module';
-import { AuthorizationModule } from './authorization/authorization.module';
-import { AuditingModule } from './auditing/auditing.module';
-import { LoggingModule } from './logging/logging.module';
-import { YahooModule } from './financial/yahoo/yahoo.module';
-import { HealthModule } from './health/health.module';
+import * as path from 'path';
+import * as fs from 'fs';
+
+// Import your controllers and services here
+// import { AppController } from './app.controller';
+// import { AppService } from './app.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['.env.local', '.env'],
     }),
-    UsersModule,
-    RecordsModule,
-    RecipesModule,
-    OpenSkyModule,
-    AlphaVantageModule,
-    FileModule,
-    UserModule,
-    AuthenticationModule,
-    AuthorizationModule,
-    AuditingModule,
-    LoggingModule,
-    YahooModule,
-    HealthModule,
+    // Add other modules here
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [
+    // AppController,
+    // Add other controllers here
+  ],
+  providers: [
+    // AppService,
+    // Add other services here
+  ],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    // Ensure storage directories exist
+    const storagePath = path.resolve(process.cwd(), 'apps/craft-nest/storage');
+    const documentsPath = path.join(storagePath, 'documents', 'book');
+    
+    // Create directories if they don't exist
+    if (!fs.existsSync(documentsPath)) {
+      try {
+        fs.mkdirSync(documentsPath, { recursive: true });
+        console.log('Storage directories created successfully');
+      } catch (error) {
+        console.error('Failed to create storage directories:', error);
+      }
+    }
+  }
+}
