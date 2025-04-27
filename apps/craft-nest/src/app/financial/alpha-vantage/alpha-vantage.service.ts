@@ -1,98 +1,76 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { Observable, throwError, forkJoin, interval } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
-import { SocketGateway } from '../../socket/socket.gateway';
+import { Observable, catchError, map, tap } from 'rxjs';
+import { SocketService } from '../../socket/socket.service';
 
 @Injectable()
 export class AlphaVantageService {
-  private readonly apiKey: string;
-  private readonly baseUrl: string = 'https://www.alphavantage.co/query';
-  private readonly refreshInterval = 60000; // 1 minute refresh rate for socket updates
+  private readonly apiUrl = 'https://www.alphavantage.co/query';
+  private readonly apiKey = process.env.ALPHA_VANTAGE_API_KEY || 'demo';
 
   constructor(
-    private readonly httpService: HttpService,
-    private readonly socketGateway: SocketGateway
-  ) {
-    this.apiKey = environment.alphaVantageApiKey || 'demo'; // Add fallback to demo key
-    this.initializeFinancialDataStream();
-  }
+    private httpService: HttpService, 
+    private socketService: SocketService
+  ) {}
 
+  /**
+   * Get stock data for a specific symbol
+   */
   getStockData(symbol: string): Observable<any> {
-    const url = `${this.baseUrl}?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${this.apiKey}`;
+    const url = `${this.apiUrl}?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${this.apiKey}`;
 
     return this.httpService.get(url).pipe(
       map(response => response.data),
       tap(data => {
-        // Emit the fresh data via socket when received
-        this.socketGateway.server.emit('financial:stock-update', { 
-          symbol,
-          data,
-          timestamp: Date.now()
-        });
+        // After getting data, emit to all connected clients via the SocketService
+        this.socketService.emitToAll('alpha-vantage:stock-update', { symbol, data });
       }),
       catchError(error => {
-        console.error('Error fetching stock data:', error);
-        return throwError(() => new Error(`Server-side error: ${error.response?.status} ${error.response?.statusText}`));
+        throw `Error fetching stock data: ${error.message}`;
       })
     );
   }
 
-  getMultipleStocksData(symbols: string[]): Observable<any[]> {
-    const observables = symbols.map(symbol => this.getStockData(symbol));
-    return forkJoin(observables);
-  }
+  /**
+   * Get forex data for a specific currency pair
+   */
+  getForexData(fromCurrency: string, toCurrency: string): Observable<any> {
+    const url = `${this.apiUrl}?function=CURRENCY_EXCHANGE_RATE&from_currency=${fromCurrency}&to_currency=${toCurrency}&apikey=${this.apiKey}`;
 
-  getCryptoData(symbol: string): Observable<any> {
-    const url = `${this.baseUrl}/crypto/candle?symbol=${symbol}&resolution=D&from=1622505600&to=1625097600&token=${this.apiKey}`;
     return this.httpService.get(url).pipe(
       map(response => response.data),
       tap(data => {
-        // Emit the crypto data via socket
-        this.socketGateway.server.emit('financial:crypto-update', {
-          symbol,
-          data,
-          timestamp: Date.now()
-        });
+        // Emit forex update to clients
+        this.socketService.emitToAll('alpha-vantage:forex-update', { fromCurrency, toCurrency, data });
+      }),
+      catchError(error => {
+        throw `Error fetching forex data: ${error.message}`;
       })
     );
   }
 
   /**
-   * Initialize socket-driven metrics for financial data
-   * Periodically fetches data and emits via socket
+   * Get cryptocurrency data for a specific symbol
    */
-  private initializeFinancialDataStream(): void {
-    // List of default symbols to monitor
-    const defaultSymbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN'];
-    
-    // Set up periodic polling and broadcasting via socket
-    interval(this.refreshInterval).pipe(
-      switchMap(() => this.getMultipleStocksData(defaultSymbols)),
+  getCryptoData(symbol: string, market: string = 'USD'): Observable<any> {
+    const url = `${this.apiUrl}?function=DIGITAL_CURRENCY_DAILY&symbol=${symbol}&market=${market}&apikey=${this.apiKey}`;
+
+    return this.httpService.get(url).pipe(
+      map(response => response.data),
+      tap(data => {
+        // Emit crypto update to clients
+        this.socketService.emitToAll('alpha-vantage:crypto-update', { symbol, market, data });
+      }),
       catchError(error => {
-        console.error('Error in financial data stream:', error);
-        return interval(this.refreshInterval * 2); // Retry with longer interval on error
+        throw `Error fetching crypto data: ${error.message}`;
       })
-    ).subscribe({
-      next: (data) => {
-        // Broadcast financial metrics to all connected clients
-        this.socketGateway.server.emit('financial:metrics-update', {
-          data,
-          timestamp: Date.now()
-        });
-      },
-      error: (err) => console.error('Financial data stream error:', err)
-    });
+    );
   }
 
   /**
-   * Provides a live resource that combines initial REST data with WebSocket updates
-   * @param symbol Stock symbol to monitor
-   * @returns Observable that emits both initial data and live updates
+   * Emit stock update to all connected clients
    */
-  getLiveStockData(symbol: string): Observable<any> {
-    // Initial fetch via REST API, socket updates handled client-side
-    return this.getStockData(symbol);
+  emitStockUpdate(symbol: string, data: any): void {
+    this.socketService.emitToAll('alpha-vantage:update', { symbol, data });
   }
 }

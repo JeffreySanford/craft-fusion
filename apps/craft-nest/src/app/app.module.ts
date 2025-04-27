@@ -1,43 +1,23 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import * as path from 'path';
-import * as fs from 'fs';
-
-// Import your controllers and services here
-// import { AppController } from './app.controller';
-// import { AppService } from './app.service';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { UserModule } from './user/user.module';
+import { FileModule } from './documents/file.module';
+import { SocketGatewayModule } from './socket/socket.module';
+import { AuthModule } from './auth/auth.module';
+import { UserStateModule } from './user-state/user-state.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: ['.env.local', '.env'],
-    }),
-    // Add other modules here
+    ConfigModule.forRoot(),
+    FileModule,  // Add FileModule import to make FileService available
+    UserModule,
+    SocketGatewayModule,
+    AuthModule,
+    UserStateModule
   ],
-  controllers: [
-    // AppController,
-    // Add other controllers here
-  ],
-  providers: [
-    // AppService,
-    // Add other services here
-  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
-export class AppModule {
-  constructor() {
-    // Ensure storage directories exist
-    const storagePath = path.resolve(process.cwd(), 'apps/craft-nest/storage');
-    const documentsPath = path.join(storagePath, 'documents', 'book');
-    
-    // Create directories if they don't exist
-    if (!fs.existsSync(documentsPath)) {
-      try {
-        fs.mkdirSync(documentsPath, { recursive: true });
-        console.log('Storage directories created successfully');
-      } catch (error) {
-        console.error('Failed to create storage directories:', error);
-      }
-    }
-  }
-}
+export class AppModule {}

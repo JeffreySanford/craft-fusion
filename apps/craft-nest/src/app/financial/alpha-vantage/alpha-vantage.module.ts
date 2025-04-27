@@ -2,14 +2,14 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { AlphaVantageController } from './alpha-vantage.controller';
 import { AlphaVantageService } from './alpha-vantage.service';
-import { SocketModule } from '../../socket/socket.module';
+import { SocketGatewayModule } from '../../socket/socket.module'; // Changed from SocketModule to SocketGatewayModule
 
 @Module({
   imports: [
     HttpModule,
-    SocketModule
+    SocketGatewayModule  // This imports the correct module
   ],
   controllers: [AlphaVantageController],
   providers: [AlphaVantageService],
 })
-export class AlphaVantageModule{}
+export class AlphaVantageModule {}

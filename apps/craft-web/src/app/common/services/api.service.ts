@@ -5,7 +5,7 @@ import { Observable, tap, catchError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { environment as production } from '../../../environments/environment.prod';
 import { LoggerService } from './logger.service';
-import { User } from './user-state.service';
+import { User } from './session.service'; // Import User from session.service instead
 
 /**
  * API Service for interacting with backend endpoints

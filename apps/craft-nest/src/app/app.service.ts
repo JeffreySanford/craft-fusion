@@ -3,6 +3,6 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class AppService {
   getHello(): string {
-    return 'Hello from Craft Nest API!';
+    return 'Welcome to Craft Fusion API!';
   }
 }

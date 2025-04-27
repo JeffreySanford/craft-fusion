@@ -11,5 +11,16 @@
     "src/**/*.ts",
     "src/main.ts"
   ],
-  "exclude": ["tmp"]
+  "exclude": ["tmp"],
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "strictInjectionParameters": true,
+    "strictInputTypes": true,
+    "strictNullInputTypes": true,
+    "strictAttributeTypes": true,
+    "strictOutputEventTypes": true,
+    "strictDomLocalRefTypes": true,
+    "strictOutputTypeChecks": true,
+    "strictLiteralTypes": true
+  }
 }

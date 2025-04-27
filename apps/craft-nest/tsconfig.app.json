@@ -14,6 +14,17 @@
     "skipLibCheck": true,
     "strict": true
   },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "strictInjectionParameters": true,
+    "strictInputTypes": true,
+    "strictNullInputTypes": true,
+    "strictAttributeTypes": true,
+    "strictOutputEventTypes": true,
+    "strictDomLocalRefTypes": true,
+    "strictOutputTypeChecks": true,
+    "strictLiteralTypes": true
+  },
   "files": ["src/main.ts"],
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist", "**/*.spec.ts"]

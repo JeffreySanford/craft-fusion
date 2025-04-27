@@ -81,10 +81,13 @@ export class AuthenticationService {
     this.initializeAuthentication();
   }
 
-  get currentUser$(): Observable<User> {
-    return this.currentUserSubject.asObservable();
+  /**
+   * Gets an observable that emits the current authentication status
+   */
+  get isAuthenticated$(): Observable<boolean> {
+    return this.isAuthenticated.asObservable();
   }
-
+  
   get isAdmin$(): Observable<boolean> {
     return this.isAdminSubject.asObservable();
   }

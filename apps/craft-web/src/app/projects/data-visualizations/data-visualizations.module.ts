@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
 import { DataVisualizationsComponent } from './data-visualizations.component';
 import { BarComponent } from './bar/bar.component';
 import { LineComponent } from './line/line.component';
@@ -16,17 +15,18 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list'; // Add this for mat-list-item
+import { MatListModule } from '@angular/material/list';
 import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { AnimatedDirectivesModule } from '../../animated-directives.module';
-import { MapboxService } from '../../common/services/mapbox.service'; // Update import path
+import { MapboxService } from '../../common/services/mapbox.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChartLayoutService } from './services/chart-layout.service';
 import { TileLimitDialogComponent } from './dialogs/tile-limit-dialog.component';
 import { FinanceModule } from './financial/finance.module';
-import { MatGridListModule } from '@angular/material/grid-list'; // Add MatGridListModule for grid layouts
+import { MatGridListModule } from '@angular/material/grid-list';
+import { RouterModule, Routes } from '@angular/router';
 
 // Define routes for the data visualizations module
 const dataVisualizationsRoutes: Routes = [
@@ -50,7 +50,7 @@ const dataVisualizationsRoutes: Routes = [
 
 @NgModule({
   declarations: [
-    DataVisualizationsComponent, 
+    DataVisualizationsComponent,
     BarComponent, 
     LineComponent,
     FireAlertComponent, 
@@ -58,7 +58,7 @@ const dataVisualizationsRoutes: Routes = [
   ],
   imports: [
     CommonModule,
-    RouterModule.forChild(dataVisualizationsRoutes), // Add RouterModule with routes
+    RouterModule.forChild(dataVisualizationsRoutes),
     MaterialModule,
     DragDropModule,
     MatDialogModule,
@@ -67,24 +67,24 @@ const dataVisualizationsRoutes: Routes = [
     MatButtonToggleModule,
     MatSliderModule,
     MatIconModule,
-    MatListModule, // Add this for mat-list components
+    MatListModule,
     FormsModule,
     MatTabsModule,
     MatCardModule,
-    MatGridListModule, // Add MatGridListModule for grid layouts
+    MatGridListModule,
     AnimatedDirectivesModule,
     MatTooltipModule,
     FinanceModule
   ],
   exports: [
     DataVisualizationsComponent,
-    RouterModule // Export RouterModule
+    RouterModule
   ],
   providers: [
     AlphaVantageService, 
     FlightRadarService, 
     MapboxService,
-    ChartLayoutService // Now provided from the local module
+    ChartLayoutService
   ],
 })
-export class DataVisualizationsModule {}
+export class DataVisualizationsModule { }

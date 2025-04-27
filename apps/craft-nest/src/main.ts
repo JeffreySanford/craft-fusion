@@ -1,5 +1,4 @@
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import { Logger } from '@nestjs/common';
 import helmet from 'helmet';
@@ -17,6 +16,8 @@ function isError(error: unknown): error is Error {
 }
 
 async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api'); // Add this line to ensure all routes have /api prefix
   // Define HTTPS options before creating the app
   let httpsOptions;
   const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -47,14 +48,6 @@ async function bootstrap() {
   }
 
   // Create app with optimized settings
-  const app = await NestFactory.create(AppModule, { 
-    httpsOptions,
-    bodyParser: true,
-    cors: true,
-    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
-    bufferLogs: true,
-  });
-  
   const configService = app.get(ConfigService);
   
   const HOST = isProduction ? 'jeffreysanford.us' : 'localhost';
@@ -68,9 +61,6 @@ async function bootstrap() {
   
   Logger.log(`Starting server in ${NODE_ENV} mode with ${serverTimeout}ms timeout`);
   Logger.log(`Host: ${HOST}, Port: ${PORT}`);
-
-  // Set global prefix for all routes
-  app.setGlobalPrefix('api');
 
   // Configure CORS
   app.enableCors({
@@ -183,16 +173,6 @@ async function bootstrap() {
       Logger.error(`Yahoo handler error: ${isError(error) ? error.message : String(error)}`);
     }
   });
-
-  // Swagger setup
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('API Documentation')
-    .setDescription('API description')
-    .setVersion('1.0')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/docs', app, document);
 
   // Start server with error handling
   try {

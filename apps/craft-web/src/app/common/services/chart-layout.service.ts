@@ -114,7 +114,6 @@ export class ChartLayoutService {
         return `${baseClass} bar-chart-content`;
       case 'app-finance-chart':
         return `${baseClass} finance-chart-content`;
-      case 'app-quantum-fisher-tile':
       case 'app-fire-alert':
         return `${baseClass} scrollable-chart-content`;
       default:

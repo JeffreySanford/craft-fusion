@@ -237,6 +237,41 @@ The table component currently uses a toggle between client-side and server-side 
 - Would require state synchronization between connected clients
 - Most beneficial for collaborative scenarios where multiple users work on the same data
 
+## Connection Behavior
+
+### Gateway Initialization
+
+When the NestJS application starts, the WebSocket gateways are initialized, but no active connections exist yet. You will see initialization logs like:
+
+```
+[SocketGateway] WebSocket Gateway initialized
+[YahooGateway] YahooGateway initialized
+```
+
+However, you won't see connection logs until a client connects.
+
+### Connection Events
+
+Socket connections are only established when frontend clients explicitly connect. The connection cycle looks like:
+
+1. **Backend starts**: Gateways initialize and listen for connections
+2. **Frontend connects**: Angular services create socket.io connections
+3. **Connection established**: `handleConnection()` is triggered on the server
+4. **Connection logged**: Both client and server log the successful connection
+
+### Connection Logging
+
+All WebSocket connections are logged by:
+
+1. The NestJS Logger in gateway `handleConnection()` methods
+2. Angular's LoggerService in the frontend socket service
+3. Socket.IO's admin UI (if enabled)
+
+To see active connections:
+
+- Check server logs for connection messages
+- Use the Socket.IO Admin UI at `https://admin.socket.io`
+
 ## Conclusion
 
 Socket.IO provides a robust foundation for real-time features in Craft Fusion. Services that require immediate updates or handle frequently changing data are ideal candidates for socket-based implementation.

@@ -2,20 +2,21 @@ import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { LoggerService } from './logger.service';
 
 @Injectable({ providedIn: 'root' })
 export class SocketClientService {
   private socket: Socket;
   private connectionStatus = new BehaviorSubject<boolean>(false);
 
-  constructor() {
+  constructor(private logger: LoggerService) {
     // Use the backend API server for socket connection
-    // For dev: ws://localhost:3000, for prod: use your prod backend URL
-    const socketUrl =
-      environment.production
-        ? 'https://jeffreysanford.us' // or your prod backend
-        : 'http://localhost:3000';
+    const socketUrl = environment.production
+      ? 'https://jeffreysanford.us' // or your prod backend
+      : 'http://localhost:3000';
 
+    this.logger.info('Initializing socket connection to', { socketUrl });
+    
     this.socket = io(socketUrl, {
       path: '/socket.io',
       transports: ['websocket'],
@@ -23,8 +24,25 @@ export class SocketClientService {
       withCredentials: true
     });
 
-    this.socket.on('connect', () => this.connectionStatus.next(true));
-    this.socket.on('disconnect', () => this.connectionStatus.next(false));
+    this.socket.on('connect', () => {
+      this.connectionStatus.next(true);
+      this.logger.info('Socket connected successfully', { 
+        id: this.socket.id,
+        // Extract namespace from socketUrl path if present
+        namespace: socketUrl.includes('/') && socketUrl.split('/').length > 3 ? 
+          socketUrl.split('/')[3] : 'default'
+      });
+    });
+
+    this.socket.on('connect_error', (error) => {
+      this.logger.error('Socket connection error', { error: error.message });
+      this.connectionStatus.next(false);
+    });
+
+    this.socket.on('disconnect', (reason) => {
+      this.connectionStatus.next(false);
+      this.logger.warn('Socket disconnected', { reason });
+    });
   }
 
   on<T>(event: string): Observable<T> {

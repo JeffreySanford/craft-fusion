@@ -1,100 +1,76 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { Observable, of, throwError } from 'rxjs';
+import { Injectable } from '@nestjs/common';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { mapTo } from 'rxjs/operators';
 import { FileService } from '../documents/file.service';
 
 @Injectable()
 export class UserStateService {
-  private loginDateTime: Date | null = null;
-  private visitLength: number | null = null;
-  private visitedPages: string[] = [];
+  // Use BehaviorSubjects for hot observable state
+  private userLoginTimes = new Map<string, BehaviorSubject<Date | null>>();
+  private guestLoginTimes = new Map<string, BehaviorSubject<Date | null>>();
+
+  private userVisitLengths = new Map<string, BehaviorSubject<number | null>>();
+  private guestVisitLengths = new Map<string, BehaviorSubject<number | null>>();
+
+  private userVisitedPages = new Map<string, BehaviorSubject<string[]>>();
+  private guestVisitedPages = new Map<string, BehaviorSubject<string[]>>();
 
   constructor(private fileService: FileService) {}
 
-  setLoginDateTime(dateTime: Date): Observable<void> {
-    console.log('STATE: Setting login date/time:', dateTime);
-    this.loginDateTime = dateTime;
-    return this.fileService.saveOpenedDocuments(['loginDateTime', dateTime.toISOString()]);
+  private getOrCreateSubject<T>(
+    map: Map<string, BehaviorSubject<T>>,
+    userId: string,
+    initial: T
+  ): BehaviorSubject<T> {
+    if (!map.has(userId)) {
+      map.set(userId, new BehaviorSubject<T>(initial));
+    }
+    return map.get(userId)!;
   }
 
-  getLoginDateTime(): Observable<Date | null> {
-    console.log('STATE: Getting login date/time');
-    return new Observable(observer => {
-      this.fileService.getOpenedDocuments().subscribe(docs => {
-        const loginDateTime = docs.find(doc => doc.startsWith('loginDateTime:'));
-        if (loginDateTime) {
-          this.loginDateTime = new Date(loginDateTime.split(':')[1]);
-          observer.next(this.loginDateTime);
-        } else {
-          observer.next(null);
-        }
-        observer.complete();
-      });
-    });
+  setLoginDateTime(dateTime: Date, userId: string, isGuest = false): Observable<void> {
+    const map = isGuest ? this.guestLoginTimes : this.userLoginTimes;
+    this.getOrCreateSubject(map, userId, null).next(dateTime);
+    if (!isGuest) {
+      this.fileService.saveOpenedDocuments([`loginDateTime:${userId}`, dateTime.toISOString()]).subscribe();
+    }
+    return this.getOrCreateSubject(map, userId, null).asObservable().pipe(mapTo(void 0));
   }
 
-  setVisitLength(): Observable<void> {
-    const length = Date.now() - (this.loginDateTime?.getTime() || Date.now());
-    console.log('STATE: Setting visit length:', length);
-    this.visitLength = length;
-    return this.fileService.saveOpenedDocuments(['visitLength', length.toString()]);
+  getLoginDateTime(userId: string, isGuest = false): Observable<Date | null> {
+    const map = isGuest ? this.guestLoginTimes : this.userLoginTimes;
+    return this.getOrCreateSubject(map, userId, null).asObservable();
   }
 
-  getVisitLength(): Observable<number | null> {
-    console.log('STATE: Getting visit length');
-    return new Observable(observer => {
-      this.fileService.getOpenedDocuments().subscribe(docs => {
-        const visitLength = docs.find(doc => doc.startsWith('visitLength:'));
-        if (visitLength) {
-          this.visitLength = parseInt(visitLength.split(':')[1], 10);
-          observer.next(this.visitLength);
-        } else {
-          observer.next(null);
-        }
-        observer.complete();
-      });
-    });
+  setVisitLength(length: number, userId: string, isGuest = false): Observable<void> {
+    const map = isGuest ? this.guestVisitLengths : this.userVisitLengths;
+    this.getOrCreateSubject(map, userId, null).next(length);
+    if (!isGuest) {
+      this.fileService.saveOpenedDocuments([`visitLength:${userId}`, length.toString()]).subscribe();
+    }
+    return this.getOrCreateSubject(map, userId, null).asObservable().pipe(mapTo(void 0));
   }
 
-  setVisitedPages(pages: string[]): Observable<void> {
-    console.log('STATE: Setting visited pages:', pages);
-    this.visitedPages = pages;
-    return this.fileService.saveOpenedDocuments(['visitedPages', JSON.stringify(pages)]);
+  getVisitLength(userId: string, isGuest = false): Observable<number | null> {
+    const map = isGuest ? this.guestVisitLengths : this.userVisitLengths;
+    return this.getOrCreateSubject(map, userId, null).asObservable();
   }
 
-  setVisitedPage(page: string): Observable<void> {
-    console.log('STATE: Adding visited page:', page);
-    return new Observable(observer => {
-      this.getVisitedPages().subscribe({
-        next: (pages) => {
-          if (!pages.includes(page)) {
-            this.visitedPages = [...pages, page];
-            this.fileService.saveOpenedDocuments(['visitedPages', JSON.stringify(this.visitedPages)])
-              .subscribe({
-                next: () => observer.complete(),
-                error: (error) => observer.error(error)
-              });
-          } else {
-            observer.complete();
-          }
-        },
-        error: (error) => observer.error(error)
-      });
-    });
+  setVisitedPage(page: string, userId: string, isGuest = false): Observable<void> {
+    const map = isGuest ? this.guestVisitedPages : this.userVisitedPages;
+    const subject = this.getOrCreateSubject(map, userId, []);
+    const pages = subject.value;
+    if (!pages.includes(page)) {
+      subject.next([...pages, page]);
+      if (!isGuest) {
+        this.fileService.saveOpenedDocuments([`visitedPages:${userId}`, JSON.stringify([...pages, page])]).subscribe();
+      }
+    }
+    return subject.asObservable().pipe(mapTo(void 0));
   }
 
-  getVisitedPages(): Observable<string[]> {
-    console.log('STATE: Getting visited pages');
-    return new Observable(observer => {
-      this.fileService.getOpenedDocuments().subscribe(docs => {
-        const visitedPages = docs.find(doc => doc.startsWith('visitedPages:'));
-        if (visitedPages) {
-          this.visitedPages = JSON.parse(visitedPages.split(':')[1]);
-          observer.next(this.visitedPages);
-        } else {
-          observer.next([]);
-        }
-        observer.complete();
-      });
-    });
+  getVisitedPages(userId: string, isGuest = false): Observable<string[]> {
+    const map = isGuest ? this.guestVisitedPages : this.userVisitedPages;
+    return this.getOrCreateSubject(map, userId, []).asObservable();
   }
 }

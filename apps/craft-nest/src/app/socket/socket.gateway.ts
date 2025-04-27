@@ -1,79 +1,59 @@
-import {
-  WebSocketGateway,
-  OnGatewayInit,
+import { 
+  WebSocketGateway, 
+  WebSocketServer, 
   OnGatewayConnection,
   OnGatewayDisconnect,
-  WebSocketServer,
-  SubscribeMessage,
+  OnGatewayInit,
+  SubscribeMessage 
 } from '@nestjs/websockets';
+import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { instrument } from '@socket.io/admin-ui';
-import { LoggingService } from '../logging/logging.service';
-import { SocketService } from './socket.service';
-import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from '../auth/auth.guard';
 
 @WebSocketGateway({
   cors: {
-    origin: ['https://admin.socket.io', 'http://localhost:4200'],
-    credentials: true,
+    origin: '*',
   },
 })
-@UseGuards(AuthGuard)
 export class SocketGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer() server!: Server; // Added ! to fix initialization error
-  private clientCount = 0;
-
-  constructor(
-    private logger: LoggingService,
-    private socketService: SocketService
-  ) {}
+  @WebSocketServer()
+  server!: Server; // Added ! for definite assignment assertion
+  
+  private logger = new Logger('SocketGateway');
 
   afterInit(server: Server) {
-    // Set up Socket.IO Admin UI
-    instrument(server, {
-      auth: {
-        type: 'basic',
-        username: 'admin',
-        password: '$2b$10$heqvAkYMez.Va6Et2uXInOnkCT6/uQj1brkrbyG3LpopDklcq7ZOS', // "password" hashed
-      },
-      mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-    });
-
-    // Pass server instance to socket service
-    this.socketService.setServer(this.server);
-
-    this.logger.info('WebSocket Gateway initialized', { port: process.env.PORT || 3000 });
+    this.logger.log('Socket.IO initialized');
   }
 
   handleConnection(client: Socket) {
-    this.clientCount++;
-    this.logger.info('Client connected', {
-      clientId: client.id,
-      totalClients: this.clientCount,
-    });
-
-    // Broadcast updated client count
-    this.server.emit('clientCount', { count: this.clientCount });
-    
-    // Send initial metrics to new client
-    client.emit('metrics:snapshot', this.socketService.getMetrics());
+    this.logger.log(`Client connected: ${client.id}`);
   }
 
   handleDisconnect(client: Socket) {
-    this.clientCount--;
-    this.logger.info('Client disconnected', {
-      clientId: client.id,
-      totalClients: this.clientCount,
-    });
-
-    // Broadcast updated client count
-    this.server.emit('clientCount', { count: this.clientCount });
+    this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage('ping')
-  handlePing(client: Socket): { event: string; data: any } {
-    this.logger.debug('Received ping from client', { clientId: client.id });
-    return { event: 'pong', data: { timestamp: Date.now() } };
+  @SubscribeMessage('registerGuest')
+  handleRegisterGuest(client: Socket): void {
+    const guestId = `guest-${Math.random().toString(36).substring(2, 10)}`;
+    client.emit('guestRegistered', { guestId });
+    this.logger.log(`Guest registered with ID: ${guestId}`);
+  }
+
+  @SubscribeMessage('updateLoginTime')
+  handleUpdateLoginTime(client: Socket, payload: { dateTime: string }): void {
+    this.logger.log(`Login time updated: ${payload.dateTime}`);
+    // Store in database if needed
+  }
+
+  @SubscribeMessage('updateVisitLength')
+  handleUpdateVisitLength(client: Socket, payload: { length: number }): void {
+    this.logger.log(`Visit length updated: ${payload.length}`);
+    // Store in database if needed
+  }
+
+  @SubscribeMessage('updateVisitedPage')
+  handleUpdateVisitedPage(client: Socket, payload: { page: string }): void {
+    this.logger.log(`Visited page updated: ${payload.page}`);
+    // Store in database if needed
   }
 }

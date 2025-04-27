@@ -26,7 +26,7 @@ import { UserStateInterceptor } from './common/interceptors/user-state.intercept
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
 import { AuthHttpInterceptor } from './common/interceptors/auth.interceptor';
-import { ApiService } from './common/services/api.service'; // Added import
+import { ApiService } from './common/services/api.service';
 
 @NgModule({
   declarations: [
@@ -36,6 +36,7 @@ import { ApiService } from './common/services/api.service'; // Added import
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    HttpClientModule, // Add HttpClientModule here to provide HttpClient
     RouterModule.forRoot(appRoutes),
     MaterialModule,
     FormsModule,
@@ -47,7 +48,6 @@ import { ApiService } from './common/services/api.service'; // Added import
     SpaceVideoModule,
     TableModule,
     FooterModule,
-    HttpClientModule,
     ToastrModule.forRoot({
       timeOut: 3000,
       positionClass: 'toast-bottom-center',
@@ -59,7 +59,7 @@ import { ApiService } from './common/services/api.service'; // Added import
   ],
   exports: [MaterialModule, ReactiveFormsModule],
   providers: [
-    ApiService,
+    ApiService, // Keep class-based injection
     BusyService,
     ToastrService,
     provideAnimations(),
@@ -75,12 +75,8 @@ import { ApiService } from './common/services/api.service'; // Added import
       multi: true
     },
     { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true }, // Enable AuthHttpInterceptor
-    ApiService  // Added provider for ApiService
+    { provide: 'ApiService', useClass: ApiService } // Add string token injection for UserStateService
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {
-  constructor() {
-    console.log('AppModule loaded');
-  }
-}
+export class AppModule { }

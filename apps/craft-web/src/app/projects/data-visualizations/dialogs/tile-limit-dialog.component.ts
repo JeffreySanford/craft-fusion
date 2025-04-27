@@ -54,7 +54,6 @@ export class TileLimitDialogComponent implements OnInit {
       case 'app-bar-chart': return 'bar_chart';
       case 'app-finance-chart': return 'trending_up';
       case 'app-fire-alert': return 'warning';
-      case 'app-quantum-fisher-tile': return 'science';
       default: return 'widgets';
     }
   }
