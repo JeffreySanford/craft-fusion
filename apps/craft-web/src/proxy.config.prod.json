@@ -1,0 +1,39 @@
+{
+  "/api": {
+    "target": "https://jeffreysanford.us",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "info",
+    "pathRewrite": {
+      "^/api": "/api"
+    }
+  },
+  "/api-go": {
+    "target": "https://jeffreysanford.us",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "info",
+    "pathRewrite": {
+      "^/api-go": "/api-go"
+    }
+  },
+  "/socket.io": {
+    "target": "https://jeffreysanford.us",
+    "secure": true,
+    "ws": true,
+    "changeOrigin": true
+  },
+  "/assets": {
+    "target": "https://jeffreysanford.us",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/": {
+    "target": "https://jeffreysanford.us",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/": ""
+    }
+  }
+}

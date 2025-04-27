@@ -11,6 +11,7 @@ import { AuthorizationService } from '../../common/services/authorization.servic
 import { AdminStateService } from '../../common/services/admin-state.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { ApiLoggerService } from '../../common/services/api-logger.service';
+import { SocketClientService } from '../../common/services/socket-client.service';
 
 interface PerformanceMetrics {
   memoryUsage: string;
@@ -219,9 +220,18 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     private userActivity: UserActivityService,
     private userState: UserStateService,
     private authService: AuthorizationService,
-    private apiLogger: ApiLoggerService
+    private apiLogger: ApiLoggerService,
+    private socketClient: SocketClientService
   ) {
-    this.logger.info('Admin component initialized');
+    // Subscribe to real-time metrics
+    this.socketClient.on<any>('metrics:update').subscribe(metric => {
+      // Update metrics in the dashboard
+      this.logger.info('Received real-time metric', metric);
+    });
+    // Subscribe to connection status
+    this.socketClient.isConnected$.subscribe(connected => {
+      this.logger.info('Socket connection status', { connected });
+    });
   }
 
   ngOnInit(): void {
@@ -442,7 +452,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
           const serviceInfo = this.endpointLogs[metric.serviceName];
           serviceInfo.lastContacted = new Date(metric.timestamp);
           serviceInfo.lastPing = new Date();
-          serviceInfo.hitCount++; // Increment hit counter
+          serviceInfo.hitCount++;
           
           // Track success/error counts
           if ((metric.status ?? 0) >= 200 && (metric.status ?? 0) < 400) {
@@ -2002,7 +2012,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   // Method to monitor API endpoints via logs instead of direct service tracking
   private monitorApiEndpoints(): void {
     this.apiLogsSubscription = this.apiLogger.getLogStream().subscribe(logEntry => {
-      if (!logEntry || !logEntry.request || !logEntry.request.url) return;
+      if (!logEntry) return;
       
       // Extract endpoint path from URL
       const urlObj = new URL(logEntry.request.url, window.location.origin);

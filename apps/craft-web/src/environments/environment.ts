@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000',
+  apiUrl: '/api',
   host: 'localhost',
   finnhubApiKey: 'cu8gbkpr01qt63vgue4gcu8gbkpr01qt63vgue50',
   finnHubAPI: 'https://finnhub.io/api/v1',

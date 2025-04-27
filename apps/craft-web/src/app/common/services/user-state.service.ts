@@ -6,6 +6,7 @@ import { ApiService } from './api.service';
 import { UserState as IUserState, LoginDateTimeDTO, UserState as ImportedUserState } from '../interfaces/user-state.interface';
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
+import { SocketClientService } from './socket-client.service';
 
 interface Document {
   name: string;
@@ -70,7 +71,8 @@ export class UserStateService {
   constructor(
     private api: ApiService, 
     private http: HttpClient,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private socketClient: SocketClientService // Inject socket client
   ) {
     this.logger.registerService('UserStateService');
     this.logger.info('UserStateService initialized');
@@ -80,6 +82,12 @@ export class UserStateService {
       debounceTime(this.DEBOUNCE_TIME)
     ).subscribe(length => {
       this.saveStateData('visitLength', length.toString());
+    });
+
+    // Listen for real-time updates
+    this.socketClient.on<any>('user:state:update').subscribe(state => {
+      this.logger.info('Received real-time user state update', state);
+      // Update local state as needed
     });
   }
 

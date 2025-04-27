@@ -11,7 +11,6 @@ import { FireAlertComponent } from './alert/fire-alert.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FlightRadarService } from '../../common/services/flightradar.service';
 import { AlphaVantageService } from '../../common/services/alpha-vantage.service';
-import { QuantumFisherInformationComponent } from './quantum-fisher-information/quantum-fisher-information.component';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -22,7 +21,6 @@ import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { AnimatedDirectivesModule } from '../../animated-directives.module';
-import { KatexModule } from "./quantum-fisher-information/katex/katex.module";
 import { MapboxService } from '../../common/services/mapbox.service'; // Update import path
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChartLayoutService } from './services/chart-layout.service';
@@ -35,10 +33,6 @@ const dataVisualizationsRoutes: Routes = [
   { 
     path: '', 
     component: DataVisualizationsComponent 
-  },
-  { 
-    path: 'quantum-fisher', 
-    component: QuantumFisherInformationComponent 
   },
   { 
     path: 'bar', 
@@ -60,7 +54,6 @@ const dataVisualizationsRoutes: Routes = [
     BarComponent, 
     LineComponent,
     FireAlertComponent, 
-    QuantumFisherInformationComponent,
     TileLimitDialogComponent
   ],
   imports: [
@@ -80,13 +73,11 @@ const dataVisualizationsRoutes: Routes = [
     MatCardModule,
     MatGridListModule, // Add MatGridListModule for grid layouts
     AnimatedDirectivesModule,
-    KatexModule,
     MatTooltipModule,
     FinanceModule
   ],
   exports: [
     DataVisualizationsComponent,
-    QuantumFisherInformationComponent, // Export the component so it can be used outside this module
     RouterModule // Export RouterModule
   ],
   providers: [

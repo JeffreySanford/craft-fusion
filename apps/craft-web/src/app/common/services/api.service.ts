@@ -72,6 +72,21 @@ export class ApiService {
     });
   }
 
+  private addSecurityHeaders(headers: HttpHeaders): HttpHeaders {
+    return headers
+      .set('X-Content-Type-Options', 'nosniff')
+      .set('X-Frame-Options', 'DENY')
+      .set('X-XSS-Protection', '1; mode=block');
+  }
+
+  private getTracingHeaders(): HttpHeaders {
+    let headers = this.getHeaders();
+    // Generate or propagate trace ID (simple UUID for demo)
+    const traceId = (window.crypto?.randomUUID?.() || Math.random().toString(36).slice(2));
+    headers = headers.set('X-Request-ID', traceId);
+    return this.addSecurityHeaders(headers);
+  }
+
   private getFullUrl(endpoint: string): string {
     // In development, use relative URLs so the proxy works
     if (!this.isProduction) {
@@ -94,11 +109,9 @@ export class ApiService {
   get<T>(endpoint: string, options?: any): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'GET', url);
-    
-    // Create options but don't allow overriding observe
     const httpOptions = { 
       ...options,
-      headers: this.getHeaders(), 
+      headers: this.getTracingHeaders(),
     };
     
     // Use explicit type casting for the HTTP call
@@ -124,7 +137,7 @@ export class ApiService {
 
     const httpOptions = {
       ...options,
-      headers: this.getHeaders(),
+      headers: this.getTracingHeaders(),
     };
     
     return this.http.post<R>(url, body, httpOptions).pipe(
@@ -149,7 +162,7 @@ export class ApiService {
 
     const httpOptions = {
       ...options,
-      headers: this.getHeaders(),
+      headers: this.getTracingHeaders(),
     };
     
     return this.http.put<T>(url, body, httpOptions).pipe(
@@ -174,7 +187,7 @@ export class ApiService {
 
     const httpOptions = {
       ...options,
-      headers: this.getHeaders(),
+      headers: this.getTracingHeaders(),
     };
     
     return this.http.delete<T>(url, httpOptions).pipe(

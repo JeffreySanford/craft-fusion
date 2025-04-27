@@ -12,6 +12,7 @@ import { SidebarStateService } from '../../common/services/sidebar-state.service
 import { ChartLayoutService } from './services/chart-layout.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TileLimitDialogComponent } from './dialogs/tile-limit-dialog.component';
+import { SocketClientService } from '../../common/services/socket-client.service';
 
 @Component({
   selector: 'app-data-visualizations',
@@ -76,7 +77,6 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   public allCharts: ExtendedChartData[] = [
     { name: 'Line Chart', component: 'app-line-chart', color: 'dodgerblue', data: this.lineChartData, size: 'small' },
     { name: 'Bar Chart', component: 'app-bar-chart', color: 'limegreen', data: this.barChartData, size: 'small' },
-    { name: 'Quantum Fisher Information', component: 'app-quantum-fisher-tile', color: 'mediumpurple', data: [], size: 'large' },
     { name: 'FinTech Chart', component: 'app-finance-chart', color: 'tomato', data: [], size: 'medium' },
     { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [], size: 'large' }, // Changed from 'small' to 'large'
   ];
@@ -100,7 +100,8 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     private sanitizer: DomSanitizer,
     private sidebarStateService: SidebarStateService,
     private chartLayoutService: ChartLayoutService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private socketClient: SocketClientService
   ) {
     // Register icons - this ensures Material icons are available
     this.registerIcons();
@@ -137,6 +138,13 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
         
         this.cdr.detectChanges();
       });
+
+    // Listen for real-time updates
+    this.socketClient.on<any>('yahoo:data').subscribe(data => {
+      // Update chart data in real-time
+      this.fintechChartData = data;
+      this.cdr.detectChanges();
+    });
 
     // Subscribe to sidebar state changes
     this.sidebarSubscription = this.sidebarStateService.isCollapsed$.subscribe(
@@ -257,16 +265,6 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     console.log(`Checking space - Current tile counts: ${largeCount} large, ${mediumCount} medium, ${smallCount} small`);
     console.log(`Attempting to add: ${newTile.name} (${newTile.size})`);
     
-    // Handle special case for Quantum Fisher Information
-    if (newTile.component === 'app-quantum-fisher-tile') {
-      // Always allow adding the quantum fisher tile, but clear other tiles if needed
-      if (largeCount > 0 || mediumCount > 0 || smallCount > 0) {
-        console.log('Other tiles exist, will prompt user to clear them');
-        return false; // Will trigger the dialog to remove other tiles
-      }
-      return true;
-    }
-    
     // Rule 1: Two large tiles maximum and they can't be mixed with other sizes
     if (largeCount > 0) {
       // If we already have large tiles
@@ -338,39 +336,6 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   // Add tile to the main display with improved grid positioning
   addTile(chart: ChartData): void {
     console.log('Adding tile:', chart.name, chart.size);
-    
-    // Special handling for Quantum Fisher tile
-    if (chart.component === 'app-quantum-fisher-tile') {
-      console.log('Adding Quantum Fisher tile with special handling');
-      
-      // If other tiles exist, show dialog to confirm clearing them
-      if (this.displayedCharts.length > 0) {
-        this.showNoSpaceNotification(chart as ExtendedChartData);
-        return;
-      }
-      
-      // Clone the chart to avoid reference issues
-      const chartCopy = { ...chart } as ExtendedChartData;
-      
-      // Pre-calculate the chart class
-      chartCopy.chartClass = this.chartLayoutService.calculateChartClass(chartCopy.component);
-      
-      // Apply special layout for quantum fisher tile
-      chartCopy.specialLayout = 'size-large-single';
-      
-      // Clear existing charts and add only the quantum fisher tile
-      this.displayedCharts = [chartCopy];
-      
-      this.optimizeChartLayout();
-      this.cdr.detectChanges();
-      
-      // Ensure proper rendering
-      setTimeout(() => {
-        this.resizeCharts();
-      }, 150);
-      
-      return;
-    }
     
     // Check if there's room for more tiles
     if (!this.hasRoomForMoreTiles(chart)) {
@@ -543,7 +508,6 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       case 'app-bar-chart': return 'bar_chart';
       case 'app-finance-chart': return 'trending_up';
       case 'app-fire-alert': return 'warning';
-      case 'app-quantum-fisher-tile': return 'science';
       default: return 'widgets';
     }
   }
