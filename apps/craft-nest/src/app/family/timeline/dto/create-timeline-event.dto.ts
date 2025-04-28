@@ -1,18 +1,18 @@
-import { IsNotEmpty, IsString, IsOptional, IsEnum, IsDateString } from 'class-validator';
+import { IsNotEmpty, IsString, IsDateString, IsOptional, IsEnum } from 'class-validator';
 import { TimelineEventType } from '../schemas/timeline-event.schema';
 
 export class CreateTimelineEventDto {
   @IsNotEmpty()
   @IsString()
-  title: string;
+  title: string = '';
 
   @IsNotEmpty()
   @IsString()
-  description: string;
+  description: string = '';
 
   @IsNotEmpty()
   @IsDateString()
-  date: string;
+  date: string = '';
 
   @IsOptional()
   @IsString()
@@ -22,6 +22,7 @@ export class CreateTimelineEventDto {
   @IsString()
   actionLink?: string;
 
+  @IsNotEmpty()
   @IsEnum(TimelineEventType)
-  type: TimelineEventType;
+  type: TimelineEventType = TimelineEventType.PERSONAL;
 }

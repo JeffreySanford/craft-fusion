@@ -4,13 +4,13 @@ import { Subscription, interval } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UserStateService } from './common/services/user-state.service';
-import { User } from './common/services/session.service'; // Import User from session.service instead
+import { User } from './common/services/session.service';
 import { UserActivityService } from './common/services/user-activity.service';
 import { LoggerService } from './common/services/logger.service';
 import { AdminStateService } from './common/services/admin-state.service';
-import { AuthenticationService } from './common/services/authentication.service';
 import { FooterStateService } from './common/services/footer-state.service';
 import { UserTrackingService } from './common/services/user-tracking.service';
+import { AuthService } from './common/services/auth/auth.service'; // Using existing AuthService
 
 @Component({
   selector: 'app-root',
@@ -48,7 +48,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private adminStateService: AdminStateService,
     private userActivityService: UserActivityService,
     private logger: LoggerService,
-    private authService: AuthenticationService, // Inject AuthenticationService
+    private authService: AuthService, // Changed to use existing AuthService
     private footerStateService: FooterStateService,
     private userStateService: UserStateService
   ) {
@@ -63,6 +63,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     // Temporarily set admin status here - will be replaced with auth later
     // this.adminStateService.setAdminStatus(true); // Set to true for development
 
+    // Update to use authService instead of authFacade
     this.authService.isAdmin$.subscribe(isAdmin => {
       this.adminStateService.setAdminStatus(isAdmin);
     });
@@ -204,7 +205,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (data: YourDataType) => {
         // Process data
         this.logger.info('Data loaded successfully', { count: data.length });
-      },Glimm
+      },
       error: (error: Error) => {
         // Handle error properly
         this.logger.error('Failed to load data', { error: error.message });

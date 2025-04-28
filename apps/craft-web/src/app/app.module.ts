@@ -58,8 +58,9 @@ import { AuthModule } from './common/services/auth/auth.module';
     RouterModule,
     ReactiveFormsModule,
     BookModule,
-    CommonServicesModule, // Add this
-    AuthModule,           // Add this
+    CommonServicesModule, 
+    AuthModule,
+    // Note: NotFoundModule is lazy loaded via routes and doesn't need to be imported here
   ],
   exports: [MaterialModule, ReactiveFormsModule],
   providers: [

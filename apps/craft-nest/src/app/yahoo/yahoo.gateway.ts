@@ -1,106 +1,102 @@
-import { 
-  WebSocketGateway, 
-  SubscribeMessage, 
-  MessageBody, 
-  WebSocketServer,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-  ConnectedSocket
-} from '@nestjs/websockets';
+import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { YahooService, StockData } from './yahoo.service'; // Import StockData type from YahooService
-import { Logger } from '@nestjs/common';
-
-// We can still keep these internal interfaces if needed
-interface StockDataPoint {
-  date: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-}
+import { LoggingService } from '../logging/logging.service';
+import { YahooService } from './yahoo.service';
 
 @WebSocketGateway({
+  namespace: 'yahoo',
   cors: {
-    origin: ['http://localhost:4200', 'https://jeffreysanford.us'],
+    origin: '*',
     credentials: true
-  },
-  namespace: 'yahoo'
+  }
 })
-export class YahooGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class YahooGateway {
   @WebSocketServer() server!: Server;
-  private readonly logger = new Logger(YahooGateway.name);
-  private readonly activeClients = new Map<string, Socket>();
-  private readonly activeSubscriptions = new Map<string, { symbols: string[], interval: string, range: string }>();
+  private clientSubscriptions = new Map<string, Set<string>>();
 
-  constructor(private readonly yahooService: YahooService) {
-    this.logger.log('YahooGateway initialized');
+  constructor(
+    private yahooService: YahooService,
+    private logger: LoggingService
+  ) {}
+
+  handleConnection(client: Socket): void {
+    this.logger.info('Client connected to Yahoo gateway', { clientId: client.id });
+    this.clientSubscriptions.set(client.id, new Set<string>());
   }
 
-  handleConnection(client: Socket) {
-    this.logger.log(`Client connected: ${client.id}`);
-    this.activeClients.set(client.id, client);
-  }
-
-  handleDisconnect(client: Socket) {
-    this.logger.log(`Client disconnected: ${client.id}`);
-    this.activeClients.delete(client.id);
-    this.activeSubscriptions.delete(client.id);
-  }
-
-  @SubscribeMessage('yahoo:subscribe')
-  handleSubscribe(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { symbols: string[], interval: string, range: string }
-  ) {
-    const { symbols, interval, range } = payload;
-    this.logger.log(`Client ${client.id} subscribed to Yahoo data: ${symbols.join(',')}`);
-    
-    this.yahooService.getHistoricalData(symbols, interval, range).subscribe({
-      next: (value: StockData[]) => {
-        client.emit('yahoo:data', { data: value });
-      },
-      error: (error: Error) => {
-        this.logger.error(`Error fetching Yahoo data: ${error.message}`);
-        client.emit('yahoo:error', { message: 'Failed to fetch financial data' });
-      }
+  handleDisconnect(client: Socket): void {
+    this.logger.info('Client disconnected from Yahoo gateway', { 
+      clientId: client.id,
+      subscribedSymbols: Array.from(this.clientSubscriptions.get(client.id) || [])
     });
+    this.clientSubscriptions.delete(client.id);
+  }
+
+  @SubscribeMessage('subscribeToSymbols')
+  async handleSubscribeToSymbols(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { symbols: string[] }
+  ): Promise<void> {
+    const { symbols } = payload;
     
-    return { event: 'yahoo:subscribe', data: { subscribed: true, symbols } };
-  }
+    if (!symbols || !Array.isArray(symbols)) {
+      this.logger.warn('Invalid subscription request', { clientId: client.id, payload });
+      return;
+    }
 
-  @SubscribeMessage('yahoo:unsubscribe')
-  handleUnsubscribe(@ConnectedSocket() client: Socket) {
-    this.logger.log(`Client ${client.id} unsubscribed from Yahoo data`);
-    this.activeSubscriptions.delete(client.id);
-    return { event: 'yahoo:unsubscribe', data: { unsubscribed: true } };
-  }
+    const clientSubs = this.clientSubscriptions.get(client.id) || new Set<string>();
+    
+    symbols.forEach(symbol => clientSubs.add(symbol));
+    this.clientSubscriptions.set(client.id, clientSubs);
+    
+    this.logger.info('Client subscribed to symbols', { 
+      clientId: client.id,
+      symbols,
+      totalSubscriptions: clientSubs.size
+    });
 
-  // Method to broadcast updates to all subscribed clients
-  broadcastUpdates(symbols: string[]) {
-    this.activeSubscriptions.forEach((subscription, clientId) => {
-      // Only send updates for symbols the client is subscribed to
-      const relevantSymbols = subscription.symbols.filter(s => symbols.includes(s));
+    try {
+      const startTime = Date.now();
+      const data = await this.yahooService.getHistoricalData(symbols);
+      const duration = Date.now() - startTime;
+      const dataPointCount = Array.isArray(data) ? data.length : 0;
       
-      if (relevantSymbols.length > 0) {
-        const client = this.activeClients.get(clientId);
-        if (client) {
-          this.yahooService.getHistoricalData(
-            relevantSymbols, 
-            subscription.interval, 
-            subscription.range
-          ).subscribe({
-            next: (value: StockData[]) => {
-              client.emit('yahoo:data', { data: value });
-            },
-            error: (error: unknown) => {
-              const errorMessage = error instanceof Error ? error.message : String(error);
-              this.logger.error(`Error sending update to client ${clientId}: ${errorMessage}`);
-            }
-          });
-        }
-      }
+      this.logger.debug('Sending historical data to client', {
+        clientId: client.id,
+        symbols,
+        dataPoints: dataPointCount,
+        duration: `${duration}ms`
+      });
+      
+      client.emit('historicalData', { data });
+    } catch (error) {
+      this.logger.error('Failed to fetch historical data', {
+        error,
+        clientId: client.id,
+        symbols
+      });
+      client.emit('error', { message: 'Failed to fetch historical data' });
+    }
+  }
+
+  @SubscribeMessage('unsubscribeFromSymbols')
+  handleUnsubscribeFromSymbols(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { symbols: string[] }
+  ): void {
+    const { symbols } = payload;
+    const clientSubs = this.clientSubscriptions.get(client.id);
+    
+    if (!clientSubs) {
+      return;
+    }
+
+    symbols.forEach(symbol => clientSubs.delete(symbol));
+    
+    this.logger.info('Client unsubscribed from symbols', {
+      clientId: client.id,
+      symbols,
+      remainingSubscriptions: clientSubs.size
     });
   }
 }

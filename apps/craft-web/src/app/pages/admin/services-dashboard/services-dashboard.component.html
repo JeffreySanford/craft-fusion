@@ -1,95 +1,124 @@
-<div class="services-dashboard">
-  <div class="dashboard-header">
-    <h2>Services Dashboard</h2>
-    <div class="summary-cards">
-      <div class="summary-card">
-        <div class="card-value">{{services.length}}</div>
-        <div class="card-label">Total Services</div>
+<div class="dashboard-container">
+  <mat-card class="dashboard-overview">
+    <mat-card-header>
+      <mat-card-title>Services Overview</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="overview-stats">
+        <div class="stat-card active">
+          <div class="stat-number">{{activeServicesCount}}</div>
+          <div class="stat-label">Active Services</div>
+        </div>
+        <div class="stat-card error">
+          <div class="stat-number">{{errorServicesCount}}</div>
+          <div class="stat-label">Error Services</div>
+        </div>
+        <div class="stat-card inactive">
+          <div class="stat-number">{{inactiveServicesCount}}</div>
+          <div class="stat-label">Inactive Services</div>
+        </div>
       </div>
-      <div class="summary-card">
-        <div class="card-value">{{services.filter(s => s.status === 'active').length}}</div>
-        <div class="card-label">Active</div>
-      </div>
-      <div class="summary-card error">
-        <div class="card-value">{{services.filter(s => s.status === 'error').length}}</div>
-        <div class="card-label">With Errors</div>
-      </div>
-      <div class="summary-card inactive">
-        <div class="card-value">{{services.filter(s => s.status === 'inactive').length}}</div>
-        <div class="card-label">Inactive</div>
-      </div>
-    </div>
-  </div>
+    </mat-card-content>
+  </mat-card>
 
-  <div class="services-section">
-    <h3>Core Services</h3>
-    <table mat-table [dataSource]="coreServices" class="mat-elevation-z2">
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Service</th>
-        <td mat-cell *matCellDef="let service">
-          <div class="service-name">{{service.name}}</div>
-          <div class="service-desc">{{service.description}}</div>
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let service">
-          <span class="status-indicator" [ngClass]="getStatusClass(service.status)"></span>
-          {{service.status | titlecase}}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="type">
-        <th mat-header-cell *matHeaderCellDef>Type</th>
-        <td mat-cell *matCellDef="let service">{{service.type | titlecase}}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="lastActivity">
-        <th mat-header-cell *matHeaderCellDef>Last Activity</th>
-        <td mat-cell *matCellDef="let service">{{formatLastActivity(service.lastActivity)}}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="usageCount">
-        <th mat-header-cell *matHeaderCellDef>Usage</th>
-        <td mat-cell *matCellDef="let service">{{service.usageCount}}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="errorCount">
-        <th mat-header-cell *matHeaderCellDef>Errors</th>
-        <td mat-cell *matCellDef="let service">{{service.errorCount}}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="successRate">
-        <th mat-header-cell *matHeaderCellDef>Success Rate</th>
-        <td mat-cell *matCellDef="let service">
-          {{service.successRate !== undefined ? (service.successRate | number:'1.0-0') + '%' : 'N/A'}}
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="avgResponseTime">
-        <th mat-header-cell *matHeaderCellDef>Avg Response</th>
-        <td mat-cell *matCellDef="let service">
-          {{service.avgResponseTime !== undefined ? (service.avgResponseTime | number:'1.0-0') + 'ms' : 'N/A'}}
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  </div>
-
-  <div class="services-section" *ngIf="featureServices.length > 0">
-    <h3>Feature Services</h3>
-    <table mat-table [dataSource]="featureServices" class="mat-elevation-z2">
-      <!-- Same column definitions as above -->
-    </table>
-  </div>
+  <!-- Core Services -->
+  <mat-card class="service-category">
+    <mat-card-header>
+      <mat-card-title>Core Services</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="coreServices" class="service-table">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Service Name</th>
+          <td mat-cell *matCellDef="let service">{{service.name}}</td>
+        </ng-container>
+        
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let service">
+            <span [ngClass]="getStatusClass(service.status)">{{service.status}}</span>
+          </td>
+        </ng-container>
+        
+        <ng-container matColumnDef="lastActivity">
+          <th mat-header-cell *matHeaderCellDef>Last Activity</th>
+          <td mat-cell *matCellDef="let service">{{formatLastActivity(service.lastActivity)}}</td>
+        </ng-container>
+        
+        <ng-container matColumnDef="responseTime">
+          <th mat-header-cell *matHeaderCellDef>Response Time</th>
+          <td mat-cell *matCellDef="let service">{{service.responseTime}} ms</td>
+        </ng-container>
+        
+        <ng-container matColumnDef="endpoints">
+          <th mat-header-cell *matHeaderCellDef>Endpoints</th>
+          <td mat-cell *matCellDef="let service">{{service.endpoints}}</td>
+        </ng-container>
+        
+        <ng-container matColumnDef="memoryUsage">
+          <th mat-header-cell *matHeaderCellDef>Memory Usage</th>
+          <td mat-cell *matCellDef="let service">{{service.memoryUsage}} MB</td>
+        </ng-container>
+        
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
   
-  <div class="services-section" *ngIf="thirdPartyServices.length > 0">
-    <h3>Third-Party Services</h3>
-    <table mat-table [dataSource]="thirdPartyServices" class="mat-elevation-z2">
-      <!-- Same column definitions as above -->
-    </table>
-  </div>
+  <!-- Feature Services -->
+  <mat-card class="service-category">
+    <mat-card-header>
+      <mat-card-title>Feature Services</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="featureServices" class="service-table">
+        <!-- Same column definitions as above -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Service Name</th>
+          <td mat-cell *matCellDef="let service">{{service.name}}</td>
+        </ng-container>
+        
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let service">
+            <span [ngClass]="getStatusClass(service.status)">{{service.status}}</span>
+          </td>
+        </ng-container>
+        
+        <!-- Other columns -->
+        
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+  
+  <!-- Third Party Services -->
+  <mat-card class="service-category">
+    <mat-card-header>
+      <mat-card-title>Third Party Services</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="thirdPartyServices" class="service-table">
+        <!-- Same column definitions as above -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Service Name</th>
+          <td mat-cell *matCellDef="let service">{{service.name}}</td>
+        </ng-container>
+        
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let service">
+            <span [ngClass]="getStatusClass(service.status)">{{service.status}}</span>
+          </td>
+        </ng-container>
+        
+        <!-- Other columns -->
+        
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
 </div>

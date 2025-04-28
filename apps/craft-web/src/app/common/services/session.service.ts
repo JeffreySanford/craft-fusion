@@ -7,6 +7,7 @@ export interface User {
   id: number;
   firstName: string;
   lastName: string;
+  name?: string; // Optional string that can be set manually
   role: string;
 }
 
@@ -14,6 +15,19 @@ export interface User {
   providedIn: 'root'
 })
 export class SessionService {
+  
+  // Helper method to get full name from a user
+  getFullName(user: User): string {
+    if (user.firstName && user.lastName) {
+      return `${user.firstName} ${user.lastName}`;
+    } else if (user.firstName) {
+      return user.firstName;
+    } else if (user.lastName) {
+      return user.lastName;
+    } else {
+      return user.username; // Fallback to username
+    }
+  }
 
 
   status() {

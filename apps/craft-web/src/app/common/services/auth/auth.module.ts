@@ -14,11 +14,6 @@ import { AuthorizationService } from './authorization.service';
     AuthService,
     AuthenticationService,
     AuthorizationService
-  ],
-  exports: [
-    AuthService,
-    AuthenticationService,
-    AuthorizationService
   ]
 })
 export class AuthModule { }

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from '@craft-fusion/auth/guards/auth.guard';
-import { RoleGuard } from '@craft-fusion/auth/guards/role.guard';
+import { AuthGuard } from './common/guards/auth.guard';
+import { RoleGuard } from './common/guards/role.guard';
 
 const routes: Routes = [
   // ... existing routes

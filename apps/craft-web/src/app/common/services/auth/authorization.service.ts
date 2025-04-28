@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { LoggerService } from '../logger.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthorizationService {
-
-  constructor() { }
+  constructor(private logger: LoggerService) {
+    this.logger.registerService('AuthorizationService');
+  }
 
   canAccessResource(resource: string): Observable<boolean> {
-    // In a real application, this would check the user's roles/permissions
-    // against the requested resource.
-    // For this example, we'll just return true for 'admin' and false otherwise.
-    return of(resource === 'admin');
+    this.logger.debug('Checking resource access', { resource });
+    // This is a placeholder implementation
+    // In a real application, this would check permissions based on user roles
+    return of(resource !== 'admin');
   }
 }
