@@ -5,7 +5,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { MenuItem, MenuGroup } from './sidebar.types'
 import { Router } from '@angular/router';
 import { SidebarStateService } from '../../common/services/sidebar-state.service';
-import { AuthorizationService } from '../../common/services/authorization.service';
+import { AuthorizationService } from '../../common/services/auth/authorization.service';
 import { AdminStateService } from '../../common/services/admin-state.service';
 
 @Component({

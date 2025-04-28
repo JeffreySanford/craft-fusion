@@ -27,6 +27,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
 import { AuthHttpInterceptor } from './common/interceptors/auth.interceptor';
 import { ApiService } from './common/services/api.service';
+import { CommonServicesModule } from './common/services/common-services.module';
+import { AuthModule } from './common/services/auth/auth.module';
 
 @NgModule({
   declarations: [
@@ -55,7 +57,9 @@ import { ApiService } from './common/services/api.service';
     }),
     RouterModule,
     ReactiveFormsModule,
-    BookModule
+    BookModule,
+    CommonServicesModule, // Add this
+    AuthModule,           // Add this
   ],
   exports: [MaterialModule, ReactiveFormsModule],
   providers: [

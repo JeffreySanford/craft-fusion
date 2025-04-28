@@ -1,0 +1,18 @@
+<div class="timeline-list">
+  <ng-container *ngIf="events && events.length > 0; else noEvents">
+    <div class="timeline-list-content">
+      <app-timeline-item
+        *ngFor="let event of events; trackBy: trackById"
+        [event]="event"
+        class="animate-fade-in"
+      ></app-timeline-item>
+    </div>
+  </ng-container>
+  
+  <ng-template #noEvents>
+    <div class="no-events-container">
+      <mat-icon>event_busy</mat-icon>
+      <p>No timeline events found.</p>
+    </div>
+  </ng-template>
+</div>

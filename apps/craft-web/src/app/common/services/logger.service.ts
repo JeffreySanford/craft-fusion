@@ -596,4 +596,56 @@ export class LoggerService {
       component: 'LoggerService'
     });
   }
+  
+  /**
+   * Log a change that should be added to the changelog
+   * @param type - Type of change (feat, fix, etc.)
+   * @param description - Description of the change
+   * @param scope - Optional scope of the change
+   */
+  changelogEntry(type: 'feat' | 'fix' | 'docs' | 'style' | 'refactor' | 'perf' | 'test' | 'build' | 'ci' | 'chore', 
+                 description: string, 
+                 scope?: string): void {
+    // Format as conventional commit message
+    const message = scope ? 
+      `${type}(${scope}): ${description}` : 
+      `${type}: ${description}`;
+    
+    // Log to console
+    this.info(`CHANGELOG: ${message}`, { changelog: true });
+    
+    // Store in localStorage to be picked up by changelog generator
+    try {
+      const entries = JSON.parse(localStorage.getItem('changelog-entries') || '[]');
+      entries.push({
+        type,
+        scope,
+        description,
+        timestamp: new Date().toISOString()
+      });
+      localStorage.setItem('changelog-entries', JSON.stringify(entries));
+    } catch (e) {
+      this.error('Failed to store changelog entry', e);
+    }
+  }
+  
+  /**
+   * Retrieve all stored changelog entries
+   */
+  getChangelogEntries(): Array<{type: string, scope?: string, description: string, timestamp: string}> {
+    try {
+      return JSON.parse(localStorage.getItem('changelog-entries') || '[]');
+    } catch (e) {
+      this.error('Failed to retrieve changelog entries', e);
+      return [];
+    }
+  }
+  
+  /**
+   * Clear stored changelog entries
+   */
+  clearChangelogEntries(): void {
+    localStorage.removeItem('changelog-entries');
+    this.info('Cleared changelog entries');
+  }
 }

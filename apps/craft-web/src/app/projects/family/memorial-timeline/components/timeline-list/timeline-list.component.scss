@@ -1,0 +1,56 @@
+@use 'styles/variables' as vars;
+@use 'styles/mixins' as mix;
+
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.timeline-list-content {
+  position: relative;
+  
+  // Vertical timeline line
+  &::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background-color: var(--md-sys-color-primary);
+    opacity: 0.6;
+  }
+  
+  // Use stagger animation for child items
+  app-timeline-item {
+    @for $i from 1 through 10 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 100}ms;
+      }
+    }
+  }
+}
+
+.no-events-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: var(--md-sys-color-surface);
+  border-radius: 8px;
+  
+  mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    margin-bottom: 1rem;
+    color: var(--md-sys-color-secondary);
+  }
+  
+  p {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 1.1rem;
+  }
+}

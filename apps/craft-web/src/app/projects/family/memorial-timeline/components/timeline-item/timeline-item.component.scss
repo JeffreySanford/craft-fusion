@@ -1,0 +1,105 @@
+@use 'styles/variables' as vars;
+@use 'styles/mixins' as mix;
+
+:host {
+  margin-left: 50px;
+  position: relative;
+  
+  // Timeline node
+  &::before {
+    content: "★";
+    position: absolute;
+    left: -36px;
+    top: 8px;
+    width: 20px;
+    height: 20px;
+    background-color: var(--md-sys-color-tertiary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--md-sys-color-on-tertiary);
+    z-index: 2;
+  }
+}
+
+.timeline-item-card {
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease-in-out;
+  
+  // Patriotic themed gradient background
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(187, 10, 48, 0.05) 100%
+  );
+  
+  // Blue border accent
+  border-left: 3px solid var(--md-sys-color-primary);
+  
+  &:hover {
+    transform: translateY(-3px);
+  }
+}
+
+.timeline-avatar {
+  background-color: var(--md-sys-color-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  mat-icon {
+    color: var(--md-sys-color-on-tertiary);
+  }
+}
+
+mat-card-title {
+  color: var(--md-sys-color-primary);
+  font: var(--md-sys-typescale-headline-small);
+}
+
+mat-card-subtitle {
+  color: var(--md-sys-color-secondary);
+  font: var(--md-sys-typescale-title-medium);
+}
+
+mat-card-content {
+  p {
+    color: var(--md-sys-color-on-surface);
+    font: var(--md-sys-typescale-body-medium);
+    margin-bottom: 1rem;
+  }
+}
+
+.timeline-image-container {
+  overflow: hidden;
+  border-radius: 4px;
+  margin: 1rem 0;
+  
+  .timeline-image {
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+}
+
+mat-card-actions {
+  padding: 8px 16px;
+  
+  a {
+    color: var(--md-sys-color-primary);
+    
+    mat-icon {
+      margin-right: 4px;
+      font-size: 16px;
+      height: 16px;
+      width: 16px;
+      vertical-align: middle;
+    }
+  }
+}
