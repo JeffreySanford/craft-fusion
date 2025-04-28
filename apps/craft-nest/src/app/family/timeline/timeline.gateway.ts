@@ -10,7 +10,7 @@ import { Logger } from '@nestjs/common';
   namespace: 'timeline',
 })
 export class TimelineGateway {
-  @WebSocketServer() server: Server;
+  @WebSocketServer() server!: Server;
   private readonly logger = new Logger(TimelineGateway.name);
 
   notifyNewEvent(event: TimelineEvent) {
