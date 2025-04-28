@@ -97,7 +97,11 @@ export class AuthService {
       return of(user);
     } catch (error) {
       this.logger.error('Token verification failed', error);
-      console.error('Invalid token:', error.message);
+      if (error instanceof Error) {
+        console.error('Invalid token:', error.message);
+      } else {
+        console.error('Invalid token:', String(error));
+      }
       return of(null);
     }
   }
