@@ -1,10 +1,2 @@
-export interface User {
-    username: string;
-    email: string;
-    password: string;
-    id: number;
-    firstName: string;
-    lastName: string;
-    name?: string; // Optional string that can be set manually
-    roles: string[];
-  }
+// Re-export the User interface from the common interfaces directory
+export { User, AuthResponse, LoginRequest, CreateUserRequest } from '../interfaces/user.interface';

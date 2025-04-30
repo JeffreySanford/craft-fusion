@@ -63,7 +63,7 @@
           "node_modules/flag-icon-css/css/flag-icons.min.css"
         ],
         "stylePreprocessorOptions": {
-          "includePaths": ["apps/craft-web/src/styles/styles/**"]
+          "includePaths": ["apps/craft-web/src/styles"]
         },
         "scripts": ["node_modules/tinymce/tinymce.min.js"],
         "allowedCommonJsDependencies": [

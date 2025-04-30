@@ -16,6 +16,7 @@ import { HeaderModule } from './pages/header/header.module';
 import { SidebarModule } from './pages/sidebar/sidebar.module';
 import { FooterModule } from './pages/footer/footer.module';
 import { LoggerService } from './common/services/logger.service';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { LoggerService } from './common/services/logger.service';
     PeasantKitchenModule,
     HeaderModule,
     SidebarModule,
-    FooterModule
+    FooterModule,
+    NgxSpinnerModule // Add NgxSpinnerModule
   ],
   providers: [
     {

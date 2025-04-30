@@ -1,3 +1,8 @@
+@use 'variables' as vars;
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:color';
+
 // Responsive mixins
 @mixin mobile {
   @media (max-width: 576px) {
@@ -116,9 +121,6 @@
 }
 
 // Core mixins for the application
-@use '../variables' as vars;
-@use 'sass:map';
-@use 'sass:math';
 
 // Display mixins
 @mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {

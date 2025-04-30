@@ -26,9 +26,9 @@ export interface User {
   
   /** 
    * User's role - determines permissions 
-   * Note: Kept as string for compatibility with role.guard
+   * Note: This may be a single role or a list of roles depending on the system
    */
-  role: string;
+  roles: string[];
   
   /** Flag indicating if user has administrative privileges */
   isAdmin?: boolean;

@@ -27,6 +27,9 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { CdkTableModule } from '@angular/cdk/table';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
+// Third-party Modules
+import { NgxSpinnerModule } from 'ngx-spinner';
+
 // Components
 import { RecordListComponent } from './record-list.component';
 import { RecordDetailComponent } from './record-detail/record-detail.component';
@@ -67,6 +70,9 @@ import { RecordDetailComponent } from './record-detail/record-detail.component';
     // CDK Modules
     CdkTableModule,
     ScrollingModule,
+
+    // Third-party Modules
+    NgxSpinnerModule,
 
     // Shared Modules
     // SharedDirectivesModule, // Commented out due to import error
