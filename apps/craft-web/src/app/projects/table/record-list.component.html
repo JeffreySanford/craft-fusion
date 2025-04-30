@@ -138,7 +138,7 @@
               
               <div class="income-total">
                 <span class="total-label">Total Annual Salary:</span>
-                <span class="total-amount">{{ expandedElement.salary | employmentIncome | currency }}</span>
+                <span class="total-amount">{{ getTotalSalary(expandedElement.salary) | currency }}</span>
               </div>
             </div>
           </div>

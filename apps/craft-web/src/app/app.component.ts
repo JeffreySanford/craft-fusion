@@ -10,7 +10,7 @@ import { LoggerService } from './common/services/logger.service';
 import { AdminStateService } from './common/services/admin-state.service';
 import { FooterStateService } from './common/services/footer-state.service';
 import { UserTrackingService } from './common/services/user-tracking.service';
-import { AuthService } from './common/services/auth/auth.service'; // Using existing AuthService
+import { AuthService } from './common/services/auth/auth.service';
 
 @Component({
   selector: 'app-root',

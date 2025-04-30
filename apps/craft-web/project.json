@@ -57,8 +57,7 @@
           }
         ],
         "styles": [
-          "apps/craft-web/src/styles/styles.scss",
-          "apps/craft-web/src/styles/_variables.scss",
+          "apps/craft-web/src/styles.scss",
           "node_modules/ngx-toastr/toastr.css",
           "node_modules/mapbox-gl/dist/mapbox-gl.css",
           "node_modules/flag-icon-css/css/flag-icons.min.css"

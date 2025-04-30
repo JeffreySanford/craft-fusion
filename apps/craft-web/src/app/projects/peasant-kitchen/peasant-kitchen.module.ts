@@ -1,34 +1,32 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PeasantKitchenComponent } from './peasant-kitchen.component';
-import { RecipeComponent } from './recipe/recipe.component';
-import { RecipesComponent } from './recipes/recipes.component';
-import { MaterialModule } from '../../material.module';
-import { AnimatedDirectivesModule } from '../../animated-directives.module';
-
-import { RecipeService } from './recipe.service';
 import { RouterModule } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatCardModule } from '@angular/material/card';
+import { PeasantKitchenComponent } from './peasant-kitchen.component';
+import { RecipesComponent } from './recipes/recipes.component';
+import { RecipeComponent } from './recipe/recipe.component';
+import { MaterialModule } from '../../material.module';
+import { RecordService } from '../table/services/record.service';
 
 @NgModule({
   declarations: [
     PeasantKitchenComponent,
     RecipesComponent,
+    RecipeComponent
   ],
   imports: [
     CommonModule,
     MaterialModule,
-    AnimatedDirectivesModule,
-    RouterModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatCardModule
+    RouterModule.forChild([
+      {
+        path: '',
+        component: PeasantKitchenComponent,
+        children: [
+          { path: '', component: RecipesComponent },
+          { path: 'recipe/:id', component: RecipeComponent }
+        ]
+      }
+    ])
   ],
-  providers: [RecipeService],
-  exports: [
-    PeasantKitchenComponent
-  ]
+  providers: [RecordService],
 })
-export class PeasantKitchenModule {}
+export class PeasantKitchenModule { }

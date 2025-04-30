@@ -11,7 +11,6 @@ export class RecordsController {
   @Get()
   getAllRecords(): Record[] {
     console.log('Received request to get all records');
-     
     return this.recordService.getAllRecords();
   }
 
@@ -19,22 +18,21 @@ export class RecordsController {
   generateMultipleRecords(@Query('count') count: number): Record[] {
     console.log('Received request to generate records with count:', count);
     const recordCount = Number(count) || 10;
-
     return this.recordService.generateMultipleRecords(recordCount);
   }
 
   @Get('total-income/:UID')
   getTotalIncome(@Param('UID') UID: string): number {
     console.log('Received request to get total income for UID:', UID);
-
     return this.recordService.calculateTotalIncome(UID);
   }
 
   @Get('time')
-  getCreationTime(): number {
-    console.log('Received request to get creation time');    
-
-    return this.recordService.getCreationTime();
+  getCreationTime(): { generationTime: number } {
+    console.log('Received request to get creation time');
+    const generationTime = this.recordService.getCreationTime();
+    console.log('Returning creation time:', generationTime);
+    return { generationTime };
   }
 
   @Get(':UID')

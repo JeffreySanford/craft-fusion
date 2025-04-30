@@ -15,10 +15,10 @@ import { LoggerService } from '../logger.service';
   providedIn: 'root'
 })
 export class AuthService {
-  // Expose key observables from AuthenticationService
-  readonly isAuthenticated$ = this.authenticationService.isAuthenticated$;
-  readonly isAdmin$ = this.authenticationService.isAdmin$;
-  readonly isLoggedIn$ = this.authenticationService.isLoggedIn$;
+  // Properties will be initialized in the constructor
+  readonly isAuthenticated$: Observable<boolean>;
+  readonly isAdmin$: Observable<boolean>;
+  readonly isLoggedIn$: Observable<boolean>;
 
   constructor(
     private authenticationService: AuthenticationService,
@@ -27,6 +27,11 @@ export class AuthService {
   ) {
     this.logger.registerService('AuthService');
     this.logger.info('Auth Service facade initialized');
+    
+    // Initialize properties after constructor parameters are available
+    this.isAuthenticated$ = this.authenticationService.isAuthenticated$;
+    this.isAdmin$ = this.authenticationService.isAdmin$;
+    this.isLoggedIn$ = this.authenticationService.isLoggedIn$;
   }
 
   // Authentication methods

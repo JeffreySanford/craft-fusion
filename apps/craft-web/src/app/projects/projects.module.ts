@@ -6,38 +6,37 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 
 import { MemorialTimelineModule } from './family/memorial-timeline/memorial-timeline.module';
-
-// Import other project components as needed
-// import { BookComponent } from './book/book.component';
-// import { DataVisualizationsComponent } from './data-visualizations/data-visualizations.component';
-// import { PeasantKitchenComponent } from './peasant-kitchen/peasant-kitchen.component';
-// import { RecordListComponent } from './table/record-list.component';
-// import { SpaceVideoComponent } from './space-video/space-video.component';
+import { DataVisualizationsModule } from './data-visualizations/data-visualizations.module';
+import { BookModule } from './book/book.module';
+import { ChatModule } from './chat/chat.module';
+import { PeasantKitchenModule } from './peasant-kitchen/peasant-kitchen.module';
+import { TableModule } from './table/table.module';
+import { SpaceVideoModule } from './space-video/space-video.module';
 
 @NgModule({
-  declarations: [
-    // Add other project components here, but NOT the timeline components
-    // since they're already declared in MemorialTimelineModule
-    // BookComponent,
-    // DataVisualizationsComponent,
-    // PeasantKitchenComponent,
-    // RecordListComponent,
-    // SpaceVideoComponent,
-  ],
   imports: [
     CommonModule,
     RouterModule,
     MatIconModule,
     MatCardModule,
     MatButtonModule,
-    // Import the MemorialTimelineModule instead of declaring its components
-    MemorialTimelineModule
-    // Add other required modules
+    MemorialTimelineModule,
+    DataVisualizationsModule,
+    BookModule,
+    ChatModule,
+    PeasantKitchenModule,
+    TableModule,
+    SpaceVideoModule
   ],
+  declarations: [],
   exports: [
-    // Export MemorialTimelineModule to make its components available
-    MemorialTimelineModule
-    // Export other components as needed
+    MemorialTimelineModule,
+    DataVisualizationsModule,
+    BookModule,
+    ChatModule,
+    PeasantKitchenModule,
+    TableModule,
+    SpaceVideoModule
   ]
 })
 export class ProjectsModule { }

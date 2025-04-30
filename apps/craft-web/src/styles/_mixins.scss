@@ -1,0 +1,116 @@
+// Responsive mixins
+@mixin mobile {
+  @media (max-width: 576px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: 577px) and (max-width: 991px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: 992px) {
+    @content;
+  }
+}
+
+// Flexbox mixins
+@mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+  flex-wrap: $wrap;
+}
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Animation mixins
+@mixin fade-in($duration: 0.3s) {
+  animation: fadeIn $duration ease-in-out;
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+@mixin slide-in($direction: 'left', $distance: 20px, $duration: 0.3s) {
+  $start-x: 0;
+  $start-y: 0;
+  
+  @if $direction == 'left' {
+    $start-x: -$distance;
+  } @else if $direction == 'right' {
+    $start-x: $distance;
+  } @else if $direction == 'up' {
+    $start-y: $distance;
+  } @else if $direction == 'down' {
+    $start-y: -$distance;
+  }
+  
+  animation: slideIn $duration ease-out;
+  
+  @keyframes slideIn {
+    from {
+      transform: translate($start-x, $start-y);
+      opacity: 0;
+    }
+    to {
+      transform: translate(0, 0);
+      opacity: 1;
+    }
+  }
+}
+
+// Layout and positioning mixins
+@mixin page-layer {
+  position: relative;
+  z-index: 1;
+}
+
+@mixin animation-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none; // Allows clicking through to elements behind
+}
+
+@mixin stacked-layout {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+}
+
+// Card mixin
+@mixin card {
+  background-color: var(--md-sys-color-surface);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+}
+
+// Patriotic theme mixins
+@mixin patriotic-border {
+  border-left: 4px solid transparent;
+  border-image: linear-gradient(
+    to bottom,
+    var(--md-sys-color-primary),
+    var(--md-sys-color-primary) 33%,
+    var(--md-sys-color-secondary) 33%,
+    var(--md-sys-color-secondary) 67%,
+    var(--md-sys-color-tertiary) 67%,
+    var(--md-sys-color-tertiary) 100%
+  );
+  border-image-slice: 1;
+}

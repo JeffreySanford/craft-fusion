@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, timer, throwError } from 'rxjs';
-import { catchError, map, retry, shareReplay, switchMap, tap, delay, retryWhen } from 'rxjs/operators';
+import { catchError, map, retry, shareReplay, switchMap, tap, delay, retryWhen, take } from 'rxjs/operators';
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
-import * as io from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 export interface ConnectionDiagnostics {
   isConnected: boolean;
@@ -74,12 +74,12 @@ export class ApiDiagnosticsService {
   private retryDelay = 1000;
   private consecutiveFailures = 0;
   private maxConsecutiveFailures = 5;
-  private socketInstance: any = null;
+  private socketInstance: Socket | null = null;
   private socketReconnectAttempts = 0;
   private maxSocketReconnectAttempts = 10;
   
-  // Namespace-specific socket instances
-  private namespaceSocketInstances = new Map<string, any>();
+  // Namespace-specific socket instances - add definite assignment assertion
+  private namespaceSocketInstances = new Map<string, Socket>();
 
   // Expose as observable for components to consume
   readonly diagnostics$ = this.diagnosticsSubject.asObservable();
@@ -524,8 +524,8 @@ export class ApiDiagnosticsService {
         }
       }
 
-      // Create new namespace socket
-      const nsSocket = io(namespaceUrl);
+      // Create new namespace socket - fixed Socket type
+      const nsSocket = io(namespaceUrl) as Socket;
       this.namespaceSocketInstances.set(namespace, nsSocket);
       
       // Create initial status for this namespace if it doesn't exist
@@ -850,5 +850,39 @@ export class ApiDiagnosticsService {
     }
     
     return `${error.status}: ${error.statusText || error.message || 'Unknown error'}`;
+  }
+
+  /**
+   * Get diagnostic dashboard data for admin UI
+   */
+  getDiagnosticDashboardData(): Observable<any> {
+    return this.checkConnectionNow().pipe(
+      map(diagnostics => {
+        return {
+          connectionStatus: diagnostics.status,
+          isConnected: diagnostics.isConnected,
+          lastChecked: diagnostics.lastChecked,
+          responseTime: this.calculateAverageResponseTime(diagnostics.responseTimes || []),
+          serverInfo: {
+            binding: diagnostics.serverBinding || 'Unknown',
+            error: diagnostics.error
+          },
+          socketStatus: {
+            connected: this.socketDiagnosticsSubject.value.isConnected,
+            pingTime: this.socketDiagnosticsSubject.value.pingTime,
+            connectionId: this.socketDiagnosticsSubject.value.connectionId
+          }
+        };
+      }),
+      catchError(error => {
+        this.logger.error('Error fetching diagnostic data', { error });
+        return of({
+          connectionStatus: 'unavailable',
+          isConnected: false,
+          lastChecked: new Date(),
+          error: this.formatError(error)
+        });
+      })
+    );
   }
 }

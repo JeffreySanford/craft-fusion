@@ -1,12 +1,7 @@
 import { Component, OnInit, ViewEncapsulation, Inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { Recipe } from '../recipe.class';
-import { RecipeService } from '../recipe.service';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { LowerCasePipe, CommonModule } from '@angular/common';
+import { Recipe } from '../services/recipe.interface';
+import { RecipeService } from '../services/recipe.service';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -15,15 +10,7 @@ import { of } from 'rxjs';
   encapsulation: ViewEncapsulation.None,
   templateUrl: './recipe.component.html',
   styleUrls: ['./recipe.component.scss'],
-  imports: [
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    LowerCasePipe,
-    CommonModule
-  ],
-  standalone: true,
+  standalone: false // CRITICAL: Must always be explicitly set to false for all components
 })
 export class RecipeComponent implements OnInit {
   recipe!: Recipe;

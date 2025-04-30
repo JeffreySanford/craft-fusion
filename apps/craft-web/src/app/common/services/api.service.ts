@@ -88,14 +88,20 @@ export class ApiService {
   }
 
   private getFullUrl(endpoint: string): string {
-    // In development, use relative URLs so the proxy works
-    if (!this.isProduction) {
-      endpoint = endpoint.replace(/^\/+/, '');
-      return `/api/${endpoint}`;
-    }
-    // In production, use the full API URL
+    // Modified to always use the full URL from apiUrl, not relying on the proxy
     endpoint = endpoint.replace(/^\/+/, '');
+    
+    // Always use the full URL including hostname and port
     return `${this.apiUrl}/${endpoint}`;
+    
+    // The original code (commented out) relied on Angular's proxy:
+    // if (!this.isProduction) {
+    //   endpoint = endpoint.replace(/^\/+/, '');
+    //   return `/api/${endpoint}`;
+    // }
+    // In production, use the full API URL
+    // endpoint = endpoint.replace(/^\/+/, '');
+    // return `${this.apiUrl}/${endpoint}`;
   }
 
   // 🛡️ API CRUD Operations
@@ -235,27 +241,24 @@ export class ApiService {
   }
 
   /**
-   * Dynamically sets the server API URL based on the selected server name.
-   * Updates `apiUrl` to point to the selected server.
-   * @param serverName - Name of the server ('Nest' or 'Go')
-   * @example
-   * setApiUrl('Nest');
-   * setApiUrl('Go');
+   * Sets the API URL based on the provided resource name.
+   * @param resource - Resource name to determine which API URL to use
+   * @returns The configured API URL
    */
-  setApiUrl(serverName: string): string {
-    const server = this.servers.find(s => s.name === serverName);
-
-    if (server) {
-      this.currentServer = server;
-      const protocol = this.isProduction ? 'https' : 'http';
-      const host = this.isProduction ? production.host : environment.host;
-      this.apiUrl = `${protocol}://${host}:${server.port}`;
-      this.logger.info(`API URL set to ${this.apiUrl}`);
+  setApiUrl(resource: string): string {
+    console.log(`Setting API URL for resource: ${resource}`);
+    
+    if (resource === 'Go') {
+      this.apiUrl = 'http://localhost:8080/api';
+    } else if (resource === 'Nest') {
+      // Fix the malformed URL - remove duplicate http:// and port
+      this.apiUrl = 'http://localhost:3000/api';
     } else {
-      this.apiUrl = '';
-      this.logger.error(`Server with name '${serverName}' not found`);
+      // Default case
+      this.apiUrl = 'http://localhost:3000/api';
     }
-
+    
+    console.log(`API URL set to ${this.apiUrl}`);
     return this.apiUrl;
   }
 

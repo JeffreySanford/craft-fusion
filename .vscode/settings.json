@@ -15,5 +15,6 @@
     "ngrx-uml.saveConvertResultToJson": true,
     "ngrx-uml.saveWsd": true,
     "ngrx-uml.logLevel": "INFO",
-    "ngrx-uml.clickableLinks": true
+    "ngrx-uml.clickableLinks": true,
+    "typescript.tsdk": "node_modules\\typescript\\lib"
 }

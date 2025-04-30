@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "types": []
@@ -9,20 +9,11 @@
     "src/polyfills.ts"
   ],
   "include": [
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "src/**/*.ts"
   ],
   "exclude": [
+    "src/test-setup.ts",
     "**/*.spec.ts"
-  ],
-  "angularCompilerOptions": {
-    "strictTemplates": true,
-    "strictInjectionParameters": true,
-    "strictInputTypes": true,
-    "strictNullInputTypes": true,
-    "strictAttributeTypes": true,
-    "strictOutputEventTypes": true,
-    "strictDomLocalRefTypes": true,
-    "strictOutputTypeChecks": true,
-    "strictLiteralTypes": true
-  }
+  ]
 }

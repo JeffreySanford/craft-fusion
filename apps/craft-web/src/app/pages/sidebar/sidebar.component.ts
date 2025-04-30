@@ -44,6 +44,7 @@ export class SidebarComponent implements OnInit {
         { icon: 'bar_chart', label: 'Data Visualizations', routerLink: '/data-visualizations', active: false },
         { icon: 'restaurant', label: 'Peasant Kitchen', routerLink: '/peasant-kitchen', active: false },
         { icon: 'movie', label: 'HTML Video', routerLink: '/space-video', active: false },
+        { icon: 'family', label: 'Family', routerLink: '/family', active: false },
         { icon: 'chat', label: 'Chat', routerLink: '/chat', active: false },
         { icon: 'book', label: 'Book', routerLink: '/book', active: false },
       ],

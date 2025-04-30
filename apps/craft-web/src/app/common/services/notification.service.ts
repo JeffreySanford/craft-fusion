@@ -1,40 +1,45 @@
 import { Injectable } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
-
 export class NotificationService {
+  constructor(private snackBar: MatSnackBar) {}
 
-    constructor(private toastr: ToastrService) { }
+  showSuccess(message: string, title: string = 'Success') {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      horizontalPosition: 'right',
+      verticalPosition: 'bottom',
+      panelClass: ['success-snackbar']
+    });
+  }
 
-    clear () {
-        this.toastr.clear();
-    }
-    
-    showSuccess(message: string, title: string) {
-        this.showHTMLMessage(true, message, title);
-    }
+  showError(message: string, title: string = 'Error') {
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      horizontalPosition: 'right',
+      verticalPosition: 'bottom',
+      panelClass: ['error-snackbar']
+    });
+  }
 
-    showError(message: string, title: string) {
-        this.showHTMLMessage(false, message, title);
-    }
+  showWarning(message: string, title: string = 'Warning') {
+    this.snackBar.open(message, 'Close', {
+      duration: 4000,
+      horizontalPosition: 'right',
+      verticalPosition: 'bottom',
+      panelClass: ['warning-snackbar']
+    });
+  }
 
-
-    showHTMLMessage(success: boolean, message: string, title: string) {
-        if (success) {
-            this.toastr.success(message, title, {
-                enableHtml: true,
-                positionClass: 'toast-bottom-center'
-            })
-
-        } else {
-            this.toastr.error(message, title, {
-                timeOut: 3000,
-                enableHtml: true,
-                positionClass: 'toast-bottom-center'
-            });
-        }
-    }
+  showInfo(message: string, title: string = 'Info') {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      horizontalPosition: 'right',
+      verticalPosition: 'bottom',
+      panelClass: ['info-snackbar']
+    });
+  }
 }

@@ -1,16 +1,14 @@
 {
-  "extends": "./tsconfig.app.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "ES2022",
-    "outDir": "../../out-tsc/spec",
-    "types": ["jasmine", "node"]
+    "outDir": "../../dist/out-tsc",
+    "types": ["jest", "node"]
   },
   "files": [
-    "src/main.ts"
+    "src/test-setup.ts"
   ],
   "include": [
-    "src/**/*.spec.ts",
-    "src/**/*.d.ts"
+    "**/*.spec.ts",
+    "**/*.d.ts"
   ]
 }
