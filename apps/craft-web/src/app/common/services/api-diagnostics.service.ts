@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, timer, throwError } from 'rxjs';
-import { catchError, map, retry, shareReplay, switchMap, tap, delay, retryWhen } from 'rxjs/operators';
+import { catchError, map, retry, shareReplay, switchMap, tap, delay, retryWhen, take } from 'rxjs/operators';
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
-import * as io from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 export interface ConnectionDiagnostics {
   isConnected: boolean;
@@ -779,6 +779,32 @@ export class ApiDiagnosticsService {
     }
     
     return suggestions;
+  }
+
+  /**
+   * Get diagnostic data formatted for dashboard display
+   */
+  getDiagnosticDashboardData(): Observable<any> {
+    const connectionDiagnostics = this.diagnosticsSubject.value;
+    const socketDiagnostics = this.socketDiagnosticsSubject.value;
+    
+    return of({
+      apiConnection: {
+        status: connectionDiagnostics.status,
+        isConnected: connectionDiagnostics.isConnected,
+        lastChecked: connectionDiagnostics.lastChecked,
+        responseTimes: connectionDiagnostics.responseTimes || [],
+        averageResponseTime: this.calculateAverageResponseTime(connectionDiagnostics.responseTimes || [])
+      },
+      socketConnection: {
+        isConnected: socketDiagnostics.isConnected,
+        reconnectAttempts: socketDiagnostics.reconnectAttempts,
+        pingTime: socketDiagnostics.pingTime,
+        connectionId: socketDiagnostics.connectionId
+      },
+      suggestions: this.getSuggestedFixes(),
+      namespaceStatuses: Array.from(this.knownNamespaces.values())
+    });
   }
 
   /**

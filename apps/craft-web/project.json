@@ -58,13 +58,12 @@
         ],
         "styles": [
           "apps/craft-web/src/styles/styles.scss",
-          "apps/craft-web/src/styles/_variables.scss",
           "node_modules/ngx-toastr/toastr.css",
           "node_modules/mapbox-gl/dist/mapbox-gl.css",
           "node_modules/flag-icon-css/css/flag-icons.min.css"
         ],
         "stylePreprocessorOptions": {
-          "includePaths": ["apps/craft-web/src/styles"]
+          "includePaths": ["apps/craft-web/src/styles/styles/**"]
         },
         "scripts": ["node_modules/tinymce/tinymce.min.js"],
         "allowedCommonJsDependencies": [

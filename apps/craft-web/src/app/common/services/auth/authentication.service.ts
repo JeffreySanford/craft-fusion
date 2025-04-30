@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { User } from '../session.service';
+import { User } from '../user.interface';
 import { LoggerService } from '../logger.service';
 
 @Injectable({
@@ -40,7 +40,8 @@ export class AuthenticationService {
           this.currentUserSubject.next(user);
           this.isLoggedInSubject.next(true);
           this.isAuthenticatedSubject.next(true);
-          this.isAdminSubject.next(user.role === 'admin');
+          this.isAdminSubject.next(user.roles.includes('admin')); // Using roles property correctly
+          this.setAuthToken(token); // Ensure token is set
           this.logger.info('User authenticated on init', { username: user.username });
         }),
         catchError(error => {
@@ -61,7 +62,7 @@ export class AuthenticationService {
         this.currentUserSubject.next(response.user);
         this.isLoggedInSubject.next(true);
         this.isAuthenticatedSubject.next(true);
-        this.isAdminSubject.next(response.user.role === 'admin');
+        this.isAdminSubject.next(Array.isArray(response.user.roles) && response.user.roles.includes('admin')); // Using roles property correctly with safety check
         this.logger.info('User logged in successfully', { username });
       }),
       catchError(error => {
@@ -81,7 +82,19 @@ export class AuthenticationService {
     this.router.navigate(['/login']);
   }
 
-  getAuthToken(): string | null {
+  //TODO: Implement token validation logic
+  validateToken(token: string): Observable<boolean> {
+    return this.isAuthenticated$.pipe(
+      tap(isAuthenticated => {
+        if (isAuthenticated) {
+          this.logger.info('Token is valid', { token });
+        } else {
+          this.logger.warn('Token is invalid', { token });
+        }
+      })
+    );
+  }
+  public getAuthToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 

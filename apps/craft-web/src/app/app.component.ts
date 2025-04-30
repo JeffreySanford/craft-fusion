@@ -4,7 +4,7 @@ import { Subscription, interval } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UserStateService } from './common/services/user-state.service';
-import { User } from './common/services/session.service';
+import { User } from './common/services/user.interface';
 import { UserActivityService } from './common/services/user-activity.service';
 import { LoggerService } from './common/services/logger.service';
 import { AdminStateService } from './common/services/admin-state.service';

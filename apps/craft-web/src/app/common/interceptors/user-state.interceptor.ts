@@ -49,7 +49,7 @@ export class UserStateInterceptor implements HttpInterceptor {
     // Update visit length periodically
     const now = Date.now();
     const elapsedTime = now - (this.loginTime?.getTime() || now);
-    this.userStateService.setVisitLength(elapsedTime);
+    this.userStateService.setVisitLength(elapsedTime).subscribe();
 
     this.logger.debug(`Request intercepted: ${request.url}`, { 
       pageName,

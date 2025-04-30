@@ -32,9 +32,9 @@ export class RoleGuard implements CanActivate {
     return this.authService.currentUser$.pipe(
       take(1),
       map(user => {
-        // If no user or user has no role
-        if (!user || !user.role) {
-          this.logger.warn('Role guard: User has no role', {
+        // If no user or user has no roles array
+        if (!user || !Array.isArray(user.roles)) {
+          this.logger.warn('Role guard: User has no roles', {
             url: state.url,
             requiredRoles
           });
@@ -44,19 +44,19 @@ export class RoleGuard implements CanActivate {
         }
 
         // Check if user has one of the required roles
-        const hasRole = requiredRoles.includes(user.role);
+        const hasRole = requiredRoles.some(role => user.roles.includes(role));
         
         if (hasRole) {
           this.logger.debug('Role guard: User has required role', {
             url: state.url,
-            userRole: user.role,
+            userRoles: user.roles,
             requiredRoles
           });
           return true;
         } else {
           this.logger.warn('Role guard: User does not have required role', {
             url: state.url,
-            userRole: user.role,
+            userRoles: user.roles,
             requiredRoles
           });
           

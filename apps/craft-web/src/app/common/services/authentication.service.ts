@@ -6,7 +6,7 @@ import { catchError, map, tap, timeout } from 'rxjs/operators';
 import { SessionService } from './session.service';
 import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
-import { User } from './models/user.model';
+import { User } from './user.interface'; // Import from user.interface instead
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +21,7 @@ export class AuthenticationService {
     lastName: '',
     email: '',
     password: '',
-    role: ''
+    roles: [] // Use roles array instead of singular role
   });
 
   private isLoggedInSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -45,6 +45,15 @@ export class AuthenticationService {
     return this.isLoggedInSubject.value;
   }
 
+  /**
+   * Helper method to determine if a user has admin role based on roles array
+   * @param user User object to check
+   * @returns boolean indicating if user has admin role
+   */
+  private hasAdminRole(user: User): boolean {
+    return Array.isArray(user.roles) && user.roles.includes('admin');
+  }
+
   public login(username: string, password: string): Observable<any> {
     // Clear any existing token before attempting login
     this.clearAuthToken();
@@ -59,14 +68,13 @@ export class AuthenticationService {
         firstName: 'Test',
         lastName: 'User',
         email: 'test@example.com',
-        role: 'admin',
+        roles: ['admin'], // Use roles array instead of singular role
         password: 'test', // Add password to match SessionService's User interface
-        isAdmin: true
       };
       this.setAuthToken('mock-token-for-development-only');
       this.currentUserSubject.next(mockUser);
       this.isLoggedInSubject.next(true);
-      this.isAdminSubject.next(true);
+      this.isAdminSubject.next(this.hasAdminRole(mockUser));
       this.sessionService.setUserSession(mockUser);
       return of({ success: true, user: mockUser });
     }
@@ -79,7 +87,8 @@ export class AuthenticationService {
             this.setAuthToken(response.token);
             this.currentUserSubject.next(response.user);
             this.isLoggedInSubject.next(true);
-            this.isAdminSubject.next(response.user.isAdmin || false);
+            // Use the user's roles to determine admin status instead of a property
+            this.isAdminSubject.next(this.hasAdminRole(response.user));
             this.sessionService.setUserSession(response.user);
             this.logger.info('User logged in successfully', { username });
           }
@@ -98,7 +107,7 @@ export class AuthenticationService {
       firstName: '',
       lastName: '',
       email: '',
-      role: '',
+      roles: [], // Use roles array instead of singular role
       password: ''
     });
     this.isLoggedInSubject.next(false);
@@ -126,7 +135,8 @@ export class AuthenticationService {
               (user: any) => {
                 this.currentUserSubject.next(user);
                 this.isLoggedInSubject.next(true);
-                this.isAdminSubject.next(user.isAdmin || false);
+                // Set admin status based on roles instead of property
+                this.isAdminSubject.next(this.hasAdminRole(user));
               },
               error => this.logout()
             );
@@ -143,7 +153,7 @@ export class AuthenticationService {
     localStorage.setItem(this.TOKEN_KEY, token);
   }
 
-  private getAuthToken(): string | null {
+  public getAuthToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 

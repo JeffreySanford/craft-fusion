@@ -1,6 +1,5 @@
-@use 'styles/variables' as vars;
-@use 'styles/mixins' as mix;
-
+@use 'variables' as vars;
+@use 'mixins' as mix;
 .memorial-timeline-container {
   display: flex;
   flex-direction: column;
@@ -29,7 +28,7 @@
       to bottom,
       var(--md-sys-color-primary),
       var(--md-sys-color-secondary),
-      var(--md-sys-color-primary)
+      var(--md-sys-color-tertiary)
     );
   }
 }

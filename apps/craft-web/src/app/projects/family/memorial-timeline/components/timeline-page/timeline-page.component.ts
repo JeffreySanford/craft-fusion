@@ -11,21 +11,26 @@ import { LoggerService } from '../../../../../common/services/logger.service';
   standalone: false
 })
 export class TimelinePageComponent implements OnInit, OnDestroy {
-  events$: Observable<TimelineEvent[]>;
+  public timelineEvents$: Observable<TimelineEvent[]>;
+  public loading = true; // Explicitly make public
   private subscription: Subscription = new Subscription();
   
   constructor(
     private timelineService: TimelineService,
     private logger: LoggerService
   ) {
-    this.events$ = this.timelineService.events$;
+    this.timelineEvents$ = this.timelineService.events$;
   }
   
   ngOnInit(): void {
     this.timelineService.connect();
     this.subscription.add(
       this.timelineService.loadInitialEvents().subscribe({
-        error: err => this.logger.error('Failed to load timeline events', err)
+        next: () => this.loading = false,
+        error: err => {
+          this.loading = false;
+          this.logger.error('Failed to load timeline events', err);
+        }
       })
     );
   }

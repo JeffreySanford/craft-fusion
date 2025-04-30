@@ -1,538 +1,103 @@
-/* Craft Fusion Animation System
- * Version: 1.1.2
- *
- * This file contains all application-wide animations, organized by type.
- * All animations respect the prefers-reduced-motion media query.
- */
+// Core animations for the application
 
-@use 'transition-variables' as transitions;
-
-/* ----- Variables ----- */
-$base-duration: 0.3s;
-$fast-duration: 0.2s;
-
-$ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
-$ease-decelerate: cubic-bezier(0.0, 0.0, 0.2, 1);
-$ease-accelerate: cubic-bezier(0.4, 0.0, 1, 1);
-$ease-patriotic: cubic-bezier(0.6, 0.0, 0.2, 1);
-
-$md-elevation1: 0 2px 1px -1px rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 1px 3px 0 rgba(0,0,0,.12);
-$md-elevation2: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);
-$md-elevation4: 0 2px 4px -1px rgba(0,0,0,.2),0 4px 5px 0 rgba(0,0,0,.14),0 1px 10px 0 rgba(0,0,0,.12);
-
-// ----- Respecting Prefers-Reduced-Motion ----- //
-// This media query wrapper is used in each animation class
-@mixin respect-motion-preferences {
-  @media (prefers-reduced-motion: no-preference) {
-    @content;
-  }
-}
-
-.prefers-reduced-motion * {
-  animation-duration: 0.001s !important;
-  transition-duration: 0.001s !important;
-}
-
-// ----- Keyframe Animations ----- //
-
-// 1. Entrance Animations
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideInRight {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
-
-@keyframes slideInLeft {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
-}
-
-@keyframes slideInUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes slideInDown {
-  from { transform: translateY(-30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-// 2. Exit Animations
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-@keyframes slideOutRight {
-  from { transform: translateX(0); }
-  to { transform: translateX(100%); }
-}
-
-@keyframes slideOutLeft {
-  from { transform: translateX(0); }
-  to { transform: translateX(-100%); }
-}
-
-@keyframes slideOutUp {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(-30px); opacity: 0; }
-}
-
-@keyframes slideOutDown {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(30px); opacity: 0; }
-}
-
-// 3. Attention Seeking & Patriotic Animations
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-@keyframes patrioticPulse {
-  0% { box-shadow: 0 0 0 0 rgba(191, 10, 48, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(191, 10, 48, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(191, 10, 48, 0); }
-}
-
-@keyframes flagWave {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(2deg); }
-  50% { transform: rotate(0deg); }
-  75% { transform: rotate(-2deg); }
-  100% { transform: rotate(0deg); }
-}
-
-@keyframes starTwinkle {
-  0% { opacity: 0.4; }
-  50% { opacity: 1; }
-  100% { opacity: 0.4; }
-}
-
-@keyframes patrioticShimmer {
-  0% { background-position: -100% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@keyframes shimmer {
-  0% { transform: rotate(30deg) translateX(-100%); }
-  100% { transform: rotate(30deg) translateX(100%); }
-}
-
-@keyframes pulse-green {
-  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-}
-
-@keyframes pulse-yellow {
-  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
-}
-
-@keyframes pulse-red {
-  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-}
-
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-5px); }
-  100% { transform: translateY(0px); }
-}
-
-// Enhanced star animation
-@keyframes starEnhanced {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.4;
-    color: white;
-    text-shadow: 0 0 5px white;
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(5); // Maintain centered position during scaling
-    opacity: 1;
-    color: gold;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.4);
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.4;
-    color: white;
-    text-shadow: 0 0 5px white;
-  }
-}
-
-// 4. Loading Animations
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes starStripes {
-  0% { background-position: 0 0; }
-  100% { background-position: 50px 0; }
-}
-
-// 5. Interactive Feedback Animations
-@keyframes expandRipple {
-  0% {
-    transform: scale(0);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(1);
+// Fade in animation
+@keyframes fade-in {
+  from {
     opacity: 0;
   }
+  to {
+    opacity: 1;
+  }
 }
 
-@keyframes elevationTransition {
-  from { 
-    box-shadow: $md-elevation1;
+// Slide in from left
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Slide in from right
+@keyframes slide-in-right {
+  from {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Pulse animation
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(191, 10, 48, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(191, 10, 48, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(191, 10, 48, 0);
+  }
+}
+
+// Twinkle animation
+@keyframes twinkle {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.9) rotate(-8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.1) rotate(8deg);
+  }
+}
+
+// Shine animation for elements
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  50%, 100% {
+    transform: translateX(300%) skewX(-15deg);
+  }
+}
+
+// Wave animation
+@keyframes wave {
+  0%, 100% {
     transform: translateY(0);
   }
-  to { 
-    box-shadow: $md-elevation4;
-    transform: translateY(-2px);
+  50% {
+    transform: translateY(-5px);
   }
 }
 
-// Header-specific animations
-@keyframes neonPulse {
-  0% { 
-    box-shadow: 
-      0 0 5px #00f7ff,
-      0 0 10px #00f7ff,
-      0 0 20px #00f7ff;
-  }
-  50% { 
-    box-shadow: 
-      0 0 10px #ff00ff,
-      0 0 20px #ff00ff,
-      0 0 40px #ff00ff;
-  }
-  100% { 
-    box-shadow: 
-      0 0 5px #00f7ff,
-      0 0 10px #00f7ff,
-      0 0 20px #00f7ff;
-  }
-}
-
-@keyframes neonRotate {
-  from { 
-    transform: rotate(0deg); 
-    box-shadow: 0 0 20px #00ff00;
-  }
-  to { 
-    transform: rotate(360deg);
-    box-shadow: 0 0 40px #00ff00;
-  }
-}
-
-@keyframes patrioticSpin {
+// Footer shine animation
+@keyframes shine-footer {
   0% {
-    transform: rotate(0deg);
-    box-shadow: 0 0 10px rgba(0, 40, 104, 0.8);
-  }
-  33% {
-    box-shadow: 0 0 15px rgba(191, 10, 48, 0.8);
-  }
-  66% {
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    left: -100%;
   }
   100% {
-    transform: rotate(360deg);
-    box-shadow: 0 0 10px rgba(0, 40, 104, 0.8);
+    left: 200%;
   }
 }
 
-// Header/Menu animations
-@keyframes zoomIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
+// Flag wave animation
+@keyframes flag-wave {
+  0% {
+    transform: rotate(-1deg);
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+  50% {
+    transform: rotate(1deg);
   }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+  100% {
+    transform: rotate(-1deg);
   }
 }
-
-// Add userPulse animation
-@keyframes userPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
-
-// ----- Animation Utility Classes ----- //
-
-// 1. Entrance Animations
-.fade-in {
-  @include respect-motion-preferences {
-    animation: fadeIn $base-duration $ease-standard forwards;
-  }
-}
-
-.slide-in-right {
-  @include respect-motion-preferences {
-    animation: slideInRight $base-duration $ease-decelerate forwards;
-  }
-}
-
-.slide-in-left {
-  @include respect-motion-preferences {
-    animation: slideInLeft $base-duration $ease-decelerate forwards;
-  }
-}
-
-.slide-in-up {
-  @include respect-motion-preferences {
-    animation: slideInUp $base-duration $ease-decelerate forwards;
-  }
-}
-
-.slide-in-down {
-  @include respect-motion-preferences {
-    animation: slideInDown $base-duration $ease-decelerate forwards;
-  }
-}
-
-// 2. Exit Animations
-.fade-out {
-  @include respect-motion-preferences {
-    animation: fadeOut $base-duration $ease-standard forwards;
-  }
-}
-
-.slide-out-right {
-  @include respect-motion-preferences {
-    animation: slideOutRight $base-duration $ease-accelerate forwards;
-  }
-}
-
-.slide-out-left {
-  @include respect-motion-preferences {
-    animation: slideOutLeft $base-duration $ease-accelerate forwards;
-  }
-}
-
-.slide-out-up {
-  @include respect-motion-preferences {
-    animation: slideOutUp $base-duration $ease-accelerate forwards;
-  }
-}
-
-.slide-out-down {
-  @include respect-motion-preferences {
-    animation: slideOutDown $base-duration $ease-accelerate forwards;
-  }
-}
-
-// 3. Attention Seeking & Patriotic Animations
-.pulse {
-  @include respect-motion-preferences {
-    animation: pulse 2s $ease-standard infinite;
-  }
-}
-
-.patriotic-pulse {
-  @include respect-motion-preferences {
-    animation: patrioticPulse 2s infinite;
-  }
-}
-
-.flag-wave {
-  @include respect-motion-preferences {
-    animation: flagWave 6s ease-in-out infinite;
-    transform-origin: center left;
-  }
-}
-
-.star-twinkle {
-  @include respect-motion-preferences {
-    animation: starTwinkle 2s ease-in-out infinite;
-  }
-}
-
-.patriotic-shimmer {
-  @include respect-motion-preferences {
-    background-image: linear-gradient(
-      90deg, 
-      rgba(0, 40, 104, 0) 0%,
-      rgba(0, 40, 104, 0.3) 25%, 
-      rgba(191, 10, 48, 0.3) 50%, 
-      rgba(255, 255, 255, 0.3) 75%, 
-      rgba(255, 255, 255, 0) 100%
-    );
-    background-size: 200% 100%;
-    animation: patrioticShimmer 3s linear infinite;
-  }
-}
-
-// 4. Loading Animations
-.loading-spin {
-  @include respect-motion-preferences {
-    animation: spin 1.2s linear infinite;
-  }
-}
-
-.loading-stars-stripes {
-  @include respect-motion-preferences {
-    background-image: repeating-linear-gradient(
-      45deg,
-      rgba(191, 10, 48, 0.3),
-      rgba(191, 10, 48, 0.3) 10px,
-      rgba(255, 255, 255, 0.3) 10px,
-      rgba(255, 255, 255, 0.3) 20px,
-      rgba(0, 40, 104, 0.3) 20px,
-      rgba(0, 40, 104, 0.3) 30px
-    );
-    background-size: 150px 100%;
-    animation: starStripes 3s linear infinite;
-  }
-}
-
-// 5. Interactive Feedback Animations
-.ripple {
-  position: relative;
-  overflow: hidden;
-  
-  &::after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 120%;
-    height: 120%;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    pointer-events: none;
-  }
-  
-  &:active::after {
-    @include respect-motion-preferences {
-      animation: expandRipple 0.4s $ease-patriotic;
-    }
-  }
-}
-
-.elevate-on-hover {
-  transition: transform $base-duration $ease-standard, 
-              box-shadow $base-duration $ease-standard;
-  box-shadow: $md-elevation1;
-  
-  &:hover {
-    @include respect-motion-preferences {
-      transform: translateY(-2px);
-      box-shadow: $md-elevation4;
-    }
-  }
-}
-
-// 6. Route Transition Animations
-.route-enter {
-  position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(to right, #BF0A30, #002868, #FFFFFF);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform transitions.$slow-duration transitions.$ease-patriotic;
-  }
-  
-  &.active::before {
-    @include respect-motion-preferences {
-      transform: scaleX(1);
-    }
-  }
-}
-
-// Add animation utility classes for the keyframes
-.zoom-in {
-  @include respect-motion-preferences {
-    animation: zoomIn 0.2s $ease-decelerate forwards;
-  }
-}
-
-.slide-in {
-  @include respect-motion-preferences {
-    animation: slideIn 0.2s $ease-decelerate forwards;
-  }
-}
-
-// ----- Mixin Library ----- //
-
-// Single-property transitions
-@mixin animate-property($property, $duration: $base-duration, $easing: $ease-standard) {
-  transition: $property $duration $easing;
-}
-
-// Multi-property transitions
-@mixin animate-properties($properties, $duration: $base-duration, $easing: $ease-standard) {
-  $transitions: ();
-  @each $property in $properties {
-    $transitions: append($transitions, $property $duration $easing, comma);
-  }
-  transition: $transitions;
-}
-
-// Staggered animation for multiple children
-@mixin staggered-animation($animation-name, $items, $stagger-delay: 0.1s) {
-  @for $i from 1 through $items {
-    &:nth-child(#{$i}) {
-      animation-delay: $i * $stagger-delay;
-    }
-  }
-}
-
-// Patriotic gradient background
-@mixin patriotic-gradient($angle: 135deg) {
-  background: linear-gradient($angle, rgba(0, 40, 104, 0.9), rgba(191, 10, 48, 0.9));
-}
-
-// ----- Angular Animation Snippets ----- //
-// These are for reference when implementing Angular animations
-
-// Example: fadeInOut animation trigger for Angular
-/*
-import { trigger, transition, style, animate } from '@angular/animations';
-
-export const fadeInOut = trigger('fadeInOut', [
-  transition(':enter', [
-    style({ opacity: 0 }),
-    animate('{{duration}} {{easing}}', style({ opacity: 1 }))
-  ], { params: { duration: '0.3s', easing: 'ease' } }),
-  
-  transition(':leave', [
-    animate('{{duration}} {{easing}}', style({ opacity: 0 }))
-  ], { params: { duration: '0.3s', easing: 'ease' } })
-]);
-*/
