@@ -9,14 +9,14 @@ export interface User {
   firstName: string;
   lastName: string;
   role: string;
-  permissions?: string[];
+  permissions?: string[]; // Ensure permissions is marked as optional
 }
 
 export interface JwtPayload {
   sub: number;
   username: string;
   role: string;
-  permissions: string[];
+  permissions: string[]; // This expects a non-optional array
 }
 
 @Injectable()
@@ -32,8 +32,10 @@ export class AuthService {
   }
 
   validateUser(username: string, password: string): Observable<User | null> {
-    this.logger.debug(`Attempting to validate user: ${username}`);
-    console.log(`Auth attempt for: ${username}`);
+    this.logger.debug(`Authentication attempt initiated`, { 
+      username,
+      timestamp: new Date().toISOString()
+    });
     
     // Demo authentication logic - replace with real DB check
     if (username === 'admin' && password === 'admin') {
@@ -43,10 +45,17 @@ export class AuthService {
         firstName: 'Admin',
         lastName: 'User',
         role: 'admin',
-        permissions: ['read:all', 'write:all', 'delete:all']
+        permissions: ['read:all', 'write:all', 'delete:all'] // Define permissions explicitly here
       };
       
       this.addActiveUser(user);
+      this.logger.log(`Authentication successful`, {
+        username,
+        role: user.role,
+        permissions: user.permissions?.join(',') || 'none', // Fixed: Use optional chaining
+        loginAttemptResult: 'success'
+      });
+      
       return of(user);
     } else if (username === 'user' && password === 'user') {
       const user: User = {
@@ -55,29 +64,72 @@ export class AuthService {
         firstName: 'Regular',
         lastName: 'User',
         role: 'user',
-        permissions: ['read:own', 'write:own']
+        permissions: ['read:own', 'write:own'] // Define permissions explicitly here
       };
       
       this.addActiveUser(user);
+      this.logger.log(`Authentication successful`, {
+        username,
+        role: user.role,
+        permissions: user.permissions?.join(',') || 'none', // Fixed: Use optional chaining
+        loginAttemptResult: 'success'
+      });
+      
+      return of(user);
+    } else if (username === 'test' && password === 'test') {
+      // Add special test user for development
+      const user: User = {
+        id: 3,
+        username: 'test',
+        firstName: 'Test',
+        lastName: 'User',
+        role: 'admin',
+        permissions: ['read:all', 'write:all', 'delete:all'] // Define permissions explicitly here
+      };
+      
+      this.addActiveUser(user);
+      this.logger.log(`Test user authenticated`, {
+        username,
+        role: user.role,
+        permissions: user.permissions?.join(',') || 'none',
+        loginAttemptResult: 'success'
+      });
+      
       return of(user);
     }
     
-    this.logger.warn(`Failed login attempt for user: ${username}`);
-    console.log(`Failed login: ${username}`);
+    this.logger.warn(`Authentication failed - invalid credentials`, { 
+      username,
+      loginAttemptResult: 'failure',
+      reason: 'Invalid username or password'
+    });
+    
     return of(null);
   }
 
   generateToken(user: User): string {
-    this.logger.debug(`Generating JWT token for user: ${user.username}`);
+    this.logger.debug(`Generating JWT token for user`, {
+      username: user.username,
+      userId: user.id,
+      role: user.role
+    });
     
     const payload: JwtPayload = {
       sub: user.id,
       username: user.username,
       role: user.role,
-      permissions: user.permissions || []
+      permissions: user.permissions || [] // Fixed: Use nullish coalescing to provide default empty array
     };
     
-    return this.jwtService.sign(payload);
+    const token = this.jwtService.sign(payload);
+    
+    this.logger.debug(`JWT token generated successfully`, {
+      username: user.username,
+      tokenLength: token.length,
+      expiresIn: '1h' // This should match your actual JWT expiration config
+    });
+    
+    return token;
   }
 
   verifyToken(token: string): Observable<User | null> {
@@ -85,33 +137,47 @@ export class AuthService {
       this.logger.debug('Verifying JWT token');
       const payload = this.jwtService.verify(token) as JwtPayload;
       
+      this.logger.debug('Token verified successfully', {
+        username: payload.username,
+        role: payload.role,
+        tokenSubject: payload.sub
+      });
+      
       const user: User = {
         id: payload.sub,
         username: payload.username,
         firstName: '', // These would come from a user service/database
         lastName: '',
         role: payload.role,
-        permissions: payload.permissions
+        permissions: payload.permissions || [] // Fixed: Use nullish coalescing for safety
       };
       
       return of(user);
-    } catch (error) {
-      this.logger.error('Token verification failed', error);
-      if (error instanceof Error) {
-        console.error('Invalid token:', error.message);
-      } else {
-        console.error('Invalid token:', String(error));
-      }
+    } catch (error: unknown) {
+      const typedError = error as Error;
+      this.logger.error(`Token verification failed`, {
+        error: typedError.message,
+        stack: typedError.stack?.split('\n')[0]
+      });
+      
       return of(null);
     }
   }
 
   private addActiveUser(user: User): void {
-    const activeUsersMap = this.activeUsers.value;
-    activeUsersMap.set(user.username, user);
-    this.activeUsers.next(new Map(activeUsersMap));
+    const currentUsers = this.activeUsers.value;
+    currentUsers.set(user.username, user);
+    this.activeUsers.next(currentUsers);
     
-    this.logger.log(`User added to active sessions: ${user.username} (${user.role})`);
-    console.log(`Active user added: ${user.username}, Role: ${user.role}`);
+    this.logger.debug(`User added to active sessions`, {
+      username: user.username,
+      activeSessionCount: currentUsers.size
+    });
+  }
+
+  getActiveUsers(): Observable<User[]> {
+    return this.activeUsers.pipe(
+      map(userMap => Array.from(userMap.values()))
+    );
   }
 }

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import { environment } from 'apps/craft-web/src/environments/environment';
-import mapboxgl from 'mapbox-gl';
+import { environment } from '../../../environments/environment'; // Corrected relative path
+import * as mapboxgl from 'mapbox-gl';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +11,8 @@ export class MapboxService {
   private map: mapboxgl.Map | undefined;
 
   constructor() {
-    mapboxgl.accessToken = environment.mapbox.accessToken;
+    // Set your Mapbox token here
+    (mapboxgl as any).accessToken = (environment as any).mapboxToken;
   }
 
   initializeMap(container: string, center: [number, number], zoom: number): mapboxgl.Map {

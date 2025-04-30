@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'craft-nest-api',
-      script: './dist/apps/craft-nest/src/main.js', // Updated path
+      script: './dist/apps/craft-nest/main.js', // Corrected path
       instances: process.env.NODE_ENV === 'production' ? 'max' : 1,
       exec_mode: process.env.NODE_ENV === 'production' ? 'cluster' : 'fork',
       cwd: __dirname,

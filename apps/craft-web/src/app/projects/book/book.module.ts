@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -42,7 +42,6 @@ import { EditorModule } from '@tinymce/tinymce-angular';
   ],
   providers: [
     BookService
-  ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA] // Add both schemas to handle unknown elements and property bindings
+  ]
 })
 export class BookModule { }

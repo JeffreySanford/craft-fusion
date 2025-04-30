@@ -1,7 +1,7 @@
 import { Injectable, Inject, forwardRef } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 // Add ResponseType import for better typing
-import { Observable, tap, catchError } from 'rxjs';
+import { Observable, tap, catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { environment as production } from '../../../environments/environment.prod';
 import { LoggerService } from './logger.service';
@@ -33,6 +33,13 @@ export class ApiService {
   // Default API URL set to NestJS server
   private apiUrl = `${environment.apiUrl}/api`;
   private recordSize = 100; // Default record size
+  
+  // Connection management properties
+  private readonly BASE_TIMEOUT = 10000; // 10 seconds timeout for API requests
+  private readonly MAX_RETRIES = 3;
+  private serverStarting = false;
+  private connectionAttempts = 0;
+  private maxStartupRetries = 5;
 
   private servers: Server[] = [
     {
@@ -87,21 +94,24 @@ export class ApiService {
     return this.addSecurityHeaders(headers);
   }
 
+  // Get current URL construction for clarity
   private getFullUrl(endpoint: string): string {
-    // Modified to always use the full URL from apiUrl, not relying on the proxy
+    // Remove leading slashes
     endpoint = endpoint.replace(/^\/+/, '');
     
-    // Always use the full URL including hostname and port
-    return `${this.apiUrl}/${endpoint}`;
+    // Ensure we have the correct base URL with environment-specific settings
+    let baseUrl;
+    if (this.isProduction) {
+      // In production, use the full environment API URL
+      baseUrl = this.apiUrl;
+    } else {
+      // In development, use the Angular proxy (no hostname needed)
+      // This ensures requests go through Angular DevServer proxy
+      baseUrl = '/api';
+    }
     
-    // The original code (commented out) relied on Angular's proxy:
-    // if (!this.isProduction) {
-    //   endpoint = endpoint.replace(/^\/+/, '');
-    //   return `/api/${endpoint}`;
-    // }
-    // In production, use the full API URL
-    // endpoint = endpoint.replace(/^\/+/, '');
-    // return `${this.apiUrl}/${endpoint}`;
+    // Combine and return the full URL path
+    return `${baseUrl}/${endpoint}`;
   }
 
   // 🛡️ API CRUD Operations
@@ -135,31 +145,6 @@ export class ApiService {
         throw error;
       })
     ) as Observable<T>; // Explicitly cast the return type
-  }
-
-  post<T, R>(endpoint: string, body: T, options?: any): Observable<R> {
-    const url = this.getFullUrl(endpoint);
-    const callId = this.logger.startServiceCall('ApiService', 'POST', url);
-
-    const httpOptions = {
-      ...options,
-      headers: this.getTracingHeaders(),
-    };
-    
-    return this.http.post<R>(url, body, httpOptions).pipe(
-      tap(response => {
-        this.logger.endServiceCall(callId, 200);
-        this.logger.debug(`POST ${endpoint} succeeded`);
-      }),
-      catchError(error => {
-        this.logger.endServiceCall(callId, error.status || 500);
-        this.logger.error(`POST ${endpoint} failed`, { 
-          status: error.status,
-          message: error.message
-        });
-        throw error;
-      })
-    ) as Observable<R>;
   }
 
   put<T>(endpoint: string, body: T, options?: any): Observable<T> {
@@ -246,7 +231,7 @@ export class ApiService {
    * @returns The configured API URL
    */
   setApiUrl(resource: string): string {
-    console.log(`Setting API URL for resource: ${resource}`);
+    this.logger.debug(`Setting API URL for resource: ${resource}`);
     
     if (resource === 'Go') {
       this.apiUrl = 'http://localhost:8080/api';
@@ -258,7 +243,7 @@ export class ApiService {
       this.apiUrl = 'http://localhost:3000/api';
     }
     
-    console.log(`API URL set to ${this.apiUrl}`);
+    this.logger.debug(`API URL set to ${this.apiUrl}`);
     return this.apiUrl;
   }
 
@@ -342,5 +327,164 @@ export class ApiService {
   getUserById(id: string): Observable<User> {
     // Use getFullUrl for proxy compatibility
     return this.http.get<User>(this.getFullUrl(`users/${id}`));
+  }
+
+  /**
+   * Check if server appears to be in startup process
+   */
+  public get isServerStarting(): boolean {
+    return this.serverStarting;
+  }
+
+  /**
+   * Special method for authentication requests with enhanced retry logic
+   * @param method HTTP method (GET, POST, etc)
+   * @param endpoint API endpoint
+   * @param body Request body (for POST/PUT)
+   * @param options Additional options
+   * @returns Observable of response
+   */
+  public authRequest<T>(method: string, endpoint: string, body?: any, options = {}): Observable<T> {
+    // Log detailed debugging information
+    console.log('🔍 Auth request details', {
+      method,
+      endpoint,
+      fullUrl: this.getFullUrl(endpoint),
+      bodyKeys: body ? Object.keys(body) : 'none',
+      timestamp: new Date().toISOString(),
+      options,
+      isProduction: this.isProduction
+    });
+    
+    // Enhanced retry options for auth requests
+    const enhancedOptions = { 
+      ...options,
+      timeout: this.BASE_TIMEOUT * 2, // Double timeout for auth requests
+      retries: this.maxStartupRetries
+    };
+    
+    // Add debugging information to request headers
+    const debugHeaders = {
+      headers: {
+        'X-Debug-Timestamp': new Date().toISOString(),
+        'X-Client-Info': navigator.userAgent
+      }
+    };
+    
+    const finalOptions = {
+      ...enhancedOptions,
+      ...debugHeaders
+    };
+    
+    // Use regular request methods with enhanced options
+    switch (method.toUpperCase()) {
+      case 'GET':
+        return this.get<T>(endpoint, finalOptions);
+      case 'POST':
+        // Allow a breakpoint here for debugging
+        // debugger;
+        console.log(`🔐 Making ${method} request to ${this.getFullUrl(endpoint)}`);
+        return this.post<any, T>(endpoint, body, finalOptions);
+      case 'PUT':
+        return this.put<any>(endpoint, body, finalOptions);
+      case 'DELETE':
+        return this.delete<T>(endpoint, finalOptions);
+      default:
+        this.logger.error(`Unsupported HTTP method for auth request: ${method}`);
+        return throwError(() => new Error(`Unsupported HTTP method: ${method}`));
+    }
+  }
+
+  /**
+   * Creates HTTP POST request to specified endpoint
+   * 
+   * @param endpoint - API endpoint to request
+   * @param body - Request body
+   * @param options - Optional HTTP request options
+   * @returns Observable<R> - Observable of response type R
+   */
+  post<T extends object, R>(endpoint: string, body: T, options?: any): Observable<R> {
+    const url = this.getFullUrl(endpoint);
+    const callId = this.logger.startServiceCall('ApiService', 'POST', url);
+
+    const httpOptions = {
+      ...options,
+      headers: this.getTracingHeaders(),
+    };
+    
+    this.logger.debug(`Making POST request to ${url}`, {
+      endpoint,
+      baseUrl: this.apiUrl,
+      fullUrl: url,
+      isProduction: this.isProduction
+    });
+    
+    // Add more detailed debugging for auth endpoints
+    if (endpoint.includes('auth')) {
+      console.log(`🌐 Network request details:`, {
+        url,
+        method: 'POST',
+        bodyType: typeof body,
+        hasCredentials: !!(body && 'username' in body),
+        timestamp: Date.now(),
+        options: Object.keys(httpOptions || {})
+      });
+    }
+    
+    return this.http.post<R>(url, body, httpOptions).pipe(
+      tap(response => {
+        this.logger.endServiceCall(callId, 200);
+        this.logger.debug(`POST ${endpoint} succeeded`);
+        
+        if (endpoint.includes('auth')) {
+          console.log(`✅ Auth request succeeded`, {
+            endpoint, 
+            responseReceived: true,
+            responseType: typeof response
+          });
+        }
+      }),
+      catchError(error => {
+        this.logger.endServiceCall(callId, error.status || 500);
+        this.logger.error(`POST ${endpoint} failed`, { 
+          status: error.status,
+          message: error.message,
+          url: url
+        });
+        
+        if (endpoint.includes('auth')) {
+          console.error(`❌ Auth request failed: ${error.status}`, {
+            message: error.message || 'No message',
+            statusText: error.statusText,
+            url: url,
+            error: error
+          });
+          
+          // Check if the server is available by pinging it
+          this.checkServerAvailability();
+        }
+        
+        throw error;
+      })
+    ) as Observable<R>;
+  }
+  
+  /**
+   * Check if the server is available by making a simple HEAD request
+   */
+  private checkServerAvailability(): void {
+    // Try to ping the server root to check if it's up
+    fetch('/api', { method: 'HEAD' })
+      .then(response => {
+        console.log('🔄 Server availability check: Server is responding', {
+          status: response.status, 
+          ok: response.ok
+        });
+      })
+      .catch(error => {
+        console.error('🔄 Server availability check: Server is not responding', {
+          error: error.message || 'Unknown error'
+        });
+      });
   }
 }

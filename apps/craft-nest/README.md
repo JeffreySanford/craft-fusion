@@ -23,32 +23,53 @@ Craft-Nest is a robust NestJS backend service that provides API endpoints, real-
 - **Framework**: NestJS 10+
 - **Runtime**: Node.js 20+
 - **Language**: TypeScript 5+
-- **Database**: MongoDB (with in-memory option for testing)
-- **ORM**: Mongoose with TypeGoose for type-safety
+- **Database**: SQLite (via TypeORM or Prisma - clarify which is used)
+- **ORM/Query Builder**: TypeORM / Prisma (clarify which is used)
 - **API Documentation**: Swagger/OpenAPI
 - **Real-time Communication**: WebSockets with Socket.IO
 - **Authentication**: JWT with Passport strategies
 - **Validation**: Class-validator and class-transformer
 - **Testing**: Jest with Supertest
-- **Blockchain**: Custom blockchain implementation for data integrity
-- **Logging**: Winston logger
+- **Blockchain**: Custom blockchain implementation for data integrity (if applicable)
+- **Logging**: Built-in NestJS Logger (or Winston if configured)
 
 ## Application Structure
+<!-- Add details about module structure, e.g., feature modules, core module, shared module -->
 
 ## Development Guidelines
 
 ### Package Management
 
-> **Important**: This application follows monorepo architecture principles. 
-> - **DO NOT** create a package.json file in this directory
-> - All dependencies must be managed through the root-level package.json
-> - Use `nx run craft-nest:command` format for operations
+> **Important**: This application is part of an Nx monorepo.
+> - **DO NOT** create a `package.json` file within the `apps/craft-nest` directory.
+> - All dependencies **MUST** be managed through the root-level `package.json` located at `c:\repos\craft-fusion\package.json`.
+> - Use Nx commands run from the workspace root (`c:\repos\craft-fusion`) for managing dependencies and running scripts.
 
-To install a new dependency:
+**Adding a Dependency:**
 ```bash
-# Add a dependency for this application
-cd ../../  # Navigate to root
-npm install some-package --save
+# Navigate to the workspace root directory
+cd c:\repos\craft-fusion
+
+# Add a production dependency
+npm install some-package
+
+# Add a development dependency
+npm install some-dev-package --save-dev
+```
+
+**Running Scripts (Examples):**
+```bash
+# Serve the NestJS app in development mode
+npx nx serve craft-nest
+
+# Build the NestJS app for production
+npx nx build craft-nest --configuration=production
+
+# Run tests
+npx nx test craft-nest
+
+# Run linting
+npx nx lint craft-nest
 ```
 
 ## Entity Validation
@@ -58,13 +79,16 @@ npm install some-package --save
 The Record entity uses TypeScript interfaces with runtime type guards:
 
 ```typescript
-import { Record, isRecord } from './entities/record.entity';
+// Example path - adjust if necessary
+import { Record, isRecord } from './app/records/entities/record.entity';
 
 // Example usage in a service
-validateRecord(data: any): boolean {
+validateRecord(data: unknown): data is Record { // Use unknown and type predicate
   return isRecord(data);
 }
 ```
 
-All fields in the Record entity are required to ensure data consistency.
+All fields in the Record entity are required to ensure data consistency. Consider using `class-validator` decorators on DTOs for robust validation at API boundaries.
+
+<!-- Add sections for Data Access, API Design, Real-time, Auth, Testing etc. -->
 
