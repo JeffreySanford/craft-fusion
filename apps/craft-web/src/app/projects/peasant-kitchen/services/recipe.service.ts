@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, catchError, tap, of } from 'rxjs';
-import { Recipe } from './recipe.class';
-import { ApiService } from '../../common/services/api.service';
+import { Recipe } from './recipe.interface';
+import { ApiService } from '../../../common/services/api.service';
 
 @Injectable()
 export class RecipeService {

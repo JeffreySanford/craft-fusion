@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { RecipeService } from '../recipe.service';
-import { Recipe } from '../recipe.class';
+import { RecipeService } from '../services/recipe.service';
+import { Recipe } from '../services/recipe.interface';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 

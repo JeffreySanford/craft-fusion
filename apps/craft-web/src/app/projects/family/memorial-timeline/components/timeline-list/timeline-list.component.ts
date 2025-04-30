@@ -7,8 +7,7 @@ import { TimelineEvent } from '../../models/timeline-event.model';
   templateUrl: './timeline-list.component.html',
   styleUrls: ['./timeline-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false, // CRITICAL: Must always be false for all components
-  host: { 'class': 'memorial-timeline-list' }
+  standalone: false // Ensure standalone is explicitly false
 })
 export class TimelineListComponent {
   @Input() events: TimelineEvent[] | null = [];

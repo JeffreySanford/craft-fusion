@@ -1,15 +1,11 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, takeUntil } from 'rxjs/operators';
-import { SocketClientService } from './socket-client.service';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { catchError, takeUntil, tap } from 'rxjs/operators';
 import { LoggerService } from './logger.service';
+import { Document } from '../../projects/book/book.component';
+import { SocketClientService } from './socket-client.service';
 import { ApiService } from './api.service';
-
-export interface Document {
-  name: string;
-  color: string;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -127,6 +123,8 @@ export class UserStateService implements OnDestroy {
       const newDoc: Document = {
         name: documentName,
         color: 'Patriotic Red' // Default color
+        ,
+        contrast: ''
       };
       const updatedDocs = [...currentDocs, newDoc];
       this.openedDocumentsSubject.next(updatedDocs);

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ElementRef, ViewChild } from '@angular/core';
 import { Observable, Subscription, interval, of } from 'rxjs';
 import Chart, { Color } from 'chart.js/auto';
 import { LoggerService, ServiceCallMetric } from '../../common/services/logger.service';
@@ -7,8 +7,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { LoggerDisplayComponent } from '../../components/logger-display/logger-display.component';
 import { UserActivityService } from '../../common/services/user-activity.service';
 import { UserStateService } from '../../common/services/user-state.service';
-import { AuthorizationService } from '../../common/services/authorization.service';
-import { AdminStateService } from '../../common/services/admin-state.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { ApiLoggerService } from '../../common/services/api-logger.service';
 import { SocketClientService } from '../../common/services/socket-client.service';
@@ -76,7 +74,7 @@ interface ApiEndpointLog {
     ]),
   ]
 })
-export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
+export class AdminComponent implements OnInit {
   @ViewChild('systemMetricsChart') systemMetricsChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('serviceMetricsChart') serviceMetricsChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -216,10 +214,11 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
   private apiLogsSubscription!: Subscription;
 
   constructor(
+    // Use @Inject with a string token that matches what's registered in your providers
+    @Inject('AuthService') private authService: any,
     private logger: LoggerService,
     private userActivity: UserActivityService,
     private userState: UserStateService,
-    private authService: AuthorizationService,
     private apiLogger: ApiLoggerService,
     private socketClient: SocketClientService
   ) {
@@ -1530,7 +1529,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
       this.systemMetricsChart.options.scales.y1.ticks.color = '#ef4444';
       
       this.systemMetricsChart.data.datasets[0].yAxisID = 'y';  // Memory (not visible)
-      this.systemMetricsChart.data.datasets[1].yAxisID = 'y';  // CPU on left 
+      this.systemMetricsChart.data.datasets[1].yAxisID = 'y';  // CPU on left
       this.systemMetricsChart.data.datasets[2].yAxisID = 'y1'; // Network on right
     }
   }
@@ -1791,8 +1790,8 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     
     const minTime = Math.min(...timeValues);
     const maxTime = Math.max(...timeValues);
-    const minResponse = 0; // Start at 0 for better visualization
-    const maxResponse = Math.max(...responseValues) * 1.1; // Add 10% headroom
+    const minResponse = Math.min(...responseValues);
+    const maxResponse = Math.max(...responseValues);
     
     // Generate points for the sparkline
     const points = timelineData.map((d, i) => {
@@ -1820,111 +1819,6 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     `;
   }
 
-  // Add these helper methods for the template
-  getTotalSuccessCount(): number {
-    return Object.values(this.endpointLogs).reduce((total, endpoint) => 
-      total + endpoint.successCount, 0);
-  }
-
-  getTotalHitCount(): number {
-    return Object.values(this.endpointLogs).reduce((total, endpoint) => 
-      total + endpoint.hitCount, 0);
-  }
-
-  getTotalErrorCount(): number {
-    return Object.values(this.endpointLogs).reduce((total, endpoint) => 
-      total + endpoint.errorCount, 0);
-  }
-
-  // Calculate gauge fill for response time
-  getGaugeFill(responseTime: number): string {
-    // Calculate percentage of stroke to fill based on response time
-    // Higher response time = lower fill percentage (worse performance)
-    // 0-50ms: 100-80%, 50-100ms: 80-60%, 100-200ms: 60-40%, 200-500ms: 40-20%, 500+ms: 20-0%
-    let percentage = 100;
-    
-    if (responseTime <= 50) {
-      percentage = 100 - ((responseTime / 50) * 20);
-    } else if (responseTime <= 100) {
-      percentage = 80 - (((responseTime - 50) / 50) * 20);
-    } else if (responseTime <= 200) {
-      percentage = 60 - (((responseTime - 100) / 100) * 20);
-    } else if (responseTime <= 500) {
-      percentage = 40 - (((responseTime - 200) / 300) * 20);
-    } else {
-      percentage = Math.max(20 - (((responseTime - 500) / 500) * 20), 0);
-    }
-    
-    // Convert percentage to stroke-dasharray
-    // For an arc gauge, the total length is approximately 126 (for this SVG path)
-    const maxLength = 126;
-    const dashLength = (percentage / 100) * maxLength;
-    return `${dashLength} ${maxLength}`;
-  }
-
-  // Check if response time trend is positive (lower is better)
-  isResponseTimeTrendPositive(endpointKey: string): boolean {
-    if (!this.endpointLogs[endpointKey] || 
-        !this.endpointLogs[endpointKey].timelineData || 
-        this.endpointLogs[endpointKey].timelineData.length < 2) {
-      return true; // Default to positive if no data
-    }
-    
-    const timeline = this.endpointLogs[endpointKey].timelineData;
-    const avgOfRecent = this.getAverageOfLastN(timeline, 3, 'responseTime');
-    const avgOfPrevious = this.getAverageOfLastN(timeline, 3, 'responseTime', 3);
-    
-    // Lower response time is better, so if recent average is lower than previous, trend is positive
-    return avgOfRecent <= avgOfPrevious;
-  }
-
-  // Calculate response time trend percentage
-  getResponseTimeTrend(endpointKey: string): number {
-    if (!this.endpointLogs[endpointKey] || 
-        !this.endpointLogs[endpointKey].timelineData || 
-        this.endpointLogs[endpointKey].timelineData.length < 2) {
-      return 0;
-    }
-    
-    const timeline = this.endpointLogs[endpointKey].timelineData;
-    const avgOfRecent = this.getAverageOfLastN(timeline, 3, 'responseTime');
-    const avgOfPrevious = this.getAverageOfLastN(timeline, 3, 'responseTime', 3);
-    
-    if (avgOfPrevious === 0) return 0;
-    
-    // Calculate percentage change
-    const percentChange = ((avgOfPrevious - avgOfRecent) / avgOfPrevious) * 100;
-    return Math.abs(Math.round(percentChange));
-  }
-
-  // Helper function to get average of last N items in timeline
-  private getAverageOfLastN(timeline: any[], n: number, property: string, offset: number = 0): number {
-    if (timeline.length <= offset) return 0;
-    
-    const end = timeline.length - offset;
-    const start = Math.max(0, end - n);
-    
-    if (start === end) return 0;
-    
-    let sum = 0;
-    for (let i = start; i < end; i++) {
-      sum += timeline[i][property];
-    }
-    
-    return sum / (end - start);
-  }
-
-  // Calculate gauge fill for success rate
-  getSuccessRateGaugeFill(endpointKey: string): string {
-    const successRate = this.getSuccessRate(this.endpointLogs[endpointKey]);
-    
-    // Convert percentage to stroke-dasharray
-    // For an arc gauge, the total length is approximately 126 (for this SVG path)
-    const maxLength = 126;
-    const dashLength = (successRate / 100) * maxLength;
-    return `${dashLength} ${maxLength}`;
-  }
-
   // Generate detailed sparkline SVG - enhanced version of existing function
   generateDetailedSparklineSVG(timelineData: any[]): string {
     if (!timelineData || timelineData.length < 2) {
@@ -1945,24 +1839,25 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     // Extract status codes
     const statuses = timelineData.map(data => data.status);
     
+    // Get time range and response time range
+    const timeValues = timelineData.map(d => d.timestamp.getTime());
+    const minTime = Math.min(...timeValues);
+    const maxTime = Math.max(...timeValues);
+    const minResponse = 0; // Start at 0 for better visualization
+    const maxResponse = Math.max(...responseTimes) * 1.1; // Add 10% headroom
+    
     // Generate path for response time line
-    let pathData = '';
-    normalizedResponseTimes.forEach((value, index) => {
-      const x = padding + (index / (normalizedResponseTimes.length - 1)) * innerWidth;
-      const y = padding + (1 - value) * innerHeight;
-      
-      if (index === 0) {
-        pathData += `M ${x},${y}`;
-      } else {
-        pathData += ` L ${x},${y}`;
-      }
-    });
+    const pathData = timelineData.map((d, index) => {
+      const x = padding + (innerWidth * (d.timestamp.getTime() - minTime) / (maxTime - minTime));
+      const y = height - padding - (innerHeight * (d.responseTime - minResponse) / (maxResponse - minResponse));
+      return `${x},${y}`;
+    }).join(' ');
     
     // Generate dots for status codes
     let dotsHtml = '';
-    normalizedResponseTimes.forEach((value, index) => {
-      const x = padding + (index / (normalizedResponseTimes.length - 1)) * innerWidth;
-      const y = padding + (1 - value) * innerHeight;
+    timelineData.forEach((d, index) => {
+      const x = padding + (innerWidth * (d.timestamp.getTime() - minTime) / (maxTime - minTime));
+      const y = height - padding - (innerHeight * (d.responseTime - minResponse) / (maxResponse - minResponse));
       const status = statuses[index];
       
       // Determine color based on status code
@@ -1977,7 +1872,7 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     
     // Generate area fill
-    let areaData = pathData + ` L ${padding + innerWidth},${padding + innerHeight} L ${padding},${padding + innerHeight} Z`;
+    const areaData = pathData + ` L ${padding + innerWidth},${height - padding} L ${padding},${height - padding} Z`;
     
     // Create the SVG
     const svg = `
@@ -2092,50 +1987,6 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     return (serviceInfo.successCount / serviceInfo.hitCount) * 100;
   }
   
-  // Other methods...
-  
-  // Update log detail display methods for the expanded section
-  toggleTimestampFormat(): void {
-    this.timestampFormat = this.timestampFormat === 'shortTime' ? 'medium' : 'shortTime';
-  }
-  
-  getEndpointDetails(endpointKey: string): any {
-    if (!this.endpointLogs[endpointKey] ||
-        !this.endpointLogs[endpointKey].timelineData ||
-        this.endpointLogs[endpointKey].timelineData.length === 0) {
-      return null;
-    }
-    
-    // Get the most recent log entry
-    return this.endpointLogs[endpointKey].timelineData[
-      this.endpointLogs[endpointKey].timelineData.length - 1
-    ];
-  }
-  
-  // Method to generate request/response details
-  getFormattedJson(obj: any): string {
-    if (!obj) return 'No data';
-    try {
-      return JSON.stringify(obj, null, 2);
-    } catch (e) {
-      return 'Error parsing data';
-    }
-  }
-  
-  // Format headers for display
-  getFormattedHeaders(headers: any): string {
-    if (!headers) return 'No headers';
-    try {
-      const headersList = [];
-      for (const key in headers) {
-        headersList.push(`${key}: ${headers[key]}`);
-      }
-      return headersList.join('\n');
-    } catch (e) {
-      return 'Error parsing headers';
-    }
-  }
-  
   // Get minimum response time for an endpoint
   getMinResponseTime(endpointKey: string): number {
     if (!this.endpointLogs[endpointKey] || 
@@ -2160,114 +2011,127 @@ export class AdminComponent implements OnInit, AfterViewInit, OnDestroy {
     return Math.max(...timeline.map(item => item.responseTime));
   }
   
-  // Method to toggle endpoint details expansion
-  toggleEndpointDetails(endpointKey: string): void {
-    this.expandedEndpoint = this.expandedEndpoint === endpointKey ? null : endpointKey;
+  // Get total success count across all endpoints
+  getTotalSuccessCount(): number {
+    return Object.values(this.endpointLogs).reduce((total, endpoint) => {
+      return total + (endpoint.successCount || 0);
+    }, 0);
   }
 
-  // Get service status class based on status
-  getServiceStatusClass(endpointKey: string): string {
-    if (!this.endpointLogs[endpointKey]) return 'inactive';
-    
-    switch (this.endpointLogs[endpointKey].status) {
-      case 'active':
-        return 'active';
-      case 'warning':
-        return 'warning';
-      case 'error':
-        return 'error';
-      default:
-        return 'inactive';
+  // Get total hit count across all endpoints
+  getTotalHitCount(): number {
+    return Object.values(this.endpointLogs).reduce((total, endpoint) => {
+      return total + (endpoint.hitCount || 0);
+    }, 0);
+  }
+
+  // Get total error count across all endpoints
+  getTotalErrorCount(): number {
+    return Object.values(this.endpointLogs).reduce((total, endpoint) => {
+      return total + (endpoint.errorCount || 0);
+    }, 0);
+  }
+  
+  // Toggle endpoint details expansion
+  toggleEndpointDetails(endpointKey: string): void {
+    if (this.expandedEndpoint === endpointKey) {
+      this.expandedEndpoint = null;
+    } else {
+      this.expandedEndpoint = endpointKey;
     }
   }
-
+  
+  // Get color for endpoint method
+  getEndpointMethodColor(method: string):string {
+    switch (method.toUpperCase()) {
+      case 'GET': return '#10b981'; // Green
+      case 'POST': return '#3b82f6'; // Blue
+      case 'PUT': return '#f59e0b'; // Orange
+      case 'DELETE': return '#ef4444'; // Red
+      case 'PATCH': return '#8b5cf6'; // Purple
+      default: return '#6b7280'; // Gray
+    }
+  }
+  
+  // Get icon for endpoint method
+  getEndpointMethodIcon(method: string): string {
+    switch (method.toUpperCase()) {
+      case 'GET': return 'download';
+      case 'POST': return 'add_circle';
+      case 'PUT': return 'update';
+      case 'DELETE': return 'delete';
+      case 'PATCH': return 'edit';
+      default: return 'api';
+    }
+  }
+  
+  // Get status color based on success rate
+  getStatusColor(successRate: number): string {
+    if (successRate >= 95) return '#10b981'; // Green for high success rate
+    if (successRate >= 80) return '#f59e0b'; // Orange for medium success rate
+    return '#ef4444'; // Red for low success rate
+  }
+  
+  // Get status class for service
+  getServiceStatusClass(endpointKey: string): string {
+    if (!this.endpointLogs[endpointKey]) return 'status-unknown';
+    
+    const successRate = this.getSuccessRate(this.endpointLogs[endpointKey]);
+    if (successRate >= 95) return 'status-healthy';
+    if (successRate >= 80) return 'status-warning';
+    return 'status-error';
+  }
+  
   // Get service status text
   getServiceStatusText(endpointKey: string): string {
-    if (!this.endpointLogs[endpointKey]) return 'Inactive';
+    if (!this.endpointLogs[endpointKey]) return 'Unknown';
     
-    switch (this.endpointLogs[endpointKey].status) {
-      case 'active':
-        return 'Active';
-      case 'warning':
-        return 'Warning';
-      case 'error':
-        return 'Error';
-      default:
-        return 'Inactive';
-    }
+    const successRate = this.getSuccessRate(this.endpointLogs[endpointKey]);
+    if (successRate >= 95) return 'Healthy';
+    if (successRate >= 80) return 'Warning';
+    return 'Error';
   }
-  
-  // Get color for endpoint method icon
-  getEndpointMethodColor(method?: string): string {
-    if (!method) return '#9ca3af'; // Default gray
+
+  // Add these methods that were referenced in the template
+  toggleTimestampFormat(): void {
+    this.timestampFormat = this.timestampFormat === 'shortTime' ? 'mediumTime' : 'shortTime';
+  }
+
+  getEndpointDetails(endpointKey: string): any {
+    if (!this.endpointLogs[endpointKey]) {
+      return null;
+    }
     
-    switch (method.toUpperCase()) {
-      case 'GET':
-        return '#3b82f6'; // Blue
-      case 'POST':
-        return '#10b981'; // Green
-      case 'PUT':
-        return '#f59e0b'; // Yellow
-      case 'DELETE':
-        return '#ef4444'; // Red
-      case 'PATCH':
-        return '#8b5cf6'; // Purple
-      default:
-        return '#9ca3af'; // Gray
+    // Get the last entry in the timeline data
+    const timelineData = this.endpointLogs[endpointKey].timelineData;
+    if (timelineData && timelineData.length > 0) {
+      return timelineData[timelineData.length - 1];
+    }
+    
+    return null;
+  }
+
+  getFormattedHeaders(headers: any): string {
+    if (!headers) {
+      return 'No headers available';
+    }
+    
+    try {
+      return JSON.stringify(headers, null, 2);
+    } catch (error) {
+      return 'Unable to format headers';
     }
   }
 
-  // Get icon for HTTP method
-  getEndpointMethodIcon(method?: string): string {
-    if (!method) return 'api';
+  getFormattedJson(data: any): string {
+    if (!data) {
+      return 'No data available';
+    }
     
-    switch (method.toUpperCase()) {
-      case 'GET':
-        return 'download';
-      case 'POST':
-        return 'add_circle';
-      case 'PUT':
-        return 'update';
-      case 'DELETE':
-        return 'delete';
-      case 'PATCH':
-        return 'edit';
-      default:
-        return 'api';
+    try {
+      return JSON.stringify(data, null, 2);
+    } catch (error) {
+      return 'Unable to format data';
     }
-  }
-  
-  // Get appropriate status color based on success rate
-  getStatusColor(successRate: number): string {
-    if (successRate >= 90) {
-      return 'rgba(16, 185, 129, 0.7)'; // Green for high success
-    } else if (successRate >= 75) {
-      return 'rgba(245, 158, 11, 0.7)'; // Yellow/orange for medium success
-    } else {
-      return 'rgba(239, 68, 68, 0.7)'; // Red for low success
-    }
-  }
-
-  // Update the timestamp handling to match ServiceCallMetric type
-  private processServiceCall(call: any): ServiceCallMetric {
-    // Fix timestamp type
-    return {
-      id: call.id || `call-${Date.now()}`,
-      timestamp: new Date(call.timestamp), // Convert to Date object
-      serviceName: call.service,
-      method: call.method,
-      url: call.url,
-      status: call.status,
-      duration: call.duration,
-      // Don't include properties not in ServiceCallMetric interface
-    };
-  }
-
-  // Fix timestamp comparison by properly converting to milliseconds
-  private getRecentMetrics(): ServiceCallMetric[] {
-    const now = new Date().getTime();
-    return this.serviceMetrics.filter(m => 
-      (now - m.timestamp.getTime()) < 30000 // Only look at last 30 seconds
-    );
   }
 }

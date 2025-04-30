@@ -8,7 +8,6 @@ import { MaterialModule } from '../../material.module';
   imports: [
     CommonModule,
     MaterialModule
-  ],
-  exports: [SpaceVideoComponent],
+  ]
 })
-export class SpaceVideoModule {}
+export class SpaceVideoModule { }

@@ -1,19 +1,39 @@
 {
-  "typescript.preferences.autoImportSpecifierExcludeRegexes": [],
-  "typescript.preferences.organizeImports": {},
-    "typescript.suggest.autoImports": true,
-    "typescript.suggest.paths": true,
-    "typescript.suggest.autoImportsOverwrite": true,
-    "typescript.suggest.completeJSDocs": true,
-    "typescript.suggest.completeFunctionCalls": true,
-    "ngrx-uml.tsConfigFileName": "tsconfig.base.json",
-    "ngrx-uml.baseDir": "c:\\repos\\craft-fusion",
-    "ngrx-uml.ignorePattern": ["**/*.spec.ts", "**/node_modules/**"],
-    "ngrx-uml.outDir": "c:\\repos\\craft-fusion\\out",
-    "ngrx-uml.generateImages": false,
-    "ngrx-uml.imageFormat": "off",
-    "ngrx-uml.saveConvertResultToJson": true,
-    "ngrx-uml.saveWsd": true,
-    "ngrx-uml.logLevel": "INFO",
-    "ngrx-uml.clickableLinks": true
+  // Exclude files/folders from the file explorer
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/node_modules": true, // Exclude node_modules
+    "**/dist": true,         // Exclude build output
+    "**/.nx/cache": true,   // Exclude NX cache
+    "apps/craft-web/src/assets/shapefiles": true, // Optionally exclude large assets if not actively editing them
+    "apps/training/models": true, // Optionally exclude generated models
+    "apps/training/training_data": true // Optionally exclude large training data
+  },
+  // Exclude files/folders from search results
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "**/dist": true,
+    "**/.nx/cache": true,
+    "apps/craft-web/src/assets/shapefiles": true,
+    "apps/training/models": true,
+    "apps/training/training_data": true
+  },
+  // Exclude files/folders from the file watcher (reduces CPU/memory usage)
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/*/**": true,
+    "**/.nx/cache/**": true,
+    "**/dist/**": true,
+    "apps/craft-web/src/assets/shapefiles/**": true,
+    "apps/training/models/**": true,
+    "apps/training/training_data/**": true
+  }
 }

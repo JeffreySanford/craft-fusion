@@ -1,37 +1,47 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { BookComponent } from './book.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { EditorModule, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
-import { RouterModule, Routes } from '@angular/router';
+import { BookService } from './services/book.service';
+import { SafeHtmlPipe } from './pipes/safe-html.pipe';
+
+// Angular Material imports
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
-import { FileUploadService } from '../../common/services/file-upload.service';
-import { MatIconModule } from '@angular/material/icon';
-import { SafeHtmlPipe } from '../../common/pipes/safe-html.pipe';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
-const routes: Routes = [
-  { path: '', component: BookComponent }
-];
+// Editor import if you're using a third-party editor like TinyMCE
+import { EditorModule } from '@tinymce/tinymce-angular';
 
 @NgModule({
-  declarations: [BookComponent, SafeHtmlPipe],
+  declarations: [
+    BookComponent,
+    SafeHtmlPipe
+  ],
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
-    EditorModule,
-    RouterModule.forChild(routes),
+    RouterModule.forChild([
+      { path: '', component: BookComponent }
+    ]),
+    // Angular Material modules
+    MatButtonModule,
+    MatIconModule,
     MatSidenavModule,
     MatListModule,
-    MatIconModule
+    MatTooltipModule,
+    // Editor module
+    EditorModule
+  ],
+  exports: [
+    BookComponent,
+    SafeHtmlPipe
   ],
   providers: [
-    {
-      provide: TINYMCE_SCRIPT_SRC,
-      useValue: 'tinymce/tinymce.min.js',
-    },
-    FileUploadService
-  ],
+    BookService
+  ]
 })
-export class BookModule {}
+export class BookModule { }

@@ -7,6 +7,7 @@ import { FileModule } from './documents/file.module';
 import { SocketGatewayModule } from './socket/socket.module';
 import { AuthModule } from './auth/auth.module';
 import { UserStateModule } from './user-state/user-state.module';
+import { RecordsModule } from './records/records.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { UserStateModule } from './user-state/user-state.module';
     UserModule,
     SocketGatewayModule,
     AuthModule,
-    UserStateModule
+    UserStateModule,
+    RecordsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

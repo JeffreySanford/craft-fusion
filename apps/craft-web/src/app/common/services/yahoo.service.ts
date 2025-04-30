@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map, catchError, retry } from 'rxjs/operators';
-import { environment } from 'apps/craft-web/src/environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs'; // Add 'of' import
+import { catchError, map } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
 
 @Injectable({
@@ -12,11 +12,11 @@ export class YahooService {
   private apiUrl = environment.yahooFinance.url;
 
   private options = {
-    headers: new HttpHeaders({
+    headers: {
       'x-api-key': environment.yahooFinance.apiKey,
       'Content-Type': 'application/json',
       Accept: 'application/json',
-    }),
+    },
   };
 
   constructor(
@@ -29,7 +29,7 @@ export class YahooService {
 
   getStockQuote(symbol: string): Observable<any> {
     const url = `${this.apiUrl}/quoteSummary/${symbol}`;
-    const params = new HttpParams().set('modules', 'defaultKeyStatistics,assetProfile');
+    const params = { modules: 'defaultKeyStatistics,assetProfile' };
 
     this.logger.debug(`Fetching stock quote for ${symbol}`, { url });
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
@@ -46,7 +46,7 @@ export class YahooService {
           message: error.message
         });
         this.logger.endServiceCall(callId, error.status || 500);
-        return of(null); // Return null as a fallback
+        return of(null); // Now works with proper import
       }),
     );
   }
@@ -58,7 +58,6 @@ export class YahooService {
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
 
     return this.http.get(url, this.options).pipe(
-      retry(3), // Retry the request up to 3 times
       map((response: any) => {
         this.logger.endServiceCall(callId, 200);
         const parsedData = symbols.map(symbol => {
@@ -110,7 +109,7 @@ export class YahooService {
 
   getTrendingSymbols(region: string): Observable<any> {
     const url = `${this.apiUrl}/trending`;
-    const params = new HttpParams().set('region', region);
+    const params = { region };
 
     this.logger.debug(`Fetching trending symbols for region ${region}`, { url });
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
@@ -134,7 +133,7 @@ export class YahooService {
 
   getCompanyDetails(symbol: string): Observable<any> {
     const url = `${this.apiUrl}/quoteSummary/${symbol}`;
-    const params = new HttpParams().set('modules', 'assetProfile,defaultKeyStatistics');
+    const params = { modules: 'assetProfile,defaultKeyStatistics' };
 
     this.logger.debug(`Fetching company details for ${symbol}`, { url });
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
@@ -151,7 +150,7 @@ export class YahooService {
           message: error.message
         });
         this.logger.endServiceCall(callId, error.status || 500);
-        return of(null); // Return null as a fallback
+        return of(null); // Now works with proper import
       }),
     );
   }

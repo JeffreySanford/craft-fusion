@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Company } from '../models/company';
-import { Record } from '../models/record';
-import { RecordService } from '../record.service';
+import { Record, Company } from '../models/record';
+import { RecordService } from '../services/record.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
@@ -11,6 +10,7 @@ import { trigger, transition, style, animate, query, stagger } from '@angular/an
   standalone: false,
   templateUrl: './record-detail.component.html',
   styleUrls: ['./record-detail.component.scss'],
+  providers: [RecordService],
   animations: [
     trigger('fadeIn', [
       transition(':enter', [
@@ -74,7 +74,8 @@ export class RecordDetailComponent implements OnInit, OnDestroy {
 
   public getTotalSalary(): number {
     this.totalAnnualSalary = 0;
-    this.user?.salary.forEach((company: Company) => {
+    this.user?.salary.forEach((company) => {
+      // Use the correct property based on the company structure
       this.totalAnnualSalary += company.annualSalary;
     });
 

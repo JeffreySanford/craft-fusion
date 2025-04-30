@@ -1,7 +1,3 @@
-import { Company } from './company';
-import { Phone } from './phone';
-
-
 export interface Record {
     UID: string;
     name: string;
@@ -21,4 +17,22 @@ export interface Record {
     phone: Phone;
     salary: Company[];
     totalHouseholdIncome: number;
+  }
+
+  export interface Phone {
+    UID: string;
+    number: string;
+    type: string;
+    countryCode?: string;
+    areaCode?: string;
+    extension?: string | null;
+    hasExtension?: boolean;
+  }
+  
+  export interface Company {
+    UID: string;
+    employeeName: string; // Renamed from 'name'
+    annualSalary: number;
+    companyName: string; // Made required
+    companyPosition?: string; // Added optional field
   }

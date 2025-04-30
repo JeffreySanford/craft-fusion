@@ -70,6 +70,13 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     'settings': 'settings'
   };
 
+  // Add connection state tracking properties
+  private networkConnectionFailed = false;
+  private consecutiveFailures = 0;
+  private normalPingInterval = 60000; // Once per minute when connected
+  private currentPingInterval = 3000;  // Start with more frequent checks
+  private maxConsecutiveFailures = 5;  // After this many failures, slow down dramatically
+
   constructor(
     private router: Router, 
     private logger: LoggerService,
@@ -122,11 +129,33 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     this.logger.info('Footer component destroyed');
   }
 
+  private lastUsedPingInterval: number = 3000; // Track the last used interval
+  
   private startPerformanceMonitoring() {
     this.logger.info('Starting performance monitoring');
-    const performanceInterval = interval(3000); // Emit every 3 seconds
+    
+    // Use the currentPingInterval property instead of a fixed value
+    const performanceInterval = interval(this.currentPingInterval);
+    this.lastUsedPingInterval = this.currentPingInterval;
+    
     this.performanceSubscription = performanceInterval.subscribe(() => {
       this.updatePerformanceMetrics();
+      
+      // Dynamically adjust the interval if needed
+      if (this.performanceSubscription && 
+          this.currentPingInterval !== this.lastUsedPingInterval) {
+        // Unsubscribe from current interval
+        this.performanceSubscription.unsubscribe();
+        
+        // Create new subscription with updated interval
+        const newInterval = interval(this.currentPingInterval);
+        this.lastUsedPingInterval = this.currentPingInterval;
+        this.performanceSubscription = newInterval.subscribe(() => {
+          this.updatePerformanceMetrics();
+        });
+        
+        this.logger.debug(`Updated performance monitoring interval to ${this.currentPingInterval}ms`);
+      }
     });
   }
 
@@ -188,18 +217,65 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     // Use actual network request to measure latency
     const startTime = performance.now();
     
+    // Add a unique timestamp to prevent caching
+    const timestamp = new Date().getTime();
+    
     // Create a tiny request to measure network latency
-    fetch('/assets/documents/ping.txt?' + new Date().getTime(), { 
+    fetch(`/assets/documents/ping.txt?${timestamp}`, { 
       method: 'HEAD',
       cache: 'no-store'
     })
     .then(() => {
       const latency = performance.now() - startTime;
       this.performanceMetrics.networkLatency = `${latency.toFixed(2)} ms`;
+      
+      // Connection succeeded, reset failure tracking
+      if (this.networkConnectionFailed) {
+        this.logger.info('Network connection restored after previous failures');
+      }
+      
+      this.networkConnectionFailed = false;
+      this.consecutiveFailures = 0;
+      
+      // Reset to normal ping interval once connection is established
+      this.currentPingInterval = this.normalPingInterval;
+      
       this.updateChart();
     })
-    .catch(() => {
+    .catch((error) => {
+      // Track consecutive failures
+      this.consecutiveFailures++;
+      
+      if (!this.networkConnectionFailed) {
+        this.logger.warn('Network connectivity issue detected', {
+          error: error.message || 'Connection refused',
+          consecutiveFailures: this.consecutiveFailures
+        });
+      }
+      
+      this.networkConnectionFailed = true;
+      
+      // Use fallback value for UI
+      this.performanceMetrics.networkLatency = 'N/A';
+      
+      // Implement exponential backoff for ping frequency
+      if (this.consecutiveFailures >= this.maxConsecutiveFailures) {
+        // After several consecutive failures, reduce ping frequency substantially
+        // to avoid console spam and unnecessary network attempts
+        this.currentPingInterval = Math.min(30000, this.currentPingInterval * 2);
+        
+        // Log only on interval changes to reduce console spam
+        this.logger.debug(`Reducing ping frequency due to consecutive failures, new interval: ${this.currentPingInterval}ms`);
+      }
+      
       // Fallback to RTCPeerConnection method if fetch fails
+      this.performRTCLatencyCheck(startTime);
+    });
+  }
+
+  // Extract RTCPeerConnection logic to a separate method for clarity
+  private performRTCLatencyCheck(startTime: number): void {
+    try {
       const peerConnection = new RTCPeerConnection({ iceServers: [] });
       peerConnection.createDataChannel('latencyCheck');
       
@@ -215,7 +291,11 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
         peerConnection.close();
         this.updateChart();
       });
-    });
+    } catch (error) {
+      // Handle any RTC errors gracefully
+      this.performanceMetrics.networkLatency = 'N/A';
+      this.updateChart();
+    }
   }
 
   getMemoryUsageClass() {

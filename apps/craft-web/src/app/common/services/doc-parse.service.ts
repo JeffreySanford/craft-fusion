@@ -216,14 +216,17 @@ export class DocParseService {
       if (patternName === 'mythSection' || patternName === 'mythKeywordSection') {
         const match = normalizedText.match(pattern);
         this.log(`Trying ${patternName} pattern: ${pattern}`);
-        if (match?.groups) {
-          this.log(`Matched myth pattern: ${patternName}`, match.groups);
+        if (match && match.groups) {
+          const book = match.groups['verse'];
+          const verseRange = `${match.groups['start']}-${match.groups['end']}`;
+          const ref = match.groups['ref'];
+          const text = match.groups['content'];
+          const url = match.groups['link'];
+          
           return {
-            verse: match.groups.verse || 
-                  `${match.groups.start}-${match.groups.end}` ||
-                  match.groups.ref || '',
-            content: match.groups.content?.trim() || '',
-            link: match.groups.link
+            verse: book || verseRange || ref || '',
+            content: text?.trim() || '',
+            link: url
           };
         } else {
           this.log(`${patternName} pattern did not match.`);
@@ -257,12 +260,12 @@ export class DocParseService {
   }
 
   private createMythElement(match: RegExpMatchArray) {
-    const verse = match.groups?.verse || 
-                 `${match.groups?.start}-${match.groups?.end}` ||
-                 match.groups?.ref || '';
+    const verse = match.groups?.['verse'] || 
+                 `${match.groups?.['start']}-${match.groups?.['end']}` ||
+                 match.groups?.['ref'] || '';
     
-    const content = match.groups?.content?.trim() || '';
-    const link = match.groups?.link;
+    const content = match.groups?.['content']?.trim() || '';
+    const link = match.groups?.['link'];
 
     if (verse) {
       // Move URL link to verse label only

@@ -432,7 +432,7 @@ export class BookComponent implements OnInit, AfterViewInit {
         mythElement.style.fontStyle = 'italic';
         const verse = mythElement.getAttribute('data-verse');
         if (verse) {
-          mythElement.dataset.verse = verse;
+          mythElement.dataset['verse'] = verse; // Use bracket notation
         }
       });
     }

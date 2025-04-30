@@ -4,11 +4,17 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Subject, BehaviorSubject, of } from 'rxjs';
-import { catchError, switchMap, tap, takeUntil } from 'rxjs/operators';
+import { catchError, switchMap, tap, takeUntil, finalize } from 'rxjs/operators';
 import { detailExpand, flyIn } from './animations';
 import { Record } from './models/record';
-import { RecordService } from './record.service';
+import { RecordService } from './services/record.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { NotificationService } from '../../common/services/notification.service';
+import { throwError } from 'rxjs';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { LoggerService } from '../../common/services/logger.service';
+import { NgxSpinnerService } from 'ngx-spinner'; // May need to install this package
 
 export interface Server {
   name: string;
@@ -85,7 +91,15 @@ export class RecordListComponent implements OnInit, OnDestroy {
   private reportSubject = new BehaviorSubject<Report | null>(null);
   report$ = this.reportSubject.asObservable();
 
-  constructor(private router: Router, private recordService: RecordService, private changeDetectorRef: ChangeDetectorRef) {
+  constructor(
+    private recordService: RecordService,
+    private breakpointObserver: BreakpointObserver,
+    private spinner: NgxSpinnerService,
+    private logger: LoggerService,
+    private notificationService: NotificationService,
+    private changeDetectorRef: ChangeDetectorRef,
+    private router: Router
+  ) {
     console.log('Constructor: RecordListComponent created');
     console.log('Initial servers:', this.servers);
   }
@@ -278,40 +292,86 @@ export class RecordListComponent implements OnInit, OnDestroy {
   }
 
   private fetchData(count: number): void {
+    this.spinner.show();
     this.recordService
       .generateNewRecordSet(count)
       .pipe(
         takeUntil(this.destroy$),
+        // Add finalize to hide spinner regardless of success/failure
+        finalize(() => {
+          this.spinner.hide();
+          this.resolvedSubject.next(true);
+          this.changeDetectorRef.detectChanges();
+        }),
         switchMap((dataset: Record[]) => {
-          if (dataset) {
+          if (dataset && dataset.length > 0) {
+            // Success path
             this.dataSource.data = dataset;
             this.resolved = true;
             this.newData = true;
 
+            this.paginator.pageIndex = 0;
+            this.paginator.pageSize = 5;
             this.paginator.length = dataset.length;
+            this.changeDetectorRef.detectChanges();
 
+            // Set up flexible filtering
             this.dataSource.filterPredicate = (data: Record, filter: string) => {
-              return data.UID.toLowerCase().includes(filter);
+              const searchStr = filter.toLowerCase();
+              return (
+                data.UID?.toLowerCase().includes(searchStr) ||
+                data.firstName?.toLowerCase().includes(searchStr) ||
+                data.lastName?.toLowerCase().includes(searchStr) ||
+                data.address?.city?.toLowerCase().includes(searchStr) ||
+                data.address?.state?.toLowerCase().includes(searchStr)
+              );
             };
 
             this.sort = { active: 'userID', direction: 'asc' } as MatSort;
             this.updateDisplayedColumns();
 
             this.totalRecords = dataset.length;
-            console.log('Data: New record set generated with length:', dataset.length);
+            this.logger.debug('Data: New record set generated', { 
+              length: dataset.length,
+              sample: dataset[0]?.UID
+            });
 
             this.updateCreationTime();
             this.triggerFadeToRed();
-            this.changeDetectorRef.detectChanges();
+          } else {
+            // Empty dataset handling
+            this.logger.warn('Empty dataset returned');
+            this.notificationService.showWarning(
+              'No records were returned. Showing empty table.',
+              'Empty Dataset'
+            );
+            this.dataSource.data = [];
+            this.resolved = true;
+            this.triggerFadeToRed();
           }
-          return of([]);
+          return of(dataset || []);
         }),
         catchError((error: any) => {
-          console.error('Error: generateNewRecordSet failed:', error);
-          this.resolvedSubject.next(true);
-          this.changeDetectorRef.detectChanges();
+          // Error handling with better user feedback
+          this.logger.error('Error: generateNewRecordSet failed:', error);
+          
+          // Show user-friendly message based on error type
+          let errorMessage = 'An error occurred while loading records.';
+          if (error.status === 504) {
+            errorMessage = 'The server took too long to respond. Using offline data instead.';
+          } else if (error.status === 0) {
+            errorMessage = 'Cannot connect to the server. Using offline data instead.';
+          }
+          
+          this.notificationService.showWarning(errorMessage, 'Data Loading Issue');
+          
+          // Initialize with empty data to avoid UI breakage
+          this.dataSource.data = [];
+          this.resolved = true;
+          this.triggerFadeToRed();
+          
           return of([]);
-        }),
+        })
       )
       .subscribe();
   }
@@ -432,42 +492,75 @@ export class RecordListComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         tap((generationTime: number) => {
-          const endTime = new Date().getTime();
-          const roundtrip = endTime - this.startTime;
-          const roundtripLabel = roundtrip > 1000 ? `${(roundtrip / 1000).toFixed(2)} seconds` : `${roundtrip.toFixed(2)} milliseconds`;
-          const generationTimeLabel = generationTime > 1000 ? `${(generationTime / 1000).toFixed(2)} seconds` : `${generationTime.toFixed(2)} milliseconds`;
-          const networkPerformance = `${(roundtrip - generationTime).toFixed(2)} milliseconds`;
-          const diskTransferTime = `${(generationTime / 2).toFixed(2)} milliseconds`;
-
-          const report: Report = { roundtripLabel, generationTimeLabel, networkPerformance, diskTransferTime };
-
-          console.log('Start Time:', this.startTime);
-          console.log('End Time:', endTime);
-          console.log('Roundtrip Time:', roundtrip);
-          console.log('Generation Time:', generationTime);
-          this.reportSubject.next(report);
-
-          console.log(
-            'Timing: Data generation time:',
-            generationTimeLabel,
-            'Roundtrip time:',
-            roundtripLabel,
-            'Network performance:',
-            networkPerformance,
-            'Disk transfer time:',
-            diskTransferTime,
+          try {
+            const endTime = new Date().getTime();
+            const roundtrip = endTime - this.startTime;
+            
+            // Format the time values with proper error handling
+            const generationTimeLabel = typeof generationTime === 'number' 
+              ? `${generationTime.toFixed(2)} milliseconds` 
+              : '0.00 milliseconds';
+              
+            const roundtripLabel = `${roundtrip.toFixed(2)} milliseconds`;
+            
+            // Create performance report
+            const report = {
+              roundtripLabel,
+              generationTimeLabel,
+              networkPerformance: `${roundtrip.toFixed(2)} milliseconds`,
+              diskTransferTime: generationTimeLabel
+            };
+            
+            // Update component properties
+            this.generationTimeLabel = generationTimeLabel;
+            this.roundtripLabel = roundtripLabel;
+            this.networkPerformance = report.networkPerformance;
+            this.diskTransferTime = report.diskTransferTime;
+            
+            console.log('Start Time:', this.startTime);
+            console.log('End Time:', endTime);
+            console.log('Roundtrip Time:', roundtrip);
+            console.log('Generation Time:', generationTime);
+            console.log('Report:', report);
+            
+            console.log(`Timing: Data generation time: ${generationTimeLabel} Roundtrip time: ${roundtripLabel} Network performance: ${report.networkPerformance} Disk transfer time: ${report.diskTransferTime}`);
+            
+            // Show a success toast notification
+            this.notificationService.showSuccess(
+              `Data loaded successfully in ${roundtripLabel}`,
+              'Success'
+            );
+            
+            // Request change detection to update the view
+            this.changeDetectorRef.detectChanges();
+          } catch (error) {
+            console.error('Error formatting time values:', error);
+            // Show error toast if formatting fails
+            this.notificationService.showError(
+              'Error processing timing information',
+              'Error'
+            );
+          }
+        }),
+        catchError(error => {
+          console.error('Error:', error);
+          // Show error toast if API call fails
+          this.notificationService.showError(
+            'Failed to get generation time information',
+            'Error'
           );
-          this.resolvedSubject.next(true);
-          this.changeDetectorRef.detectChanges();
-        }),
-        catchError((error: any) => {
-          console.error('Error: getCreationTime failed:', error);
-          this.resolvedSubject.next(true);
-          this.changeDetectorRef.detectChanges();
-          return of('');
-        }),
+          return throwError(() => error);
+        })
       )
       .subscribe();
+  }
+
+  // Calculate total salary directly without using the employmentIncome pipe
+  getTotalSalary(companies: any[]): number {
+    if (!companies || !Array.isArray(companies)) {
+      return 0;
+    }
+    return companies.reduce((total, company) => total + (company.annualSalary || 0), 0);
   }
 
   private getSwaggerUrl(serverName: string): string {
@@ -494,5 +587,17 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('Event: Swagger button clicked');
     window.open(this.server.swagger, '_blank');
     console.log('Navigation: Opened Swagger UI');
+  }
+
+  // Add a method to retry connection when offline
+  public retryConnection(): void {
+    this.recordService.checkNetworkStatus().subscribe(isOnline => {
+      if (isOnline) {
+        this.notificationService.showSuccess('Connection restored! Refreshing data...', 'Online');
+        this.fetchData(this.totalRecords);
+      } else {
+        this.notificationService.showWarning('Still offline. Using local data.', 'Offline Mode');
+      }
+    });
   }
 }

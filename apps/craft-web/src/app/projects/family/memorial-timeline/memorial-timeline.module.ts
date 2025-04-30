@@ -1,42 +1,39 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+
+// Import Angular Material modules
+import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+// Import components
 import { TimelinePageComponent } from './components/timeline-page/timeline-page.component';
 import { TimelineListComponent } from './components/timeline-list/timeline-list.component';
 import { TimelineItemComponent } from './components/timeline-item/timeline-item.component';
-import { TimelineService } from './services/timeline.service';
+import { MemorialTimelineComponent } from './components/memorial-timeline/memorial-timeline.component';
 
 @NgModule({
   declarations: [
     TimelinePageComponent,
     TimelineListComponent,
-    TimelineItemComponent
+    TimelineItemComponent,
+    MemorialTimelineComponent // Added the missing component
   ],
   imports: [
     CommonModule,
+    RouterModule,
+    MatCardModule,
     MatIconModule,
     MatButtonModule,
-    MatCardModule, // Added MatCardModule for mat-card components
-    MatProgressSpinnerModule, // Add the spinner module
-    RouterModule.forChild([
-      {
-        path: '',
-        component: TimelinePageComponent,
-      }
-    ])
+    MatProgressSpinnerModule // Added for mat-spinner
   ],
   exports: [
     TimelinePageComponent,
     TimelineListComponent,
-    TimelineItemComponent
-  ],
-  providers: [
-    TimelineService
+    TimelineItemComponent,
+    MemorialTimelineComponent // Export the component
   ]
 })
 export class MemorialTimelineModule { }

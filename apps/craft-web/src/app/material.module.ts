@@ -24,31 +24,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
 @NgModule({
-  imports: [
-    MatFormFieldModule,
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatIconModule,
-    MatInputModule,
-    MatListModule,
-    MatMenuModule,
-    MatPaginatorModule,
-    MatSidenavModule,
-    MatSortModule,
-    MatTableModule,
-    MatTabsModule,
-    MatToolbarModule,
-    MatSelectModule,
-    MatSliderModule,
-    MatExpansionModule,
-    MatProgressSpinnerModule,
-    MatGridListModule,
-    DragDropModule,
-    MatSnackBarModule,
-    MatSlideToggleModule,
-    MatTooltipModule 
-  ],
   exports: [
     MatButtonModule,
     MatCardModule,
@@ -71,7 +46,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     DragDropModule,
     MatSnackBarModule,
     MatSlideToggleModule,
-    MatTooltipModule 
+    MatTooltipModule,
+    MatFormFieldModule
   ]
 })
 export class MaterialModule { }

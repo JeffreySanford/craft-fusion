@@ -45,6 +45,11 @@ export class AuthService {
     
     this.logger.registerService('AuthService');
     this.logger.info('Auth Service facade initialized');
+    
+    // Initialize properties after constructor parameters are available
+    this.isAuthenticated$ = this.authenticationService.isAuthenticated$;
+    this.isAdmin$ = this.authenticationService.isAdmin$;
+    this.isLoggedIn$ = this.authenticationService.isLoggedIn$;
   }
 
   // Authentication methods

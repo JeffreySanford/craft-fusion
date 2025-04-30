@@ -7,6 +7,7 @@ import { ChatComponent } from './chat.component';
 import { ChatService } from './chat.service';
 import { SplitTextPipe } from './split-text.pipe';
 import { MarkdownPipe } from './markdown.pipe';
+import { ModelSelectorComponent } from './model-selector/model-selector.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
@@ -16,7 +17,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
-import { ModelSelectorComponent } from './model-selector/model-selector.component';
 import { MatSelectModule } from '@angular/material/select';
 
 const routes: Routes = [
@@ -48,7 +48,9 @@ const routes: Routes = [
   ],
   providers: [ChatService, SplitTextPipe],
   exports: [
-    ChatComponent
+    ChatComponent,
+    MarkdownPipe,
+    ModelSelectorComponent
   ]
 })
 export class ChatModule {}

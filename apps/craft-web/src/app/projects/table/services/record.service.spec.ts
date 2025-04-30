@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { RecordService } from './record.service';
 import { HttpClientModule } from '@angular/common/http';
-import { NotificationService } from '../../common/services/notification.service';
+import { NotificationService } from '../../../common/services/notification.service';
 import { ToastrService } from 'ngx-toastr';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 

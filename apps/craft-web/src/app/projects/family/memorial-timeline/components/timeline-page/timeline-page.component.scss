@@ -15,8 +15,8 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
-  
-  // Flag-inspired accent border
+
+  /* Flag-inspired accent border */
   &::before {
     content: '';
     position: absolute;
@@ -27,37 +27,29 @@
     background: linear-gradient(
       to bottom,
       var(--md-sys-color-primary),
-      var(--md-sys-color-secondary),
-      var(--md-sys-color-tertiary)
+      var(--md-sys-color-primary) 33%,
+      var(--md-sys-color-on-primary) 33%,
+      var(--md-sys-color-on-primary) 66%,
+      var(--md-sys-color-secondary) 66%,
+      var(--md-sys-color-secondary)
     );
   }
-}
 
-.memorial-timeline-title {
-  color: var(--md-sys-color-primary);
-  margin-bottom: 0.5rem;
-  font-size: 1.8rem;
-}
+  h1 {
+    color: var(--md-sys-color-primary);
+    margin-bottom: 0.5rem;
+  }
 
-.memorial-timeline-subtitle {
-  color: var(--md-sys-color-on-surface-variant);
-  font-size: 1rem;
-}
-
-.memorial-timeline-content {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  
-  span {
-    margin-top: 1rem;
+  p {
     color: var(--md-sys-color-on-surface-variant);
   }
+}
+
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2em;
+  color: var(--md-sys-color-primary);
 }

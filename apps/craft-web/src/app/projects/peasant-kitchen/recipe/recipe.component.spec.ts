@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { RecipeComponent } from './recipe.component';
 import { PeasantKitchenService } from '../recipe.service';
-import { Recipe } from '../recipe.class';
+import { Recipe } from '../services/recipe.interface';
 
 describe('RecipeComponent', () => {
   let component: RecipeComponent;

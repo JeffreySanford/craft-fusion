@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '../../common/services/authentication.service';
 import { Observable } from 'rxjs';
-import { LoggerService } from '../../common/services/logger.service'; // Import LoggerService
-import { ThemeService } from '../../common/services/theme.service'; // Import ThemeService
+import { AuthenticationService } from '../../common/services/auth/authentication.service';
+import { LoggerService } from '../../common/services/logger.service';
+import { ThemeService } from '../../common/services/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -37,7 +37,7 @@ export class HeaderComponent implements OnInit {
     this.logger.info('Header component initialized');
     
     this.authService.isLoggedIn$.subscribe(isLoggedIn => {
-      this.updateUserMenuItems();
+      this.updateUserMenuItems(); // Call updateUserMenuItems when login state changes
       this.logger.debug('Auth state changed', { isLoggedIn });
     });
     
@@ -58,13 +58,32 @@ export class HeaderComponent implements OnInit {
       { label: 'Reports', icon: 'bar_chart', action: 'reports' }
     ];
 
-    if (this.authService.getAuthToken()) {
-      this.userMenuItems.push({ label: 'Logout', icon: 'logout', action: 'logout' });
-      this.logger.debug('Added logout option to user menu');
-    } else {
-      this.userMenuItems.push({ label: 'Login', icon: 'login', action: 'login' });
-      this.logger.debug('Added login option to user menu');
-    }
+    // Subscribe to the isLoggedIn$ Observable to get its current value
+    this.authService.isLoggedIn$.subscribe(isLoggedIn => {
+      if (isLoggedIn) {
+        // Find and remove login option if it exists
+        const loginIndex = this.userMenuItems.findIndex(item => item.action === 'login');
+        if (loginIndex !== -1) {
+          this.userMenuItems.splice(loginIndex, 1);
+        }
+        
+        if (!this.userMenuItems.some(item => item.action === 'logout')) {
+          this.userMenuItems.push({ label: 'Logout', icon: 'logout', action: 'logout' });
+          this.logger.debug('Added logout option to user menu');
+        }
+      } else {
+        // Find and remove logout option if it exists
+        const logoutIndex = this.userMenuItems.findIndex(item => item.action === 'logout');
+        if (logoutIndex !== -1) {
+          this.userMenuItems.splice(logoutIndex, 1);
+        }
+        
+        if (!this.userMenuItems.some(item => item.action === 'login')) {
+          this.userMenuItems.push({ label: 'Login', icon: 'login', action: 'login' });
+          this.logger.debug('Added login option to user menu');
+        }
+      }
+    });
   }
 
   setActive(item: any) {
@@ -94,6 +113,5 @@ export class HeaderComponent implements OnInit {
   // Add theme toggle method
   toggleTheme() {
     this.themeService.toggleTheme();
-    this.logger.info('Theme toggled', { isDarkTheme: !this.isDarkTheme });
   }
 }

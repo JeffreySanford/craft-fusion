@@ -2,7 +2,7 @@
   <div class="header-content">
     <!-- Other header content can go here -->
     <button mat-icon-button [matMenuTriggerFor]="userMenu" #menuTrigger="matMenuTrigger">
-      <mat-icon class="profile-icon" [class.logged-in]="authService.getAuthToken()">person</mat-icon>
+      <mat-icon class="profile-icon" [class.logged-in]="isLoggedIn$ | async">person</mat-icon>
     </button>
     <mat-menu #userMenu="matMenu" 
               class="user-menu" 

@@ -85,6 +85,6 @@ const dataVisualizationsRoutes: Routes = [
     FlightRadarService, 
     MapboxService,
     ChartLayoutService
-  ],
+  ]
 })
 export class DataVisualizationsModule { }

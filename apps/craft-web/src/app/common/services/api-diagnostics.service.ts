@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, of, timer, throwError } from 'rxjs';
 import { catchError, map, retry, shareReplay, switchMap, tap, delay, retryWhen, take } from 'rxjs/operators';
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 export interface ConnectionDiagnostics {
   isConnected: boolean;
@@ -74,12 +74,12 @@ export class ApiDiagnosticsService {
   private retryDelay = 1000;
   private consecutiveFailures = 0;
   private maxConsecutiveFailures = 5;
-  private socketInstance: any = null;
+  private socketInstance: Socket | null = null;
   private socketReconnectAttempts = 0;
   private maxSocketReconnectAttempts = 10;
   
-  // Namespace-specific socket instances
-  private namespaceSocketInstances = new Map<string, any>();
+  // Namespace-specific socket instances - add definite assignment assertion
+  private namespaceSocketInstances = new Map<string, Socket>();
 
   // Expose as observable for components to consume
   readonly diagnostics$ = this.diagnosticsSubject.asObservable();
@@ -351,13 +351,13 @@ export class ApiDiagnosticsService {
         this.socketReconnectAttempts = 0;
         const socketDiagnostics: SocketDiagnostics = {
           isConnected: true,
-          connectionId: this.socketInstance.id,
+          connectionId: this.socketInstance?.id, // Use optional chaining
           reconnectAttempts: this.socketReconnectAttempts,
           socketUrl
         };
         this.socketDiagnosticsSubject.next(socketDiagnostics);
         this.logger.info('Socket connected successfully', { 
-          socketId: this.socketInstance.id,
+          socketId: this.socketInstance?.id, // Use optional chaining
           url: socketUrl 
         });
 
@@ -454,33 +454,33 @@ export class ApiDiagnosticsService {
     
     return new Observable<boolean>(observer => {
       try {
-        this.socketInstance.disconnect();
+        this.socketInstance?.disconnect();
         
         // Allow some time for disconnection to complete
         setTimeout(() => {
-          this.socketInstance.connect();
+          this.socketInstance?.connect();
           
           // Subscribe to connection event only once for this reconnection attempt
           const onConnect = () => {
-            this.socketInstance.off('connect', onConnect);
-            this.socketInstance.off('connect_error', onError);
+            this.socketInstance?.off('connect', onConnect);
+            this.socketInstance?.off('connect_error', onError);
             observer.next(true);
             observer.complete();
           };
           
-          const onError = (error) => {
-            this.socketInstance.off('connect', onConnect);
-            this.socketInstance.off('connect_error', onError);
+          const onError = (error: any) => { // Add type annotation
+            this.socketInstance?.off('connect', onConnect);
+            this.socketInstance?.off('connect_error', onError);
             observer.error(error);
           };
           
-          this.socketInstance.once('connect', onConnect);
-          this.socketInstance.once('connect_error', onError);
+          this.socketInstance?.once('connect', onConnect);
+          this.socketInstance?.once('connect_error', onError);
           
           // Set timeout for reconnection attempt
           setTimeout(() => {
-            this.socketInstance.off('connect', onConnect);
-            this.socketInstance.off('connect_error', onError);
+            this.socketInstance?.off('connect', onConnect);
+            this.socketInstance?.off('connect_error', onError);
             observer.error(new Error('Reconnection timeout'));
           }, 5000);
         }, 1000);
@@ -524,8 +524,8 @@ export class ApiDiagnosticsService {
         }
       }
 
-      // Create new namespace socket
-      const nsSocket = io(namespaceUrl);
+      // Create new namespace socket - fixed Socket type
+      const nsSocket = io(namespaceUrl) as Socket;
       this.namespaceSocketInstances.set(namespace, nsSocket);
       
       // Create initial status for this namespace if it doesn't exist
@@ -654,7 +654,7 @@ export class ApiDiagnosticsService {
             observer.complete();
           };
           
-          const onError = (error) => {
+          const onError = (error: any) => { // Add type annotation
             nsSocket.off('connect', onConnect);
             nsSocket.off('connect_error', onError);
             observer.error(error);
