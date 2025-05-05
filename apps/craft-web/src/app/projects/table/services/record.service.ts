@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
 import { map, catchError, timeout, retry, delay, tap } from 'rxjs/operators';
 import { ApiService } from '../../../common/services/api.service';
 import { Record } from '../models/record';
@@ -20,19 +20,29 @@ export class RecordService {
   private readonly RETRY_COUNT = 2;
   private readonly RETRY_DELAY = 1000;
   
-  // Flag to track if we're in offline mode
-  private isOfflineMode = false;
+  // Flag to track if we're in offline mode - renamed to avoid conflict
+  private _isOfflineMode = false;
   
-  // Mock data cache (used when API is unavailable)
-  private mockDataCache: Record[] = [];
-
+  // Mock data for offline mode
+  private mockRecords: Record[] = [];
+  
+  // Add BehaviorSubject for offline status
+  private offlineStatusSubject = new BehaviorSubject<boolean>(false);
+  public offlineStatus$ = this.offlineStatusSubject.asObservable();
+  
   constructor(
     public apiService: ApiService,
     private notificationService: NotificationService,
     private logger: LoggerService
   ) {
     this.apiUrl = apiService.getApiUrl();
-    this.logger.debug('RecordService initialized', { apiUrl: this.apiUrl });
+    this.logger.info('RecordService initialized', { 
+      apiUrl: this.apiUrl,
+      timeout: this.REQUEST_TIMEOUT 
+    });
+    
+    // Initialize mock data for fallback when backend is unavailable
+    this.generateMockRecords(100);
   }
 
   /**
@@ -51,22 +61,33 @@ export class RecordService {
    * @returns An observable of records
    */
   getAllRecords(): Observable<Record[]> {
-    // If we're in offline mode, return mock data
-    if (this.isOfflineMode) {
-      this.logger.warn('Operating in offline mode, using cached records');
-      return of(this.generateMockRecords(100));
+    // In offline mode, use mock data instead of failing
+    if (this._isOfflineMode) {
+      this.logger.warn('Operating in offline mode, using mock data');
+      this.notificationService.showInfo(
+        'Using locally generated data because server is unreachable.',
+        'Offline Mode'
+      );
+      return of(this.mockRecords);
     }
     
     return this.apiService.get<Record[]>(this.baseUrl, { 
       timeout: this.REQUEST_TIMEOUT 
     }).pipe(
-      timeout(this.REQUEST_TIMEOUT),
-      retry({ count: this.RETRY_COUNT, delay: this.RETRY_DELAY }),
-      tap(records => {
-        // Cache the successfully retrieved records for offline use
-        this.mockDataCache = records;
-      }),
-      catchError(error => this.handleApiError(error, 100))
+      catchError(error => {
+        this.logger.error('Failed to get all records', { error });
+        // If connection fails, use mock data
+        if (error.status === 0 || error.status === 504) {
+          this.setOfflineMode(true);
+          this.notificationService.showWarning(
+            'Cannot connect to server. Using mock data instead.',
+            'Connectivity Issue'
+          );
+          this.logger.info('Switching to offline mode with mock data');
+          return of(this.mockRecords);
+        }
+        return throwError(() => error);
+      })
     );
   }
 
@@ -77,12 +98,18 @@ export class RecordService {
    */
   getRecordByUID(UID: string): Observable<Record> {
     this.selectedUID = UID;
+    this.logger.debug('Getting record by UID', { UID });
     
-    // Handle offline mode
-    if (this.isOfflineMode) {
-      const mockRecord = this.generateMockRecords(1)[0];
-      mockRecord.UID = UID;
-      return of(mockRecord).pipe(delay(300)); // Add delay to simulate network
+    // Handle offline mode with mock data
+    if (this._isOfflineMode) {
+      this.logger.warn('Using mock data for record in offline mode', { UID });
+      // Find a record with matching UID or return the first mock record
+      const record = this.mockRecords.find(r => r.UID === UID) || this.mockRecords[0];
+      this.notificationService.showInfo(
+        'Using locally generated data because server is unreachable.',
+        'Offline Mode'
+      );
+      return of(record);
     }
     
     return this.apiService.get<Record>(`${this.baseUrl}/${UID}`, {
@@ -92,13 +119,15 @@ export class RecordService {
       retry({ count: this.RETRY_COUNT, delay: this.RETRY_DELAY }),
       catchError(error => {
         if (error.status === 0 || error.status === 504) {
-          this.logger.warn('Network error while fetching record, generating mock', { UID });
-          this.isOfflineMode = true;
-          
-          // Generate a single mock record with the requested UID
-          const mockRecord = this.generateMockRecords(1)[0];
-          mockRecord.UID = UID;
-          return of(mockRecord);
+          this.logger.warn('Network error while fetching record, using mock data', { UID });
+          this.setOfflineMode(true);
+          this.notificationService.showWarning(
+            'Cannot connect to server. Using mock data instead.',
+            'Connection Error'
+          );
+          // Return a mock record as fallback
+          const record = this.mockRecords.find(r => r.UID === UID) || this.mockRecords[0];
+          return of(record);
         }
         
         this.logger.error('Failed to fetch record by UID', { error, UID });
@@ -116,35 +145,51 @@ export class RecordService {
     this.logger.debug(`Generating new record set`, {
       count,
       endpoint: `${this.baseUrl}/generate?count=${count}`,
-      isOffline: this.isOfflineMode
+      isOffline: this._isOfflineMode
     });
     
-    // If we're in offline mode, generate mock data locally
-    if (this.isOfflineMode) {
-      return of(this.generateMockRecords(count)).pipe(
-        delay(500), // Simulate network latency
-        tap(() => {
-          this.notificationService.showInfo(
-            'Using offline mode with generated records',
-            'Offline Mode'
-          );
-        })
+    // If we're in offline mode, use mock data
+    if (this._isOfflineMode) {
+      this.logger.info('Using mock data generator in offline mode', { count });
+      this.notificationService.showInfo(
+        'Using locally generated mock data instead of server.',
+        'Offline Mode'
       );
+      this.mockRecords = this.generateMockRecords(count);
+      this.recordGenerationTime = this.getMockGenerationTime();
+      return of(this.mockRecords);
     }
     
     // Online mode - try to get data from API
     return this.apiService.get<Record[]>(`${this.baseUrl}/generate?count=${count}`, {
       timeout: this.REQUEST_TIMEOUT
     }).pipe(
-      timeout(this.REQUEST_TIMEOUT),
-      retry({ count: this.RETRY_COUNT, delay: this.RETRY_DELAY }),
       tap(records => {
-        // Cache the data we received
-        if (records && records.length > 0) {
-          this.mockDataCache = records;
-        }
+        this.logger.debug(`Successfully retrieved ${records.length} records from API`);
+        // If we got records successfully, ensure we're in online mode
+        this.setOfflineMode(false);
       }),
-      catchError(error => this.handleApiError(error, count))
+      catchError(error => {
+        this.logger.error('Failed to generate record set from API', { error, count });
+        
+        // If connection error, switch to offline mode and use mock data
+        if (error.status === 0 || error.status === 504) {
+          this.setOfflineMode(true);
+          this.logger.warn('Connection error, switching to offline mode with mock data');
+          
+          this.notificationService.showWarning(
+            'Server is unreachable. Using locally generated data instead.',
+            'Connection Error'
+          );
+          
+          // Generate and return mock data
+          this.mockRecords = this.generateMockRecords(count);
+          this.recordGenerationTime = this.getMockGenerationTime();
+          return of(this.mockRecords);
+        }
+        
+        return throwError(() => error);
+      })
     );
   }
 
@@ -153,9 +198,9 @@ export class RecordService {
    * @returns An observable of the generation time
    */
   getCreationTime(): Observable<number> {
-    if (this.isOfflineMode) {
-      // Simulate a reasonable generation time for mock data
-      return of(Math.floor(Math.random() * 50) + 10);
+    if (this._isOfflineMode) {
+      this.logger.info('Using mock generation time in offline mode');
+      return of(this.getMockGenerationTime());
     }
     
     return this.apiService.get<{ generationTime: number }>(`${this.baseUrl}/time`, {
@@ -164,12 +209,16 @@ export class RecordService {
       map(response => response.generationTime),
       catchError(error => {
         if (error.status === 0 || error.status === 504) {
-          // Switch to offline mode and return a mock time
-          this.isOfflineMode = true;
-          return of(Math.floor(Math.random() * 50) + 20);
+          // Switch to offline mode and use mock generation time
+          this.setOfflineMode(true);
+          this.notificationService.showWarning(
+            'Cannot connect to server. Using mock timing data.',
+            'Connection Error'
+          );
+          return of(this.getMockGenerationTime());
         }
         this.logger.error('Failed to fetch creation time', { error });
-        return throwError(() => error);
+        return of(this.getMockGenerationTime());
       })
     );
   }
@@ -190,124 +239,138 @@ export class RecordService {
     this.selectedUID = uid;
   }
   
-  // Private helper methods
-  
   /**
-   * Handles API errors with appropriate fallbacks
-   * @param error The error from the API call
-   * @param count The number of records to generate as fallback
-   * @returns An observable of fallback records
+   * Gets mock records for offline mode
+   * @returns An array of mock records
    */
-  private handleApiError(error: any, count: number): Observable<Record[]> {
-    // Check if this is a network connectivity issue
-    if (error.status === 0 || error.status === 504) {
-      this.isOfflineMode = true;
-      this.logger.warn('Network error - switching to offline mode', { 
-        status: error.status,
-        message: error.message 
-      });
-      
-      // Show notification about offline mode
-      this.notificationService.showWarning(
-        'Server is unreachable. Using offline mode with generated data.',
-        'Connectivity Issue'
-      );
-      
-      // First try to use cached data if available
-      if (this.mockDataCache.length > 0) {
-        return of(this.mockDataCache);
-      }
-      
-      // Otherwise generate new mock data
-      return of(this.generateMockRecords(count)).pipe(
-        delay(300) // Add a small delay to simulate network
-      );
+  public getMockRecords(): Record[] {
+    if (this.mockRecords.length === 0) {
+      // If no mock records exist, generate some
+      this.mockRecords = this.generateMockRecords(100);
     }
-    
-    // For other types of errors, log and rethrow
-    this.logger.error('API request failed', { error });
-    return throwError(() => error);
+    return this.mockRecords;
   }
-  
-  /**
-   * Generates mock record data when offline
-   * @param count Number of records to generate
-   * @returns Array of mock records
-   */
+
+  // Generate mock records for offline mode
   private generateMockRecords(count: number): Record[] {
-    const records: Record[] = [];
+    const mockRecords: Record[] = [];
+    const states = ['CA', 'TX', 'FL', 'NY', 'PA', 'IL', 'OH', 'GA', 'NC', 'MI'];
+    const cities = ['Los Angeles', 'Houston', 'Miami', 'New York', 'Philadelphia', 'Chicago', 'Columbus', 'Atlanta', 'Charlotte', 'Detroit'];
+    const firstNames = ['James', 'John', 'Robert', 'Michael', 'William', 'Mary', 'Patricia', 'Jennifer', 'Linda', 'Elizabeth'];
+    const lastNames = ['Smith', 'Johnson', 'Williams', 'Jones', 'Brown', 'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor'];
     
     for (let i = 0; i < count; i++) {
-      const uid = this.generateUID();
-      records.push({
-        UID: uid,
-        firstName: `FirstName${i}`,
-        lastName: `LastName${i}`,
-        name: `FirstName${i} LastName${i}`,
-        avatar: null,
-        flicker: null,
+      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const stateIndex = Math.floor(Math.random() * states.length);
+      const state = states[stateIndex];
+      const city = cities[stateIndex]; 
+      const zipcode = `${10000 + Math.floor(Math.random() * 89999)}`;
+      
+      const salary = [];
+      const companyCount = Math.floor(Math.random() * 3) + 1; // 1-3 companies
+      for (let c = 0; c < companyCount; c++) {
+        salary.push({
+          UID: `COMP-${i}-${c}`,
+          companyName: `MockCorp ${c + 1}`,
+          employeeName: `${firstName} ${lastName}`,
+          annualSalary: 70000 + Math.floor(Math.random() * 80000),
+          companyPosition: 'Software Engineer'
+        });
+      }
+      
+      const phoneUID = `PHONE-${i + 10000}`;
+      
+      mockRecords.push({
+        UID: `MOCK-${i + 10000}`,
+        firstName,
+        lastName,
+        name: `${firstName} ${lastName}`,
         address: {
-          street: `${i} Mock Street`,
-          city: `City${i % 10}`,
-          state: `State${i % 5}`,
-          zipcode: `${10000 + i % 90000}`
+          street: `${1000 + i} Main St`,
+          city,
+          state,
+          zipcode
         },
-        city: `City${i % 10}`,
-        state: `State${i % 5}`,
-        zip: `${10000 + i % 90000}`,
+        city,
+        state,
+        zip: zipcode,
         phone: {
-          UID: `phone-${uid}`,
-          number: `555${i.toString().padStart(7, '0')}`,
+          UID: phoneUID,
+          number: `(555) ${100 + Math.floor(Math.random() * 899)}-${1000 + Math.floor(Math.random() * 8999)}`,
           type: 'mobile'
         },
-        salary: [
-          {
-            UID: `salary-${uid}-1`,
-            employeeName: `FirstName${i} LastName${i}`,
-            annualSalary: 50000 + (i * 1000),
-            companyName: `Company ${i % 5}`
-          },
-          {
-            UID: `salary-${uid}-2`,
-            employeeName: `FirstName${i} LastName${i}`,
-            annualSalary: 25000 + (i * 500),
-            companyName: `Side Gig ${i % 3}`
-          }
-        ],
-        totalHouseholdIncome: 75000 + (i * 1500)
+        salary: salary,
+        email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
+        birthDate: new Date(1960 + Math.floor(Math.random() * 40), Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString(),
+        registrationDate: new Date().toISOString(),
+        // Add missing required properties
+        avatar: null,
+        flicker: null,
+        totalHouseholdIncome: Math.floor(Math.random() * 150000) + 50000 // Random household income between 50k-200k
       });
     }
     
-    return records;
+    this.logger.info(`Generated ${mockRecords.length} mock records for offline mode`);
+    return mockRecords;
   }
   
-  /**
-   * Generates a random UID for mock records
-   * @returns A string UID
-   */
-  private generateUID(): string {
-    return Math.random().toString(36).substring(2, 15) + 
-           Math.random().toString(36).substring(2, 15);
+  // Returns a simulated generation time for metrics when in offline mode
+  private getMockGenerationTime(): number {
+    return Math.random() * 100 + 50; // Random value between 50-150ms
   }
   
   /**
    * Checks network connectivity and resets offline mode if connectivity returns
    */
   public checkNetworkStatus(): Observable<boolean> {
-    return this.apiService.get<any>('health-check', {
+    this.logger.debug('Checking network connectivity status...');
+    
+    return this.apiService.get<any>('health', {
       headers: { 'Cache-Control': 'no-cache' },
       timeout: 3000
     }).pipe(
       timeout(3000),
       map(() => {
         // If we can reach the server, reset offline mode
-        this.isOfflineMode = false;
+        this.setOfflineMode(false); // Use the method to ensure the subject is updated
+        this.logger.info('Network connectivity restored');
         return true;
       }),
-      catchError(() => {
-        this.isOfflineMode = true;
+      catchError(error => {
+        this.setOfflineMode(true); // Use the method to ensure the subject is updated
+        this.logger.warn('Network connectivity check failed', { error });
         return of(false);
       })
     );
+  }
+
+  /**
+   * Check if the service is currently in offline mode
+   */
+  isOfflineMode(): boolean {
+    return this._isOfflineMode;
+  }
+
+  /**
+   * Sets offline mode status and notifies subscribers
+   */
+  private setOfflineMode(isOffline: boolean): void {
+    if (this._isOfflineMode !== isOffline) {
+      this._isOfflineMode = isOffline;
+      this.offlineStatusSubject.next(isOffline);
+      
+      if (isOffline) {
+        this.logger.warn('Service entered offline mode', { 
+          apiUrl: this.apiUrl,
+          mode: 'offline'
+        });
+      } else {
+        this.logger.info('Service entered online mode', {
+          apiUrl: this.apiUrl,
+          mode: 'online'
+        });
+      }
+    }
   }
 }

@@ -30,8 +30,10 @@ export interface Server {
 export class ApiService {
   private isProduction = environment.production;
 
-  // Default API URL set to NestJS server
-  private apiUrl = `${environment.apiUrl}/api`;
+  // Default API URL set to NestJS server - Use relative path for Angular DevServer proxy
+  private apiUrl = '/api'; // FIXED: Always use relative URLs for proxy compatibility
+  private apiPrefix = '/api'; // Base API path for NestJS
+  private apiPrefixGo = '/api-go'; // Base API path for Go
   private recordSize = 100; // Default record size
   
   // Connection management properties
@@ -94,24 +96,20 @@ export class ApiService {
     return this.addSecurityHeaders(headers);
   }
 
-  // Get current URL construction for clarity
+  // FIX: Get current URL construction for clarity
   private getFullUrl(endpoint: string): string {
     // Remove leading slashes
     endpoint = endpoint.replace(/^\/+/, '');
     
-    // Ensure we have the correct base URL with environment-specific settings
-    let baseUrl;
-    if (this.isProduction) {
-      // In production, use the full environment API URL
-      baseUrl = this.apiUrl;
-    } else {
-      // In development, use the Angular proxy (no hostname needed)
-      // This ensures requests go through Angular DevServer proxy
-      baseUrl = '/api';
-    }
+    // FIXED: Always use the correct API prefix for the proxy
+    // This ensures requests go through Angular DevServer proxy correctly
+    const baseUrl = this.apiUrl;
     
-    // Combine and return the full URL path
-    return `${baseUrl}/${endpoint}`;
+    // Log the full URL being constructed
+    const fullUrl = `${baseUrl}/${endpoint}`;
+    this.logger.debug(`Constructed API URL: ${fullUrl}`);
+    
+    return fullUrl;
   }
 
   // 🛡️ API CRUD Operations
@@ -130,21 +128,47 @@ export class ApiService {
       headers: this.getTracingHeaders(),
     };
     
+    // Enhanced logging for debugging
+    this.logger.debug(`Making GET request to ${url}`, {
+      endpoint,
+      fullUrl: url,
+      options: JSON.stringify(httpOptions),
+      timestamp: new Date().toISOString()
+    });
+    
     // Use explicit type casting for the HTTP call
     return this.http.get<T>(url, httpOptions).pipe(
       tap(response => {
         this.logger.endServiceCall(callId, 200);
-        this.logger.debug(`GET ${endpoint} succeeded`);
+        this.logger.debug(`GET ${endpoint} succeeded`, {
+          responseReceived: true,
+          url
+        });
       }),
       catchError(error => {
         this.logger.endServiceCall(callId, error.status || 500);
         this.logger.error(`GET ${endpoint} failed`, { 
           status: error.status,
-          message: error.message
+          message: error.message,
+          url,
+          timestamp: new Date().toISOString(),
+          errorObject: JSON.stringify(error)
         });
+        
+        // Enhanced error logging
+        console.error(`API Error Details:`, {
+          url,
+          status: error.status,
+          message: error.message,
+          error
+        });
+        
+        // Ping server to check availability on error
+        this.checkServerAvailability();
+        
         throw error;
       })
-    ) as Observable<T>; // Explicitly cast the return type
+    ) as Observable<T>;
   }
 
   put<T>(endpoint: string, body: T, options?: any): Observable<T> {
@@ -233,17 +257,16 @@ export class ApiService {
   setApiUrl(resource: string): string {
     this.logger.debug(`Setting API URL for resource: ${resource}`);
     
+    // FIXED: Always use relative URLs for proxy compatibility
     if (resource === 'Go') {
-      this.apiUrl = 'http://localhost:8080/api';
-    } else if (resource === 'Nest') {
-      // Fix the malformed URL - remove duplicate http:// and port
-      this.apiUrl = 'http://localhost:3000/api';
+      this.apiUrl = '/api-go';  // Use relative URL for Go API
+      this.logger.debug(`Switched to Go API: ${this.apiUrl}`);
     } else {
-      // Default case
-      this.apiUrl = 'http://localhost:3000/api';
+      // Default to NestJS
+      this.apiUrl = '/api';  // Use relative URL for NestJS API
+      this.logger.debug(`Switched to NestJS API: ${this.apiUrl}`);
     }
     
-    this.logger.debug(`API URL set to ${this.apiUrl}`);
     return this.apiUrl;
   }
 
@@ -470,21 +493,35 @@ export class ApiService {
   }
   
   /**
-   * Check if the server is available by making a simple HEAD request
+   * Enhanced server availability check
    */
   private checkServerAvailability(): void {
+    this.logger.debug('Checking server availability...');
+    
     // Try to ping the server root to check if it's up
-    fetch('/api', { method: 'HEAD' })
+    fetch('/api/health', { method: 'HEAD' })
       .then(response => {
-        console.log('🔄 Server availability check: Server is responding', {
+        this.logger.info('Server availability check: Server is responding', {
           status: response.status, 
           ok: response.ok
         });
+        this.serverStarting = false;
       })
       .catch(error => {
-        console.error('🔄 Server availability check: Server is not responding', {
-          error: error.message || 'Unknown error'
+        this.logger.error('Server availability check: Server is not responding', {
+          error: error.message || 'Unknown error',
+          timestamp: new Date().toISOString()
         });
+        
+        // Check if this might be a startup issue
+        this.connectionAttempts++;
+        if (this.connectionAttempts <= this.maxStartupRetries) {
+          this.serverStarting = true;
+          this.logger.warn(`Server might be starting up. Attempt ${this.connectionAttempts} of ${this.maxStartupRetries}`);
+        } else {
+          this.serverStarting = false;
+          this.logger.error('Server appears to be offline after multiple attempts');
+        }
       });
   }
 }

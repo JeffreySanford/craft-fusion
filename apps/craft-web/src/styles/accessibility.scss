@@ -1,0 +1,69 @@
+// Modern accessibility styles to replace deprecated -ms-high-contrast
+
+// Replace all instances of -ms-high-contrast: active with forced-colors: active
+@media (forced-colors: active) {
+  // Enhanced focus indicators for better visibility
+  :focus {
+    outline: 2px solid CanvasText;
+    outline-offset: 2px;
+  }
+  
+  // Apply high contrast styles to buttons and interactive elements
+  button, 
+  .mat-button,
+  .mat-raised-button,
+  .mat-flat-button,
+  .mat-stroked-button,
+  .mat-icon-button,
+  .mat-fab,
+  .mat-mini-fab {
+    border: 1px solid transparent;
+    
+    &:focus {
+      border-color: CanvasText;
+    }
+  }
+  
+  // Table specific styles that were triggering warnings
+  table, 
+  .flex-row,
+  .flex-header-cell,
+  .flex-cell {
+    border-color: CanvasText;
+    
+    &:focus {
+      outline: 2px solid CanvasText;
+      outline-offset: 1px;
+    }
+  }
+
+  // Form controls
+  input,
+  textarea,
+  select,
+  .mat-form-field {
+    border-color: CanvasText;
+    outline-color: CanvasText;
+  }
+  
+  // Icons need proper contrast
+  .mat-icon {
+    forced-color-adjust: auto;
+  }
+}
+
+// Replace all instances of -ms-high-contrast: black-on-white with appropriate forced-colors
+@media (forced-colors: active) and (prefers-color-scheme: light) {
+  // Light mode high contrast styles
+  .light-contrast-border {
+    border-color: CanvasText;
+  }
+}
+
+// Replace all instances of -ms-high-contrast: white-on-black with appropriate forced-colors
+@media (forced-colors: active) and (prefers-color-scheme: dark) {
+  // Dark mode high contrast styles
+  .dark-contrast-border {
+    border-color: CanvasText;
+  }
+}

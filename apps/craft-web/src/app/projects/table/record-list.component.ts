@@ -64,6 +64,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
   showAddressColumns = true;
   showMediumColumns = true;
   showMinimalColumns = false;
+  isOffline = false;
   displayedColumns: string[] = ['userID', 'name', 'address', 'city', 'state', 'zip', 'phone', 'icons'];
   private destroy$ = new Subject<void>();
   private resolvedSubject = new BehaviorSubject<boolean>(true);
@@ -90,6 +91,10 @@ export class RecordListComponent implements OnInit, OnDestroy {
   data$ = this.dataSubject.asObservable();
   private reportSubject = new BehaviorSubject<Report | null>(null);
   report$ = this.reportSubject.asObservable();
+  // Add connectionAttempts counter for exponential backoff
+  private connectionAttempts = 0;
+  // Maximum number of automatic retry attempts
+  private readonly MAX_AUTO_RETRIES = 3;
 
   constructor(
     private recordService: RecordService,
@@ -102,6 +107,26 @@ export class RecordListComponent implements OnInit, OnDestroy {
   ) {
     console.log('Constructor: RecordListComponent created');
     console.log('Initial servers:', this.servers);
+
+    // Subscribe to the offline status from the service
+    this.recordService.offlineStatus$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isOffline => {
+        if (this.isOffline !== isOffline) {
+          this.isOffline = isOffline;
+          
+          if (isOffline) {
+            this.logger.warn('Application is in offline mode', { component: 'RecordListComponent' });
+            this.notificationService.showWarning('Cannot connect to backend server. Using offline mode.', 'Connection Error');
+          } else if (this.connectionAttempts > 0) {
+            // Only show online notification if we were previously offline
+            this.logger.info('Connection restored - back online', { component: 'RecordListComponent' });
+            this.notificationService.showSuccess('Connection to backend server restored!', 'Back Online');
+          }
+          
+          this.changeDetectorRef.detectChanges();
+        }
+      });
   }
 
   @HostListener('window:resize', ['$event'])
@@ -166,6 +191,9 @@ export class RecordListComponent implements OnInit, OnDestroy {
         this.diskTransferTime = report.diskTransferTime;
       }
     });
+
+    // Check if we're in offline mode - fixed method call
+    this.isOffline = this.recordService.isOfflineMode();
   }
 
   ngOnDestroy(): void {
@@ -293,6 +321,8 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
   private fetchData(count: number): void {
     this.spinner.show();
+    this.resolvedSubject.next(false);
+    
     this.recordService
       .generateNewRecordSet(count)
       .pipe(
@@ -304,59 +334,24 @@ export class RecordListComponent implements OnInit, OnDestroy {
           this.changeDetectorRef.detectChanges();
         }),
         switchMap((dataset: Record[]) => {
+          // Check if we received data or are in offline mode
           if (dataset && dataset.length > 0) {
-            // Success path
             this.dataSource.data = dataset;
-            this.resolved = true;
-            this.newData = true;
-
-            this.paginator.pageIndex = 0;
-            this.paginator.pageSize = 5;
-            this.paginator.length = dataset.length;
-            this.changeDetectorRef.detectChanges();
-
-            // Set up flexible filtering
-            this.dataSource.filterPredicate = (data: Record, filter: string) => {
-              const searchStr = filter.toLowerCase();
-              return (
-                data.UID?.toLowerCase().includes(searchStr) ||
-                data.firstName?.toLowerCase().includes(searchStr) ||
-                data.lastName?.toLowerCase().includes(searchStr) ||
-                data.address?.city?.toLowerCase().includes(searchStr) ||
-                data.address?.state?.toLowerCase().includes(searchStr)
-              );
-            };
-
-            this.sort = { active: 'userID', direction: 'asc' } as MatSort;
-            this.updateDisplayedColumns();
-
-            this.totalRecords = dataset.length;
-            this.logger.debug('Data: New record set generated', { 
-              length: dataset.length,
-              sample: dataset[0]?.UID
-            });
-
-            this.updateCreationTime();
-            this.triggerFadeToRed();
+            this.isOffline = this.recordService.isOfflineMode();
+            return this.recordService.getCreationTime();
           } else {
-            // Empty dataset handling
-            this.logger.warn('Empty dataset returned');
-            this.notificationService.showWarning(
-              'No records were returned. Showing empty table.',
-              'Empty Dataset'
-            );
             this.dataSource.data = [];
-            this.resolved = true;
-            this.triggerFadeToRed();
+            return of(0);
           }
-          return of(dataset || []);
         }),
-        catchError((error: any) => {
-          // Error handling with better user feedback
-          this.logger.error('Error: generateNewRecordSet failed:', error);
+        catchError(error => {
+          this.logger.error('Error fetching data', { error });
           
-          // Show user-friendly message based on error type
-          let errorMessage = 'An error occurred while loading records.';
+          // Update offline state based on error
+          this.isOffline = true;
+          
+          let errorMessage = 'Failed to load data. Please try again later.';
+          
           if (error.status === 504) {
             errorMessage = 'The server took too long to respond. Using offline data instead.';
           } else if (error.status === 0) {
@@ -368,9 +363,13 @@ export class RecordListComponent implements OnInit, OnDestroy {
           // Initialize with empty data to avoid UI breakage
           this.dataSource.data = [];
           this.resolved = true;
-          this.triggerFadeToRed();
           
-          return of([]);
+          // If we have connection attempts left, schedule a retry with exponential backoff
+          if (this.connectionAttempts < this.MAX_AUTO_RETRIES) {
+            this.scheduleRetry();
+          }
+          
+          return of(0);
         })
       )
       .subscribe();
@@ -591,13 +590,44 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
   // Add a method to retry connection when offline
   public retryConnection(): void {
-    this.recordService.checkNetworkStatus().subscribe(isOnline => {
-      if (isOnline) {
-        this.notificationService.showSuccess('Connection restored! Refreshing data...', 'Online');
-        this.fetchData(this.totalRecords);
-      } else {
-        this.notificationService.showWarning('Still offline. Using local data.', 'Offline Mode');
-      }
+    this.logger.info('Manual connection retry initiated', { component: 'RecordListComponent' });
+    this.notificationService.showInfo('Attempting to reconnect to server...', 'Reconnecting');
+    
+    this.recordService.checkNetworkStatus().pipe(
+      tap(isOnline => {
+        if (isOnline) {
+          this.connectionAttempts = 0; // Reset connection attempts on success
+          this.notificationService.showSuccess('Connection restored! Refreshing data...', 'Online');
+          this.fetchData(this.totalRecords);
+        } else {
+          this.connectionAttempts++;
+          this.notificationService.showWarning('Still offline. Using local data.', 'Offline Mode');
+        }
+      }),
+      catchError(error => {
+        this.logger.error('Error during connection retry', { error });
+        this.connectionAttempts++;
+        this.notificationService.showError('Connection retry failed', 'Error');
+        return of(false);
+      })
+    ).subscribe();
+  }
+  
+  // Schedule an automatic retry with exponential backoff
+  private scheduleRetry(): void {
+    const backoffTime = Math.min(1000 * Math.pow(2, this.connectionAttempts), 30000); // Max 30 seconds
+    
+    this.logger.debug(`Scheduling automatic retry in ${backoffTime}ms`, { 
+      attempt: this.connectionAttempts + 1,
+      component: 'RecordListComponent'
     });
+    
+    setTimeout(() => {
+      if (this.isOffline) {
+        this.connectionAttempts++;
+        this.logger.info(`Auto-retry connection attempt ${this.connectionAttempts}`, { component: 'RecordListComponent' });
+        this.retryConnection();
+      }
+    }, backoffTime);
   }
 }

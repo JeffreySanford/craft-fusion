@@ -5,7 +5,7 @@ import { PeasantKitchenComponent } from './peasant-kitchen.component';
 import { RecipesComponent } from './recipes/recipes.component';
 import { RecipeComponent } from './recipe/recipe.component';
 import { MaterialModule } from '../../material.module';
-import { RecordService } from '../table/services/record.service';
+import { RecipeService } from './services/recipe.service';
 
 @NgModule({
   declarations: [
@@ -27,6 +27,6 @@ import { RecordService } from '../table/services/record.service';
       }
     ])
   ],
-  providers: [RecordService],
+  providers: [RecipeService],
 })
 export class PeasantKitchenModule { }

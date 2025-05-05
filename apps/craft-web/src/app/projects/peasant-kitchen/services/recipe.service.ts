@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, catchError, tap, of } from 'rxjs';
+import { Observable, catchError, tap, of, throwError, timer } from 'rxjs';
+import { retry, timeout } from 'rxjs/operators';
 import { Recipe } from './recipe.interface';
 import { ApiService } from '../../../common/services/api.service';
 
@@ -7,6 +8,8 @@ import { ApiService } from '../../../common/services/api.service';
 export class RecipeService {
   private recipe!: Recipe;
   private readonly endpoint = 'recipes';
+  private isOfflineMode = false;
+  private readonly REQUEST_TIMEOUT = 5000; // 5 seconds timeout
   private readonly defaultRecipe: Recipe = {
     id: 0,
     name: 'Sample Recipe',
@@ -23,6 +26,32 @@ export class RecipeService {
     url: 'sample-recipe'
   };
 
+  // Fallback recipes for offline mode
+  private readonly fallbackRecipes: Recipe[] = [
+    {
+      id: 1, 
+      name: 'Classic Beef Stew', 
+      description: 'A hearty beef stew with root vegetables', 
+      countryCode: 'FR', 
+      countryName: 'France', 
+      servingSize: '6 servings', 
+      url: 'classic-beef-stew', 
+      ingredients: ['2 lbs beef chuck', '4 carrots', '2 onions', '3 potatoes'], 
+      directions: ['Brown the beef', 'Add vegetables and broth', 'Simmer for 2 hours']
+    },
+    {
+      id: 2, 
+      name: 'Simple Pasta Carbonara', 
+      description: 'Traditional Roman pasta dish', 
+      countryCode: 'IT', 
+      countryName: 'Italy', 
+      servingSize: '4 servings', 
+      url: 'pasta-carbonara', 
+      ingredients: ['1 lb spaghetti', '8 oz pancetta', '4 egg yolks', '1 cup Pecorino Romano'], 
+      directions: ['Cook pasta', 'Fry pancetta', 'Mix eggs and cheese', 'Toss all together while hot']
+    }
+  ];
+
   constructor(private apiService: ApiService) {}
 
   /**
@@ -30,12 +59,21 @@ export class RecipeService {
    * @returns Observable<Recipe[]> - Array of all recipes
    */
   getRecipes(): Observable<Recipe[]> {
+    if (this.isOfflineMode) {
+      console.log('In offline mode - returning fallback recipes');
+      return of(this.fallbackRecipes);
+    }
+
     console.log('Fetching all recipes');
     return this.apiService.get<Recipe[]>(this.endpoint).pipe(
+      timeout(this.REQUEST_TIMEOUT),
+      retry({ count: 2, delay: (_, retryCount) => timer(retryCount * 1000) }),
       tap(recipes => console.log(`Retrieved ${recipes.length} recipes`)),
       catchError((error: any) => {
         console.error('Error fetching recipes:', error);
-        return of([]);
+        this.isOfflineMode = true;
+        console.warn('Switching to offline mode with fallback recipes');
+        return of(this.fallbackRecipes);
       })
     );
   }
@@ -76,6 +114,10 @@ export class RecipeService {
     switch (countryCode) {
       case 'US':
         return 'United States of America';
+      case 'IT':
+        return 'Italy';
+      case 'FR':
+        return 'France';
       case 'ZA':
         return 'South Africa';
       default:
@@ -97,11 +139,18 @@ export class RecipeService {
    * @returns Observable<Recipe>
    */
   addRecipe(recipe: Recipe): Observable<Recipe> {
+    if (this.isOfflineMode) {
+      console.warn('Cannot add recipe in offline mode');
+      return throwError(() => new Error('Cannot add recipe in offline mode'));
+    }
+
     console.log('Adding new recipe:', recipe);
     return this.apiService.post<Recipe, Recipe>(this.endpoint, recipe).pipe(
+      timeout(this.REQUEST_TIMEOUT),
       tap(newRecipe => console.log('Created recipe:', newRecipe.id)),
       catchError((error: any) => {
         console.error('Error creating recipe:', error);
+        this.isOfflineMode = true;
         throw error;
       })
     );
@@ -113,11 +162,18 @@ export class RecipeService {
    * @returns Observable<Recipe>
    */
   updateRecipe(recipe: Recipe): Observable<Recipe> {
+    if (this.isOfflineMode) {
+      console.warn('Cannot update recipe in offline mode');
+      return throwError(() => new Error('Cannot update recipe in offline mode'));
+    }
+
     console.log('Updating recipe:', recipe.id);
     return this.apiService.put<Recipe>(`${this.endpoint}/${recipe.id}`, recipe).pipe(
+      timeout(this.REQUEST_TIMEOUT),
       tap(updatedRecipe => console.log('Updated recipe:', updatedRecipe.id)),
       catchError((error: any) => {
         console.error('Error updating recipe:', error);
+        this.isOfflineMode = true;
         throw error;
       })
     );
@@ -129,11 +185,18 @@ export class RecipeService {
    * @returns Observable<void>
    */
   deleteRecipe(id: string): Observable<void> {
+    if (this.isOfflineMode) {
+      console.warn('Cannot delete recipe in offline mode');
+      return throwError(() => new Error('Cannot delete recipe in offline mode'));
+    }
+
     console.log('Deleting recipe:', id);
     return this.apiService.delete<void>(`${this.endpoint}/${id}`).pipe(
+      timeout(this.REQUEST_TIMEOUT),
       tap(() => console.log('Deleted recipe:', id)),
       catchError((error: any) => {
         console.error('Error deleting recipe:', error);
+        this.isOfflineMode = true;
         throw error;
       })
     );

@@ -3,6 +3,21 @@
     <mat-progress-spinner mode="indeterminate" [diameter]="100" [style.color]="'teal'"></mat-progress-spinner>
   </div>
 </ng-template>
+
+<!-- Offline state banner -->
+<div *ngIf="isOffline" class="offline-banner mat-elevation-z4" [@fly-in]>
+  <div class="offline-content">
+    <mat-icon class="offline-icon">cloud_off</mat-icon>
+    <div class="offline-message">
+      <h3>You are currently offline</h3>
+      <p>Cannot connect to the server. Using local data instead.</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="retryConnection()">
+      <mat-icon>refresh</mat-icon> Retry Connection
+    </button>
+  </div>
+</div>
+
 <div class="table-container">
   <mat-card class="record-collection" [@fly-in]>
     <mat-card-content>
@@ -11,7 +26,8 @@
           <p [hidden]="!resolved">
             Using the backend server language,
             <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ server.language }}</span>
-            , a mock record set of
+            <span [ngClass]="{ 'offline-text': isOffline }">({{ isOffline ? 'OFFLINE' : 'ONLINE' }})</span>
+            , a {{ isOffline ? 'mock' : '' }} record set of
             <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ totalRecords }}</span>
             records was generated in <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ generationTimeLabel }}</span> and delivered in
             <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ roundtripLabel }}</span> to the Angular frontend with a latency of
@@ -20,7 +36,10 @@
         </div>
 
         <div class="button-container">
-          <button mat-raised-button color="primary" class="swagger-button" (click)="onSwaggerButtonClick()">Swagger API for {{ server.language }}</button>
+          <button mat-raised-button color="primary" class="swagger-button" (click)="onSwaggerButtonClick()" [disabled]="isOffline">Swagger API for {{ server.language }}</button>
+          <button *ngIf="isOffline" mat-raised-button color="accent" class="retry-button" (click)="retryConnection()">
+            <mat-icon>refresh</mat-icon> Retry Connection
+          </button>
         </div>
       </div>
 
@@ -154,4 +173,14 @@
 
 <div *ngIf="!resolved" class="loading-container">
   <ng-container *ngTemplateOutlet="noData"></ng-container>
+</div>
+
+<!-- Show no records message when online but no records available -->
+<div *ngIf="resolved && dataSource.data.length === 0 && !isOffline" class="no-records-container mat-elevation-z2">
+  <mat-icon>warning</mat-icon>
+  <h3>No Records Available</h3>
+  <p>No records were found in the database.</p>
+  <button mat-raised-button color="primary" (click)="fetchData(totalRecords)">
+    <mat-icon>refresh</mat-icon> Refresh Data
+  </button>
 </div>

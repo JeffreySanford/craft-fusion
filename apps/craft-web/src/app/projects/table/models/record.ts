@@ -16,7 +16,10 @@ export interface Record {
     zip: string;
     phone: Phone;
     salary: Company[];
+    email: string;
+    birthDate: string;
     totalHouseholdIncome: number;
+    registrationDate: string;
   }
 
   export interface Phone {

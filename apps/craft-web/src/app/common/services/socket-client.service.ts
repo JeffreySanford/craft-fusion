@@ -10,12 +10,15 @@ export class SocketClientService {
   private connectionStatus = new BehaviorSubject<boolean>(false);
 
   constructor(private logger: LoggerService) {
-    // Use the backend API server for socket connection
+    // Use relative URL for development to leverage Angular's proxy
+    // Use absolute URL for production environment
     const socketUrl = environment.production
       ? 'https://jeffreysanford.us' // or your prod backend
-      : 'http://localhost:3000';
+      : ''; // Empty string will use the current host, working with Angular proxy
 
-    this.logger.info('Initializing socket connection to', { socketUrl });
+    this.logger.info('Initializing socket connection to', { 
+      socketUrl: socketUrl || 'current host (via proxy)'
+    });
     
     this.socket = io(socketUrl, {
       path: '/socket.io',

@@ -334,7 +334,8 @@ export class ApiDiagnosticsService {
    */
   initializeSocketMonitoring(socketUrl?: string): void {
     if (!socketUrl) {
-      socketUrl = environment.apiUrl;
+      // Use relative URL in dev mode for proper proxy handling
+      socketUrl = environment.production ? environment.apiUrl : '';
     }
 
     this.logger.info('Initializing socket monitoring', { socketUrl });
@@ -509,26 +510,21 @@ export class ApiDiagnosticsService {
    */
   monitorNamespaceSocket(namespace: string, socketUrl?: string): void {
     if (!socketUrl) {
-      socketUrl = environment.apiUrl;
+      // Use relative URL in dev mode for proper proxy handling
+      socketUrl = environment.production ? environment.apiUrl : '';
     }
-
-    const namespaceUrl = namespace ? `${socketUrl}/${namespace}` : socketUrl;
-    this.logger.info(`Initializing monitoring for socket namespace: ${namespace}`, { socketUrl: namespaceUrl });
     
     try {
-      // Close existing namespace socket if any
-      if (this.namespaceSocketInstances.has(namespace)) {
-        const existingSocket = this.namespaceSocketInstances.get(namespace);
-        if (existingSocket) {
-          existingSocket.disconnect();
-        }
-      }
-
-      // Create new namespace socket - fixed Socket type
-      const nsSocket = io(namespaceUrl) as Socket;
-      this.namespaceSocketInstances.set(namespace, nsSocket);
+      // Create a socket for this specific namespace
+      const nsPath = namespace ? `/${namespace}` : '';
+      const nsSocket = io(`${socketUrl}${nsPath}`);
       
-      // Create initial status for this namespace if it doesn't exist
+      this.logger.debug(`Monitoring socket namespace: ${namespace || 'default'}`, { socketUrl });
+      
+      if (!this.namespaceSocketInstances.has(namespace)) {
+        this.namespaceSocketInstances.set(namespace, nsSocket);
+      }
+      
       if (!this.knownNamespaces.has(namespace)) {
         this.knownNamespaces.set(namespace, {
           namespace,
@@ -552,7 +548,7 @@ export class ApiDiagnosticsService {
         
         this.logger.info(`Socket namespace ${namespace} connected successfully`, { 
           socketId: nsSocket.id,
-          url: namespaceUrl 
+          url: socketUrl + nsPath 
         });
       });
 

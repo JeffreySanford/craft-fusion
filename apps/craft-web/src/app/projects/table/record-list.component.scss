@@ -2084,3 +2084,133 @@ mat-card {
     }
   }
 }
+
+// Add offline banner styling
+.offline-banner {
+  width: 100%;
+  background: linear-gradient(to right,
+    rgba(map.get($table-theme, patriotic-red), 0.8),
+    rgba(map.get($table-theme, patriotic-red), 0.9)
+  );
+  color: white;
+  padding: 10px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s infinite;
+  border-left: 4px solid map.get($table-theme, patriotic-blue);
+  
+  .offline-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    .offline-icon {
+      font-size: 32px;
+      margin-right: 16px;
+    }
+    
+    .offline-message {
+      flex-grow: 1;
+      
+      h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: bold;
+      }
+      
+      p {
+        margin: 4px 0 0 0;
+        font-size: 14px;
+      }
+    }
+    
+    button {
+      white-space: nowrap;
+      margin-left: 16px;
+      background-color: white;
+      color: map.get($table-theme, patriotic-blue);
+      &:hover {
+        background-color: map.get($table-theme, light-blue);
+      }
+    }
+  }
+}
+
+// Add pulsing animation for the offline banner
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// Add style for offline indicator in the report text
+.offline-text {
+  font-weight: bold;
+  color: map.get($table-theme, patriotic-red) !important;
+}
+
+// Add retry button styling
+.retry-button {
+  background-color: map.get($table-theme, patriotic-blue) !important;
+  color: white !important;
+  margin-left: 8px;
+  
+  &:hover {
+    background-color: color.adjust(map.get($table-theme, patriotic-blue), $lightness: -10%) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  mat-icon {
+    margin-right: 4px;
+  }
+}
+
+// Add no-records container styling
+.no-records-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  margin: 16px auto;
+  max-width: 400px;
+  text-align: center;
+  
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: map.get($table-theme, patriotic-blue);
+    margin-bottom: 16px;
+  }
+  
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    color: map.get($table-theme, patriotic-blue);
+  }
+  
+  p {
+    margin: 8px 0 16px;
+    color: #555;
+  }
+  
+  button {
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      margin-right: 4px;
+      margin-bottom: 0;
+    }
+  }
+}

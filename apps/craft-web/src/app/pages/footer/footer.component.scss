@@ -14,6 +14,13 @@
   overflow: visible;
   transition: height 0.3s ease;
   z-index: 1000;
+  background: linear-gradient(
+    to right,
+    rgba(255, 0, 0, 0.7) 0%,
+    rgba(255, 255, 255, 0.7) 20%,
+    rgba(0, 0, 255, 0.7) 30%,
+    rgba(0, 128, 128, 0.7) 100%
+  );
   
   &.expanded {
     // When expanded, footer takes up more space
