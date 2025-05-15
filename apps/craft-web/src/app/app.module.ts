@@ -17,6 +17,14 @@ import { SidebarModule } from './pages/sidebar/sidebar.module';
 import { FooterModule } from './pages/footer/footer.module';
 import { LoggerService } from './common/services/logger.service';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { SocketClientService } from './common/services/socket-client.service';
+
+export function socketClientFactory(socketClient: SocketClientService): () => void {
+  return () => {
+    // This will ensure the socket client is created on app initialization
+    // and the connection is established right away
+  };
+}
 
 @NgModule({
   declarations: [
@@ -50,6 +58,13 @@ import { NgxSpinnerModule } from 'ngx-spinner';
         };
       },
       deps: [Router, LoggerService],
+      multi: true
+    },
+    SocketClientService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: socketClientFactory,
+      deps: [SocketClientService],
       multi: true
     }
   ],

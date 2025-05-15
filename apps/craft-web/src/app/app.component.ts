@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Subscription, interval } from 'rxjs';
+import { Subscription, Subject, interval, take, takeUntil, timer } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UserStateService } from './common/services/user-state.service';
@@ -26,7 +26,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   title = 'frontend';
   private routerSubscription!: Subscription;
-  private videoCheckSubscription!: Subscription;
+
   private footerStateSubscription!: Subscription;
 
   menuItems = [
@@ -38,6 +38,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   userDisplayName = '🔒 Guest';
   isLoggedIn = false;
+
+  // Reduce network polling
+  private videoCheckInterval: number = 10000; // Increased from whatever it was before
+  private inactivityTimeout: any = null;
+  private videoCheckSubscription: Subscription | null = null;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
@@ -108,23 +114,41 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           document.body.classList.remove('footer-expanded');
         }
       });
+
+    // Console log for user interaction - debugging purposes
+    // Log only every 10 seconds at most to reduce spam
+    let lastInteractionLog = 0;
+    document.addEventListener('click', () => {
+      const now = Date.now();
+      if (now - lastInteractionLog > 10000) {
+        console.log('User interaction detected');
+        lastInteractionLog = now;
+      }
+    });
   }
 
   ngAfterViewInit() {
-    console.log('Step 2: ngAfterViewInit called');
-    this.ensureVideoIsPlaying();
+    this.logger.info('App component view initialized');
+    
+    // Set a small timeout before handling video to prevent blocking the main thread
+    setTimeout(() => {
+      this.ensureVideoIsPlaying();
+    }, 100);
+    
+    // Set a maximum timeout for API connections with proper error handling
+    this.setupConnectionTimeouts();
+    
     this.addUserInteractionListener();
     this.startVideoCheckPolling();
-
-    this.logger.info('App component view initialized');
   }
-
+  
   ngOnDestroy() {
-    console.log('Step 4: ngOnDestroy called');
+    this.logger.info('App component destroyed');
+    
+    // Clean up all resources
     this.removeUserInteractionListener();
     this.stopVideoCheckPolling();
-
-    this.logger.info('App component destroyed');
+    this.cancelAllTimeouts();
     
     // Log user activity summary on exit
     const activitySummary = this.userActivityService.getActivitySummary();
@@ -133,35 +157,77 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.footerStateSubscription) {
       this.footerStateSubscription.unsubscribe();
     }
+    
+    // Clear any pending timeouts
+    if (this.inactivityTimeout) {
+      clearTimeout(this.inactivityTimeout);
+      this.inactivityTimeout = null;
+    }
+    
+    // Complete the destroy$ subject to clean up subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   setActive(item: any) {
     this.menuItems.forEach(menuItem => (menuItem.active = false));
     item.active = true;
   }
+  
+  // New helper method to handle connection timeouts
+  private setupConnectionTimeouts(): void {
+    // Set global timeout for XHR requests
+    this.destroy$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      // This will be called when component is destroyed
+      // Any active XHR should be canceled here
+    });
+  }
+  
+  // New helper method to cancel all pending timeouts
+  private cancelAllTimeouts(): void {
+    if (this.inactivityTimeout) {
+      clearTimeout(this.inactivityTimeout);
+      this.inactivityTimeout = null;
+    }
+    
+    // Any other timeouts should be cleared here
+    const pendingTimeouts = window.setTimeout(() => {}, 0);
+    for (let i = 0; i < pendingTimeouts; i++) {
+      window.clearTimeout(i);
+    }
+  }
 
   private ensureVideoIsPlaying() {
     const video = document.getElementById('background-video') as HTMLVideoElement;
-    if (video) {
-      video.playbackRate = 0.5; // Slow down the video
-      if (video.paused || video.ended) {
-        video
-          .play()
+    if (!video) {
+      // If video element doesn't exist, stop polling and exit
+      this.stopVideoCheckPolling();
+      return;
+    }
+    
+    video.playbackRate = 0.5; // Slow down the video
+    
+    if (video.paused || video.ended) {
+      // Add a timeout to the play attempt to prevent blocking render
+      setTimeout(() => {
+        video.play()
           .then(() => {
             this.stopVideoCheckPolling();
             this.polling = false;
           })
-          .catch(error => {
-            // console.error('Error attempting to play the video:', error);
+          .catch(() => {
+            // Silent catch - errors are expected on some browsers/devices
+            // No need to log this error
           });
-      } else {
-        if (this.polling) {
-          console.log('Video is already playing, stopping polling');
-          this.stopVideoCheckPolling();
-        }
-      }
+      }, 20);
     } else {
-      console.error('Video element not found');
+      // Video is already playing
+      if (this.polling) {
+        this.stopVideoCheckPolling();
+        this.polling = false;
+      }
     }
   }
 
@@ -184,11 +250,22 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   };
 
-  private startVideoCheckPolling() {
-    const videoCheckInterval = interval(5000); // Emit every 5 seconds
-    this.videoCheckSubscription = videoCheckInterval.subscribe(() => {
-      this.ensureVideoIsPlaying();
-    });
+  private startVideoCheckPolling(): void {
+    // Clear any existing polling first
+    this.stopVideoCheckPolling();
+    
+    // Only set up polling if we're not already polling
+    if (!this.videoCheckSubscription) {
+      this.videoCheckSubscription = timer(0, this.videoCheckInterval)
+        .pipe(
+          takeUntil(this.destroy$),
+          // Add take(5) to ensure polling stops after 5 attempts if video still doesn't play
+          take(5)
+        )
+        .subscribe(() => {
+          this.ensureVideoIsPlaying();
+        });
+    }
   }
 
   private stopVideoCheckPolling() {

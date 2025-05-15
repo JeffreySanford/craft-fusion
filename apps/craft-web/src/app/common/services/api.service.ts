@@ -1,7 +1,7 @@
 import { Injectable, Inject, forwardRef } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 // Add ResponseType import for better typing
-import { Observable, tap, catchError, throwError } from 'rxjs';
+import { Observable, tap, catchError, throwError, timer, switchMap, finalize } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { environment as production } from '../../../environments/environment.prod';
 import { LoggerService } from './logger.service';
@@ -61,6 +61,12 @@ export class ApiService {
   ];
 
   private currentServer: Server = this.servers[0];
+
+  // Add request throttling to prevent too many simultaneous requests
+  private requestThrottler = new Map<string, number>();
+  private activeRequests = new Set<string>();
+  private readonly MAX_CONCURRENT_REQUESTS = 8;
+  private readonly THROTTLE_WINDOW_MS = 1000; // 1 second window
 
   constructor(
     private http: HttpClient,
@@ -128,6 +134,14 @@ export class ApiService {
       headers: this.getTracingHeaders(),
     };
     
+    // Check if we should throttle this request
+    if (this.shouldThrottleRequest(url)) {
+      return this.delayedRequest<T>(() => this.get(endpoint, options), 300);
+    }
+    
+    // Track this request
+    this.trackRequest(url);
+
     // Enhanced logging for debugging
     this.logger.debug(`Making GET request to ${url}`, {
       endpoint,
@@ -146,6 +160,7 @@ export class ApiService {
         });
       }),
       catchError(error => {
+        this.releaseRequest(url);
         this.logger.endServiceCall(callId, error.status || 500);
         this.logger.error(`GET ${endpoint} failed`, { 
           status: error.status,
@@ -163,10 +178,19 @@ export class ApiService {
           error
         });
         
+        // Implement better backoff for specific error types
+        if (error.status === 504 || error.status === 0) {
+          // Gateway timeout or network error - don't retry automatically
+          return throwError(() => error);
+        }
+
         // Ping server to check availability on error
         this.checkServerAvailability();
         
         throw error;
+      }),
+      finalize(() => {
+        this.releaseRequest(url);
       })
     ) as Observable<T>;
   }
@@ -523,5 +547,36 @@ export class ApiService {
           this.logger.error('Server appears to be offline after multiple attempts');
         }
       });
+  }
+
+  private shouldThrottleRequest(endpoint: string): boolean {
+    // If we have too many active requests, throttle new ones
+    if (this.activeRequests.size >= this.MAX_CONCURRENT_REQUESTS) {
+      return true;
+    }
+    
+    const now = Date.now();
+    const lastRequest = this.requestThrottler.get(endpoint) || 0;
+    
+    if (now - lastRequest < this.THROTTLE_WINDOW_MS) {
+      return true; // Should throttle
+    }
+    
+    this.requestThrottler.set(endpoint, now);
+    return false;
+  }
+  
+  private trackRequest(endpoint: string): void {
+    this.activeRequests.add(endpoint);
+  }
+  
+  private releaseRequest(endpoint: string): void {
+    this.activeRequests.delete(endpoint);
+  }
+  
+  private delayedRequest<T>(requestFn: () => Observable<T>, delayMs: number): Observable<T> {
+    return timer(delayMs).pipe(
+      switchMap(() => requestFn())
+    );
   }
 }

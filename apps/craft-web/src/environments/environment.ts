@@ -34,6 +34,6 @@ export const environment = {
   
   // WebSocket configuration
   socket: {
-    url: 'ws://localhost:3000'
+    url: 'ws://localhost:3000'  // Using port 3000 for the Nest server WebSocket connection
   }
 };

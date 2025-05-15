@@ -35,5 +35,6 @@
     "apps/craft-web/src/assets/shapefiles/**": true,
     "apps/training/models/**": true,
     "apps/training/training_data/**": true
-  }
+  },
+  "nxConsole.generateAiAgentRules": true
 }

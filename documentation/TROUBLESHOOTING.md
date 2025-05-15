@@ -202,8 +202,8 @@ Error: EMFILE: too many open files, open '/repos/craft-fusion/dist/apps/craft-we
 
 3. **Verify proxy configuration**
    ```bash
-   # Check proxy.conf.json
-   cat apps/craft-web/proxy.conf.json
+   # Check proxy.configjson
+   cat apps/craft-web/proxy.configjson
    ```
 
 4. **Use mock data temporarily**
@@ -438,7 +438,7 @@ When running both NestJS and Go backends:
 
 2. **Check for proper proxy configuration**
    ```json
-   // proxy.conf.json
+   // proxy.configjson
    {
      "/api": {
        "target": "http://localhost:3000",
@@ -496,3 +496,255 @@ After applying fixes, verify your environment:
    - Monitor system health through the admin dashboard
    - Check memory usage metrics
    - Watch for increasing resource trends
+
+## WebSocket Connection Issues
+
+### Gateway Timeout Errors
+
+**Symptoms:**
+- 504 Gateway Timeout errors in browser console
+- Socket connection fails to establish
+- "Socket connected successfully" message never appears in logs
+- API requests failing with timeout errors
+
+**Causes:**
+1. Backend server not running or inaccessible
+2. Incorrect proxy configuration for WebSocket endpoints
+3. Missing transport fallback options
+4. Authentication token issues with WebSocket connections
+5. CORS policy restrictions
+
+**Solutions:**
+
+1. **Configure proper Socket.IO transport options**
+   ```typescript
+   // In your socket service
+   this.socket = io(this.socketUrl, {
+     transports: ['websocket', 'polling'], // Try WebSocket first, fall back to polling
+     reconnectionAttempts: 5,
+     reconnectionDelay: 1000,
+     timeout: 10000
+   });
+   ```
+
+2. **Verify proxy configuration includes WebSocket support**
+   ```json
+   // In proxy.configjson
+   {
+     "/api": {
+       "target": "http://localhost:3000",
+       "secure": false,
+       "ws": true
+     }
+   }
+   ```
+
+3. **Check server logs for socket connection attempts**
+   ```bash
+   # Start backend with verbose logging
+   DEBUG=socket.io* npx nx run craft-nest:serve
+   ```
+
+4. **Test socket connection with a standalone client**
+   ```javascript
+   // Create a test.html file with this code
+   <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+   <script>
+     const socket = io('http://localhost:3000', {
+       transports: ['websocket', 'polling']
+     });
+     socket.on('connect', () => {
+       console.log('Connected!', socket.id);
+     });
+     socket.on('connect_error', (err) => {
+       console.error('Connection error:', err);
+     });
+   </script>
+   ```
+
+5. **Verify CORS configuration on the server**
+   ```typescript
+   // In NestJS main.ts
+   const app = await NestFactory.create(AppModule);
+   app.enableCors({
+     origin: true,
+     methods: ['GET', 'POST'],
+     credentials: true,
+   });
+   ```
+
+6. **Restart both frontend and backend services**
+   ```bash
+   # Terminate and restart everything
+   npx nx run craft-nest:serve
+   # In another terminal
+   npx nx run craft-web:serve
+   ```
+
+## Authentication Integration Issues
+
+### Login State Not Synchronizing
+
+**Symptoms:**
+- User appears logged in but has no permissions
+- Admin status not being recognized after login
+- Authentication state resets unexpectedly
+- WebSocket connections don't send authentication data
+
+**Causes:**
+1. AdminStateService not being updated on login/logout
+2. Authentication tokens not being properly stored
+3. Socket connections not being refreshed with new auth state
+4. Race conditions between authentication and service initialization
+
+**Solutions:**
+
+1. **Ensure AdminStateService updates on authentication changes**
+   ```typescript
+   // In your AuthenticationService
+   login(username: string, password: string): Observable<any> {
+     return this.http.post<any>('/api/auth/login', { username, password }).pipe(
+       tap(response => {
+         this.sessionService.setToken(response.token);
+         
+         // Update admin state based on user roles
+         const isAdmin = this.hasAdminRole(response.user);
+         this.adminStateService.setAdminStatus(isAdmin);
+         
+         // Reconnect sockets with new token
+         this.socketService.reconnectWithAuth(response.token);
+       }),
+       catchError(error => {
+         this.logger.error('Login failed', { error, username });
+         return throwError(() => error);
+       })
+     );
+   }
+   ```
+
+2. **Fix token storage and retrieval**
+   ```typescript
+   // In SessionService
+   setToken(token: string): void {
+     localStorage.setItem('auth_token', token);
+     this.tokenSubject.next(token);
+   }
+   
+   getToken(): string | null {
+     return localStorage.getItem('auth_token');
+   }
+   ```
+
+3. **Implement proper service initialization order**
+   ```typescript
+   // In app.component.ts
+   ngOnInit() {
+     // First restore authentication from storage
+     this.authService.restoreAuthState().pipe(
+       // Then initialize dependent services
+       tap(() => this.socketService.initialize()),
+       tap(() => this.loggerService.startPollingBackendLogs())
+     ).subscribe();
+   }
+   ```
+
+4. **Add socket reconnection with authentication**
+   ```typescript
+   // In SocketService
+   reconnectWithAuth(token: string): void {
+     // Disconnect existing socket
+     if (this.socket && this.socket.connected) {
+       this.socket.disconnect();
+     }
+     
+     // Reconnect with auth token
+     this.socket = io(this.socketUrl, {
+       transports: ['websocket', 'polling'],
+       auth: {
+         token: token
+       }
+     });
+     
+     // Setup event handlers
+     this.setupSocketEventHandlers();
+   }
+   ```
+
+## Realtime Data Issues
+
+### Socket-Based Data Not Updating
+
+**Symptoms:**
+- Real-time charts not updating
+- Socket events not being received
+- Console shows socket connection but no event data
+
+**Causes:**
+1. Socket namespace mismatch between client and server
+2. Event name discrepancies 
+3. Incorrect event payload format
+4. Missing error handling for socket events
+5. Component destroying socket subscriptions improperly
+
+**Solutions:**
+
+1. **Verify socket namespaces match exactly**
+   ```typescript
+   // Server-side (NestJS)
+   @WebSocketGateway({ namespace: 'data-feeds' })
+   
+   // Client-side (Angular)
+   this.socket = io('http://localhost:3000/data-feeds');
+   ```
+
+2. **Check event names for exact matches**
+   ```typescript
+   // Server-side emission
+   this.server.emit('chart:update', payload);
+   
+   // Client-side reception
+   this.socket.on('chart:update', (data) => {
+     // Handler code
+   });
+   ```
+
+3. **Implement proper socket cleanup**
+   ```typescript
+   // In your component
+   private destroyed$ = new Subject<void>();
+   
+   ngOnInit() {
+     this.socketService.on<ChartData[]>('chart:update')
+       .pipe(takeUntil(this.destroyed$))
+       .subscribe(data => {
+         this.chartData = data;
+       });
+   }
+   
+   ngOnDestroy() {
+     this.destroyed$.next();
+     this.destroyed$.complete();
+   }
+   ```
+
+4. **Add explicit error handling**
+   ```typescript
+   this.socket.on('connect_error', (error) => {
+     this.logger.error('Socket connection error', { error, socketUrl: this.socketUrl });
+     this.handleConnectionFailure();
+   });
+   ```
+
+5. **Validate data structure on both ends**
+   ```typescript
+   // Type-check incoming socket data
+   this.socket.on('chart:update', (rawData: unknown) => {
+     try {
+       // Validate data structure matches expected type
+       const chartData = validateChartData(rawData);
+       this.updateChart(chartData);
+     } catch (error) {
+       this.logger.error('Invalid chart data received', { error, rawData });
+     }
+   });
+   ```

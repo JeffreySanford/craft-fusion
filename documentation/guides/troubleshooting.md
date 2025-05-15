@@ -203,8 +203,8 @@ Error: EMFILE: too many open files, open '/repos/craft-fusion/dist/apps/craft-we
 
 3. **Verify proxy configuration**
    ```bash
-   # Check proxy.conf.json
-   cat apps/craft-web/proxy.conf.json
+   # Check proxy.configjson
+   cat apps/craft-web/proxy.configjson
    ```
 
 4. **Use mock data temporarily**
@@ -439,7 +439,7 @@ When running both NestJS and Go backends:
 
 2. **Check for proper proxy configuration**
    ```json
-   // proxy.conf.json
+   // proxy.configjson
    {
      "/api": {
        "target": "http://localhost:3000",

@@ -109,3 +109,6 @@ yarn-error.log*
 *.sqlite
 *.sqlite3
 database.sqlite # Ignore specific sqlite db file
+
+.cursor\rules\nx-rules.mdc
+.github\instructions\nx.instructions.md

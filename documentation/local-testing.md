@@ -102,4 +102,4 @@ htop
 - **Ports already in use**: Kill the process using `kill $(lsof -t -i:<port_number>)`
 - **Ollama not responding**: Check Ollama logs with `./scripts/ollama-manager.sh logs`
 - **Missing models**: Pull models manually with the script
-- **Angular CORS issues**: Ensure proxy configuration is properly set in your `proxy.conf.json`
+- **Angular CORS issues**: Ensure proxy configuration is properly set in your `proxy.configjson`

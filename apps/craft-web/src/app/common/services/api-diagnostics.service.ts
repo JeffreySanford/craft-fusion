@@ -236,7 +236,7 @@ export class ApiDiagnosticsService {
           diagnosticMessage += '  • Proxy configuration incorrect\n';
           diagnosticMessage += '\n- Recommendations:\n';
           diagnosticMessage += '  • Check if the API endpoint exists in the backend\n';
-          diagnosticMessage += '  • Verify proxy.conf.json settings\n';
+          diagnosticMessage += '  • Verify proxy.config.json settings\n';
         } else if (error.status === 403) {
           diagnosticMessage += `- HTTP Error 403: Forbidden\n`;
           diagnosticMessage += '- Possible causes:\n';
@@ -292,7 +292,7 @@ export class ApiDiagnosticsService {
     if (!currentDiagnostics.isConnected) {
       suggestions.push('Ensure the NestJS backend is running with "npx nx run craft-nest:serve"');
       suggestions.push('Check if the server is binding to 0.0.0.0 instead of localhost in main.ts');
-      suggestions.push('Verify the proxy configuration in angular.json or proxy.conf.json');
+      suggestions.push('Verify the proxy configuration in angular.json or proxy.configjson');
       suggestions.push('Try restarting both frontend and backend services');
       suggestions.push('Check environment.apiUrl setting is correct');
       

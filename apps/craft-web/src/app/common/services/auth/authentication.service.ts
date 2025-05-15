@@ -5,6 +5,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User } from '../user.interface';
 import { LoggerService } from '../logger.service';
+import { AdminStateService } from '../admin-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,8 @@ export class AuthenticationService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private adminStateService: AdminStateService
   ) {
     this.logger.registerService('AuthenticationService');
     this.initializeAuthentication();
@@ -40,7 +42,9 @@ export class AuthenticationService {
           this.currentUserSubject.next(user);
           this.isLoggedInSubject.next(true);
           this.isAuthenticatedSubject.next(true);
-          this.isAdminSubject.next(user.roles.includes('admin')); // Using roles property correctly
+          const isAdmin = user.roles.includes('admin');
+          this.isAdminSubject.next(isAdmin); // Using roles property correctly
+          this.adminStateService.setAdminStatus(isAdmin); // Update AdminStateService
           this.setAuthToken(token); // Ensure token is set
           this.logger.info('User authenticated on init', { username: user.username });
         }),
@@ -62,8 +66,12 @@ export class AuthenticationService {
         this.currentUserSubject.next(response.user);
         this.isLoggedInSubject.next(true);
         this.isAuthenticatedSubject.next(true);
-        this.isAdminSubject.next(Array.isArray(response.user.roles) && response.user.roles.includes('admin')); // Using roles property correctly with safety check
-        this.logger.info('User logged in successfully', { username });
+        
+        const isAdmin = Array.isArray(response.user.roles) && response.user.roles.includes('admin');
+        this.isAdminSubject.next(isAdmin); // Using roles property correctly with safety check
+        this.adminStateService.setAdminStatus(isAdmin); // Update AdminStateService
+        
+        this.logger.info('User logged in successfully', { username, isAdmin });
       }),
       catchError(error => {
         this.logger.error('Login failed', { error, username });
@@ -79,6 +87,7 @@ export class AuthenticationService {
     this.isLoggedInSubject.next(false);
     this.isAuthenticatedSubject.next(false);
     this.isAdminSubject.next(false);
+    this.adminStateService.setAdminStatus(false); // Update AdminStateService on logout
     this.router.navigate(['/login']);
   }
 

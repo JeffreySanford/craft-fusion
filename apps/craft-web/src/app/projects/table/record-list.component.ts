@@ -94,7 +94,8 @@ export class RecordListComponent implements OnInit, OnDestroy {
   // Add connectionAttempts counter for exponential backoff
   private connectionAttempts = 0;
   // Maximum number of automatic retry attempts
-  private readonly MAX_AUTO_RETRIES = 3;
+  private readonly MAX_AUTO_RETRIES = 2; // Reduced from 3
+  private retryTimeoutRef: any = null;
 
   constructor(
     private recordService: RecordService,
@@ -200,6 +201,11 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('Lifecycle: ngOnDestroy called');
     this.destroy$.next();
     this.destroy$.complete();
+    
+    // Clean up retry timeout if it exists
+    if (this.retryTimeoutRef) {
+      clearTimeout(this.retryTimeoutRef);
+    }
   }
 
   // tABLE PAGEsIZE HAS BEEN CHANGED
@@ -615,14 +621,27 @@ export class RecordListComponent implements OnInit, OnDestroy {
   
   // Schedule an automatic retry with exponential backoff
   private scheduleRetry(): void {
-    const backoffTime = Math.min(1000 * Math.pow(2, this.connectionAttempts), 30000); // Max 30 seconds
+    // Clear any existing retry timeout first
+    if (this.retryTimeoutRef) {
+      clearTimeout(this.retryTimeoutRef);
+    }
+    
+    // Stop if we've reached maximum retries
+    if (this.connectionAttempts >= this.MAX_AUTO_RETRIES) {
+      this.logger.warn(`Maximum retry attempts (${this.MAX_AUTO_RETRIES}) reached. Automatic retry stopped.`, { 
+        component: 'RecordListComponent'
+      });
+      return;
+    }
+    
+    const backoffTime = Math.min(2000 * Math.pow(2, this.connectionAttempts), 30000); // Max 30 seconds
     
     this.logger.debug(`Scheduling automatic retry in ${backoffTime}ms`, { 
       attempt: this.connectionAttempts + 1,
       component: 'RecordListComponent'
     });
     
-    setTimeout(() => {
+    this.retryTimeoutRef = setTimeout(() => {
       if (this.isOffline) {
         this.connectionAttempts++;
         this.logger.info(`Auto-retry connection attempt ${this.connectionAttempts}`, { component: 'RecordListComponent' });

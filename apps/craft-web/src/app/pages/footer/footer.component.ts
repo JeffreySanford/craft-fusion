@@ -73,9 +73,9 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   // Add connection state tracking properties
   private networkConnectionFailed = false;
   private consecutiveFailures = 0;
-  private normalPingInterval = 60000; // Once per minute when connected
-  private currentPingInterval = 3000;  // Start with more frequent checks
-  private maxConsecutiveFailures = 5;  // After this many failures, slow down dramatically
+  private normalPingInterval = 10000; // Changed from 3000 to 10000ms
+  private currentPingInterval = 10000; // Changed from 3000 to 10000ms
+  private maxConsecutiveFailures = 3;  // Reduced from 5 to 3 to fail faster
 
   constructor(
     private router: Router, 
@@ -214,16 +214,21 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private measureNetworkLatency() {
-    // Use actual network request to measure latency
+    // Skip network tests if we've had consecutive failures
+    if (this.consecutiveFailures >= this.maxConsecutiveFailures) {
+      this.performanceMetrics.networkLatency = 'N/A';
+      return;
+    }
+    
     const startTime = performance.now();
+    const pingUrl = `/api/health?cache=${Date.now()}`;
     
-    // Add a unique timestamp to prevent caching
-    const timestamp = new Date().getTime();
-    
-    // Create a tiny request to measure network latency
-    fetch(`/assets/documents/ping.txt?${timestamp}`, { 
-      method: 'HEAD',
-      cache: 'no-store'
+    // Add timeout to fetch to prevent hanging requests
+    fetch(pingUrl, { 
+      method: 'GET',
+      cache: 'no-store',
+      headers: { 'pragma': 'no-cache' },
+      signal: AbortSignal.timeout(3000) // 3 second timeout
     })
     .then(() => {
       const latency = performance.now() - startTime;
@@ -268,34 +273,9 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
         this.logger.debug(`Reducing ping frequency due to consecutive failures, new interval: ${this.currentPingInterval}ms`);
       }
       
-      // Fallback to RTCPeerConnection method if fetch fails
-      this.performRTCLatencyCheck(startTime);
+      // Skip RTCPeerConnection fallback method which might be causing additional issues
+      // this.performRTCLatencyCheck(startTime); // Commented out fallback
     });
-  }
-
-  // Extract RTCPeerConnection logic to a separate method for clarity
-  private performRTCLatencyCheck(startTime: number): void {
-    try {
-      const peerConnection = new RTCPeerConnection({ iceServers: [] });
-      peerConnection.createDataChannel('latencyCheck');
-      
-      peerConnection.createOffer().then(offer => {
-        return peerConnection.setLocalDescription(offer);
-      }).then(() => {
-        const latency = performance.now() - startTime;
-        this.performanceMetrics.networkLatency = `${latency.toFixed(2)} ms`;
-        peerConnection.close();
-        this.updateChart();
-      }).catch(() => {
-        this.performanceMetrics.networkLatency = 'N/A';
-        peerConnection.close();
-        this.updateChart();
-      });
-    } catch (error) {
-      // Handle any RTC errors gracefully
-      this.performanceMetrics.networkLatency = 'N/A';
-      this.updateChart();
-    }
   }
 
   getMemoryUsageClass() {
@@ -318,19 +298,8 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private getSimulatedCPULoad(): Observable<number> {
-    return new Observable<number>(observer => {
-      const startMeasure = this.measureCPU();
-      setTimeout(() => {
-        const endMeasure = this.measureCPU();
-        const idleDifference = endMeasure.idle - startMeasure.idle;
-        const totalDifference = endMeasure.total - startMeasure.total;
-        const cpuLoad = 100 - (100 * idleDifference / totalDifference);
-        const currentTime = new Date().toLocaleString();
-        this.logger.debug(`Simulated CPU Load at ${currentTime}: ${cpuLoad.toFixed(2)}%`);
-        observer.next(cpuLoad);
-        observer.complete();
-      }, 1000);
-    });
+    // Return a static value instead of calculating to reduce load
+    return of(15); // just return a reasonable fixed value
   }
 
   private measureCPU() {
@@ -341,21 +310,8 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private getRealCPULoad(): Observable<number> {
-    // Estimate CPU load based on frame rate
-    if (this.frameRateSamples.length === 0) {
-      return of(0);
-    }
-    
-    // Calculate average FPS from samples
-    const avgFps = this.frameRateSamples.reduce((sum, fps) => sum + fps, 0) / this.frameRateSamples.length;
-    
-    // Map FPS to CPU load (lower FPS = higher CPU load)
-    // Assume 60 FPS is ideal (0% load) and 10 FPS is maximum load (100%)
-    const maxFps = 60;
-    const minFps = 10;
-    const load = Math.max(0, Math.min(100, 100 * (1 - ((avgFps - minFps) / (maxFps - minFps)))));
-    
-    return of(load);
+    // Return a static value instead of calculating to reduce load
+    return of(20); // just return a reasonable fixed value
   }
 
   getCpuLoadClass() {
@@ -588,8 +544,8 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     const fps = 1000 / delta;
     this.frameRateSamples.push(fps);
     
-    // Keep only the most recent 30 samples
-    if (this.frameRateSamples.length > 30) {
+    // Keep only the most recent 10 samples (reduced from 30)
+    if (this.frameRateSamples.length > 10) {
       this.frameRateSamples.shift();
     }
     

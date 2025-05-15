@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Injectable, Injector } from '@angular/core';
+import { BehaviorSubject, Observable, Subject, of, timer } from 'rxjs';
+import { switchMap, takeUntil, catchError } from 'rxjs/operators';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 export enum LogLevel {
   DEBUG = 0,
@@ -50,12 +52,15 @@ export class LoggerService {
   private registeredServices: Set<string> = new Set();
   private serviceCallsInProgress: Map<string, ServiceCallMetric> = new Map();
   
+  // Backend log polling
+  private pollingDestroy$: Subject<void> = new Subject<void>();
+  
   // Observable that components can subscribe to for log updates
   logAdded$ = this.logSubject.asObservable();
   logStream$ = this.logSubject.asObservable(); // Alias for compatibility
   serviceCalls$ = this.serviceCallsSubject.asObservable();
 
-  constructor() {
+  constructor(private http: HttpClient) {
     // Check for stored log level preference
     const storedLevel = localStorage.getItem('loggerLevel');
     if (storedLevel !== null) {
@@ -63,6 +68,12 @@ export class LoggerService {
     }
     
     this.info('LoggerService initialized', { level: this.loggerLevel });
+    
+    // Start polling for backend logs with 15 seconds interval
+    // Use a slight delay to ensure HttpClient is available after Angular initialization
+    setTimeout(() => {
+      this.startPollingBackendLogs(15000);
+    }, 1000);
   }
 
   setLevel(level: LogLevel) {
@@ -580,6 +591,101 @@ export class LoggerService {
     } catch (error) {
       // If any error during sanitization, return original but add warning
       return { original: details, warning: 'Could not sanitize log details' };
+    }
+  }
+  
+  // Backend log integration methods
+  
+  /**
+   * Fetch logs from the backend server
+   * Uses HTTP polling instead of WebSockets to avoid infinite loops
+   * @param level - Optional log level filter
+   * @param limit - Maximum number of logs to fetch
+   */
+  fetchBackendLogs(level?: string, limit: number = 100): Observable<LogEntry[]> {
+    // Build query parameters
+    let params = new HttpParams();
+    if (level) {
+      params = params.set('level', level);
+    }
+    if (limit) {
+      params = params.set('limit', limit.toString());
+    }
+
+    // Make HTTP request to fetch logs
+    return this.http.get<LogEntry[]>('/api/logs', { params }).pipe(
+      catchError(error => {
+        console.error('Error fetching backend logs:', error);
+        return of([]); // Return empty array on error
+      })
+    );
+  }
+  
+  /**
+   * Start polling for backend logs
+   * @param intervalMs - Polling interval in milliseconds
+   */
+  startPollingBackendLogs(intervalMs: number = 10000): void {
+    // Create polling mechanism using RxJS timer
+    this.stopPollingBackendLogs(); // Stop any existing polling
+    
+    // Create a new destroy subject
+    this.pollingDestroy$ = new Subject<void>();
+    
+    // Set up periodic polling
+    timer(0, intervalMs)
+      .pipe(
+        switchMap(() => this.fetchBackendLogs()),
+        takeUntil(this.pollingDestroy$)
+      )
+      .subscribe({
+        next: (logs) => {
+          // Process logs without causing infinite loop
+          this.processBackendLogs(logs);
+        },
+        error: (err) => {
+          console.error('Error fetching backend logs:', err);
+        }
+      });
+    
+    this.info('Backend log polling started', { intervalMs });
+  }
+  
+  /**
+   * Stop polling for backend logs
+   */
+  stopPollingBackendLogs(): void {
+    if (this.pollingDestroy$) {
+      this.pollingDestroy$.next();
+      this.pollingDestroy$.complete();
+      this.info('Backend log polling stopped');
+    }
+  }
+  
+  /**
+   * Process logs received from the backend
+   * Ensures logs are properly formatted and doesn't cause infinite feedback
+   */
+  private processBackendLogs(logs: LogEntry[]): void {
+    // Don't notify subscribers for backend logs to avoid infinite loops
+    // Just store them in our local logs array with a special tag
+    
+    for (const log of logs) {
+      // Add source identifier to distinguish backend logs
+      const backendLog = {
+        ...log,
+        source: 'backend',
+        // Ensure proper date object
+        timestamp: log.timestamp instanceof Date ? log.timestamp : new Date(log.timestamp)
+      };
+      
+      // Add to logs array without notifying subscribers
+      this.logs.unshift(backendLog);
+    }
+    
+    // Trim logs if they exceed the maximum
+    while (this.logs.length > this.logLimit) {
+      this.logs.pop();
     }
   }
   

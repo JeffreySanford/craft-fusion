@@ -34,6 +34,9 @@ This changelog follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.
 - Type errors in category detection methods for logger service
 - Rendering performance issues in admin dashboard
 - Missing type safety in service monitoring components
+- WebSocket connection issues with proper transport configuration
+- Authentication service integration with AdminStateService
+- Angular inject() usage outside of injection context in LoggerService
 
 ## [1.5.0] - 2023-10-30
 
