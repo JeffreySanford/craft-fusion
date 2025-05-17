@@ -63,18 +63,8 @@ export class YahooService {
    * Generates mock financial data for development and fallback scenarios
    */
   private generateMockFinancialData(symbols: string[], limit: number): Record<string, any> {
-    Logger.log('Generating mock financial data for Yahoo Finance');
-    
-    return symbols.reduce<Record<string, any>>((result, symbol) => {
-      result[symbol] = {
-        timestamp: Array(limit).fill(0).map((_, i) => Math.floor(Date.now()/1000) - (limit - i) * 86400),
-        close: Array(limit).fill(0).map(() => Math.random() * 1000 + 100),
-        volume: Array(limit).fill(0).map(() => Math.floor(Math.random() * 10000000)),
-        high: Array(limit).fill(0).map(() => Math.random() * 1000 + 150),
-        low: Array(limit).fill(0).map(() => Math.random() * 1000 + 50),
-        open: Array(limit).fill(0).map(() => Math.random() * 1000 + 100)
-      };
-      return result;
-    }, {});
+    // Instead of generating mock data, return null or empty object
+    Logger.log('Backend connection failed - returning empty dataset');
+    return {};
   }
 }

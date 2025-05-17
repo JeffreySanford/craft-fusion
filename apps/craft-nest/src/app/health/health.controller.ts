@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Head } from '@nestjs/common';
 import { 
   HealthCheckResult, 
   HealthIndicatorResult, 
@@ -52,6 +52,12 @@ export class HealthController {
         return result;
       })
     );
+  }
+  
+  @Head()
+  @HealthCheck()
+  head(): Observable<HealthCheckResult> {
+    return this.check();
   }
 
   @Get('detailed')

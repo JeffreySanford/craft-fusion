@@ -260,6 +260,7 @@ export class ApiDiagnosticsService {
    * Perform port availability check
    */
   checkPortAvailability(): Observable<string> {
+    // No change needed here, as /api/health/ports returns JSON
     return this.http.get<any>(`${environment.apiUrl}/api/health/ports`, {
       headers: { 'X-Diagnostics': 'true' }
     }).pipe(

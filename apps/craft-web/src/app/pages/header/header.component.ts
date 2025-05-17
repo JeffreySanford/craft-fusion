@@ -96,9 +96,15 @@ export class HeaderComponent implements OnInit {
     this.logger.info('User menu action selected', { action });
     
     if (action === 'login') {
-      this.authService.login('test', 'test').subscribe(() => {
-        this.updateUserMenuItems();
-        this.logger.info('User logged in');
+      this.authService.login('test', 'test').subscribe({
+        next: () => {
+          this.updateUserMenuItems();
+          this.logger.info('User logged in');
+        },
+        error: err => {
+          this.logger.error('Login failed', err);
+          // TODO: show notification or UI feedback
+        }
       });
     } else if (action === 'logout') {
       this.authService.logout();

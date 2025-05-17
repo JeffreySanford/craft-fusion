@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Record, Company } from '../models/record';
+import { Record, Company } from '@craft-fusion/craft-library';
 import { RecordService } from '../services/record.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -74,7 +74,7 @@ export class RecordDetailComponent implements OnInit, OnDestroy {
 
   public getTotalSalary(): number {
     this.totalAnnualSalary = 0;
-    this.user?.salary.forEach((company) => {
+    this.user?.salary.forEach((company: Company) => {
       // Use the correct property based on the company structure
       this.totalAnnualSalary += company.annualSalary;
     });

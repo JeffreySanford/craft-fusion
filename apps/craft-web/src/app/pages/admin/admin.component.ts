@@ -399,10 +399,11 @@ export class AdminComponent implements OnInit {
 
   private measureNetworkLatency(): void {
     const startTime = performance.now();
-
-    fetch('/assets/documents/ping.txt?' + Date.now(), {
+    // Use HEAD request to backend health endpoint
+    fetch('/api/health?' + Date.now(), {
       method: 'HEAD',
       cache: 'no-store',
+      signal: AbortSignal.timeout ? AbortSignal.timeout(3000) : undefined
     })
       .then(() => {
         const latency = performance.now() - startTime;
@@ -410,14 +411,28 @@ export class AdminComponent implements OnInit {
         this.updateSystemMetricsChart();
       })
       .catch(() => {
-        // Fallback or simulated data
-        if (this.isSimulatingData) {
-          const simulatedLatency = Math.random() * 100 + 20; // Random between 20-120ms
-          this.performanceMetrics.networkLatency = `${simulatedLatency.toFixed(2)} ms`;
-        } else {
-          this.performanceMetrics.networkLatency = 'N/A';
-        }
-        this.updateSystemMetricsChart();
+        // Fallback: try to fetch a static asset to check if frontend is responsive
+        const assetStart = performance.now();
+        fetch('/assets/ping.txt?' + Date.now(), {
+          method: 'HEAD',
+          cache: 'no-store',
+          signal: AbortSignal.timeout ? AbortSignal.timeout(2000) : undefined
+        })
+          .then(() => {
+            const latency = performance.now() - assetStart;
+            this.performanceMetrics.networkLatency = `${latency.toFixed(2)} ms (static)`;
+            this.updateSystemMetricsChart();
+          })
+          .catch(() => {
+            // Fallback or simulated data
+            if (this.isSimulatingData) {
+              const simulatedLatency = Math.random() * 100 + 20; // Random between 20-120ms
+              this.performanceMetrics.networkLatency = `${simulatedLatency.toFixed(2)} ms`;
+            } else {
+              this.performanceMetrics.networkLatency = 'N/A';
+            }
+            this.updateSystemMetricsChart();
+          });
       });
   }
 

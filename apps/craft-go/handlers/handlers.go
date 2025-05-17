@@ -67,10 +67,19 @@ func generateRecords(count int) []models.UserRecord {
 				Zipcode: gofakeit.Zip(),
 			},
 			Phone: models.Phone{
-				Number:       gofakeit.Phone(),
-				AreaCode:     strconv.Itoa(gofakeit.Number(200, 999)),
-				HasExtension: gofakeit.Bool(),
-				Extension:    func() *string { ext := strconv.Itoa(gofakeit.Number(1000, 9999)); return &ext }(),
+				Number: gofakeit.Phone(),
+				AreaCode: func() *string {
+					areaCode := strconv.Itoa(gofakeit.Number(200, 999))
+					return &areaCode
+				}(),
+				HasExtension: func() *bool {
+					hasExt := gofakeit.Bool()
+					return &hasExt
+				}(),
+				Extension: func() *string {
+					ext := strconv.Itoa(gofakeit.Number(1000, 9999))
+					return &ext
+				}(),
 			},
 			Salary: []models.Salary{
 				{Amount: float64(gofakeit.Number(50000, 100000)), Year: 2021},

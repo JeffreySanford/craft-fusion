@@ -82,43 +82,12 @@ export class YahooService {
 
   // Helper method to generate mock data for testing
   private generateMockData(symbol: string, count: number): StockDataPoint[] {
-    const data: StockDataPoint[] = [];
-    const basePrice = this.getBasePrice(symbol);
-    const today = new Date();
-    
-    for (let i = 0; i < count; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      
-      const randomFactor = 1 + (Math.random() - 0.5) * 0.05;
-      const open = basePrice * randomFactor;
-      const high = open * (1 + Math.random() * 0.02);
-      const low = open * (1 - Math.random() * 0.02);
-      const close = (open + high + low) / 3;
-      const volume = Math.floor(Math.random() * 10000000);
-      
-      data.push({
-        date: date.toISOString().split('T')[0], // format date as YYYY-MM-DD
-        open,
-        high,
-        low,
-        close,
-        volume
-      });
-    }
-    
-    return data;
+    // Instead of generating mock data, return empty array
+    return [];
   }
 
   private getBasePrice(symbol: string): number {
-    // Simple way to generate different base prices for different symbols
-    const priceMap: Record<string, number> = {
-      'AAPL': 180,
-      'GOOGL': 140,
-      'MSFT': 350,
-      'AMZN': 170
-    };
-    
-    return priceMap[symbol] || 100;
+    // Since we're not generating mock data, this can be simplified
+    return 0;
   }
 }

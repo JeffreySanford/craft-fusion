@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Record } from '../models/record';
+import { Record, Company } from '@craft-fusion/craft-library';
 
 @Pipe({
   name: 'totalIncome',
@@ -8,6 +8,6 @@ import { Record } from '../models/record';
 export class TotalIncomePipe implements PipeTransform {
   transform(records: Record[]): number {
     console.log('TotalIncomePipe transform called for records:', records);
-    return records.reduce((total, record) => total + record.salary.reduce((sum, company) => sum + company.annualSalary, 0), 0);
+    return records.reduce((total, record) => total + record.salary.reduce((sum: number, company: Company) => sum + company.annualSalary, 0), 0);
   }
 }

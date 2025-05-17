@@ -4,6 +4,10 @@
     "outDir": "../../dist/out-tsc",
     "types": []
   },
+  "angularCompilerOptions": {
+    "enableIvy": true,
+    "strictTemplates": true
+  },
   "files": [],
   "include": [],
   "references": [

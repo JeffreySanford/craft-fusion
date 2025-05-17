@@ -558,7 +558,7 @@ export class AuthenticationService {
    */
   private handleOfflineLogin(username: string, password: string): Observable<AuthResponse> {
     // Only allow certain usernames in offline mode
-    const validOfflineUsers = ['test', 'demo', 'admin'];
+    const validOfflineUsers = ['test', 'demo', 'admin', 'guest'];
     
     if (validOfflineUsers.includes(username.toLowerCase())) {
       const mockUser: User = { 

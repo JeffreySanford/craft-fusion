@@ -36,14 +36,22 @@ func GenerateMockRecords(limit int) []models.Record {
 				Zipcode: gofakeit.Zip(),
 			},
 			Phone: models.Phone{
-				Extension:    &extensionStr,
-				HasExtension: gofakeit.Bool(),
+				Extension: &extensionStr,
+				HasExtension: func() *bool {
+					hasExt := gofakeit.Bool()
+					return &hasExt
+				}(),
 			},
 			Salary: []models.Company{
 				{
-					Name:   gofakeit.Company(),
-					Salary: gofakeit.Price(50000, 200000),
-					Title:  gofakeit.JobTitle(),
+					UID:          strconv.Itoa(gofakeit.Number(100000, 999999)),
+					EmployeeName: gofakeit.Name(),
+					AnnualSalary: gofakeit.Price(50000, 200000),
+					CompanyName:  gofakeit.Company(),
+					CompanyPosition: func() *string {
+						position := gofakeit.JobTitle()
+						return &position
+					}(),
 				},
 			},
 			TotalHouseholdIncome: gofakeit.Price(100000, 500000),

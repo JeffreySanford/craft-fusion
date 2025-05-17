@@ -19,6 +19,9 @@ import { LoggerService } from './common/services/logger.service';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { SocketClientService } from './common/services/socket-client.service';
 
+// Import shared types from craft-library
+// import { User } from '@craft-fusion/craft-library';
+
 export function socketClientFactory(socketClient: SocketClientService): () => void {
   return () => {
     // This will ensure the socket client is created on app initialization

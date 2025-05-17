@@ -1,0 +1,34 @@
+{
+  "name": "craft-library",
+  "projectType": "library",
+  "sourceRoot": "libs/craft-library/src",
+  "prefix": "craft",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{workspaceRoot}/dist/libs/craft-library"],
+      "options": {
+        "outputPath": "dist/libs/craft-library",
+        "main": "libs/craft-library/src/index.ts",
+        "tsConfig": "libs/craft-library/tsconfig.lib.json",
+        "assets": []
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/craft-library/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/craft-library"],
+      "options": {
+        "jestConfig": "libs/craft-library/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

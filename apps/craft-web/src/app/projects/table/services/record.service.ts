@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
 import { map, catchError, timeout, retry, delay, tap } from 'rxjs/operators';
 import { ApiService } from '../../../common/services/api.service';
-import { Record } from '../models/record';
+import { Record } from '@craft-fusion/craft-library';
 import { NotificationService } from '../../../common/services/notification.service'; 
 import { LoggerService } from '../../../common/services/logger.service';
 

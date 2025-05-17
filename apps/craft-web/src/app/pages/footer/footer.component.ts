@@ -222,10 +222,10 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     
     const startTime = performance.now();
     const pingUrl = `/api/health?cache=${Date.now()}`;
-    
-    // Add timeout to fetch to prevent hanging requests
+
+    // Use HEAD request for health check, fallback to static asset if fails
     fetch(pingUrl, { 
-      method: 'GET',
+      method: 'HEAD',
       cache: 'no-store',
       headers: { 'pragma': 'no-cache' },
       signal: AbortSignal.timeout(3000) // 3 second timeout
@@ -233,48 +233,44 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     .then(() => {
       const latency = performance.now() - startTime;
       this.performanceMetrics.networkLatency = `${latency.toFixed(2)} ms`;
-      
-      // Connection succeeded, reset failure tracking
       if (this.networkConnectionFailed) {
         this.logger.info('Network connection restored after previous failures');
       }
-      
       this.networkConnectionFailed = false;
       this.consecutiveFailures = 0;
-      
-      // Reset to normal ping interval once connection is established
       this.currentPingInterval = this.normalPingInterval;
-      
       this.updateChart();
     })
-    .catch((error) => {
-      // Track consecutive failures
-      this.consecutiveFailures++;
-      
-      if (!this.networkConnectionFailed) {
-        this.logger.warn('Network connectivity issue detected', {
-          error: error.message || 'Connection refused',
-          consecutiveFailures: this.consecutiveFailures
+    .catch(() => {
+      // Fallback: try to fetch a static asset to check if frontend is responsive
+      const assetStart = performance.now();
+      fetch(`/assets/ping.txt?cache=${Date.now()}`, { method: 'HEAD', cache: 'no-store', signal: AbortSignal.timeout(2000) })
+        .then(() => {
+          const latency = performance.now() - assetStart;
+          this.performanceMetrics.networkLatency = `${latency.toFixed(2)} ms (static)`;
+          if (this.networkConnectionFailed) {
+            this.logger.info('Frontend asset reachable, but backend health check failed');
+          }
+          this.networkConnectionFailed = false;
+          this.consecutiveFailures = 0;
+          this.currentPingInterval = this.normalPingInterval;
+          this.updateChart();
+        })
+        .catch((error) => {
+          this.consecutiveFailures++;
+          if (!this.networkConnectionFailed) {
+            this.logger.warn('Network connectivity issue detected', {
+              error: error.message || 'Connection refused',
+              consecutiveFailures: this.consecutiveFailures
+            });
+          }
+          this.networkConnectionFailed = true;
+          this.performanceMetrics.networkLatency = 'N/A';
+          if (this.consecutiveFailures >= this.maxConsecutiveFailures) {
+            this.currentPingInterval = Math.min(30000, this.currentPingInterval * 2);
+            this.logger.debug(`Reducing ping frequency due to consecutive failures, new interval: ${this.currentPingInterval}ms`);
+          }
         });
-      }
-      
-      this.networkConnectionFailed = true;
-      
-      // Use fallback value for UI
-      this.performanceMetrics.networkLatency = 'N/A';
-      
-      // Implement exponential backoff for ping frequency
-      if (this.consecutiveFailures >= this.maxConsecutiveFailures) {
-        // After several consecutive failures, reduce ping frequency substantially
-        // to avoid console spam and unnecessary network attempts
-        this.currentPingInterval = Math.min(30000, this.currentPingInterval * 2);
-        
-        // Log only on interval changes to reduce console spam
-        this.logger.debug(`Reducing ping frequency due to consecutive failures, new interval: ${this.currentPingInterval}ms`);
-      }
-      
-      // Skip RTCPeerConnection fallback method which might be causing additional issues
-      // this.performRTCLatencyCheck(startTime); // Commented out fallback
     });
   }
 

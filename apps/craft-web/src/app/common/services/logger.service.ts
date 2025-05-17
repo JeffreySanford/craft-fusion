@@ -1,7 +1,12 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable, Injector, forwardRef } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, of, timer } from 'rxjs';
-import { switchMap, takeUntil, catchError } from 'rxjs/operators';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { switchMap, takeUntil, catchError, map, tap, filter, take } from 'rxjs/operators';
+import { HttpContext, HttpContextToken } from '@angular/common/http';
+// Import the type but use forwardRef in the code to avoid circular dependency
+import { SocketClientService } from './socket-client.service';
+
+// Define the TIMEOUT token for HTTP requests
+export const TIMEOUT = new HttpContextToken<number>(() => 30000);
 
 export enum LogLevel {
   DEBUG = 0,
@@ -59,21 +64,36 @@ export class LoggerService {
   logAdded$ = this.logSubject.asObservable();
   logStream$ = this.logSubject.asObservable(); // Alias for compatibility
   serviceCalls$ = this.serviceCallsSubject.asObservable();
+  
+  // Property to hold the socket client reference
+  private socketClient: SocketClientService | null = null;
 
-  constructor(private http: HttpClient) {
-    // Check for stored log level preference
-    const storedLevel = localStorage.getItem('loggerLevel');
-    if (storedLevel !== null) {
-      this.loggerLevel = parseInt(storedLevel, 10);
+  constructor(
+    private injector: Injector
+  ) {
+    // Break circular dependency by deferring socket client injection
+    setTimeout(() => this.initSocketClient(), 0);
+    this.info('LoggerService initialized');
+  }
+  
+  private initSocketClient(): void {
+    try {
+      // Get SocketClientService from injector after initialization to break circular dependency
+      // Use forwardRef with the actual class for type-safe injection
+      this.socketClient = this.injector.get(forwardRef(() => SocketClientService));
+    } catch (e) {
+      console.warn('Could not inject SocketClientService');
     }
-    
-    this.info('LoggerService initialized', { level: this.loggerLevel });
-    
-    // Start polling for backend logs with 15 seconds interval
-    // Use a slight delay to ensure HttpClient is available after Angular initialization
-    setTimeout(() => {
-      this.startPollingBackendLogs(15000);
-    }, 1000);
+
+    // Subscribe to backend log gateway via WebSocket if socket client is initialized
+    if (this.socketClient) {
+      this.socketClient.on<LogEntry>('log').subscribe((log: LogEntry) => {
+        this.processBackendLogs([log]);
+      });
+
+      // Initiate socket connection for logs
+      this.socketClient.connect();
+    }
   }
 
   setLevel(level: LogLevel) {
@@ -597,58 +617,74 @@ export class LoggerService {
   // Backend log integration methods
   
   /**
-   * Fetch logs from the backend server
-   * Uses HTTP polling instead of WebSockets to avoid infinite loops
-   * @param level - Optional log level filter
-   * @param limit - Maximum number of logs to fetch
-   */
-  fetchBackendLogs(level?: string, limit: number = 100): Observable<LogEntry[]> {
-    // Build query parameters
-    let params = new HttpParams();
-    if (level) {
-      params = params.set('level', level);
-    }
-    if (limit) {
-      params = params.set('limit', limit.toString());
-    }
-
-    // Make HTTP request to fetch logs
-    return this.http.get<LogEntry[]>('/api/logs', { params }).pipe(
-      catchError(error => {
-        console.error('Error fetching backend logs:', error);
-        return of([]); // Return empty array on error
-      })
-    );
-  }
-  
-  /**
    * Start polling for backend logs
    * @param intervalMs - Polling interval in milliseconds
    */
   startPollingBackendLogs(intervalMs: number = 10000): void {
-    // Create polling mechanism using RxJS timer
-    this.stopPollingBackendLogs(); // Stop any existing polling
+    // Stop any existing polling
+    this.stopPollingBackendLogs();
+    
+    // Track backend connectivity status
+    let backendAvailable = true;
+    let consecutiveFailures = 0;
+    let currentInterval = intervalMs;
+    const maxInterval = 60000; // Max 1 minute between attempts
     
     // Create a new destroy subject
     this.pollingDestroy$ = new Subject<void>();
     
-    // Set up periodic polling
-    timer(0, intervalMs)
+    // Set up periodic polling with exponential backoff on failures
+    timer(1000, 1000) // Check every second to calculate interval dynamically
       .pipe(
-        switchMap(() => this.fetchBackendLogs()),
-        takeUntil(this.pollingDestroy$)
+        takeUntil(this.pollingDestroy$),
+        map(() => {
+          // Reset poll interval to normal if backend is available
+          if (backendAvailable) {
+            currentInterval = intervalMs;
+          }
+          return currentInterval;
+        }),
+        switchMap(interval => 
+          timer(0, interval).pipe(
+            takeUntil(this.pollingDestroy$),
+            switchMap(() => this.checkBackendHealth()),
+            catchError(() => of(false)),
+            tap(isHealthy => {
+              backendAvailable = isHealthy;
+              
+              if (!isHealthy) {
+                // Increase interval with exponential backoff
+                consecutiveFailures++;
+                currentInterval = Math.min(intervalMs * Math.pow(1.5, consecutiveFailures), maxInterval);
+                
+                if (consecutiveFailures === 1) {
+                  this.warn('Backend connection lost, retrying with increased interval', { 
+                    nextRetry: `${(currentInterval / 1000).toFixed(1)}s` 
+                  });
+                }
+              } else if (consecutiveFailures > 0) {
+                // Reset failures when connection is restored
+                consecutiveFailures = 0;
+                this.info('Backend connection restored, resuming normal polling');
+              }
+            }),
+            // Only proceed with fetching logs if backend is available
+            filter(isHealthy => isHealthy),
+            switchMap(() => this.fetchBackendLogs())
+          )
+        )
       )
       .subscribe({
         next: (logs) => {
           // Process logs without causing infinite loop
           this.processBackendLogs(logs);
-        },
-        error: (err) => {
-          console.error('Error fetching backend logs:', err);
         }
       });
     
-    this.info('Backend log polling started', { intervalMs });
+    this.info('Backend log polling started', { 
+      initialIntervalMs: intervalMs,
+      adaptivePolling: true 
+    });
   }
   
   /**
@@ -658,7 +694,7 @@ export class LoggerService {
     if (this.pollingDestroy$) {
       this.pollingDestroy$.next();
       this.pollingDestroy$.complete();
-      this.info('Backend log polling stopped');
+      this.debug('Backend log polling stopped');
     }
   }
   
@@ -753,5 +789,21 @@ export class LoggerService {
   clearChangelogEntries(): void {
     localStorage.removeItem('changelog-entries');
     this.info('Cleared changelog entries');
+  }
+
+  /**
+   * Stub: Check backend health. Returns Observable<boolean>.
+   */
+  private checkBackendHealth(): Observable<boolean> {
+    // TODO: Implement actual health check logic
+    return of(true); // Always healthy for now
+  }
+
+  /**
+   * Stub: Fetch backend logs. Returns Observable<LogEntry[]>.
+   */
+  private fetchBackendLogs(): Observable<LogEntry[]> {
+    // TODO: Implement actual log fetching logic
+    return of([]); // No logs for now
   }
 }

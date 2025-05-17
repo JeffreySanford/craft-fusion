@@ -33,8 +33,8 @@ export class WebsocketService {
     
     try {
       const wsUrl = environment.production 
-        ? `wss://${window.location.host}/socket.io/?EIO=4&transport=websocket` 
-        : `ws://${window.location.hostname}:4200/socket.io/?EIO=4&transport=websocket`;
+        ? `wss://${window.location.host}/socket/?EIO=4&transport=websocket` 
+        : `ws://${window.location.hostname}:4200/socket/?EIO=4&transport=websocket`;
       
       this.logger.debug(`Connecting to WebSocket: ${wsUrl}`);
       this.socket = new WebSocket(wsUrl);

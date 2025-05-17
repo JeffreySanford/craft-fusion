@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { Subject, BehaviorSubject, of } from 'rxjs';
 import { catchError, switchMap, tap, takeUntil, finalize } from 'rxjs/operators';
 import { detailExpand, flyIn } from './animations';
-import { Record } from './models/record';
+import { Record } from '@craft-fusion/craft-library';
 import { RecordService } from './services/record.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { NotificationService } from '../../common/services/notification.service';
@@ -325,7 +325,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  private fetchData(count: number): void {
+  public fetchData(count: number): void {
     this.spinner.show();
     this.resolvedSubject.next(false);
     

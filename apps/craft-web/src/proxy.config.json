@@ -1,0 +1,36 @@
+{
+  "/api": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "info",
+    "timeout": 120000,
+    "proxyTimeout": 120000
+  },
+  "/api-go": {
+    "target": "http://localhost:4000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api-go": "/api-go"
+    },
+    "timeout": 120000,
+    "proxyTimeout": 120000
+  },
+  "/socket": {
+    "target": "ws://localhost:3000",
+    "secure": false,
+    "ws": true,
+    "changeOrigin": true,
+    "timeout": 120000,
+    "proxyTimeout": 120000
+  },
+  "/assets": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true,
+    "timeout": 120000,
+    "proxyTimeout": 120000
+  }
+}

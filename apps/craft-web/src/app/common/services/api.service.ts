@@ -521,9 +521,8 @@ export class ApiService {
    */
   private checkServerAvailability(): void {
     this.logger.debug('Checking server availability...');
-    
     // Try to ping the server root to check if it's up
-    fetch('/api/health', { method: 'HEAD' })
+    fetch('/api/health', { method: 'HEAD', signal: AbortSignal.timeout ? AbortSignal.timeout(3000) : undefined })
       .then(response => {
         this.logger.info('Server availability check: Server is responding', {
           status: response.status, 
@@ -532,12 +531,17 @@ export class ApiService {
         this.serverStarting = false;
       })
       .catch(error => {
-        this.logger.error('Server availability check: Server is not responding', {
-          error: error.message || 'Unknown error',
-          timestamp: new Date().toISOString()
-        });
-        
-        // Check if this might be a startup issue
+        // Fallback: try to fetch a static asset to check if frontend is responsive
+        fetch('/assets/ping.txt', { method: 'HEAD', signal: AbortSignal.timeout ? AbortSignal.timeout(2000) : undefined })
+          .then(() => {
+            this.logger.warn('Backend unavailable, but frontend assets are reachable');
+          })
+          .catch(() => {
+            this.logger.error('Server availability check: Server is not responding', {
+              error: error.message || 'Unknown error',
+              timestamp: new Date().toISOString()
+            });
+          });
         this.connectionAttempts++;
         if (this.connectionAttempts <= this.maxStartupRetries) {
           this.serverStarting = true;

@@ -18,8 +18,10 @@
     "moduleResolution": "node", // Ensure Node module resolution
     "resolveJsonModule": true, // Already present, ensures JSON modules can be imported
     "typeRoots": ["../../node_modules/@types", "node_modules/@types"], // Ensure local and root node_modules/@types are checked
-    "types": ["node", "jest"] // Added jest types
+    "types": ["node", "jest"], // Added jest types
+    "composite": true // Added for composite project support
   },
+  "files": ["./src/app/recipes/recipes.json"], // Explicitly include the JSON file
   "include": ["src/**/*.ts", "src/**/*.json"], // Add explicit pattern for JSON files
   "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
 }

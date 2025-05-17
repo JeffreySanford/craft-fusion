@@ -7,6 +7,9 @@ import { ConfigService } from '@nestjs/config';
 import { Request, Response, NextFunction } from 'express';
 import { environment } from './environments/environment';
 
+// Import shared types from craft-library
+// import { User } from '@craft-fusion/craft-library';
+
 // Type guard to safely handle errors
 function isError(error: unknown): error is Error {
   return error instanceof Error || 

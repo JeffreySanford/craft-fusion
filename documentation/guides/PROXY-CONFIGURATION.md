@@ -117,8 +117,8 @@ When working with both NestJS and Go backends simultaneously:
       "^/api-go": ""
     }
   },
-  "/socket.io": {
-    "target": "http://localhost:3000",
+  "/socket": {
+    "target": "ws://localhost:3000",
     "secure": false,
     "ws": true,
     "changeOrigin": true

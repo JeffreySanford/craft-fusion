@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@craft-fusion/craft-library": ["libs/craft-library/src/index.ts"],
       "@craft-fusion/shared/data": ["libs/shared/data/src/index.ts"],
       "@craft-fusion/shared/ui": ["libs/shared/ui/src/index.ts"],
       "@craft-fusion/utils": ["libs/utils/src/index.ts"],
