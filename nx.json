@@ -48,5 +48,5 @@
   "workspaceLayout": { "appsDir": "apps", "libsDir": "libs" },
   "test": { "executor": "@nx/jest:jest", "outputs": ["coverage/craft-web"] },
   "stylelint": { "inputs": ["default", "{projectRoot}/**/*"] },
-  "nxCloudId": "6772d6df2bb7dc08eb8f15aa"
+  "nxCloudId": "6830d3ed3f8c60ca88d46c61"
 }
