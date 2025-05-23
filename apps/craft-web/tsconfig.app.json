@@ -2,17 +2,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": [],
-    "declaration": true,
-    "declarationMap": true
+    "types": []
   },
-  "files": [
-    "src/main.ts",
-    "src/polyfills.ts"
-  ],
   "include": [
-    "src/**/*.d.ts",
-    "src/**/*.ts",
+    "src/main.ts",
+    "src/polyfills.ts",
     "../../libs/craft-library/src/index.ts",
     "../../libs/craft-library/src/**/*.ts"
   ],

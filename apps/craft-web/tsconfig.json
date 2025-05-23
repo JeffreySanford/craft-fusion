@@ -2,25 +2,18 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": [],
-    "declaration": true,
-    "declarationMap": true
+    "types": []
   },
   "angularCompilerOptions": {
     "enableIvy": true,
     "strictTemplates": true
   },
-  "files": [
-    "src/main.ts",
-    "src/polyfills.ts"
-  ],
   "include": [
-    "**/*.ts",
-    "**/*.html",
-    "**/*.scss"
+    "src/**/*.ts",
+    "src/**/*.d.ts"
   ],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.spec.json" }
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts"
   ]
 }
