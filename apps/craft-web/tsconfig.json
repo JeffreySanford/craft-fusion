@@ -2,14 +2,24 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": []
+    "types": [],
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false
   },
   "angularCompilerOptions": {
     "enableIvy": true,
     "strictTemplates": true
   },
   "files": [],
-  "include": [],
+  "include": [
+    "**/*.ts",
+    "**/*.html",
+    "**/*.scss",
+    "**/*.css",
+    "**/*.json"
+  ],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.spec.json" }

@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDir": ".",
     "sourceMap": true,
-    "declaration": false,
+    "declaration": true,
+    "declarationMap": true,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -14,6 +15,7 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
+    "composite": true,
     "paths": {
       "@craft-fusion/craft-library": ["libs/craft-library/src/index.ts"],
       "@craft-fusion/shared/data": ["libs/shared/data/src/index.ts"],
