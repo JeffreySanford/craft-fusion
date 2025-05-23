@@ -71,18 +71,19 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
 
   .main-stage {
     background: var(--dashboard-gradient) !important;
-    color: var(--md-sys-color-on-surface) !important; /* Ensure text is visible against the background */
+    color: var(--md-sys-color-on-surface) !important;
 
-    /* Make sure this isn't interfering with the router outlet display */
-    ::ng-deep router-outlet {
-      display: none; /* Router outlets shouldn't be visible themselves */
-    }
+    // Ensure main-stage has flex layout for its content
+    display: flex;
+    flex-direction: column;
+  }
 
-    /* Ensure content within router-outlet's siblings is visible */
-    ::ng-deep router-outlet + * {
-      display: block; /* Force display of router-outlet content */
-      min-height: 50px; /* Ensure content takes space */
-    }
+  // Ensure the router content wrapper inside main-stage is visible
+  .main-stage .router-content-wrapper {
+    display: block !important;
+    width: 100%;
+    flex: 1;
+    overflow-y: auto;
   }
 
   ::ng-deep .patriotic-menu.mat-mdc-menu-panel {

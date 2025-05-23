@@ -13,6 +13,7 @@ import { ChartLayoutService } from './services/chart-layout.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TileLimitDialogComponent } from './dialogs/tile-limit-dialog.component';
 import { SocketClientService } from '../../common/services/socket-client.service';
+import { active } from 'd3';
 
 @Component({
   selector: 'app-data-visualizations',
@@ -75,10 +76,10 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
 
   // Master list of all chart data
   public allCharts: ExtendedChartData[] = [
-    { name: 'Line Chart', component: 'app-line-chart', color: 'dodgerblue', data: this.lineChartData, size: 'small' },
-    { name: 'Bar Chart', component: 'app-bar-chart', color: 'limegreen', data: this.barChartData, size: 'small' },
-    { name: 'FinTech Chart', component: 'app-finance-chart', color: 'tomato', data: [], size: 'medium' },
-    { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [], size: 'large' }, // Changed from 'small' to 'large'
+    { name: 'Line Chart', component: 'app-line-chart', color: 'dodgerblue', data: this.lineChartData, size: 'medium', active: true },
+    { name: 'Bar Chart', component: 'app-bar-chart', color: 'limegreen', data: this.barChartData, size: 'medium', active: true },
+    { name: 'FinTech Chart', component: 'app-finance-chart', color: 'tomato', data: [], size: 'medium', active: false },
+    { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [], size: 'large', active: false },
   ];
 
   public fintechChartData: any[] = [];
@@ -109,16 +110,6 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     // Initialize available and displayed charts
     this.availableCharts = [...this.allCharts];
     
-    // By default, only show the Fire Alert tile
-    const fireAlertIndex = this.availableCharts.findIndex(chart => chart.component === 'app-fire-alert');
-    if (fireAlertIndex !== -1) {
-      // Create a copy to avoid reference issues
-      const fireAlertChart = { ...this.availableCharts[fireAlertIndex] };
-      // Set special layout to ensure it's full width as the default
-      fireAlertChart.specialLayout = 'large-tile-full-width';
-      this.displayedCharts = [fireAlertChart];
-      this.optimizeChartLayout(); // Apply layout optimization
-    }
     
     this.loadFintechChartData()
       .pipe()
@@ -168,6 +159,27 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 100);
+
+    this.allCharts.forEach(chart => {
+      // if line and bar chart, mark active, else turn off initially
+      if (chart.component === 'app-line-chart' || chart.component === 'app-bar-chart') {
+        chart.active = true;
+      } else {
+        chart.active = false;
+      }
+      // Set default size if not provided
+      if (!chart.size) {
+        chart.size = 'medium';
+      }
+      // Set default position if not provided
+      if (!chart.position) {
+        chart.position = 0;
+      }
+      // Pre-calculate chart classes for each chart
+      chart.chartClass = this.chartLayoutService.calculateChartClass(chart.component);
+    });
+
+    this.displayedCharts = this.allCharts.filter(chart => chart.active);
   }
 
   ngOnDestroy() {

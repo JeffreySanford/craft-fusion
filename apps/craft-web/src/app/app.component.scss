@@ -46,10 +46,16 @@
     z-index: 1; /* Ensure content is above background elements */
     
     .router-content-wrapper {
+      display: flex;
+      flex-direction: column;
       height: 100%;
       width: 100%;
-      display: block;
-      min-height: 100px; /* Ensure minimal height */
+
+      > * {
+        flex: 1;
+        display: block;
+        width: 100%;
+      }
     }
     
     &.footer-expanded {
