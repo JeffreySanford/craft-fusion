@@ -21,7 +21,9 @@
     "types": ["node", "jest"], // Added jest types
     "composite": true // Added for composite project support
   },
-  "files": ["./src/app/recipes/recipes.json"], // Explicitly include the JSON file
-  "include": ["src/**/*.ts", "src/**/*.json"], // Add explicit pattern for JSON files
+  "include": [
+    "src/**/*.ts", 
+    "src/**/*.json"
+  ],
   "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
 }

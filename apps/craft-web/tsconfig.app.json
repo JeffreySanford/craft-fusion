@@ -2,7 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": []
+    "types": [],
+    "declaration": true,
+    "declarationMap": true
   },
   "files": [
     "src/main.ts",
@@ -10,7 +12,9 @@
   ],
   "include": [
     "src/**/*.d.ts",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "../../libs/craft-library/src/index.ts",
+    "../../libs/craft-library/src/**/*.ts"
   ],
   "exclude": [
     "src/test-setup.ts",

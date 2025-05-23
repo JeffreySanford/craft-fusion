@@ -3,22 +3,21 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "types": [],
-    "composite": true,
     "declaration": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": false
+    "declarationMap": true
   },
   "angularCompilerOptions": {
     "enableIvy": true,
     "strictTemplates": true
   },
-  "files": [],
+  "files": [
+    "src/main.ts",
+    "src/polyfills.ts"
+  ],
   "include": [
     "**/*.ts",
     "**/*.html",
-    "**/*.scss",
-    "**/*.css",
-    "**/*.json"
+    "**/*.scss"
   ],
   "references": [
     { "path": "./tsconfig.app.json" },

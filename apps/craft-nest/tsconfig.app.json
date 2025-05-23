@@ -26,6 +26,6 @@
     "strictLiteralTypes": true
   },
   "files": ["src/main.ts"],
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.json"],
   "exclude": ["node_modules", "dist", "**/*.spec.ts"]
 }
