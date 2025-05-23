@@ -3,16 +3,6 @@
 </div>
 
 <div class="detail-container" *ngIf="user && !loading" @fadeIn>
-  <!-- Move back button to a header row -->
-  <div class="back-button-container">
-    <button class="back-button" (click)="navigateBack()">
-      <mat-icon>arrow_back</mat-icon>
-      Return to Records
-    </button>
-    <h1 class="page-title">User Detail Record</h1>
-    <div></div> <!-- Empty div for spacing in flexbox -->
-  </div>
-
   <div class="horizontal-layout">
     <!-- Left Column - Personal Info -->
     <div class="left-column">
@@ -36,22 +26,22 @@
           
           <div class="detail-item">
             <mat-icon>home</mat-icon>
-            <p><strong>Street:</strong> {{ user.address.street }}</p>
+            <p><strong>Street:</strong> {{ user.address?.street }}</p>
           </div>
           
           <div class="detail-item">
             <mat-icon>location_city</mat-icon>
-            <p><strong>City:</strong> {{ user.address.city }}</p>
+            <p><strong>City:</strong> {{ user.address?.city }}</p>
           </div>
           
           <div class="detail-item">
             <mat-icon>flag</mat-icon>
-            <p><strong>State:</strong> {{ user.address.state }}</p>
+            <p><strong>State:</strong> {{ user.address?.state }}</p>
           </div>
           
           <div class="detail-item">
             <mat-icon>markunread_mailbox</mat-icon>
-            <p><strong>Zipcode:</strong> {{ user.address.zipcode }}</p>
+            <p><strong>Zipcode:</strong> {{ user.address?.zipcode }}</p>
           </div>
           
           <div class="detail-divider"></div>

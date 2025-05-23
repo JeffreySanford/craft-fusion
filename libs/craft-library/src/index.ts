@@ -50,4 +50,35 @@ export interface Company {
   companyPosition?: string; // Added optional field
 }
 
+// Health types (shared with backend)
+export type HealthStatus = 'healthy' | 'degraded' | 'unhealthy';
+
+export interface SystemMetrics {
+  uptime: number;
+  memory: {
+    total: number;
+    free: number;
+    used: number;
+    usage: number;
+  };
+  cpu: {
+    loadAvg: number[];
+    usage: number;
+  };
+  process: {
+    pid: number;
+    memoryUsage: any; // NodeJS.MemoryUsage, but keep as any for cross-platform
+    uptime: number;
+  };
+  timestamp: number;
+}
+
+export interface HealthData {
+  status: HealthStatus;
+  services: globalThis.Record<string, boolean>;
+  uptime: number;
+  version: string;
+  metrics?: SystemMetrics;
+}
+
 // Add more shared types/interfaces here

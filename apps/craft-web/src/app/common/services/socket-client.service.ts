@@ -1,6 +1,6 @@
 import { Injectable, Injector, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, timer } from 'rxjs';
-import { takeUntil, retry, filter } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, timer, throwError } from 'rxjs';
+import { takeUntil, catchError } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
 
@@ -18,48 +18,53 @@ export class SocketClientService implements OnDestroy {
     this.initializeSocket();
   }
 
-  private initializeSocket(): void {
-    try {
-      const socketUrl = environment.socket?.url || 'ws://localhost:3000';
-      console.info('Initializing socket connection to', { socketUrl });
-      this.closeSocket();
-      this.socket = io(socketUrl, {
-        path: '/socket.io',
-        transports: ['websocket', 'polling'],
-        reconnectionAttempts: this.maxReconnectAttempts,
-        reconnectionDelay: this.backoffDelay,
-        timeout: 10000,
-        autoConnect: true,
-        withCredentials: true
+  initializeSocket(): void {
+    const socketUrl = environment.socket?.url || 'ws://localhost:3000';
+    console.info('Initializing socket connection to', { socketUrl });
+    this.closeSocket();
+    this.socket = io(socketUrl, {
+      path: '/socket.io',
+      transports: ['websocket', 'polling'],
+      reconnectionAttempts: this.maxReconnectAttempts,
+      reconnectionDelay: this.backoffDelay,
+      timeout: 10000,
+      autoConnect: true,
+      withCredentials: true
+    });
+    if (!this.socket) {
+      this.handleSocketError(new Error('Socket initialization failed'));
+      return;
+    }
+    this.socket.on('connect', () => {
+      this.reconnectAttempts = 0;
+      this.reconnecting = false;
+      this.connectionStatus.next(true);
+      console.info('Socket connected successfully', {
+        id: this.socket?.id,
+        namespace: this.extractNamespace(socketUrl)
       });
-      this.socket.on('connect', () => {
-        this.reconnectAttempts = 0;
-        this.reconnecting = false;
-        this.connectionStatus.next(true);
-        console.info('Socket connected successfully', {
-          id: this.socket?.id,
-          namespace: this.extractNamespace(socketUrl)
-        });
-      });
-      this.socket.on('connect_error', (error) => {
-        this.connectionStatus.next(false);
-        console.error('Socket connection error', { error: error.message });
+    });
+    this.socket.on('connect_error', (error) => {
+      this.connectionStatus.next(false);
+      this.handleSocketError(error);
+      if (!this.reconnecting && this.reconnectAttempts < this.maxReconnectAttempts) {
+        this.attemptReconnection();
+      }
+    });
+    this.socket.on('disconnect', (reason) => {
+      this.connectionStatus.next(false);
+      console.warn('Socket disconnected', { reason });
+      if (reason === 'io server disconnect' || reason === 'transport close') {
         if (!this.reconnecting && this.reconnectAttempts < this.maxReconnectAttempts) {
           this.attemptReconnection();
         }
-      });
-      this.socket.on('disconnect', (reason) => {
-        this.connectionStatus.next(false);
-        console.warn('Socket disconnected', { reason });
-        if (reason === 'io server disconnect' || reason === 'transport close') {
-          if (!this.reconnecting && this.reconnectAttempts < this.maxReconnectAttempts) {
-            this.attemptReconnection();
-          }
-        }
-      });
-    } catch (error) {
-      console.error('Error initializing socket', { error });
-    }
+      }
+    });
+  }
+
+  private handleSocketError(error: any): void {
+    this.connectionStatus.next(false);
+    console.error('Socket error', { error: error?.message || error });
   }
 
   private attemptReconnection(): void {
@@ -77,9 +82,7 @@ export class SocketClientService implements OnDestroy {
         if (this.reconnectAttempts < this.maxReconnectAttempts) {
           this.initializeSocket();
         } else {
-          console.error('Maximum socket reconnection attempts reached', {
-            attempts: this.reconnectAttempts
-          });
+          this.handleSocketError(new Error('Maximum socket reconnection attempts reached'));
           this.reconnecting = false;
         }
       });
@@ -103,15 +106,23 @@ export class SocketClientService implements OnDestroy {
         observer.error('Socket connection not established');
         return;
       }
-      this.socket.on(event, (data: T) => {
-        observer.next(data);
-      });
+      const handler = (data: T) => observer.next(data);
+      const errorHandler = (error: any) => observer.error(error);
+      this.socket.on(event, handler);
+      this.socket.on('connect_error', errorHandler);
+      // Teardown logic
       return () => {
         if (this.socket) {
-          this.socket.off(event);
+          this.socket.off(event, handler);
+          this.socket.off('connect_error', errorHandler);
         }
       };
-    });
+    }).pipe(
+      catchError(err => {
+        this.handleSocketError(err);
+        return throwError(() => err);
+      })
+    );
   }
 
   emit(event: string, data?: any): void {

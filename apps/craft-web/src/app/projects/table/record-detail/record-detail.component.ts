@@ -1,8 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Record, Company } from '@craft-fusion/craft-library';
-import { RecordService } from '../services/record.service';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
@@ -11,7 +8,6 @@ import { trigger, transition, style, animate, query, stagger } from '@angular/an
   standalone: false,
   templateUrl: './record-detail.component.html',
   styleUrls: ['./record-detail.component.scss'],
-  providers: [RecordService],
   animations: [
     trigger('fadeIn', [
       transition(':enter', [
@@ -31,57 +27,44 @@ import { trigger, transition, style, animate, query, stagger } from '@angular/an
     ]),
   ]
 })
-export class RecordDetailComponent implements OnInit, OnDestroy {
-  user?: Record;
+export class RecordDetailComponent implements OnChanges {
+  @Input() user!: Record;
+  @Input() loading = false;
+
   totalAnnualSalary = 0;
   salaryDisplayedColumns: string[] = ['company', 'salary'];
   salaryArray!: MatTableDataSource<Company>;
-  selectedUserId!: string;
-  loading = true;
-  
+
   // Array for displaying stars based on salary
   wealthIndicator: number[] = [];
 
-  userSub: Subscription;
-
-  constructor(private recordService: RecordService, private router: Router) {
-    this.selectedUserId = recordService.getSelectedUID();
-    if (this.selectedUserId === "0000000") {
-      this.router.navigate(['/table']);
-    }
-
-    this.userSub = this.recordService.getRecordByUID(this.selectedUserId).subscribe((user: Record) => {
-      this.user = user;
-      this.loading = false;
-      
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['user'] && this.user) {
+      // Defensive: ensure all nested properties exist
+      this.user = {
+        ...this.user,
+        address: this.user.address || { street: '', city: '', state: '', zipcode: '' },
+        phone: this.user.phone || { UID: '', number: '', type: '' },
+        salary: Array.isArray(this.user.salary) ? this.user.salary : [],
+      };
       // Calculate and generate wealth indicator stars (1-5)
-      if (user && user.salary) {
-        this.salaryArray = new MatTableDataSource<Company>(user.salary);
+      if (this.user.salary) {
+        this.salaryArray = new MatTableDataSource<Company>(this.user.salary);
         this.totalAnnualSalary = this.getTotalSalary();
         const starCount = Math.min(5, Math.max(1, Math.floor(this.totalAnnualSalary / 20000)));
         this.wealthIndicator = new Array(starCount).fill(0);
       }
-    });
-  }
-
-  ngOnDestroy(): void {
-    if (this.userSub) {
-      this.userSub.unsubscribe();
     }
   }
 
-  ngOnInit(): void {
-    // Already set in property initialization
-  }
-
   public getTotalSalary(): number {
-    this.totalAnnualSalary = 0;
+    let total = 0;
     this.user?.salary.forEach((company: Company) => {
       // Use the correct property based on the company structure
-      this.totalAnnualSalary += company.annualSalary;
+      total += company.annualSalary;
     });
 
-    return this.totalAnnualSalary;
+    return total;
   }
   
   public formatPhoneNumber(phoneNumber: string): string {
@@ -89,9 +72,5 @@ export class RecordDetailComponent implements OnInit, OnDestroy {
     if (!phoneNumber || phoneNumber.length < 10) return phoneNumber;
     
     return `(${phoneNumber.substring(0, 3)}) ${phoneNumber.substring(3, 6)}-${phoneNumber.substring(6)}`;
-  }
-  
-  navigateBack(): void {
-    this.router.navigate(['/table']);
   }
 }

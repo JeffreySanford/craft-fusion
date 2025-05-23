@@ -1,10 +1,10 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer, inject } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, NavigationStart, NavigationCancel, NavigationEnd, NavigationError } from '@angular/router';
 import { AppComponent } from './app.component';
 import { appRoutes } from './app.routes';
 import { MaterialModule } from './material.module';
@@ -20,12 +20,28 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { SocketClientService } from './common/services/socket-client.service';
 
 // Import shared types from craft-library
-// import { User } from '@craft-fusion/craft-library';
+import { HealthData } from '@craft-fusion/craft-library';
+import { ProjectsModule } from './projects/projects.module';
 
 export function socketClientFactory(socketClient: SocketClientService): () => void {
   return () => {
-    // This will ensure the socket client is created on app initialization
-    // and the connection is established right away
+    // Initialize the socket client and emit health metric
+    socketClient.connect();
+    console.info('[AppModule] SocketClientService initialized and connected');
+    const healthMetric: HealthData = {
+      status: 'healthy',
+      services: { api: true },
+      uptime: 0,
+      version: 'frontend',
+      metrics: {
+        uptime: 0,
+        memory: { total: 0, free: 0, used: 0, usage: 0 },
+        cpu: { loadAvg: [0, 0, 0], usage: 0 },
+        process: { pid: 0, memoryUsage: {}, uptime: 0 },
+        timestamp: Date.now()
+      }
+    };
+    socketClient.emit('health', healthMetric);
   };
 }
 
@@ -41,6 +57,7 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
     HttpClientModule,
     RouterModule.forRoot(appRoutes, { initialNavigation: 'enabledBlocking' }),
     MaterialModule,
+    ProjectsModule,
     ComponentsModule, // Import ComponentsModule which exports ServerStatusComponent
     LandingModule,
     AdminModule,
@@ -51,25 +68,33 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
     NgxSpinnerModule // Add NgxSpinnerModule
   ],
   providers: [
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (router: Router, logger: LoggerService) => {
-        return () => {
-          // Register the Router with the logger
-          logger.registerService('Router');
-          return Promise.resolve();
-        };
-      },
-      deps: [Router, LoggerService],
-      multi: true
-    },
+    provideAppInitializer(() => {
+      const router = inject(Router);
+      const logger = inject(LoggerService);
+      
+      // Register the Router with the logger, return a hot observable that emits the router instance
+      // This is a workaround to ensure the logger has access to the router instance
+      // and can log navigation events
+      router.events.subscribe(event => {
+        if (event instanceof NavigationStart) {
+          logger.info('Navigation started', event);
+        } else if (event instanceof NavigationEnd) {
+          logger.info('Navigation ended', event);
+        } else if (event instanceof NavigationError) {
+          logger.error('Navigation error', event);
+          router.navigate(['/error'], { queryParams: { error: event.error } });
+        } else if (event instanceof NavigationCancel) {
+          logger.info('Navigation cancelled', event);
+        }
+      });
+
+      logger.registerService('Router');
+    }),
     SocketClientService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: socketClientFactory,
-      deps: [SocketClientService],
-      multi: true
-    }
+    provideAppInitializer(() => {
+      const socketClient = inject(SocketClientService);
+      socketClientFactory(socketClient)();
+    })
   ],
   bootstrap: [AppComponent]
 })

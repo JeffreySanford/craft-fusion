@@ -1,6 +1,6 @@
 import { Injectable, Injector } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, of, timer } from 'rxjs';
-import { switchMap, takeUntil, catchError, map, tap, filter, take } from 'rxjs/operators';
+import { Observable, Subject, BehaviorSubject, ReplaySubject, of, timer } from 'rxjs';
+import { map, switchMap, takeUntil, catchError, tap, filter } from 'rxjs/operators';
 import { HttpContext, HttpContextToken } from '@angular/common/http';
 
 // Define the TIMEOUT token for HTTP requests
@@ -63,6 +63,17 @@ export class LoggerService {
   logStream$ = this.logSubject.asObservable(); // Alias for compatibility
   serviceCalls$ = this.serviceCallsSubject.asObservable();
   
+  // Hot observables for integration
+  private connectSubject = new Subject<any>();
+  private errorSubject = new Subject<any>();
+  private infoSubject = new Subject<any>();
+  private changelogSubject = new ReplaySubject<any>(100);
+
+  connect$ = this.connectSubject.asObservable();
+  error$ = this.errorSubject.asObservable();
+  info$ = this.infoSubject.asObservable();
+  changelog$ = this.changelogSubject.asObservable();
+  
   constructor(
     private injector: Injector
   ) {
@@ -95,7 +106,6 @@ export class LoggerService {
   }
   
   highlight(message: string, details?: any, component: string = this.getCallerComponent()) {
-    // Special highlighted log - treat as INFO level
     this.log(LogLevel.INFO, `⭐ ${message} ⭐`, details, component);
   }
   
@@ -205,6 +215,12 @@ export class LoggerService {
       
       // Notify subscribers
       this.logSubject.next(entry);
+      // Emit to info/error subjects
+      if (level === LogLevel.ERROR) {
+        this.errorSubject.next(entry);
+      } else if (level === LogLevel.INFO) {
+        this.infoSubject.next(entry);
+      }
       
       // Still send to console for development visibility
       this.outputToConsole(level, message, sanitizedDetails, component);
@@ -725,35 +741,29 @@ export class LoggerService {
     const message = scope ? 
       `${type}(${scope}): ${description}` : 
       `${type}: ${description}`;
-    
     // Log to console
     this.info(`CHANGELOG: ${message}`, { changelog: true });
-    
-    // Store in localStorage to be picked up by changelog generator
-    try {
-      const entries = JSON.parse(localStorage.getItem('changelog-entries') || '[]');
-      entries.push({
-        type,
-        scope,
-        description,
-        timestamp: new Date().toISOString()
-      });
-      localStorage.setItem('changelog-entries', JSON.stringify(entries));
-    } catch (e) {
-      this.error('Failed to store changelog entry', e);
-    }
+    // Store in changelog subject (no try-catch)
+    const entry = {
+      type,
+      scope,
+      description,
+      timestamp: new Date().toISOString()
+    };
+    this.changelogSubject.next(entry);
+    // Optionally, persist to localStorage (no try-catch)
+    const entries = JSON.parse(localStorage.getItem('changelog-entries') || '[]');
+    entries.push(entry);
+    localStorage.setItem('changelog-entries', JSON.stringify(entries));
   }
   
   /**
    * Retrieve all stored changelog entries
    */
   getChangelogEntries(): Array<{type: string, scope?: string, description: string, timestamp: string}> {
-    try {
-      return JSON.parse(localStorage.getItem('changelog-entries') || '[]');
-    } catch (e) {
-      this.error('Failed to retrieve changelog entries', e);
-      return [];
-    }
+    // No try-catch, just return parsed or empty array
+    const raw = localStorage.getItem('changelog-entries');
+    return raw ? JSON.parse(raw) : [];
   }
   
   /**
@@ -778,5 +788,10 @@ export class LoggerService {
   private fetchBackendLogs(): Observable<LogEntry[]> {
     // TODO: Implement actual log fetching logic
     return of([]); // No logs for now
+  }
+
+  // Example: emit connect event (call this when appropriate in your app)
+  emitConnectEvent(data: any) {
+    this.connectSubject.next(data);
   }
 }

@@ -133,33 +133,13 @@
         <div class="modal-container" *ngIf="expandedElement">
           <!-- Backdrop with pointer events to close on click -->
           <div class="expanded-backdrop" (click)="expandRow(expandedElement); $event.stopPropagation();"></div>
-          
           <!-- Modal content with absolute fixed positioning -->
           <div class="expand-element-detail">
             <button class="close-overlay-btn" (click)="expandRow(expandedElement); $event.stopPropagation();">
               <mat-icon>close</mat-icon>
             </button>
-            <div class="expand-element-description">
-              <h2 class="expand-header">Employment Income Information</h2>
-              
-              <div class="income-grid">
-                <div *ngFor="let company of expandedElement.salary" class="income-item">
-                  <div class="company-info">
-                    <span class="company-name">{{ company.companyName }}</span>
-                    <span class="company-salary">{{ company.annualSalary | currency }}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="income-summary" *ngIf="expandedElement.salary && expandedElement.salary.length > 10">
-                <p><strong>Note:</strong> This user has {{ expandedElement.salary.length }} sources of income.</p>
-              </div>
-              
-              <div class="income-total">
-                <span class="total-label">Total Annual Salary:</span>
-                <span class="total-amount">{{ getTotalSalary(expandedElement.salary) | currency }}</span>
-              </div>
-            </div>
+            <!-- Use the RecordDetailComponent here -->
+            <app-record-detail [user]="expandedElement"></app-record-detail>
           </div>
         </div>
 
