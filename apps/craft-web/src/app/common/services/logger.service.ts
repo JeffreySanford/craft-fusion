@@ -1,9 +1,7 @@
-import { Injectable, Injector, forwardRef } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, of, timer } from 'rxjs';
 import { switchMap, takeUntil, catchError, map, tap, filter, take } from 'rxjs/operators';
 import { HttpContext, HttpContextToken } from '@angular/common/http';
-// Import the type but use forwardRef in the code to avoid circular dependency
-import { SocketClientService } from './socket-client.service';
 
 // Define the TIMEOUT token for HTTP requests
 export const TIMEOUT = new HttpContextToken<number>(() => 30000);
@@ -65,37 +63,12 @@ export class LoggerService {
   logStream$ = this.logSubject.asObservable(); // Alias for compatibility
   serviceCalls$ = this.serviceCallsSubject.asObservable();
   
-  // Property to hold the socket client reference
-  private socketClient: SocketClientService | null = null;
-
   constructor(
     private injector: Injector
   ) {
-    // Break circular dependency by deferring socket client injection
-    setTimeout(() => this.initSocketClient(), 0);
     this.info('LoggerService initialized');
   }
   
-  private initSocketClient(): void {
-    try {
-      // Get SocketClientService from injector after initialization to break circular dependency
-      // Use forwardRef with the actual class for type-safe injection
-      this.socketClient = this.injector.get(forwardRef(() => SocketClientService));
-    } catch (e) {
-      console.warn('Could not inject SocketClientService');
-    }
-
-    // Subscribe to backend log gateway via WebSocket if socket client is initialized
-    if (this.socketClient) {
-      this.socketClient.on<LogEntry>('log').subscribe((log: LogEntry) => {
-        this.processBackendLogs([log]);
-      });
-
-      // Initiate socket connection for logs
-      this.socketClient.connect();
-    }
-  }
-
   setLevel(level: LogLevel) {
     this.loggerLevel = level;
     localStorage.setItem('loggerLevel', level.toString());

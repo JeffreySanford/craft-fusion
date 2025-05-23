@@ -17,8 +17,7 @@ import { RoleGuard } from './common/guards/role.guard';
 
 export const appRoutes: Routes = [
   { path: 'home', component: LandingComponent },
-  { path: 'table', component: RecordListComponent },
-  { path: 'table/:id', component: RecordDetailComponent },
+  { path: 'table', loadChildren: () => import('./projects/table/table.module').then(m => m.TableModule) },
   { path: 'data-visualizations', component: DataVisualizationsComponent },
   { path: 'book', component: BookComponent },
   { path: 'chat', loadChildren: () => import('./projects/chat/chat.module').then(m => m.ChatModule) },

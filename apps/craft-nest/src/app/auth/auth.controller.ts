@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { Controller, Post, Body, HttpException, HttpStatus, Logger, HttpCode } from '@nestjs/common';
 import { AuthService, User } from './auth.service';
 import { Observable, catchError, map, of, throwError } from 'rxjs';
 
@@ -21,6 +21,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(HttpStatus.OK) // Always return 200 on successful login
   login(@Body() loginRequest: LoginRequest): Observable<LoginResponse> {
     this.logger.debug(`Login request received`, {
       username: loginRequest.username,
@@ -38,8 +39,8 @@ export class AuthController {
             elapsedMs: Math.round(performance.now() - startTime)
           });
           throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
-        }
-
+        }        
+        
         const token = this.authService.generateToken(user);
         
         this.logger.log(`Login successful for user`, {
@@ -48,9 +49,15 @@ export class AuthController {
           elapsedMs: Math.round(performance.now() - startTime)
         });
         
+        // Adapt backend User model to frontend expectations (role -> roles)
+        const adaptedUser = {
+          ...user,
+          roles: [user.role], // Convert single role to roles array for frontend
+        };
+        
         return {
           token,
-          user
+          user: adaptedUser
         };
       }),
       catchError(error => {

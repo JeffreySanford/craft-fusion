@@ -4,7 +4,7 @@ export const environment = {
   logLevel: 'debug',
   useOfflineMode: false,
   enableDebug: true,
-  useApiMocks: true, // Set to true to use mocked data when backend is unavailable
+  useApiMocks: false, // Set to false to use the actual backend endpoints
   sentryDsn: '',
   version: '0.1.0',
   // Add server health check endpoints
@@ -34,6 +34,6 @@ export const environment = {
   
   // WebSocket configuration
   socket: {
-    url: 'ws://localhost:3000'  // Using port 3000 for the Nest server WebSocket connection
+    url: 'ws://127.0.0.1:3000' // Use 127.0.0.1 for the Nest server WebSocket connection
   }
 };

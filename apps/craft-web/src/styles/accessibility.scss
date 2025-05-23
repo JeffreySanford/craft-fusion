@@ -1,6 +1,6 @@
 // Modern accessibility styles to replace deprecated -ms-high-contrast
 
-// Replace all instances of -ms-high-contrast: active with forced-colors: active
+// Use only forced-colors media queries for high contrast mode
 @media (forced-colors: active) {
   // Enhanced focus indicators for better visibility
   :focus {
@@ -52,17 +52,13 @@
   }
 }
 
-// Replace all instances of -ms-high-contrast: black-on-white with appropriate forced-colors
 @media (forced-colors: active) and (prefers-color-scheme: light) {
-  // Light mode high contrast styles
   .light-contrast-border {
     border-color: CanvasText;
   }
 }
 
-// Replace all instances of -ms-high-contrast: white-on-black with appropriate forced-colors
 @media (forced-colors: active) and (prefers-color-scheme: dark) {
-  // Dark mode high contrast styles
   .dark-contrast-border {
     border-color: CanvasText;
   }

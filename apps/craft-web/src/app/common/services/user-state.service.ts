@@ -154,10 +154,14 @@ export class UserStateService implements OnDestroy {
 
   setLoginDateTime(dateTime: Date): Observable<void> {
     this.loginDateTimeSubject.next(dateTime);
-    
-    // Emit via socket instead of HTTP call
-    this.socketClient.emit('updateLoginTime', { dateTime: dateTime.toISOString() });
-    
+    // Only emit if socket is connected
+    this.socketClient.isConnected$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(connected => {
+        if (connected) {
+          this.socketClient.emit('updateLoginTime', { dateTime: dateTime.toISOString() });
+        }
+      });
     return of(void 0);
   }
 

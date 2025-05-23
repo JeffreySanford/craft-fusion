@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { CurrencyPipe } from '@angular/common';
 
 // Material Modules
 import { MatTableModule } from '@angular/material/table';
@@ -14,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; // Import MatProgressSpinnerModule
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -33,6 +34,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 // Components
 import { RecordListComponent } from './record-list.component';
 import { RecordDetailComponent } from './record-detail/record-detail.component';
+import { tableRoutes } from './table.routes';
 
 @NgModule({
   declarations: [
@@ -43,9 +45,7 @@ import { RecordDetailComponent } from './record-detail/record-detail.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterModule.forChild([
-      { path: '', component: RecordListComponent }
-    ]),
+    RouterModule.forChild(tableRoutes),
 
     // Material Modules
     MatTableModule,
@@ -58,7 +58,7 @@ import { RecordDetailComponent } from './record-detail/record-detail.component';
     MatIconModule,
     MatTooltipModule,
     MatCardModule,
-    MatProgressSpinnerModule, // Add MatProgressSpinnerModule here
+    MatProgressSpinnerModule,
     MatSelectModule,
     MatDialogModule,
     MatSnackBarModule,
@@ -80,6 +80,9 @@ import { RecordDetailComponent } from './record-detail/record-detail.component';
   ],
   exports: [
     RecordListComponent // Export if needed elsewhere
+  ],
+  providers: [
+    CurrencyPipe // Provides CurrencyPipe for use in the components
   ]
 })
 export class TableModule { }

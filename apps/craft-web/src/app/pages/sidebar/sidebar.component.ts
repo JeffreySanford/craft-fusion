@@ -44,9 +44,6 @@ export class SidebarComponent implements OnInit {
         { icon: 'bar_chart', label: 'Data Visualizations', routerLink: '/data-visualizations', active: false },
         { icon: 'restaurant', label: 'Peasant Kitchen', routerLink: '/peasant-kitchen', active: false },
         { icon: 'movie', label: 'HTML Video', routerLink: '/space-video', active: false },
-        { icon: 'family', label: 'Family', routerLink: '/family', active: false },
-        { icon: 'chat', label: 'Chat', routerLink: '/chat', active: false },
-        { icon: 'book', label: 'Book', routerLink: '/book', active: false },
       ],
     }
   ];
@@ -73,6 +70,9 @@ export class SidebarComponent implements OnInit {
         const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
         if (adminItemIndex === -1) {
           this.menuGroups[0].items.push({ icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false });
+          this.menuGroups[0].items.push({ icon: 'family_restroom', label: 'Family Admin', routerLink: '/family-admin', active: false });
+          this.menuGroups[0].items.push({ icon: 'chat_bubble', label: 'Chat Admin', routerLink: '/chat-admin', active: false });
+          this.menuGroups[0].items.push({ icon: 'book', label: 'Book Admin', routerLink: '/book-admin', active: false });
           this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
         }
       } else {

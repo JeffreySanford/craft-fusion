@@ -3,6 +3,7 @@ import { Record, Company } from '@craft-fusion/craft-library';
 import { RecordService } from '../services/record.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { MatTableDataSource } from '@angular/material/table';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 
 @Component({
@@ -34,7 +35,7 @@ export class RecordDetailComponent implements OnInit, OnDestroy {
   user?: Record;
   totalAnnualSalary = 0;
   salaryDisplayedColumns: string[] = ['company', 'salary'];
-  salaryArray!: Company[];
+  salaryArray!: MatTableDataSource<Company>;
   selectedUserId!: string;
   loading = true;
   
@@ -55,6 +56,7 @@ export class RecordDetailComponent implements OnInit, OnDestroy {
       
       // Calculate and generate wealth indicator stars (1-5)
       if (user && user.salary) {
+        this.salaryArray = new MatTableDataSource<Company>(user.salary);
         this.totalAnnualSalary = this.getTotalSalary();
         const starCount = Math.min(5, Math.max(1, Math.floor(this.totalAnnualSalary / 20000)));
         this.wealthIndicator = new Array(starCount).fill(0);

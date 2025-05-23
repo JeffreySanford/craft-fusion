@@ -53,7 +53,7 @@ async function bootstrap() {
   // Create app with optimized settings
   const configService = app.get(ConfigService);
   
-  const HOST = isProduction ? 'jeffreysanford.us' : 'localhost';
+  const HOST = isProduction ? 'jeffreysanford.us' : '0.0.0.0';
   let PORT = configService.get<number>('NEST_PORT') || 3000;
   const protocol = isProduction ? 'https' : 'http';
   
