@@ -1,3 +1,24 @@
+/* Global layout styles */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  
+  &.footer-expanded {
+    height: 100vh;
+  }
+}
+
 .layout-container {
   display: flex;
   flex-direction: row;
@@ -6,16 +27,35 @@
   height: calc(100% - 64px); // Adjust based on your header height
   overflow: hidden;
   
-  .sidebar {
-    flex-shrink: 0;
-    height: auto;
+  &.footer-expanded {
+    height: calc(100% - 64px - 200px); // Adjust the footer height (200px) as needed
+    transition: height 0.3s ease;
   }
   
-
+  .sidebar {
+    flex-shrink: 0;
+    height: 100%;
+  }
+  
   .main-stage {
     flex: 1;
+    height: 100%;
     overflow-y: auto;
     padding: 1rem;
+    position: relative; /* Ensure position context for z-index */
+    z-index: 1; /* Ensure content is above background elements */
+    
+    .router-content-wrapper {
+      height: 100%;
+      width: 100%;
+      display: block;
+      min-height: 100px; /* Ensure minimal height */
+    }
+    
+    &.footer-expanded {
+      max-height: calc(100vh - 64px - 200px); // Adjust based on header and expanded footer heights
+      transition: max-height 0.3s ease;
+    }
   }
 }
 

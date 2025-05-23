@@ -6,7 +6,9 @@
         <app-sidebar [isSmallScreen]="isSmallScreen" [isCollapsed]="isCollapsed" [ngClass]="{ 'collapsed': !isCollapsed }"></app-sidebar>
       </aside>
       <main class="main-stage" [class.footer-expanded]="isFooterExpanded">
-        <router-outlet></router-outlet>
+        <div class="router-content-wrapper">
+          <router-outlet></router-outlet>
+        </div>
       </main>
     </div>
     <app-footer></app-footer>

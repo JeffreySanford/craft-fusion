@@ -15,6 +15,24 @@ export class FooterStateService {
    * @param expanded - Whether the footer is expanded
    */
   setExpanded(expanded: boolean): void {
+    console.log('Setting footer expanded state:', expanded); // Debug log
     this.expandedSubject.next(expanded);
+  }
+  
+  /**
+   * Get the current footer expansion state
+   * @returns boolean
+   */
+  isExpanded(): boolean {
+    return this.expandedSubject.getValue();
+  }
+  
+  /**
+   * Toggle the footer expansion state
+   */
+  toggleExpanded(): void {
+    const currentState = this.expandedSubject.getValue();
+    console.log('Toggling footer state from:', currentState, 'to:', !currentState); // Debug log
+    this.expandedSubject.next(!currentState);
   }
 }

@@ -13,6 +13,7 @@ export class SocketClientService implements OnDestroy {
   private backoffDelay = 2000; // Start with 2 seconds
   private reconnecting = false;
   private destroy$ = new Subject<void>();
+  user$: Observable<any>;
 
   constructor(private injector: Injector) {
     this.initializeSocket();

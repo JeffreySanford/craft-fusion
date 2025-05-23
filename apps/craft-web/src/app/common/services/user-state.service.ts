@@ -1,7 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
-import { catchError, takeUntil, tap } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { LoggerService } from './logger.service';
 import { Document } from '../../projects/book/book.component';
 import { SocketClientService } from './socket-client.service';
@@ -22,12 +21,15 @@ export class UserStateService implements OnDestroy {
   readonly loginDateTime$ = this.loginDateTimeSubject.asObservable();
   readonly visitLength$ = this.visitLengthSubject.asObservable();
   readonly visitedPages$ = this.visitedPagesSubject.asObservable();
-
+  readonly user$: Observable<any>;
+  
+  
   constructor(
     private socketClient: SocketClientService,
-    private logger: LoggerService,
-    private api: ApiService
+    private logger: LoggerService
   ) {
+    // Initialize user$ observable - create a default observable since user$ doesn't exist on SocketClientService
+    this.user$ = of(null);
     // Initialize login time if not set
     if (!this.loginDateTimeSubject.value) {
       this.setLoginDateTime(new Date());
@@ -197,16 +199,5 @@ export class UserStateService implements OnDestroy {
     }
     
     return of(void 0);
-  }
-
-  // Fallback methods for when socket is not available
-  private saveOpenedDocuments(documents: Document[]): Observable<void> {
-    return this.api.post<{documents: Document[]}, void>('/api/files/saveOpenedDocuments', { documents })
-      .pipe(
-        catchError(error => {
-          this.logger.error('Error saving documents to backend', { error });
-          return of(void 0);
-        })
-      );
   }
 }

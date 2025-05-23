@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, SimpleChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription, Subject, interval, take, takeUntil, timer } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
@@ -16,7 +16,7 @@ import { AuthService } from './common/services/auth/auth.service';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   isCollapsed = false;
@@ -56,64 +56,62 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private logger: LoggerService,
     private authService: AuthService, // Changed to use existing AuthService
     private footerStateService: FooterStateService,
-    private userStateService: UserStateService
+    private userStateService: UserStateService,
   ) {
     // Replace direct console logs with logger calls
     this.logger.info('App component initialized', { appVersion: '1.0.0' });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    // Handle changes to inputs if any
+    if (changes['user']) {
+      // Replace any existing console.log with logger calls
+      this.logger.debug('Application started', { timestamp: new Date().toISOString() });
+
+      // Temporarily set admin status here - will be replaced with auth later
+      // this.adminStateService.setAdminStatus(true); // Set to true for development
+
+      // Update to use authService instead of authFacade
+      this.authService.isAdmin$.subscribe(isAdmin => {
+        this.adminStateService.setAdminStatus(isAdmin);
+      });
+
+      this.userTrackingService.getCurrentUser().subscribe(
+        user => {
+          if (user?.username) {
+            this.isLoggedIn = true;
+            this.userDisplayName = '🔒 ' + user.username;
+          } else {
+            this.isLoggedIn = false;
+          }
+        },
+        error => {
+          this.logger.error('Error fetching users:', error);
+        },
+      );
+    }
+  }
+
   ngOnInit(): void {
-    // Replace any existing console.log with logger calls
-    this.logger.debug('Application started', { timestamp: new Date().toISOString() });
-
-    // Temporarily set admin status here - will be replaced with auth later
-    // this.adminStateService.setAdminStatus(true); // Set to true for development
-
-    // Update to use authService instead of authFacade
-    this.authService.isAdmin$.subscribe(isAdmin => {
-      this.adminStateService.setAdminStatus(isAdmin);
-    });
-
-    this.userTrackingService.getCurrentUser().subscribe((user) => {
-      if (user?.username) {
-        this.isLoggedIn = true;
-        this.userDisplayName = '🔒 ' + user.username;
-      } else {
-        this.isLoggedIn = false;
-      }
-    }, error => {
-      this.logger.error('Error fetching users:', error);
-    });
-
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
       this.isSmallScreen = result.matches;
       this.isCollapsed = this.isSmallScreen;
     });
-    if (this.routerSubscription) {
-      this.routerSubscription.unsubscribe();
-    }
-    if (this.videoCheckSubscription) {
-      this.videoCheckSubscription.unsubscribe();
-    }
 
     this.isSmallScreen = this.breakpointObserver.isMatched('(max-width: 599px)');
-
-    // Removed login event registration to avoid infinite loop
 
     this.logger.info('App component initialized');
 
     // Subscribe to footer state changes
-    this.footerStateSubscription = this.footerStateService.expanded$
-      .subscribe(expanded => {
-        this.isFooterExpanded = expanded;
-        console.log('Footer expanded state changed:', expanded);
-        // Apply the appropriate class to the body
-        if (expanded) {
-          document.body.classList.add('footer-expanded');
-        } else {
-          document.body.classList.remove('footer-expanded');
-        }
-      });
+    this.footerStateSubscription = this.footerStateService.expanded$.subscribe(expanded => {
+      this.isFooterExpanded = expanded;
+      console.log('Footer expanded state changed:', expanded);
+      
+      // Force redraw of child components after footer state changes
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+      }, 100);
+    });
 
     // Console log for user interaction - debugging purposes
     // Log only every 10 seconds at most to reduce spam
@@ -125,45 +123,57 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         lastInteractionLog = now;
       }
     });
+
+    this.userStateService.user$.subscribe((user: User) => {
+      if (user) {
+        this.userDisplayName = user.username || 'Guest';
+        this.isLoggedIn = !!user.username;
+      } else {
+        this.userDisplayName = 'Guest';
+        this.isLoggedIn = false;
+      }
+    });
   }
 
   ngAfterViewInit() {
     this.logger.info('App component view initialized');
-    
+
     // Set a small timeout before handling video to prevent blocking the main thread
     setTimeout(() => {
       this.ensureVideoIsPlaying();
     }, 100);
-    
+
     // Set a maximum timeout for API connections with proper error handling
     this.setupConnectionTimeouts();
-    
+
     this.addUserInteractionListener();
     this.startVideoCheckPolling();
   }
-  
+
   ngOnDestroy() {
     this.logger.info('App component destroyed');
-    
+
     // Clean up all resources
     this.removeUserInteractionListener();
     this.stopVideoCheckPolling();
     this.cancelAllTimeouts();
-    
+
     // Log user activity summary on exit
     const activitySummary = this.userActivityService.getActivitySummary();
-    this.logger.info(`Session summary: ${activitySummary.pageViews} page views, ${activitySummary.clicks} clicks, ${Math.round(activitySummary.sessionDuration / 1000)} seconds duration`);
+    this.logger.info(
+      `Session summary: ${activitySummary.pageViews} page views, ${activitySummary.clicks} clicks, ${Math.round(activitySummary.sessionDuration / 1000)} seconds duration`,
+    );
 
     if (this.footerStateSubscription) {
       this.footerStateSubscription.unsubscribe();
     }
-    
+
     // Clear any pending timeouts
     if (this.inactivityTimeout) {
       clearTimeout(this.inactivityTimeout);
       this.inactivityTimeout = null;
     }
-    
+
     // Complete the destroy$ subject to clean up subscriptions
     this.destroy$.next();
     this.destroy$.complete();
@@ -173,25 +183,23 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.menuItems.forEach(menuItem => (menuItem.active = false));
     item.active = true;
   }
-  
+
   // New helper method to handle connection timeouts
   private setupConnectionTimeouts(): void {
     // Set global timeout for XHR requests
-    this.destroy$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
+    this.destroy$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       // This will be called when component is destroyed
       // Any active XHR should be canceled here
     });
   }
-  
+
   // New helper method to cancel all pending timeouts
   private cancelAllTimeouts(): void {
     if (this.inactivityTimeout) {
       clearTimeout(this.inactivityTimeout);
       this.inactivityTimeout = null;
     }
-    
+
     // Any other timeouts should be cleared here
     const pendingTimeouts = window.setTimeout(() => {}, 0);
     for (let i = 0; i < pendingTimeouts; i++) {
@@ -206,13 +214,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.stopVideoCheckPolling();
       return;
     }
-    
+
     video.playbackRate = 0.5; // Slow down the video
-    
+
     if (video.paused || video.ended) {
       // Add a timeout to the play attempt to prevent blocking render
       setTimeout(() => {
-        video.play()
+        video
+          .play()
           .then(() => {
             this.stopVideoCheckPolling();
             this.polling = false;
@@ -253,14 +262,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private startVideoCheckPolling(): void {
     // Clear any existing polling first
     this.stopVideoCheckPolling();
-    
+
     // Only set up polling if we're not already polling
     if (!this.videoCheckSubscription) {
       this.videoCheckSubscription = timer(0, this.videoCheckInterval)
         .pipe(
           takeUntil(this.destroy$),
           // Add take(5) to ensure polling stops after 5 attempts if video still doesn't play
-          take(5)
+          take(5),
         )
         .subscribe(() => {
           this.ensureVideoIsPlaying();
@@ -289,7 +298,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     */
-    
+
     // For now, just log a message to avoid the error
     this.logger.info('App component initialized');
   }
