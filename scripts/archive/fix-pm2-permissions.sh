@@ -76,7 +76,7 @@ module.exports = {
       max_memory_restart: '100M',
       env: {
         NODE_ENV: 'production',
-        PORT: 8080
+        PORT: 4000
       },
       out_log: '/var/log/craft-fusion/craft-go/out.log',
       error_log: '/var/log/craft-fusion/craft-go/error.log',

@@ -2,25 +2,26 @@ module.exports = {
   apps: [
     {
       name: 'craft-nest-api',
-      script: './dist/apps/craft-nest/main.js',
-      instances: 1,              // Simplified: single instance instead of cluster
-      exec_mode: 'fork',         // Use fork mode for simplicity
+      script: './dist/apps/craft-nest/src/main.js',  // FIXED: Correct path to compiled JS
+      instances: 1,
+      exec_mode: 'fork',
       cwd: __dirname,
+      node_args: '--max-old-space-size=200',  // Memory optimization for 2GB VPS
       env: {
         NODE_ENV: 'production',
         PORT: 3000,
-        HOST: 'jeffreysanford.us',
+        HOST: '0.0.0.0',  // FIXED: Bind to all interfaces for server access
         LOG_LEVEL: 'info',
       },
       error_file: './logs/craft-nest/error.log',
       out_file: './logs/craft-nest/out.log',
       merge_logs: true,
       time: true,
-      max_memory_restart: '1G',
+      max_memory_restart: '150M',  // FIXED: Appropriate limit for 2GB VPS
       autorestart: true,
-      min_uptime: '10s',         // Prevent rapid restarts
-      max_restarts: 10,          // Limit restart attempts
-      restart_delay: 4000        // Delay between restarts
+      min_uptime: '10s',
+      max_restarts: 10,
+      restart_delay: 4000
     },
     {
       name: 'craft-go-api',
@@ -31,14 +32,14 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 4000,
-        HOST: 'jeffreysanford.us',
+        HOST: '0.0.0.0',  // FIXED: Bind to all interfaces for server access
         LOG_LEVEL: 'info',
       },
       error_file: './logs/craft-go/error.log',
       out_file: './logs/craft-go/out.log',
       merge_logs: true,
       time: true,
-      max_memory_restart: '1G',
+      max_memory_restart: '100M',  // FIXED: Appropriate limit for 2GB VPS
       autorestart: true,
       min_uptime: '10s',
       max_restarts: 10,
