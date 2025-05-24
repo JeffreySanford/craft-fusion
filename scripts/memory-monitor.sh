@@ -1,5 +1,5 @@
 #!/bin/bash
-# memory-monitor.sh - Real-time memory monitoring during deployment
+# memory-monitor.sh - Real-time memory and network monitoring during deployment
 
 # Colors
 GREEN='\033[0;32m'
@@ -8,12 +8,91 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 PURPLE='\033[0;35m'
+WHITE='\033[1;37m'
 BOLD='\033[1m'
 NC='\033[0m'
+
+# Network monitoring variables
+LAST_RX_BYTES=0
+LAST_TX_BYTES=0
+LAST_CHECK_TIME=0
 
 # Progress bar
 PROGRESS_CHAR="█"
 EMPTY_CHAR="░"
+
+# Network functions
+get_network_interface() {
+    # Get the main network interface (usually eth0, ens3, or similar for VPS)
+    ip route | grep default | awk '{print $5}' | head -1
+}
+
+get_network_stats() {
+    local interface=$1
+    if [ -f "/sys/class/net/$interface/statistics/rx_bytes" ]; then
+        local rx_bytes=$(cat /sys/class/net/$interface/statistics/rx_bytes)
+        local tx_bytes=$(cat /sys/class/net/$interface/statistics/tx_bytes)
+        echo "$rx_bytes $tx_bytes"
+    else
+        echo "0 0"
+    fi
+}
+
+format_bytes() {
+    local bytes=$1
+    if [ $bytes -lt 1024 ]; then
+        echo "${bytes}B"
+    elif [ $bytes -lt 1048576 ]; then
+        echo "$((bytes/1024))KB"
+    elif [ $bytes -lt 1073741824 ]; then
+        echo "$((bytes/1048576))MB"
+    else
+        echo "$((bytes/1073741824))GB"
+    fi
+}
+
+check_network_connectivity() {
+    # Check multiple endpoints for reliability
+    local endpoints=("8.8.8.8" "1.1.1.1" "github.com")
+    local success=0
+    local latency_sum=0
+    
+    for endpoint in "${endpoints[@]}"; do
+        if ping -c 1 -W 2 "$endpoint" >/dev/null 2>&1; then
+            local latency=$(ping -c 1 -W 2 "$endpoint" 2>/dev/null | grep 'time=' | sed 's/.*time=\([0-9.]*\).*/\1/')
+            if [ -n "$latency" ]; then
+                latency_sum=$(echo "$latency_sum + $latency" | bc 2>/dev/null || echo "$latency_sum")
+                success=$((success + 1))
+            fi
+        fi
+    done
+    
+    echo "$success $latency_sum"
+}
+
+check_deployment_endpoints() {
+    local endpoints=("localhost:3000" "localhost:4000")
+    local api_status=""
+    
+    for endpoint in "${endpoints[@]}"; do
+        if curl -s --max-time 2 "http://$endpoint/health" >/dev/null 2>&1 || \
+           curl -s --max-time 2 "http://$endpoint" >/dev/null 2>&1; then
+            if [[ "$endpoint" == *":3000"* ]]; then
+                api_status="${api_status}${GREEN}NestJS✓${NC} "
+            else
+                api_status="${api_status}${GREEN}Go✓${NC} "
+            fi
+        else
+            if [[ "$endpoint" == *":3000"* ]]; then
+                api_status="${api_status}${RED}NestJS✗${NC} "
+            else
+                api_status="${api_status}${RED}Go✗${NC} "
+            fi
+        fi
+    done
+    
+    echo "$api_status"
+}
 
 print_memory_bar() {
     local used=$1
@@ -40,7 +119,7 @@ print_memory_bar() {
 while true; do
     clear
     echo -e "${BOLD}${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BOLD}${CYAN}║                  🖥️  MEMORY MONITOR                          ║${NC}"
+    echo -e "${BOLD}${CYAN}║              🖥️  SYSTEM MONITOR v2.0                        ║${NC}"
     echo -e "${BOLD}${CYAN}║                   $(date '+%H:%M:%S')                             ║${NC}"
     echo -e "${BOLD}${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo
@@ -102,6 +181,71 @@ while true; do
     fi
     
     echo
+    echo -e "${BOLD}${WHITE}🌐 Network Connectivity:${NC}"
+    
+    # Get network interface
+    NETWORK_INTERFACE=$(get_network_interface)
+    if [ -n "$NETWORK_INTERFACE" ]; then
+        echo -e "   Interface: ${CYAN}$NETWORK_INTERFACE${NC}"
+        
+        # Check network connectivity and latency
+        connectivity_result=$(check_network_connectivity)
+        success_count=$(echo "$connectivity_result" | awk '{print $1}')
+        total_latency=$(echo "$connectivity_result" | awk '{print $2}')
+        
+        if [ $success_count -eq 3 ]; then
+            avg_latency=$(echo "scale=1; $total_latency / 3" | bc 2>/dev/null || echo "$((${total_latency%.*} / 3))")
+            echo -e "   Status:    ${GREEN}${BOLD}✓ ONLINE${NC} (${avg_latency}ms avg)"
+        elif [ $success_count -gt 0 ]; then
+            avg_latency=$(echo "scale=1; $total_latency / $success_count" | bc 2>/dev/null || echo "$((${total_latency%.*} / $success_count))")
+            echo -e "   Status:    ${YELLOW}${BOLD}⚠️  PARTIAL${NC} ($success_count/3, ${avg_latency}ms)"
+        else
+            echo -e "   Status:    ${RED}${BOLD}✗ OFFLINE${NC}"
+        fi
+        
+        # Get current network stats
+        current_stats=$(get_network_stats "$NETWORK_INTERFACE")
+        current_rx=$(echo "$current_stats" | awk '{print $1}')
+        current_tx=$(echo "$current_stats" | awk '{print $2}')
+        current_time=$(date +%s)
+        
+        # Calculate network speed if we have previous data
+        if [ $LAST_CHECK_TIME -gt 0 ] && [ $current_time -gt $LAST_CHECK_TIME ]; then
+            time_diff=$((current_time - LAST_CHECK_TIME))
+            rx_diff=$((current_rx - LAST_RX_BYTES))
+            tx_diff=$((current_tx - LAST_TX_BYTES))
+            
+            if [ $time_diff -gt 0 ]; then
+                rx_speed=$((rx_diff / time_diff))
+                tx_speed=$((tx_diff / time_diff))
+                
+                echo -e "   Traffic:   ${GREEN}↓$(format_bytes $rx_speed)/s${NC} ${YELLOW}↑$(format_bytes $tx_speed)/s${NC}"
+            fi
+        fi
+        
+        # Update last values
+        LAST_RX_BYTES=$current_rx
+        LAST_TX_BYTES=$current_tx
+        LAST_CHECK_TIME=$current_time
+        
+        # Show total data transfer
+        echo -e "   Total RX:  ${CYAN}$(format_bytes $current_rx)${NC}"
+        echo -e "   Total TX:  ${CYAN}$(format_bytes $current_tx)${NC}"
+        
+    else
+        echo -e "   ${RED}✗ No network interface detected${NC}"
+    fi
+    
+    echo
+    echo -e "${BOLD}${PURPLE}🎯 API Endpoints:${NC}"
+    api_status=$(check_deployment_endpoints)
+    if [ -n "$api_status" ]; then
+        echo -e "   Services:  $api_status"
+    else
+        echo -e "   ${YELLOW}⚪ No APIs responding${NC}"
+    fi
+    
+    echo
     echo -e "${BOLD}${GREEN}🔄 Top Memory Consumers:${NC}"
     ps aux --sort=-%mem | head -6 | tail -5 | while read line; do
         user=$(echo $line | awk '{print $1}')
@@ -131,22 +275,73 @@ while true; do
     fi
     
     echo
-    echo -e "${BOLD}${CYAN}📈 Memory Pressure Indicators:${NC}"
+    echo -e "${BOLD}${WHITE}🌍 Network Conditions:${NC}"
     
-    # Check memory pressure
-    if [ $mem_available -lt 200 ]; then
-        echo -e "   ${RED}🔥 HIGH PRESSURE - System may slow down${NC}"
-    elif [ $mem_available -lt 500 ]; then
-        echo -e "   ${YELLOW}⚠️  MODERATE PRESSURE - Monitor closely${NC}"
+    # Network condition analysis
+    if [ $success_count -eq 3 ] && [ -n "$avg_latency" ] && [ "$avg_latency" != "N/A" ]; then
+        latency_num=$(echo "$avg_latency" | cut -d'.' -f1 2>/dev/null || echo "$avg_latency")
+        if [ "$latency_num" -lt 50 ] 2>/dev/null; then
+            echo -e "   Quality:   ${GREEN}${BOLD}🚀 EXCELLENT${NC} - Low latency"
+        elif [ "$latency_num" -lt 100 ] 2>/dev/null; then
+            echo -e "   Quality:   ${GREEN}${BOLD}✓ GOOD${NC} - Normal latency"
+        elif [ "$latency_num" -lt 200 ] 2>/dev/null; then
+            echo -e "   Quality:   ${YELLOW}${BOLD}⚠️  FAIR${NC} - Moderate latency"
+        else
+            echo -e "   Quality:   ${RED}${BOLD}⚠️  POOR${NC} - High latency"
+        fi
+    elif [ $success_count -gt 0 ]; then
+        echo -e "   Quality:   ${YELLOW}${BOLD}⚠️  UNSTABLE${NC} - Intermittent connectivity"
     else
-        echo -e "   ${GREEN}✅ LOW PRESSURE - System performing well${NC}"
+        echo -e "   Quality:   ${RED}${BOLD}✗ NO CONNECTION${NC}"
     fi
     
-    # Check swap activity
-    if [ $swap_used -gt 0 ] && [ $swap_used -lt 100 ]; then
-        echo -e "   ${CYAN}💭 Light swap usage - Normal for large builds${NC}"
-    elif [ $swap_used -gt 100 ]; then
-        echo -e "   ${YELLOW}💽 Heavy swap usage - Build may be slower${NC}"
+    # Check current network activity level
+    if [ $LAST_CHECK_TIME -gt 0 ] && [ -n "$rx_speed" ] && [ -n "$tx_speed" ]; then
+        total_speed=$((rx_speed + tx_speed))
+        if [ $total_speed -gt 1048576 ]; then  # > 1MB/s
+            echo -e "   Activity:  ${GREEN}${BOLD}🔥 HIGH${NC} - Heavy data transfer"
+        elif [ $total_speed -gt 102400 ]; then  # > 100KB/s
+            echo -e "   Activity:  ${CYAN}${BOLD}📊 MODERATE${NC} - Active transfer"
+        elif [ $total_speed -gt 1024 ]; then   # > 1KB/s
+            echo -e "   Activity:  ${YELLOW}${BOLD}💭 LOW${NC} - Light activity"
+        else
+            echo -e "   Activity:  ${WHITE}${BOLD}⚪ IDLE${NC} - Minimal traffic"
+        fi
+    else
+        echo -e "   Activity:  ${WHITE}${BOLD}⏳ MEASURING${NC} - Collecting data..."
+    fi
+    
+    echo
+    echo -e "${BOLD}${CYAN}📈 System Health Summary:${NC}"
+    
+    echo
+    echo -e "${BOLD}${CYAN}📈 System Health Summary:${NC}"
+    
+    # Memory pressure
+    if [ $mem_available -lt 200 ]; then
+        echo -e "   Memory:    ${RED}🔥 HIGH PRESSURE - System may slow down${NC}"
+    elif [ $mem_available -lt 500 ]; then
+        echo -e "   Memory:    ${YELLOW}⚠️  MODERATE PRESSURE - Monitor closely${NC}"
+    else
+        echo -e "   Memory:    ${GREEN}✅ LOW PRESSURE - System performing well${NC}"
+    fi
+    
+    # Swap activity
+    if [ $swap_used -gt 100 ]; then
+        echo -e "   Swap:      ${YELLOW}💽 Heavy usage - Build may be slower${NC}"
+    elif [ $swap_used -gt 0 ]; then
+        echo -e "   Swap:      ${CYAN}💭 Light usage - Normal for large builds${NC}"
+    else
+        echo -e "   Swap:      ${GREEN}✓ No usage - Memory sufficient${NC}"
+    fi
+    
+    # Network status
+    if [ $success_count -eq 3 ]; then
+        echo -e "   Network:   ${GREEN}✓ Stable connection - Deployments OK${NC}"
+    elif [ $success_count -gt 0 ]; then
+        echo -e "   Network:   ${YELLOW}⚠️  Unstable - Watch deployment progress${NC}"
+    else
+        echo -e "   Network:   ${RED}✗ No connection - Deployments will fail${NC}"
     fi
     
     echo
