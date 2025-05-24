@@ -1,6 +1,9 @@
+<!-- filepath: c:\repos\craft-fusion\documentation\services\UTILITY-SERVICES.md -->
 # Utility Services
 
-This document describes various utility services providing common functionalities within the application.
+## Overview
+
+This document describes various utility services providing common functionalities within the application. This is the canonical documentation for utility services. If you find duplicate or outdated utility service docs elsewhere, please update or remove them.
 
 ## File Handling Services
 

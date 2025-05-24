@@ -1,6 +1,9 @@
+<!-- filepath: c:\repos\craft-fusion\documentation\services\third-party-services.md -->
 # Third-Party Service Integrations
 
-This document outlines services responsible for interacting with external APIs and libraries.
+## Overview
+
+This document outlines services responsible for interacting with external APIs and libraries. This is the canonical documentation for third-party integrations. If you find duplicate or outdated third-party service docs elsewhere, please update or remove them.
 
 ## Financial Data
 
@@ -42,35 +45,7 @@ This document outlines services responsible for interacting with external APIs a
 
 (`c:\repos\craft-fusion\apps\craft-web\src\app\common\services\openskies.service.ts`)
 
-*   **Purpose:** Fetches flight and airport data, likely from the OpenSky Network via a backend proxy.
-*   **Integration:** Interacts with a custom backend proxy (`/openskies` endpoint, hardcoded base URL `http://localhost:3000`). Uses `HttpClient` directly.
-*   **Methods:** `fetchFlightData`, `fetchAirportData`, `fetchFlightDataByAirline`, `fetchFlightDataByAircraft`.
-
-## Mapping
-
-### MapboxService
-
-(`c:\repos\craft-fusion\apps\craft-web\src\app\common\services\mapbox.service.ts`)
-
-*   **Purpose:** Integrates with Mapbox GL JS for displaying maps.
-*   **Integration:** Uses the `mapbox-gl` library and an access token from environment variables (`environment.mapbox.accessToken`).
-*   **Methods:** `initializeMap`, `addMarker` (with popup), `addPolyline` (removes existing layer/source first), `resizeMap`, `destroyMap` (removes map instance).
-
-## AI / Language Models
-
-### OpenAIService
-
-(`c:\repos\craft-fusion\apps\craft-web\src\app\common\services\openai.service.ts`)
-
-*   **Purpose:** Sends prompts to an OpenAI model (specifically configured for `v1/engines/davinci-codex/completions`).
-*   **Integration:** Directly calls the OpenAI API (`api.openai.com`). Uses `HttpClient`.
-*   **Configuration:** Requires an API key (`apiKey` - currently hardcoded placeholder `YOUR_OPENAI_API_KEY`).
-*   **Method:** `sendMessage`. Extracts text from the first choice in the response. Includes basic error handling.
-
-### DeepSeekService
-
-(`c:\repos\craft-fusion\apps\craft-web\src\app\common\services\deepseek-local.service.ts`)
-
-*   **Purpose:** Sends prompts to a locally running DeepSeek model via its API.
-*   **Integration:** Makes POST requests to a configurable API URL passed into `sendMessage`. Uses `HttpClient`. Configured for model `deepseek-r1:1.5b`.
-*   **Method:** `sendMessage`. Handles chunked/streamed JSON responses (splits by newline, parses each JSON, joins `response` fields). Includes basic error handling.
+*   **Purpose:** Fetches flight and airport data.
+*   **Integration:** Uses the OpenSkies API with an API key from environment variables.
+*   **Methods:** `getFlights`, `getAirports`.
+*   **Error Handling:** Standard error handling and logging.

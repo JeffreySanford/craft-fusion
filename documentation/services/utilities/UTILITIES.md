@@ -1,6 +1,7 @@
-# Utility Services
+<!-- filepath: c:\repos\craft-fusion\documentation\UTILITIES.md -->
+# Utility Services (Deprecated)
 
-This document describes various utility services providing common functionalities within the application.
+> **Note:** This file is deprecated. Please refer to [services/UTILITY-SERVICES.md](services/UTILITY-SERVICES.md) for the canonical and up-to-date documentation of utility services in Craft Fusion.
 
 ## File Handling
 

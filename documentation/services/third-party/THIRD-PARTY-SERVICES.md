@@ -1,6 +1,7 @@
-# Third-Party Service Integrations
+<!-- filepath: c:\repos\craft-fusion\documentation\THIRD-PARTY-SERVICES.md -->
+# Third-Party Service Integrations (Deprecated)
 
-This document outlines services responsible for interacting with external APIs and libraries.
+> **Note:** This file is deprecated. Please refer to [services/third-party-services.md](services/third-party-services.md) for the canonical and up-to-date documentation of third-party integrations in Craft Fusion.
 
 ## Financial Data
 

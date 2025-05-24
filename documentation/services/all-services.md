@@ -1,6 +1,7 @@
-# Craft Fusion Services Overview
+<!-- filepath: c:\repos\craft-fusion\documentation\services\all-services.md -->
+# Craft Fusion Services Overview (Deprecated)
 
-This document provides a comprehensive overview of all services in the Craft Fusion project, organized by category.
+> **Note:** This file is deprecated. Please refer to [../../ALL-SERVICES.md](../../ALL-SERVICES.md) for the canonical and up-to-date list of all services in the Craft Fusion project.
 
 ## Core Services
 

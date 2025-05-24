@@ -209,6 +209,7 @@ clear_to_end() {
 init_screen() {
     clear
     hide_cursor
+    START_TIME=$(date +%s)
     echo -e "${BOLD}${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
     echo -e "${BOLD}${CYAN}║              🖥️  SYSTEM MONITOR v2.1                        ║${NC}"
     echo -e "${BOLD}${CYAN}║                   LIVE UPDATING                             ║${NC}"
@@ -246,12 +247,29 @@ check_server_status() {
     printf "   %s: %b%s%b\n" "$name" "$color" "$status" "$NC"
 }
 
+init_screen
+START_TIME=$(date +%s)
+
 while true; do
     move_cursor_home
     clear_to_end
+    now_time=$(date '+%H:%M:%S')
+    current_time=$(date +%s)
+    elapsed=$((current_time - START_TIME))
+    elapsed_h=$((elapsed / 3600))
+    elapsed_m=$(((elapsed % 3600) / 60))
+    elapsed_s=$((elapsed % 60))
+    elapsed_fmt=$(printf "%02d:%02d:%02d" $elapsed_h $elapsed_m $elapsed_s)
+    header_line="║              🖥️  SYSTEM MONITOR v2.1"
+    time_str="${now_time}"
+    elapsed_str="Elapsed: ${elapsed_fmt}"
+    # Calculate padding for right alignment (60 chars wide box)
+    pad_len=$((60 - ${#header_line} - 2 - ${#time_str} - 2 - ${#elapsed_str}))
+    pad=""
+    for ((i=0; i<pad_len; i++)); do pad+=" "; done
     echo -e "${BOLD}${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BOLD}${CYAN}║              🖥️  SYSTEM MONITOR v2.0                        ║${NC}"
-    echo -e "${BOLD}${CYAN}║                   $(date '+%H:%M:%S')                             ║${NC}"
+    echo -e "${BOLD}${CYAN}${header_line}${pad}${time_str}  ${elapsed_str} ║${NC}"
+    echo -e "${BOLD}${CYAN}║                   LIVE UPDATING                             ║${NC}"
     echo -e "${BOLD}${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo
     
@@ -483,5 +501,5 @@ while true; do
     echo
     echo -e "${CYAN}Press Ctrl+C to exit monitor${NC}"
     
-    sleep 2
+    sleep 30
 done

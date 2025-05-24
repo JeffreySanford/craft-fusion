@@ -1,4 +1,3 @@
-```markdown
 # API Integration Services
 
 This document provides detailed information about the services responsible for handling API communication in the Craft Fusion applications.
@@ -145,4 +144,3 @@ export const environment = {
 * [CacheService](./services/cache-service.md) - Provides caching capabilities for API responses
 * [SyncService](./services/sync-service.md) - Handles offline data synchronization
 * [MockApiService](./services/mock-api-service.md) - Used for development and testing
-```
