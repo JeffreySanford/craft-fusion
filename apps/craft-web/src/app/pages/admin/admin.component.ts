@@ -159,7 +159,7 @@ export class AdminComponent implements OnInit {
   // Add navigator property for template access
   navigator = window.navigator;
 
-  selectedMetrics: string[] = [];
+  selectedMetrics: string[] = ['memory', 'cpu', 'network'];
 
   // Add a property to track selected API call
   selectedApiCall: ServiceCallMetric | null = null;
@@ -2033,8 +2033,7 @@ export class AdminComponent implements OnInit {
     }, 0);
   }
 
-  // Get total hit count across all endpoints
-  getTotalHitCount(): number {
+  // Get total hit count across all endpoints  getTotalHitCount(): number {
     return Object.values(this.endpointLogs).reduce((total, endpoint) => {
       return total + (endpoint.hitCount || 0);
     }, 0);

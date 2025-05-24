@@ -129,6 +129,43 @@
               </mat-card-content>
             </mat-card>
           </div>
+
+          <!-- Additional System Information Card -->
+          <div class="system-info additional-system-info">
+            <mat-card>
+              <mat-card-header>
+                <div mat-card-avatar class="system-header-image">
+                  <mat-icon>info</mat-icon>
+                </div>
+                <mat-card-title>System Information</mat-card-title>
+                <mat-card-subtitle>Hardware & Software Details</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="info-row">
+                  <span class="info-label">OS Platform:</span>
+                  <span class="info-value">{{navigator.platform}}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Browser:</span>
+                  <span class="info-value">{{navigator.userAgent}}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">CPU Cores:</span>
+                  <span class="info-value">{{navigator.hardwareConcurrency}}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Language:</span>
+                  <span class="info-value">{{navigator.language}}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Online Status:</span>
+                  <span class="info-value" [ngClass]="navigator.onLine ? 'status-online' : 'status-offline'">
+                    {{navigator.onLine ? 'Connected' : 'Disconnected'}}
+                  </span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
         </div>
       </div>
     </mat-tab>
