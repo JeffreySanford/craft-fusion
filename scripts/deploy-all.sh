@@ -49,12 +49,18 @@ rm -rf .nx/cache/
 rm -rf /tmp/nx-cache/ 2>/dev/null || true
 
 ./scripts/clean-build.sh
-if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✓ Previous builds cleaned successfully${NC}"
-else
-    echo -e "${RED}✗ Failed to clean previous builds${NC}"
-    exit 1
+CLEAN_STATUS=$?
+if [ $CLEAN_STATUS -ne 0 ]; then
+    echo -e "${YELLOW}⚠ clean-build.sh failed, retrying once...${NC}"
+    ./scripts/clean-build.sh
+    CLEAN_STATUS=$?
+    if [ $CLEAN_STATUS -ne 0 ]; then
+        echo -e "${RED}✗ clean-build.sh failed twice, aborting deployment.${NC}"
+        exit 1
+    fi
 fi
+
+echo -e "${GREEN}✓ Previous builds cleaned successfully${NC}"
 
 # Clear memory before dependency installation
 echo -e "${BLUE}Clearing memory and installing dependencies...${NC}"
