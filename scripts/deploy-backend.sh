@@ -98,7 +98,7 @@ fi
 
 # Verify Go binary is for Linux
 GO_BINARY_TYPE=$(file dist/apps/craft-go/main)
-if [[ "$GO_BINARY_TYPE" == *"Linux"* ]]; then
+if [[ "$GO_BINARY_TYPE" == *"ELF 64-bit LSB executable"* && "$GO_BINARY_TYPE" == *"x86-64"* ]]; then
     echo -e "${GREEN}✓ Go binary is Linux executable${NC}"
 else
     echo -e "${RED}✗ Go binary is not Linux executable: $GO_BINARY_TYPE${NC}"
