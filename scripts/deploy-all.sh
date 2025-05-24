@@ -21,6 +21,43 @@ cd "$PROJECT_ROOT"
 # Ensure scripts are executable
 chmod +x scripts/*.sh
 
+# clean the NX repository
+rm -rf node_modules/.cache/nx
+echo -e "${BLUE}Cleaning previous builds...${NC}"
+./scripts/clean-build.sh
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ Previous builds cleaned successfully${NC}"
+else
+    echo -e "${RED}✗ Failed to clean previous builds${NC}"
+    exit 1
+fi
+
+rm -rf node_modules && npm cache clear --force
+echo -e "${BLUE}Cleaning node_modules and npm cache...${NC}"
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ node_modules and npm cache cleaned successfully${NC}"
+else
+    echo -e "${RED}✗ Failed to clean node_modules or npm cache${NC}"
+    exit 1
+fi
+
+
+echo -e "${BLUE}=== Phase 0: Dependencies Setup ===${NC}"
+echo -e "${BLUE}Installing/updating dependencies...${NC}"
+npm install --no-optional --no-audit --prefer-offline --progress=false
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✓ Dependencies installed successfully${NC}"
+else
+    echo -e "${YELLOW}⚠ First npm install failed, trying with reduced concurrency...${NC}"
+    npm install --maxsockets 1 --no-optional --no-audit --prefer-offline --progress=false
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✓ Dependencies installed (retry)${NC}"
+    else
+        echo -e "${RED}✗ Dependencies installation failed${NC}"
+        exit 1
+    fi
+fi
+
 echo -e "${BLUE}=== Phase 1: Backend Deployment ===${NC}"
 ./scripts/deploy-backend.sh
 
