@@ -26,8 +26,11 @@ else
 fi
 
 echo -e "${BLUE}2. Cleaning previous builds...${NC}"
+# Clean individual app dist directories for more targeted cleanup
+rm -rf dist/apps/craft-web/
+# Also clean root dist if it exists
 rm -rf dist/
-echo -e "${GREEN}✓ Build directory cleaned${NC}"
+echo -e "${GREEN}✓ Build directories cleaned${NC}"
 
 echo -e "${BLUE}3. Building Angular application...${NC}"
 npx nx run craft-web:build --configuration=production
@@ -59,7 +62,7 @@ sudo cp -r dist/apps/craft-web/* "$WEB_ROOT"/
 echo -e "${GREEN}✓ Files copied to $WEB_ROOT${NC}"
 
 echo -e "${BLUE}6. Setting permissions...${NC}"
-sudo chown -R www-data:www-data "$WEB_ROOT"/
+sudo chown -R nginx:nginx "$WEB_ROOT"/
 sudo chmod -R 755 "$WEB_ROOT"/
 echo -e "${GREEN}✓ Permissions set${NC}"
 
