@@ -79,12 +79,12 @@ fi
 
 echo -e "${BLUE}=== Phase 0: Dependencies Setup (Memory Optimized) ===${NC}"
 echo -e "${BLUE}Installing dependencies with memory constraints...${NC}"
-npm install --no-optional --no-audit --prefer-offline --progress=false --maxsockets=1
+npm install --omit=optional --no-audit --prefer-offline --progress=false --maxsockets=1
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Dependencies installed successfully${NC}"
 else
     echo -e "${YELLOW}⚠ First npm install failed, trying with reduced concurrency...${NC}"
-    npm install --maxsockets 1 --no-optional --no-audit --prefer-offline --progress=false
+    npm install --maxsockets 1 --omit=optional --no-audit --prefer-offline --progress=false
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}✓ Dependencies installed (retry)${NC}"
     else
