@@ -104,6 +104,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private socketClient: SocketClientService
   ) {
+    console.log('DataVisualizationsComponent instantiated');
     // Register icons - this ensures Material icons are available
     this.registerIcons();
     
@@ -127,21 +128,21 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
           this.displayedCharts[displayedFinanceIndex].data = this.fintechChartData;
         }
         
-        this.cdr.detectChanges();
+        setTimeout(() => this.cdr.detectChanges());
       });
 
     // Listen for real-time updates
     this.socketClient.on<any>('yahoo:data').subscribe(data => {
       // Update chart data in real-time
       this.fintechChartData = data;
-      this.cdr.detectChanges();
+      setTimeout(() => this.cdr.detectChanges());
     });
 
     // Subscribe to sidebar state changes
     this.sidebarSubscription = this.sidebarStateService.isCollapsed$.subscribe(
       isCollapsed => {
         this.isSidebarCollapsed = isCollapsed;
-        this.cdr.detectChanges();
+        setTimeout(() => this.cdr.detectChanges());
       }
     );
   }
@@ -149,7 +150,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       this.isMobile = result.matches;
-      this.cdr.detectChanges();
+      setTimeout(() => this.cdr.detectChanges());
     });
 
     // Setup resize observer to track container dimensions
@@ -372,11 +373,6 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     // Sort charts by size to optimize layout (large first, then medium, then small)
     this.optimizeChartLayout();
     
-    this.cdr.detectChanges();
-    
-    console.log('Current layout:', this.displayedCharts.map(c => `${c.name} (${c.size})`));
-    
-    // Ensure proper rendering with slight delay to allow DOM updates
     setTimeout(() => {
       this.resizeCharts();
     }, 150);
@@ -407,7 +403,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
         
         // Force a complete refresh of the layout
         this.optimizeChartLayout();
-        this.cdr.detectChanges();
+        setTimeout(() => this.cdr.detectChanges());
         
         console.log('After removal - checking space again');
         // Log current state for debugging
@@ -457,9 +453,6 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     
     // Optimize layout after adding
     this.optimizeChartLayout();
-    this.cdr.detectChanges();
-    
-    // Resize charts
     setTimeout(() => {
       this.resizeCharts();
     }, 150);
@@ -480,7 +473,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     if (index !== -1) {
       console.log(`Removing tile: ${chart.name}, index: ${index}`);
       this.displayedCharts.splice(index, 1);
-      this.cdr.detectChanges();
+      setTimeout(() => this.cdr.detectChanges());
       
       // Optionally skip resize for bulk operations
       if (triggerResize) {
@@ -505,7 +498,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
 
   drop(event: CdkDragDrop<ExtendedChartData[]>) {
     moveItemInArray(this.displayedCharts, event.previousIndex, event.currentIndex);
-    this.cdr.detectChanges();
+    setTimeout(() => this.cdr.detectChanges());
     
     // Resize charts after reordering
     setTimeout(() => {
@@ -650,7 +643,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
 
   toggleVisualizationSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
-    this.cdr.detectChanges();
+    setTimeout(() => this.cdr.detectChanges());
     
     // Ensure proper rendering
     setTimeout(() => {

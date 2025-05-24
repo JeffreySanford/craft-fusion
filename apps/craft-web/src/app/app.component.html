@@ -8,9 +8,7 @@
       <main class="main-stage" [class.footer-expanded]="isFooterExpanded">
         <div class="router-content-wrapper">
           <!-- Main router outlet -->
-          <ng-container *ngIf="true">
-            <router-outlet></router-outlet>
-          </ng-container>
+          <router-outlet (activate)="onRouterActivate($event)" (deactivate)="onRouterDeactivate($event)"></router-outlet>
         </div>
       </main>
     </div>

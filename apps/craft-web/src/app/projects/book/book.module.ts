@@ -24,9 +24,7 @@ import { EditorModule } from '@tinymce/tinymce-angular';
   imports: [
     CommonModule,
     FormsModule,
-    RouterModule.forChild([
-      { path: '', component: BookComponent }
-    ]),
+    RouterModule.forChild([{ path: '', component: BookComponent }]),
     // Angular Material modules
     MatButtonModule,
     MatIconModule,

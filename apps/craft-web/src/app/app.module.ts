@@ -9,9 +9,6 @@ import { AppComponent } from './app.component';
 import { appRoutes } from './app.routes';
 import { MaterialModule } from './material.module';
 import { ComponentsModule } from './common/components/components.module';
-import { LandingModule } from './pages/landing/landing.module';
-import { AdminModule } from './pages/admin/admin.module';
-import { PeasantKitchenModule } from './projects/peasant-kitchen/peasant-kitchen.module';
 import { HeaderModule } from './pages/header/header.module';
 import { SidebarModule } from './pages/sidebar/sidebar.module';
 import { FooterModule } from './pages/footer/footer.module';
@@ -21,7 +18,6 @@ import { SocketClientService } from './common/services/socket-client.service';
 
 // Import shared types from craft-library
 import { HealthData } from '@craft-fusion/craft-library';
-import { ProjectsModule } from './projects/projects.module';
 
 export function socketClientFactory(socketClient: SocketClientService): () => void {
   return () => {
@@ -55,13 +51,13 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
     CommonModule,
     FormsModule,
     HttpClientModule,
-    RouterModule.forRoot(appRoutes, { initialNavigation: 'enabledBlocking' }),
+    RouterModule.forRoot(appRoutes, {
+      scrollPositionRestoration: 'enabled', // Restore scroll position on navigation
+      anchorScrolling: 'enabled', // Enable anchor scrolling
+      onSameUrlNavigation: 'reload' // Reload the component on same URL navigation
+    }),
     MaterialModule,
-    ProjectsModule,
     ComponentsModule, // Import ComponentsModule which exports ServerStatusComponent
-    LandingModule,
-    AdminModule,
-    PeasantKitchenModule,
     HeaderModule,
     SidebarModule,
     FooterModule,
@@ -70,6 +66,9 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
   providers: [
     provideAppInitializer(() => {
       const router = inject(Router);
+      router.events.subscribe(event => {
+        console.log('Router event:', event);
+      });
       const logger = inject(LoggerService);
       
       // Register the Router with the logger, return a hot observable that emits the router instance

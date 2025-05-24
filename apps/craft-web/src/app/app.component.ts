@@ -60,6 +60,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {
     // Replace direct console logs with logger calls
     this.logger.info('App component initialized', { appVersion: '1.0.0' });
+    console.log('debug-router: AppComponent instantiated');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -93,6 +94,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    console.log('debug-router: AppComponent ngOnInit');
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
       this.isSmallScreen = result.matches;
       this.isCollapsed = this.isSmallScreen;
@@ -136,6 +138,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
+    console.log('debug-router: AppComponent ngAfterViewInit');
     this.logger.info('App component view initialized');
 
     // Set a small timeout before handling video to prevent blocking the main thread
@@ -301,5 +304,19 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // For now, just log a message to avoid the error
     this.logger.info('App component initialized');
+  }
+
+  onRouterActivate(event: any) {
+    console.log('debug-router: router-outlet activated', event);
+    const fallback = document.getElementById('debug-router-fallback');
+    if (fallback) fallback.style.display = 'none';
+  }
+
+  onRouterDeactivate(event: any) {
+    console.log('debug-router: router-outlet deactivated', event);
+    setTimeout(() => {
+      const fallback = document.getElementById('debug-router-fallback');
+      if (fallback) fallback.style.display = 'block';
+    }, 100);
   }
 }

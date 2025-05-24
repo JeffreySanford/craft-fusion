@@ -164,9 +164,12 @@ export class BookComponent implements OnInit, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private http: HttpClient,
     private logger: LoggerService
-  ) { }
+  ) {
+    console.log('BookComponent instantiated');
+  }
 
   ngOnInit(): void {
+    debugger;
     this.init.readonly = this.isReadOnly;
     this.loadFilesFromAssets();
     this.applyTheme(); // Apply the default theme
