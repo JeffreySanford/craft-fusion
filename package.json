@@ -139,7 +139,6 @@
     "@types/mapbox-gl": "^3.4.1",
     "@types/markdown-it": "^14.1.2",
     "@types/markdown-it-container": "^2.0.10",
-    "@types/multer": "^1.4.12",
     "@types/node": "^18.19.100",
     "@types/showdown": "^2.0.6",
     "@types/socket.io-client": "^1.4.36",
