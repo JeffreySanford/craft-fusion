@@ -13,7 +13,18 @@
     "pm2:restart": "pm2 restart all",
     "pm2:logs": "pm2 logs",
     "pm2:monitor": "pm2 monit",
-    "pm2:build": "npx nx build craft-nest --configuration=production && npx nx build craft-go"
+    "pm2:build": "npx nx build craft-nest --configuration=production && npx nx build craft-go",
+    "test:backends": "bash ./scripts/test-backends.sh",
+    "test:apis": "npm run test:backends",
+    "deploy:frontend": "bash ./scripts/deploy-frontend.sh",
+    "build:prod": "rm -rf dist && npx nx run craft-web:build --configuration=production",
+    "test:frontend": "curl -I http://jeffreysanford.us && curl -I http://jeffreysanford.us/api/health",
+    "nginx:test": "bash ./scripts/nginx-test.sh",
+    "nginx:reload": "sudo nginx -t && sudo nginx -s reload",
+    "nginx:restart": "sudo systemctl restart nginx",
+    "nginx:status": "sudo systemctl status nginx",
+    "nginx:logs": "sudo tail -f /var/log/nginx/access.log",
+    "deploy:full": "npm run pm2:build && npm run deploy:frontend && npm run pm2:restart"
   },
   "dependencies": {
     "@angular/animations": "^19.1.0",
