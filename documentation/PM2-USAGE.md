@@ -1,41 +1,13 @@
 # PM2 Usage Guide
 
-This document explains how to use PM2 with the enhanced `ecosystem.config.js` configuration for both development and production environments.
+This document explains how to use PM2 with the production-focused `ecosystem.config.js` configuration.
 
 ## Overview
 
-The ecosystem configuration now supports both development and production workflows:
-
-- **Development**: Uses Nx serve commands with hot reload and file watching
-- **Production**: Uses built artifacts with clustering and optimizations
-
-## Development Usage
-
-### Start all services in development mode:
-```bash
-npm run pm2:dev
-```
-
-This will start:
-- `craft-nest-api`: NestJS API with hot reload
-- `craft-go-api`: Go API with file watching  
-- `craft-web-dev`: Angular frontend with live reload
-
-### Monitor services:
-```bash
-npm run pm2:dev:logs     # View logs from all services
-npm run pm2:dev:monitor  # Interactive monitoring dashboard
-```
-
-### Stop services:
-```bash
-npm run pm2:dev:stop
-```
-
-### Restart services:
-```bash
-npm run pm2:dev:restart
-```
+The ecosystem configuration is optimized for production deployment with:
+- **craft-nest-api**: Clustered NestJS API on port 3000
+- **craft-go-api**: Go API service on port 4000
+- Both services configured for `jeffreysanford.us` host
 
 ## Production Usage
 
@@ -44,23 +16,25 @@ npm run pm2:dev:restart
 npm run pm2:build
 ```
 
-### Start in production mode:
+### Start services:
 ```bash
-npm run pm2:prod
+npm run pm2:start
 ```
 
-This will start:
-- `craft-nest-api`: Clustered NestJS API from built files
-- `craft-go-api`: Go binary with production settings
-
-### Stop production services:
+### Monitor services:
 ```bash
-npm run pm2:prod:stop
+npm run pm2:logs     # View logs from all services
+npm run pm2:monitor  # Interactive monitoring dashboard
 ```
 
-### Restart production services:
+### Stop services:
 ```bash
-npm run pm2:prod:restart
+npm run pm2:stop
+```
+
+### Restart services:
+```bash
+npm run pm2:restart
 ```
 
 ## Direct PM2 Commands
@@ -68,45 +42,66 @@ npm run pm2:prod:restart
 You can also use PM2 directly:
 
 ```bash
-# Development
-NODE_ENV=development pm2 start ecosystem.config.js
-pm2 logs craft-nest-api
-pm2 restart craft-nest-api
+# Start services
+pm2 start ecosystem.config.js
 
-# Production  
-NODE_ENV=production pm2 start ecosystem.config.js --env production
-pm2 save  # Save PM2 configuration
-pm2 startup  # Auto-start on system boot
+# Monitor specific service
+pm2 logs craft-nest-api
+pm2 logs craft-go-api
+
+# Restart specific service
+pm2 restart craft-nest-api
+pm2 restart craft-go-api
+
+# Save configuration
+pm2 save
+
+# Auto-start on system boot
+pm2 startup
 ```
 
 ## Key Features
 
-### Development Mode Features:
-- **Hot Reload**: Files are watched and services restart automatically
-- **Source Maps**: Better debugging with source map support
-- **Nx Integration**: Uses Nx serve commands for optimal development experience
-- **Frontend Included**: Angular app runs alongside APIs
-
-### Production Mode Features:
-- **Clustering**: NestJS runs in cluster mode for better performance
-- **Optimized Builds**: Uses production-optimized builds
-- **Process Management**: Better memory limits and restart policies
-- **Deployment Ready**: Includes deployment configuration
-
-### Shared Features:
+### Production Optimizations:
+- **Clustering**: NestJS runs in cluster mode for maximum performance
+- **Process Management**: Automatic restarts on memory limits or crashes
 - **Logging**: Structured logging to files with timestamps
-- **Memory Management**: Automatic restart on memory limits
-- **Graceful Shutdown**: Proper process termination
 - **Health Monitoring**: Process monitoring and auto-restart
+- **Graceful Shutdown**: Proper process termination with timeouts
+
+### Service Configuration:
+- **craft-nest-api**: 
+  - Port 3000 on jeffreysanford.us
+  - Cluster mode with max instances
+  - 1GB memory limit
+- **craft-go-api**: 
+  - Port 4000 on jeffreysanford.us
+  - Fork mode (single instance)
+  - 1GB memory limit
+
+## Deployment
+
+The configuration includes automated deployment settings:
+
+```bash
+# Deploy to production server
+pm2 deploy production
+```
+
+This will:
+1. Pull latest code from main branch
+2. Install dependencies
+3. Build applications
+4. Reload PM2 services
 
 ## Troubleshooting
 
 ### Common Issues:
 
-1. **Port conflicts**: Make sure ports 3000, 4000, and 4200 are available
-2. **Build failures**: Run `npm run pm2:build` before production mode
+1. **Port conflicts**: Ensure ports 3000 and 4000 are available
+2. **Build failures**: Run `npm run pm2:build` before starting services
 3. **Permission issues**: Ensure log directories exist and are writable
-4. **Go binary**: Make sure Go app builds correctly for your platform
+4. **Go binary**: Verify Go app builds correctly for your platform
 
 ### Useful Commands:
 
@@ -116,18 +111,28 @@ pm2 describe <app-name>  # Detailed process info
 pm2 flush               # Clear all logs
 pm2 reload <app-name>   # Zero-downtime restart
 pm2 delete <app-name>   # Remove process
+pm2 reset <app-name>    # Reset process counters
 ```
 
 ## Environment Variables
 
-The configuration respects these environment variables:
+Services use these production environment variables:
 
-- `NODE_ENV`: Determines development vs production mode
-- `PORT`: Override default ports (3000 for nest, 4000 for go, 4200 for web)
-- `HOST`: Override default hosts
-- `LOG_LEVEL`: Set logging verbosity
+- `NODE_ENV=production`
+- `HOST=jeffreysanford.us`
+- `LOG_LEVEL=info`
+- Ports: 3000 (nest), 4000 (go)
 
-Example:
+## Development Alternative
+
+For development, use the Nx serve commands instead:
+
 ```bash
-NODE_ENV=development PORT=3001 npm run pm2:dev
+npm run start:all  # Start all services in development mode
 ```
+
+This provides:
+- Hot reload
+- Development-optimized builds
+- Source maps
+- Debug logging

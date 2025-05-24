@@ -8,16 +8,12 @@
     "start": "ng serve ",
     "lint": "eslint . --ext .ts,.js,.html && stylelint \"**/*.scss\"",
     "start:all": "npx concurrently \"npx nx run craft-nest:serve\" \"npx nx run craft-web:serve \" \"npx nx run craft-go:serve\"",
-    "pm2:dev": "NODE_ENV=development pm2 start ecosystem.config.js",
-    "pm2:dev:stop": "pm2 stop ecosystem.config.js",
-    "pm2:dev:restart": "pm2 restart ecosystem.config.js",
-    "pm2:dev:logs": "pm2 logs",
-    "pm2:dev:monitor": "pm2 monit",
-    "pm2:prod": "NODE_ENV=production pm2 start ecosystem.config.js --env production",
-    "pm2:prod:stop": "pm2 stop all",
-    "pm2:prod:restart": "pm2 restart all",
-    "pm2:build": "npx nx build craft-nest --configuration=production && npx nx build craft-go",
-    "pm2:build:dev": "npx nx build craft-nest --configuration=development && npx nx build craft-go"
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop all",
+    "pm2:restart": "pm2 restart all",
+    "pm2:logs": "pm2 logs",
+    "pm2:monitor": "pm2 monit",
+    "pm2:build": "npx nx build craft-nest --configuration=production && npx nx build craft-go"
   },
   "dependencies": {
     "@angular/animations": "^19.1.0",
