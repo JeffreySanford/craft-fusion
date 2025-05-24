@@ -1,7 +1,9 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { Record, Company } from '@craft-fusion/craft-library';
 import { MatTableDataSource } from '@angular/material/table';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
+import { ActivatedRoute } from '@angular/router';
+import { RecordService } from '../services/record.service';
 
 @Component({
   selector: 'app-record-detail',
@@ -27,7 +29,7 @@ import { trigger, transition, style, animate, query, stagger } from '@angular/an
     ]),
   ]
 })
-export class RecordDetailComponent implements OnChanges {
+export class RecordDetailComponent implements OnChanges, OnInit {
   @Input() user!: Record;
   @Input() loading = false;
 
@@ -37,6 +39,30 @@ export class RecordDetailComponent implements OnChanges {
 
   // Array for displaying stars based on salary
   wealthIndicator: number[] = [];
+
+  constructor(private route: ActivatedRoute, private recordService: RecordService) {}
+
+  ngOnInit(): void {
+    if (!this.user) {
+      const id = this.route.snapshot.paramMap.get('id');
+      if (id) {
+        this.loading = true;
+        this.recordService.getRecordByUID(id).subscribe({
+          next: (record) => {
+            this.user = record;
+            this.loading = false;
+            this.ngOnChanges({ user: { currentValue: record, previousValue: null, firstChange: true, isFirstChange: () => true } });
+          },
+          error: () => {
+            this.loading = false;
+          }
+        });
+        return;
+      }
+      this.loading = true;
+      return;
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['user'] && this.user) {
@@ -68,9 +94,20 @@ export class RecordDetailComponent implements OnChanges {
   }
   
   public formatPhoneNumber(phoneNumber: string): string {
-    // Format phone numbers like (123) 456-7890
-    if (!phoneNumber || phoneNumber.length < 10) return phoneNumber;
-    
-    return `(${phoneNumber.substring(0, 3)}) ${phoneNumber.substring(3, 6)}-${phoneNumber.substring(6)}`;
+    if (!phoneNumber) return '';
+    // Remove all non-digit characters
+    const digits = phoneNumber.replace(/\D/g, '');
+    if (digits.length === 10) {
+      // US standard 10-digit
+      return `(${digits.substring(0, 3)}) ${digits.substring(3, 6)}-${digits.substring(6)}`;
+    } else if (digits.length === 11 && digits.startsWith('1')) {
+      // US with country code
+      return `+1 (${digits.substring(1, 4)}) ${digits.substring(4, 7)}-${digits.substring(7)}`;
+    } else if (digits.length > 10) {
+      // International, just group
+      return `+${digits.substring(0, digits.length - 10)} (${digits.substring(digits.length - 10, digits.length - 7)}) ${digits.substring(digits.length - 7, digits.length - 4)}-${digits.substring(digits.length - 4)}`;
+    }
+    // Fallback: return as is
+    return phoneNumber;
   }
 }

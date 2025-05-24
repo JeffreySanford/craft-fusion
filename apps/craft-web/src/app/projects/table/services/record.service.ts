@@ -5,6 +5,7 @@ import { ApiService } from '../../../common/services/api.service';
 import { Record } from '@craft-fusion/craft-library';
 import { NotificationService } from '../../../common/services/notification.service'; 
 import { LoggerService } from '../../../common/services/logger.service';
+import { AuthService } from '@craft-web/services/auth';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,7 @@ export class RecordService {
   
   constructor(
     public apiService: ApiService,
+    private auth: AuthService,
     private notificationService: NotificationService,
     private logger: LoggerService
   ) {
@@ -44,6 +46,7 @@ export class RecordService {
     // Initialize mock data for fallback when backend is unavailable
     this.generateMockRecords(100);
   }
+
 
   /**
    * Sets the server resource for API calls

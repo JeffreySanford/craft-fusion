@@ -1,4 +1,4 @@
-import { Component, HostListener, EventEmitter, Output, Input, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, HostListener, EventEmitter, Output, Input, OnInit, ViewChild, ChangeDetectorRef, Renderer2, ElementRef } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer } from '@angular/material/sidenav';
@@ -52,7 +52,9 @@ export class SidebarComponent implements OnInit {
     private router: Router,
     private sidebarStateService: SidebarStateService,
     private adminStateService: AdminStateService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private renderer: Renderer2,
+    private el: ElementRef
   ) {}
 
   ngOnInit() {
@@ -68,9 +70,9 @@ export class SidebarComponent implements OnInit {
         const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
         if (adminItemIndex === -1) {
           this.menuGroups[0].items.push({ icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false });
-          this.menuGroups[0].items.push({ icon: 'family_restroom', label: 'Family Admin', routerLink: '/family-admin', active: false });
-          this.menuGroups[0].items.push({ icon: 'chat_bubble', label: 'Chat Admin', routerLink: '/chat-admin', active: false });
-          this.menuGroups[0].items.push({ icon: 'book', label: 'Book Admin', routerLink: '/book-admin', active: false });
+          this.menuGroups[0].items.push({ icon: 'family_restroom', label: 'Family', routerLink: '/family', active: false });
+          this.menuGroups[0].items.push({ icon: 'chat_bubble', label: 'Chat', routerLink: '/chat', active: false });
+          this.menuGroups[0].items.push({ icon: 'book', label: 'Book', routerLink: '/book', active: false });
           this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
         }
       } else {
@@ -96,7 +98,7 @@ export class SidebarComponent implements OnInit {
   onResize(event: Event) {
     const width = (event.target as Window).innerWidth;
     this.isCollapsed = width < 900;
-    this.isSmallScreen = true;
+    this.isSmallScreen = width < 900;
   
     this.sidebarToggle.emit(!this.isCollapsed);
     this.sidebarStateService.toggleSidebar(this.isCollapsed);

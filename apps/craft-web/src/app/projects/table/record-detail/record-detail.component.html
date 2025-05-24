@@ -1,5 +1,6 @@
 <div class="loading-container" *ngIf="loading">
   <mat-progress-spinner mode="indeterminate" [diameter]="100"></mat-progress-spinner>
+  <div style="color: red; font-weight: bold; margin-top: 1em;">DEBUG: No user input provided or loading...</div>
 </div>
 
 <div class="detail-container" *ngIf="user && !loading" @fadeIn>

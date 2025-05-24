@@ -96,6 +96,9 @@ export class RecordListComponent implements OnInit, OnDestroy {
   // Maximum number of automatic retry attempts
   private readonly MAX_AUTO_RETRIES = 2; // Reduced from 3
   private retryTimeoutRef: any = null;
+  creationTime = new Date().getTime();
+  currentUser: any;
+
 
   constructor(
     private recordService: RecordService,
@@ -106,28 +109,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private router: Router
   ) {
-    console.log('Constructor: RecordListComponent created');
-    console.log('Initial servers:', this.servers);
-
-    // Subscribe to the offline status from the service
-    this.recordService.offlineStatus$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(isOffline => {
-        if (this.isOffline !== isOffline) {
-          this.isOffline = isOffline;
-          
-          if (isOffline) {
-            this.logger.warn('Application is in offline mode', { component: 'RecordListComponent' });
-            this.notificationService.showWarning('Cannot connect to backend server. Using offline mode.', 'Connection Error');
-          } else if (this.connectionAttempts > 0) {
-            // Only show online notification if we were previously offline
-            this.logger.info('Connection restored - back online', { component: 'RecordListComponent' });
-            this.notificationService.showSuccess('Connection to backend server restored!', 'Back Online');
-          }
-          
-          this.changeDetectorRef.detectChanges();
-        }
-      });
   }
 
   @HostListener('window:resize', ['$event'])
@@ -163,6 +144,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
     this.server = server;
 
     this.apiURL = this.recordService.setServerResource(server.name);
+    console.log('totalRecords before fetchData:', this.totalRecords);
     this.fetchData(100);
 
     // Set up paginator and sort
@@ -292,13 +274,11 @@ export class RecordListComponent implements OnInit, OnDestroy {
         switchMap((dataset: Record[]) => {
           if (dataset) {
             this.dataSource.data = dataset;
-            this.resolved = true;
             this.newData = true;
 
             this.paginator.pageIndex = 0;
             this.paginator.pageSize = 5;
             this.paginator.length = dataset.length;
-            this.changeDetectorRef.detectChanges();
 
             this.dataSource.filterPredicate = (data: Record, filter: string) => {
               return data.UID.toLowerCase().includes(filter);
@@ -310,15 +290,25 @@ export class RecordListComponent implements OnInit, OnDestroy {
             this.totalRecords = dataset.length;
             console.log('Data: New record set generated with length:', dataset.length);
 
+
+            this.resolved = true; // Ensure resolved is set to true after data loads
+            this.changeDetectorRef.detectChanges();
+            this.logger.info(`New record set generated with ${dataset.length} records`, {
+              creationTime: this.creationTime,
+              user: this.currentUser
+            });
             this.updateCreationTime();
             this.triggerFadeToRed();
+          } else {
+            this.resolved = true; // Also set resolved to true if no data
+            this.changeDetectorRef.detectChanges();
           }
           return of([]);
         }),
         catchError((error: any) => {
-          console.error('Error: generateNewRecordSet failed:', error);
-          this.resolvedSubject.next(true);
+          this.resolved = true; // Ensure resolved is set on error
           this.changeDetectorRef.detectChanges();
+          console.error('Error: generateNewRecordSet failed:', error);
           return of([]);
         }),
       )
@@ -326,6 +316,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
   }
 
   public fetchData(count: number): void {
+    this.resolved = false; // Ensure resolved is reset before fetching
     this.spinner.show();
     this.resolvedSubject.next(false);
     
@@ -336,11 +327,11 @@ export class RecordListComponent implements OnInit, OnDestroy {
         // Add finalize to hide spinner regardless of success/failure
         finalize(() => {
           this.spinner.hide();
+          this.resolved = true; // Set resolved to true after spinner hides
           this.resolvedSubject.next(true);
           this.changeDetectorRef.detectChanges();
         }),
         switchMap((dataset: Record[]) => {
-          // Check if we received data or are in offline mode
           if (dataset && dataset.length > 0) {
             this.dataSource.data = dataset;
             this.isOffline = this.recordService.isOfflineMode();
@@ -351,6 +342,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
           }
         }),
         catchError(error => {
+          this.resolved = true; // Ensure resolved is set on error
           this.logger.error('Error fetching data', { error });
           
           // Update offline state based on error
@@ -365,15 +357,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
           }
           
           this.notificationService.showWarning(errorMessage, 'Data Loading Issue');
-          
-          // Initialize with empty data to avoid UI breakage
-          this.dataSource.data = [];
-          this.resolved = true;
-          
-          // If we have connection attempts left, schedule a retry with exponential backoff
-          if (this.connectionAttempts < this.MAX_AUTO_RETRIES) {
-            this.scheduleRetry();
-          }
+
           
           return of(0);
         })

@@ -1,6 +1,7 @@
 <ng-template #noData>
-  <div class="no-data">
-    <mat-progress-spinner mode="indeterminate" [diameter]="100" [style.color]="'teal'"></mat-progress-spinner>
+  <div class="no-data" *ngIf="!resolved">
+    <mat-progress-spinner mode="indeterminate" [diameter]="100" [style.color]="'teal'" *ngIf="!resolved"></mat-progress-spinner>
+    <div style="color: red; font-weight: bold; margin-top: 1em;">DEBUG: noData template is ACTIVE</div>
   </div>
 </ng-template>
 

@@ -8,6 +8,7 @@ import { SocketGatewayModule } from './socket/socket.module';
 import { AuthModule } from './auth/auth.module';
 import { UserStateModule } from './user-state/user-state.module';
 import { RecordsModule } from './records/records.module';
+import { RecipesModule } from './recipes/recipes.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { RecordsModule } from './records/records.module';
     AuthModule,
     UserStateModule,
     RecordsModule,
+    RecipesModule, // <-- Register RecipesModule
   ],
   controllers: [AppController],
   providers: [AppService],
