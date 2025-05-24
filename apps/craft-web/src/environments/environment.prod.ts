@@ -22,5 +22,8 @@ export const environment = {
   yahooFinance: {
     url: 'https://yfapi.net/',
     apiKey: 'uANiNS5imM7YUDOxZNpu3qrmLEYkoqu2r6OzqCW8' // Replace with your Yahoo Finance API key
+  },
+  socket: {
+    url: 'wss://jeffreysanford.us'
   }
 };

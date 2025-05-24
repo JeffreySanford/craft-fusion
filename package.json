@@ -13,7 +13,7 @@
     "pm2:restart": "pm2 restart all",
     "pm2:logs": "pm2 logs",
     "pm2:monitor": "pm2 monit",
-    "pm2:build": "npx nx build craft-nest --configuration=production && npx nx build craft-go",
+    "pm2:build": "npx nx build craft-nest --configuration=production && npx nx build craft-go --configuration=production",
     "test:backends": "bash ./scripts/test-backends.sh",
     "test:apis": "npm run test:backends",
     "deploy:frontend": "bash ./scripts/deploy-frontend.sh",

@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'craft-nest-api',
-      script: './dist/apps/craft-nest/src/main.js',
+      script: './dist/apps/craft-nest/main.js',
       instances: 1,              // Simplified: single instance instead of cluster
       exec_mode: 'fork',         // Use fork mode for simplicity
       cwd: __dirname,
