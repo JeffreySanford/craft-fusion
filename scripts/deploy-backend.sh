@@ -82,8 +82,11 @@ fi
 
 echo -e "${BLUE}7. Verifying build outputs...${NC}"
 # Check NestJS build
-if [ ! -f "dist/apps/craft-nest/src/main.js" ]; then
-    echo -e "${RED}✗ NestJS build output not found${NC}"
+if [ -f "dist/apps/craft-nest/src/main.js" ]; then
+    echo -e "${GREEN}✓ NestJS build output found${NC}"
+else
+    echo -e "${RED}✗ NestJS build output not found at dist/apps/craft-nest/src/main.js${NC}"
+    ls -la dist/apps/craft-nest/ 2>/dev/null || echo "Directory not found"
     exit 1
 fi
 
