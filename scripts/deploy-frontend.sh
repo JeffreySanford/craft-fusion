@@ -92,20 +92,50 @@ echo -e "${BLUE}10. Testing deployment...${NC}"
 sleep 2  # Give nginx a moment to reload
 
 # Test if the site is accessible
-if curl -s -f -w "%{http_code}" "http://jeffreysanford.us" | grep -q "200"; then
-    echo -e "${GREEN}✓ Site is accessible (HTTP 200)${NC}"
+HTTP_RESPONSE=$(curl -s -f -w "%{http_code}" "http://jeffreysanford.us" 2>/dev/null || echo "000")
+HTTPS_RESPONSE=$(curl -s -f -w "%{http_code}" "https://jeffreysanford.us" 2>/dev/null || echo "000")
+
+if [ "$HTTP_RESPONSE" = "200" ] || [ "$HTTP_RESPONSE" = "301" ] || [ "$HTTP_RESPONSE" = "302" ]; then
+    echo -e "${GREEN}✓ HTTP site accessible (HTTP $HTTP_RESPONSE)${NC}"
 else
-    echo -e "${YELLOW}⚠ Site test failed - check logs${NC}"
-    echo -e "${BLUE}Nginx error log:${NC}"
-    sudo tail -5 /var/log/nginx/error.log
+    echo -e "${YELLOW}⚠ HTTP site test failed (HTTP $HTTP_RESPONSE)${NC}"
+fi
+
+if [ "$HTTPS_RESPONSE" = "200" ]; then
+    echo -e "${GREEN}✓ HTTPS site accessible (HTTPS $HTTPS_RESPONSE)${NC}"
+    PROTOCOL="https"
+else
+    echo -e "${YELLOW}⚠ HTTPS site test failed (HTTPS $HTTPS_RESPONSE)${NC}"
+    PROTOCOL="http"
 fi
 
 # Test API proxy
 echo -e "${BLUE}11. Testing API proxy...${NC}"
-if curl -s -f "http://jeffreysanford.us/api/health" > /dev/null 2>&1; then
+API_HTTP_RESPONSE=$(curl -s -f -w "%{http_code}" -o /dev/null "http://jeffreysanford.us/api/health" 2>/dev/null || echo "000")
+API_HTTPS_RESPONSE=$(curl -s -f -w "%{http_code}" -o /dev/null "https://jeffreysanford.us/api/health" 2>/dev/null || echo "000")
+
+if [ "$API_HTTP_RESPONSE" = "200" ] || [ "$API_HTTPS_RESPONSE" = "200" ]; then
     echo -e "${GREEN}✓ API proxy working${NC}"
 else
-    echo -e "${YELLOW}⚠ API proxy test failed${NC}"
+    echo -e "${YELLOW}⚠ API proxy test failed (HTTP: $API_HTTP_RESPONSE, HTTPS: $API_HTTPS_RESPONSE)${NC}"
+fi
+
+# Test WebSocket connection (if WSS is configured)
+echo -e "${BLUE}12. Testing WebSocket connection...${NC}"
+if command -v wscat &> /dev/null; then
+    # Test WSS if HTTPS is working, otherwise test WS
+    if [ "$HTTPS_RESPONSE" = "200" ]; then
+        timeout 5s wscat -c "wss://jeffreysanford.us/socket.io/?EIO=4&transport=websocket" --no-check &>/dev/null && \
+        echo -e "${GREEN}✓ WSS connection test passed${NC}" || \
+        echo -e "${YELLOW}⚠ WSS connection test failed - check backend${NC}"
+    else
+        timeout 5s wscat -c "ws://jeffreysanford.us/socket.io/?EIO=4&transport=websocket" --no-check &>/dev/null && \
+        echo -e "${GREEN}✓ WS connection test passed${NC}" || \
+        echo -e "${YELLOW}⚠ WS connection test failed - check backend${NC}"
+    fi
+else
+    echo -e "${YELLOW}⚠ wscat not installed - skipping WebSocket test${NC}"
+    echo -e "${BLUE}Install with: npm install -g wscat${NC}"
 fi
 
 echo -e "${GREEN}=== Frontend Deployment Complete ===${NC}"
