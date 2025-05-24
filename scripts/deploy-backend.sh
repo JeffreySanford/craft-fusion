@@ -34,17 +34,32 @@ sudo mkdir -p "$LOG_DIR/craft-nest"
 sudo mkdir -p "$LOG_DIR/craft-go"
 echo -e "${GREEN}✓ Directories created${NC}"
 
-echo -e "${BLUE}3. Cleaning previous builds...${NC}"
-# Clean individual app dist directories for more targeted cleanup
+echo -e "${BLUE}3. Cleaning backend builds only...${NC}"
+# Clean only backend dist directories, preserve frontend
 rm -rf dist/apps/craft-nest/
 rm -rf dist/apps/craft-go/
-# Also clean root dist if it exists
-rm -rf dist/
-echo -e "${GREEN}✓ Build directories cleaned${NC}"
+echo -e "${GREEN}✓ Backend build directories cleaned${NC}"
 
-echo -e "${BLUE}4. Installing dependencies...${NC}"
-npm ci --prefer-offline
-echo -e "${GREEN}✓ Dependencies installed${NC}"
+echo -e "${BLUE}4. Checking dependencies...${NC}"
+# Check if node_modules exists and has the key packages we need
+if [ -d "node_modules" ] && [ -f "node_modules/.bin/nx" ]; then
+    echo -e "${GREEN}✓ Dependencies already installed${NC}"
+else
+    echo -e "${YELLOW}Installing dependencies...${NC}"
+    npm install --no-optional --no-audit --prefer-offline --progress=false
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✓ Dependencies installed${NC}"
+    else
+        echo -e "${YELLOW}⚠ First npm install failed, trying with reduced concurrency...${NC}"
+        npm install --maxsockets 1 --no-optional --no-audit --prefer-offline --progress=false
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}✓ Dependencies installed (retry)${NC}"
+        else
+            echo -e "${RED}✗ Dependencies installation failed${NC}"
+            exit 1
+        fi
+    fi
+fi
 
 echo -e "${BLUE}5. Building NestJS application (production)...${NC}"
 npx nx run craft-nest:build --configuration=production
