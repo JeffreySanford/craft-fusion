@@ -21,11 +21,11 @@ cd "$PROJECT_ROOT"
 # Ensure scripts are executable
 chmod +x scripts/*.sh
 
-echo -e "${BLUE}=== Phase 1: Frontend Deployment ===${NC}"
-./scripts/deploy-frontend.sh
-
-echo -e "${BLUE}=== Phase 2: Backend Deployment ===${NC}"
+echo -e "${BLUE}=== Phase 1: Backend Deployment ===${NC}"
 ./scripts/deploy-backend.sh
+
+echo -e "${BLUE}=== Phase 2: Frontend Deployment ===${NC}"
+./scripts/deploy-frontend.sh
 
 echo -e "${BLUE}=== Phase 3: SSL/WSS Setup (if needed) ===${NC}"
 read -p "Do you want to set up SSL/WSS? (y/N): " -n 1 -r
