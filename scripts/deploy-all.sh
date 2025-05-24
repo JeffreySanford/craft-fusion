@@ -1,5 +1,5 @@
 #!/bin/bash
-# deploy-all.sh - Complete application deployment script for Fedora server
+# deploy-all.sh - Complete application deployment script for Fedora server with memory optimization
 
 set -e
 
@@ -18,12 +18,36 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 echo -e "${BLUE}Project root: $PROJECT_ROOT${NC}"
 cd "$PROJECT_ROOT"
 
+# Memory optimization settings
+export NODE_OPTIONS="--max-old-space-size=512"
+export NX_CACHE_DIRECTORY="/tmp/nx-cache"
+
 # Ensure scripts are executable
 chmod +x scripts/*.sh
 
-# clean the NX repository
+echo -e "${BLUE}=== Memory Status Check ===${NC}"
+echo -e "${BLUE}Current Memory Status:${NC}"
+free -h | grep -E "(Mem|Swap)" || echo "Memory info not available"
+
+# Check available memory and warn if low
+AVAILABLE_MEM=$(free -m 2>/dev/null | awk 'NR==2{print $7}' || echo "2000")
+if [ "$AVAILABLE_MEM" -lt 1000 ]; then
+    echo -e "${YELLOW}⚠ Low memory detected ($AVAILABLE_MEM MB available)${NC}"
+    echo -e "${BLUE}Ensuring swap is active and clearing system caches...${NC}"
+    
+    # Clear system caches to free memory
+    sudo sync 2>/dev/null || true
+    sudo sysctl vm.drop_caches=1 2>/dev/null || true
+    
+    echo -e "${GREEN}✓ System caches cleared${NC}"
+fi
+
+# Clear system caches and optimize memory before builds
+echo -e "${BLUE}Cleaning previous builds with memory optimization...${NC}"
 rm -rf node_modules/.cache/nx
-echo -e "${BLUE}Cleaning previous builds...${NC}"
+rm -rf .nx/cache/
+rm -rf /tmp/nx-cache/ 2>/dev/null || true
+
 ./scripts/clean-build.sh
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Previous builds cleaned successfully${NC}"
@@ -31,6 +55,11 @@ else
     echo -e "${RED}✗ Failed to clean previous builds${NC}"
     exit 1
 fi
+
+# Clear memory before dependency installation
+echo -e "${BLUE}Clearing memory and installing dependencies...${NC}"
+sudo sync 2>/dev/null || true
+sudo sysctl vm.drop_caches=1 2>/dev/null || true
 
 rm -rf node_modules && npm cache clear --force
 echo -e "${BLUE}Cleaning node_modules and npm cache...${NC}"
@@ -42,9 +71,9 @@ else
 fi
 
 
-echo -e "${BLUE}=== Phase 0: Dependencies Setup ===${NC}"
-echo -e "${BLUE}Installing/updating dependencies...${NC}"
-npm install --no-optional --no-audit --prefer-offline --progress=false
+echo -e "${BLUE}=== Phase 0: Dependencies Setup (Memory Optimized) ===${NC}"
+echo -e "${BLUE}Installing dependencies with memory constraints...${NC}"
+npm install --no-optional --no-audit --prefer-offline --progress=false --maxsockets=1
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Dependencies installed successfully${NC}"
 else

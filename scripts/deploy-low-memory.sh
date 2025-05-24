@@ -12,9 +12,20 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-# Configuration
-APP_DIR="/var/www/craft-fusion"
-LOG_DIR="/var/log/craft-fusion"
+# Cross-platform path handling
+if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
+    echo -e "${YELLOW}⚠ Running on Windows - some operations may be skipped${NC}"
+    IS_WINDOWS=true
+    # Configuration for Windows development
+    APP_DIR="/var/www/craft-fusion"
+    LOG_DIR="/var/log/craft-fusion"
+else
+    echo -e "${BLUE}Running on Unix-like system${NC}"
+    IS_WINDOWS=false
+    # Configuration for Linux server
+    APP_DIR="/var/www/craft-fusion"
+    LOG_DIR="/var/log/craft-fusion"
+fi
 
 # Memory optimization settings
 export NODE_OPTIONS="--max-old-space-size=512"
