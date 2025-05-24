@@ -260,17 +260,37 @@ while true; do
     elapsed_m=$(((elapsed % 3600) / 60))
     elapsed_s=$((elapsed % 60))
     elapsed_fmt=$(printf "%02d:%02d:%02d" $elapsed_h $elapsed_m $elapsed_s)
-    header_line="║              🖥️  SYSTEM MONITOR v2.1"
-    time_str="${now_time}"
-    elapsed_str="Elapsed: ${elapsed_fmt}"
-    # Calculate padding for right alignment (60 chars wide box)
-    pad_len=$((60 - ${#header_line} - 2 - ${#time_str} - 2 - ${#elapsed_str}))
-    pad=""
-    for ((i=0; i<pad_len; i++)); do pad+=" "; done
-    echo -e "${BOLD}${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BOLD}${CYAN}${header_line}${pad}${time_str}  ${elapsed_str} ║${NC}"
-    echo -e "${BOLD}${CYAN}║                   LIVE UPDATING                             ║${NC}"
-    echo -e "${BOLD}${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
+
+    # Vibrant color cycling for time and elapsed (alternates CYAN, GREEN, PURPLE)
+    color_cycle=($CYAN $GREEN $PURPLE)
+    color_idx=$(( (current_time / 2) % 3 ))
+    time_color=${color_cycle[$color_idx]}
+    elapsed_color=${color_cycle[$(( (color_idx+1)%3 ))]}
+
+    # Elapsed time progress bar (30 chars, fills as time passes in the hour)
+    elapsed_percent=$(( (elapsed % 3600) * 100 / 3600 ))
+    elapsed_bar_filled=$((elapsed_percent * 30 / 100))
+    elapsed_bar_empty=$((30 - elapsed_bar_filled))
+    elapsed_bar=""
+    for ((i=0; i<elapsed_bar_filled; i++)); do elapsed_bar+="${GREEN}━${NC}"; done
+    for ((i=0; i<elapsed_bar_empty; i++)); do elapsed_bar+="${CYAN}─${NC}"; done
+
+    # Header lines
+    top_line="╔══════════════════════════════════════════════════════════════╗"
+    title_line="║   ${BOLD}${CYAN}🖥️  TRUE NORTH INSIGHTS: CRAFT FUSION SYSTEM MONITOR${NC}   ║"
+    author_line="║        ${WHITE}${BOLD}by True North Insights${NC}                        ║"
+    time_line="║   ${BOLD}${time_color}⏰ ${now_time}${NC}   ${BOLD}${elapsed_color}⏳ Elapsed: ${elapsed_fmt}${NC}   ║"
+    bar_line="║   ${elapsed_bar}   ║"
+    sub_line="║        ${PURPLE}${BOLD}LIVE UPDATING • LEGENDARY MODE${NC}         ║"
+    bot_line="╚══════════════════════════════════════════════════════════════╝"
+
+    echo -e "${BOLD}${CYAN}${top_line}${NC}"
+    echo -e "${title_line}"
+    echo -e "${author_line}"
+    echo -e "${time_line}"
+    echo -e "${bar_line}"
+    echo -e "${sub_line}"
+    echo -e "${BOLD}${CYAN}${bot_line}${NC}"
     echo
     
     # Get memory info
