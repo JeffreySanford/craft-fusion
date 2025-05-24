@@ -77,11 +77,16 @@ echo '* hard nofile 65535' | sudo tee -a /etc/security/limits.conf
 echo '* soft nproc 65535' | sudo tee -a /etc/security/limits.conf
 echo '* hard nproc 65535' | sudo tee -a /etc/security/limits.conf
 
-# b. Set CPU governor to performance (if available)
+# b. Install cpupower and set CPU governor to performance
+if ! command -v cpupower >/dev/null 2>&1; then
+  echo "Installing cpupower for CPU governor tuning..." | tee -a $LOG
+  sudo dnf install -y kernel-tools | tee -a $LOG
+fi
 if command -v cpupower >/dev/null 2>&1; then
+  echo "Setting CPU governor to performance..." | tee -a $LOG
   sudo cpupower frequency-set -g performance | tee -a $LOG
 else
-  echo "cpupower not installed, skipping CPU governor tuning" | tee -a $LOG
+  echo "cpupower not available, skipping CPU governor tuning" | tee -a $LOG
 fi
 
 # c. Enable dnf fastestmirror plugin
