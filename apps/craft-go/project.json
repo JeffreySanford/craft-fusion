@@ -12,7 +12,7 @@
       },
       "configurations": {
         "production": {
-          "command": "GOOS=linux GOARCH=amd64 go build -o ../../dist/apps/craft-go/main ./main.go",
+          "command": "GOOS=linux GOARCH=amd64 go build -ldflags=\"-s -w\" -o ../../dist/apps/craft-go/main ./main.go && strip ../../dist/apps/craft-go/main",
           "cwd": "apps/craft-go"
         },
         "development": {
