@@ -201,6 +201,8 @@ export class AdminComponent implements OnInit {
   private lastPerformanceWarning = 0;
   private performanceIssueCount = 0;
 
+
+
   // Track expanded endpoint
   expandedEndpoint: string | null = null;
 
@@ -2033,7 +2035,8 @@ export class AdminComponent implements OnInit {
     }, 0);
   }
 
-  // Get total hit count across all endpoints  getTotalHitCount(): number {
+  // Get total hit count across all endpoints
+  getTotalHitCount(): number {
     return Object.values(this.endpointLogs).reduce((total, endpoint) => {
       return total + (endpoint.hitCount || 0);
     }, 0);
