@@ -275,34 +275,12 @@ while true; do
     for ((i=0; i<elapsed_bar_filled; i++)); do elapsed_bar+="${GREEN}━${NC}"; done
     for ((i=0; i<elapsed_bar_empty; i++)); do elapsed_bar+="${CYAN}─${NC}"; done
 
-    # Header lines
-    # Box width (excluding corners): 62
-    box_width=62
-    # Helper to center text
-    center_box_line() {
-        local content="$1"
-        local pad_total=$((box_width - ${#content}))
-        local pad_left=$((pad_total / 2))
-        local pad_right=$((pad_total - pad_left))
-        printf "║%*s%s%*s║\n" $pad_left "" "$content" $pad_right ""
-    }
-    # Helper to left+right align two fields
-    lr_box_line() {
-        local left="$1"
-        local right="$2"
-        local mid_space=$((box_width - ${#left} - ${#right}))
-        printf "║%s%*s%s║\n" "$left" $mid_space "" "$right"
-    }
-    top_line="╔════════════════════════════════════════════════════════════════╗"
-    bot_line="╚════════════════════════════════════════════════════════════════╝"
-    # Compose header
-    echo -e "${BOLD}${CYAN}${top_line}${NC}"
-    center_box_line "${BOLD}${CYAN}🖥️  TRUE NORTH INSIGHTS: CRAFT FUSION SYSTEM MONITOR${NC}"
-    center_box_line "${WHITE}${BOLD}by True North Insights${NC}"
-    lr_box_line "  ${BOLD}${time_color}⏰ ${now_time}${NC}" "${BOLD}${elapsed_color}⏳ Elapsed: ${elapsed_fmt}${NC}  "
-    center_box_line "${elapsed_bar}"
-    center_box_line "${PURPLE}${BOLD}LIVE UPDATING • LEGENDARY MODE${NC}"
-    echo -e "${BOLD}${CYAN}${bot_line}${NC}"
+    # Print legendary header (no box)
+    echo -e "${BOLD}${CYAN}🖥️  TRUE NORTH INSIGHTS: CRAFT FUSION SYSTEM MONITOR${NC}"
+    echo -e "${WHITE}${BOLD}by True North Insights${NC}"
+    printf "${BOLD}${time_color}⏰ %s${NC}    ${BOLD}${elapsed_color}⏳ Elapsed: %s${NC}\n" "$now_time" "$elapsed_fmt"
+    echo -e "$elapsed_bar"
+    echo -e "${PURPLE}${BOLD}LIVE UPDATING • LEGENDARY MODE${NC}"
     echo
     
     # Get memory info
