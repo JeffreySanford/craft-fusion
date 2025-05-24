@@ -116,8 +116,139 @@ print_memory_bar() {
     printf "${NC} ${BOLD}%d%%${NC}" "$percent"
 }
 
-while true; do
+print_cpu_bar() {
+    local percent=$1
+    local filled=$((percent * 30 / 100))
+    local empty=$((30 - filled))
+    
+    if [ $percent -lt 50 ]; then
+        color=$GREEN
+    elif [ $percent -lt 80 ]; then
+        color=$YELLOW
+    else
+        color=$RED
+    fi
+    
+    printf "${color}"
+    for ((i=0; i<filled; i++)); do printf "${PROGRESS_CHAR}"; done
+    printf "${NC}${BLUE}"
+    for ((i=0; i<empty; i++)); do printf "${EMPTY_CHAR}"; done
+    printf "${NC} ${BOLD}%d%%${NC}" "$percent"
+}
+
+print_disk_bar() {
+    local used=$1
+    local total=$2
+    local percent=$((used * 100 / total))
+    local filled=$((percent * 30 / 100))
+    local empty=$((30 - filled))
+    
+    if [ $percent -lt 70 ]; then
+        color=$GREEN
+    elif [ $percent -lt 90 ]; then
+        color=$YELLOW
+    else
+        color=$RED
+    fi
+    
+    printf "${color}"
+    for ((i=0; i<filled; i++)); do printf "${PROGRESS_CHAR}"; done
+    printf "${NC}${PURPLE}"
+    for ((i=0; i<empty; i++)); do printf "${EMPTY_CHAR}"; done
+    printf "${NC} ${BOLD}%d%%${NC}" "$percent"
+}
+
+print_network_bar() {
+    local speed=$1
+    local max_speed=$2
+    local percent=0
+    
+    if [ $max_speed -gt 0 ]; then
+        percent=$((speed * 100 / max_speed))
+        if [ $percent -gt 100 ]; then
+            percent=100
+        fi
+    fi
+    
+    local filled=$((percent * 30 / 100))
+    local empty=$((30 - filled))
+    
+    if [ $percent -lt 30 ]; then
+        color=$WHITE
+    elif [ $percent -lt 70 ]; then
+        color=$CYAN
+    else
+        color=$GREEN
+    fi
+    
+    printf "${color}"
+    for ((i=0; i<filled; i++)); do printf "${PROGRESS_CHAR}"; done
+    printf "${NC}${WHITE}"
+    for ((i=0; i<empty; i++)); do printf "${EMPTY_CHAR}"; done
+    printf "${NC} ${BOLD}%d%%${NC}" "$percent"
+}
+
+# Cursor control functions
+hide_cursor() {
+    printf "\033[?25l"
+}
+
+show_cursor() {
+    printf "\033[?25h"
+}
+
+move_cursor_home() {
+    printf "\033[H"
+}
+
+clear_to_end() {
+    printf "\033[J"
+}
+
+# Initialize screen once
+init_screen() {
     clear
+    hide_cursor
+    echo -e "${BOLD}${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${BOLD}${CYAN}║              🖥️  SYSTEM MONITOR v2.1                        ║${NC}"
+    echo -e "${BOLD}${CYAN}║                   LIVE UPDATING                             ║${NC}"
+    echo -e "${BOLD}${CYAN}╚══════════════════════════════════════════════════════════════╝${NC}"
+    echo
+}
+
+# Server status function
+check_server_status() {
+    local name=$1
+    local port=$2
+    local process_pattern=$3
+    local status=""
+    local color=""
+    local health_url="http://localhost:$port/health"
+    local pid=$(pgrep -f "$process_pattern" | head -1)
+    local health_resp=""
+    
+    if [ -n "$pid" ]; then
+        # Process is running, check health endpoint
+        health_resp=$(curl -s --max-time 2 "$health_url")
+        if [ $? -eq 0 ] && [ -n "$health_resp" ]; then
+            status="UP"
+            color=$GREEN
+        else
+            # Process running but health endpoint not responding
+            status="RESTARTING"
+            color=$YELLOW
+        fi
+    else
+        # Process not running
+        status="DOWN"
+        color=$RED
+    fi
+    printf "   %s: %b%s%b\n" "$name" "$color" "$status" "$NC"
+}
+
+while true; do
+    move_cursor_home
+    clear_to_end
     echo -e "${BOLD}${CYAN}╔══════════════════════════════════════════════════════════════╗${NC}"
     echo -e "${BOLD}${CYAN}║              🖥️  SYSTEM MONITOR v2.0                        ║${NC}"
     echo -e "${BOLD}${CYAN}║                   $(date '+%H:%M:%S')                             ║${NC}"
@@ -247,13 +378,18 @@ while true; do
     
     echo
     echo -e "${BOLD}${GREEN}🔄 Top Memory Consumers:${NC}"
+    # Get total memory for per-process bar
+    total_mem=$(free -m | awk '/^Mem:/ {print $2}')
     ps aux --sort=-%mem | head -6 | tail -5 | while read line; do
         user=$(echo $line | awk '{print $1}')
         pid=$(echo $line | awk '{print $2}')
-        mem=$(echo $line | awk '{print $4}')
+        mem_perc=$(echo $line | awk '{print $4}')
+        mem_mb=$(awk -v perc="$mem_perc" -v total="$total_mem" 'BEGIN {printf "%d", perc*total/100}')
         cmd=$(echo $line | awk '{for(i=11;i<=NF;i++) printf "%s ", $i; print ""}' | cut -c1-30)
-        
-        printf "   ${CYAN}%8s${NC} ${YELLOW}%6s${NC} ${GREEN}%5s%%${NC} %s\n" "$user" "$pid" "$mem" "$cmd"
+        printf "   ${CYAN}%8s${NC} ${YELLOW}%6s${NC} ${GREEN}%5s%%${NC} %s\n" "$user" "$pid" "$mem_perc" "$cmd"
+        printf "        "
+        print_memory_bar "$mem_mb" "$total_mem"
+        echo
     done
     
     echo
