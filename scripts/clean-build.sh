@@ -24,7 +24,7 @@ echo -e "${BLUE}2. Cleaning root dist directory...${NC}"
 rm -rf dist/
 
 echo -e "${BLUE}3. Cleaning Nx cache...${NC}"
-npx nx reset
+timeout 20s npx nx reset || echo -e "${YELLOW}⚠ nx reset timed out or failed, continuing...${NC}"
 
 echo -e "${BLUE}4. Cleaning node_modules cache...${NC}"
 npm cache clean --force
