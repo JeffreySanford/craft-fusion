@@ -138,6 +138,8 @@ while true; do
         AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
         printf "   ${GREEN}✓ %s scan found (%d days ago)${NC}\n" "$profile" "$AGE_DAYS"
         printf "   Report: ${CYAN}%s${NC}\n" "$current_profile_report_file"
+        printf "   Report last modified: %s${NC}\n" "$(stat -c '%y' "$current_profile_result_file")"
+        printf "   Local date/time: ${WHITE}%s${NC}\n" "$(date)"
         if command -v xmllint &>/dev/null; then
           # Use more robust XPath and add notapplicable
           TOTAL_XPATH="count(//rule-result)"

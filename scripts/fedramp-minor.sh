@@ -200,6 +200,13 @@ copy_scan_reports() {
         echo -e "  ${CYAN}Updated latest (legacy):      $user_html_legacy_latest${NC}"
       fi
     fi
+
+    if [ -f "$user_xml_latest" ]; then
+      echo -e "  ${WHITE}Report last modified: $(stat -c '%y' "$user_xml_latest")${NC}"
+    fi
+    if [ -f "$user_html_latest" ]; then
+      echo -e "  ${WHITE}HTML report last modified: $(stat -c '%y' "$user_html_latest")${NC}"
+    fi
 }
 
 for profile in "${PROFILES[@]}"; do

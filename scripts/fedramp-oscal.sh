@@ -233,7 +233,13 @@ cleanup_progress_line
 if [ $oscap_status -eq 0 ] || [ $oscap_status -eq 2 ]; then # 0 for success, 2 for success with failures
   echo -e "${GREEN}✓ OpenSCAP scan complete.${NC}"
   echo -e "${WHITE}Results: ${CYAN}$RESULTS${NC}"
+  if [ -f "$RESULTS" ]; then
+    echo -e "${WHITE}Report last modified: $(stat -c '%y' "$RESULTS")${NC}"
+  fi
   echo -e "${WHITE}HTML Report: ${CYAN}$REPORT${NC}"
+  if [ -f "$REPORT" ]; then
+    echo -e "${WHITE}HTML report last modified: $(stat -c '%y' "$REPORT")${NC}"
+  fi
   # Show vibrant pass/fail summary for each control if xmllint is available
   # More specific XPath for OSCAP results:
     # Assumes rule-result elements are within a TestResult, often under a Benchmark root.

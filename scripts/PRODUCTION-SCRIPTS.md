@@ -67,6 +67,7 @@ Experimental and completed scripts have been moved to `scripts/archive/`:
   - Evidence collection and automated compliance documentation
 - **Logging:**
   - All scripts log to timestamped files in `logs/` or `oscal-analysis/`
+  - All scripts display the last modified date/time of each compliance report in their output for traceability
   - Color-coded output for quick status review
   - Summary tables and detailed logs for each scan
   - Error and warning highlighting

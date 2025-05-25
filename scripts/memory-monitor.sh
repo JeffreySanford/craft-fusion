@@ -297,6 +297,7 @@ for profile in "${OSCAL_PROFILES[@]}"; do
     AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
     printf "   ${GREEN}✓ %s scan found (%d days ago)${NC}\n" "$profile" "$AGE_DAYS"
     printf "   Report: ${CYAN}%s${NC}\n" "$OSCAL_REPORT_FILE"
+    printf "   Local date/time: ${WHITE}%s${NC}\n" "$(date)"
     # Show pass/fail/total summary if xmllint is available
     if command -v xmllint &>/dev/null; then
       # Use more robust XPath and add notapplicable
@@ -662,6 +663,7 @@ while true; do
                 echo -e "   ${YELLOW}⚠️  OpenSCAP scan for ${profile_loop_var} is older than $OSCAL_MAX_AGE_DAYS days ($AGE_DAYS days ago)${NC}"
             fi
             echo -e "   Report: ${CYAN}$current_profile_report_file${NC}"
+            echo -e "   Local date/time: ${WHITE}$(stat -c '%y' "$current_profile_result_file")${NC}"
             # Show pass/fail summary if xmllint is available
             if command -v xmllint &>/dev/null; then
                 # Use more robust XPath and add notapplicable
