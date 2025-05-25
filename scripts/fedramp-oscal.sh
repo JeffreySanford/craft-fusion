@@ -33,7 +33,7 @@ if [ ! -f "$SCAP_CONTENT" ]; then
   exit 1
 fi
 
-# === Environment & Time Estimate Infographic ===
+# Vibrant environment summary and time estimate for OSCAL scan
 CPU_CORES=$(nproc 2>/dev/null || echo 1)
 MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
 DISK_AVAIL=$(df -h / | awk 'NR==2{print $4}')
@@ -44,10 +44,13 @@ bar() {
   printf "${color}%-18s [" "$label"
   for ((i=0;i<n;i++)); do printf "█"; done
   for ((i=n;i<max;i++)); do printf "·"; done
-  printf "]${NC} %s\n" "$value"
+  printf "]${NC} %s min\n" "$value"
 }
 
-OSCAL_EST=3; if [ "$CPU_CORES" -le 1 ]; then OSCAL_EST=7; elif [ "$CPU_CORES" -le 2 ]; then OSCAL_EST=5; fi; if [ "$MEM_TOTAL_MB" -lt 1500 ]; then OSCAL_EST=$((OSCAL_EST+2)); fi
+OSCAL_EST=3
+if [ "$CPU_CORES" -le 1 ]; then OSCAL_EST=7; fi
+if [ "$CPU_CORES" -le 2 ]; then OSCAL_EST=5; fi
+if [ "$MEM_TOTAL_MB" -lt 1500 ]; then OSCAL_EST=$((OSCAL_EST+2)); fi
 
 printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════╗\n"
 printf "║        🛡️  FedRAMP OSCAL Scan Environment         ║\n"

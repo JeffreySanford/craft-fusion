@@ -30,6 +30,9 @@ bar() {
 }
 
 MONITOR_EST=1
+if [ "$CPU_CORES" -le 1 ]; then MONITOR_EST=2; fi
+if [ "$MEM_TOTAL_MB" -lt 1500 ]; then MONITOR_EST=$((MONITOR_EST+1)); fi
+
 printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════╗\n"
 printf "║        🛡️  FedRAMP Monitor Environment              ║\n"
 printf "╚══════════════════════════════════════════════════════════════╝${NC}\n"

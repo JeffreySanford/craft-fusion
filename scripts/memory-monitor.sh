@@ -253,7 +253,7 @@ OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results.xml"
 OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report.html"
 OSCAL_MAX_AGE_DAYS=7
 
-# === Environment & Time Estimate Infographic ===
+# Vibrant environment summary and time estimate for memory monitoring
 CPU_CORES=$(nproc 2>/dev/null || echo 1)
 MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
 DISK_AVAIL=$(df -h / | awk 'NR==2{print $4}')
@@ -268,8 +268,11 @@ bar() {
 }
 
 MONITOR_EST=1
+if [ "$CPU_CORES" -le 1 ]; then MONITOR_EST=2; fi
+if [ "$MEM_TOTAL_MB" -lt 1500 ]; then MONITOR_EST=$((MONITOR_EST+1)); fi
+
 printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════╗\n"
-printf "║        📊 Memory/Network Monitor Environment         ║\n"
+printf "║        🧠 Memory Monitor Environment                 ║\n"
 printf "╚══════════════════════════════════════════════════════════════╝${NC}\n"
 echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}"
 bar "Monitoring" $MONITOR_EST 10 "$GREEN"
