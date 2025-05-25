@@ -164,6 +164,7 @@ fi
 # Only install dependencies if node_modules is missing or package-lock.json changed
 if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
   echo -e "${CYAN}Installing dependencies (detected change)...${NC}"
+  echo -e "${BLUE}NPM install in progress...${NC}"
   echo -e "${BLUE}The progress bar is an overall estimate for this NPM installation phase.${NC}"
   echo -e "${BLUE}Please be patient while NPM completes all its tasks.${NC}"
   NPM_CI_ESTIMATE_SECONDS=300 # 5 minutes
