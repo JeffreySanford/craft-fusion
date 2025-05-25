@@ -277,6 +277,15 @@ for profile in "${PROFILES[@]}"; do
     echo -e "${BOLD}${CYAN}FedRAMP OSCAL Control Results for $profile:${NC}"
     echo -e "${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}  ${YELLOW}N/A: $NOTAPPLICABLE${NC}  ${WHITE}Other: $OTHER${NC}  ${WHITE}Total: $TOTAL${NC}"
   fi
+  # Export all HTML reports to PDF/Markdown after all scans
+  if [ "$profile" = "truenorth" ]; then
+    if command -v node >/dev/null 2>&1; then
+      echo -e "${CYAN}Exporting all OSCAL HTML reports to PDF and Markdown...${NC}"
+      node "$SCRIPT_DIR/../tools/oscal-export.js"
+    else
+      echo -e "${YELLOW}Node.js not found, skipping PDF/Markdown export.${NC}"
+    fi
+  fi
   echo
 done
 

@@ -239,6 +239,13 @@ if [ $oscap_status -eq 0 ] || [ $oscap_status -eq 2 ]; then # 0 for success, 2 f
   echo -e "${WHITE}HTML Report: ${CYAN}$REPORT${NC}"
   if [ -f "$REPORT" ]; then
     echo -e "${WHITE}HTML report last modified: $(stat -c '%y' "$REPORT")${NC}"
+    # --- PDF/Markdown Export ---
+    if command -v node >/dev/null 2>&1; then
+      echo -e "${CYAN}Exporting OSCAL report to PDF and Markdown...${NC}"
+      node "$(dirname "$0")/../tools/oscal-export.js"
+    else
+      echo -e "${YELLOW}Node.js not found, skipping PDF/Markdown export.${NC}"
+    fi
   fi
   # Show vibrant pass/fail summary for each control if xmllint is available
   # More specific XPath for OSCAP results:
