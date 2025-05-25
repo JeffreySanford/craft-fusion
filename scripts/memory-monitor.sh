@@ -698,7 +698,7 @@ while true; do
       fi
 
     done
-    printf "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} %s\n" "$colored_profiles"
+    echo -e "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} $colored_profiles"
     
     sleep 30
 done
