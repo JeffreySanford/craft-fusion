@@ -271,13 +271,24 @@ printf "${BOLD}${CYAN}Available OSCAL scan options:${NC} ${YELLOW}%s${NC}\n" "${
 for profile in "${OSCAL_PROFILES[@]}"; do
   OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results-$profile.xml"
   OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report-$profile.html"
-  if [ "$profile" = "standard" ]; then
+  USER_RESULT_FILE="$OSCAL_DIR/user-readable-results-$profile.xml"
+  USER_REPORT_FILE="$OSCAL_DIR/user-readable-report-$profile.html"
+  
+  # Check for user-readable files first, then admin files
+  if [ -f "$USER_RESULT_FILE" ]; then
+    OSCAL_RESULT_FILE="$USER_RESULT_FILE"
+    OSCAL_REPORT_FILE="$USER_REPORT_FILE"
+  elif [ "$profile" = "standard" ]; then
     # Also check for legacy report names for standard
-    if [ -f "$OSCAL_DIR/oscap-results.xml" ]; then
+    if [ -f "$OSCAL_DIR/user-readable-results.xml" ]; then
+      OSCAL_RESULT_FILE="$OSCAL_DIR/user-readable-results.xml"
+      OSCAL_REPORT_FILE="$OSCAL_DIR/user-readable-report.html"
+    elif [ -f "$OSCAL_DIR/oscap-results.xml" ]; then
       OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results.xml"
       OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report.html"
     fi
   fi
+  
   if [ -f "$OSCAL_RESULT_FILE" ]; then
     LAST_RUN=$(stat -c %Y "$OSCAL_RESULT_FILE")
     NOW_TS=$(date +%s)
