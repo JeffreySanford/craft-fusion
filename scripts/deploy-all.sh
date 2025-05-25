@@ -172,6 +172,7 @@ if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
   kill "$progress_pid" &>/dev/null || true
   wait "$progress_pid" &>/dev/null || true
   cleanup_progress_line
+  echo -e "${BLUE}NPM install command finished. Verifying status...${NC}"
 
   if [ $npm_ci_status -eq 0 ]; then
     echo -e "${GREEN}✓ Dependencies installed successfully via npm ci${NC}"
@@ -188,6 +189,7 @@ if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
     kill "$progress_pid" &>/dev/null || true
     wait "$progress_pid" &>/dev/null || true
     cleanup_progress_line
+    echo -e "${BLUE}NPM install command (retry) finished. Verifying status...${NC}"
 
     if [ $npm_ci_retry_status -eq 0 ]; then
       echo -e "${GREEN}✓ Dependencies installed (retry successful)${NC}"
