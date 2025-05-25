@@ -133,14 +133,21 @@ while true; do
         printf "   ${GREEN}✓ %s scan found (%d days ago)${NC}\n" "$profile" "$AGE_DAYS"
         printf "   Report: ${CYAN}%s${NC}\n" "$current_profile_report_file"
         if command -v xmllint &>/dev/null; then
-          PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$current_profile_result_file" 2>/dev/null)
-          FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$current_profile_result_file" 2>/dev/null)
-          TOTAL=$(xmllint --xpath 'count(//rule-result)' "$current_profile_result_file" 2>/dev/null)
+          # Use more robust XPath and add notapplicable
+          TOTAL_XPATH="count(//TestResult//rule-result)"
+          PASS_XPATH="count(//TestResult//rule-result[result='pass'])"
+          FAIL_XPATH="count(//TestResult//rule-result[result='fail'])"
+          NOTAPPLICABLE_XPATH="count(//TestResult//rule-result[result='notapplicable'])"
+          TOTAL=$(xmllint --xpath "$TOTAL_XPATH" "$current_profile_result_file" 2>/dev/null)
+          PASS=$(xmllint --xpath "$PASS_XPATH" "$current_profile_result_file" 2>/dev/null)
+          FAIL=$(xmllint --xpath "$FAIL_XPATH" "$current_profile_result_file" 2>/dev/null)
+          NOTAPPLICABLE=$(xmllint --xpath "$NOTAPPLICABLE_XPATH" "$current_profile_result_file" 2>/dev/null)
           PASS=${PASS:-0}
           FAIL=${FAIL:-0}
           TOTAL=${TOTAL:-0}
-          if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]] && [[ "$TOTAL" =~ ^[0-9]+$ ]]; then
-            printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}  ${WHITE}Total: %s${NC}\n" "$PASS" "$FAIL" "$TOTAL"
+          NOTAPPLICABLE=${NOTAPPLICABLE:-0}
+          if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]] && [[ "$TOTAL" =~ ^[0-9]+$ ]] && [[ "$NOTAPPLICABLE" =~ ^[0-9]+$ ]]; then
+            printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}  ${YELLOW}N/A: %s${NC}  ${WHITE}Total: %s${NC}\n" "$PASS" "$FAIL" "$NOTAPPLICABLE" "$TOTAL"
           fi
         fi
       else
