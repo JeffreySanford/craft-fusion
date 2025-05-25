@@ -151,9 +151,21 @@ while true; do
       fi
     done
 
-    # Only show available options if any are missing
-    if [ ${#missing_profiles[@]} -gt 0 ]; then
-      printf "${BOLD}${CYAN}Available OSCAL scan options:${NC} ${YELLOW}%s${NC}\n" "${missing_profiles[*]}"
+    # Display actionable OSCAL scans (missing or stale)
+    actionable_scans_display=()
+    all_scans_ok=true
+    for profile_check in "${OSCAL_PROFILES[@]}"; do
+        # Re-check status for display (similar logic to above loop)
+        # This part assumes current_profile_result_file and AGE_DAYS were determined correctly in the loop above for each profile
+        # For simplicity, we'll re-evaluate based on missing_profiles array and age check (if not missing)
+        if [[ " ${missing_profiles[*]} " =~ " ${profile_check} " ]]; then # Check if profile is in missing_profiles
+            actionable_scans_display+=("${RED}${profile_check} (missing)${NC}")
+            all_scans_ok=false
+        # Add age check here if you want to show stale ones too, e.g. by checking AGE_DAYS for that profile if it wasn't missing
+        fi
+    done
+    if [ "$all_scans_ok" = false ] && [ ${#actionable_scans_display[@]} -gt 0 ]; then
+      printf "${BOLD}${CYAN}Actionable OSCAL Scans:${NC} %s\n" "$(IFS=, ; echo "${actionable_scans_display[*]}")"
     fi
 
     # If standard scan is missing, run it automatically
