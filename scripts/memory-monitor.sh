@@ -663,7 +663,13 @@ while true; do
                 echo -e "   ${YELLOW}⚠️  OpenSCAP scan for ${profile_loop_var} is older than $OSCAL_MAX_AGE_DAYS days ($AGE_DAYS days ago)${NC}"
             fi
             echo -e "   Report: ${CYAN}$current_profile_report_file${NC}"
-            echo -e "   Local date/time: ${WHITE}$(stat -c '%y' "$current_profile_result_file")${NC}"
+            # Show human readable date/time in SFO (America/Los_Angeles)
+            if command -v date >/dev/null 2>&1; then
+                local_time_sfo=$(TZ=America/Los_Angeles date -d "$(stat -c '%y' "$current_profile_result_file")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
+                echo -e "   Local date/time: ${WHITE}$local_time_sfo${NC}"
+            else
+                echo -e "   Local date/time: ${WHITE}$(stat -c '%y' "$current_profile_result_file")${NC}"
+            fi
             # Show pass/fail summary if xmllint is available
             if command -v xmllint &>/dev/null; then
                 # Use more robust XPath and add notapplicable
