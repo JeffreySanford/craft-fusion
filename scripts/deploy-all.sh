@@ -355,6 +355,37 @@ df -h / | tail -1 | awk '{print "  Root partition: " $3 " used of " $2 " (" $5 "
 echo -e "${CYAN}Memory Usage:${NC}"
 free -h | grep Mem | awk '{print "  Memory: " $3 " used of " $2}'
 
+# OSCAL scan profile summary (color-coded)
+OSCAL_DIR="$PROJECT_ROOT/oscal-analysis"
+OSCAL_PROFILES=(standard ospp pci-dss cusp medium-high rev5 truenorth)
+colored_profiles=""
+for p in "${OSCAL_PROFILES[@]}"; do
+  if [ -f "$OSCAL_DIR/user-readable-results-$p.xml" ] || [ -f "$OSCAL_DIR/oscap-results-$p.xml" ]; then
+    colored_profiles+="${GREEN}$p${NC} ";
+  else
+    colored_profiles+="${RED}$p${NC} ";
+  fi
+done
+echo -e "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} $colored_profiles"
+
+# Deployment step totals summary
+TOTAL_STEPS=6
+COMPLETED_STEPS=0
+
+# Check each major phase for success (simple heuristic)
+[ $backend_status -eq 0 ] && [ $frontend_status -eq 0 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
+[ $npm_ci_status -eq 0 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
+[ $CLEAN_STATUS -eq 0 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
+[ $oscal_status -eq 0 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
+[ "$SITE_HTTP" -eq 200 ] && [ "$SITE_HTTPS" -eq 200 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
+[ "$API_NEST_HTTP" -eq 200 ] && [ "$API_GO_HTTP" -eq 200 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
+
+if [ $COMPLETED_STEPS -eq $TOTAL_STEPS ]; then
+  echo -e "${BOLD}${GREEN}All $TOTAL_STEPS deployment steps completed successfully!${NC}"
+else
+  echo -e "${BOLD}${YELLOW}Deployment completed with $COMPLETED_STEPS/$TOTAL_STEPS successful steps. Review output above for any warnings or errors.${NC}"
+fi
+
 echo -e "${BOLD}${GREEN}\n=== Craft Fusion Deployment Complete ===${NC}"
 echo -e "${BOLD}${BLUE}🎉 Your Craft Fusion application is now deployed!${NC}"
 echo
