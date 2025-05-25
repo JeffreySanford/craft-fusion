@@ -53,16 +53,18 @@ case "$PROFILE" in
     PROFILE_ID="xccdf_org.ssgproject.content_profile_cusp_fedora" ;;
   medium-high)
     PROFILE_ID="xccdf_org.ssgproject.content_profile_PLACEHOLDER_medium_high" ;; # Placeholder for future FedRAMP Rev 5 Medium/High - Update when actual ID is known
+  rev5)
+    PROFILE_ID="xccdf_org.ssgproject.content_profile_PLACEHOLDER_rev5" ;; # Placeholder for future FedRAMP Rev 5 - Update when actual ID is known
   *)
     echo "Unknown profile: $PROFILE"
-    echo "Usage: $0 [standard|ospp|pci-dss|cusp|medium-high (placeholder for Rev 5)]"
+    echo "Usage: $0 [standard|ospp|pci-dss|cusp|medium-high (placeholder for Rev 5)|rev5 (placeholder for Rev 5)]"
     exit 1
     ;;
 esac
 
 if [ "$SUPPRESS_PRE_SCAN_SUMMARY_FLAG" != "--no-summary" ]; then
   # === Actionable OSCAL Scans Summary (pre-scan check) ===
-  OSCAL_PROFILES_TO_CHECK=(standard ospp pci-dss cusp medium-high) # medium-high is a placeholder for future Rev 5
+  OSCAL_PROFILES_TO_CHECK=(standard ospp pci-dss cusp medium-high rev5) # medium-high & rev5 are placeholders for future Rev 5
   OSCAL_MAX_AGE_DAYS=7
   actionable_scans_display=()
   all_scans_ok=true
@@ -129,6 +131,7 @@ if [ "$PROFILE" = "ospp" ]; then PROFILE_LABEL="OSPP"; CURRENT_PROFILE_COLOR="$C
 if [ "$PROFILE" = "pci-dss" ]; then PROFILE_LABEL="PCI-DSS"; CURRENT_PROFILE_COLOR="$YELLOW"; fi
 if [ "$PROFILE" = "cusp" ]; then PROFILE_LABEL="CUSP"; CURRENT_PROFILE_COLOR="$GREEN"; fi
 if [ "$PROFILE" = "medium-high" ]; then PROFILE_LABEL="Med-High R5"; CURRENT_PROFILE_COLOR="$BLUE"; fi # Placeholder for FedRAMP Rev 5 Medium/High
+if [ "$PROFILE" = "rev5" ]; then PROFILE_LABEL="FedRAMP Rev5"; CURRENT_PROFILE_COLOR="$MAGENTA"; fi # Placeholder for FedRAMP Rev 5
 
 # --- Progress Function ---
 print_progress() {
