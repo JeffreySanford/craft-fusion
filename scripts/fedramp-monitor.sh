@@ -66,6 +66,9 @@ bar() {
   value=${value:-0}
   max=${max:-30}
   color=${color:-$NC}
+  # Defensive: ensure value and max are valid integers
+  if ! [[ "$value" =~ ^[0-9]+$ ]]; then value=0; fi
+  if ! [[ "$max" =~ ^[0-9]+$ ]]; then max=30; fi
   local n=$((value > max ? max : value))
   printf "%s%-18s [" "$color" "$label"
   for ((i=0;i<n;i++)); do printf "█"; done
@@ -83,6 +86,9 @@ bar() {
   value=${value:-0}
   max=${max:-30}
   color=${color:-$NC}
+  # Defensive: ensure value and max are valid integers
+  if ! [[ "$value" =~ ^[0-9]+$ ]]; then value=0; fi
+  if ! [[ "$max" =~ ^[0-9]+$ ]]; then max=30; fi
   local n=$((value > max ? max : value))
   printf "%s%-18s [" "$color" "$label"
   for ((i=0;i<n;i++)); do printf "█"; done
