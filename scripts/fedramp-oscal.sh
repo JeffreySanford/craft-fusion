@@ -135,7 +135,7 @@ bar() {
   printf "%s%-18s [" "$color" "$label"
   for ((i=0;i<n;i++)); do printf "█"; done
   for ((i=n;i<max;i++)); do printf "·"; done
-  printf "]%s %s min\n" "$NC" "$value"
+  printf "] %s min%s\n" "$value" "$NC"
 }
 
 CPU_CORES=$(nproc 2>/dev/null || echo 1)

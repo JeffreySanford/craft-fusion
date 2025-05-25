@@ -79,7 +79,7 @@ fi
 for profile in "${PROFILES[@]}"; do
   echo -e "${BOLD}${CYAN}=== Running OSCAL scan for profile: $profile ===${NC}"
   
-  if sudo "$SCRIPT_DIR/fedramp-oscal.sh" "$profile"; then
+  if sudo "$SCRIPT_DIR/fedramp-oscal.sh" --no-summary "$profile"; then
     echo -e "${GREEN}✓ $profile scan completed${NC}"
     
     # Create user-readable copies with simplified names
@@ -113,7 +113,12 @@ for profile in "${PROFILES[@]}"; do
       fi
     fi
   else
-    echo -e "${RED}✗ $profile scan failed${NC}"
+    oscal_script_exit_code=$?
+    if [ $oscal_script_exit_code -eq 2 ]; then # OpenSCAP uses 2 for completed scan with failures
+        echo -e "${YELLOW}⚠ $profile scan completed with rule failures (exit code $oscal_script_exit_code)${NC}"
+    else
+        echo -e "${RED}✗ $profile scan command failed (exit code $oscal_script_exit_code)${NC}"
+    fi
   fi
   echo
 done
