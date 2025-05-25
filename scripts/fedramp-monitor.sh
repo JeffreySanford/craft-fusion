@@ -82,20 +82,31 @@ while true; do
     # OSCAL/SCAP scan check
     echo -e "${BLUE}[OSCAL] Checking for recent OpenSCAP scan...${NC}"
     if [ -f "$OSCAL_RESULT_FILE" ]; then
-      LAST_RUN=$(stat -c %Y "$OSCAL_RESULT_FILE")
-      NOW_TS=$(date +%s)
-      AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
-      if [ "$AGE_DAYS" -le "$OSCAL_MAX_AGE_DAYS" ]; then
-        echo -e "${GREEN}  [✓] OpenSCAP scan found ($AGE_DAYS days ago)${NC}"
-        bar "OSCAL" 30 "$GREEN"
-      else
-        echo -e "${YELLOW}  [!] OpenSCAP scan is older than $OSCAL_MAX_AGE_DAYS days ($AGE_DAYS days ago)${NC}"
-        bar "OSCAL" 10 "$YELLOW"
-      fi
-      echo -e "  Report: $OSCAL_REPORT_FILE"
+        LAST_RUN=$(stat -c %Y "$OSCAL_RESULT_FILE")
+        NOW_TS=$(date +%s)
+        AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
+        if [ "$AGE_DAYS" -le "$OSCAL_MAX_AGE_DAYS" ]; then
+            echo -e "   ${GREEN}✓ OpenSCAP scan found ($AGE_DAYS days ago)${NC}"
+        else
+            echo -e "   ${YELLOW}⚠️  OpenSCAP scan is older than $OSCAL_MAX_AGE_DAYS days ($AGE_DAYS days ago)${NC}"
+        fi
+        echo -e "   Report: ${CYAN}$OSCAL_REPORT_FILE${NC}"
+        # Optional: show pass/fail summary if xmllint is available
+        if command -v xmllint &>/dev/null; then
+            PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null || echo 0)
+            FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null || echo 0)
+            echo -e "   ${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}"
+        fi
     else
-      echo -e "${RED}  [!] No OpenSCAP scan results found!${NC}"
-      bar "OSCAL" 0 "$RED"
+        echo -e "   ${RED}✗ No OpenSCAP scan results found in oscal-analysis/${NC}"
+        # Auto-run OSCAL scan if not found
+        echo -e "${YELLOW}Running OSCAL scan (standard profile) to generate results...${NC}"
+        sudo ./scripts/fedramp-oscal.sh standard
+        if [ -f "$OSCAL_RESULT_FILE" ]; then
+            echo -e "   ${GREEN}✓ OSCAL scan generated. Re-run monitor to see results.${NC}"
+        else
+            echo -e "   ${RED}✗ OSCAL scan failed to generate results.${NC}"
+        fi
     fi
 
     # AC-2: Unauthorized UID 0 Accounts
