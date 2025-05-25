@@ -89,6 +89,9 @@ export NX_CACHE_DIRECTORY="/tmp/nx-cache"
 # Ensure scripts are executable
 chmod +x scripts/*.sh
 
+# --- System Prep: Clean up lingering processes and free memory ---
+source "$(dirname "$0")/system-prep.sh"
+
 # Add vibrant step headers for each major step
 step_header() {
   local title="$1"

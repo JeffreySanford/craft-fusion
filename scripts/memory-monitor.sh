@@ -12,6 +12,9 @@ WHITE='\033[1;37m'
 BOLD='\033[1m'
 NC='\033[0m'
 
+# --- System Prep: Clean up lingering processes and free memory ---
+source "$(dirname "$0")/system-prep.sh"
+
 # Network monitoring variables
 LAST_RX_BYTES=0
 LAST_TX_BYTES=0

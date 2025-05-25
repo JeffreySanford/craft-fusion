@@ -20,6 +20,9 @@ MAGENTA=$'\033[0;35m' # Added MAGENTA for consistency with deploy-all
 WEB_ROOT="/var/www/jeffreysanford.us"
 BACKUP_DIR="/var/backups/jeffreysanford.us"
 
+# --- System Prep: Clean up lingering processes and free memory ---
+source "$(dirname "$0")/system-prep.sh"
+
 # --- Progress Function (copied from deploy-all.sh) ---
 print_progress() {
     local title="$1"

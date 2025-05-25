@@ -12,6 +12,9 @@ NC='\033[0m'
 
 echo "=== Clean Build Started ==="
 
+# --- System Prep: Clean up lingering processes and free memory ---
+source "$(dirname "$0")/system-prep.sh"
+
 echo -e "${BLUE}1. Cleaning individual app dist directories...${NC}"
 # Clean specific app directories
 rm -rf dist/apps/craft-web/

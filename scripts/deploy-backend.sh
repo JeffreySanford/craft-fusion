@@ -16,6 +16,9 @@ NC='\033[0m'
 APP_DIR="/var/www/craft-fusion"
 LOG_DIR="/var/log/craft-fusion"
 
+# --- System Prep: Clean up lingering processes and free memory ---
+source "$(dirname "$0")/system-prep.sh"
+
 echo -e "${BLUE}1. Stopping existing services...${NC}"
 # Stop PM2 processes if they exist
 if command -v pm2 &> /dev/null; then
