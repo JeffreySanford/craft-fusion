@@ -300,10 +300,10 @@ for profile in "${OSCAL_PROFILES[@]}"; do
     # Show pass/fail/total summary if xmllint is available
     if command -v xmllint &>/dev/null; then
       # Use more robust XPath and add notapplicable
-      TOTAL_XPATH="count(//TestResult//rule-result)"
-      PASS_XPATH="count(//TestResult//rule-result[result='pass'])"
-      FAIL_XPATH="count(//TestResult//rule-result[result='fail'])"
-      NOTAPPLICABLE_XPATH="count(//TestResult//rule-result[result='notapplicable'])"
+      TOTAL_XPATH="count(//rule-result)"
+      PASS_XPATH="count(//rule-result[result='pass'])"
+      FAIL_XPATH="count(//rule-result[result='fail'])"
+      NOTAPPLICABLE_XPATH="count(//rule-result[result='notapplicable'])"
       TOTAL=$(xmllint --xpath "$TOTAL_XPATH" "$OSCAL_RESULT_FILE" 2>/dev/null)
       PASS=$(xmllint --xpath "$PASS_XPATH" "$OSCAL_RESULT_FILE" 2>/dev/null)
       FAIL=$(xmllint --xpath "$FAIL_XPATH" "$OSCAL_RESULT_FILE" 2>/dev/null)
@@ -665,10 +665,10 @@ while true; do
             # Show pass/fail summary if xmllint is available
             if command -v xmllint &>/dev/null; then
                 # Use more robust XPath and add notapplicable
-                TOTAL_XPATH_LOOP="count(//TestResult//rule-result)"
-                PASS_XPATH_LOOP="count(//TestResult//rule-result[result='pass'])"
-                FAIL_XPATH_LOOP="count(//TestResult//rule-result[result='fail'])"
-                NOTAPPLICABLE_XPATH_LOOP="count(//TestResult//rule-result[result='notapplicable'])"
+                TOTAL_XPATH_LOOP="count(//rule-result)"
+                PASS_XPATH_LOOP="count(//rule-result[result='pass'])"
+                FAIL_XPATH_LOOP="count(//rule-result[result='fail'])"
+                NOTAPPLICABLE_XPATH_LOOP="count(//rule-result[result='notapplicable'])"
                 TOTAL=$(xmllint --xpath "$TOTAL_XPATH_LOOP" "$current_profile_result_file" 2>/dev/null)
                 PASS=$(xmllint --xpath "$PASS_XPATH_LOOP" "$current_profile_result_file" 2>/dev/null)
                 FAIL=$(xmllint --xpath "$FAIL_XPATH_LOOP" "$current_profile_result_file" 2>/dev/null)

@@ -140,10 +140,10 @@ while true; do
         printf "   Report: ${CYAN}%s${NC}\n" "$current_profile_report_file"
         if command -v xmllint &>/dev/null; then
           # Use more robust XPath and add notapplicable
-          TOTAL_XPATH="count(//TestResult//rule-result)"
-          PASS_XPATH="count(//TestResult//rule-result[result='pass'])"
-          FAIL_XPATH="count(//TestResult//rule-result[result='fail'])"
-          NOTAPPLICABLE_XPATH="count(//TestResult//rule-result[result='notapplicable'])"
+          TOTAL_XPATH="count(//rule-result)"
+          PASS_XPATH="count(//rule-result[result='pass'])"
+          FAIL_XPATH="count(//rule-result[result='fail'])"
+          NOTAPPLICABLE_XPATH="count(//rule-result[result='notapplicable'])"
           TOTAL=$(xmllint --xpath "$TOTAL_XPATH" "$current_profile_result_file" 2>/dev/null)
           PASS=$(xmllint --xpath "$PASS_XPATH" "$current_profile_result_file" 2>/dev/null)
           FAIL=$(xmllint --xpath "$FAIL_XPATH" "$current_profile_result_file" 2>/dev/null)

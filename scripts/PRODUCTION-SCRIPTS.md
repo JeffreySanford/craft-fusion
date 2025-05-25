@@ -30,9 +30,51 @@ Experimental and completed scripts have been moved to `scripts/archive/`:
 
 ## Compliance
 
-- **FedRAMP/OSCAL Profiles Supported:** standard, ospp, pci-dss, cusp, medium-high, rev5, and **truenorth** (truenorth exceeds all standards)
+### FedRAMP/OSCAL Profiles Supported
 
-## Usage
+| Profile         | Status/Color         | Description                                                                                                   | Key Features / Checks                                                                                 |
+|----------------|----------------------|--------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
+| `standard`     | ![#228B22](https://via.placeholder.com/10/228B22?text=+) Green | Baseline security (recommended for most)                                                                     | Basic OSCAL/SCAP scan, XML/HTML reports, health checks, service status, port checks, file/dir checks, resource usage, network health, audit log presence, summary and detailed logs |
+| `ospp`         | ![#4682B4](https://via.placeholder.com/10/4682B4?text=+) Blue  | Protection Profile for General Purpose Operating Systems                                                     | OSPP-specific controls, audit logging, system process checks, advanced file/dir permissions, systemd service validation, log rotation, process anomaly detection, user account checks |
+| `pci-dss`      | ![#FFD700](https://via.placeholder.com/10/FFD700?text=+) Gold  | Payment Card Industry Data Security Standard                                                                 | PCI-DSS controls, encryption checks, access control, log retention, cardholder data checks, secure transport, audit trail validation, compliance report archiving |
+| `cusp`         | ![#8A2BE2](https://via.placeholder.com/10/8A2BE2?text=+) Purple| Custom User Security Profile (Fedora-specific)                                                               | Custom controls, Fedora hardening, custom audit checks, SELinux/AppArmor status, kernel parameter checks, custom compliance scripts, Fedora-specific logging |
+| `medium-high`  | ![#FF8C00](https://via.placeholder.com/10/FF8C00?text=+) Orange| FedRAMP Rev5 Medium/High (pre-release, forward compatible)                                                   | Enhanced controls, more frequent scan checks, stricter logging, pre-2025 requirements, advanced NIST controls, log integrity, incident response checks |
+| <span style="color:#1e90ff;font-weight:bold;">`rev5`</span> | <span style="color:#1e90ff;">Blue (New)</span> | <b>FedRAMP Rev5</b>, <b>new standard</b> – <i>not yet officially defined</i> (2025)                        | All medium-high checks, new NIST controls, advanced audit, real-time compliance logging, continuous monitoring, advanced incident detection, forward-compatible logging, compliance evidence collection |
+| <span style="color:#ff8c00;font-weight:bold;">`fedramp20x`</span> | <span style="color:#ff8c00;">Orange (Future)</span> | <b>FedRAMP 20x</b>, <b>May 2025 specification</b> – <b>future standard</b>                                 | All rev5 checks, forward compatibility, continuous monitoring, 2025+ requirements, automated compliance reporting, AI-driven anomaly detection, advanced log analytics, future-proof controls |
+| <span style="color:#32cd32;font-weight:bold;">`truenorth`</span> | <span style="color:#32cd32;">Lime Green (Custom)</span> | <b>Exceeds all standards</b>, <b>real-time monitoring</b>, 3FAO/3PAO, <b>not yet officially defined</b> | All fedramp20x checks, real-time monitoring, 3FAO/3PAO, custom controls, anomaly detection, reporting, AI-based compliance, live endpoint monitoring, advanced alerting, compliance dashboard, custom JSON validation |
+
+> **Note:** `medium-high`, <span style="color:#1e90ff;">`rev5`</span>, and <span style="color:#ff8c00;">`fedramp20x`</span> are included for forward compatibility with the May 2025 FedRAMP 20x update. <span style="color:#32cd32;">`truenorth`</span> is a custom profile that exceeds all current and planned standards.
+
+#### Additional Checks & Logging (All Profiles)
+
+- **System Health:**
+  - Service status (nginx, PM2, Node, Go, etc.)
+  - Port checks (80, 443, 3000, 4000, etc.)
+  - File/directory existence and permissions
+  - Resource usage (CPU, memory, disk, swap)
+  - Network connectivity and endpoint health
+  - System uptime and load
+  - Open file limits and process counts
+  - User account and group checks
+- **FedRAMP/OSCAL-Specific:**
+  - OSCAL/SCAP scan results (XML/HTML)
+  - Profile-specific control checks (see table above)
+  - Audit log presence, rotation, and integrity
+  - Real-time monitoring (for `truenorth`, `fedramp20x`, `rev5`)
+  - Anomaly detection and alerting (for `truenorth`, `fedramp20x`)
+  - Compliance report generation and archiving
+  - JSON schema validation for custom profiles (e.g., `truenorth-template.json`)
+  - Evidence collection and automated compliance documentation
+- **Logging:**
+  - All scripts log to timestamped files in `logs/` or `oscal-analysis/`
+  - Color-coded output for quick status review
+  - Summary tables and detailed logs for each scan
+  - Error and warning highlighting
+  - Recommendations for remediation if checks fail
+  - Compliance dashboard output (for advanced/future profiles)
+  - AI-driven log analysis (for `truenorth`, `fedramp20x`)
+
+#### Example Usage
 
 ```bash
 # Full production deployment
@@ -43,4 +85,14 @@ Experimental and completed scripts have been moved to `scripts/archive/`:
 
 # Monitor system resources
 ./scripts/memory-monitor.sh
+
+# Run OSCAL/FedRAMP scan (all profiles)
+sudo ./scripts/fedramp-minor.sh
+
+# Run TrueNorth OSCAL test
+bash ./scripts/truenorth-oscal-test.sh
 ```
+
+---
+
+For more details, see individual script headers and logs in `oscal-analysis/`.
