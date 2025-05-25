@@ -96,6 +96,21 @@ else
   echo -e "${GREEN}✓ node_modules up to date, skipping npm install${NC}"
 fi
 
+# === Phase 0: FedRAMP OSCAL Compliance Scan (Optional) ===
+echo -e "${BLUE}=== Phase 0: FedRAMP OSCAL Compliance Scan (Optional) ===${NC}"
+read -p "Run a FedRAMP OSCAL scan before deployment? (y/N): " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    ./scripts/fedramp-oscal.sh standard
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✓ OSCAL scan complete. See ./oscal-analysis/oscap-report.html${NC}"
+    else
+        echo -e "${YELLOW}⚠ OSCAL scan failed or incomplete${NC}"
+    fi
+else
+    echo -e "${YELLOW}Skipping OSCAL scan${NC}"
+fi
+
 # Build backend and frontend in parallel
 
 echo -e "${BLUE}=== Phase 1: Backend & Frontend Deployment (Parallel) ===${NC}"

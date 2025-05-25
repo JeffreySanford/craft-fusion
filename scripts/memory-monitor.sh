@@ -247,6 +247,12 @@ check_server_status() {
     printf "   %s: %b%s%b\n" "$name" "$color" "$status" "$NC"
 }
 
+# OSCAL/SCAP scan check (FedRAMP compliance)
+OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
+OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results.xml"
+OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report.html"
+OSCAL_MAX_AGE_DAYS=7
+
 init_screen
 START_TIME=$(date +%s)
 
@@ -510,6 +516,28 @@ while true; do
     
     echo
     echo -e "${CYAN}Press Ctrl+C to exit monitor${NC}"
+    
+    echo
+    echo -e "${BOLD}${CYAN}🛡️  OSCAL/FedRAMP Compliance Scan:${NC}"
+    if [ -f "$OSCAL_RESULT_FILE" ]; then
+        LAST_RUN=$(stat -c %Y "$OSCAL_RESULT_FILE")
+        NOW_TS=$(date +%s)
+        AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
+        if [ "$AGE_DAYS" -le "$OSCAL_MAX_AGE_DAYS" ]; then
+            echo -e "   ${GREEN}✓ OpenSCAP scan found ($AGE_DAYS days ago)${NC}"
+        else
+            echo -e "   ${YELLOW}⚠️  OpenSCAP scan is older than $OSCAL_MAX_AGE_DAYS days ($AGE_DAYS days ago)${NC}"
+        fi
+        echo -e "   Report: ${CYAN}$OSCAL_REPORT_FILE${NC}"
+        # Optional: show pass/fail summary if xmllint is available
+        if command -v xmllint &>/dev/null; then
+            PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
+            FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
+            echo -e "   ${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}"
+        fi
+    else
+        echo -e "   ${RED}✗ No OpenSCAP scan results found in oscal-analysis/${NC}"
+    fi
     
     sleep 30
 done

@@ -1,6 +1,6 @@
 #!/bin/bash
 # fedramp-oscal.sh - Run OpenSCAP (oscap) with selected SCAP Security Guide profile for Fedora
-# Usage: sudo bash scripts/fedramp-oscal.sh [standard|ospp|pci-dss|cusp]
+# Usage: sudo ./scripts/fedramp-oscal.sh [standard|ospp|pci-dss|cusp]
 
 PROFILE=${1:-standard}
 PROFILE_ID=""
@@ -34,7 +34,7 @@ if [ ! -f "$SCAP_CONTENT" ]; then
 fi
 
 echo "Running OpenSCAP scan with profile: $PROFILE_ID"
-sudo oscap xccdf eval --profile "$PROFILE_ID" \
+oscap xccdf eval --profile "$PROFILE_ID" \
   --results "$RESULTS" \
   --report "$REPORT" \
   "$SCAP_CONTENT"
