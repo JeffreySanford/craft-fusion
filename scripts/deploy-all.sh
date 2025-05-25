@@ -161,12 +161,15 @@ fi
 # Only install dependencies if node_modules is missing or package-lock.json changed
 if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
   echo -e "${CYAN}Installing dependencies (detected change)...${NC}"
+  echo -e "${BLUE}This step can take several minutes. NPM will provide verbose logs below.${NC}"
+  echo -e "${BLUE}The progress bar is an overall estimate for this NPM installation phase.${NC}"
+  echo -e "${BLUE}Please be patient while NPM completes all its tasks.${NC}"
   NPM_CI_ESTIMATE_SECONDS=300 # 5 minutes
   phase_start_time=$(date +%s)
   print_progress "NPM Install (npm ci)" "$NPM_CI_ESTIMATE_SECONDS" "$phase_start_time" &
   progress_pid=$!
 
-  npm ci --omit=optional --no-audit --prefer-offline --progress=false --maxsockets=1
+  npm ci --loglevel verbose --omit=optional --no-audit --prefer-offline --maxsockets=1
   npm_ci_status=$?
 
   kill "$progress_pid" &>/dev/null || true
@@ -179,12 +182,15 @@ if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
   else
     # Fallback or retry logic if needed
     echo -e "${YELLOW}⚠ First npm ci failed, trying with reduced concurrency...${NC}"
+    echo -e "${BLUE}This retry can also take several minutes. NPM will provide verbose logs below.${NC}"
+    echo -e "${BLUE}The progress bar is an overall estimate for this NPM installation retry phase.${NC}"
+    echo -e "${BLUE}Please be patient while NPM completes all its tasks.${NC}"
     NPM_CI_RETRY_ESTIMATE_SECONDS=300
     phase_start_time=$(date +%s)
     print_progress "NPM Install (retry)" "$NPM_CI_RETRY_ESTIMATE_SECONDS" "$phase_start_time" &
     progress_pid=$!
 
-    npm ci --maxsockets 1 --omit=optional --no-audit --prefer-offline --progress=false
+    npm ci --loglevel verbose --maxsockets 1 --omit=optional --no-audit --prefer-offline
     npm_ci_retry_status=$?
     kill "$progress_pid" &>/dev/null || true
     wait "$progress_pid" &>/dev/null || true
