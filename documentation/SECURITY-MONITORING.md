@@ -111,6 +111,19 @@ sudo ./scripts/fedramp-oscal.sh cusp
 
 ---
 
+# TrueNorth OSCAL Integration
+
+## New Files
+- **truenorth-oscal-test.sh**: Validates the new TrueNorth OSCAL profile and test files for real-time, Rev5, and 3PAO/3FAO compliance.
+- **truenorth-template.json**: OSCAL template for TrueNorth real-time, audit-ready Rev5 profile.
+- **truenorth-test.json**: Test case for TrueNorth OSCAL profile.
+
+## Usage
+- Run `truenorth-oscal-test.sh` to validate your OSCAL files against the TrueNorth profile.
+- Integrate these files and tests into your deployment pipeline to ensure continuous compliance.
+
+---
+
 **References:**
 - [OpenSCAP Documentation](https://www.open-scap.org/tools/openscap-base/)
 - [SCAP Security Guide](https://github.com/ComplianceAsCode/content)

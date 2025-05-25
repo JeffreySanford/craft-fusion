@@ -147,6 +147,7 @@ All PM2 services should be started after running `system-prep.sh` and using the 
 | deploy-all.sh           | Full build & deployment                      |
 | fedramp-minor.sh        | OSCAL/FedRAMP compliance scans               |
 | clean-build.sh          | Clean, reset, and build all apps             |
+| truenorth-oscal-test.sh   | Validates TrueNorth OSCAL Rev5 profile/test         |
 
 ## Example: Start All Services
 ```bash

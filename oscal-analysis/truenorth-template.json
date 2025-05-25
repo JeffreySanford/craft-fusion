@@ -1,0 +1,51 @@
+{
+  "profile": "truenorth-rev5",
+  "description": "TrueNorth Real-Time Rev5 Monitoring & Auditing Profile",
+  "oscal_version": "1.0.4",
+  "baseline": "FedRAMP Moderate Rev5",
+  "control_families": [
+    "AC",
+    "AU",
+    "CM",
+    "CA",
+    "IR",
+    "RA",
+    "SI"
+  ],
+  "features": {
+    "real_time_monitoring": true,
+    "audit_logging": true,
+    "automated_validation": [
+      "schema",
+      "schematron",
+      "content"
+    ],
+    "3PAO_3FAO_hooks": true,
+    "visual_output": [
+      "cli",
+      "html"
+    ],
+    "api_cli_parity": true
+  },
+  "audit_log_example": {
+    "action": "OSCAL_VALIDATION_SUCCEEDED",
+    "resource": "ssp",
+    "user": "auditor@truenorth.com",
+    "timestamp": "2025-05-25T20:00:00Z",
+    "details": {
+      "documentPath": "./output/system-security-plan.json",
+      "validationType": "schematron"
+    }
+  },
+  "compliance": {
+    "rev5": true,
+    "3PAO": true,
+    "3FAO": true
+  },
+  "templates": [
+    "ssp",
+    "sap",
+    "sar",
+    "poam"
+  ]
+}

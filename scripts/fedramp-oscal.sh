@@ -1,7 +1,7 @@
 #!/bin/bash
 # fedramp-oscal.sh - Run OpenSCAP (oscap) with selected SCAP Security Guide profile for Fedora
 # Usage:
-#   sudo ./scripts/fedramp-oscal.sh [standard|ospp|pci-dss|cusp]
+#   sudo ./scripts/fedramp-oscal.sh [standard|ospp|pci-dss|cusp|truenorth]
 #
 # Runs an OpenSCAP (oscap) scan using the selected SCAP Security Guide profile for Fedora.
 # Generates XML and HTML reports in ./oscal-analysis/ for each profile.
@@ -11,6 +11,7 @@
 #   ospp       - Protection Profile for General Purpose Operating Systems
 #   pci-dss    - Payment Card Industry Data Security Standard
 #   cusp       - Custom User Security Profile (Fedora-specific)
+#   truenorth  - TrueNorth custom OSCAL profile (not a SCAP profile, for monitoring and compliance reporting)
 #
 # Example:
 #   sudo ./scripts/fedramp-oscal.sh standard
@@ -55,16 +56,18 @@ case "$PROFILE" in
     PROFILE_ID="xccdf_org.ssgproject.content_profile_PLACEHOLDER_medium_high" ;; # Placeholder for future FedRAMP Rev 5 Medium/High - Update when actual ID is known
   rev5)
     PROFILE_ID="xccdf_org.ssgproject.content_profile_PLACEHOLDER_rev5" ;; # Placeholder for future FedRAMP Rev 5 - Update when actual ID is known
+  truenorth)
+    PROFILE_ID="oscal_truenorth_profile" ;; # TrueNorth custom OSCAL profile (not a SCAP profile)
   *)
     echo "Unknown profile: $PROFILE"
-    echo "Usage: $0 [standard|ospp|pci-dss|cusp|medium-high (placeholder for Rev 5)|rev5 (placeholder for Rev 5)]"
+    echo "Usage: $0 [standard|ospp|pci-dss|cusp|medium-high|rev5|truenorth]"
     exit 1
     ;;
 esac
 
 if [ "$SUPPRESS_PRE_SCAN_SUMMARY_FLAG" != "--no-summary" ]; then
   # === Actionable OSCAL Scans Summary (pre-scan check) ===
-  OSCAL_PROFILES_TO_CHECK=(standard ospp pci-dss cusp medium-high rev5) # medium-high & rev5 are placeholders for future Rev 5
+  OSCAL_PROFILES_TO_CHECK=(standard ospp pci-dss cusp medium-high rev5 truenorth) # Added truenorth for monitoring
   OSCAL_MAX_AGE_DAYS=7
   actionable_scans_display=()
   all_scans_ok=true
@@ -204,6 +207,13 @@ if [ "$PROFILE" = "medium-high" ] || [ "$PROFILE" = "rev5" ]; then
   echo -e "${YELLOW}SCAP Security Guide Project: ${CYAN}https://www.open-scap.org/security-policies/scap-security-guide/${NC}"
   echo -e "${YELLOW}FedRAMP Program: ${CYAN}https://www.fedramp.gov/${NC}"
   echo -e "${YELLOW}----------------------------------------------------------------------${NC}"
+fi
+
+if [ "$PROFILE" = "truenorth" ]; then
+  echo -e "${BOLD}${CYAN}TrueNorth OSCAL profile selected. No SCAP scan will be run.${NC}"
+  echo -e "${CYAN}Validating truenorth-template.json and truenorth-test.json...${NC}"
+  bash "$OSCAL_DIR/../scripts/truenorth-oscal-test.sh"
+  exit $?
 fi
 
 echo -e "${BOLD}${CYAN}Running OpenSCAP scan with profile: ${YELLOW}$PROFILE_ID${NC}"
