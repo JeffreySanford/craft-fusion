@@ -79,7 +79,7 @@ fi
 for profile in "${PROFILES[@]}"; do
   echo -e "${BOLD}${CYAN}=== Running OSCAL scan for profile: $profile ===${NC}"
   
-  if sudo "$SCRIPT_DIR/fedramp-oscal.sh" --no-summary "$profile"; then
+  if sudo "$SCRIPT_DIR/fedramp-oscal.sh" "$profile" --no-summary; then
     echo -e "${GREEN}✓ $profile scan completed${NC}"
     
     # Create user-readable copies with simplified names
