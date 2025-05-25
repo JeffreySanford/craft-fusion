@@ -251,6 +251,7 @@ check_server_status() {
 OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
 OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results.xml"
 OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report.html"
+OSCAL_PROFILES=("standard" "ospp" "pci-dss" "cusp")
 OSCAL_MAX_AGE_DAYS=7
 
 # Vibrant environment summary and time estimate for memory monitoring
@@ -544,25 +545,34 @@ while true; do
     
     echo
     echo -e "${BOLD}${CYAN}🛡️  OSCAL/FedRAMP Compliance Scan:${NC}"
-    if [ -f "$OSCAL_RESULT_FILE" ]; then
-        LAST_RUN=$(stat -c %Y "$OSCAL_RESULT_FILE")
-        NOW_TS=$(date +%s)
-        AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
-        if [ "$AGE_DAYS" -le "$OSCAL_MAX_AGE_DAYS" ]; then
-            echo -e "   ${GREEN}✓ OpenSCAP scan found ($AGE_DAYS days ago)${NC}"
+    for PROFILE in "${OSCAL_PROFILES[@]}"; do
+        PROFILE_RESULT_FILE="$OSCAL_DIR/oscap-results-$PROFILE.xml"
+        PROFILE_REPORT_FILE="$OSCAL_DIR/oscap-report-$PROFILE.html"
+        if [ "$PROFILE" = "standard" ]; then
+            PROFILE_RESULT_FILE="$OSCAL_RESULT_FILE"
+            PROFILE_REPORT_FILE="$OSCAL_REPORT_FILE"
+        fi
+        if [ -f "$PROFILE_RESULT_FILE" ]; then
+            LAST_RUN=$(stat -c %Y "$PROFILE_RESULT_FILE")
+            NOW_TS=$(date +%s)
+            AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
+            if [ "$AGE_DAYS" -le "$OSCAL_MAX_AGE_DAYS" ]; then
+                echo -e "   ${GREEN}✓ OpenSCAP scan found for ${PROFILE} ($AGE_DAYS days ago)${NC}"
+            else
+                echo -e "   ${YELLOW}⚠️  OpenSCAP scan for ${PROFILE} is older than $OSCAL_MAX_AGE_DAYS days ($AGE_DAYS days ago)${NC}"
+            fi
+            echo -e "   Report: ${CYAN}$PROFILE_REPORT_FILE${NC}"
+            # Show pass/fail summary if xmllint is available
+            if command -v xmllint &>/dev/null; then
+                PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$PROFILE_RESULT_FILE" 2>/dev/null)
+                FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$PROFILE_RESULT_FILE" 2>/dev/null)
+                echo -e "   ${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}"
+            fi
         else
-            echo -e "   ${YELLOW}⚠️  OpenSCAP scan is older than $OSCAL_MAX_AGE_DAYS days ($AGE_DAYS days ago)${NC}"
+            echo -e "   ${RED}✗ No OpenSCAP scan results found for ${PROFILE}${NC}"
         fi
-        echo -e "   Report: ${CYAN}$OSCAL_REPORT_FILE${NC}"
-        # Optional: show pass/fail summary if xmllint is available
-        if command -v xmllint &>/dev/null; then
-            PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
-            FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
-            echo -e "   ${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}"
-        fi
-    else
-        echo -e "   ${RED}✗ No OpenSCAP scan results found in oscal-analysis/${NC}"
-    fi
+    done
+    echo -e "${CYAN}Available OSCAL scan options:${NC} ${WHITE}${OSCAL_PROFILES[*]}${NC}"
     
     sleep 30
 done

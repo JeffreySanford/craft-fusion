@@ -154,7 +154,9 @@ while true; do
     WW_FILES=$(find /etc /var /home -xdev -type f -perm -0002 2>/dev/null | head -5)
     if [ -n "$WW_FILES" ]; then
       while read -r f; do
-        echo -e "${YELLOW}  [!] World-writable file: $f${NC}"
+        if [ -n "$f" ]; then
+          echo -e "${YELLOW}  [!] World-writable file: $f${NC}"
+        fi
       done <<< "$WW_FILES"
       bar "CM-7" 10 "$YELLOW"
     else
