@@ -63,6 +63,11 @@ Lines should not end with spaces. Use a linter to detect these.
 
 Use *italic* for emphasis and **bold** for strong emphasis.
 
+## Project-wide Standards
+
+- All documentation should reference the vibrant, color-coded CLI output where relevant.
+- DRY scripting and system-prep.sh are project-wide standards.
+
 ---
 
-Last Updated: 2025-03-25
+Last Updated: 2025-05-25

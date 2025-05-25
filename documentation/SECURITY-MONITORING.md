@@ -1,22 +1,23 @@
-# SECURITY MONITORING
+# SECURITY MONITORING (2025 Vibrant Edition)
 
 This project provides both real-time and scheduled security monitoring for compliance and operational assurance.
 
-## Real-Time Monitoring: `fedramp-monitor.sh`
-
-- **Location:** `scripts/fedramp-monitor.sh`
-- **Purpose:** Continuously checks key technical FedRAMP controls (AC-2, CM-7) and verifies that a recent OpenSCAP (OSCAL) scan has been performed.
-- **Log Output:** `/var/log/fedramp-monitor.log` (tail this file for live status)
-- **OSCAL Reports:** All OpenSCAP results and HTML reports are stored in the root `oscal-analysis/` folder.
+## 🌈 Real-Time Monitoring: `fedramp-monitor.sh` & `memory-monitor.sh`
+- **Location:** `scripts/fedramp-monitor.sh`, `scripts/memory-monitor.sh`
+- **Purpose:** Continuously checks key technical FedRAMP controls and system health, with vibrant color-coded output.
 - **How to Run:**
   ```bash
   sudo bash scripts/fedramp-monitor.sh
+  bash scripts/memory-monitor.sh
   ```
-- **What it checks:**
-  - Unauthorized UID 0 accounts (AC-2)
-  - World-writable files (CM-7)
-  - Age and presence of the latest OpenSCAP scan results (OSCAL)
-  - Location of the latest OSCAL report for review
+- **All monitoring scripts now source `system-prep.sh` for consistent system prep.**
+
+### Example Vibrant Compliance Output
+```text
+🛡️  OSCAL/FedRAMP Compliance Scan:
+   ✓ OpenSCAP scan found for standard (2 days ago)
+   Pass: 120  Fail: 0  N/A: 5  Total: 125
+```
 
 ## Scheduled Full Baseline Scans: `fedramp-oscal.sh`
 

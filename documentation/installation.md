@@ -1,4 +1,4 @@
-# 🚀 Craft Fusion Installation Guide
+# 🚀 Craft Fusion Installation Guide (2025 Update)
 
 ## 📋 Required Tools Installation
 
@@ -81,6 +81,29 @@ npm run install:deps
 
 # Start Development
 npm start
+```
+
+## 🌈 Post-Install System Prep
+After installing dependencies, always run:
+```bash
+bash scripts/system-prep.sh
+```
+This optimizes your system for memory and process management before any build or deploy.
+
+## 🟩 Environment Variables
+All scripts use `.env` for configuration (domain, ports, etc.). Example:
+```env
+NODE_ENV=production
+DOMAIN=jeffreysanford.us
+PORT=3000
+HOST=0.0.0.0
+EXPOSE_API=true
+```
+
+## 🖥️ Vibrant Monitoring
+For live system health, run:
+```bash
+bash scripts/memory-monitor.sh
 ```
 
 ## 🎯 Common Issues

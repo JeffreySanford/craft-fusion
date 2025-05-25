@@ -57,4 +57,8 @@ npm install your-dev-package --save-dev
 <!-- Ensure blank lines around headings/lists -->
 <!-- Added "Last Updated" -->
 
-Last Updated: 2025-03-25
+## Project-wide Standards
+- All scripts use DRY system prep via `system-prep.sh`.
+- Vibrant, color-coded output is standard for all CLI tools.
+
+Last Updated: 2025-05-25

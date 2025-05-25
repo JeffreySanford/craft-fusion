@@ -240,3 +240,9 @@ export class RecordListComponent implements OnInit {
   }
 }
 ```
+
+## Project-wide Standards
+- All scripts use DRY system prep via `system-prep.sh`.
+- Vibrant, color-coded output is standard for all CLI tools.
+
+Last Updated: 2025-05-25

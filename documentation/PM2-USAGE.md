@@ -1,4 +1,4 @@
-# PM2 Usage Guide
+# PM2 Usage Guide (2025 Vibrant Edition)
 
 This document explains how to use PM2 with the production-focused `ecosystem.config.js` configuration.
 
@@ -136,3 +136,19 @@ This provides:
 - Development-optimized builds
 - Source maps
 - Debug logging
+
+## 🚦 Script-Driven Service Management
+All PM2 services should be started after running `system-prep.sh` and using the provided scripts:
+
+| Script                  | Purpose                                      |
+|-------------------------|----------------------------------------------|
+| system-prep.sh          | System prep, memory/process cleanup, tuning  |
+| memory-monitor.sh       | Live system health dashboard                 |
+| deploy-all.sh           | Full build & deployment                      |
+| fedramp-minor.sh        | OSCAL/FedRAMP compliance scans               |
+| clean-build.sh          | Clean, reset, and build all apps             |
+
+## Example: Start All Services
+```bash
+bash scripts/deploy-all.sh
+```

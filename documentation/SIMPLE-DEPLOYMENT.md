@@ -1,33 +1,31 @@
-# Simple Production Deployment Guide
+# Simple Production Deployment Guide (2025 Vibrant Edition)
 
-## Overview
-This guide provides a simplified approach to deploying both the NestJS and Go APIs using PM2 without clustering complexities.
+## 🚀 Vibrant Quick Start
 
-## Quick Start
+1. **Run full deployment:**
+   ```bash
+   bash scripts/deploy-all.sh
+   ```
+2. **Monitor system health in real time:**
+   ```bash
+   bash scripts/memory-monitor.sh
+   ```
+3. **Run compliance scans:**
+   ```bash
+   sudo bash scripts/fedramp-minor.sh
+   ```
 
-### 1. Build Applications
-```bash
-npm run pm2:build
+All scripts now use `system-prep.sh` for system prep, memory cleanup, and vibrant color-coded output.
+
+---
+
+## Example Vibrant Output
+```text
+🖥️  TRUE NORTH INSIGHTS: CRAFT FUSION SYSTEM MONITOR
+...colorful output...
 ```
 
-### 2. Start PM2 Services
-```bash
-npm run pm2:start
-```
-
-### 3. Monitor Services
-```bash
-npm run pm2:logs     # View logs
-npm run pm2:monitor  # Interactive dashboard
-```
-
-## Configuration Details
-
-The simplified `ecosystem.config.js` configuration:
-- **No Clustering**: Both apps run in single instances with `fork` mode
-- **Simple Restart Logic**: 10s minimum uptime, max 10 restarts, 4s delay between restarts
-- **Reliable Logging**: Structured logs with timestamps to `./logs/` directory
-- **Memory Management**: 1GB memory limit with auto-restart
+---
 
 ## Service Endpoints
 
@@ -271,12 +269,6 @@ done
 
 echo
 echo "=== Test Complete ==="
-```
-
-**Make it executable and run:**
-```bash
-chmod +x test-backends.sh
-./test-backends.sh
 ```
 
 ## Frontend Deployment
