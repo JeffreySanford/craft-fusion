@@ -1,73 +1,88 @@
 #!/bin/bash
-# fedramp-monitor.sh - FedRAMP 20x Rev 5 Security Controls Monitoring Script
-# Scans key controls every minute and logs results to fedramp-monitor.log
+# FedRAMP Rev 5 Security Controls Monitoring Script (Lite)
+# Checks AC-2 (UID 0 accounts) and CM-7 (world-writable files) every minute
 
-LOG_FILE="$(dirname "$0")/../logs/fedramp-monitor.log"
-mkdir -p "$(dirname "$LOG_FILE")"
+LOG_FILE="/var/log/fedramp-monitor.log"
+SCAN_INTERVAL=60
 
-scan_once() {
-    echo "==== FedRAMP Security Scan: $(date) ===="
-    # 1. Unauthorized users (UID 0 other than root)
-    echo "[AC-2] Checking for unauthorized UID 0 accounts..."
-    awk -F: '($3 == 0 && $1 != "root") {print $1}' /etc/passwd | while read user; do
-        echo "  [!] Unauthorized UID 0 user: $user"
-    done
+# === COLORS ===
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+MAGENTA='\033[0;35m'
+NC='\033[0m'
+BOLD='\033[1m'
 
-    # 2. World-writable files
-    echo "[CM-7] Checking for world-writable files..."
-    find / -xdev -type f -perm -0002 2>/dev/null | head -n 10 | while read file; do
-        echo "  [!] World-writable file: $file"
-    done
-
-    # 3. Suspicious processes (running as root, not in allowlist)
-    echo "[SI-4] Checking for suspicious root processes..."
-    ps -U root -u root u | grep -vE "(sshd|systemd|bash|ps|grep|init|kthreadd|kworker|dbus|cron|rsyslog|nginx|pm2|node|go)" | awk 'NR>1 {print "  [!] Suspicious root process: "$11}'
-
-    # 4. Open ports/services
-    echo "[CM-7] Listing open ports/services..."
-    ss -tuln | grep -vE "127.0.0.1|::1|127.0.1.1" | awk 'NR>1 {print "  [*] Open: "$5}'
-
-    # 5. Failed logins
-    echo "[AU-2] Checking for failed logins..."
-    lastb -n 5 2>/dev/null | awk 'NR>1 {print "  [!] Failed login: "$1, $3, $4, $5, $6, $7}'
-
-    # 6. System file integrity (basic check)
-    echo "[SI-7] Checking for modified system binaries..."
-    for bin in /bin/ls /bin/bash /usr/bin/ssh /usr/bin/sudo; do
-        if [ -f "$bin" ]; then
-            md5sum "$bin"
-        fi
-    done
-
-    # 7. Critical system updates
-    echo "[SI-2] Checking for critical updates..."
-    if command -v dnf &>/dev/null; then
-        dnf check-update --security | grep -E "Important|Critical" || echo "  [*] No critical updates found."
-    elif command -v yum &>/dev/null; then
-        yum check-update --security | grep -E "Important|Critical" || echo "  [*] No critical updates found."
-    else
-        echo "  [*] Package manager not found."
-    fi
-
-    # 8. SELinux/AppArmor status
-    echo "[AC-3] Checking SELinux/AppArmor status..."
-    if command -v getenforce &>/dev/null; then
-        echo "  SELinux: $(getenforce)"
-    elif command -v aa-status &>/dev/null; then
-        aa-status
-    else
-        echo "  [*] SELinux/AppArmor not found."
-    fi
-
-    # 9. SSH config best practices
-    echo "[SC-7] Checking SSH config..."
-    if [ -f /etc/ssh/sshd_config ]; then
-        grep -E 'PermitRootLogin|PasswordAuthentication' /etc/ssh/sshd_config
-    fi
-    echo
+bar() {
+  local label="$1"; local value="$2"; local color="$3"; local max=30
+  local n=$((value > max ? max : value))
+  printf "${color}%-20s [" "$label"
+  for ((i=0;i<n;i++)); do printf "█"; done
+  for ((i=n;i<max;i++)); do printf "·"; done
+  printf "]${NC} %s\n" "$value"
 }
 
+# Check for recent OSCAL (OpenSCAP) scan results
+OSCAL_DIR="$PROJECT_ROOT/oscal-analysis"
+OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results.xml"
+OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report.html"
+OSCAL_MAX_AGE_DAYS=7
+
+# Ensure oscal-analysis directory exists
+mkdir -p "$OSCAL_DIR"
+
 while true; do
-    scan_once | tee -a "$LOG_FILE"
-    sleep 60
+  NOW=$(date -u '+%a %b %d %I:%M:%S %p UTC %Y')
+  {
+    echo -e "${BOLD}${CYAN}==== FedRAMP Security Scan (Lite): $NOW ====${NC}"
+    echo -e "${MAGENTA}Controls Checked: 2 (AC-2, CM-7)${NC}"
+
+    # OSCAL/SCAP scan check
+    echo -e "${BLUE}[OSCAL] Checking for recent OpenSCAP scan...${NC}"
+    if [ -f "$OSCAL_RESULT_FILE" ]; then
+      LAST_RUN=$(stat -c %Y "$OSCAL_RESULT_FILE")
+      NOW_TS=$(date +%s)
+      AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
+      if [ "$AGE_DAYS" -le "$OSCAL_MAX_AGE_DAYS" ]; then
+        echo -e "${GREEN}  [✓] OpenSCAP scan found ($AGE_DAYS days ago)${NC}"
+        bar "OSCAL" 30 "$GREEN"
+      else
+        echo -e "${YELLOW}  [!] OpenSCAP scan is older than $OSCAL_MAX_AGE_DAYS days ($AGE_DAYS days ago)${NC}"
+        bar "OSCAL" 10 "$YELLOW"
+      fi
+      echo -e "  Report: $OSCAL_REPORT_FILE"
+    else
+      echo -e "${RED}  [!] No OpenSCAP scan results found!${NC}"
+      bar "OSCAL" 0 "$RED"
+    fi
+
+    # AC-2: Unauthorized UID 0 Accounts
+    echo -e "${BLUE}[AC-2] Checking for unauthorized UID 0 accounts...${NC}"
+    ROOT_USERS=$(awk -F: '($3 == 0) {print $1}' /etc/passwd | grep -vE '^root$')
+    if [ -n "$ROOT_USERS" ]; then
+      echo -e "${RED}  [!] Unauthorized UID 0 accounts: $ROOT_USERS${NC}"
+      bar "AC-2" 5 "$RED"
+    else
+      echo -e "${GREEN}  [✓] No unauthorized UID 0 accounts${NC}"
+      bar "AC-2" 30 "$GREEN"
+    fi
+
+    # CM-7: World-writable Files
+    echo -e "${BLUE}[CM-7] Checking for world-writable files...${NC}"
+    WW_FILES=$(find /etc /var /home -xdev -type f -perm -0002 2>/dev/null | head -5)
+    if [ -n "$WW_FILES" ]; then
+      while read -r f; do
+        echo -e "${YELLOW}  [!] World-writable file: $f${NC}"
+      done <<< "$WW_FILES"
+      bar "CM-7" 10 "$YELLOW"
+    else
+      echo -e "${GREEN}  [✓] No world-writable files found${NC}"
+      bar "CM-7" 30 "$GREEN"
+    fi
+
+    echo
+  } | tee -a "$LOG_FILE"
+  sleep $SCAN_INTERVAL
 done
