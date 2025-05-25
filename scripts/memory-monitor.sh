@@ -688,7 +688,16 @@ while true; do
             echo -e "   ${RED}✗ No OpenSCAP scan results found for ${profile_loop_var}${NC}"
         fi
     done
-    echo -e "${CYAN}Monitored OSCAL scan profiles:${NC} ${WHITE}${OSCAL_PROFILES[*]}${NC}"
+    # At the end, print colored monitored profiles
+    colored_profiles=""
+    for p in "${OSCAL_PROFILES[@]}"; do
+      if [ -f "$OSCAL_DIR/user-readable-results-$p.xml" ] || [ -f "$OSCAL_DIR/oscap-results-$p.xml" ]; then
+        colored_profiles+="${GREEN}$p${NC} ";
+      else
+        colored_profiles+="${RED}$p${NC} ";
+      fi
+    done
+    printf "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} %s\n" "$colored_profiles"
     
     sleep 30
 done

@@ -102,6 +102,8 @@ while true; do
 
     missing_profiles=()
     missing_standard=false # Initialize missing_standard flag
+    # Declare an associative array for profile status mapping
+    declare -A profile_status_map
     for profile in "${OSCAL_PROFILES[@]}"; do
       # Determine the most relevant result file for the current profile
       current_profile_result_file=""
@@ -191,7 +193,12 @@ while true; do
     if [ "$all_scans_ok" = false ] && [ ${#actionable_scans_display[@]} -gt 0 ]; then
       printf "${BOLD}${YELLOW}Actionable OSCAL Scans (need to be run):${NC} %s\n" "$(IFS=, ; echo "${actionable_scans_display[*]}")"
     fi
-    echo -e "${CYAN}Monitored OSCAL profiles:${NC} ${WHITE}${OSCAL_PROFILES[*]}${NC}"
+    # At the end, print colored monitored profiles
+    colored_profiles=""
+    for p in "${OSCAL_PROFILES[@]}"; do
+      colored_profiles+="${profile_status_map[$p]} ";
+    done
+    printf "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} %s\n" "$colored_profiles"
 
     # If standard scan is missing, run it automatically
     if [ "$missing_standard" = true ]; then # Check the flag
