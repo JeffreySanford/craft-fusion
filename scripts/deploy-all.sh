@@ -172,7 +172,7 @@ if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
   print_progress "NPM Install (npm ci)" "$NPM_CI_ESTIMATE_SECONDS" "$phase_start_time" &
   progress_pid=$!
 
-  npm ci --loglevel error --omit=optional --no-audit --prefer-offline --maxsockets=1
+  npm ci --loglevel error --omit=optional --no-audit --prefer-offline --maxsockets=1 --no-progress
   npm_ci_status=$?
 
   kill "$progress_pid" &>/dev/null || true
@@ -192,7 +192,7 @@ if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
     print_progress "NPM Install (retry)" "$NPM_CI_RETRY_ESTIMATE_SECONDS" "$phase_start_time" &
     progress_pid=$!
 
-    npm ci --loglevel error --maxsockets 1 --omit=optional --no-audit --prefer-offline
+    npm ci --loglevel error --maxsockets 1 --omit=optional --no-audit --prefer-offline --no-progress
     npm_ci_retry_status=$?
     kill "$progress_pid" &>/dev/null || true
     wait "$progress_pid" &>/dev/null || true
