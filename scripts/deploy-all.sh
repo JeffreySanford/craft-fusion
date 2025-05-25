@@ -3,6 +3,25 @@
 
 set -e
 
+# Vibrant deployment header
+BOLD="\033[1m"; CYAN="\033[0;36m"; NC="\033[0m"; WHITE="\033[1;37m"; GREEN="\033[0;32m"; YELLOW="\033[1;33m"; RED="\033[0;31m"; MAGENTA="\033[0;35m"; BLUE="\033[0;34m"
+
+printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════╗\n"
+printf "║        🚀 Craft Fusion Deployment: System Overview    ║\n"
+printf "╚══════════════════════════════════════════════════════════════╝${NC}\n"
+CPU_CORES=$(nproc 2>/dev/null || echo 1)
+MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
+DISK_AVAIL=$(df -h / | awk 'NR==2{print $4}')
+NET_IFACE=$(ip route | grep default | awk '{print $5}' | head -1)
+NET_IP=$(ip -4 addr show "$NET_IFACE" 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
+PING_TIME=$(ping -c 1 8.8.8.8 2>/dev/null | grep 'time=' | sed 's/.*time=\([0-9.]*\).*/\1/' | head -1)
+AUDITD_STATUS=$(systemctl is-active auditd 2>/dev/null || echo "unknown")
+
+printf "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}\n"
+printf "${BLUE}Network:     ${CYAN}$NET_IFACE${NC} (${GREEN}$NET_IP${NC})   ${BLUE}Ping: ${CYAN}${PING_TIME}ms${NC}\n"
+printf "${BLUE}Auditd:      ${CYAN}$AUDITD_STATUS${NC}\n"
+printf "${BLUE}Date:        ${WHITE}$(date)${NC}\n\n"
+
 # Parse arguments
 do_full_clean=false
 for arg in "$@"; do
@@ -100,24 +119,7 @@ else
   echo -e "${GREEN}✓ node_modules up to date, skipping npm install${NC}"
 fi
 
-# === Vibrant System & Deployment Summary ===
-CPU_CORES=$(nproc 2>/dev/null || echo 1)
-MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
-DISK_AVAIL=$(df -h / | awk 'NR==2{print $4}')
-NET_IFACE=$(ip route | grep default | awk '{print $5}' | head -1)
-NET_IP=$(ip -4 addr show "$NET_IFACE" 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
-PING_TIME=$(ping -c 1 8.8.8.8 2>/dev/null | grep 'time=' | sed 's/.*time=\([0-9.]*\).*/\1/' | head -1)
-AUDITD_STATUS=$(systemctl is-active auditd 2>/dev/null || echo "unknown")
-
-printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════╗\n"
-printf "║        🚀 Craft Fusion Deployment Environment         ║\n"
-printf "╚══════════════════════════════════════════════════════════════╝${NC}\n"
-echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}"
-echo -e "${BLUE}Network:     ${CYAN}$NET_IFACE${NC} (${GREEN}$NET_IP${NC})   ${BLUE}Ping: ${CYAN}${PING_TIME}ms${NC}"
-echo -e "${BLUE}Auditd:      ${CYAN}$AUDITD_STATUS${NC}"
-echo -e "${BLUE}Date:        ${WHITE}$(date)${NC}\n"
-
-# At each major step, print a vibrant header
+# Add vibrant step headers for each major step
 step_header() {
   local title="$1"
   printf "${BOLD}${MAGENTA}\n╔══════════════════════════════════════════════════════════════╗\n"
@@ -125,7 +127,7 @@ step_header() {
   printf "╚══════════════════════════════════════════════════════════════╝${NC}\n"
 }
 
-# Example usage at each step:
+# === Vibrant System & Deployment Summary ===
 step_header "Phase 0: FedRAMP OSCAL Compliance Scan (Optional)"
 # ...existing code...
 step_header "Phase 1: Backend & Frontend Deployment (Parallel)"
