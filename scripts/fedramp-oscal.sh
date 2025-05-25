@@ -97,17 +97,36 @@ oscap xccdf eval --profile "$PROFILE_ID" \
   --report "$REPORT" \
   "$SCAP_CONTENT"
 
+# After OpenSCAP scan, parse and print vibrant pass/fail summary with progress bars
 if [ $? -eq 0 ]; then
   echo -e "${GREEN}✓ OpenSCAP scan complete.${NC}"
   echo -e "${WHITE}Results: ${CYAN}$RESULTS${NC}"
   echo -e "${WHITE}HTML Report: ${CYAN}$REPORT${NC}"
-  # Show pass/fail summary if xmllint is available
+  # Show vibrant pass/fail summary for each control if xmllint is available
   if command -v xmllint &>/dev/null; then
+    TOTAL=$(xmllint --xpath 'count(//rule-result)' "$RESULTS" 2>/dev/null)
     PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$RESULTS" 2>/dev/null)
     FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$RESULTS" 2>/dev/null)
-    if [ -n "$PASS" ] && [ -n "$FAIL" ]; then
-      echo -e "${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}"
-    fi
+    OTHER=$((TOTAL - PASS - FAIL))
+    echo -e "${BOLD}${CYAN}\nFedRAMP OSCAL Control Results:${NC}"
+    echo -e "${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}  ${YELLOW}Other: $OTHER${NC}  ${WHITE}Total: $TOTAL${NC}"
+    # Print a vibrant progress bar for each control
+    xmllint --xpath '//rule-result' "$RESULTS" 2>/dev/null | \
+      grep -oP '<rule-result[\s\S]*?</rule-result>' | \
+      while read -r rule; do
+        TITLE=$(echo "$rule" | grep -oP 'idref="[^"]+"' | cut -d'"' -f2)
+        RESULT=$(echo "$rule" | grep -oP '<result>[^<]+</result>' | sed 's/<\/?result>//g')
+        COLOR="$WHITE"; BAR_COLOR="$WHITE"; ICON="·"
+        if [ "$RESULT" = "pass" ]; then COLOR="$GREEN"; BAR_COLOR="$GREEN"; ICON="✓"; fi
+        if [ "$RESULT" = "fail" ]; then COLOR="$RED"; BAR_COLOR="$RED"; ICON="✗"; fi
+        if [ "$RESULT" = "notapplicable" ]; then COLOR="$YELLOW"; BAR_COLOR="$YELLOW"; ICON="!"; fi
+        printf "%b%-40s %b%-8s %b" "$COLOR" "$TITLE" "$BAR_COLOR" "$RESULT" "$NC"
+        # Progress bar: pass=full green, fail=full red, notapplicable=yellow
+        if [ "$RESULT" = "pass" ]; then printf " [${GREEN}████████${NC}] "; fi
+        if [ "$RESULT" = "fail" ]; then printf " [${RED}████████${NC}] "; fi
+        if [ "$RESULT" = "notapplicable" ]; then printf " [${YELLOW}████████${NC}] "; fi
+        printf "%b\n" "$NC"
+      done
   fi
 else
   echo -e "${RED}✗ OpenSCAP scan failed.${NC}"

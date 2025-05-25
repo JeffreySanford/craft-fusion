@@ -154,12 +154,20 @@ while true; do
     for profile in "${OSCAL_PROFILES[@]}"; do
       OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results-$profile.xml"
       OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report-$profile.html"
+      if [ "$profile" = "standard" ]; then
+        # Also check for legacy report names for standard
+        if [ -f "$OSCAL_DIR/oscap-results.xml" ]; then
+          OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results.xml"
+          OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report.html"
+        fi
+      fi
       if [ -f "$OSCAL_RESULT_FILE" ]; then
         LAST_RUN=$(stat -c %Y "$OSCAL_RESULT_FILE")
         NOW_TS=$(date +%s)
         AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
         printf "   ${GREEN}✓ %s scan found (%d days ago)${NC}\n" "$profile" "$AGE_DAYS"
         printf "   Report: ${CYAN}%s${NC}\n" "$OSCAL_REPORT_FILE"
+        # Show pass/fail summary if xmllint is available
         if command -v xmllint &>/dev/null; then
           PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
           FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
@@ -169,9 +177,6 @@ while true; do
         fi
       else
         printf "   ${RED}✗ No OpenSCAP scan results found for %s${NC}\n" "$profile"
-        if [ "$profile" = "standard" ]; then
-          missing_standard=true
-        fi
       fi
     done
     printf "Available OSCAL scan options: ${YELLOW}%s${NC}\n" "${OSCAL_PROFILES[*]}"
