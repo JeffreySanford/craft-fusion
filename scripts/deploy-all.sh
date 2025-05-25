@@ -100,7 +100,7 @@ else
   echo -e "${GREEN}✓ node_modules up to date, skipping npm install${NC}"
 fi
 
-# === Vibrant Environment & Security Summary ===
+# === Vibrant System & Deployment Summary ===
 CPU_CORES=$(nproc 2>/dev/null || echo 1)
 MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
 DISK_AVAIL=$(df -h / | awk 'NR==2{print $4}')
@@ -108,48 +108,34 @@ NET_IFACE=$(ip route | grep default | awk '{print $5}' | head -1)
 NET_IP=$(ip -4 addr show "$NET_IFACE" 2>/dev/null | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -1)
 PING_TIME=$(ping -c 1 8.8.8.8 2>/dev/null | grep 'time=' | sed 's/.*time=\([0-9.]*\).*/\1/' | head -1)
 AUDITD_STATUS=$(systemctl is-active auditd 2>/dev/null || echo "unknown")
-OSCAL_REPORT="./oscal-analysis/oscap-report.html"
-OSCAL_RESULT="./oscal-analysis/oscap-results.xml"
-OSCAL_STATUS="Not run"
-if [ -f "$OSCAL_RESULT" ]; then
-  OSCAL_STATUS="$(stat -c %y "$OSCAL_RESULT" | cut -d' ' -f1)"
-fi
 
-bar() {
-  local label="$1"; local value="$2"; local max="$3"; local color="$4"
-  local n=$((value > max ? max : value))
-  printf "${color}%-20s [" "$label"
-  for ((i=0;i<n;i++)); do printf "█"; done
-  for ((i=n;i<max;i++)); do printf "·"; done
-  printf "]${NC} %s min\n" "$value"
+printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════╗\n"
+printf "║        🚀 Craft Fusion Deployment Environment         ║\n"
+printf "╚══════════════════════════════════════════════════════════════╝${NC}\n"
+echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}"
+echo -e "${BLUE}Network:     ${CYAN}$NET_IFACE${NC} (${GREEN}$NET_IP${NC})   ${BLUE}Ping: ${CYAN}${PING_TIME}ms${NC}"
+echo -e "${BLUE}Auditd:      ${CYAN}$AUDITD_STATUS${NC}"
+echo -e "${BLUE}Date:        ${WHITE}$(date)${NC}\n"
+
+# At each major step, print a vibrant header
+step_header() {
+  local title="$1"
+  printf "${BOLD}${MAGENTA}\n╔══════════════════════════════════════════════════════════════╗\n"
+  printf "║  %-56s║\n" "$title"
+  printf "╚══════════════════════════════════════════════════════════════╝${NC}\n"
 }
 
-# Estimate times (minutes)
-OSCAL_EST=3; BUILD_EST=3; NPM_EST=2; MONITOR_EST=1; CLEAN_EST=2
-if [ "$CPU_CORES" -le 1 ]; then OSCAL_EST=7; BUILD_EST=6; fi
-if [ "$CPU_CORES" -le 2 ]; then OSCAL_EST=5; BUILD_EST=4; fi
-if [ "$MEM_TOTAL_MB" -lt 1500 ]; then OSCAL_EST=$((OSCAL_EST+2)); BUILD_EST=$((BUILD_EST+2)); fi
-if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then NPM_EST=$((NPM_EST+2)); fi
-TOTAL_EST=$((OSCAL_EST+BUILD_EST+NPM_EST+CLEAN_EST+MONITOR_EST))
-
-printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════════════════════╗\n"
-printf "║        🚀 Craft Fusion Deployment Environment & Security Summary 🚀      ║\n"
-printf "╚══════════════════════════════════════════════════════════════════════════════╝${NC}\n"
-echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}   ${BLUE}Net: ${GREEN}${NET_IP}${NC} (${NET_IFACE})   ${BLUE}Ping: ${GREEN}${PING_TIME}ms${NC}   ${BLUE}Auditd: ${GREEN}${AUDITD_STATUS}${NC}"
-echo -e "${BLUE}OSCAL Report: ${CYAN}${OSCAL_REPORT}${NC}   ${BLUE}Last Scan: ${CYAN}${OSCAL_STATUS}${NC}"
-bar "Full Clean" $CLEAN_EST 10 "$YELLOW"
-bar "OSCAL Scan" $OSCAL_EST 10 "$PURPLE"
-bar "Dependency Install" $NPM_EST 10 "$YELLOW"
-bar "Build/Deploy" $BUILD_EST 10 "$CYAN"
-bar "Monitoring" $MONITOR_EST 10 "$GREEN"
-echo -e "${BOLD}${WHITE}Total Estimated Time: ~${TOTAL_EST} min${NC}\n"
-
-read -p "Proceed with deployment? (y/N): " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo -e "${YELLOW}Aborting deployment.${NC}"
-    exit 0
-fi
+# Example usage at each step:
+step_header "Phase 0: FedRAMP OSCAL Compliance Scan (Optional)"
+# ...existing code...
+step_header "Phase 1: Backend & Frontend Deployment (Parallel)"
+# ...existing code...
+step_header "Phase 3: SSL/WSS Setup (if needed)"
+# ...existing code...
+step_header "Phase 4: Final System Tests"
+# ...existing code...
+step_header "Phase 5: System Status Summary"
+# ...existing code...
 
 # === Phase 0: FedRAMP OSCAL Compliance Scan (Optional) ===
 echo -e "${BLUE}=== Phase 0: FedRAMP OSCAL Compliance Scan (Optional) ===${NC}"
