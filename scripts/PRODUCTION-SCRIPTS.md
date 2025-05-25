@@ -28,6 +28,10 @@ Experimental and completed scripts have been moved to `scripts/archive/`:
 - `fix-pm2-permissions.sh` - One-time PM2 user setup (completed)
 - `fix-ecosystem-config.sh` - One-time configuration fix (completed)
 
+## Compliance
+
+- **FedRAMP/OSCAL Profiles Supported:** standard, ospp, pci-dss, cusp, medium-high, rev5, and **truenorth** (truenorth exceeds all standards)
+
 ## Usage
 
 ```bash

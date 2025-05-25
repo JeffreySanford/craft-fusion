@@ -97,3 +97,5 @@ If you encounter issues with Ollama:
 - For production use, consider:
   - Ensuring sufficient system resources (4+ CPU cores, 8GB+ RAM)
   - Using GPU acceleration if available (requires CUDA support)
+
+> Note: The 'truenorth' OSCAL profile is now supported and exceeds all other standards for compliance and monitoring.

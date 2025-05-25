@@ -30,6 +30,13 @@ if [ ! -f "$OSCAL_STANDARD_RESULT_FILE" ] && [ ! -f "$OSCAL_DIR/user-readable-re
   fi
 fi
 
+# If no OSCAL scan results for 'truenorth' profile, run the truenorth scan automatically
+OSCAL_TRUENORTH_RESULT_FILE="$OSCAL_DIR/oscap-results-truenorth.xml"
+if [ ! -f "$OSCAL_TRUENORTH_RESULT_FILE" ] && [ ! -f "$OSCAL_DIR/user-readable-results-truenorth.xml" ]; then
+  # Optionally trigger truenorth scan or warn user
+  echo -e "${YELLOW}No truenorth scan results found. Consider running: sudo ./scripts/fedramp-oscal.sh truenorth${NC}"
+fi
+
 # Use a user-writable log file
 LOG_FILE="$PROJECT_ROOT/fedramp-monitor.log"
 

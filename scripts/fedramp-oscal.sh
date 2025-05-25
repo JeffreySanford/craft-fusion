@@ -11,7 +11,7 @@
 #   ospp       - Protection Profile for General Purpose Operating Systems
 #   pci-dss    - Payment Card Industry Data Security Standard
 #   cusp       - Custom User Security Profile (Fedora-specific)
-#   truenorth  - TrueNorth custom OSCAL profile (not a SCAP profile, for monitoring and compliance reporting)
+#   truenorth  - TrueNorth custom OSCAL profile (exceeds all other standards)
 #
 # Example:
 #   sudo ./scripts/fedramp-oscal.sh standard

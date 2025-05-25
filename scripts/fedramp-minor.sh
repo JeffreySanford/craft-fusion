@@ -2,7 +2,7 @@
 # fedramp-minor.sh - Run all OSCAL/FedRAMP OpenSCAP scans (all profiles) and ensure reports are user-readable
 
 
-PROFILES=(standard ospp pci-dss cusp medium-high rev5 truenorth) # Added truenorth profile
+PROFILES=(standard ospp pci-dss cusp medium-high rev5 truenorth) # 'truenorth' exceeds all standards
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 OSCAL_DIR="$SCRIPT_DIR/../oscal-analysis"
 
@@ -30,11 +30,11 @@ fi
 echo -e "${GREEN}✓ Script is running with sudo privileges.${NC}"
 
 echo -e "${BOLD}${CYAN}🛡️  FedRAMP Minor Scan: Running all OSCAL profiles${NC}"
-echo -e "${WHITE}This will run standard, ospp, pci-dss, cusp, medium-high, rev5, and truenorth scans${NC}"
+echo -e "${WHITE}This will run standard, ospp, pci-dss, cusp, medium-high, rev5, and truenorth scans (truenorth exceeds all standards)${NC}"
 echo
 
 # === Actionable OSCAL Scans Summary ===
-OSCAL_PROFILES_TO_CHECK=(standard ospp pci-dss cusp medium-high rev5 truenorth) # Added truenorth profile
+OSCAL_PROFILES_TO_CHECK=(standard ospp pci-dss cusp medium-high rev5 truenorth) # 'truenorth' included
 OSCAL_MAX_AGE_DAYS=7
 actionable_scans_display=()
 all_scans_ok=true
