@@ -57,10 +57,10 @@ case "$PROFILE" in
   rev5)
     PROFILE_ID="xccdf_org.ssgproject.content_profile_PLACEHOLDER_rev5" ;; # Placeholder for future FedRAMP Rev 5 - Update when actual ID is known
   truenorth)
-    PROFILE_ID="oscal_truenorth_profile" ;; # TrueNorth custom OSCAL profile (not a SCAP profile)
+    PROFILE_ID="oscal_truenorth_profile" ;; # Placeholder for TrueNorth OSCAL profile, update as needed
   *)
     echo "Unknown profile: $PROFILE"
-    echo "Usage: $0 [standard|ospp|pci-dss|cusp|medium-high|rev5|truenorth]"
+    echo "Usage: $0 [standard|ospp|pci-dss|cusp|medium-high (placeholder for Rev 5)|rev5 (placeholder for Rev 5)|truenorth]"
     exit 1
     ;;
 esac
@@ -135,6 +135,7 @@ if [ "$PROFILE" = "pci-dss" ]; then PROFILE_LABEL="PCI-DSS"; CURRENT_PROFILE_COL
 if [ "$PROFILE" = "cusp" ]; then PROFILE_LABEL="CUSP"; CURRENT_PROFILE_COLOR="$GREEN"; fi
 if [ "$PROFILE" = "medium-high" ]; then PROFILE_LABEL="Med-High R5"; CURRENT_PROFILE_COLOR="$BLUE"; fi # Placeholder for FedRAMP Rev 5 Medium/High
 if [ "$PROFILE" = "rev5" ]; then PROFILE_LABEL="FedRAMP Rev5"; CURRENT_PROFILE_COLOR="$MAGENTA"; fi # Placeholder for FedRAMP Rev 5
+if [ "$PROFILE" = "truenorth" ]; then PROFILE_LABEL="TrueNorth"; CURRENT_PROFILE_COLOR="$WHITE"; fi
 
 # --- Progress Function ---
 print_progress() {
@@ -195,17 +196,13 @@ echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${
 # The print_progress function will show the estimated time.
 
 # Add informational message for placeholder profiles
-if [ "$PROFILE" = "medium-high" ] || [ "$PROFILE" = "rev5" ]; then
+if [ "$PROFILE" = "medium-high" ] || [ "$PROFILE" = "rev5" ] || [ "$PROFILE" = "truenorth" ]; then
   echo
   echo -e "${YELLOW}----------------------------------------------------------------------${NC}"
   echo -e "${YELLOW}${BOLD}INFO: Placeholder Profile - '$PROFILE_LABEL'${NC}"
-  echo -e "${YELLOW}This profile ('$PROFILE') is a placeholder for an upcoming FedRAMP Rev 5 aligned standard.${NC}"
-  echo -e "${YELLOW}The current SCAP Profile ID ('${PROFILE_ID}') is temporary.${NC}"
-  echo -e "${YELLOW}You will need to update this ID in the script once the official profile is released${NC}"
-  echo -e "${YELLOW}and available in your 'scap-security-guide' package.${NC}"
-  echo -e "${YELLOW}Check for updates: ${CYAN}sudo dnf update scap-security-guide${NC}"
-  echo -e "${YELLOW}SCAP Security Guide Project: ${CYAN}https://www.open-scap.org/security-policies/scap-security-guide/${NC}"
-  echo -e "${YELLOW}FedRAMP Program: ${CYAN}https://www.fedramp.gov/${NC}"
+  echo -e "${YELLOW}This profile ('$PROFILE') is a placeholder for an upcoming or custom OSCAL-aligned standard.${NC}"
+  echo -e "${YELLOW}The current SCAP Profile ID ('${PROFILE_ID}') is temporary or custom.${NC}"
+  echo -e "${YELLOW}You may need to update this ID in the script once the official or custom profile is finalized${NC}"
   echo -e "${YELLOW}----------------------------------------------------------------------${NC}"
 fi
 
