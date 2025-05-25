@@ -4,17 +4,63 @@
 set -e
 
 echo "=== Frontend Deployment Started ==="
-
 # Colors
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m'
+GREEN=$'\033[0;32m'
+BLUE=$'\033[0;34m'
+YELLOW=$'\033[1;33m'
+RED=$'\033[0;31m'
+NC=$'\033[0m'
+BOLD=$'\033[1m'
+WHITE=$'\033[1;37m'
+PURPLE=$'\033[0;35m'
+CYAN=$'\033[0;36m'
+MAGENTA=$'\033[0;35m' # Added MAGENTA for consistency with deploy-all
 
 # Configuration
 WEB_ROOT="/var/www/jeffreysanford.us"
 BACKUP_DIR="/var/backups/jeffreysanford.us"
+
+# --- Progress Function (copied from deploy-all.sh) ---
+print_progress() {
+    local title="$1"
+    local estimated_total_seconds="$2"
+    local start_time_epoch="$3"
+    local progress_bar_width=30
+    local color_arg="${4:-$MAGENTA}" # Use passed color or default to MAGENTA
+
+    if [ ! -t 1 ]; then return; fi # Only run if TTY
+
+    while true; do
+        local current_time_epoch=$(date +%s)
+        local elapsed_seconds=$((current_time_epoch - start_time_epoch))
+        local remaining_seconds=$((estimated_total_seconds - elapsed_seconds))
+
+        [ "$remaining_seconds" -lt 0 ] && remaining_seconds=0
+
+        local percent_done=0
+        [ "$estimated_total_seconds" -gt 0 ] && percent_done=$((elapsed_seconds * 100 / estimated_total_seconds))
+        [ "$percent_done" -gt 100 ] && percent_done=100
+
+        local filled_width=$((percent_done * progress_bar_width / 100))
+        local empty_width=$((progress_bar_width - filled_width))
+
+        local bar_str=""
+        for ((i=0; i<filled_width; i++)); do bar_str+="█"; done
+        for ((i=0; i<empty_width; i++)); do bar_str+="░"; done
+
+        local rem_min=$((remaining_seconds / 60))
+        local rem_sec=$((remaining_seconds % 60))
+        local time_left_str=$(printf "%02d:%02d" "$rem_min" "$rem_sec")
+
+        printf "\r${BOLD}${color_arg}%-25s ${WHITE}[%s] ${GREEN}%3d%%${NC} ${YELLOW}(%s remaining)${NC}\033[K" "$title:" "$bar_str" "$percent_done" "$time_left_str"
+
+        if [ "$remaining_seconds" -eq 0 ] && [ "$elapsed_seconds" -ge "$estimated_total_seconds" ]; then break; fi
+        command sleep 5 # Update interval (e.g., 5 seconds for this script)
+    done
+}
+
+cleanup_progress_line() { [ -t 1 ] && printf "\r\033[K"; }
+# --- End of Progress Function ---
 
 echo -e "${BLUE}1. Creating backup of current deployment...${NC}"
 if [ -d "$WEB_ROOT" ] && [ "$(ls -A $WEB_ROOT 2>/dev/null)" ]; then
@@ -33,8 +79,21 @@ rm -rf dist/
 echo -e "${GREEN}✓ Build directories cleaned${NC}"
 
 echo -e "${BLUE}3. Building Angular application...${NC}"
+
+# Estimate time for Angular build (adjust as needed based on your system)
+ANGULAR_BUILD_ESTIMATE_SECONDS=120 # 2 minutes
+phase_start_time=$(date +%s)
+print_progress "Angular Build" "$ANGULAR_BUILD_ESTIMATE_SECONDS" "$phase_start_time" "$CYAN" &
+progress_pid=$!
+
 npx nx run craft-web:build --configuration=production
-if [ $? -eq 0 ]; then
+angular_build_status=$?
+
+kill "$progress_pid" &>/dev/null || true
+wait "$progress_pid" &>/dev/null || true
+cleanup_progress_line
+
+if [ $angular_build_status -eq 0 ]; then
     echo -e "${GREEN}✓ Angular build successful${NC}"
 else
     echo -e "${RED}✗ Angular build failed${NC}"
