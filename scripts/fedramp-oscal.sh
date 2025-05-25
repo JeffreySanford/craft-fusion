@@ -25,15 +25,15 @@
 # For vibrant environment summary and time estimate, see script output.
 
 # === COLORS (ensure all used colors are defined) ===
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-PURPLE='\033[0;35m'
-WHITE='\033[1;37m'
-BOLD='\033[1m'
-NC='\033[0m'
+GREEN=$'\033[0;32m'
+RED=$'\033[0;31m'
+YELLOW=$'\033[1;33m'
+BLUE=$'\033[0;34m'
+CYAN=$'\033[0;36m'
+PURPLE=$'\033[0;35m'
+WHITE=$'\033[1;37m'
+BOLD=$'\033[1m'
+NC=$'\033[0m'
 
 OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
 mkdir -p "$OSCAL_DIR"
