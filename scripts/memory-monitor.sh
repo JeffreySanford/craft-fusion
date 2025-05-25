@@ -249,7 +249,7 @@ check_server_status() {
 
 # OSCAL/SCAP scan check (FedRAMP compliance)
 OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
-OSCAL_PROFILES=("standard" "ospp" "pci-dss" "cusp")
+OSCAL_PROFILES=("standard" "ospp" "pci-dss" "cusp" "medium-high" "rev5") # medium-high & rev5 are placeholders for future FedRAMP Rev 5
 OSCAL_MAX_AGE_DAYS=7
 
 # Vibrant OSCAL scan status header
@@ -265,7 +265,7 @@ echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${
 echo
 
 # Show available OSCAL scan profiles
-printf "${BOLD}${CYAN}Available OSCAL scan options:${NC} ${YELLOW}%s${NC}\n" "${OSCAL_PROFILES[*]}"
+printf "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} ${YELLOW}%s${NC}\n" "${OSCAL_PROFILES[*]}"
 
 # Show status for each profile
 missing_profiles=()
@@ -322,7 +322,7 @@ done
 
 # Only show available options if any are missing
 if [ ${#missing_profiles[@]} -gt 0 ]; then
-  printf "${BOLD}${CYAN}Available OSCAL scan options:${NC} ${YELLOW}%s${NC}\n" "${missing_profiles[*]}"
+  printf "${BOLD}${CYAN}Actionable OSCAL Scans (missing from monitor):${NC} ${YELLOW}%s${NC}\n" "${missing_profiles[*]}"
 fi
 
 # Vibrant environment summary and time estimate for memory monitoring
@@ -679,7 +679,7 @@ while true; do
             echo -e "   ${RED}✗ No OpenSCAP scan results found for ${profile_loop_var}${NC}"
         fi
     done
-    echo -e "${CYAN}Available OSCAL scan options:${NC} ${WHITE}${OSCAL_PROFILES[*]}${NC}"
+    echo -e "${CYAN}Monitored OSCAL scan profiles:${NC} ${WHITE}${OSCAL_PROFILES[*]}${NC}"
     
     sleep 30
 done
