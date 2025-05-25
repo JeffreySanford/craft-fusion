@@ -148,6 +148,8 @@ while true; do
     OSCAL_PROFILES=(standard ospp pci-dss cusp)
     OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
 
+    missing_standard=false
+
     printf "${BOLD}${CYAN}\n🛡️  OSCAL/FedRAMP Compliance Scan Status:${NC}\n"
     for profile in "${OSCAL_PROFILES[@]}"; do
       OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results-$profile.xml"
@@ -161,16 +163,28 @@ while true; do
         if command -v xmllint &>/dev/null; then
           PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
           FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
-          # Only print if both PASS and FAIL are valid numbers
           if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]]; then
             printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}\n" "$PASS" "$FAIL"
           fi
         fi
       else
         printf "   ${RED}✗ No OpenSCAP scan results found for %s${NC}\n" "$profile"
+        if [ "$profile" = "standard" ]; then
+          missing_standard=true
+        fi
       fi
     done
     printf "Available OSCAL scan options: ${YELLOW}%s${NC}\n" "${OSCAL_PROFILES[*]}"
+
+    # If standard scan is missing, run it automatically
+    if [ "$missing_standard" = true ]; then
+      echo -e "${YELLOW}[OSCAL] No OpenSCAP scan results found for standard! Running standard scan...${NC}"
+      if [ -x "$PROJECT_ROOT/scripts/fedramp-oscal.sh" ]; then
+        sudo "$PROJECT_ROOT/scripts/fedramp-oscal.sh" standard
+      else
+        echo -e "${RED}fedramp-oscal.sh not found or not executable!${NC}"
+      fi
+    fi
 
     # AC-2: Unauthorized UID 0 Accounts
     echo -e "${BLUE}[AC-2] Checking for unauthorized UID 0 accounts...${NC}"
