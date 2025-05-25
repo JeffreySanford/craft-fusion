@@ -109,7 +109,7 @@ while true; do
     echo -e "${MAGENTA}Controls Checked: 2 (AC-2, CM-7)${NC}"
 
     # OSCAL/SCAP scan check
-    echo -e "${BLUE}[OSCAL] Checking for recent OpenSCAP scan...${NC}"
+    echo -e "${BOLD}${CYAN}🛡️  OSCAL/FedRAMP Compliance Scan:${NC}"
     if [ -f "$OSCAL_RESULT_FILE" ]; then
         LAST_RUN=$(stat -c %Y "$OSCAL_RESULT_FILE")
         NOW_TS=$(date +%s)
@@ -122,19 +122,19 @@ while true; do
         echo -e "   Report: ${CYAN}$OSCAL_REPORT_FILE${NC}"
         # Optional: show pass/fail summary if xmllint is available
         if command -v xmllint &>/dev/null; then
-            PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null || echo 0)
-            FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null || echo 0)
+            PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
+            FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
+            PASS=${PASS:-0}
+            FAIL=${FAIL:-0}
             echo -e "   ${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}"
         fi
     else
         echo -e "   ${RED}✗ No OpenSCAP scan results found in oscal-analysis/${NC}"
-        # Auto-run OSCAL scan if not found
-        echo -e "${YELLOW}Running OSCAL scan (standard profile) to generate results...${NC}"
-        sudo ./scripts/fedramp-oscal.sh standard
-        if [ -f "$OSCAL_RESULT_FILE" ]; then
-            echo -e "   ${GREEN}✓ OSCAL scan generated. Re-run monitor to see results.${NC}"
+        echo -e "   ${YELLOW}Running OSCAL scan now...${NC}"
+        if ./scripts/fedramp-oscal.sh standard; then
+            echo -e "   ${GREEN}✓ OSCAL scan complete. See ./oscal-analysis/oscap-report.html${NC}"
         else
-            echo -e "   ${RED}✗ OSCAL scan failed to generate results.${NC}"
+            echo -e "   ${RED}✗ OSCAL scan failed or incomplete${NC}"
         fi
     fi
 
