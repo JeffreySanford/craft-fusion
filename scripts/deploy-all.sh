@@ -60,7 +60,7 @@ print_progress() {
         printf "\r${BOLD}${MAGENTA}%-25s ${WHITE}[%s] ${GREEN}%3d%%${NC} ${YELLOW}(%s remaining)${NC}\033[K" "$title:" "$bar" "$percent_done" "$time_left_str"
 
         if [ "$remaining_seconds" -eq 0 ] && [ "$elapsed_seconds" -ge "$estimated_total_seconds" ]; then break; fi
-        sleep 1
+        command sleep 1 # Ensure standard sleep is used
     done
 }
 
@@ -139,7 +139,8 @@ if [ "$do_full_clean" = true ]; then
       exit 1
     fi
   fi
-  kill "$progress_pid" &>/dev/null; wait "$progress_pid" &>/dev/null
+  kill "$progress_pid" &>/dev/null || true # Ignore error if kill fails (e.g., process already dead)
+  wait "$progress_pid" &>/dev/null || true   # Ignore error from wait (e.g., process killed, or already reaped)
   cleanup_progress_line
   echo -e "${GREEN}✓ Full clean completed successfully${NC}"
 else
@@ -151,7 +152,8 @@ else
 
   ./scripts/clean-build.sh || true
 
-  kill "$progress_pid" &>/dev/null; wait "$progress_pid" &>/dev/null
+  kill "$progress_pid" &>/dev/null || true
+  wait "$progress_pid" &>/dev/null || true
   cleanup_progress_line
   echo -e "${GREEN}✓ Build outputs cleaned${NC}"
 fi
@@ -167,7 +169,8 @@ if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
   npm ci --omit=optional --no-audit --prefer-offline --progress=false --maxsockets=1
   npm_ci_status=$?
 
-  kill "$progress_pid" &>/dev/null; wait "$progress_pid" &>/dev/null
+  kill "$progress_pid" &>/dev/null || true
+  wait "$progress_pid" &>/dev/null || true
   cleanup_progress_line
 
   if [ $npm_ci_status -eq 0 ]; then
@@ -182,7 +185,8 @@ if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
 
     npm ci --maxsockets 1 --omit=optional --no-audit --prefer-offline --progress=false
     npm_ci_retry_status=$?
-    kill "$progress_pid" &>/dev/null; wait "$progress_pid" &>/dev/null
+    kill "$progress_pid" &>/dev/null || true
+    wait "$progress_pid" &>/dev/null || true
     cleanup_progress_line
 
     if [ $npm_ci_retry_status -eq 0 ]; then
@@ -208,7 +212,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     ./scripts/fedramp-oscal.sh standard
     oscal_status=$?
 
-    kill "$progress_pid" &>/dev/null; wait "$progress_pid" &>/dev/null
+    kill "$progress_pid" &>/dev/null || true
+    wait "$progress_pid" &>/dev/null || true
     cleanup_progress_line
 
     if [ $oscal_status -eq 0 ]; then
@@ -239,7 +244,8 @@ wait $frontend_pid
 frontend_status=$?
 deploy_end_time=$(date +%s)
 
-kill "$progress_pid" &>/dev/null; wait "$progress_pid" &>/dev/null
+kill "$progress_pid" &>/dev/null || true
+wait "$progress_pid" &>/dev/null || true
 cleanup_progress_line
 
 if [ $backend_status -eq 0 ] && [ $frontend_status -eq 0 ]; then
@@ -311,7 +317,8 @@ else
     echo -e "${YELLOW}⚠ wscat not installed - install with: npm install -g wscat${NC}"
 fi
 
-kill "$progress_pid" &>/dev/null; wait "$progress_pid" &>/dev/null
+kill "$progress_pid" &>/dev/null || true
+wait "$progress_pid" &>/dev/null || true
 cleanup_progress_line
 echo -e "${GREEN}✓ System tests completed.${NC}"
 
