@@ -1,7 +1,15 @@
 #!/bin/bash
-# deploy-all.sh - Complete application deployment script for Fedora server with memory optimization
+# deploy-all.sh - Optimized application deployment script for Fedora server with memory optimization
 
 set -e
+
+# Parse arguments
+do_full_clean=false
+for arg in "$@"; do
+  if [ "$arg" == "--full-clean" ]; then
+    do_full_clean=true
+  fi
+done
 
 echo "=== Craft Fusion Complete Deployment Started ==="
 
@@ -42,62 +50,64 @@ if [ "$AVAILABLE_MEM" -lt 1000 ]; then
     echo -e "${GREEN}✓ System caches cleared${NC}"
 fi
 
-# Clear system caches and optimize memory before builds
-echo -e "${BLUE}Cleaning previous builds with memory optimization...${NC}"
-rm -rf node_modules/.cache/nx
-rm -rf .nx/cache/
-rm -rf /tmp/nx-cache/ 2>/dev/null || true
-
-./scripts/clean-build.sh
-CLEAN_STATUS=$?
-if [ $CLEAN_STATUS -ne 0 ]; then
+# Clean builds and node_modules only if --full-clean is passed
+if [ "$do_full_clean" = true ]; then
+  echo -e "${BLUE}Full clean requested (--full-clean).${NC}"
+  echo -e "${BLUE}Cleaning previous builds and node_modules...${NC}"
+  rm -rf node_modules/.cache/nx
+  rm -rf .nx/cache/
+  rm -rf /tmp/nx-cache/ 2>/dev/null || true
+  rm -rf node_modules
+  ./scripts/clean-build.sh
+  CLEAN_STATUS=$?
+  if [ $CLEAN_STATUS -ne 0 ]; then
     echo -e "${YELLOW}⚠ clean-build.sh failed, retrying once...${NC}"
     ./scripts/clean-build.sh
     CLEAN_STATUS=$?
     if [ $CLEAN_STATUS -ne 0 ]; then
-        echo -e "${RED}✗ clean-build.sh failed twice, aborting deployment.${NC}"
-        exit 1
+      echo -e "${RED}✗ clean-build.sh failed twice, aborting deployment.${NC}"
+      exit 1
     fi
-fi
-
-echo -e "${GREEN}✓ Previous builds cleaned successfully${NC}"
-
-# Clear memory before dependency installation
-echo -e "${BLUE}Clearing memory and installing dependencies...${NC}"
-sudo sync 2>/dev/null || true
-sudo sysctl vm.drop_caches=1 2>/dev/null || true
-
-rm -rf node_modules && npm cache clear --force
-echo -e "${BLUE}Cleaning node_modules and npm cache...${NC}"
-if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✓ node_modules and npm cache cleaned successfully${NC}"
+  fi
+  echo -e "${GREEN}✓ Previous builds and node_modules cleaned successfully${NC}"
 else
-    echo -e "${RED}✗ Failed to clean node_modules or npm cache${NC}"
-    exit 1
+  echo -e "${BLUE}Skipping full clean. Only cleaning build outputs...${NC}"
+  ./scripts/clean-build.sh || true
+  echo -e "${GREEN}✓ Build outputs cleaned${NC}"
 fi
 
-
-echo -e "${BLUE}=== Phase 0: Dependencies Setup (Memory Optimized) ===${NC}"
-echo -e "${BLUE}Installing dependencies with memory constraints...${NC}"
-npm install --omit=optional --no-audit --prefer-offline --progress=false --maxsockets=1
-if [ $? -eq 0 ]; then
+# Only install dependencies if node_modules is missing or package-lock.json changed
+if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
+  echo -e "${BLUE}Installing dependencies (detected change)...${NC}"
+  npm ci --omit=optional --no-audit --prefer-offline --progress=false --maxsockets=1
+  if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Dependencies installed successfully${NC}"
-else
-    echo -e "${YELLOW}⚠ First npm install failed, trying with reduced concurrency...${NC}"
-    npm install --maxsockets 1 --omit=optional --no-audit --prefer-offline --progress=false
+  else
+    echo -e "${YELLOW}⚠ First npm ci failed, trying with reduced concurrency...${NC}"
+    npm ci --maxsockets 1 --omit=optional --no-audit --prefer-offline --progress=false
     if [ $? -eq 0 ]; then
-        echo -e "${GREEN}✓ Dependencies installed (retry)${NC}"
+      echo -e "${GREEN}✓ Dependencies installed (retry)${NC}"
     else
-        echo -e "${RED}✗ Dependencies installation failed${NC}"
-        exit 1
+      echo -e "${RED}✗ Dependencies installation failed${NC}"
+      exit 1
     fi
+  fi
+else
+  echo -e "${GREEN}✓ node_modules up to date, skipping npm install${NC}"
 fi
 
-echo -e "${BLUE}=== Phase 1: Backend Deployment ===${NC}"
-./scripts/deploy-backend.sh
+# Build backend and frontend in parallel
 
-echo -e "${BLUE}=== Phase 2: Frontend Deployment ===${NC}"
-./scripts/deploy-frontend.sh
+echo -e "${BLUE}=== Phase 1: Backend & Frontend Deployment (Parallel) ===${NC}"
+start_time=$(date +%s)
+./scripts/deploy-backend.sh &
+backend_pid=$!
+./scripts/deploy-frontend.sh &
+frontend_pid=$!
+wait $backend_pid
+wait $frontend_pid
+end_time=$(date +%s)
+echo -e "${GREEN}✓ Backend and frontend deployed in $((end_time-start_time)) seconds${NC}"
 
 echo -e "${BLUE}=== Phase 3: SSL/WSS Setup (if needed) ===${NC}"
 read -p "Do you want to set up SSL/WSS? (y/N): " -n 1 -r
