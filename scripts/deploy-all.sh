@@ -211,6 +211,13 @@ else
   echo -e "${GREEN}✓ node_modules up-to-date, skipping npm install${NC}"
 fi
 
+# --- Nx Pre-check (after npm install) ---
+if [ ! -d node_modules/@nrwl ] && [ ! -d node_modules/nx ]; then
+  echo -e "${RED}✗ Nx modules not found in node_modules. Nx-based scripts will fail.${NC}"
+  echo -e "${YELLOW}Please run: ${BOLD}npm install${NC}${YELLOW} in your workspace root before deploying.${NC}"
+  exit 1
+fi
+
 step_header "Phase 0: FedRAMP OSCAL Compliance Scan (Optional)"
 read -p "Run a FedRAMP OSCAL scan before deployment? (y/N): " -n 1 -r
 echo
