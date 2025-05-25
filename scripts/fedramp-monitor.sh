@@ -2,7 +2,37 @@
 # FedRAMP Rev 5 Security Controls Monitoring Script (Lite)
 # Checks AC-2 (UID 0 accounts) and CM-7 (world-writable files) every minute
 
-LOG_FILE="/var/log/fedramp-monitor.log"
+# Set project root for relative paths
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+OSCAL_DIR="$PROJECT_ROOT/oscal-analysis"
+OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results.xml"
+OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report.html"
+OSCAL_MAX_AGE_DAYS=7
+
+# Ensure oscal-analysis directory exists (with sudo if needed)
+if [ ! -d "$OSCAL_DIR" ]; then
+  if [ "$EUID" -ne 0 ]; then
+    echo -e "${YELLOW}Creating oscal-analysis directory with sudo...${NC}"
+    sudo mkdir -p "$OSCAL_DIR"
+    sudo chown "$USER":"$USER" "$OSCAL_DIR"
+  else
+    mkdir -p "$OSCAL_DIR"
+  fi
+fi
+
+# If no OSCAL scan results, run the standard scan automatically
+if [ ! -f "$OSCAL_RESULT_FILE" ]; then
+  echo -e "${YELLOW}[OSCAL] No OpenSCAP scan results found! Running standard scan...${NC}"
+  if [ -x "$PROJECT_ROOT/scripts/fedramp-oscal.sh" ]; then
+    sudo "$PROJECT_ROOT/scripts/fedramp-oscal.sh" standard
+  else
+    echo -e "${RED}fedramp-oscal.sh not found or not executable!${NC}"
+  fi
+fi
+
+# Use a user-writable log file
+LOG_FILE="$PROJECT_ROOT/fedramp-monitor.log"
+
 SCAN_INTERVAL=60
 
 # === COLORS ===
@@ -41,14 +71,6 @@ bar "Monitoring" $MONITOR_EST 10 "$GREEN"
 echo -e "${BOLD}${WHITE}Estimated Time: Continuous${NC}\n"
 
 # Check for recent OSCAL (OpenSCAP) scan results
-OSCAL_DIR="$PROJECT_ROOT/oscal-analysis"
-OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results.xml"
-OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report.html"
-OSCAL_MAX_AGE_DAYS=7
-
-# Ensure oscal-analysis directory exists
-mkdir -p "$OSCAL_DIR"
-
 while true; do
   NOW=$(date -u '+%a %b %d %I:%M:%S %p UTC %Y')
   {

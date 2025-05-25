@@ -37,6 +37,11 @@ fi
 CPU_CORES=$(nproc 2>/dev/null || echo 1)
 MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
 DISK_AVAIL=$(df -h / | awk 'NR==2{print $4}')
+PROFILE_LABEL="Standard"
+PROFILE_COLOR="$PURPLE"
+if [ "$1" == "ospp" ]; then PROFILE_LABEL="OSPP"; PROFILE_COLOR="$CYAN"; fi
+if [ "$1" == "pci-dss" ]; then PROFILE_LABEL="PCI-DSS"; PROFILE_COLOR="$YELLOW"; fi
+if [ "$1" == "cusp" ]; then PROFILE_LABEL="CUSP"; PROFILE_COLOR="$GREEN"; fi
 
 bar() {
   local label="$1"; local value="$2"; local max="$3"; local color="$4"
@@ -53,10 +58,10 @@ if [ "$CPU_CORES" -le 2 ]; then OSCAL_EST=5; fi
 if [ "$MEM_TOTAL_MB" -lt 1500 ]; then OSCAL_EST=$((OSCAL_EST+2)); fi
 
 printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════╗\n"
-printf "║        🛡️  FedRAMP OSCAL Scan Environment         ║\n"
+printf "║        🛡️  FedRAMP OSCAL Scan: %-10s Environment      ║\n" "$PROFILE_LABEL"
 printf "╚══════════════════════════════════════════════════════════════╝${NC}\n"
 echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}"
-bar "OSCAL Scan" $OSCAL_EST 10 "$PURPLE"
+bar "OSCAL $PROFILE_LABEL" $OSCAL_EST 10 "$PROFILE_COLOR"
 echo -e "${BOLD}${WHITE}Estimated Time: ~${OSCAL_EST} min${NC}\n"
 
 echo "Running OpenSCAP scan with profile: $PROFILE_ID"

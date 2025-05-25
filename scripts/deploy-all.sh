@@ -115,22 +115,24 @@ bar() {
 }
 
 # Estimate times (minutes)
-OSCAL_EST=3; BUILD_EST=3; NPM_EST=2; MONITOR_EST=1
-if [ "$CPU_CORES" -le 1 ]; then OSCAL_EST=7; BUILD_EST=6; fi
-if [ "$CPU_CORES" -le 2 ]; then OSCAL_EST=5; BUILD_EST=4; fi
-if [ "$MEM_TOTAL_MB" -lt 1500 ]; then OSCAL_EST=$((OSCAL_EST+2)); BUILD_EST=$((BUILD_EST+2)); fi
+OSCAL_EST=3; OSCAL_OSPP_EST=4; OSCAL_PCI_EST=4; BUILD_EST=3; NPM_EST=2; MONITOR_EST=1
+if [ "$CPU_CORES" -le 1 ]; then OSCAL_EST=7; OSCAL_OSPP_EST=8; OSCAL_PCI_EST=8; BUILD_EST=6; fi
+if [ "$CPU_CORES" -le 2 ]; then OSCAL_EST=5; OSCAL_OSPP_EST=6; OSCAL_PCI_EST=6; BUILD_EST=4; fi
+if [ "$MEM_TOTAL_MB" -lt 1500 ]; then OSCAL_EST=$((OSCAL_EST+2)); OSCAL_OSPP_EST=$((OSCAL_OSPP_EST+2)); OSCAL_PCI_EST=$((OSCAL_PCI_EST+2)); BUILD_EST=$((BUILD_EST+2)); fi
 if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then NPM_EST=$((NPM_EST+2)); fi
-TOTAL_EST=$((OSCAL_EST+BUILD_EST+NPM_EST+MONITOR_EST))
+TOTAL_EST=$((OSCAL_EST+OSCAL_OSPP_EST+OSCAL_PCI_EST+BUILD_EST+NPM_EST+MONITOR_EST))
 
 printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════╗\n"
 printf "║        🚀 Craft Fusion Deployment Environment 🚀         ║\n"
 printf "╚══════════════════════════════════════════════════════════════╝${NC}\n"
 echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}"
-bar "OSCAL Scan" $OSCAL_EST 10 "$PURPLE"
+bar "OSCAL Scan (standard)" $OSCAL_EST 10 "$PURPLE"
+bar "OSCAL Scan (ospp)" $OSCAL_OSPP_EST 10 "$CYAN"
+bar "OSCAL Scan (pci-dss)" $OSCAL_PCI_EST 10 "$BLUE"
 bar "Dependency Install" $NPM_EST 10 "$YELLOW"
-bar "Build/Deploy" $BUILD_EST 10 "$CYAN"
-bar "Monitoring" $MONITOR_EST 10 "$GREEN"
-echo -e "${BOLD}${WHITE}Total Estimated Time: ~${TOTAL_EST} min${NC}\n"
+bar "Build/Deploy" $BUILD_EST 10 "$GREEN"
+bar "Monitoring" $MONITOR_EST 10 "$WHITE"
+echo -e "${BOLD}${WHITE}Total Estimated Time Invested: ~${TOTAL_EST} min${NC}\n"
 
 read -p "Proceed with deployment? (y/N): " -n 1 -r
 echo
