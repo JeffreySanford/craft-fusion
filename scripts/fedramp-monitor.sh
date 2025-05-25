@@ -196,9 +196,13 @@ while true; do
     # At the end, print colored monitored profiles
     colored_profiles=""
     for p in "${OSCAL_PROFILES[@]}"; do
-      colored_profiles+="${profile_status_map[$p]} ";
+      if [ -f "$OSCAL_DIR/user-readable-results-$p.xml" ] || [ -f "$OSCAL_DIR/oscap-results-$p.xml" ]; then
+        colored_profiles+="${GREEN}$p${NC} ";
+      else
+        colored_profiles+="${RED}$p${NC} ";
+      fi
     done
-    printf "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} %s\n" "$colored_profiles"
+    echo -e "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} $colored_profiles"
 
     # If standard scan is missing, run it automatically
     if [ "$missing_standard" = true ]; then # Check the flag

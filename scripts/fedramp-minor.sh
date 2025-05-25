@@ -268,3 +268,15 @@ echo -e "${BOLD}${WHITE}----------------------------------------------------${NC
 echo -e "${WHITE}Admin reports (root-owned): ${CYAN}$OSCAL_DIR/oscap-*${NC}"
 echo -e "${WHITE}User-readable 'latest' reports: ${CYAN}$OSCAL_DIR/user-readable-results-<profile>.xml/html${NC}"
 echo -e "${WHITE}User-readable timestamped reports: ${CYAN}$OSCAL_DIR/user-readable-results-<profile>-<timestamp>.xml/html${NC}"
+
+# At the end, print colored monitored profiles
+colored_profiles=""
+for p in "${PROFILES[@]}"; do
+  if [ -f "$OSCAL_DIR/user-readable-results-$p.xml" ] || [ -f "$OSCAL_DIR/oscap-results-$p.xml" ]; then
+    colored_profiles+="${GREEN}$p${NC} ";
+  else
+    colored_profiles+="${RED}$p${NC} ";
+  fi
+
+done
+echo -e "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} $colored_profiles"

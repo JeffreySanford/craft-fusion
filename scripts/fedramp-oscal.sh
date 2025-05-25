@@ -284,4 +284,16 @@ if [ $oscap_status -eq 0 ] || [ $oscap_status -eq 2 ]; then # 0 for success, 2 f
 else
   echo -e "${RED}✗ OpenSCAP scan failed (oscap exit code: $oscap_status).${NC}"
 fi
+
+# At the end, print colored monitored profiles
+colored_profiles=""
+for p in "standard" "ospp" "pci-dss" "cusp" "medium-high" "rev5" "truenorth"; do
+  if [ -f "$OSCAL_DIR/user-readable-results-$p.xml" ] || [ -f "$OSCAL_DIR/oscap-results-$p.xml" ]; then
+    colored_profiles+="${GREEN}$p${NC} ";
+  else
+    colored_profiles+="${RED}$p${NC} ";
+  fi
+done
+echo -e "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} $colored_profiles"
+
 exit $oscap_status # Exit with oscap's status code

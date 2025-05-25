@@ -696,6 +696,7 @@ while true; do
       else
         colored_profiles+="${RED}$p${NC} ";
       fi
+
     done
     printf "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} %s\n" "$colored_profiles"
     
