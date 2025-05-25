@@ -126,6 +126,11 @@ print_progress() {
 cleanup_progress_line() { [ -t 1 ] && printf "\r\033[K"; }
 # --- End of Progress Function ---
 
+# Initialize counters for final summary
+successful_scans=0
+scans_with_failures=0
+failed_scans=0
+
 copy_scan_reports() {
     local current_profile="$1"
     local timestamp
@@ -235,16 +240,24 @@ for profile in "${PROFILES[@]}"; do
   if [ $oscal_script_exit_code -eq 0 ]; then
     echo -e "${GREEN}✓ $profile scan completed successfully${NC}"
     copy_scan_reports "$profile"
+    successful_scans=$((successful_scans + 1))
   elif [ $oscal_script_exit_code -eq 2 ]; then # OpenSCAP uses 2 for completed scan with rule failures
     echo -e "${YELLOW}⚠ $profile scan completed with rule failures (exit code $oscal_script_exit_code)${NC}"
     copy_scan_reports "$profile"
+    scans_with_failures=$((scans_with_failures + 1))
   else # Handles other exit codes (e.g., 1 for fedramp-oscal.sh script error or oscap critical error)
     echo -e "${RED}✗ $profile scan command failed (exit code $oscal_script_exit_code)${NC}"
+    failed_scans=$((failed_scans + 1))
   fi
   echo
 done
 
 echo -e "${BOLD}${GREEN}🎉 All OSCAL scans complete!${NC}"
+echo -e "${BOLD}${WHITE}-------------------- SCAN SUMMARY --------------------${NC}"
+echo -e "${GREEN}Successful scans:             ${successful_scans}${NC}"
+echo -e "${YELLOW}Scans with rule failures:   ${scans_with_failures}${NC}"
+echo -e "${RED}Failed/Aborted scans:       ${failed_scans}${NC}"
+echo -e "${BOLD}${WHITE}----------------------------------------------------${NC}"
 echo -e "${WHITE}Admin reports (root-owned): ${CYAN}$OSCAL_DIR/oscap-*${NC}"
 echo -e "${WHITE}User-readable 'latest' reports: ${CYAN}$OSCAL_DIR/user-readable-results-<profile>.xml/html${NC}"
 echo -e "${WHITE}User-readable timestamped reports: ${CYAN}$OSCAL_DIR/user-readable-results-<profile>-<timestamp>.xml/html${NC}"

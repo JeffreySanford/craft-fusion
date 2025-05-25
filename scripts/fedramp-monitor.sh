@@ -91,7 +91,7 @@ while true; do
     echo -e "${BOLD}${CYAN}🛡️  OSCAL/FedRAMP Compliance Scan:${NC}"
 
     # Show OSCAL scan status for all profiles
-    OSCAL_PROFILES=(standard ospp pci-dss cusp)
+    OSCAL_PROFILES=(standard ospp pci-dss cusp medium-high rev5) # Ensure all profiles are monitored
     OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
 
     missing_profiles=()
@@ -155,6 +155,15 @@ while true; do
         if [ "$profile" = "standard" ]; then
           missing_standard=true # Set flag if standard profile is missing
         fi
+        # Add a note for placeholder profiles if they are missing
+        if [ "$profile" = "medium-high" ] || [ "$profile" = "rev5" ]; then
+          local profile_label_temp="$profile"
+          if [ "$profile" = "medium-high" ]; then profile_label_temp="Med-High R5"; fi
+          if [ "$profile" = "rev5" ]; then profile_label_temp="FedRAMP Rev5"; fi
+          printf "   ${YELLOW}Note: '$profile_label_temp' is a placeholder for a future FedRAMP Rev 5 profile.${NC}\n"
+          printf "   ${YELLOW}      Update its Profile ID in 'fedramp-oscal.sh' when available.${NC}\n"
+          missing_standard=true # Set flag if standard profile is missing
+        fi
       fi
     done
 
@@ -172,8 +181,9 @@ while true; do
         fi
     done
     if [ "$all_scans_ok" = false ] && [ ${#actionable_scans_display[@]} -gt 0 ]; then
-      printf "${BOLD}${CYAN}Actionable OSCAL Scans:${NC} %s\n" "$(IFS=, ; echo "${actionable_scans_display[*]}")"
+      printf "${BOLD}${YELLOW}Actionable OSCAL Scans (need to be run):${NC} %s\n" "$(IFS=, ; echo "${actionable_scans_display[*]}")"
     fi
+    echo -e "${CYAN}Monitored OSCAL profiles:${NC} ${WHITE}${OSCAL_PROFILES[*]}${NC}"
 
     # If standard scan is missing, run it automatically
     if [ "$missing_standard" = true ]; then # Check the flag

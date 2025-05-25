@@ -191,6 +191,21 @@ printf "╚═══════════════════════
 echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}"
 # The print_progress function will show the estimated time.
 
+# Add informational message for placeholder profiles
+if [ "$PROFILE" = "medium-high" ] || [ "$PROFILE" = "rev5" ]; then
+  echo
+  echo -e "${YELLOW}----------------------------------------------------------------------${NC}"
+  echo -e "${YELLOW}${BOLD}INFO: Placeholder Profile - '$PROFILE_LABEL'${NC}"
+  echo -e "${YELLOW}This profile ('$PROFILE') is a placeholder for an upcoming FedRAMP Rev 5 aligned standard.${NC}"
+  echo -e "${YELLOW}The current SCAP Profile ID ('${PROFILE_ID}') is temporary.${NC}"
+  echo -e "${YELLOW}You will need to update this ID in the script once the official profile is released${NC}"
+  echo -e "${YELLOW}and available in your 'scap-security-guide' package.${NC}"
+  echo -e "${YELLOW}Check for updates: ${CYAN}sudo dnf update scap-security-guide${NC}"
+  echo -e "${YELLOW}SCAP Security Guide Project: ${CYAN}https://www.open-scap.org/security-policies/scap-security-guide/${NC}"
+  echo -e "${YELLOW}FedRAMP Program: ${CYAN}https://www.fedramp.gov/${NC}"
+  echo -e "${YELLOW}----------------------------------------------------------------------${NC}"
+fi
+
 echo -e "${BOLD}${CYAN}Running OpenSCAP scan with profile: ${YELLOW}$PROFILE_ID${NC}"
 
 phase_start_time=$(date +%s)
