@@ -155,6 +155,7 @@ while true; do
         if command -v xmllint &>/dev/null; then
           PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
           FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
+          # Only print if both PASS and FAIL are valid numbers
           if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]]; then
             printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}\n" "$PASS" "$FAIL"
           fi
@@ -162,7 +163,7 @@ while true; do
       else
         printf "   ${RED}✗ No OpenSCAP scan results found for %s${NC}\n" "$profile"
       fi
-      done
+    done
     printf "Available OSCAL scan options: ${YELLOW}%s${NC}\n" "${OSCAL_PROFILES[*]}"
 
     # AC-2: Unauthorized UID 0 Accounts
