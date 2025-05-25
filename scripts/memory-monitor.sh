@@ -296,9 +296,13 @@ for profile in "${OSCAL_PROFILES[@]}"; do
     printf "   Report: ${CYAN}%s${NC}\n" "$OSCAL_REPORT_FILE"
     # Show pass/fail/total summary if xmllint is available
     if command -v xmllint &>/dev/null; then
-      PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
-      FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
-      TOTAL=$(xmllint --xpath 'count(//rule-result)' "$OSCAL_RESULT_FILE" 2>/dev/null)
+      TOTAL_XPATH="count(//TestResult//rule-result)"
+      PASS_XPATH="count(//TestResult//rule-result[result='pass'])"
+      FAIL_XPATH="count(//TestResult//rule-result[result='fail'])"
+      TOTAL=$(xmllint --xpath "$TOTAL_XPATH" "$OSCAL_RESULT_FILE" 2>/dev/null)
+      PASS=$(xmllint --xpath "$PASS_XPATH" "$OSCAL_RESULT_FILE" 2>/dev/null)
+      FAIL=$(xmllint --xpath "$FAIL_XPATH" "$OSCAL_RESULT_FILE" 2>/dev/null)
+
       PASS=${PASS:-0}
       FAIL=${FAIL:-0}
       TOTAL=${TOTAL:-0}
@@ -649,9 +653,13 @@ while true; do
             echo -e "   Report: ${CYAN}$current_profile_report_file${NC}"
             # Show pass/fail summary if xmllint is available
             if command -v xmllint &>/dev/null; then
-                PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$current_profile_result_file" 2>/dev/null)
-                FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$current_profile_result_file" 2>/dev/null)
-                TOTAL=$(xmllint --xpath 'count(//rule-result)' "$current_profile_result_file" 2>/dev/null)
+                TOTAL_XPATH_LOOP="count(//TestResult//rule-result)"
+                PASS_XPATH_LOOP="count(//TestResult//rule-result[result='pass'])"
+                FAIL_XPATH_LOOP="count(//TestResult//rule-result[result='fail'])"
+                TOTAL=$(xmllint --xpath "$TOTAL_XPATH_LOOP" "$current_profile_result_file" 2>/dev/null)
+                PASS=$(xmllint --xpath "$PASS_XPATH_LOOP" "$current_profile_result_file" 2>/dev/null)
+                FAIL=$(xmllint --xpath "$FAIL_XPATH_LOOP" "$current_profile_result_file" 2>/dev/null)
+
                 PASS=${PASS:-0}
                 FAIL=${FAIL:-0}
                 TOTAL=${TOTAL:-0}
