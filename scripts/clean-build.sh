@@ -33,41 +33,47 @@ echo -e "${GREEN}✓ All build artifacts cleaned${NC}"
 
 # Optional: If arguments are provided, run builds
 if [ $# -gt 0 ]; then
+    run_build() {
+        local project_name=$1
+        local build_command=$2
+        echo -e "${BLUE}Building $project_name...${NC}"
+        eval "$build_command"
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}✓ $project_name build successful${NC}"
+        else
+            echo -e "${RED}✗ $project_name build failed${NC}"
+            exit 1
+        fi
+    }
+
     echo -e "${BLUE}5. Running builds for: $@${NC}"
     
     for project in "$@"; do
         echo -e "${BLUE}Building $project...${NC}"
         case $project in
             "craft-web")
-                npx nx run craft-web:build --configuration=production
+                run_build "craft-web" "npx nx run craft-web:build --configuration=production"
                 ;;
             "craft-nest")
-                npx nx run craft-nest:build --configuration=production
+                run_build "craft-nest" "npx nx run craft-nest:build --configuration=production"
                 ;;
             "craft-go")
-                npx nx run craft-go:build --configuration=production
+                run_build "craft-go" "npx nx run craft-go:build --configuration=production"
                 ;;
             "craft-library")
-                npx nx run craft-library:build
+                run_build "craft-library" "npx nx run craft-library:build"
                 ;;
             "all")
                 echo -e "${BLUE}Building all projects...${NC}"
-                npx nx run craft-library:build
-                npx nx run craft-nest:build --configuration=production
-                npx nx run craft-go:build --configuration=production
-                npx nx run craft-web:build --configuration=production
+                run_build "craft-library" "npx nx run craft-library:build"
+                run_build "craft-nest" "npx nx run craft-nest:build --configuration=production"
+                run_build "craft-go" "npx nx run craft-go:build --configuration=production"
+                run_build "craft-web" "npx nx run craft-web:build --configuration=production"
                 ;;
             *)
                 echo -e "${YELLOW}⚠ Unknown project: $project${NC}"
                 ;;
         esac
-        
-        if [ $? -eq 0 ]; then
-            echo -e "${GREEN}✓ $project build successful${NC}"
-        else
-            echo -e "${RED}✗ $project build failed${NC}"
-            exit 1
-        fi
     done
 fi
 

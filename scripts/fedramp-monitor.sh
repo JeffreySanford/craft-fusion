@@ -76,36 +76,9 @@ bar() {
   printf "]%s %s\n" "$NC" "$value"
 }
 
-# === Environment & Time Estimate Infographic ===
-CPU_CORES=$(nproc 2>/dev/null || echo 1)
-MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
-DISK_AVAIL=$(df -h / | awk 'NR==2{print $4}')
-
-bar() {
-  local label="$1"; local value="$2"; local max="$3"; local color="$4"
-  value=${value:-0}
-  max=${max:-30}
-  color=${color:-$NC}
-  # Defensive: ensure value and max are valid integers
-  if ! [[ "$value" =~ ^[0-9]+$ ]]; then value=0; fi
-  if ! [[ "$max" =~ ^[0-9]+$ ]]; then max=30; fi
-  local n=$((value > max ? max : value))
-  printf "%s%-18s [" "$color" "$label"
-  for ((i=0;i<n;i++)); do printf "█"; done
-  for ((i=n;i<max;i++)); do printf "·"; done
-  printf "]%s %s\n" "$NC" "$value"
-}
-
-MONITOR_EST=1
-if [ "$CPU_CORES" -le 1 ]; then MONITOR_EST=2; fi
-if [ "$MEM_TOTAL_MB" -lt 1500 ]; then MONITOR_EST=$((MONITOR_EST+1)); fi
-
 printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════╗\n"
 printf "║        🛡️  FedRAMP Monitor Environment              ║\n"
 printf "╚══════════════════════════════════════════════════════════════╝${NC}\n"
-echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}"
-bar "Monitoring" $MONITOR_EST 10 "$GREEN"
-echo -e "${BOLD}${WHITE}Estimated Time: Continuous${NC}\n"
 
 # Check for recent OSCAL (OpenSCAP) scan results
 while true; do
@@ -206,10 +179,10 @@ while true; do
     ROOT_USERS=$(awk -F: '($3 == 0) {print $1}' /etc/passwd | grep -vE '^root$')
     if [ -n "$ROOT_USERS" ]; then
       echo -e "${RED}  [!] Unauthorized UID 0 accounts: $ROOT_USERS${NC}"
-      bar "AC-2" 5 "$RED"
+      bar "AC-2" 5 30 "$RED"
     else
       echo -e "${GREEN}  [✓] No unauthorized UID 0 accounts${NC}"
-      bar "AC-2" 30 "$GREEN"
+      bar "AC-2" 30 30 "$GREEN"
     fi
 
     # CM-7: World-writable Files
@@ -221,10 +194,10 @@ while true; do
           echo -e "${YELLOW}  [!] World-writable file: $f${NC}"
         fi
       done <<< "$WW_FILES"
-      bar "CM-7" 10 "$YELLOW"
+      bar "CM-7" 10 30 "$YELLOW"
     else
       echo -e "${GREEN}  [✓] No world-writable files found${NC}"
-      bar "CM-7" 30 "$GREEN"
+      bar "CM-7" 30 30 "$GREEN"
     fi
 
     echo

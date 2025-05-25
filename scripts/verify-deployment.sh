@@ -131,8 +131,8 @@ check_service "nginx" "active" "Nginx web server"
 echo -e "${BLUE}=== Port Verification ===${NC}"
 check_port "80" "HTTP port"
 check_port "443" "HTTPS port (if SSL configured)"
-check_port "3000" "NestJS API"
-check_port "8080" "Go API"
+check_port "3000" "NestJS API (local)"
+check_port "4000" "Go API (local)" # Assuming Go runs on 4000 as per deploy-backend.sh
 
 echo -e "${BLUE}=== File Structure Verification ===${NC}"
 check_directory_exists "/var/www/jeffreysanford.us" "Frontend deployment directory"
@@ -145,7 +145,7 @@ check_file_exists "/var/www/jeffreysanford.us/main.js" "Frontend main.js bundle"
 
 # Check for backend files
 check_file_exists "/var/www/craft-fusion/dist/apps/craft-nest/src/main.js" "NestJS main file"
-check_file_exists "/var/www/craft-fusion/go-api/main" "Go API executable"
+check_file_exists "/var/www/craft-fusion/dist/apps/craft-go/main" "Go API executable" # Path from deploy-backend.sh
 
 echo -e "${BLUE}=== PM2 Process Verification ===${NC}"
 check_pm2_process "craft-nest" "NestJS"
