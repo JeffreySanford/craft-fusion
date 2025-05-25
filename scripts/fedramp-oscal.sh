@@ -51,16 +51,18 @@ case "$PROFILE" in
     PROFILE_ID="xccdf_org.ssgproject.content_profile_pci-dss" ;;
   cusp)
     PROFILE_ID="xccdf_org.ssgproject.content_profile_cusp_fedora" ;;
+  medium-high)
+    PROFILE_ID="xccdf_org.ssgproject.content_profile_PLACEHOLDER_medium_high" ;; # Placeholder for future FedRAMP Rev 5 Medium/High - Update when actual ID is known
   *)
     echo "Unknown profile: $PROFILE"
-    echo "Usage: $0 [standard|ospp|pci-dss|cusp]"
+    echo "Usage: $0 [standard|ospp|pci-dss|cusp|medium-high (placeholder for Rev 5)]"
     exit 1
     ;;
 esac
 
 if [ "$SUPPRESS_PRE_SCAN_SUMMARY_FLAG" != "--no-summary" ]; then
   # === Actionable OSCAL Scans Summary (pre-scan check) ===
-  OSCAL_PROFILES_TO_CHECK=(standard ospp pci-dss cusp)
+  OSCAL_PROFILES_TO_CHECK=(standard ospp pci-dss cusp medium-high) # medium-high is a placeholder for future Rev 5
   OSCAL_MAX_AGE_DAYS=7
   actionable_scans_display=()
   all_scans_ok=true
@@ -126,6 +128,7 @@ CURRENT_PROFILE_COLOR="$PURPLE" # Default color
 if [ "$PROFILE" = "ospp" ]; then PROFILE_LABEL="OSPP"; CURRENT_PROFILE_COLOR="$CYAN"; fi
 if [ "$PROFILE" = "pci-dss" ]; then PROFILE_LABEL="PCI-DSS"; CURRENT_PROFILE_COLOR="$YELLOW"; fi
 if [ "$PROFILE" = "cusp" ]; then PROFILE_LABEL="CUSP"; CURRENT_PROFILE_COLOR="$GREEN"; fi
+if [ "$PROFILE" = "medium-high" ]; then PROFILE_LABEL="Med-High R5"; CURRENT_PROFILE_COLOR="$BLUE"; fi # Placeholder for FedRAMP Rev 5 Medium/High
 
 # --- Progress Function ---
 print_progress() {
@@ -210,11 +213,11 @@ if [ $oscap_status -eq 0 ] || [ $oscap_status -eq 2 ]; then # 0 for success, 2 f
   if command -v xmllint &>/dev/null; then
     # More specific XPath for OSCAP results:
     # Assumes rule-result elements are within a TestResult, often under a Benchmark root.
-    # The //TestResult ensures we find TestResult anywhere, then look for rule-result within it.
-    TOTAL_XPATH="count(//TestResult//rule-result)"
-    PASS_XPATH="count(//TestResult//rule-result[result='pass'])"
-    FAIL_XPATH="count(//TestResult//rule-result[result='fail'])"
-    NOTAPPLICABLE_XPATH="count(//TestResult//rule-result[result='notapplicable'])"
+    # Using //rule-result as the iteration logic below successfully uses this simpler path.
+    TOTAL_XPATH="count(//rule-result)"
+    PASS_XPATH="count(//rule-result[result='pass'])"
+    FAIL_XPATH="count(//rule-result[result='fail'])"
+    NOTAPPLICABLE_XPATH="count(//rule-result[result='notapplicable'])"
     TOTAL=$(xmllint --xpath "$TOTAL_XPATH" "$RESULTS" 2>/dev/null)
     PASS=$(xmllint --xpath "$PASS_XPATH" "$RESULTS" 2>/dev/null)
     FAIL=$(xmllint --xpath "$FAIL_XPATH" "$RESULTS" 2>/dev/null)

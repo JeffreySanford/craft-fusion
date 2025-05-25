@@ -2,7 +2,7 @@
 # fedramp-minor.sh - Run all OSCAL/FedRAMP OpenSCAP scans (all profiles) and ensure reports are user-readable
 
 
-PROFILES=(standard ospp pci-dss cusp)
+PROFILES=(standard ospp pci-dss cusp medium-high) # medium-high is a placeholder for future FedRAMP Rev 5
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 OSCAL_DIR="$SCRIPT_DIR/../oscal-analysis"
 
@@ -34,7 +34,7 @@ echo -e "${WHITE}This will run standard, ospp, pci-dss, and cusp scans${NC}"
 echo
 
 # === Actionable OSCAL Scans Summary ===
-OSCAL_PROFILES_TO_CHECK=(standard ospp pci-dss cusp)
+OSCAL_PROFILES_TO_CHECK=(standard ospp pci-dss cusp medium-high) # medium-high is a placeholder for future Rev 5
 OSCAL_MAX_AGE_DAYS=7
 actionable_scans_display=()
 all_scans_ok=true
@@ -214,6 +214,7 @@ for profile in "${PROFILES[@]}"; do
   if [ "$profile" = "ospp" ]; then PROGRESS_COLOR="$CYAN"; fi
   if [ "$profile" = "pci-dss" ]; then PROGRESS_COLOR="$YELLOW"; fi
   if [ "$profile" = "cusp" ]; then PROGRESS_COLOR="$GREEN"; fi
+  if [ "$profile" = "medium-high" ]; then PROGRESS_COLOR="$BLUE"; fi # Placeholder for FedRAMP Rev 5 Medium/High
 
   phase_start_time=$(date +%s)
   print_progress "Scan: $profile" "$PROFILE_ESTIMATE_SECONDS" "$phase_start_time" "$PROGRESS_COLOR" &
