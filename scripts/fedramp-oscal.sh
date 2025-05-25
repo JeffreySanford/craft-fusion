@@ -228,10 +228,9 @@ if [ $oscap_status -eq 0 ] || [ $oscap_status -eq 2 ]; then # 0 for success, 2 f
   echo -e "${WHITE}Results: ${CYAN}$RESULTS${NC}"
   echo -e "${WHITE}HTML Report: ${CYAN}$REPORT${NC}"
   # Show vibrant pass/fail summary for each control if xmllint is available
-  if command -v xmllint &>/dev/null; then
-    # More specific XPath for OSCAP results:
+  # More specific XPath for OSCAP results:
     # Assumes rule-result elements are within a TestResult, often under a Benchmark root.
-    # Using //rule-result as the iteration logic below successfully uses this simpler path.
+    # Using //rule-result as the iteration logic below successfully uses this simpler path. Let's use it for counting too.
     TOTAL_XPATH="count(//rule-result)"
     PASS_XPATH="count(//rule-result[result='pass'])"
     FAIL_XPATH="count(//rule-result[result='fail'])"
