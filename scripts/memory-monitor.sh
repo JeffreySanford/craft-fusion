@@ -268,12 +268,12 @@ echo
 printf "${BOLD}${CYAN}Available OSCAL scan options:${NC} ${YELLOW}%s${NC}\n" "${OSCAL_PROFILES[*]}"
 
 # Show status for each profile
+missing_profiles=()
 for profile in "${OSCAL_PROFILES[@]}"; do
   OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results-$profile.xml"
   OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report-$profile.html"
   USER_RESULT_FILE="$OSCAL_DIR/user-readable-results-$profile.xml"
   USER_REPORT_FILE="$OSCAL_DIR/user-readable-report-$profile.html"
-  
   # Check for user-readable files first, then admin files
   if [ -f "$USER_RESULT_FILE" ]; then
     OSCAL_RESULT_FILE="$USER_RESULT_FILE"
@@ -288,25 +288,31 @@ for profile in "${OSCAL_PROFILES[@]}"; do
       OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report.html"
     fi
   fi
-  
   if [ -f "$OSCAL_RESULT_FILE" ]; then
     LAST_RUN=$(stat -c %Y "$OSCAL_RESULT_FILE")
     NOW_TS=$(date +%s)
     AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
     printf "   ${GREEN}✓ %s scan found (%d days ago)${NC}\n" "$profile" "$AGE_DAYS"
     printf "   Report: ${CYAN}%s${NC}\n" "$OSCAL_REPORT_FILE"
-    # Show pass/fail summary if xmllint is available
+    # Show pass/fail/total summary if xmllint is available
     if command -v xmllint &>/dev/null; then
       PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
       FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
+      TOTAL=$((PASS+FAIL))
       if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]]; then
-        printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}\n" "$PASS" "$FAIL"
+        printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}  ${WHITE}Total: %s${NC}\n" "$PASS" "$FAIL" "$TOTAL"
       fi
     fi
   else
     printf "   ${RED}✗ No OpenSCAP scan results found for %s${NC}\n" "$profile"
+    missing_profiles+=("$profile")
   fi
-  done
+done
+
+# Only show available options if any are missing
+if [ ${#missing_profiles[@]} -gt 0 ]; then
+  printf "${BOLD}${CYAN}Available OSCAL scan options:${NC} ${YELLOW}%s${NC}\n" "${missing_profiles[*]}"
+fi
 
 # Vibrant environment summary and time estimate for memory monitoring
 CPU_CORES=$(nproc 2>/dev/null || echo 1)

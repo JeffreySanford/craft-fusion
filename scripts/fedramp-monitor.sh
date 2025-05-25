@@ -148,15 +148,21 @@ while true; do
     OSCAL_PROFILES=(standard ospp pci-dss cusp)
     OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
 
-    missing_standard=false
-
-    printf "${BOLD}${CYAN}\n🛡️  OSCAL/FedRAMP Compliance Scan Status:${NC}\n"
+    missing_profiles=()
     for profile in "${OSCAL_PROFILES[@]}"; do
       OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results-$profile.xml"
       OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report-$profile.html"
-      if [ "$profile" = "standard" ]; then
-        # Also check for legacy report names for standard
-        if [ -f "$OSCAL_DIR/oscap-results.xml" ]; then
+      USER_RESULT_FILE="$OSCAL_DIR/user-readable-results-$profile.xml"
+      USER_REPORT_FILE="$OSCAL_DIR/user-readable-report-$profile.html"
+      # Prefer user-readable files
+      if [ -f "$USER_RESULT_FILE" ]; then
+        OSCAL_RESULT_FILE="$USER_RESULT_FILE"
+        OSCAL_REPORT_FILE="$USER_REPORT_FILE"
+      elif [ "$profile" = "standard" ]; then
+        if [ -f "$OSCAL_DIR/user-readable-results.xml" ]; then
+          OSCAL_RESULT_FILE="$OSCAL_DIR/user-readable-results.xml"
+          OSCAL_REPORT_FILE="$OSCAL_DIR/user-readable-report.html"
+        elif [ -f "$OSCAL_DIR/oscap-results.xml" ]; then
           OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results.xml"
           OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report.html"
         fi
@@ -167,19 +173,23 @@ while true; do
         AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
         printf "   ${GREEN}✓ %s scan found (%d days ago)${NC}\n" "$profile" "$AGE_DAYS"
         printf "   Report: ${CYAN}%s${NC}\n" "$OSCAL_REPORT_FILE"
-        # Show pass/fail summary if xmllint is available
         if command -v xmllint &>/dev/null; then
           PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
           FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
-          if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]]; then
-            printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}\n" "$PASS" "$FAIL"
+          TOTAL=$(xmllint --xpath 'count(//rule-result)' "$OSCAL_RESULT_FILE" 2>/dev/null)
+          if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]] && [[ "$TOTAL" =~ ^[0-9]+$ ]]; then
+            printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}  ${WHITE}Total: %s${NC}\n" "$PASS" "$FAIL" "$TOTAL"
           fi
         fi
       else
-        printf "   ${RED}✗ No OpenSCAP scan results found for %s${NC}\n" "$profile"
+        missing_profiles+=("$profile")
       fi
     done
-    printf "Available OSCAL scan options: ${YELLOW}%s${NC}\n" "${OSCAL_PROFILES[*]}"
+
+    # Only show available options if any are missing
+    if [ ${#missing_profiles[@]} -gt 0 ]; then
+      printf "${BOLD}${CYAN}Available OSCAL scan options:${NC} ${YELLOW}%s${NC}\n" "${missing_profiles[*]}"
+    fi
 
     # If standard scan is missing, run it automatically
     if [ "$missing_standard" = true ]; then
