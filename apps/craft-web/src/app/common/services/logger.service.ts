@@ -720,12 +720,8 @@ export class LoggerService {
   
   clearLogs() {
     this.logs = [];
-    this.logSubject.next({
-      timestamp: new Date(),
-      level: LogLevel.INFO,
-      message: 'Logs cleared',
-      component: 'LoggerService'
-    });
+    // Do not emit a "Logs cleared" log entry to avoid feedback loop
+    // Optionally, notify UI via a separate subject if needed
   }
   
   /**

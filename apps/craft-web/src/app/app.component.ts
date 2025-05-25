@@ -25,13 +25,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   isFooterExpanded = false;
 
   title = 'frontend';
-  private routerSubscription!: Subscription;
-
   private footerStateSubscription!: Subscription;
 
   menuItems = [
     { label: 'Home', icon: 'home', routerLink: '/home', active: false },
-    // Add more menu items as needed
   ];
   polling = true;
   editorForm: FormGroup = new FormGroup({});
@@ -40,21 +37,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoggedIn = false;
 
   // Reduce network polling
-  private videoCheckInterval: number = 10000; // Increased from whatever it was before
+  private videoCheckInterval: number = 10000;
   private inactivityTimeout: any = null;
   private videoCheckSubscription: Subscription | null = null;
   private destroy$ = new Subject<void>();
 
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private route: ActivatedRoute,
     private breakpointObserver: BreakpointObserver,
     private userTrackingService: UserTrackingService,
     private adminStateService: AdminStateService,
     private userActivityService: UserActivityService,
     private logger: LoggerService,
-    private authService: AuthService, // Changed to use existing AuthService
+    private authService: AuthService,
     private footerStateService: FooterStateService,
     private userStateService: UserStateService,
   ) {
@@ -68,9 +62,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (changes['user']) {
       // Replace any existing console.log with logger calls
       this.logger.debug('Application started', { timestamp: new Date().toISOString() });
-
-      // Temporarily set admin status here - will be replaced with auth later
-      // this.adminStateService.setAdminStatus(true); // Set to true for development
 
       // Update to use authService instead of authFacade
       this.authService.isAdmin$.subscribe(isAdmin => {

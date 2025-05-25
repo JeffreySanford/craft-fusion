@@ -11,19 +11,16 @@ export const appRoutes: Routes = [
   { path: 'table', loadChildren: () => import('./projects/table/table.module').then(m => m.TableModule) },
   {
     path: 'data-visualizations',
-    loadChildren: () => import('./projects/data-visualizations/data-visualizations.module').then(m => m.DataVisualizationsModule)
+    loadChildren: () => import('./projects/data-visualizations/data-visualizations.module').then(m => m.DataVisualizationsModule),
   },
   {
     path: 'book',
-    loadChildren: () => import('./projects/book/book.module').then(m => m.BookModule),
-    canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['admin', 'book'] }
-  },
+    loadChildren: () => import('./projects/book/book.module').then(m => m.BookModule) },
+
   {
     path: 'family',
     loadChildren: () => import('./projects/family/memorial-timeline/memorial-timeline.module').then(m => m.MemorialTimelineModule),
-    canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['admin', 'family'] }
+
   },
   {
     path: 'peasant-kitchen',
@@ -35,20 +32,14 @@ export const appRoutes: Routes = [
   {
     path: 'resume',
     component: ResumeComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['admin', 'resume'] }
   },
   {
     path: 'admin',
     loadChildren: () => import('./pages/admin/admin.module').then(m => m.AdminModule),
-    canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['admin'] }
   },
   {
     path: 'chat',
     loadChildren: () => import('./projects/chat/chat.module').then(m => m.ChatModule),
-    canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['admin', 'chat'] }
   },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/404' },
