@@ -357,6 +357,10 @@ init_screen
 START_TIME=$(date +%s)
 
 while true; do
+    # Initialize network speed variables to avoid unbound variable errors
+    rx_speed=0
+    tx_speed=0
+    
     move_cursor_home
     clear_to_end
     now_time=$(date '+%H:%M:%S')
