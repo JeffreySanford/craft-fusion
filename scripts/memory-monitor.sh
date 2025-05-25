@@ -249,10 +249,37 @@ check_server_status() {
 
 # OSCAL/SCAP scan check (FedRAMP compliance)
 OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
-OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results.xml"
-OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report.html"
 OSCAL_PROFILES=("standard" "ospp" "pci-dss" "cusp")
 OSCAL_MAX_AGE_DAYS=7
+
+# Show available OSCAL scan profiles
+printf "${BOLD}${CYAN}\n🛡️  OSCAL/FedRAMP Compliance Scan Options:${NC}\n"
+for profile in "${OSCAL_PROFILES[@]}"; do
+  printf "   ${YELLOW}- %s${NC}  (run: ./scripts/fedramp-oscal.sh %s)\n" "$profile" "$profile"
+done
+
+# Show status for each profile
+for profile in "${OSCAL_PROFILES[@]}"; do
+  OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results-$profile.xml"
+  OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report-$profile.html"
+  if [ -f "$OSCAL_RESULT_FILE" ]; then
+    LAST_RUN=$(stat -c %Y "$OSCAL_RESULT_FILE")
+    NOW_TS=$(date +%s)
+    AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
+    printf "   ${GREEN}✓ %s scan found (%d days ago)${NC}\n" "$profile" "$AGE_DAYS"
+    printf "   Report: ${CYAN}%s${NC}\n" "$OSCAL_REPORT_FILE"
+    # Show pass/fail summary if xmllint is available
+    if command -v xmllint &>/dev/null; then
+      PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
+      FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
+      if [ -n "$PASS" ] && [ -n "$FAIL" ]; then
+        printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}\n" "$PASS" "$FAIL"
+      fi
+    fi
+  else
+    printf "   ${RED}✗ No %s scan results found!${NC}\n" "$profile"
+  fi
+done
 
 # Vibrant environment summary and time estimate for memory monitoring
 CPU_CORES=$(nproc 2>/dev/null || echo 1)

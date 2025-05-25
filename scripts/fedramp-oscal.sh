@@ -23,8 +23,8 @@ esac
 
 SCAP_CONTENT="/usr/share/xml/scap/ssg/content/ssg-fedora-ds.xml"
 OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
-RESULTS="$OSCAL_DIR/oscap-results.xml"
-REPORT="$OSCAL_DIR/oscap-report.html"
+RESULTS="$OSCAL_DIR/oscap-results-$PROFILE.xml"
+REPORT="$OSCAL_DIR/oscap-report-$PROFILE.html"
 
 mkdir -p "$OSCAL_DIR"
 
@@ -39,9 +39,9 @@ MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
 DISK_AVAIL=$(df -h / | awk 'NR==2{print $4}')
 PROFILE_LABEL="Standard"
 PROFILE_COLOR="$PURPLE"
-if [ "$1" == "ospp" ]; then PROFILE_LABEL="OSPP"; PROFILE_COLOR="$CYAN"; fi
-if [ "$1" == "pci-dss" ]; then PROFILE_LABEL="PCI-DSS"; PROFILE_COLOR="$YELLOW"; fi
-if [ "$1" == "cusp" ]; then PROFILE_LABEL="CUSP"; PROFILE_COLOR="$GREEN"; fi
+if [ "$PROFILE" == "ospp" ]; then PROFILE_LABEL="OSPP"; PROFILE_COLOR="$CYAN"; fi
+if [ "$PROFILE" == "pci-dss" ]; then PROFILE_LABEL="PCI-DSS"; PROFILE_COLOR="$YELLOW"; fi
+if [ "$PROFILE" == "cusp" ]; then PROFILE_LABEL="CUSP"; PROFILE_COLOR="$GREEN"; fi
 
 bar() {
   local label="$1"; local value="$2"; local max="$3"; local color="$4"
@@ -64,16 +64,24 @@ echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${
 bar "OSCAL $PROFILE_LABEL" $OSCAL_EST 10 "$PROFILE_COLOR"
 echo -e "${BOLD}${WHITE}Estimated Time: ~${OSCAL_EST} min${NC}\n"
 
-echo "Running OpenSCAP scan with profile: $PROFILE_ID"
+echo -e "${BOLD}${CYAN}Running OpenSCAP scan with profile: ${YELLOW}$PROFILE_ID${NC}"
 oscap xccdf eval --profile "$PROFILE_ID" \
   --results "$RESULTS" \
   --report "$REPORT" \
   "$SCAP_CONTENT"
 
 if [ $? -eq 0 ]; then
-  echo "OpenSCAP scan complete."
-  echo "Results: $RESULTS"
-  echo "HTML Report: $REPORT"
+  echo -e "${GREEN}✓ OpenSCAP scan complete.${NC}"
+  echo -e "${WHITE}Results: ${CYAN}$RESULTS${NC}"
+  echo -e "${WHITE}HTML Report: ${CYAN}$REPORT${NC}"
+  # Show pass/fail summary if xmllint is available
+  if command -v xmllint &>/dev/null; then
+    PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$RESULTS" 2>/dev/null)
+    FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$RESULTS" 2>/dev/null)
+    if [ -n "$PASS" ] && [ -n "$FAIL" ]; then
+      echo -e "${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}"
+    fi
+  fi
 else
-  echo "OpenSCAP scan failed."
+  echo -e "${RED}✗ OpenSCAP scan failed.${NC}"
 fi

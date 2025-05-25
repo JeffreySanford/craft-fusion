@@ -100,7 +100,7 @@ else
   echo -e "${GREEN}✓ node_modules up to date, skipping npm install${NC}"
 fi
 
-# === Environment & Security Summary ===
+# === Vibrant Environment & Security Summary ===
 CPU_CORES=$(nproc 2>/dev/null || echo 1)
 MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
 DISK_AVAIL=$(df -h / | awk 'NR==2{print $4}')
@@ -125,26 +125,24 @@ bar() {
 }
 
 # Estimate times (minutes)
-OSCAL_EST=3; OSCAL_OSPP_EST=4; OSCAL_PCI_EST=4; BUILD_EST=3; NPM_EST=2; MONITOR_EST=1
-if [ "$CPU_CORES" -le 1 ]; then OSCAL_EST=7; OSCAL_OSPP_EST=8; OSCAL_PCI_EST=8; BUILD_EST=6; fi
-if [ "$CPU_CORES" -le 2 ]; then OSCAL_EST=5; OSCAL_OSPP_EST=6; OSCAL_PCI_EST=6; BUILD_EST=4; fi
-if [ "$MEM_TOTAL_MB" -lt 1500 ]; then OSCAL_EST=$((OSCAL_EST+2)); OSCAL_OSPP_EST=$((OSCAL_OSPP_EST+2)); OSCAL_PCI_EST=$((OSCAL_PCI_EST+2)); BUILD_EST=$((BUILD_EST+2)); fi
+OSCAL_EST=3; BUILD_EST=3; NPM_EST=2; MONITOR_EST=1; CLEAN_EST=2
+if [ "$CPU_CORES" -le 1 ]; then OSCAL_EST=7; BUILD_EST=6; fi
+if [ "$CPU_CORES" -le 2 ]; then OSCAL_EST=5; BUILD_EST=4; fi
+if [ "$MEM_TOTAL_MB" -lt 1500 ]; then OSCAL_EST=$((OSCAL_EST+2)); BUILD_EST=$((BUILD_EST+2)); fi
 if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then NPM_EST=$((NPM_EST+2)); fi
-TOTAL_EST=$((OSCAL_EST+OSCAL_OSPP_EST+OSCAL_PCI_EST+BUILD_EST+NPM_EST+MONITOR_EST))
+TOTAL_EST=$((OSCAL_EST+BUILD_EST+NPM_EST+CLEAN_EST+MONITOR_EST))
 
-printf "${BOLD}${CYAN}\n╔════════════════════════════════════════════════════════════════════════════════════════════════════════════╗\n"
-printf "║        🚀 Craft Fusion Deployment Environment & Security Overview 🚀                                 ║\n"
-printf "╚════════════════════════════════════════════════════════════════════════════════════════════════════════════╝${NC}\n"
-echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}   ${BLUE}Network: ${GREEN}${NET_IFACE:-N/A} ${NET_IP:-N/A}${NC}   ${BLUE}Ping: ${GREEN}${PING_TIME:-N/A}ms${NC}"
-echo -e "${PURPLE}Security: OSCAL Last Run: ${CYAN}${OSCAL_STATUS}${NC}   ${PURPLE}Auditd: ${CYAN}${AUDITD_STATUS}${NC}"
-echo -e "${BOLD}${WHITE}Total Estimated Time Invested: ~${TOTAL_EST} min${NC}\n"
-bar "OSCAL Scan (standard)" $OSCAL_EST 10 "$PURPLE"
-bar "OSCAL Scan (ospp)" $OSCAL_OSPP_EST 10 "$CYAN"
-bar "OSCAL Scan (pci-dss)" $OSCAL_PCI_EST 10 "$BLUE"
+printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════════════════════╗\n"
+printf "║        🚀 Craft Fusion Deployment Environment & Security Summary 🚀      ║\n"
+printf "╚══════════════════════════════════════════════════════════════════════════════╝${NC}\n"
+echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}   ${BLUE}Net: ${GREEN}${NET_IP}${NC} (${NET_IFACE})   ${BLUE}Ping: ${GREEN}${PING_TIME}ms${NC}   ${BLUE}Auditd: ${GREEN}${AUDITD_STATUS}${NC}"
+echo -e "${BLUE}OSCAL Report: ${CYAN}${OSCAL_REPORT}${NC}   ${BLUE}Last Scan: ${CYAN}${OSCAL_STATUS}${NC}"
+bar "Full Clean" $CLEAN_EST 10 "$YELLOW"
+bar "OSCAL Scan" $OSCAL_EST 10 "$PURPLE"
 bar "Dependency Install" $NPM_EST 10 "$YELLOW"
-bar "Build/Deploy" $BUILD_EST 10 "$GREEN"
-bar "Monitoring" $MONITOR_EST 10 "$WHITE"
-echo
+bar "Build/Deploy" $BUILD_EST 10 "$CYAN"
+bar "Monitoring" $MONITOR_EST 10 "$GREEN"
+echo -e "${BOLD}${WHITE}Total Estimated Time: ~${TOTAL_EST} min${NC}\n"
 
 read -p "Proceed with deployment? (y/N): " -n 1 -r
 echo
