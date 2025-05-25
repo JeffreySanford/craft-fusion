@@ -208,9 +208,15 @@ if [ $oscap_status -eq 0 ] || [ $oscap_status -eq 2 ]; then # 0 for success, 2 f
   echo -e "${WHITE}HTML Report: ${CYAN}$REPORT${NC}"
   # Show vibrant pass/fail summary for each control if xmllint is available
   if command -v xmllint &>/dev/null; then
-    TOTAL=$(xmllint --xpath 'count(//rule-result)' "$RESULTS" 2>/dev/null)
-    PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$RESULTS" 2>/dev/null)
-    FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$RESULTS" 2>/dev/null)
+    # More specific XPath for OSCAP results:
+    # Assumes rule-result elements are within a TestResult, often under a Benchmark root.
+    # The //TestResult ensures we find TestResult anywhere, then look for rule-result within it.
+    TOTAL_XPATH="count(//TestResult//rule-result)"
+    PASS_XPATH="count(//TestResult//rule-result[result='pass'])"
+    FAIL_XPATH="count(//TestResult//rule-result[result='fail'])"
+    TOTAL=$(xmllint --xpath "$TOTAL_XPATH" "$RESULTS" 2>/dev/null)
+    PASS=$(xmllint --xpath "$PASS_XPATH" "$RESULTS" 2>/dev/null)
+    FAIL=$(xmllint --xpath "$FAIL_XPATH" "$RESULTS" 2>/dev/null)
     OTHER=$((TOTAL - PASS - FAIL))
     echo -e "${BOLD}${CYAN}\nFedRAMP OSCAL Control Results:${NC}"
     echo -e "${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}  ${YELLOW}Other: $OTHER${NC}  ${WHITE}Total: $TOTAL${NC}"
