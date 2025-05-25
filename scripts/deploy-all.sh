@@ -60,7 +60,7 @@ print_progress() {
         printf "\r${BOLD}${MAGENTA}%-25s ${WHITE}[%s] ${GREEN}%3d%%${NC} ${YELLOW}(%s remaining)${NC}\033[K" "$title:" "$bar" "$percent_done" "$time_left_str"
 
         if [ "$remaining_seconds" -eq 0 ] && [ "$elapsed_seconds" -ge "$estimated_total_seconds" ]; then break; fi
-        command sleep 1 # Ensure standard sleep is used
+        command sleep 15 # Update interval to 15 seconds
     done
 }
 
