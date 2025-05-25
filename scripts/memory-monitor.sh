@@ -298,8 +298,11 @@ for profile in "${OSCAL_PROFILES[@]}"; do
     if command -v xmllint &>/dev/null; then
       PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
       FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
-      TOTAL=$((PASS+FAIL))
-      if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]]; then
+      TOTAL=$(xmllint --xpath 'count(//rule-result)' "$OSCAL_RESULT_FILE" 2>/dev/null)
+      PASS=${PASS:-0}
+      FAIL=${FAIL:-0}
+      TOTAL=${TOTAL:-0}
+      if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]] && [[ "$TOTAL" =~ ^[0-9]+$ ]]; then
         printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}  ${WHITE}Total: %s${NC}\n" "$PASS" "$FAIL" "$TOTAL"
       fi
     fi
@@ -605,31 +608,59 @@ while true; do
     
     echo
     echo -e "${BOLD}${CYAN}🛡️  OSCAL/FedRAMP Compliance Scan:${NC}"
-    for PROFILE in "${OSCAL_PROFILES[@]}"; do
-        PROFILE_RESULT_FILE="$OSCAL_DIR/oscap-results-$PROFILE.xml"
-        PROFILE_REPORT_FILE="$OSCAL_DIR/oscap-report-$PROFILE.html"
-        if [ "$PROFILE" = "standard" ]; then
-            PROFILE_RESULT_FILE="$OSCAL_RESULT_FILE"
-            PROFILE_REPORT_FILE="$OSCAL_REPORT_FILE"
+    for profile_loop_var in "${OSCAL_PROFILES[@]}"; do # Renamed loop variable for clarity
+        current_profile_result_file=""
+        current_profile_report_file=""
+
+        # Define potential file names
+        user_readable_profile_specific="$OSCAL_DIR/user-readable-results-$profile_loop_var.xml"
+        admin_profile_specific="$OSCAL_DIR/oscap-results-$profile_loop_var.xml"
+        user_readable_generic_standard="$OSCAL_DIR/user-readable-results.xml" # Only for standard profile legacy
+        admin_generic_standard="$OSCAL_DIR/oscap-results.xml"               # Only for standard profile legacy
+
+        # Prefer user-readable files
+        if [ -f "$user_readable_profile_specific" ]; then
+            current_profile_result_file="$user_readable_profile_specific"
+            current_profile_report_file="${user_readable_profile_specific/.xml/.html}"
+        elif [ "$profile_loop_var" = "standard" ]; then # Check for legacy standard files
+            if [ -f "$user_readable_generic_standard" ]; then
+                current_profile_result_file="$user_readable_generic_standard"
+                current_profile_report_file="${user_readable_generic_standard/.xml/.html}"
+            elif [ -f "$admin_generic_standard" ]; then
+                current_profile_result_file="$admin_generic_standard"
+                current_profile_report_file="${admin_generic_standard/.xml/.html}"
+            fi
         fi
-        if [ -f "$PROFILE_RESULT_FILE" ]; then
-            LAST_RUN=$(stat -c %Y "$PROFILE_RESULT_FILE")
+        # Fallback to admin profile-specific if no user-readable or generic standard found
+        if [ -z "$current_profile_result_file" ] && [ -f "$admin_profile_specific" ]; then
+            current_profile_result_file="$admin_profile_specific"
+            current_profile_report_file="${admin_profile_specific/.xml/.html}"
+        fi
+
+        if [ -n "$current_profile_result_file" ] && [ -f "$current_profile_result_file" ]; then
+            LAST_RUN=$(stat -c %Y "$current_profile_result_file")
             NOW_TS=$(date +%s)
             AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
             if [ "$AGE_DAYS" -le "$OSCAL_MAX_AGE_DAYS" ]; then
-                echo -e "   ${GREEN}✓ OpenSCAP scan found for ${PROFILE} ($AGE_DAYS days ago)${NC}"
+                echo -e "   ${GREEN}✓ OpenSCAP scan found for ${profile_loop_var} ($AGE_DAYS days ago)${NC}"
             else
-                echo -e "   ${YELLOW}⚠️  OpenSCAP scan for ${PROFILE} is older than $OSCAL_MAX_AGE_DAYS days ($AGE_DAYS days ago)${NC}"
+                echo -e "   ${YELLOW}⚠️  OpenSCAP scan for ${profile_loop_var} is older than $OSCAL_MAX_AGE_DAYS days ($AGE_DAYS days ago)${NC}"
             fi
-            echo -e "   Report: ${CYAN}$PROFILE_REPORT_FILE${NC}"
+            echo -e "   Report: ${CYAN}$current_profile_report_file${NC}"
             # Show pass/fail summary if xmllint is available
             if command -v xmllint &>/dev/null; then
-                PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$PROFILE_RESULT_FILE" 2>/dev/null)
-                FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$PROFILE_RESULT_FILE" 2>/dev/null)
-                echo -e "   ${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}"
+                PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$current_profile_result_file" 2>/dev/null)
+                FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$current_profile_result_file" 2>/dev/null)
+                TOTAL=$(xmllint --xpath 'count(//rule-result)' "$current_profile_result_file" 2>/dev/null)
+                PASS=${PASS:-0}
+                FAIL=${FAIL:-0}
+                TOTAL=${TOTAL:-0}
+                if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]] && [[ "$TOTAL" =~ ^[0-9]+$ ]]; then
+                    printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}  ${WHITE}Total: %s${NC}\n" "$PASS" "$FAIL" "$TOTAL"
+                fi
             fi
         else
-            echo -e "   ${RED}✗ No OpenSCAP scan results found for ${PROFILE}${NC}"
+            echo -e "   ${RED}✗ No OpenSCAP scan results found for ${profile_loop_var}${NC}"
         fi
     done
     echo -e "${CYAN}Available OSCAL scan options:${NC} ${WHITE}${OSCAL_PROFILES[*]}${NC}"

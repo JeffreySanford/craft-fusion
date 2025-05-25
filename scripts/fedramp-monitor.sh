@@ -5,8 +5,8 @@
 # Set project root for relative paths
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OSCAL_DIR="$PROJECT_ROOT/oscal-analysis"
-OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results.xml"
-OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report.html"
+OSCAL_STANDARD_RESULT_FILE="$OSCAL_DIR/oscap-results-standard.xml" # Specific to standard profile
+OSCAL_STANDARD_REPORT_FILE="$OSCAL_DIR/oscap-report-standard.html"
 OSCAL_MAX_AGE_DAYS=7
 
 # Ensure oscal-analysis directory exists (with sudo if needed)
@@ -20,8 +20,8 @@ if [ ! -d "$OSCAL_DIR" ]; then
   fi
 fi
 
-# If no OSCAL scan results, run the standard scan automatically
-if [ ! -f "$OSCAL_RESULT_FILE" ]; then
+# If no OSCAL scan results for "standard" profile, run the standard scan automatically
+if [ ! -f "$OSCAL_STANDARD_RESULT_FILE" ] && [ ! -f "$OSCAL_DIR/user-readable-results-standard.xml" ] && [ ! -f "$OSCAL_DIR/oscap-results.xml" ]; then # Check primary, user-readable, and generic legacy for standard
   echo -e "${YELLOW}[OSCAL] No OpenSCAP scan results found! Running standard scan...${NC}"
   if [ -x "$PROJECT_ROOT/scripts/fedramp-oscal.sh" ]; then
     sudo "$PROJECT_ROOT/scripts/fedramp-oscal.sh" standard
@@ -87,75 +87,67 @@ while true; do
     echo -e "${BOLD}${CYAN}==== FedRAMP Security Scan (Lite): $NOW ====${NC}"
     echo -e "${MAGENTA}Controls Checked: 2 (AC-2, CM-7)${NC}"
 
-    # OSCAL/SCAP scan check
+    # OSCAL/SCAP scan check for all profiles
     echo -e "${BOLD}${CYAN}🛡️  OSCAL/FedRAMP Compliance Scan:${NC}"
-    if [ -f "$OSCAL_RESULT_FILE" ]; then
-        LAST_RUN=$(stat -c %Y "$OSCAL_RESULT_FILE")
-        NOW_TS=$(date +%s)
-        AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
-        if [ "$AGE_DAYS" -le "$OSCAL_MAX_AGE_DAYS" ]; then
-            echo -e "   ${GREEN}✓ OpenSCAP scan found ($AGE_DAYS days ago)${NC}"
-        else
-            echo -e "   ${YELLOW}⚠️  OpenSCAP scan is older than $OSCAL_MAX_AGE_DAYS days ($AGE_DAYS days ago)${NC}"
-        fi
-        echo -e "   Report: ${CYAN}$OSCAL_REPORT_FILE${NC}"
-        # Optional: show pass/fail summary if xmllint is available
-        if command -v xmllint &>/dev/null; then
-            PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
-            FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
-            PASS=${PASS:-0}
-            FAIL=${FAIL:-0}
-            echo -e "   ${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}"
-        fi
-    else
-        echo -e "   ${RED}✗ No OpenSCAP scan results found in oscal-analysis/${NC}"
-        echo -e "   ${YELLOW}Running OSCAL scan now...${NC}"
-        if ./scripts/fedramp-oscal.sh standard; then
-            echo -e "   ${GREEN}✓ OSCAL scan complete. See ./oscal-analysis/oscap-report.html${NC}"
-        else
-            echo -e "   ${RED}✗ OSCAL scan failed or incomplete${NC}"
-        fi
-    fi
 
     # Show OSCAL scan status for all profiles
     OSCAL_PROFILES=(standard ospp pci-dss cusp)
     OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
 
     missing_profiles=()
+    missing_standard=false # Initialize missing_standard flag
     for profile in "${OSCAL_PROFILES[@]}"; do
-      OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results-$profile.xml"
-      OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report-$profile.html"
-      USER_RESULT_FILE="$OSCAL_DIR/user-readable-results-$profile.xml"
-      USER_REPORT_FILE="$OSCAL_DIR/user-readable-report-$profile.html"
+      # Determine the most relevant result file for the current profile
+      current_profile_result_file=""
+      current_profile_report_file=""
+
+      # Define potential file names
+      user_readable_profile_specific="$OSCAL_DIR/user-readable-results-$profile.xml"
+      admin_profile_specific="$OSCAL_DIR/oscap-results-$profile.xml"
+      user_readable_generic_standard="$OSCAL_DIR/user-readable-results.xml" # Only for standard profile legacy
+      admin_generic_standard="$OSCAL_DIR/oscap-results.xml"               # Only for standard profile legacy
+
       # Prefer user-readable files
-      if [ -f "$USER_RESULT_FILE" ]; then
-        OSCAL_RESULT_FILE="$USER_RESULT_FILE"
-        OSCAL_REPORT_FILE="$USER_REPORT_FILE"
+      if [ -f "$user_readable_profile_specific" ]; then
+        current_profile_result_file="$user_readable_profile_specific"
+        current_profile_report_file="${user_readable_profile_specific/.xml/.html}"
       elif [ "$profile" = "standard" ]; then
-        if [ -f "$OSCAL_DIR/user-readable-results.xml" ]; then
-          OSCAL_RESULT_FILE="$OSCAL_DIR/user-readable-results.xml"
-          OSCAL_REPORT_FILE="$OSCAL_DIR/user-readable-report.html"
-        elif [ -f "$OSCAL_DIR/oscap-results.xml" ]; then
-          OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results.xml"
-          OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report.html"
+        if [ -f "$user_readable_generic_standard" ]; then
+          current_profile_result_file="$user_readable_generic_standard"
+          current_profile_report_file="${user_readable_generic_standard/.xml/.html}"
+        elif [ -f "$admin_generic_standard" ]; then
+          current_profile_result_file="$admin_generic_standard"
+          current_profile_report_file="${admin_generic_standard/.xml/.html}"
         fi
       fi
-      if [ -f "$OSCAL_RESULT_FILE" ]; then
-        LAST_RUN=$(stat -c %Y "$OSCAL_RESULT_FILE")
+      # Fallback to admin profile-specific if no user-readable or generic standard found
+      if [ -z "$current_profile_result_file" ] && [ -f "$admin_profile_specific" ]; then
+          current_profile_result_file="$admin_profile_specific"
+          current_profile_report_file="${admin_profile_specific/.xml/.html}"
+      fi
+
+      if [ -n "$current_profile_result_file" ] && [ -f "$current_profile_result_file" ]; then
+        LAST_RUN=$(stat -c %Y "$current_profile_result_file")
         NOW_TS=$(date +%s)
         AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
         printf "   ${GREEN}✓ %s scan found (%d days ago)${NC}\n" "$profile" "$AGE_DAYS"
-        printf "   Report: ${CYAN}%s${NC}\n" "$OSCAL_REPORT_FILE"
+        printf "   Report: ${CYAN}%s${NC}\n" "$current_profile_report_file"
         if command -v xmllint &>/dev/null; then
-          PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
-          FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
-          TOTAL=$(xmllint --xpath 'count(//rule-result)' "$OSCAL_RESULT_FILE" 2>/dev/null)
+          PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$current_profile_result_file" 2>/dev/null)
+          FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$current_profile_result_file" 2>/dev/null)
+          TOTAL=$(xmllint --xpath 'count(//rule-result)' "$current_profile_result_file" 2>/dev/null)
+          PASS=${PASS:-0}
+          FAIL=${FAIL:-0}
+          TOTAL=${TOTAL:-0}
           if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]] && [[ "$TOTAL" =~ ^[0-9]+$ ]]; then
             printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}  ${WHITE}Total: %s${NC}\n" "$PASS" "$FAIL" "$TOTAL"
           fi
         fi
       else
         missing_profiles+=("$profile")
+        if [ "$profile" = "standard" ]; then
+          missing_standard=true # Set flag if standard profile is missing
+        fi
       fi
     done
 
@@ -165,7 +157,7 @@ while true; do
     fi
 
     # If standard scan is missing, run it automatically
-    if [ "$missing_standard" = true ]; then
+    if [ "$missing_standard" = true ]; then # Check the flag
       echo -e "${YELLOW}[OSCAL] No OpenSCAP scan results found for standard! Running standard scan...${NC}"
       if [ -x "$PROJECT_ROOT/scripts/fedramp-oscal.sh" ]; then
         sudo "$PROJECT_ROOT/scripts/fedramp-oscal.sh" standard
