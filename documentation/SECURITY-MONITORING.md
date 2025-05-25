@@ -51,6 +51,65 @@ Add to root's crontab (`sudo crontab -e`):
 
 ---
 
+# FedRAMP/OSCAL Compliance Scanning
+
+## Overview
+This project includes automated scripts for running OpenSCAP (oscap) compliance scans using multiple security profiles. These scans help ensure your Fedora server meets security baselines for FedRAMP, PCI-DSS, OSPP, and custom requirements.
+
+## OSCAL Scan Profiles
+- **standard**: Baseline security (recommended for most)
+- **ospp**: Protection Profile for General Purpose Operating Systems
+- **pci-dss**: Payment Card Industry Data Security Standard
+- **cusp**: Custom User Security Profile (Fedora-specific)
+
+## How to Run a Scan
+Run any scan with:
+
+```
+sudo ./scripts/fedramp-oscal.sh [standard|ospp|pci-dss|cusp]
+```
+
+- Results are saved in `./oscal-analysis/oscap-results-<profile>.xml` and `oscap-report-<profile>.html`.
+- The `memory-monitor.sh` and `fedramp-monitor.sh` scripts will show the status and summary of all available scans.
+
+## Interpreting Results
+- **Pass/Fail counts** are shown for each scan in the monitors.
+- Review the HTML report for detailed findings and remediation guidance.
+
+## Example Usage
+```
+sudo ./scripts/fedramp-oscal.sh standard
+sudo ./scripts/fedramp-oscal.sh ospp
+sudo ./scripts/fedramp-oscal.sh pci-dss
+sudo ./scripts/fedramp-oscal.sh cusp
+```
+
+## Automation
+- The `fedramp-monitor.sh` script will alert if a recent scan is missing and can be extended to auto-run scans if needed.
+- The `deploy-all.sh` script can be configured to require a passing scan before deployment.
+
+## Requirements
+- `openscap`, `scap-security-guide`, and (optionally) `xmllint` for pass/fail summaries.
+
+---
+
+# System & Security Monitoring
+
+- Use `memory-monitor.sh` for live system health, memory, and compliance status.
+- Use `fedramp-monitor.sh` for compliance and security control checks.
+- All scripts provide vibrant, colorized summaries and time estimates for each step.
+
+---
+
+# See Also
+- [installation.md](installation.md)
+- [deployment-digital-ocean.md](deployment-digital-ocean.md)
+- [SECURITY-MONITORING.md](SECURITY-MONITORING.md)
+- [PRODUCTION-SCRIPTS.md](PRODUCTION-SCRIPTS.md)
+- [testing.md](testing.md)
+
+---
+
 **References:**
 - [OpenSCAP Documentation](https://www.open-scap.org/tools/openscap-base/)
 - [SCAP Security Guide](https://github.com/ComplianceAsCode/content)

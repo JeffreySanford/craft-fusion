@@ -272,14 +272,15 @@ for profile in "${OSCAL_PROFILES[@]}"; do
     if command -v xmllint &>/dev/null; then
       PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
       FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
-      if [ -n "$PASS" ] && [ -n "$FAIL" ]; then
+      if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]]; then
         printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}\n" "$PASS" "$FAIL"
       fi
     fi
   else
-    printf "   ${RED}✗ No %s scan results found!${NC}\n" "$profile"
+    printf "   ${RED}✗ No OpenSCAP scan results found for %s${NC}\n" "$profile"
   fi
 done
+printf "${BOLD}${CYAN}Available OSCAL scan options:${NC} ${YELLOW}%s${NC}\n" "${OSCAL_PROFILES[*]}"
 
 # Vibrant environment summary and time estimate for memory monitoring
 CPU_CORES=$(nproc 2>/dev/null || echo 1)

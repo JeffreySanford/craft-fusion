@@ -138,6 +138,33 @@ while true; do
         fi
     fi
 
+    # Show OSCAL scan status for all profiles
+    OSCAL_PROFILES=(standard ospp pci-dss cusp)
+    OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
+
+    printf "${BOLD}${CYAN}\n🛡️  OSCAL/FedRAMP Compliance Scan Status:${NC}\n"
+    for profile in "${OSCAL_PROFILES[@]}"; do
+      OSCAL_RESULT_FILE="$OSCAL_DIR/oscap-results-$profile.xml"
+      OSCAL_REPORT_FILE="$OSCAL_DIR/oscap-report-$profile.html"
+      if [ -f "$OSCAL_RESULT_FILE" ]; then
+        LAST_RUN=$(stat -c %Y "$OSCAL_RESULT_FILE")
+        NOW_TS=$(date +%s)
+        AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
+        printf "   ${GREEN}✓ %s scan found (%d days ago)${NC}\n" "$profile" "$AGE_DAYS"
+        printf "   Report: ${CYAN}%s${NC}\n" "$OSCAL_REPORT_FILE"
+        if command -v xmllint &>/dev/null; then
+          PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
+          FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$OSCAL_RESULT_FILE" 2>/dev/null)
+          if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]]; then
+            printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}\n" "$PASS" "$FAIL"
+          fi
+        fi
+      else
+        printf "   ${RED}✗ No OpenSCAP scan results found for %s${NC}\n" "$profile"
+      fi
+      done
+    printf "Available OSCAL scan options: ${YELLOW}%s${NC}\n" "${OSCAL_PROFILES[*]}"
+
     # AC-2: Unauthorized UID 0 Accounts
     echo -e "${BLUE}[AC-2] Checking for unauthorized UID 0 accounts...${NC}"
     ROOT_USERS=$(awk -F: '($3 == 0) {print $1}' /etc/passwd | grep -vE '^root$')

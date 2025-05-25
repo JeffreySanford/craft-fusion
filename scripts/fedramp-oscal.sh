@@ -1,6 +1,28 @@
 #!/bin/bash
 # fedramp-oscal.sh - Run OpenSCAP (oscap) with selected SCAP Security Guide profile for Fedora
-# Usage: sudo ./scripts/fedramp-oscal.sh [standard|ospp|pci-dss|cusp]
+# Usage:
+#   sudo ./scripts/fedramp-oscal.sh [standard|ospp|pci-dss|cusp]
+#
+# Runs an OpenSCAP (oscap) scan using the selected SCAP Security Guide profile for Fedora.
+# Generates XML and HTML reports in ./oscal-analysis/ for each profile.
+#
+# Profiles:
+#   standard   - Baseline security (recommended for most)
+#   ospp       - Protection Profile for General Purpose Operating Systems
+#   pci-dss    - Payment Card Industry Data Security Standard
+#   cusp       - Custom User Security Profile (Fedora-specific)
+#
+# Example:
+#   sudo ./scripts/fedramp-oscal.sh standard
+#   sudo ./scripts/fedramp-oscal.sh ospp
+#
+# Reports:
+#   XML:  ./oscal-analysis/oscap-results-<profile>.xml
+#   HTML: ./oscal-analysis/oscap-report-<profile>.html
+#
+# Requires: openscap, scap-security-guide, xmllint (optional for summary)
+#
+# For vibrant environment summary and time estimate, see script output.
 
 PROFILE=${1:-standard}
 PROFILE_ID=""
@@ -39,17 +61,17 @@ MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
 DISK_AVAIL=$(df -h / | awk 'NR==2{print $4}')
 PROFILE_LABEL="Standard"
 PROFILE_COLOR="$PURPLE"
-if [ "$PROFILE" == "ospp" ]; then PROFILE_LABEL="OSPP"; PROFILE_COLOR="$CYAN"; fi
-if [ "$PROFILE" == "pci-dss" ]; then PROFILE_LABEL="PCI-DSS"; PROFILE_COLOR="$YELLOW"; fi
-if [ "$PROFILE" == "cusp" ]; then PROFILE_LABEL="CUSP"; PROFILE_COLOR="$GREEN"; fi
+if [ "$PROFILE" = "ospp" ]; then PROFILE_LABEL="OSPP"; PROFILE_COLOR="$CYAN"; fi
+if [ "$PROFILE" = "pci-dss" ]; then PROFILE_LABEL="PCI-DSS"; PROFILE_COLOR="$YELLOW"; fi
+if [ "$PROFILE" = "cusp" ]; then PROFILE_LABEL="CUSP"; PROFILE_COLOR="$GREEN"; fi
 
 bar() {
   local label="$1"; local value="$2"; local max="$3"; local color="$4"
   local n=$((value > max ? max : value))
-  printf "${color}%-18s [" "$label"
+  printf "%b%-18s [" "$color" "$label"
   for ((i=0;i<n;i++)); do printf "█"; done
   for ((i=n;i<max;i++)); do printf "·"; done
-  printf "]${NC} %s min\n" "$value"
+  printf "]%b %s min\n" "$NC" "$value"
 }
 
 OSCAL_EST=3
@@ -57,9 +79,9 @@ if [ "$CPU_CORES" -le 1 ]; then OSCAL_EST=7; fi
 if [ "$CPU_CORES" -le 2 ]; then OSCAL_EST=5; fi
 if [ "$MEM_TOTAL_MB" -lt 1500 ]; then OSCAL_EST=$((OSCAL_EST+2)); fi
 
-printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════╗\n"
+printf "%b\n╔══════════════════════════════════════════════════════════════╗\n" "$BOLD$CYAN"
 printf "║        🛡️  FedRAMP OSCAL Scan: %-10s Environment      ║\n" "$PROFILE_LABEL"
-printf "╚══════════════════════════════════════════════════════════════╝${NC}\n"
+printf "╚══════════════════════════════════════════════════════════════╝%b\n" "$NC"
 echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}"
 bar "OSCAL $PROFILE_LABEL" $OSCAL_EST 10 "$PROFILE_COLOR"
 echo -e "${BOLD}${WHITE}Estimated Time: ~${OSCAL_EST} min${NC}\n"
