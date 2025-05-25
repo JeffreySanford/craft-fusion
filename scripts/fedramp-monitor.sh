@@ -36,14 +36,16 @@ LOG_FILE="$PROJECT_ROOT/fedramp-monitor.log"
 SCAN_INTERVAL=60
 
 # === COLORS ===
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-MAGENTA='\033[0;35m'
-NC='\033[0m'
-BOLD='\033[1m'
+# Use tput for color codes to avoid bash arithmetic errors
+GREEN=$(tput setaf 2)
+BLUE=$(tput setaf 4)
+YELLOW=$(tput setaf 3)
+RED=$(tput setaf 1)
+NC=$(tput sgr0)
+BOLD=$(tput bold)
+WHITE=$(tput setaf 7)
+PURPLE=$(tput setaf 5)
+CYAN=$(tput setaf 6)
 
 # === Environment & Time Estimate Infographic ===
 CPU_CORES=$(nproc 2>/dev/null || echo 1)
