@@ -46,6 +46,32 @@ BOLD=$(tput bold)
 WHITE=$(tput setaf 7)
 PURPLE=$(tput setaf 5)
 CYAN=$(tput setaf 6)
+MAGENTA=$(tput setaf 5)
+
+# Defensive: ensure color variables are always set
+: "${GREEN:=$(tput setaf 2)}"
+: "${BLUE:=$(tput setaf 4)}"
+: "${YELLOW:=$(tput setaf 3)}"
+: "${RED:=$(tput setaf 1)}"
+: "${NC:=$(tput sgr0)}"
+: "${BOLD:=$(tput bold)}"
+: "${WHITE:=$(tput setaf 7)}"
+: "${PURPLE:=$(tput setaf 5)}"
+: "${CYAN:=$(tput setaf 6)}"
+: "${MAGENTA:=$(tput setaf 5)}"
+
+# Defensive: bar fallback values
+bar() {
+  local label="$1"; local value="$2"; local max="$3"; local color="$4"
+  value=${value:-0}
+  max=${max:-30}
+  color=${color:-$NC}
+  local n=$((value > max ? max : value))
+  printf "%s%-18s [" "$color" "$label"
+  for ((i=0;i<n;i++)); do printf "█"; done
+  for ((i=n;i<max;i++)); do printf "·"; done
+  printf "]%s %s\n" "$NC" "$value"
+}
 
 # === Environment & Time Estimate Infographic ===
 CPU_CORES=$(nproc 2>/dev/null || echo 1)
@@ -54,11 +80,14 @@ DISK_AVAIL=$(df -h / | awk 'NR==2{print $4}')
 
 bar() {
   local label="$1"; local value="$2"; local max="$3"; local color="$4"
+  value=${value:-0}
+  max=${max:-30}
+  color=${color:-$NC}
   local n=$((value > max ? max : value))
-  printf "${color}%-18s [" "$label"
+  printf "%s%-18s [" "$color" "$label"
   for ((i=0;i<n;i++)); do printf "█"; done
   for ((i=n;i<max;i++)); do printf "·"; done
-  printf "]${NC} %s\n" "$value"
+  printf "]%s %s\n" "$NC" "$value"
 }
 
 MONITOR_EST=1
