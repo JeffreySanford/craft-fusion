@@ -7,15 +7,15 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 OSCAL_DIR="$SCRIPT_DIR/../oscal-analysis"
 
 # === COLORS ===
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m'
-BOLD='\033[1m'
-WHITE='\033[1;37m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
+GREEN=$'\033[0;32m'
+BLUE=$'\033[0;34m'
+YELLOW=$'\033[1;33m'
+RED=$'\033[0;31m'
+NC=$'\033[0m'
+BOLD=$'\033[1m'
+WHITE=$'\033[1;37m'
+PURPLE=$'\033[0;35m'
+CYAN=$'\033[0;36m'
 
 set -e # Set after color definitions to ensure they are always set
 
@@ -76,6 +76,48 @@ else
 fi
 # === End of Actionable OSCAL Scans Summary ===
 
+# --- Progress Function (copied from deploy-all.sh / fedramp-oscal.sh) ---
+print_progress() {
+    local title="$1"
+    local estimated_total_seconds="$2"
+    local start_time_epoch="$3"
+    local progress_bar_width=30
+    local color_arg="${4:-$MAGENTA}" # Use passed color or default to MAGENTA
+
+    if [ ! -t 1 ]; then return; fi # Only run if TTY
+
+    while true; do
+        local current_time_epoch=$(date +%s)
+        local elapsed_seconds=$((current_time_epoch - start_time_epoch))
+        local remaining_seconds=$((estimated_total_seconds - elapsed_seconds))
+
+        [ "$remaining_seconds" -lt 0 ] && remaining_seconds=0
+
+        local percent_done=0
+        [ "$estimated_total_seconds" -gt 0 ] && percent_done=$((elapsed_seconds * 100 / estimated_total_seconds))
+        [ "$percent_done" -gt 100 ] && percent_done=100
+
+        local filled_width=$((percent_done * progress_bar_width / 100))
+        local empty_width=$((progress_bar_width - filled_width))
+
+        local bar_str=""
+        for ((i=0; i<filled_width; i++)); do bar_str+="█"; done
+        for ((i=0; i<empty_width; i++)); do bar_str+="░"; done
+
+        local rem_min=$((remaining_seconds / 60))
+        local rem_sec=$((remaining_seconds % 60))
+        local time_left_str=$(printf "%02d:%02d" "$rem_min" "$rem_sec")
+
+        printf "\r${BOLD}${color_arg}%-25s ${WHITE}[%s] ${GREEN}%3d%%${NC} ${YELLOW}(%s remaining)${NC}\033[K" "$title:" "$bar_str" "$percent_done" "$time_left_str"
+
+        if [ "$remaining_seconds" -eq 0 ] && [ "$elapsed_seconds" -ge "$estimated_total_seconds" ]; then break; fi
+        command sleep 5 # Update interval (e.g., 5 seconds for this higher-level script)
+    done
+}
+
+cleanup_progress_line() { [ -t 1 ] && printf "\r\033[K"; }
+# --- End of Progress Function ---
+
 copy_scan_reports() {
     local current_profile="$1"
     echo -e "  ${BLUE}Processing reports for $current_profile...${NC}"
@@ -118,7 +160,26 @@ copy_scan_reports() {
 
 for profile in "${PROFILES[@]}"; do
   echo -e "${BOLD}${CYAN}=== Running OSCAL scan for profile: $profile ===${NC}"
-  
+
+  # Estimate time for this profile's scan (similar to fedramp-oscal.sh)
+  CPU_CORES_EST=$(nproc 2>/dev/null || echo 1)
+  MEM_TOTAL_MB_EST=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
+  PROFILE_EST_MIN=3 # Base estimate in minutes
+  if [ "$CPU_CORES_EST" -le 1 ]; then PROFILE_EST_MIN=7; fi
+  if [ "$CPU_CORES_EST" -le 2 ]; then PROFILE_EST_MIN=5; fi
+  if [ "$MEM_TOTAL_MB_EST" -lt 1500 ]; then PROFILE_EST_MIN=$((PROFILE_EST_MIN+2)); fi
+  PROFILE_ESTIMATE_SECONDS=$((PROFILE_EST_MIN * 60))
+
+  # Determine color for progress bar based on profile
+  PROGRESS_COLOR="$PURPLE" # Default
+  if [ "$profile" = "ospp" ]; then PROGRESS_COLOR="$CYAN"; fi
+  if [ "$profile" = "pci-dss" ]; then PROGRESS_COLOR="$YELLOW"; fi
+  if [ "$profile" = "cusp" ]; then PROGRESS_COLOR="$GREEN"; fi
+
+  phase_start_time=$(date +%s)
+  print_progress "Scan: $profile" "$PROFILE_ESTIMATE_SECONDS" "$phase_start_time" "$PROGRESS_COLOR" &
+  progress_pid=$!
+
   # Run the scan and capture its exit code.
   # The 'if' structure handles 'set -e' correctly by not exiting immediately on non-zero.
   if sudo "$SCRIPT_DIR/fedramp-oscal.sh" "$profile" --no-summary; then
@@ -126,6 +187,9 @@ for profile in "${PROFILES[@]}"; do
   else
     oscal_script_exit_code=$?
   fi
+  kill "$progress_pid" &>/dev/null || true
+  wait "$progress_pid" &>/dev/null || true
+  cleanup_progress_line
 
   if [ $oscal_script_exit_code -eq 0 ]; then
     echo -e "${GREEN}✓ $profile scan completed successfully${NC}"

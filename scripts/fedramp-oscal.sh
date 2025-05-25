@@ -127,19 +127,48 @@ if [ "$PROFILE" = "ospp" ]; then PROFILE_LABEL="OSPP"; CURRENT_PROFILE_COLOR="$C
 if [ "$PROFILE" = "pci-dss" ]; then PROFILE_LABEL="PCI-DSS"; CURRENT_PROFILE_COLOR="$YELLOW"; fi
 if [ "$PROFILE" = "cusp" ]; then PROFILE_LABEL="CUSP"; CURRENT_PROFILE_COLOR="$GREEN"; fi
 
-bar() {
-  local label="$1"; local value="$2"; local max="$3"; local color="$4"
-  value=${value:-0}
-  max=${max:-10}
-  color=${color:-$NC}
-  if ! [[ "$value" =~ ^[0-9]+$ ]]; then value=0; fi
-  if ! [[ "$max" =~ ^[0-9]+$ ]]; then max=10; fi
-  local n=$((value > max ? max : value))
-  printf "%s%-18s [" "$color" "$label"
-  for ((i=0;i<n;i++)); do printf "█"; done
-  for ((i=n;i<max;i++)); do printf " "; done # Changed empty char to a space
-  printf "] %2d min%s\n" "$value" "$NC"      # Changed to %2d for minute alignment and consistent spacing
+# --- Progress Function ---
+print_progress() {
+    local title="$1"
+    local estimated_total_seconds="$2"
+    local start_time_epoch="$3"
+    local progress_bar_width=30
+
+    if [ ! -t 1 ]; then return; fi # Only run if TTY
+
+    while true; do
+        local current_time_epoch=$(date +%s)
+        local elapsed_seconds=$((current_time_epoch - start_time_epoch))
+        local remaining_seconds=$((estimated_total_seconds - elapsed_seconds))
+
+        [ "$remaining_seconds" -lt 0 ] && remaining_seconds=0
+
+        local percent_done=0
+        [ "$estimated_total_seconds" -gt 0 ] && percent_done=$((elapsed_seconds * 100 / estimated_total_seconds))
+        [ "$percent_done" -gt 100 ] && percent_done=100
+
+        local filled_width=$((percent_done * progress_bar_width / 100))
+        local empty_width=$((progress_bar_width - filled_width))
+
+        local bar_str="" # Renamed from 'bar' to avoid conflict with old function name if not removed
+        for ((i=0; i<filled_width; i++)); do bar_str+="█"; done
+        for ((i=0; i<empty_width; i++)); do bar_str+="░"; done
+
+        local rem_min=$((remaining_seconds / 60))
+        local rem_sec=$((remaining_seconds % 60))
+        local time_left_str=$(printf "%02d:%02d" "$rem_min" "$rem_sec")
+
+        # Use CURRENT_PROFILE_COLOR for the title
+        printf "\r${BOLD}${CURRENT_PROFILE_COLOR}%-25s ${WHITE}[%s] ${GREEN}%3d%%${NC} ${YELLOW}(%s remaining)${NC}\033[K" "$title:" "$bar_str" "$percent_done" "$time_left_str"
+
+        if [ "$remaining_seconds" -eq 0 ] && [ "$elapsed_seconds" -ge "$estimated_total_seconds" ]; then break; fi
+        command sleep 1 # Update interval to 1 second for oscap internal progress
+    done
 }
+
+cleanup_progress_line() { [ -t 1 ] && printf "\r\033[K"; }
+
+# --- End of Progress Function ---
 
 CPU_CORES=$(nproc 2>/dev/null || echo 1)
 MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
@@ -148,22 +177,32 @@ OSCAL_EST=3
 if [ "$CPU_CORES" -le 1 ]; then OSCAL_EST=7; fi
 if [ "$CPU_CORES" -le 2 ]; then OSCAL_EST=5; fi
 if [ "$MEM_TOTAL_MB" -lt 1500 ]; then OSCAL_EST=$((OSCAL_EST+2)); fi
+OSCAL_ESTIMATE_SECONDS=$((OSCAL_EST * 60))
 
 printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════╗\n"
 printf "║        🛡️  FedRAMP OSCAL Scan: %-10s Environment      ║\n" "$PROFILE_LABEL"
 printf "╚══════════════════════════════════════════════════════════════╝${NC}\n"
 echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}"
-bar "OSCAL $PROFILE_LABEL" $OSCAL_EST 10 "$CURRENT_PROFILE_COLOR"
-echo -e "${BOLD}${WHITE}Estimated Time: ~${OSCAL_EST} min${NC}\n"
+# The print_progress function will show the estimated time.
 
 echo -e "${BOLD}${CYAN}Running OpenSCAP scan with profile: ${YELLOW}$PROFILE_ID${NC}"
+
+phase_start_time=$(date +%s)
+print_progress "OSCAP Scan ($PROFILE_LABEL)" "$OSCAL_ESTIMATE_SECONDS" "$phase_start_time" &
+progress_pid=$!
+
 oscap xccdf eval --profile "$PROFILE_ID" \
   --results "$RESULTS" \
   --report "$REPORT" \
   "$SCAP_CONTENT"
+oscap_status=$?
+
+kill "$progress_pid" &>/dev/null || true
+wait "$progress_pid" &>/dev/null || true
+cleanup_progress_line
 
 # After OpenSCAP scan, parse and print vibrant pass/fail summary with progress bars
-if [ $? -eq 0 ]; then
+if [ $oscap_status -eq 0 ] || [ $oscap_status -eq 2 ]; then # 0 for success, 2 for success with failures
   echo -e "${GREEN}✓ OpenSCAP scan complete.${NC}"
   echo -e "${WHITE}Results: ${CYAN}$RESULTS${NC}"
   echo -e "${WHITE}HTML Report: ${CYAN}$REPORT${NC}"
@@ -194,5 +233,6 @@ if [ $? -eq 0 ]; then
       done
   fi
 else
-  echo -e "${RED}✗ OpenSCAP scan failed.${NC}"
+  echo -e "${RED}✗ OpenSCAP scan failed (oscap exit code: $oscap_status).${NC}"
 fi
+exit $oscap_status # Exit with oscap's status code
