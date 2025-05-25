@@ -252,11 +252,20 @@ OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
 OSCAL_PROFILES=("standard" "ospp" "pci-dss" "cusp")
 OSCAL_MAX_AGE_DAYS=7
 
+# Vibrant OSCAL scan status header
+CPU_CORES=$(nproc 2>/dev/null || echo 1)
+MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
+DISK_AVAIL=$(df -h / | awk 'NR==2{print $4}')
+BOLD="\033[1m"; CYAN="\033[0;36m"; NC="\033[0m"; WHITE="\033[1;37m"; GREEN="\033[0;32m"; YELLOW="\033[1;33m"; RED="\033[0;31m"; MAGENTA="\033[0;35m"; BLUE="\033[0;34m"
+
+printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════╗\n"
+printf "║        🛡️  OSCAL/FedRAMP Compliance Scan Status      ║\n"
+printf "╚══════════════════════════════════════════════════════════════╝${NC}\n"
+echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}"
+echo
+
 # Show available OSCAL scan profiles
-printf "${BOLD}${CYAN}\n🛡️  OSCAL/FedRAMP Compliance Scan Options:${NC}\n"
-for profile in "${OSCAL_PROFILES[@]}"; do
-  printf "   ${YELLOW}- %s${NC}  (run: ./scripts/fedramp-oscal.sh %s)\n" "$profile" "$profile"
-done
+printf "${BOLD}${CYAN}Available OSCAL scan options:${NC} ${YELLOW}%s${NC}\n" "${OSCAL_PROFILES[*]}"
 
 # Show status for each profile
 for profile in "${OSCAL_PROFILES[@]}"; do
@@ -279,8 +288,7 @@ for profile in "${OSCAL_PROFILES[@]}"; do
   else
     printf "   ${RED}✗ No OpenSCAP scan results found for %s${NC}\n" "$profile"
   fi
-done
-printf "${BOLD}${CYAN}Available OSCAL scan options:${NC} ${YELLOW}%s${NC}\n" "${OSCAL_PROFILES[*]}"
+  done
 
 # Vibrant environment summary and time estimate for memory monitoring
 CPU_CORES=$(nproc 2>/dev/null || echo 1)
