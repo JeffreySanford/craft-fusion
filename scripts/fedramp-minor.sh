@@ -21,6 +21,14 @@ set -e # Set after color definitions to ensure they are always set
 
 mkdir -p "$OSCAL_DIR"
 
+# Check if running with sudo
+if [ "$EUID" -ne 0 ]; then
+  echo -e "${RED}✗ This script needs to be run with sudo privileges.${NC}"
+  echo -e "${YELLOW}Please run again using: sudo $0${NC}"
+  exit 1
+fi
+echo -e "${GREEN}✓ Script is running with sudo privileges.${NC}"
+
 echo -e "${BOLD}${CYAN}🛡️  FedRAMP Minor Scan: Running all OSCAL profiles${NC}"
 echo -e "${WHITE}This will run standard, ospp, pci-dss, and cusp scans${NC}"
 echo
@@ -120,40 +128,71 @@ cleanup_progress_line() { [ -t 1 ] && printf "\r\033[K"; }
 
 copy_scan_reports() {
     local current_profile="$1"
-    echo -e "  ${BLUE}Processing reports for $current_profile...${NC}"
-    ADMIN_XML="$OSCAL_DIR/oscap-results-$current_profile.xml"
-    ADMIN_HTML="$OSCAL_DIR/oscap-report-$current_profile.html"
-    USER_XML="$OSCAL_DIR/user-readable-results-$current_profile.xml"
-    USER_HTML="$OSCAL_DIR/user-readable-report-$current_profile.html"
+    local timestamp
+    timestamp=$(date +%Y%m%d-%H%M%S)
+
+    # Determine the correct owner: SUDO_USER if script is run with sudo, otherwise current USER.
+    local target_owner="${SUDO_USER:-$USER}"
+    local target_group="${SUDO_GID:-$(id -g "$target_owner" 2>/dev/null || id -g "$USER")}"
+
+    echo -e "  ${BLUE}Processing reports for $current_profile (owner: $target_owner, timestamp: $timestamp)...${NC}"
+
+    # Define source admin files
+    local admin_xml_src="$OSCAL_DIR/oscap-results-$current_profile.xml"
+    local admin_html_src="$OSCAL_DIR/oscap-report-$current_profile.html"
+
+    # Define user-readable "latest" and timestamped destination files
+    local user_xml_latest="$OSCAL_DIR/user-readable-results-$current_profile.xml"
+    local user_html_latest="$OSCAL_DIR/user-readable-report-$current_profile.html"
+    local user_xml_ts="$OSCAL_DIR/user-readable-results-$current_profile-$timestamp.xml"
+    local user_html_ts="$OSCAL_DIR/user-readable-report-$current_profile-$timestamp.html"
 
     # Copy admin files to user-readable versions
-    if [ -f "$ADMIN_XML" ]; then
-      sudo cp "$ADMIN_XML" "$USER_XML"
-      sudo chown "$USER":"$USER" "$USER_XML" # Ensure current user owns the copy
-      echo -e "  ${CYAN}Created user-readable: $USER_XML${NC}"
+    if [ -f "$admin_xml_src" ]; then
+      sudo cp "$admin_xml_src" "$user_xml_ts"
+      sudo chown "$target_owner":"$target_group" "$user_xml_ts"
+      echo -e "  ${CYAN}Created timestamped: $user_xml_ts${NC}"
+      sudo cp "$admin_xml_src" "$user_xml_latest" # Create/overwrite "latest"
+      sudo chown "$target_owner":"$target_group" "$user_xml_latest"
+      echo -e "  ${CYAN}Updated latest:      $user_xml_latest${NC}"
     else
-      echo -e "  ${YELLOW}Warning: Admin XML report not found for $current_profile: $ADMIN_XML${NC}"
+      echo -e "  ${YELLOW}Warning: Admin XML report not found for $current_profile: $admin_xml_src${NC}"
     fi
-    
-    if [ -f "$ADMIN_HTML" ]; then
-      sudo cp "$ADMIN_HTML" "$USER_HTML"
-      sudo chown "$USER":"$USER" "$USER_HTML" # Ensure current user owns the copy
-      echo -e "  ${CYAN}Created user-readable: $USER_HTML${NC}"
+
+    if [ -f "$admin_html_src" ]; then
+      sudo cp "$admin_html_src" "$user_html_ts"
+      sudo chown "$target_owner":"$target_group" "$user_html_ts"
+      echo -e "  ${CYAN}Created timestamped: $user_html_ts${NC}"
+      sudo cp "$admin_html_src" "$user_html_latest" # Create/overwrite "latest"
+      sudo chown "$target_owner":"$target_group" "$user_html_latest"
+      echo -e "  ${CYAN}Updated latest:      $user_html_latest${NC}"
     else
-      echo -e "  ${YELLOW}Warning: Admin HTML report not found for $current_profile: $ADMIN_HTML${NC}"
+      echo -e "  ${YELLOW}Warning: Admin HTML report not found for $current_profile: $admin_html_src${NC}"
     fi
-    
+
     # Also handle legacy names for standard profile (oscap-results.xml / oscap-report.html)
     if [ "$current_profile" = "standard" ]; then
-      if [ -f "$OSCAL_DIR/oscap-results.xml" ]; then # Legacy admin XML
-        sudo cp "$OSCAL_DIR/oscap-results.xml" "$OSCAL_DIR/user-readable-results.xml" # Legacy user XML
-        sudo chown "$USER":"$USER" "$OSCAL_DIR/user-readable-results.xml"
-        echo -e "  ${CYAN}Created user-readable (legacy): $OSCAL_DIR/user-readable-results.xml${NC}"
+      local admin_xml_legacy_src="$OSCAL_DIR/oscap-results.xml"
+      local user_xml_legacy_latest="$OSCAL_DIR/user-readable-results.xml"
+      local user_xml_legacy_ts="$OSCAL_DIR/user-readable-results-$timestamp.xml" # Timestamped legacy
+      if [ -f "$admin_xml_legacy_src" ]; then
+        sudo cp "$admin_xml_legacy_src" "$user_xml_legacy_ts"
+        sudo chown "$target_owner":"$target_group" "$user_xml_legacy_ts"
+        echo -e "  ${CYAN}Created timestamped (legacy): $user_xml_legacy_ts${NC}"
+        sudo cp "$admin_xml_legacy_src" "$user_xml_legacy_latest"
+        sudo chown "$target_owner":"$target_group" "$user_xml_legacy_latest"
+        echo -e "  ${CYAN}Updated latest (legacy):      $user_xml_legacy_latest${NC}"
       fi
-      if [ -f "$OSCAL_DIR/oscap-report.html" ]; then # Legacy admin HTML
-        sudo cp "$OSCAL_DIR/oscap-report.html" "$OSCAL_DIR/user-readable-report.html" # Legacy user HTML
-        sudo chown "$USER":"$USER" "$OSCAL_DIR/user-readable-report.html"
-        echo -e "  ${CYAN}Created user-readable (legacy): $OSCAL_DIR/user-readable-report.html${NC}"
+      local admin_html_legacy_src="$OSCAL_DIR/oscap-report.html"
+      local user_html_legacy_latest="$OSCAL_DIR/user-readable-report.html"
+      local user_html_legacy_ts="$OSCAL_DIR/user-readable-report-$timestamp.html" # Timestamped legacy
+      if [ -f "$admin_html_legacy_src" ]; then
+        sudo cp "$admin_html_legacy_src" "$user_html_legacy_ts"
+        sudo chown "$target_owner":"$target_group" "$user_html_legacy_ts"
+        echo -e "  ${CYAN}Created timestamped (legacy): $user_html_legacy_ts${NC}"
+        sudo cp "$admin_html_legacy_src" "$user_html_legacy_latest"
+        sudo chown "$target_owner":"$target_group" "$user_html_legacy_latest"
+        echo -e "  ${CYAN}Updated latest (legacy):      $user_html_legacy_latest${NC}"
       fi
     fi
 }
@@ -205,4 +244,5 @@ done
 
 echo -e "${BOLD}${GREEN}🎉 All OSCAL scans complete!${NC}"
 echo -e "${WHITE}Admin reports (root-owned): ${CYAN}$OSCAL_DIR/oscap-*${NC}"
-echo -e "${WHITE}User-readable copies: ${CYAN}$OSCAL_DIR/user-readable-*${NC}"
+echo -e "${WHITE}User-readable 'latest' reports: ${CYAN}$OSCAL_DIR/user-readable-results-<profile>.xml/html${NC}"
+echo -e "${WHITE}User-readable timestamped reports: ${CYAN}$OSCAL_DIR/user-readable-results-<profile>-<timestamp>.xml/html${NC}"
