@@ -76,49 +76,65 @@ else
 fi
 # === End of Actionable OSCAL Scans Summary ===
 
-for profile in "${PROFILES[@]}"; do
-  echo -e "${BOLD}${CYAN}=== Running OSCAL scan for profile: $profile ===${NC}"
-  
-  if sudo "$SCRIPT_DIR/fedramp-oscal.sh" "$profile" --no-summary; then
-    echo -e "${GREEN}✓ $profile scan completed${NC}"
-    
-    # Create user-readable copies with simplified names
-    ADMIN_XML="$OSCAL_DIR/oscap-results-$profile.xml"
-    ADMIN_HTML="$OSCAL_DIR/oscap-report-$profile.html"
-    USER_XML="$OSCAL_DIR/user-readable-results-$profile.xml"
-    USER_HTML="$OSCAL_DIR/user-readable-report-$profile.html"
-    
+copy_scan_reports() {
+    local current_profile="$1"
+    echo -e "  ${BLUE}Processing reports for $current_profile...${NC}"
+    ADMIN_XML="$OSCAL_DIR/oscap-results-$current_profile.xml"
+    ADMIN_HTML="$OSCAL_DIR/oscap-report-$current_profile.html"
+    USER_XML="$OSCAL_DIR/user-readable-results-$current_profile.xml"
+    USER_HTML="$OSCAL_DIR/user-readable-report-$current_profile.html"
+
     # Copy admin files to user-readable versions
     if [ -f "$ADMIN_XML" ]; then
       sudo cp "$ADMIN_XML" "$USER_XML"
-      sudo chown "$USER":"$USER" "$USER_XML"
+      sudo chown "$USER":"$USER" "$USER_XML" # Ensure current user owns the copy
       echo -e "  ${CYAN}Created user-readable: $USER_XML${NC}"
+    else
+      echo -e "  ${YELLOW}Warning: Admin XML report not found for $current_profile: $ADMIN_XML${NC}"
     fi
     
     if [ -f "$ADMIN_HTML" ]; then
       sudo cp "$ADMIN_HTML" "$USER_HTML"
-      sudo chown "$USER":"$USER" "$USER_HTML"
+      sudo chown "$USER":"$USER" "$USER_HTML" # Ensure current user owns the copy
       echo -e "  ${CYAN}Created user-readable: $USER_HTML${NC}"
+    else
+      echo -e "  ${YELLOW}Warning: Admin HTML report not found for $current_profile: $ADMIN_HTML${NC}"
     fi
     
-    # Also handle legacy names for standard
-    if [ "$profile" = "standard" ]; then
-      if [ -f "$OSCAL_DIR/oscap-results.xml" ]; then
-        sudo cp "$OSCAL_DIR/oscap-results.xml" "$OSCAL_DIR/user-readable-results.xml"
+    # Also handle legacy names for standard profile (oscap-results.xml / oscap-report.html)
+    if [ "$current_profile" = "standard" ]; then
+      if [ -f "$OSCAL_DIR/oscap-results.xml" ]; then # Legacy admin XML
+        sudo cp "$OSCAL_DIR/oscap-results.xml" "$OSCAL_DIR/user-readable-results.xml" # Legacy user XML
         sudo chown "$USER":"$USER" "$OSCAL_DIR/user-readable-results.xml"
+        echo -e "  ${CYAN}Created user-readable (legacy): $OSCAL_DIR/user-readable-results.xml${NC}"
       fi
-      if [ -f "$OSCAL_DIR/oscap-report.html" ]; then
-        sudo cp "$OSCAL_DIR/oscap-report.html" "$OSCAL_DIR/user-readable-report.html"
+      if [ -f "$OSCAL_DIR/oscap-report.html" ]; then # Legacy admin HTML
+        sudo cp "$OSCAL_DIR/oscap-report.html" "$OSCAL_DIR/user-readable-report.html" # Legacy user HTML
         sudo chown "$USER":"$USER" "$OSCAL_DIR/user-readable-report.html"
+        echo -e "  ${CYAN}Created user-readable (legacy): $OSCAL_DIR/user-readable-report.html${NC}"
       fi
     fi
+}
+
+for profile in "${PROFILES[@]}"; do
+  echo -e "${BOLD}${CYAN}=== Running OSCAL scan for profile: $profile ===${NC}"
+  
+  # Run the scan and capture its exit code.
+  # The 'if' structure handles 'set -e' correctly by not exiting immediately on non-zero.
+  if sudo "$SCRIPT_DIR/fedramp-oscal.sh" "$profile" --no-summary; then
+    oscal_script_exit_code=0
   else
     oscal_script_exit_code=$?
-    if [ $oscal_script_exit_code -eq 2 ]; then # OpenSCAP uses 2 for completed scan with failures
-        echo -e "${YELLOW}⚠ $profile scan completed with rule failures (exit code $oscal_script_exit_code)${NC}"
-    else
-        echo -e "${RED}✗ $profile scan command failed (exit code $oscal_script_exit_code)${NC}"
-    fi
+  fi
+
+  if [ $oscal_script_exit_code -eq 0 ]; then
+    echo -e "${GREEN}✓ $profile scan completed successfully${NC}"
+    copy_scan_reports "$profile"
+  elif [ $oscal_script_exit_code -eq 2 ]; then # OpenSCAP uses 2 for completed scan with rule failures
+    echo -e "${YELLOW}⚠ $profile scan completed with rule failures (exit code $oscal_script_exit_code)${NC}"
+    copy_scan_reports "$profile"
+  else # Handles other exit codes (e.g., 1 for fedramp-oscal.sh script error or oscap critical error)
+    echo -e "${RED}✗ $profile scan command failed (exit code $oscal_script_exit_code)${NC}"
   fi
   echo
 done
