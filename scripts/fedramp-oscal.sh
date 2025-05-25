@@ -252,7 +252,12 @@ if [ $oscap_status -eq 0 ] || [ $oscap_status -eq 2 ]; then # 0 for success, 2 f
     PASS=$(xmllint --xpath "$PASS_XPATH" "$RESULTS" 2>/dev/null)
     FAIL=$(xmllint --xpath "$FAIL_XPATH" "$RESULTS" 2>/dev/null)
     NOTAPPLICABLE=$(xmllint --xpath "$NOTAPPLICABLE_XPATH" "$RESULTS" 2>/dev/null)
-    OTHER=$((TOTAL - PASS - FAIL - NOTAPPLICABLE)) # Recalculate OTHER
+    PASS=${PASS:-0}
+    FAIL=${FAIL:-0}
+    TOTAL=${TOTAL:-0}
+    NOTAPPLICABLE=${NOTAPPLICABLE:-0}
+    OTHER=$((TOTAL - PASS - FAIL - NOTAPPLICABLE))
+    [ $OTHER -lt 0 ] && OTHER=0
     echo -e "${BOLD}${CYAN}\nFedRAMP OSCAL Control Results:${NC}"
     echo -e "${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}  ${YELLOW}N/A: $NOTAPPLICABLE${NC}  ${WHITE}Other: $OTHER${NC}  ${WHITE}Total: $TOTAL${NC}"
     # Print a vibrant progress bar for each control

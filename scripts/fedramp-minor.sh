@@ -256,6 +256,27 @@ for profile in "${PROFILES[@]}"; do
     echo -e "${RED}✗ $profile scan command failed (exit code $oscal_script_exit_code)${NC}"
     failed_scans=$((failed_scans + 1))
   fi
+
+  # After each scan, print summary if xmllint is available
+  if [ -f "$OSCAL_DIR/oscap-results-$profile.xml" ] && command -v xmllint &>/dev/null; then
+    XML_FILE="$OSCAL_DIR/oscap-results-$profile.xml"
+    TOTAL_XPATH="count(//rule-result)"
+    PASS_XPATH="count(//rule-result[result='pass'])"
+    FAIL_XPATH="count(//rule-result[result='fail'])"
+    NOTAPPLICABLE_XPATH="count(//rule-result[result='notapplicable'])"
+    TOTAL=$(xmllint --xpath "$TOTAL_XPATH" "$XML_FILE" 2>/dev/null)
+    PASS=$(xmllint --xpath "$PASS_XPATH" "$XML_FILE" 2>/dev/null)
+    FAIL=$(xmllint --xpath "$FAIL_XPATH" "$XML_FILE" 2>/dev/null)
+    NOTAPPLICABLE=$(xmllint --xpath "$NOTAPPLICABLE_XPATH" "$XML_FILE" 2>/dev/null)
+    PASS=${PASS:-0}
+    FAIL=${FAIL:-0}
+    TOTAL=${TOTAL:-0}
+    NOTAPPLICABLE=${NOTAPPLICABLE:-0}
+    OTHER=$((TOTAL - PASS - FAIL - NOTAPPLICABLE))
+    [ $OTHER -lt 0 ] && OTHER=0
+    echo -e "${BOLD}${CYAN}FedRAMP OSCAL Control Results for $profile:${NC}"
+    echo -e "${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}  ${YELLOW}N/A: $NOTAPPLICABLE${NC}  ${WHITE}Other: $OTHER${NC}  ${WHITE}Total: $TOTAL${NC}"
+  fi
   echo
 done
 
