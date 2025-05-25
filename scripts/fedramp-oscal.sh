@@ -137,7 +137,7 @@ bar() {
   local n=$((value > max ? max : value))
   printf "%s%-18s [" "$color" "$label"
   for ((i=0;i<n;i++)); do printf "█"; done
-  for ((i=n;i<max;i++)); do printf "░"; done # Changed empty char from · to ░
+  for ((i=n;i<max;i++)); do printf " "; done # Changed empty char to a space
   printf "] %2d min%s\n" "$value" "$NC"      # Changed to %2d for minute alignment and consistent spacing
 }
 
