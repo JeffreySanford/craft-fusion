@@ -252,7 +252,7 @@ check_server_status() {
 
 # OSCAL/SCAP scan check (FedRAMP compliance)
 OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
-OSCAL_PROFILES=("standard" "ospp" "pci-dss" "cusp" "medium-high" "rev5") # medium-high & rev5 are placeholders for future FedRAMP Rev 5
+OSCAL_PROFILES=("standard" "ospp" "pci-dss" "cusp" "medium-high" "rev5" "truenorth") # Added truenorth profile
 OSCAL_MAX_AGE_DAYS=7
 
 # Vibrant OSCAL scan status header

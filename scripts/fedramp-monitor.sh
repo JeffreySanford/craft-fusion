@@ -91,8 +91,7 @@ while true; do
     echo -e "${BOLD}${CYAN}🛡️  OSCAL/FedRAMP Compliance Scan:${NC}"
 
     # Show OSCAL scan status for all profiles
-    OSCAL_PROFILES=(standard ospp pci-dss cusp medium-high rev5) # Ensure all profiles are monitored
-    OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
+    OSCAL_PROFILES=(standard ospp pci-dss cusp medium-high rev5 truenorth) # Added truenorth profile
 
     missing_profiles=()
     missing_standard=false # Initialize missing_standard flag
