@@ -275,7 +275,6 @@ if [ $oscap_status -eq 0 ] || [ $oscap_status -eq 2 ]; then # 0 for success, 2 f
         if [ "$RESULT" = "notapplicable" ]; then printf " [${YELLOW}████████${NC}] "; fi
         printf "%b\n" "$NC"
       done
-  fi
 else
   echo -e "${RED}✗ OpenSCAP scan failed (oscap exit code: $oscap_status).${NC}"
 fi
