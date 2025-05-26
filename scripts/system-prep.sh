@@ -48,5 +48,8 @@ else
   PREP_SUMMARY+="\n(system-optimize.sh not found)"
 fi
 
-# 5. Print summary
+# 5. Print summary with available tools and usage tips
+PREP_SUMMARY+="\n\n${CYAN}Available Tools:${NC}\n  Check resources: ${YELLOW}resource-monitor.sh${NC}\n  Emergency cleanup: ${YELLOW}memory-cleanup.sh${NC}\n  Manual memory cleanup: ${YELLOW}sudo sysctl vm.drop_caches=3${NC}\n"
+PREP_SUMMARY+="\n${WHITE}For more info, see scripts/PRODUCTION-SCRIPTS.md${NC}\n"
+
 printf "${BOLD}${CYAN}System Prep Complete:${NC}%s\n" "$PREP_SUMMARY"

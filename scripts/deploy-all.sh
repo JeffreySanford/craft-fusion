@@ -92,6 +92,10 @@ chmod +x scripts/*.sh
 # --- System Prep: Clean up lingering processes and free memory ---
 source "$(dirname "$0")/system-prep.sh"
 
+# After sourcing system-prep.sh, print a clear, modernized summary of available tools
+printf "${CYAN}Available Tools:${NC}\n  Check resources: ${YELLOW}resource-monitor.sh${NC}\n  Emergency cleanup: ${YELLOW}memory-cleanup.sh${NC}\n  Manual memory cleanup: ${YELLOW}sudo sysctl vm.drop_caches=3${NC}\n"
+printf "${WHITE}For more info, see scripts/PRODUCTION-SCRIPTS.md${NC}\n"
+
 # Add vibrant step headers for each major step
 step_header() {
   local title="$1"
