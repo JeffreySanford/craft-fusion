@@ -229,14 +229,17 @@ copy_scan_reports() {
 export PUPPETEER_CACHE_DIR="$HOME/.cache/puppeteer"
 PUPPETEER_CHROME_DIR="$PUPPETEER_CACHE_DIR/chrome"
 MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
-MEM_90PCT=$((MEM_TOTAL_MB * 90 / 100))
-export NODE_OPTIONS="--max-old-space-size=$MEM_90PCT"
+MEM_99PCT=$((MEM_TOTAL_MB * 99 / 100))
+export NODE_OPTIONS="--max-old-space-size=$MEM_99PCT"
+export NX_DAEMON=false
+export NX_WORKERS=$(nproc 2>/dev/null || echo 4)
+export NPM_CONFIG_MAXSOCKETS=32
 
-# Use aggressive nice/ionice if root, else best allowed
+# Use most aggressive nice/ionice if root, else best allowed
 if [ "$(id -u)" -eq 0 ]; then
   PWR_NICE="nice -n -20 ionice -c2 -n0"
 else
-  PWR_NICE="nice -n 0 ionice -c2 -n4"
+  PWR_NICE="nice -n -5 ionice -c2 -n2"
 fi
 
 # Only install if browser is missing

@@ -538,29 +538,17 @@ while true; do
     done
     
     echo
+    # CPU Block: Show overall and per-core usage
     echo -e "${BOLD}${WHITE}🧮 CPU Usage:${NC}"
-    # Show CPU model and core count
-    CPU_MODEL=$(lscpu | awk -F: '/Model name/ {print $2}' | sed 's/^ *//;q')
-    CPU_CORES=$(nproc 2>/dev/null || echo 1)
-    echo -e "   Model:   ${CYAN}${CPU_MODEL}${NC}"
-    echo -e "   Cores:   ${CYAN}${CPU_CORES}${NC}"
-    # Show load averages
-    LOAD_AVG=$(cat /proc/loadavg | awk '{print $1, $2, $3}')
-    echo -e "   Load Avg (1/5/15m): ${YELLOW}${LOAD_AVG}${NC}"
-    # Per-core usage (if mpstat is available)
-    if command -v mpstat &>/dev/null; then
-      mpstat -P ALL 1 1 | awk '/^Average:/ && $2 ~ /[0-9]+/ {printf "   Core %s: %s%% idle\n", $2, $12}'
+    if command -v mpstat >/dev/null 2>&1; then
+        # Show per-core and overall CPU usage
+        mpstat -P ALL 1 1 | awk 'NR==4{printf "   Total:   %s%% user, %s%% sys, %s%% idle, %s%% iowait, %s%% steal\n", $3, $5, $13, $6, $11} NR>4 && $3 ~ /[0-9]+/ {printf "   Core %s: %s%% user, %s%% sys, %s%% idle, %s%% iowait, %s%% steal\n", $3, $4, $6, $13, $7, $12}'
+    else
+        # Fallback: Show top 3 CPU-consuming processes
+        echo -e "   ${YELLOW}mpstat not found. Showing top CPU-consuming processes:${NC}"
+        ps aux --sort=-%cpu | head -6 | tail -5 | awk '{printf "   %-8s %6s %5s%% %s\n", $1, $2, $3, $11}'
     fi
-    # Top CPU-consuming processes
-    echo -e "\n   ${BOLD}${PURPLE}Top CPU Consumers:${NC}"
-    ps aux --sort=-%cpu | head -6 | tail -5 | while read line; do
-      user=$(echo $line | awk '{print $1}')
-      pid=$(echo $line | awk '{print $2}')
-      cpu_perc=$(echo $line | awk '{print $3}')
-      mem_perc=$(echo $line | awk '{print $4}')
-      cmd=$(echo $line | awk '{for(i=11;i<=NF;i++) printf "%s ", $i; print ""}' | cut -c1-30)
-      printf "   ${CYAN}%8s${NC} ${YELLOW}%6s${NC} ${RED}%5s%%${NC} CPU ${GREEN}%5s%%${NC} MEM %s\n" "$user" "$pid" "$cpu_perc" "$mem_perc" "$cmd"
-    done
+    echo
     
     # Check if no build processes are running
     if ! ps aux | grep -E "(node|ng|nx|npm|tsc)" | grep -v grep >/dev/null; then
