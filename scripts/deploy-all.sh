@@ -313,7 +313,7 @@ handle_nx_post_install() {
 }
 
 # Only install dependencies if node_modules is missing or package-lock.json changed
-if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
+if [ "$do_full_clean" = true ]; then
   echo -e "${CYAN}Installing dependencies (detected change)...${NC}"
   echo -e "${BLUE}NPM install in progress...${NC}"
   echo -e "${BLUE}The progress bar is an overall estimate for this NPM installation phase.${NC}"
