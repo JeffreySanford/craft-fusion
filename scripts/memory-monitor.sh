@@ -667,6 +667,10 @@ while true; do
             if command -v date >/dev/null 2>&1; then
                 local_time_sfo=$(TZ=America/Los_Angeles date -d "$(stat -c '%y' "$current_profile_result_file")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
                 echo -e "   Server date/time: ${WHITE}$local_time_sfo${NC}"
+                # Indicate if the file is older than the last OSCAL run (stale)
+                if [ $LAST_RUN -lt $NOW_TS ]; then
+                    echo -e "   ${YELLOW}⚠️  Note: This report has not been updated since the last OSCAL run. Please re-run OSCAL for fresh results.${NC}"
+                fi
             else
                 echo -e "   Server date/time: ${WHITE}$(stat -c '%y' "$current_profile_result_file")${NC}"
             fi

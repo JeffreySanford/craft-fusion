@@ -146,19 +146,12 @@ while true; do
         if [ -f "$current_profile_result_file" ]; then
           if command -v date >/dev/null 2>&1; then
             local_time_sfo=$(TZ=America/Los_Angeles date -d "$(stat -c '%y' \"$current_profile_result_file\")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
-            # If the file is older than the last deploy-all run, indicate as stale
-            if [ "$AGE_DAYS" -gt 0 ]; then
-              printf "   Server date/time: ${WHITE}%s${NC} ${YELLOW}(STALE - not updated since last deploy)${NC}\n" "$local_time_sfo"
-            else
-              printf "   Server date/time: ${WHITE}%s${NC} ${GREEN}(UPDATED)${NC}\n" "$local_time_sfo"
-            fi
+            printf "   Local date/time (SFO): ${WHITE}%s${NC}\n" "$local_time_sfo"
           else
-            if [ "$AGE_DAYS" -gt 0 ]; then
-              printf "   Server date/time: ${WHITE}%s${NC} ${YELLOW}(STALE - not updated since last deploy)${NC}\n" "$(stat -c '%y' \"$current_profile_result_file\")"
-            else
-              printf "   Server date/time: ${WHITE}%s${NC} ${GREEN}(UPDATED)${NC}\n" "$(stat -c '%y' \"$current_profile_result_file\")"
-            fi
+            printf "   Local date/time (SFO): ${WHITE}%s${NC}\n" "$(stat -c '%y' \"$current_profile_result_file\")"
           fi
+        else
+          printf "   ${YELLOW}No XML scan file present as of this time. Will update after next successful scan.${NC}\n"
         fi
         if command -v xmllint &>/dev/null; then
           # Use more robust XPath and add notapplicable
