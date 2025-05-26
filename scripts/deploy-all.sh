@@ -3,8 +3,58 @@
 
 set -e
 
-# Vibrant deployment header
-BOLD=$'\033[1m'; CYAN=$'\033[0;36m'; NC=$'\033[0m'; WHITE=$'\033[1;37m'; GREEN=$'\033[0;32m'; YELLOW=$'\033[1;33m'; RED=$'\033[0;31m'; MAGENTA=$'\033[0;35m'; BLUE=$'\033[0;34m'
+# Color and path setup (ensure these are defined early in your script)
+# Example color definitions (adjust as needed)
+BOLD='\033[1m'
+NC='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+MAGENTA='\033[0;35m'
+WHITE='\033[1;37m'
+
+SCRIPT_DIR_DEPLOY_ALL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT_DEPLOY_ALL="$(cd "$SCRIPT_DIR_DEPLOY_ALL/.." && pwd)"
+OSCAL_DIR="$PROJECT_ROOT_DEPLOY_ALL/oscal-analysis"
+
+# Function to display available OSCAL profiles
+display_available_oscal_profiles() {
+    printf "${BOLD}${MAGENTA}\n╔══════════════════════════════════════════════════════════════════════════╗\n"
+    printf "║              📊 Available OSCAL Scan Profiles                          ║\n"
+    printf "╚══════════════════════════════════════════════════════════════════════════╝${NC}\n"
+
+    if [ ! -d "$OSCAL_DIR" ]; then
+        echo -e "  ${YELLOW}OSCAL analysis directory not found: $OSCAL_DIR${NC}"
+        return
+    fi
+
+    local found_profiles=false
+    for file_pattern in "user-readable-results-*.xml" "oscap-results-*.xml" "user-readable-results-*.json" "oscap-results-*.json"; do
+        for file in "$OSCAL_DIR"/$file_pattern; do
+            if [ -f "$file" ]; then
+                found_profiles=true
+                local profile_name
+                profile_name=$(basename "$file" | sed -E 's/^(user-readable-results-|oscap-results-)//; s/\.(xml|json)$//')
+                local last_modified_epoch
+                last_modified_epoch=$(stat -c %Y "$file")
+                local last_modified_sfo
+                if command -v date &>/dev/null; then
+                    last_modified_sfo=$(TZ="America/Los_Angeles" date -d "@$last_modified_epoch" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
+                else
+                    last_modified_sfo=$(date -d "@$last_modified_epoch")
+                fi
+                printf "  ${CYAN}%-20s${NC} ${GREEN}Last Scan:${NC} ${WHITE}%s${NC}\n" "$profile_name" "$last_modified_sfo"
+            fi
+        done
+    done
+
+    if [ "$found_profiles" = false ]; then
+        echo -e "  ${YELLOW}No OSCAL scan result files found in $OSCAL_DIR${NC}"
+    fi
+    echo
+}
 
 printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════════════════╗\n"
 printf "║               🚀 Craft Fusion Deployment: System Overview              ║\n"
@@ -470,7 +520,7 @@ COMPLETED_PHASES=0
 # Phase A: Preparation
 prep_phase_succeeded=false # Renamed from prep_phase_succeeded for clarity
 npm_install_overall_succeeded=false
-if [ "${npm_ci_status:-1}" -eq 0 ] || \
+if [ "${npm_ci_status:-0}" -eq 0 ] || \
    { [ "${npm_ci_status}" -ne 0 ] && [ "${npm_ci_retry_status:-1}" -eq 0 ]; }; then
     npm_install_overall_succeeded=true
 fi
@@ -596,3 +646,101 @@ echo -e "${BLUE}Management Commands:${NC}"
 echo -e "  View all logs: ${YELLOW}sudo tail -f /var/log/nginx/access.log /var/log/craft-fusion/*/out.log${NC}"
 echo -e "  PM2 dashboard: ${YELLOW}sudo -u craft-fusion pm2 monit${NC}"
 echo -e "  Restart all: ${YELLOW}sudo -u craft-fusion pm2 restart all && sudo nginx -s reload${NC}"
+
+# After your system tests and before the summary, add the OSCAL Compliance Report phase:
+step_header "Phase F: OSCAL Compliance Report"
+
+PROFILES_TO_REPORT=("standard" "ospp" "pci-dss" "cusp" "medium-high" "rev5" "truenorth")
+
+if ! command -v xmllint &> /dev/null && ! command -v jq &> /dev/null; then
+    echo -e "${YELLOW}Warning: xmllint and jq are not installed. Detailed OSCAL reporting will be limited.${NC}"
+    echo -e "${BLUE}Consider installing them: sudo dnf install libxml2 jq (Fedora) or sudo apt install libxml2-utils jq (Debian/Ubuntu)${NC}"
+fi
+
+for profile in "${PROFILES_TO_REPORT[@]}"; do
+    printf "\n${BOLD}${CYAN}--- OSCAL Report for Profile: %s ---${NC}\n" "$profile"
+    result_file=""
+    report_file_html=""
+    file_type=""
+
+    if [ "$profile" = "truenorth" ]; then
+        if [ -f "$OSCAL_DIR/user-readable-results-truenorth.json" ]; then
+            result_file="$OSCAL_DIR/user-readable-results-truenorth.json"
+            report_file_html="$OSCAL_DIR/user-readable-report-truenorth.html"
+            file_type="json"
+        elif [ -f "$OSCAL_DIR/truenorth-results.json" ]; then
+            result_file="$OSCAL_DIR/truenorth-results.json"
+            report_file_html="$OSCAL_DIR/oscap-report-truenorth.html"
+            file_type="json"
+        fi
+    else
+        if [ -f "$OSCAL_DIR/user-readable-results-$profile.xml" ]; then
+            result_file="$OSCAL_DIR/user-readable-results-$profile.xml"
+            report_file_html="$OSCAL_DIR/user-readable-report-$profile.html"
+            file_type="xml"
+        elif [ -f "$OSCAL_DIR/oscap-results-$profile.xml" ]; then
+            result_file="$OSCAL_DIR/oscap-results-$profile.xml"
+            report_file_html="$OSCAL_DIR/oscap-report-$profile.html"
+            file_type="xml"
+        elif [ "$profile" = "standard" ]; then
+            if [ -f "$OSCAL_DIR/user-readable-results.xml" ]; then
+                result_file="$OSCAL_DIR/user-readable-results.xml"
+                report_file_html="$OSCAL_DIR/user-readable-report.html"
+                file_type="xml"
+            elif [ -f "$OSCAL_DIR/oscap-results.xml" ]; then
+                result_file="$OSCAL_DIR/oscap-results.xml"
+                report_file_html="$OSCAL_DIR/oscap-report.html"
+                file_type="xml"
+            fi
+        fi
+    fi
+
+    if [ -z "$result_file" ] || [ ! -f "$result_file" ]; then
+        echo -e "  ${YELLOW}Results file not found for profile '$profile'.${NC}"
+        continue
+    fi
+
+    echo -e "  ${BLUE}Report File:${NC} ${WHITE}$result_file${NC}"
+    [ -f "$report_file_html" ] && echo -e "  ${BLUE}HTML Report:${NC} ${WHITE}$report_file_html${NC}"
+
+    if [ "$file_type" = "xml" ] && command -v xmllint &> /dev/null; then
+        TOTAL_XPATH="count(//rule-result)"
+        PASS_XPATH="count(//rule-result[result='pass'])"
+        FAIL_XPATH="count(//rule-result[result='fail'])"
+        NOTAPPLICABLE_XPATH="count(//rule-result[result='notapplicable'])"
+
+        TOTAL=$(xmllint --xpath "$TOTAL_XPATH" "$result_file" 2>/dev/null || echo 0)
+        PASS=$(xmllint --xpath "$PASS_XPATH" "$result_file" 2>/dev/null || echo 0)
+        FAIL=$(xmllint --xpath "$FAIL_XPATH" "$result_file" 2>/dev/null || echo 0)
+        NOTAPPLICABLE=$(xmllint --xpath "$NOTAPPLICABLE_XPATH" "$result_file" 2>/dev/null || echo 0)
+        OTHER=$((TOTAL - PASS - FAIL - NOTAPPLICABLE))
+        [ $OTHER -lt 0 ] && OTHER=0
+
+        echo -e "  ${GREEN}Pass:${NC} $PASS  ${RED}Fail:${NC} $FAIL  ${YELLOW}N/A:${NC} $NOTAPPLICABLE  ${WHITE}Other:${NC} $OTHER  ${BOLD}Total:${NC} $TOTAL"
+        echo -e "  ${CYAN}Individual Controls:${NC}"
+
+        rule_results_data=$(xmllint --xpath "//rule-result" "$result_file" 2>/dev/null)
+        echo "$rule_results_data" | grep -oP '<rule-result idref="[^"]+">[\s\S]*?</rule-result>' | while IFS= read -r rule_block; do
+            CONTROL_ID=$(echo "$rule_block" | grep -oP 'idref="\K[^"]+')
+            RESULT=$(echo "$rule_block" | grep -oP '<result>\K[^<]+')
+
+            case "$RESULT" in
+                pass)           printf "    ${GREEN}✓ %-40s : %s${NC}\n" "$CONTROL_ID" "$RESULT" ;;
+                fail)           printf "    ${RED}✗ %-40s : %s${NC}\n" "$CONTROL_ID" "$RESULT" ;;
+                notapplicable)  printf "    ${YELLOW}○ %-40s : %s${NC}\n" "$CONTROL_ID" "$RESULT" ;;
+                *)              printf "    ${WHITE}? %-40s : %s${NC}\n" "$CONTROL_ID" "$RESULT" ;;
+            esac
+        done
+    elif [ "$file_type" = "json" ] && command -v jq &> /dev/null; then
+        PASS=$(jq -r '.scan_results.controls.passed // 0' "$result_file")
+        FAIL=$(jq -r '.scan_results.controls.failed // 0' "$result_file")
+        NOTAPPLICABLE=$(jq -r '.scan_results.controls.not_applicable // 0' "$result_file")
+        TOTAL=$(jq -r '.scan_results.controls.total // 0' "$result_file")
+        echo -e "  ${GREEN}Pass:${NC} $PASS  ${RED}Fail:${NC} $FAIL  ${YELLOW}N/A:${NC} $NOTAPPLICABLE  ${BOLD}Total:${NC} $TOTAL (from JSON)"
+        jq -r '.control_results[] | "    \(if .status == "pass" then "\(.status|@text|gsub("pass";"✓"))" elif .status == "fail" then "\(.status|@text|gsub("fail";"✗"))" else "○" end) \(.control_id) : \(.status)"' "$result_file" | sed -e "s/✓/${GREEN}✓${NC}/g" -e "s/✗/${RED}✗${NC}/g" -e "s/○/${YELLOW}○${NC}/g"
+    else
+        echo -e "  ${YELLOW}Cannot parse details. Install xmllint (for XML) or jq (for JSON).${NC}"
+    fi
+done
+
+echo -e "${GREEN}✓ OSCAL Compliance Report Phase: Completed${NC}"
