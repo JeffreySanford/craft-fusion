@@ -141,22 +141,22 @@ while true; do
         printf "   ${GREEN}✓ %s scan found (%d days ago)${NC}\n" "$profile" "$AGE_DAYS"
         printf "   Report: ${CYAN}%s${NC}\n" "$current_profile_report_file"
         printf "   Report last modified: %s${NC}\n" "$(stat -c '%y' "$current_profile_result_file")"
-        printf "   Local date/time: ${WHITE}%s${NC}\n" "$(date)"
+        printf "   Server date/time: ${WHITE}%s${NC}\n" "$(date)"
         # Print human-readable local time in SFO (America/Los_Angeles) for the report file if it exists
         if [ -f "$current_profile_result_file" ]; then
           if command -v date >/dev/null 2>&1; then
             local_time_sfo=$(TZ=America/Los_Angeles date -d "$(stat -c '%y' \"$current_profile_result_file\")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
             # If the file is older than the last deploy-all run, indicate as stale
             if [ "$AGE_DAYS" -gt 0 ]; then
-              printf "   Local date/time: ${WHITE}%s${NC} ${YELLOW}(STALE - not updated since last deploy)${NC}\n" "$local_time_sfo"
+              printf "   Server date/time: ${WHITE}%s${NC} ${YELLOW}(STALE - not updated since last deploy)${NC}\n" "$local_time_sfo"
             else
-              printf "   Local date/time: ${WHITE}%s${NC} ${GREEN}(UPDATED)${NC}\n" "$local_time_sfo"
+              printf "   Server date/time: ${WHITE}%s${NC} ${GREEN}(UPDATED)${NC}\n" "$local_time_sfo"
             fi
           else
             if [ "$AGE_DAYS" -gt 0 ]; then
-              printf "   Local date/time: ${WHITE}%s${NC} ${YELLOW}(STALE - not updated since last deploy)${NC}\n" "$(stat -c '%y' \"$current_profile_result_file\")"
+              printf "   Server date/time: ${WHITE}%s${NC} ${YELLOW}(STALE - not updated since last deploy)${NC}\n" "$(stat -c '%y' \"$current_profile_result_file\")"
             else
-              printf "   Local date/time: ${WHITE}%s${NC} ${GREEN}(UPDATED)${NC}\n" "$(stat -c '%y' \"$current_profile_result_file\")"
+              printf "   Server date/time: ${WHITE}%s${NC} ${GREEN}(UPDATED)${NC}\n" "$(stat -c '%y' \"$current_profile_result_file\")"
             fi
           fi
         fi

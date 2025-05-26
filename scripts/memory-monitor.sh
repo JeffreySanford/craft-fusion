@@ -297,7 +297,7 @@ for profile in "${OSCAL_PROFILES[@]}"; do
     AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
     printf "   ${GREEN}✓ %s scan found (%d days ago)${NC}\n" "$profile" "$AGE_DAYS"
     printf "   Report: ${CYAN}%s${NC}\n" "$OSCAL_REPORT_FILE"
-    printf "   Local date/time: ${WHITE}%s${NC}\n" "$(date)"
+    printf "   Server date/time: ${WHITE}%s${NC}\n" "$(date)"
     # Show pass/fail/total summary if xmllint is available
     if command -v xmllint &>/dev/null; then
       # Use more robust XPath and add notapplicable
@@ -666,9 +666,9 @@ while true; do
             # Show human readable date/time in SFO (America/Los_Angeles)
             if command -v date >/dev/null 2>&1; then
                 local_time_sfo=$(TZ=America/Los_Angeles date -d "$(stat -c '%y' "$current_profile_result_file")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
-                echo -e "   Local date/time: ${WHITE}$local_time_sfo${NC}"
+                echo -e "   Server date/time: ${WHITE}$local_time_sfo${NC}"
             else
-                echo -e "   Local date/time: ${WHITE}$(stat -c '%y' "$current_profile_result_file")${NC}"
+                echo -e "   Server date/time: ${WHITE}$(stat -c '%y' "$current_profile_result_file")${NC}"
             fi
             # Show pass/fail summary if xmllint is available
             if command -v xmllint &>/dev/null; then

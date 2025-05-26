@@ -211,11 +211,11 @@ copy_scan_reports() {
     # Print human-readable local time in SFO (America/Los_Angeles)
     if [ -f "$user_xml_latest" ]; then
       local_time_sfo=$(TZ=America/Los_Angeles date -d "$(stat -c '%y' \"$user_xml_latest\")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
-      echo -e "  ${WHITE}Local date/time (SFO): $local_time_sfo${NC}"
+      echo -e "  ${WHITE}Server date/time (SFO): $local_time_sfo${NC}"
     fi
     if [ -f "$user_html_latest" ]; then
       local_time_sfo_html=$(TZ=America/Los_Angeles date -d "$(stat -c '%y' \"$user_html_latest\")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
-      echo -e "  ${WHITE}HTML local date/time (SFO): $local_time_sfo_html${NC}"
+      echo -e "  ${WHITE}HTML Server date/time (SFO): $local_time_sfo_html${NC}"
     fi
 }
 
