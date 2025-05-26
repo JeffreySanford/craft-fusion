@@ -80,12 +80,13 @@ done
 
 if [ "$POWER_MODE" = true ]; then
   echo -e "${YELLOW}⚡ Power mode enabled: maximizing resource usage for deployment!${NC}"
-  export NODE_OPTIONS="--max-old-space-size=2048"
+  export NODE_OPTIONS="--max-old-space-size=1700"
   export NX_DAEMON=false
+  export NX_WORKERS=4
   if [ "$(id -u)" -eq 0 ]; then
     export POWER_NICE="nice -n -20 ionice -c2 -n0"
   else
-    echo -e "${YELLOW}⚠ Power mode requested, but not running as root. Using best allowed priority.${NC}"
+    echo -e "${YELLOW}⚠ Power mode requested, but not running as root. Using best allowed priority. For maximum effect, run as root (sudo).${NC}"
     export POWER_NICE="nice -n 0 ionice -c2 -n4"
   fi
 else
