@@ -49,7 +49,12 @@ else
 fi
 
 # 5. Print summary with available tools and usage tips
-PREP_SUMMARY+="\n\n${CYAN}Available Tools:${NC}\n  Check resources: ${YELLOW}resource-monitor.sh${NC}\n  Emergency cleanup: ${YELLOW}memory-cleanup.sh${NC}\n  Manual memory cleanup: ${YELLOW}sudo sysctl vm.drop_caches=3${NC}\n"
-PREP_SUMMARY+="\n${WHITE}For more info, see scripts/PRODUCTION-SCRIPTS.md${NC}\n"
-
-printf "${BOLD}${CYAN}System Prep Complete:${NC}%s\n" "$PREP_SUMMARY"
+# Clean up output: print each line, not as \n-joined string
+printf "${BOLD}${CYAN}System Prep Complete:${NC}\n"
+IFS=$'\n'   # Set IFS to newline for correct line splitting
+for line in $(echo -e "$PREP_SUMMARY"); do
+  # Only print non-empty lines, trim leading/trailing whitespace
+  trimmed=$(echo "$line" | sed 's/^ *//;s/ *$//')
+  [ -n "$trimmed" ] && echo -e "$trimmed"
+done
+unset IFS
