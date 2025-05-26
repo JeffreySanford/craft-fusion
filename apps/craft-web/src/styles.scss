@@ -1,0 +1,8 @@
+@use '@angular/material' as mat;
+@include mat.core();
+@include mat.all-component-themes(mat.define-theme((
+  color: (
+    primary: mat.$m3-blue-palette,
+    accent: mat.$m3-pink-palette,
+  ),
+)));
