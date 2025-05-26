@@ -202,10 +202,16 @@ copy_scan_reports() {
     fi
 
     if [ -f "$user_xml_latest" ]; then
-      echo -e "  ${WHITE}Report last modified: $(stat -c '%y' "$user_xml_latest")${NC}"
+      utc_time=$(date -u -d "$(stat -c '%y' \"$user_xml_latest\")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
+      sfo_time=$(TZ=America/Los_Angeles date -d "$(stat -c '%y' \"$user_xml_latest\")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
+      echo -e "  ${WHITE}Report last modified: $utc_time${NC}"
+      echo -e "  ${WHITE}Report last modified (SFO): $sfo_time${NC}"
     fi
     if [ -f "$user_html_latest" ]; then
-      echo -e "  ${WHITE}HTML report last modified: $(stat -c '%y' "$user_html_latest")${NC}"
+      utc_time_html=$(date -u -d "$(stat -c '%y' \"$user_html_latest\")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
+      sfo_time_html=$(TZ=America/Los_Angeles date -d "$(stat -c '%y' \"$user_html_latest\")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
+      echo -e "  ${WHITE}HTML report last modified: $utc_time_html${NC}"
+      echo -e "  ${WHITE}HTML report last modified (SFO): $sfo_time_html${NC}"
     fi
 
     # Print human-readable local time in SFO (America/Los_Angeles)
