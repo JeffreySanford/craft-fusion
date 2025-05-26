@@ -229,6 +229,28 @@ copy_scan_reports() {
 export PUPPETEER_CACHE_DIR=C:/Users/jeffrey/.cache/puppeteer
 npx puppeteer browsers install chrome
 
+# Purge option: remove all OSCAL scan result XML files and clean the archive directory
+PURGE=false
+for arg in "$@"; do
+  if [ "$arg" == "--purge" ]; then
+    PURGE=true
+  fi
+done
+
+if [ "$PURGE" = true ]; then
+  echo -e "${YELLOW}Purging all OSCAL scan results and archive...${NC}"
+  # Remove all main XML result files and related generated files
+  find ./oscal-analysis/ -type f \
+    \( -name 'oscap-results-*.xml' -o -name 'user-readable-results-*.xml' -o -name 'oscap-results.xml' -o -name 'user-readable-results.xml' \
+    -o -name '*.pdf' -o -name '*.md' -o -name '*.html' -o -name '*.json' \) -delete
+  # Clean archive directory if it exists
+  if [ -d ./oscal-analysis/archive ]; then
+    rm -rf ./oscal-analysis/archive/*
+    echo -e "${GREEN}✓ Archive cleaned${NC}"
+  fi
+  echo -e "${GREEN}✓ OSCAL scan results purged${NC}"
+fi
+
 for profile in "${PROFILES[@]}"; do
   echo -e "${BOLD}${CYAN}=== Running OSCAL scan for profile: $profile ===${NC}"
 
