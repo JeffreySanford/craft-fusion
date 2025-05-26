@@ -8,6 +8,17 @@ const puppeteer = require('puppeteer');
 const TurndownService = require('turndown');
 const chalk = require('chalk');
 
+// Patch for Chalk v5+ ESM default import style
+// (Chalk v5+ requires: import chalk from 'chalk'; const c = new chalk.Instance(); c.cyan(...))
+// For CJS, use Chalk v4 API: chalk.cyan(...)
+// This patch ensures compatibility for both
+const getChalk = () => {
+  if (typeof chalk === 'function') return chalk; // v4
+  if (chalk && typeof chalk.default === 'function') return chalk.default; // v5 ESM interop
+  return chalk;
+};
+const c = getChalk();
+
 const OSCAL_DIR = path.join(__dirname, '../oscal-analysis');
 const LEGENDARY_BANNER = `\n<div style=\"background: linear-gradient(90deg,#0ff,#0f0,#00f,#f0f,#f00,#ff0,#0ff); color:#fff; font-size:2em; font-weight:bold; text-align:center; padding:1em; border-radius:1em; margin-bottom:1em; animation: legendary 2s infinite alternate;\">🛡️ LEGENDARY OSCAL REPORT 🛡️</div>\n<style>@keyframes legendary {0%{filter:brightness(1);}100%{filter:brightness(1.3);}}</style>`;
 
@@ -51,7 +62,7 @@ async function main() {
   const files = await fs.readdir(OSCAL_DIR);
   const htmlReports = files.filter(f => f.endsWith('.html') && f.includes('report'));
   if (htmlReports.length === 0) {
-    console.log(chalk.yellow('No HTML OSCAL reports found in oscal-analysis/'));
+    console.log(c.yellow('No HTML OSCAL reports found in oscal-analysis/'));
     return;
   }
   for (const htmlFile of htmlReports) {
@@ -59,21 +70,21 @@ async function main() {
     const base = htmlFile.replace(/\.html$/, '');
     const pdfPath = path.join(OSCAL_DIR, base + '.pdf');
     const mdPath = path.join(OSCAL_DIR, base + '.md');
-    console.log(chalk.cyan(`Converting ${htmlFile} → PDF/Markdown...`));
+    console.log(c.cyan(`Converting ${htmlFile} → PDF/Markdown...`));
     try {
       await htmlToPdf(htmlPath, pdfPath);
-      console.log(chalk.green(`  ✓ PDF: ${path.basename(pdfPath)}`));
+      console.log(c.green(`  ✓ PDF: ${path.basename(pdfPath)}`));
     } catch (e) {
-      console.log(chalk.red(`  ✗ PDF failed: ${e}`));
+      console.log(c.red(`  ✗ PDF failed: ${e}`));
     }
     try {
       await htmlToMarkdown(htmlPath, mdPath);
-      console.log(chalk.green(`  ✓ Markdown: ${path.basename(mdPath)}`));
+      console.log(c.green(`  ✓ Markdown: ${path.basename(mdPath)}`));
     } catch (e) {
-      console.log(chalk.red(`  ✗ Markdown failed: ${e}`));
+      console.log(c.red(`  ✗ Markdown failed: ${e}`));
     }
   }
-  console.log(chalk.bold.green('All conversions complete!'));
+  console.log(c.bold.green('All conversions complete!'));
 }
 
 main().catch(e => { console.error(e); process.exit(1); });
