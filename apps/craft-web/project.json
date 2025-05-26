@@ -65,7 +65,7 @@
         "stylePreprocessorOptions": {
           "includePaths": [
             "apps/craft-web/src/styles",
-            "node_modules"
+            "node_modules/@angular/material/typography"
           ]
         },
         "scripts": ["node_modules/tinymce/tinymce.min.js"],
