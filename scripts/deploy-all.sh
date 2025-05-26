@@ -60,7 +60,7 @@ print_progress() {
         printf "\r${BOLD}${MAGENTA}%-25s ${WHITE}[%s] ${GREEN}%3d%%${NC} ${YELLOW}(%s remaining)${NC}\033[K" "$title:" "$bar" "$percent_done" "$time_left_str"
 
         if [ "$remaining_seconds" -eq 0 ] && [ "$elapsed_seconds" -ge "$estimated_total_seconds" ]; then break; fi
-        command sleep 15 # Update interval to 15 seconds
+        command sleep 5 # Shorter update interval for better responsiveness
     done
 }
 
@@ -84,8 +84,8 @@ if [ "$POWER_MODE" = true ]; then
   MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
   MEM_90PCT=$((MEM_TOTAL_MB * 90 / 100))
   export NODE_OPTIONS="--max-old-space-size=$MEM_90PCT"
-  export NX_DAEMON=false
-  export NX_WORKERS=8
+  export NX_DAEMON=false # Disable Nx daemon for cleaner, more predictable CI/CD runs
+  export NX_WORKERS=$(nproc 2>/dev/null || echo 4) # Use available cores, default to 4
   if [ "$(id -u)" -eq 0 ]; then
     export POWER_NICE="nice -n -20 ionice -c2 -n0"
   else
@@ -117,6 +117,16 @@ source "$(dirname "$0")/system-prep.sh"
 printf "${CYAN}Available Tools:${NC}\n  Check resources: ${YELLOW}resource-monitor.sh${NC}\n  Emergency cleanup: ${YELLOW}memory-cleanup.sh${NC}\n  Manual memory cleanup: ${YELLOW}sudo sysctl vm.drop_caches=3${NC}\n"
 printf "${WHITE}For more info, see scripts/PRODUCTION-SCRIPTS.md${NC}\n"
 
+# Initialize status variables for summary
+npm_ci_status=-1
+npm_ci_retry_status=-1
+nx_post_install_final_status=-1 # -1: not run/pending, 0: success/skipped, 1: failed after prompt
+CLEAN_STATUS=-1               # -1: pending, 0: success, 1: failure
+backend_status=-1
+frontend_status=-1
+ssl_setup_attempted=false
+ssl_setup_succeeded=false     # True if attempted and script doesn't exit due to set -e
+
 # Add vibrant step headers for each major step
 step_header() {
   local title="$1"
@@ -134,12 +144,12 @@ AVAILABLE_MEM=$(free -m 2>/dev/null | awk 'NR==2{print $7}' || echo "2000")
 if [ "$AVAILABLE_MEM" -lt 1000 ]; then
     echo -e "${YELLOW}⚠ Low memory detected ($AVAILABLE_MEM MB available)${NC}"
     echo -e "${BLUE}Ensuring swap is active and clearing system caches...${NC}"
-
-    # Clear system caches to free memory
-    sudo sync 2>/dev/null || true
-    sudo sysctl vm.drop_caches=1 2>/dev/null || true
-    
     echo -e "${GREEN}✓ System caches cleared${NC}"
+    echo -e "${YELLOW}⚠ Low memory detected ($AVAILABLE_MEM MB available) after initial system prep.${NC}"
+    echo -e "${BLUE}Consider running 'sudo ./scripts/system-optimize.sh' or 'sudo ./scripts/memory-cleanup.sh' if issues persist.${NC}"
+    # system-prep.sh already ran 'drop_caches=3', so removing the less effective 'drop_caches=1' here.
+    # If further clearing is needed here, it should also be 'drop_caches=3'.
+    # For now, rely on system-prep.sh and advise manual intervention if still low.
 fi
 
 # Clean builds and node_modules only if --full-clean is passed
@@ -178,7 +188,12 @@ else
   print_progress "Clean Build Outputs" "$CLEAN_BUILD_ESTIMATE_SECONDS" "$phase_start_time" &
   progress_pid=$!
 
-  ./scripts/clean-build.sh || true
+  ./scripts/clean-build.sh
+  clean_build_outputs_status=$?
+  if [ $clean_build_outputs_status -ne 0 ]; then
+      echo -e "${YELLOW}⚠ Cleaning build outputs failed, but treating as non-critical for this path.${NC}"
+  fi
+  CLEAN_STATUS=0 # For summary, non-full clean's build output cleaning is considered "attempted" or non-blocking.
 
   kill "$progress_pid" &>/dev/null || true
   wait "$progress_pid" &>/dev/null || true
@@ -186,81 +201,86 @@ else
   echo -e "${GREEN}✓ Build outputs cleaned${NC}"
 fi
 
+# Function to handle Nx post-install logic
+handle_nx_post_install() {
+  local estimate_seconds=60
+  local phase_start_time_nx
+  local progress_pid_nx
+  local post_install_status_nx
+
+  echo -e "${CYAN}Running Nx post-install script...${NC}"
+  phase_start_time_nx=$(date +%s)
+  print_progress "Nx Post-Install" "$estimate_seconds" "$phase_start_time_nx" &
+  progress_pid_nx=$!
+
+  set -x
+  node ./node_modules/nx/bin/post-install 2>&1 | tee nx-post-install.log
+  post_install_status_nx=${PIPESTATUS[0]}
+  set +x
+
+  kill "$progress_pid_nx" &>/dev/null || true
+  wait "$progress_pid_nx" &>/dev/null || true
+  cleanup_progress_line
+
+  if [ $post_install_status_nx -eq 0 ]; then
+    echo -e "${GREEN}✓ Nx post-install completed successfully${NC}"
+    return 0
+  fi
+
+  echo -e "${RED}✗ Nx post-install failed (exit code $post_install_status_nx)${NC}"
+  echo -e "${YELLOW}See nx-post-install.log for details. You can run 'cat nx-post-install.log' to view the full output and errors.${NC}"
+  while true; do
+    echo -e "${YELLOW}How would you like to proceed?${NC}"
+    echo -e "  [R]etry post-install"
+    echo -e "  [S]kip and continue deployment (not recommended)"
+    echo -e "  [A]bort deployment"
+    read -p "Enter your choice (R/S/A): " nx_post_choice
+    case "$nx_post_choice" in
+      [Rr])
+        echo -e "${YELLOW}Retrying Nx post-install...${NC}"
+        # Recursive call to retry
+        handle_nx_post_install || return 1 # Propagate failure if retry also fails after user aborts from it
+        return 0 # Return success if retry was successful
+        ;;
+      [Ss])
+        echo -e "${YELLOW}Skipping Nx post-install. Some features may not work as expected.${NC}"
+        return 0
+        ;;
+      [Aa])
+        echo -e "${RED}Aborting deployment due to Nx post-install failure.${NC}"
+        exit 1
+        ;;
+      *)
+        echo -e "${YELLOW}Invalid choice. Please enter R, S, or A.${NC}"
+        ;;
+    esac
+  done
+}
+
 # Only install dependencies if node_modules is missing or package-lock.json changed
 if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
   echo -e "${CYAN}Installing dependencies (detected change)...${NC}"
   echo -e "${BLUE}NPM install in progress...${NC}"
   echo -e "${BLUE}The progress bar is an overall estimate for this NPM installation phase.${NC}"
   echo -e "${BLUE}Please be patient while NPM completes all its tasks.${NC}"
-  NPM_CI_ESTIMATE_SECONDS=300 # 5 minutes
+  NPM_CI_ESTIMATE_SECONDS=240 # 4 minutes (adjusted based on typical performance)
   phase_start_time=$(date +%s)
   print_progress "NPM Install (npm ci)" "$NPM_CI_ESTIMATE_SECONDS" "$phase_start_time" &
   progress_pid=$!
 
-  npm ci --loglevel error --omit=optional --no-audit --prefer-offline --maxsockets=1 --no-progress
+  # Initial attempt with default concurrency (remove --maxsockets=1)
+  npm ci --loglevel error --omit=optional --no-audit --prefer-offline --no-progress
   npm_ci_status=$?
 
   kill "$progress_pid" &>/dev/null || true
   wait "$progress_pid" &>/dev/null || true
   cleanup_progress_line
-  echo -e "${BLUE}NPM install command finished. Verifying status...${NC}"
 
   if [ $npm_ci_status -eq 0 ]; then
     echo -e "${GREEN}✓ Dependencies installed successfully via npm ci${NC}"
-    if [ -d node_modules/nx ]; then
-      POST_INSTALL_ESTIMATE_SECONDS=60
-      phase_start_time=$(date +%s)
-      print_progress "Nx Post-Install" "$POST_INSTALL_ESTIMATE_SECONDS" "$phase_start_time" &
-      progress_pid=$!
-      set -x
-      node ./node_modules/nx/bin/post-install 2>&1 | tee nx-post-install.log
-      post_install_status=${PIPESTATUS[0]}
-      set +x
-      kill "$progress_pid" &>/dev/null || true
-      wait "$progress_pid" &>/dev/null || true
-      cleanup_progress_line
-      if [ $post_install_status -eq 0 ]; then
-        echo -e "${GREEN}✓ Nx post-install completed successfully${NC}"
-      else
-        echo -e "${RED}✗ Nx post-install failed (exit code $post_install_status)${NC}"
-        echo -e "${YELLOW}See nx-post-install.log for details. You can run 'cat nx-post-install.log' to view the full output and errors.${NC}"
-        while true; do
-          echo -e "${YELLOW}How would you like to proceed?${NC}"
-          echo -e "  [R]etry post-install"
-          echo -e "  [S]kip and continue deployment (not recommended)"
-          echo -e "  [A]bort deployment"
-          read -p "Enter your choice (R/S/A): " nx_post_choice
-          case "$nx_post_choice" in
-            [Rr])
-              echo -e "${YELLOW}Retrying Nx post-install...${NC}"
-              set -x
-              node ./node_modules/nx/bin/post-install 2>&1 | tee nx-post-install.log
-              post_install_status=${PIPESTATUS[0]}
-              set +x
-              if [ $post_install_status -eq 0 ]; then
-                echo -e "${GREEN}✓ Nx post-install completed successfully on retry${NC}"
-                break
-              else
-                echo -e "${RED}✗ Nx post-install failed again.${NC}"
-              fi
-              ;;
-            [Ss])
-              echo -e "${YELLOW}Skipping Nx post-install. Some features may not work as expected.${NC}"
-              break
-              ;;
-            [Aa])
-              echo -e "${RED}Aborting deployment due to Nx post-install failure.${NC}"
-              exit 1
-              ;;
-            *)
-              echo -e "${YELLOW}Invalid choice. Please enter R, S, or A.${NC}"
-              ;;
-          esac
-        done
-      fi
-    fi
+    [ -d node_modules/nx ] && { handle_nx_post_install; nx_post_install_final_status=$?; } || nx_post_install_final_status=0
   else
-    echo -e "${YELLOW}⚠ First npm ci failed, trying with reduced concurrency...${NC}"
+    echo -e "${YELLOW}⚠ First npm ci failed (exit code $npm_ci_status), trying with reduced concurrency (--maxsockets 1)...${NC}"
     NPM_CI_RETRY_ESTIMATE_SECONDS=300
     phase_start_time=$(date +%s)
     print_progress "NPM Install (retry)" "$NPM_CI_RETRY_ESTIMATE_SECONDS" "$phase_start_time" &
@@ -273,117 +293,16 @@ if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
     echo -e "${BLUE}NPM install command (retry) finished. Verifying status...${NC}"
     if [ $npm_ci_retry_status -eq 0 ]; then
       echo -e "${GREEN}✓ Dependencies installed (retry successful)${NC}"
-      if [ -d node_modules/nx ]; then
-        POST_INSTALL_ESTIMATE_SECONDS=60
-        phase_start_time=$(date +%s)
-        print_progress "Nx Post-Install" "$POST_INSTALL_ESTIMATE_SECONDS" "$phase_start_time" &
-        progress_pid=$!
-        set -x
-        node ./node_modules/nx/bin/post-install 2>&1 | tee nx-post-install.log
-        post_install_status=${PIPESTATUS[0]}
-        set +x
-        kill "$progress_pid" &>/dev/null || true
-        wait "$progress_pid" &>/dev/null || true
-        cleanup_progress_line
-        if [ $post_install_status -eq 0 ]; then
-          echo -e "${GREEN}✓ Nx post-install completed successfully${NC}"
-        else
-          echo -e "${RED}✗ Nx post-install failed (exit code $post_install_status)${NC}"
-          echo -e "${YELLOW}See nx-post-install.log for details. You can run 'cat nx-post-install.log' to view the full output and errors.${NC}"
-          while true; do
-            echo -e "${YELLOW}How would you like to proceed?${NC}"
-            echo -e "  [R]etry post-install"
-            echo -e "  [S]kip and continue deployment (not recommended)"
-            echo -e "  [A]bort deployment"
-            read -p "Enter your choice (R/S/A): " nx_post_choice
-            case "$nx_post_choice" in
-              [Rr])
-                echo -e "${YELLOW}Retrying Nx post-install...${NC}"
-                set -x
-                node ./node_modules/nx/bin/post-install 2>&1 | tee nx-post-install.log
-                post_install_status=${PIPESTATUS[0]}
-                set +x
-                if [ $post_install_status -eq 0 ]; then
-                  echo -e "${GREEN}✓ Nx post-install completed successfully on retry${NC}"
-                  break
-                else
-                  echo -e "${RED}✗ Nx post-install failed again.${NC}"
-                fi
-                ;;
-              [Ss])
-                echo -e "${YELLOW}Skipping Nx post-install. Some features may not work as expected.${NC}"
-                break
-                ;;
-              [Aa])
-                echo -e "${RED}Aborting deployment due to Nx post-install failure.${NC}"
-                exit 1
-                ;;
-              *)
-                echo -e "${YELLOW}Invalid choice. Please enter R, S, or A.${NC}"
-                ;;
-            esac
-          done
-        fi
-      fi
+      [ -d node_modules/nx ] && { handle_nx_post_install; nx_post_install_final_status=$?; } || nx_post_install_final_status=0
     else
-      echo -e "${RED}✗ Dependencies installation failed${NC}"
+      echo -e "${RED}✗ Dependencies installation failed on retry (exit code $npm_ci_retry_status)${NC}"
       exit 1
     fi
   fi
 else
   echo -e "${GREEN}✓ node_modules up-to-date, skipping npm install${NC}"
-  if [ -d node_modules/nx ]; then
-    POST_INSTALL_ESTIMATE_SECONDS=60
-    phase_start_time=$(date +%s)
-    print_progress "Nx Post-Install" "$POST_INSTALL_ESTIMATE_SECONDS" "$phase_start_time" &
-    progress_pid=$!
-    set -x
-    node ./node_modules/nx/bin/post-install 2>&1 | tee nx-post-install.log
-    post_install_status=${PIPESTATUS[0]}
-    set +x
-    kill "$progress_pid" &>/dev/null || true
-    wait "$progress_pid" &>/dev/null || true
-    cleanup_progress_line
-    if [ $post_install_status -eq 0 ]; then
-      echo -e "${GREEN}✓ Nx post-install completed successfully${NC}"
-    else
-      echo -e "${RED}✗ Nx post-install failed (exit code $post_install_status)${NC}"
-      echo -e "${YELLOW}See nx-post-install.log for details. You can run 'cat nx-post-install.log' to view the full output and errors.${NC}"
-      while true; do
-        echo -e "${YELLOW}How would you like to proceed?${NC}"
-        echo -e "  [R]etry post-install"
-        echo -e "  [S]kip and continue deployment (not recommended)"
-        echo -e "  [A]bort deployment"
-        read -p "Enter your choice (R/S/A): " nx_post_choice
-        case "$nx_post_choice" in
-          [Rr])
-            echo -e "${YELLOW}Retrying Nx post-install...${NC}"
-            set -x
-            node ./node_modules/nx/bin/post-install 2>&1 | tee nx-post-install.log
-            post_install_status=${PIPESTATUS[0]}
-            set +x
-            if [ $post_install_status -eq 0 ]; then
-              echo -e "${GREEN}✓ Nx post-install completed successfully on retry${NC}"
-              break
-            else
-              echo -e "${RED}✗ Nx post-install failed again.${NC}"
-            fi
-            ;;
-          [Ss])
-            echo -e "${YELLOW}Skipping Nx post-install. Some features may not work as expected.${NC}"
-            break
-            ;;
-          [Aa])
-            echo -e "${RED}Aborting deployment due to Nx post-install failure.${NC}"
-            exit 1
-            ;;
-          *)
-            echo -e "${YELLOW}Invalid choice. Please enter R, S, or A.${NC}"
-            ;;
-        esac
-      done
-    fi
-  fi
+  npm_ci_status=0 # Mark as success for summary if skipped
+  [ -d node_modules/nx ] && { handle_nx_post_install; nx_post_install_final_status=$?; } || nx_post_install_final_status=0
 fi
 
 # --- Nx Pre-check (after npm install) ---
@@ -395,8 +314,9 @@ fi
 
 # =====================
 # Phase 1: Backend & Frontend Deployment (Parallel)
+# Renamed to Phase B
 # =====================
-step_header "Phase 1: Backend & Frontend Deployment (Parallel)"
+step_header "Phase B: Backend & Frontend Deployment (Parallel)"
 
 # --- Ensure all PM2 processes are stopped for all relevant users ---
 echo -e "${CYAN}Stopping all PM2 processes for current user...${NC}"
@@ -452,22 +372,25 @@ else
     [ $frontend_status -ne 0 ] && echo -e "${RED}  Frontend deployment failed (PID $frontend_pid, exit code $frontend_status)${NC}"
 fi
 
-step_header "Phase 3: SSL/WSS Setup (Optional)"
+step_header "Phase C: SSL/WSS Setup (Optional)"
 read -p "Do you want to set up SSL/WSS? (y/N): " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
+    ssl_setup_attempted=true
     if [ ! -f "/etc/nginx/sites-available/default" ] || ! grep -q "ssl_certificate" /etc/nginx/sites-available/default; then
         echo -e "${YELLOW}Setting up SSL certificates and WSS configuration...${NC}"
         ./scripts/ssl-setup.sh
         ./scripts/wss-setup.sh
+        ssl_setup_succeeded=true # If scripts complete without error (due to set -e)
     else
         echo -e "${GREEN}✓ SSL/WSS already configured${NC}"
+        ssl_setup_succeeded=true # Already configured is a success
     fi
 else
     echo -e "${YELLOW}Skipping SSL/WSS setup${NC}"
 fi
 
-step_header "Phase 4: Final System Tests"
+step_header "Phase D: Final System Tests"
 # Test all endpoints
 SYSTEM_TEST_ESTIMATE_SECONDS=30
 phase_start_time=$(date +%s)
@@ -518,7 +441,7 @@ wait "$progress_pid" &>/dev/null || true
 cleanup_progress_line
 echo -e "${GREEN}✓ System tests completed.${NC}"
 
-step_header "Phase 5: System Status Summary"
+step_header "Phase E: System Status & Deployment Summary"
 
 # PM2 status
 echo -e "${CYAN}PM2 Services:${NC}"
@@ -541,25 +464,121 @@ echo -e "${CYAN}Memory Usage:${NC}"
 free -h | grep Mem | awk '{print "  Memory: " $3 " used of " $2}'
 
 # Deployment step totals summary
-TOTAL_STEPS=6
-COMPLETED_STEPS=0
+TOTAL_PHASES=3 # Prep, Deploy, Test. SSL is conditional.
+COMPLETED_PHASES=0
 
-# Check each major phase for success (simple heuristic)
-[ $backend_status -eq 0 ] && [ $frontend_status -eq 0 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
-[ $npm_ci_status -eq 0 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
-[ $CLEAN_STATUS -eq 0 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
-[ "$SITE_HTTP" -eq 200 ] && [ "$SITE_HTTPS" -eq 200 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
-[ "$API_NEST_HTTP" -eq 200 ] && [ "$API_GO_HTTP" -eq 200 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
+# Phase A: Preparation
+prep_phase_succeeded=false # Renamed from prep_phase_succeeded for clarity
+npm_install_overall_succeeded=false
+if [ "${npm_ci_status:-1}" -eq 0 ] || \
+   { [ "${npm_ci_status}" -ne 0 ] && [ "${npm_ci_retry_status:-1}" -eq 0 ]; }; then
+    npm_install_overall_succeeded=true
+fi
 
-if [ $COMPLETED_STEPS -eq $TOTAL_STEPS ]; then
-  echo -e "${BOLD}${GREEN}All $TOTAL_STEPS deployment steps completed successfully!${NC}"
+clean_step_overall_succeeded=false
+if [ "$do_full_clean" = true ]; then
+    [ "${CLEAN_STATUS:-1}" -eq 0 ] && clean_step_overall_succeeded=true
 else
-  echo -e "${BOLD}${YELLOW}Deployment completed with $COMPLETED_STEPS/$TOTAL_STEPS successful steps. Review output above for any warnings or errors.${NC}"
+    [ "${CLEAN_STATUS:-1}" -eq 0 ] && clean_step_overall_succeeded=true # Non-full clean's CLEAN_STATUS is set to 0
+fi
+
+nx_post_install_overall_succeeded=false
+[ "${nx_post_install_final_status:-1}" -eq 0 ] && nx_post_install_overall_succeeded=true
+
+if [ "$npm_install_overall_succeeded" = true ] && \
+   [ "$clean_step_overall_succeeded" = true ] && \
+   [ "$nx_post_install_overall_succeeded" = true ]; then
+    prep_phase_succeeded=true
+    echo -e "${GREEN}✓ Preparation Phase (Clean, NPM Install, Nx Post-Install): Successful${NC}"
+    COMPLETED_PHASES=$((COMPLETED_PHASES + 1))
+else
+    echo -e "${RED}✗ Preparation Phase: Had Issues${NC}"
+    [ "$clean_step_overall_succeeded" = false ] && echo -e "  - Clean Step: Failed (Status: ${CLEAN_STATUS:-N/A})"
+    [ "$npm_install_overall_succeeded" = false ] && echo -e "  - NPM Install: Failed (Initial: ${npm_ci_status:-N/A}, Retry: ${npm_ci_retry_status:-N/A})"
+    [ "$nx_post_install_overall_succeeded" = false ] && echo -e "  - Nx Post-Install: Failed or Aborted by user (Status: ${nx_post_install_final_status:-N/A})"
+fi
+
+# Phase B: Backend & Frontend Deployment
+deploy_phase_succeeded=false
+if [ "${backend_status:-1}" -eq 0 ] && [ "${frontend_status:-1}" -eq 0 ]; then
+    deploy_phase_succeeded=true
+    echo -e "${GREEN}✓ Backend & Frontend deployment phase successful.${NC}"
+    COMPLETED_PHASES=$((COMPLETED_PHASES+1))
+else
+    echo -e "${RED}✗ Backend & Frontend deployment phase: Had Issues${NC}"
+    [ "${backend_status:-1}" -ne 0 ] && echo -e "  - Backend Deployment: Failed (Exit Code: ${backend_status:-N/A})"
+    [ "${frontend_status:-1}" -ne 0 ] && echo -e "  - Frontend Deployment: Failed (Exit Code: ${frontend_status:-N/A})"
+fi
+
+# Phase C: SSL/WSS Setup (Conditional)
+if [ "$ssl_setup_attempted" = true ]; then
+    TOTAL_PHASES=$((TOTAL_PHASES + 1))
+    if [ "$ssl_setup_succeeded" = true ]; then
+        echo -e "${GREEN}✓ SSL/WSS Setup Phase: Successful (or already configured)${NC}"
+        COMPLETED_PHASES=$((COMPLETED_PHASES + 1))
+    else
+        echo -e "${RED}✗ SSL/WSS Setup Phase: Failed or Not Completed As Expected${NC}"
+    fi
+fi
+
+# Phase D: System Tests (Site + APIs)
+tests_phase_succeeded=false
+site_ok=false
+apis_ok=false
+
+# Determine expected protocol based on SSL setup choice
+expected_protocol="http"
+ssl_setup_choice="${REPLY:-N}" # Default to N if REPLY is not set
+if [[ $ssl_setup_choice =~ ^[Yy]$ ]]; then
+    expected_protocol="https"
+fi
+
+# Site check
+if [ "$ssl_setup_succeeded" = true ]; then # True if SSL was attempted and scripts completed
+    [ "$SITE_HTTPS" -eq 200 ] && site_ok=true
+else # HTTP expected, or HTTPS works even if SSL not chosen/completed this run
+    if [ "$SITE_HTTP" -eq 200 ] || [ "$SITE_HTTP" -eq 301 ] || [ "$SITE_HTTP" -eq 302 ]; then
+        site_ok=true
+    elif [ "$SITE_HTTPS" -eq 200 ]; then # If HTTPS works (e.g. pre-existing config)
+        site_ok=true
+        echo -e "${YELLOW}  Note: Site accessible via HTTPS, though SSL setup was not explicitly chosen/completed in this run.${NC}"
+    fi
+fi
+
+# API check (NestJS and Go must both be accessible via HTTP or HTTPS)
+nest_api_ok=false; go_api_ok=false
+([ "${API_NEST_HTTP:-0}" -eq 200 ] || [ "${API_NEST_HTTPS:-0}" -eq 200 ]) && nest_api_ok=true
+([ "${API_GO_HTTP:-0}" -eq 200 ] || [ "${API_GO_HTTPS:-0}" -eq 200 ]) && go_api_ok=true
+[ "$nest_api_ok" = true ] && [ "$go_api_ok" = true ] && apis_ok=true
+
+if [ "$site_ok" = true ] && [ "$apis_ok" = true ]; then
+    tests_phase_succeeded=true
+    echo -e "${GREEN}✓ System tests phase (Site & APIs) successful.${NC}"
+    COMPLETED_PHASES=$((COMPLETED_PHASES + 1))
+else
+    echo -e "${RED}✗ System Tests Phase: Had Issues${NC}"
+    if [ "$site_ok" = false ]; then
+        echo -e "  - Main Site: Not accessible as expected."
+        echo -e "    (Expected HTTPS if SSL setup was successful: $ssl_setup_succeeded. Site HTTP: ${SITE_HTTP:-N/A}, Site HTTPS: ${SITE_HTTPS:-N/A})"
+    fi
+    if [ "$apis_ok" = false ]; then
+        echo -e "  - APIs: One or more not accessible."
+        [ "$nest_api_ok" = false ] && echo -e "    (NestJS API - HTTP: ${API_NEST_HTTP:-N/A}, HTTPS: ${API_NEST_HTTPS:-N/A})"
+        [ "$go_api_ok" = false ] && echo -e "    (Go API - HTTP: ${API_GO_HTTP:-N/A}, HTTPS: ${API_GO_HTTPS:-N/A})"
+    fi
+fi
+
+echo -e "\n${BOLD}Overall Deployment Status:${NC}"
+if [ "$COMPLETED_PHASES" -eq "$TOTAL_PHASES" ]; then
+  echo -e "${BOLD}${GREEN}All $TOTAL_PHASES deployment phases completed successfully!${NC}"
+else
+  echo -e "${BOLD}${YELLOW}Deployment completed with $COMPLETED_PHASES/$TOTAL_PHASES successful phases. Review output above for details.${NC}"
 fi
 
 echo -e "${BOLD}${GREEN}\n=== Craft Fusion Deployment Complete ===${NC}"
 echo -e "${BOLD}${BLUE}🎉 Your Craft Fusion application is now deployed!${NC}"
 echo
+
 echo -e "${BLUE}Access your application:${NC}"
 if [ "$SITE_HTTPS" -eq 200 ]; then
     echo -e "  🌐 Main Site: ${GREEN}https://jeffreysanford.us${NC}"
