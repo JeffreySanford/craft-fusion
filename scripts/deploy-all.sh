@@ -214,6 +214,41 @@ else
   echo -e "${GREEN}✓ node_modules up-to-date, skipping npm install${NC}"
 fi
 
+# After npm ci and before Nx pre-check, add post-install progress and verbosity
+if [ -d node_modules/nx ]; then
+  echo -e "${CYAN}Running Nx post-install script with verbose output...${NC}"
+  POST_INSTALL_ESTIMATE_SECONDS=60
+  phase_start_time=$(date +%s)
+  print_progress "Nx Post-Install" "$POST_INSTALL_ESTIMATE_SECONDS" "$phase_start_time" &
+  progress_pid=$!
+
+  # Check for WASI/WebAssembly environment
+  if node -e "if (process.versions.wasi) process.exit(42)"; then
+    : # Not WASI
+  else
+    echo -e "${YELLOW}⚠ Nx Daemon is unsupported in WebAssembly (WASI) environments. Some things may be slower or not function as expected.${NC}"
+    echo -e "${YELLOW}Check your Node.js installation and environment variables.${NC}"
+  fi
+
+  # Run the post-install script with full output
+  set -x
+  node ./node_modules/nx/bin/post-install 2>&1 | tee nx-post-install.log
+  post_install_status=${PIPESTATUS[0]}
+  set +x
+
+  kill "$progress_pid" &>/dev/null || true
+  wait "$progress_pid" &>/dev/null || true
+  cleanup_progress_line
+
+  if [ $post_install_status -eq 0 ]; then
+    echo -e "${GREEN}✓ Nx post-install completed successfully${NC}"
+  else
+    echo -e "${RED}✗ Nx post-install failed (exit code $post_install_status)${NC}"
+    echo -e "${YELLOW}See nx-post-install.log for details.${NC}"
+    exit 1
+  fi
+fi
+
 # --- Nx Pre-check (after npm install) ---
 if [ ! -d node_modules/@nrwl ] && [ ! -d node_modules/nx ]; then
   echo -e "${RED}✗ Nx modules not found in node_modules. Nx-based scripts will fail.${NC}"
