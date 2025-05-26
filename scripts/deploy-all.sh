@@ -80,15 +80,19 @@ done
 
 if [ "$POWER_MODE" = true ]; then
   echo -e "${YELLOW}⚡ Power mode enabled: maximizing resource usage for deployment!${NC}"
-  export NODE_OPTIONS="--max-old-space-size=1700"
+  # Dynamically set NODE_OPTIONS to 90% of total system memory (in MB)
+  MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
+  MEM_90PCT=$((MEM_TOTAL_MB * 90 / 100))
+  export NODE_OPTIONS="--max-old-space-size=$MEM_90PCT"
   export NX_DAEMON=false
-  export NX_WORKERS=4
+  export NX_WORKERS=8
   if [ "$(id -u)" -eq 0 ]; then
     export POWER_NICE="nice -n -20 ionice -c2 -n0"
   else
     echo -e "${YELLOW}⚠ Power mode requested, but not running as root. Using best allowed priority. For maximum effect, run as root (sudo).${NC}"
     export POWER_NICE="nice -n 0 ionice -c2 -n4"
   fi
+  echo -e "${YELLOW}NODE_OPTIONS set to: $NODE_OPTIONS${NC}"
 else
   export POWER_NICE=""
   export NODE_OPTIONS="--max-old-space-size=512"

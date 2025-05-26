@@ -1,16 +1,20 @@
 #!/bin/bash
-# memory-monitor.sh - Real-time memory and network monitoring during deployment
+# memory-monitor.sh - Vibrant, modern system memory and process monitor
 
-# Colors
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-PURPLE='\033[0;35m'
-WHITE='\033[1;37m'
 BOLD='\033[1m'
 NC='\033[0m'
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+MAGENTA='\033[0;35m'
+WHITE='\033[1;37m'
+BLUE='\033[0;34m'
+
+clear
+printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════════════════╗\n"
+printf "║                💾 Craft Fusion Live Memory & Process Monitor           ║\n"
+printf "╚══════════════════════════════════════════════════════════════════════════╝${NC}\n"
 
 # --- System Prep: Clean up lingering processes and free memory ---
 source "$(dirname "$0")/system-prep.sh"
@@ -710,5 +714,5 @@ while true; do
     done
     echo -e "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} $colored_profiles"
     
-    sleep 30
+    sleep 10
 done
