@@ -352,6 +352,28 @@ else
 fi
 
 for profile in "${PROFILES[@]}"; do
+  # Lookup profile metadata from oscal-profiles.json (if jq is available)
+  profile_id=""
+  profile_status=""
+  profile_note=""
+  profile_desc=""
+  if command -v jq &>/dev/null && [ -f "$OSCAL_PROFILES_JSON" ]; then
+    profile_id=$(jq -r --arg name "$profile" '.profiles[] | select(.name==$name) | .id // ""' "$OSCAL_PROFILES_JSON")
+    profile_status=$(jq -r --arg name "$profile" '.profiles[] | select(.name==$name) | .status // ""' "$OSCAL_PROFILES_JSON")
+    profile_note=$(jq -r --arg name "$profile" '.profiles[] | select(.name==$name) | .note // ""' "$OSCAL_PROFILES_JSON")
+    profile_desc=$(jq -r --arg name "$profile" '.profiles[] | select(.name==$name) | .description // ""' "$OSCAL_PROFILES_JSON")
+  fi
+
+  # If status is placeholder or reference, print info and skip scan
+  if [[ "$profile_status" == "placeholder" || "$profile_status" == "reference" ]]; then
+    echo -e "${YELLOW}--- Skipping scan for profile: $profile ---${NC}"
+    echo -e "${CYAN}Description:${NC} $profile_desc"
+    [ -n "$profile_note" ] && echo -e "${WHITE}Note:${NC} $profile_note"
+    [ -n "$profile_id" ] && echo -e "${WHITE}Profile ID:${NC} $profile_id"
+    echo
+    continue
+  fi
+
   echo -e "${BOLD}${CYAN}=== Running OSCAL scan for profile: $profile ===${NC}"
 
   # Estimate time for this profile's scan (similar to fedramp-oscal.sh)
@@ -431,7 +453,7 @@ for profile in "${PROFILES[@]}"; do
       echo -e "${CYAN}Exporting all OSCAL HTML reports to PDF and Markdown...${NC}"
       export PUPPETEER_CACHE_DIR=C:/Users/jeffrey/.cache/puppeteer
       npx puppeteer browsers install chrome
-      node "$SCRIPT_DIR/../tools/oscal-export.js"
+      node "$SCRIPT_DIR/../scripts/tools/oscal-export.js"
     else
       echo -e "${YELLOW}Node.js not found, skipping PDF/Markdown export.${NC}"
     fi
