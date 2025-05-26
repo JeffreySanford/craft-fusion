@@ -333,35 +333,36 @@ if [ ! -d node_modules/@nrwl ] && [ ! -d node_modules/nx ]; then
   exit 1
 fi
 
-step_header "Phase 0: FedRAMP OSCAL Compliance Scan (Optional)"
-echo
-echo -e "${YELLOW}You have 10 seconds to respond. The OSCAL scan will run automatically if no input is given.${NC}"
-read -t 10 -p "Run a FedRAMP OSCAL scan before deployment? (y/N): " -n 1 -r REPLY || REPLY="y"
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    OSCAL_ESTIMATE_SECONDS=300 # 5 minutes
-    phase_start_time=$(date +%s)
-    print_progress "OSCAL Scan (standard)" "$OSCAL_ESTIMATE_SECONDS" "$phase_start_time" &
-    progress_pid=$!
+# =====================
+# Phase 1: Backend & Frontend Deployment (Parallel)
+# =====================
+step_header "Phase 1: Backend & Frontend Deployment (Parallel)"
 
-    ./scripts/fedramp-oscal.sh standard
-    oscal_status=$?
+# --- Ensure all PM2 processes are stopped for all relevant users ---
+echo -e "${CYAN}Stopping all PM2 processes for current user...${NC}"
+pm2 stop all || true
+pm2 delete all || true
+pm2 kill || true
 
-    kill "$progress_pid" &>/dev/null || true
-    wait "$progress_pid" &>/dev/null || true
-    cleanup_progress_line
-
-    if [ $oscal_status -eq 0 ]; then
-        echo -e "${GREEN}✓ OSCAL scan complete. See ./oscal-analysis/oscap-report.html${NC}"
-    else
-        echo -e "${YELLOW}⚠ OSCAL scan failed or incomplete${NC}"
-    fi
-else
-    echo -e "${YELLOW}Skipping OSCAL scan${NC}"
+if id "craft-fusion" &>/dev/null; then
+  echo -e "${CYAN}Stopping all PM2 processes for craft-fusion user...${NC}"
+  sudo -u craft-fusion pm2 stop all || true
+  sudo -u craft-fusion pm2 delete all || true
+  sudo -u craft-fusion pm2 kill || true
 fi
 
-step_header "Phase 1: Backend & Frontend Deployment (Parallel)"
-# Build backend and frontend in parallel
+# --- Wait for Go binary to be released before copying ---
+GO_BINARY_PATH="/var/www/craft-fusion/dist/apps/craft-go/main"
+if [ -f "$GO_BINARY_PATH" ]; then
+  echo -e "${CYAN}Waiting for Go binary to be released...${NC}"
+  while sudo lsof | grep -q "$GO_BINARY_PATH"; do
+    echo -e "${YELLOW}Go binary still in use, waiting...${NC}"
+    sleep 1
+  done
+  echo -e "${GREEN}Go binary is free to update.${NC}"
+fi
+
+# --- Build backend and frontend in parallel ---
 PARALLEL_DEPLOY_ESTIMATE_SECONDS=240 # 4 minutes (max of backend/frontend estimates)
 phase_start_time=$(date +%s)
 print_progress "Backend & Frontend" "$PARALLEL_DEPLOY_ESTIMATE_SECONDS" "$phase_start_time" &
@@ -479,19 +480,6 @@ df -h / | tail -1 | awk '{print "  Root partition: " $3 " used of " $2 " (" $5 "
 echo -e "${CYAN}Memory Usage:${NC}"
 free -h | grep Mem | awk '{print "  Memory: " $3 " used of " $2}'
 
-# OSCAL scan profile summary (color-coded)
-OSCAL_DIR="$PROJECT_ROOT/oscal-analysis"
-OSCAL_PROFILES=(standard ospp pci-dss cusp medium-high rev5 truenorth)
-colored_profiles=""
-for p in "${OSCAL_PROFILES[@]}"; do
-  if [ -f "$OSCAL_DIR/user-readable-results-$p.xml" ] || [ -f "$OSCAL_DIR/oscap-results-$p.xml" ]; then
-    colored_profiles+="${GREEN}$p${NC} ";
-  else
-    colored_profiles+="${RED}$p${NC} ";
-  fi
-done
-echo -e "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} $colored_profiles"
-
 # Deployment step totals summary
 TOTAL_STEPS=6
 COMPLETED_STEPS=0
@@ -500,7 +488,6 @@ COMPLETED_STEPS=0
 [ $backend_status -eq 0 ] && [ $frontend_status -eq 0 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
 [ $npm_ci_status -eq 0 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
 [ $CLEAN_STATUS -eq 0 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
-[ $oscal_status -eq 0 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
 [ "$SITE_HTTP" -eq 200 ] && [ "$SITE_HTTPS" -eq 200 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
 [ "$API_NEST_HTTP" -eq 200 ] && [ "$API_GO_HTTP" -eq 200 ] && COMPLETED_STEPS=$((COMPLETED_STEPS+1))
 
