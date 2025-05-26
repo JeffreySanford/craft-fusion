@@ -226,7 +226,18 @@ copy_scan_reports() {
 }
 
 # Ensure Puppeteer browser is installed and cache dir is set for PDF export
-export PUPPETEER_CACHE_DIR="$HOME/.cache/puppeteer"
+# Use platform-agnostic home directory detection
+if [ -n "$HOME" ]; then
+  export PUPPETEER_CACHE_DIR="$HOME/.cache/puppeteer"
+else
+  # Fallback for Windows
+  if [ -n "$USERPROFILE" ]; then
+    export PUPPETEER_CACHE_DIR="$USERPROFILE/.cache/puppeteer"
+  else
+    export PUPPETEER_CACHE_DIR="/tmp/.cache/puppeteer"
+  fi
+fi
+
 PUPPETEER_CHROME_DIR="$PUPPETEER_CACHE_DIR/chrome"
 MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
 MEM_99PCT=$((MEM_TOTAL_MB * 99 / 100))
@@ -242,12 +253,23 @@ else
   PWR_NICE="nice -n -5 ionice -c2 -n2"
 fi
 
+# Create cache directory if it doesn't exist
+mkdir -p "$PUPPETEER_CACHE_DIR"
+
 # Only install if browser is missing
 if [ ! -d "$PUPPETEER_CHROME_DIR" ] || [ -z "$(ls -A "$PUPPETEER_CHROME_DIR" 2>/dev/null)" ]; then
   echo -e "${YELLOW}Installing Puppeteer Chrome browser with power mode...${NC}"
   if ! eval $PWR_NICE npx puppeteer browsers install chrome; then
-    echo -e "${RED}✗ Puppeteer browser install failed. Check PUPPETEER_CACHE_DIR and permissions.${NC}"
-    exit 1
+    echo -e "${RED}✗ Puppeteer browser install failed. Check permissions and path: $PUPPETEER_CACHE_DIR${NC}"
+    echo -e "${YELLOW}Trying with sudo to ensure proper permissions...${NC}"
+    if ! sudo mkdir -p "$PUPPETEER_CACHE_DIR" || ! sudo chown -R "$(whoami)" "$PUPPETEER_CACHE_DIR"; then
+      echo -e "${RED}✗ Failed to create or set permissions on $PUPPETEER_CACHE_DIR${NC}"
+    else
+      echo -e "${GREEN}✓ Successfully set permissions on $PUPPETEER_CACHE_DIR. Retrying install...${NC}"
+      if ! eval $PWR_NICE npx puppeteer browsers install chrome; then
+        echo -e "${RED}✗ Puppeteer browser install still failed.${NC}"
+      fi
+    fi
   fi
 else
   echo -e "${GREEN}✓ Puppeteer Chrome browser already installed.${NC}"

@@ -19,7 +19,13 @@ const getChalk = () => {
 };
 const c = getChalk();
 
-const OSCAL_DIR = path.join(__dirname, '../oscal-analysis');
+// Platform-agnostic path handling
+const isWindows = process.platform === 'win32';
+const HOME_DIR = process.env.HOME || process.env.USERPROFILE;
+const DEFAULT_CACHE_DIR = path.join(HOME_DIR, '.cache', 'puppeteer');
+
+// Use proper path separator based on platform
+const OSCAL_DIR = path.join(__dirname, '..', 'oscal-analysis');
 const LEGENDARY_BANNER = `\n<div style=\"background: linear-gradient(90deg,#0ff,#0f0,#00f,#f0f,#f00,#ff0,#0ff); color:#fff; font-size:2em; font-weight:bold; text-align:center; padding:1em; border-radius:1em; margin-bottom:1em; animation: legendary 2s infinite alternate;\">🛡️ LEGENDARY OSCAL REPORT 🛡️</div>\n<style>@keyframes legendary {0%{filter:brightness(1);}100%{filter:brightness(1.3);}}</style>`;
 
 async function injectLegendaryBanner(htmlPath) {
@@ -37,12 +43,44 @@ function getReportTitle(html) {
 }
 
 async function htmlToPdf(htmlPath, pdfPath) {
-  await injectLegendaryBanner(htmlPath);
-  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
-  const page = await browser.newPage();
-  await page.goto('file://' + htmlPath, { waitUntil: 'networkidle0' });
-  await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
-  await browser.close();
+  let browser = null;
+  try {
+    await injectLegendaryBanner(htmlPath);
+    
+    // Configure browser launch options based on platform
+    const launchOptions = { 
+      headless: 'new', 
+      args: ['--no-sandbox'] 
+    };
+    
+    // Launch browser
+    browser = await puppeteer.launch(launchOptions);
+    const page = await browser.newPage();
+    await page.goto('file://' + htmlPath, { waitUntil: 'networkidle0' });
+    
+    // Configure PDF options
+    const pdfOptions = {
+      path: pdfPath,
+      format: 'A4',
+      printBackground: true,
+      margin: {
+        top: '0.5in',
+        right: '0.5in',
+        bottom: '0.5in',
+        left: '0.5in',
+      }
+    };
+    
+    // Generate PDF
+    await page.pdf(pdfOptions);
+    return true;
+  } catch (error) {
+    console.error(`  ${c.red('✗')} PDF failed: ${error.message}`);
+    return false;
+  } finally {
+    // Ensure browser is closed even if there's an error
+    if (browser) await browser.close();
+  }
 }
 
 async function htmlToMarkdown(htmlPath, mdPath) {
@@ -58,33 +96,55 @@ async function htmlToMarkdown(htmlPath, mdPath) {
   await fs.writeFile(mdPath, markdown, 'utf8');
 }
 
-async function main() {
-  const files = await fs.readdir(OSCAL_DIR);
-  const htmlReports = files.filter(f => f.endsWith('.html') && f.includes('report'));
-  if (htmlReports.length === 0) {
-    console.log(c.yellow('No HTML OSCAL reports found in oscal-analysis/'));
-    return;
-  }
-  for (const htmlFile of htmlReports) {
-    const htmlPath = path.join(OSCAL_DIR, htmlFile);
-    const base = htmlFile.replace(/\.html$/, '');
-    const pdfPath = path.join(OSCAL_DIR, base + '.pdf');
-    const mdPath = path.join(OSCAL_DIR, base + '.md');
-    console.log(c.cyan(`Converting ${htmlFile} → PDF/Markdown...`));
-    try {
-      await htmlToPdf(htmlPath, pdfPath);
-      console.log(c.green(`  ✓ PDF: ${path.basename(pdfPath)}`));
-    } catch (e) {
-      console.log(c.red(`  ✗ PDF failed: ${e}`));
+// Main export function
+async function exportOscalReports() {
+  try {
+    // Create oscal-analysis directory if it doesn't exist
+    if (!await fs.exists(OSCAL_DIR)) {
+      await fs.mkdir(OSCAL_DIR, { recursive: true });
     }
-    try {
-      await htmlToMarkdown(htmlPath, mdPath);
-      console.log(c.green(`  ✓ Markdown: ${path.basename(mdPath)}`));
-    } catch (e) {
-      console.log(c.red(`  ✗ Markdown failed: ${e}`));
+    
+    // Get all HTML files in the oscal-analysis directory
+    const files = await fs.readdir(OSCAL_DIR);
+    const htmlFiles = files.filter(file => file.endsWith('.html'));
+
+    if (htmlFiles.length === 0) {
+      console.log(c.yellow('No HTML reports found in ' + OSCAL_DIR));
+      return;
     }
+
+    console.log(c.cyan(`Found ${htmlFiles.length} HTML reports to process`));
+    
+    // Process each HTML file
+    for (const htmlFile of htmlFiles) {
+      const htmlPath = path.join(OSCAL_DIR, htmlFile);
+      const baseName = htmlFile.replace(/\.html$/, '');
+      const pdfPath = path.join(OSCAL_DIR, `${baseName}.pdf`);
+      const mdPath = path.join(OSCAL_DIR, `${baseName}.md`);
+      
+      console.log(c.cyan(`Converting ${htmlFile} → PDF/Markdown...`));
+      
+      // Convert to PDF
+      const pdfSuccess = await htmlToPdf(htmlPath, pdfPath);
+      if (pdfSuccess) {
+        console.log(`  ${c.green('✓')} PDF: ${pdfPath}`);
+      }
+      
+      // Convert to Markdown
+      try {
+        await htmlToMarkdown(htmlPath, mdPath);
+        console.log(`  ${c.green('✓')} Markdown: ${mdPath}`);
+      } catch (error) {
+        console.error(`  ${c.red('✗')} Markdown failed: ${error.message}`);
+      }
+    }
+    
+    console.log(c.green('All conversions complete!'));
+  } catch (error) {
+    console.error(c.red(`Error: ${error.message}`));
+    process.exit(1);
   }
-  console.log(c.bold.green('All conversions complete!'));
 }
 
-main().catch(e => { console.error(e); process.exit(1); });
+// Run the export function
+exportOscalReports();
