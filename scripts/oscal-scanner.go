@@ -37,6 +37,8 @@ type OscalScan struct {
 	ProfileID   string
 	Description string
 	Color       string
+	Reference   string
+	Note        string
 	Results     ScanResults
 }
 
@@ -67,10 +69,14 @@ type OscalResults struct {
 }
 
 // OscalProfile represents a profile entry from oscal-profiles.json
+// Add Reference and Note fields
 type OscalProfile struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	ID          string `json:"id"`
+	Status      string `json:"status"`
+	Note        string `json:"note"`
+	Reference   string `json:"reference"`
 }
 
 // Global variables for progress tracking
@@ -121,6 +127,8 @@ func main() {
 						ProfileID:   p.ID,
 						Description: p.Description,
 						Color:       color,
+						Reference:   p.Reference,
+						Note:        p.Note,
 					})
 				}
 				fmt.Printf("%sLoaded profiles from oscal-profiles.json:%s ", ColorCyan, ColorReset)
@@ -160,14 +168,14 @@ func main() {
 			},
 			{
 				Profile:     "medium-high",
-				ProfileID:   "xccdf_org.ssgproject.content_profile_PLACEHOLDER_medium_high",
-				Description: "FedRAMP Rev5 Medium/High (pre-release, forward compatible)",
+				ProfileID:   "xccdf_org.ssgproject.content_profile_moderate",
+				Description: "FedRAMP Moderate Impact (aligned with Rev5)",
 				Color:       ColorBlue,
 			},
 			{
 				Profile:     "rev5",
-				ProfileID:   "xccdf_org.ssgproject.content_profile_PLACEHOLDER_rev5",
-				Description: "FedRAMP Rev5, new standard - not yet officially defined (2025)",
+				ProfileID:   "xccdf_org.ssgproject.content_profile_high",
+				Description: "FedRAMP High Impact (aligned with Rev5)",
 				Color:       ColorPurple,
 			},
 			{
@@ -268,6 +276,16 @@ func main() {
 
 	for _, result := range results {
 		fmt.Printf("%s%s Profile: %s%s\n", result.Color, ColorBold, result.Profile, ColorReset)
+		// Print reference and note if available
+		if result.Description != "" {
+			fmt.Printf("  Description: %s\n", result.Description)
+		}
+		if result.Reference != "" {
+			fmt.Printf("  Reference: %s\n", result.Reference)
+		}
+		if result.Note != "" {
+			fmt.Printf("  Note: %s\n", result.Note)
+		}
 
 		if result.Profile == "truenorth" {
 			if result.Results.ExitCode == 0 {
@@ -540,18 +558,35 @@ func runOscapScan(profile *OscalScan, oscalDir string, scapContentFile string, v
 		profile.Results.ExitCode = originalScanExitCode // Restore original oscap exit code
 	}
 
-	// Special status message for placeholders
-	if profile.Profile == "medium-high" || profile.Profile == "rev5" {
-		fmt.Printf("%sNote: '%s' is a placeholder for a future FedRAMP Rev 5 profile.%s\n",
-			ColorYellow, profile.Profile, ColorReset)
-		fmt.Printf("%sUpdate its Profile ID in code when available.%s\n",
-			ColorYellow, ColorReset)
+	// === PDF/Markdown Export via Puppeteer (oscal-export.js) ===
+	// Only attempt if Node.js is available and HTML report exists
+	if profile.Results.HTMLPath != "" && fileExists(profile.Results.HTMLPath) {
+		fmt.Printf("%sProfile [%s]: Exporting PDF/Markdown via Puppeteer...%s\n", profile.Color, profile.Profile, ColorReset)
+		var exportCmd *exec.Cmd
+		if runtime.GOOS == "windows" {
+			// Use node from PATH, run from scripts dir, pass full path to oscal-export.js
+			exportCmd = exec.Command("node", "../tools/oscal-export.js")
+			exportCmd.Dir = oscalDir + "/.." // scripts dir
+		} else {
+			exportCmd = exec.Command("node", "../tools/oscal-export.js")
+			exportCmd.Dir = oscalDir + "/.." // scripts dir
+		}
+		var exportOut, exportErr bytes.Buffer
+		exportCmd.Stdout = &exportOut
+		exportCmd.Stderr = &exportErr
+		err := exportCmd.Run()
+		if err != nil {
+			fmt.Printf("%s  PDF/Markdown export failed: %v%s\n%s\n", ColorRed, err, ColorReset, exportErr.String())
+		} else {
+			fmt.Printf("%s  PDF/Markdown export complete.%s\n", ColorGreen, ColorReset)
+			if exportOut.Len() > 0 {
+				fmt.Printf("%s", exportOut.String())
+			}
+		}
 	}
-
-	fmt.Printf("%sOSCAL scan for %s completed with exit code %d%s\n",
-		profile.Color, profile.Profile, profile.Results.ExitCode, ColorReset)
 }
 
+// TrueNorth scan handler for custom JSON validation
 func runTrueNorthScan(profile *OscalScan, oscalDir string) {
 	fmt.Printf("%s=== Running TrueNorth OSCAL JSON validation ===%s\n",
 		ColorBold+profile.Color, ColorReset)
@@ -564,10 +599,6 @@ func runTrueNorthScan(profile *OscalScan, oscalDir string) {
 		var cmd *exec.Cmd
 		if runtime.GOOS == "windows" {
 			fmt.Printf("%sAttempting to run '%s' via WSL on Windows. Ensure WSL and bash are available.%s\n", ColorYellow, scriptName, ColorReset)
-			// For WSL, the path needs to be relative to where `wsl` is invoked, or an absolute WSL path.
-			// If oscal-scanner.exe is in C:\foo and script is C:\foo\truenorth-oscal-test.sh,
-			// then from WSL's perspective, it might be /mnt/c/foo/truenorth-oscal-test.sh
-			// Using a relative path like "./truenorth-oscal-test.sh" often works if WSL inherits CWD.
 			cmd = exec.Command("wsl", "bash", scriptPath)
 		} else {
 			cmd = exec.Command("/bin/bash", scriptPath)
@@ -601,38 +632,39 @@ func runTrueNorthScan(profile *OscalScan, oscalDir string) {
 	} else {
 		// Create a sample TrueNorth JSON result
 		fmt.Printf("%sProfile [%s]: Script '%s' not found. Generating sample JSON results.%s\n", ColorYellow, profile.Profile, scriptPath, ColorReset)
-		tnResults := map[string]interface{}{
-			"message":           fmt.Sprintf("Script '%s' not found. This is a sample result.", scriptPath),
-			"truenorth_profile": "v1.0",
-			"validation_date":   time.Now().Format(time.RFC3339),
-			"scan_summary": map[string]interface{}{
-				"passed":         42,
-				"failed":         0,
-				"not_applicable": 5,
-				"total":          47,
-			},
-			"exceeds_requirements": true,
-			"profile_status":       "COMPLIANT",
-		}
+		sampleJSON := `{
+  "version": "1.0",
+  "profile": "` + profile.Profile + `",
+  "results": {
+    "pass": 10,
+    "fail": 2,
+    "not_applicable": 1,
+    "total": 13
+  },
+  "controls": [
+    {
+      "id": "C1",
+      "result": "pass",
+      "time": "2023-10-01T12:00:00Z",
+      "description": "Sample control 1",
+      "message": "Control passed."
+    },
+    {
+      "id": "C2",
+      "result": "fail",
+      "time": "2023-10-01T12:05:00Z",
+      "description": "Sample control 2",
+      "message": "Control failed. See details."
+    }
+  ]
+}`
 
-		jsonFile := filepath.Join(oscalDir, "truenorth-results.json")
-		jsonData, err := json.MarshalIndent(tnResults, "", "  ")
-		if err != nil {
-			fmt.Printf("%sError marshalling TrueNorth JSON results: %v%s\n", ColorRed, err, ColorReset)
-			profile.Results.ExitCode = 1 // Indicate failure
-			profile.Results.EndTime = time.Now()
+		sampleFile := filepath.Join(oscalDir, "sample-truenorth-results.json")
+		if err := os.WriteFile(sampleFile, []byte(sampleJSON), 0644); err != nil {
+			fmt.Printf("%sError writing sample JSON results to %s: %v%s\n", ColorRed, sampleFile, err, ColorReset)
 		} else {
-			if err := os.WriteFile(jsonFile, jsonData, 0644); err != nil {
-				fmt.Printf("%sError writing TrueNorth JSON results to %s: %v%s\n", ColorRed, jsonFile, err, ColorReset)
-				// profile.Results.ExitCode might need to be set to 1 here if writing fails
-			}
+			fmt.Printf("%sSample TrueNorth results written to %s%s\n", ColorGreen, sampleFile, ColorReset)
 		}
-		profile.Results.JSONPath = jsonFile
-		profile.Results.Pass = 42
-		profile.Results.NotApplicable = 5
-		profile.Results.Total = 47
-		profile.Results.ExitCode = 0 // Sample data implies success of generation
-		profile.Results.EndTime = time.Now()
 	}
 
 	fmt.Printf("%sTrueNorth validation completed with exit code %d%s\n",
@@ -817,6 +849,12 @@ func convertXMLtoMarkdown(xmlFile, markdownFile string, profile *OscalScan) {
 			c.ID, c.Usage, c.Description, resultColor, strings.ToUpper(c.Result), c.Time, c.Details)
 	}
 
+	// Add reference and note to the Markdown output
+	md += "**Reference:** " + profile.Reference + "  \n"
+	if profile.Note != "" {
+		md += "**Note:** " + profile.Note + "  \n"
+	}
+
 	// Save to file
 	if err := os.WriteFile(markdownFile, []byte(md), 0644); err != nil {
 		fmt.Printf("%sError writing Markdown report to %s: %v%s\n", ColorRed, markdownFile, err, ColorReset)
@@ -876,8 +914,8 @@ func generateSummaryReport(results []OscalScan, oscalDir string) {
 	md := "# OSCAL Scan Summary Report\n\n"
 	md += fmt.Sprintf("**Report Generated:** %s\n\n", time.Now().Format("2006-01-02 15:04:05"))
 	md += "## Profile Results\n\n"
-	md += "| Profile | Status | Pass | Fail | N/A | Total | Duration |\n"
-	md += "|---------|--------|------|------|-----|-------|----------|\n"
+	md += "| Profile | Status | Pass | Fail | N/A | Total | Duration | Reference | Note |\n"
+	md += "|---------|--------|------|------|-----|-------|----------|-----------|------|\n"
 
 	for _, result := range results {
 		status := "❌ Failed"
@@ -889,14 +927,16 @@ func generateSummaryReport(results []OscalScan, oscalDir string) {
 
 		duration := result.Results.EndTime.Sub(result.Results.StartTime).Seconds()
 
-		md += fmt.Sprintf("| %s | %s | %d | %d | %d | %d | %.1fs |\n",
+		md += fmt.Sprintf("| %s | %s | %d | %d | %d | %d | %.1fs | %s | %s |\n",
 			result.Profile,
 			status,
 			result.Results.Pass,
 			result.Results.Fail,
 			result.Results.NotApplicable,
 			result.Results.Total,
-			duration)
+			duration,
+			result.Reference,
+			result.Note)
 	}
 
 	md += "\n## System Information\n\n"

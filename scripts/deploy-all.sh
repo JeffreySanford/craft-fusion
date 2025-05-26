@@ -314,49 +314,32 @@ handle_nx_post_install() {
 
 # Only install dependencies if node_modules is missing or package-lock.json changed
 if [ "$do_full_clean" = true ]; then
-  echo -e "${CYAN}Installing dependencies (detected change)...${NC}"
+  echo -e "${CYAN}Installing dependencies (npm install --no-progress)...${NC}"
   echo -e "${BLUE}NPM install in progress...${NC}"
   echo -e "${BLUE}The progress bar is an overall estimate for this NPM installation phase.${NC}"
   echo -e "${BLUE}Please be patient while NPM completes all its tasks.${NC}"
-  NPM_CI_ESTIMATE_SECONDS=240 # 4 minutes (adjusted based on typical performance)
+  NPM_INSTALL_ESTIMATE_SECONDS=240 # 4 minutes (adjusted based on typical performance)
   phase_start_time=$(date +%s)
-  print_progress "NPM Install (npm ci)" "$NPM_CI_ESTIMATE_SECONDS" "$phase_start_time" &
+  print_progress "NPM Install (npm install)" "$NPM_INSTALL_ESTIMATE_SECONDS" "$phase_start_time" &
   progress_pid=$!
 
-  # Initial attempt with default concurrency (remove --maxsockets=1)
-  npm ci --loglevel error --omit=optional --no-audit --prefer-offline --no-progress
-  npm_ci_status=$?
+  npm install --no-progress --loglevel error --omit=optional --no-audit --prefer-offline
+  npm_install_status=$?
 
   kill "$progress_pid" &>/dev/null || true
   wait "$progress_pid" &>/dev/null || true
   cleanup_progress_line
 
-  if [ $npm_ci_status -eq 0 ]; then
-    echo -e "${GREEN}✓ Dependencies installed successfully via npm ci${NC}"
+  if [ $npm_install_status -eq 0 ]; then
+    echo -e "${GREEN}✓ Dependencies installed successfully via npm install${NC}"
     [ -d node_modules/nx ] && { handle_nx_post_install; nx_post_install_final_status=$?; } || nx_post_install_final_status=0
   else
-    echo -e "${YELLOW}⚠ First npm ci failed (exit code $npm_ci_status), trying with reduced concurrency (--maxsockets 1)...${NC}"
-    NPM_CI_RETRY_ESTIMATE_SECONDS=300
-    phase_start_time=$(date +%s)
-    print_progress "NPM Install (retry)" "$NPM_CI_RETRY_ESTIMATE_SECONDS" "$phase_start_time" &
-    progress_pid=$!
-    npm ci --loglevel error --maxsockets 1 --omit=optional --no-audit --prefer-offline --no-progress
-    npm_ci_retry_status=$?
-    kill "$progress_pid" &>/dev/null || true
-    wait "$progress_pid" &>/dev/null || true
-    cleanup_progress_line
-    echo -e "${BLUE}NPM install command (retry) finished. Verifying status...${NC}"
-    if [ $npm_ci_retry_status -eq 0 ]; then
-      echo -e "${GREEN}✓ Dependencies installed (retry successful)${NC}"
-      [ -d node_modules/nx ] && { handle_nx_post_install; nx_post_install_final_status=$?; } || nx_post_install_final_status=0
-    else
-      echo -e "${RED}✗ Dependencies installation failed on retry (exit code $npm_ci_retry_status)${NC}"
-      exit 1
-    fi
+    echo -e "${RED}✗ Dependencies installation failed (exit code $npm_install_status)${NC}"
+    exit 1
   fi
 else
   echo -e "${GREEN}✓ node_modules up-to-date, skipping npm install${NC}"
-  npm_ci_status=0 # Mark as success for summary if skipped
+  npm_install_status=0 # Mark as success for summary if skipped
   [ -d node_modules/nx ] && { handle_nx_post_install; nx_post_install_final_status=$?; } || nx_post_install_final_status=0
 fi
 
