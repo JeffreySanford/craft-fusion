@@ -1,8 +1,16 @@
-@use '@angular/material' as mat;
-@include mat.core();
-@include mat.all-component-themes(mat.define-theme((
-  color: (
-    primary: mat.$m3-blue-palette,
-    accent: mat.$m3-pink-palette,
-  ),
-)));
+// Main styles entry point for Craft Fusion
+
+// Import global variables and settings
+@import 'variables';
+@import 'themes';
+@import 'typography';
+@import 'transition-variables';
+
+// Reset and base styles
+@import 'reset';
+@import 'scrollbar';
+
+// Layout and utility styles
+@import 'layout';
+@import 'responsive';
+@import 'utilities';
