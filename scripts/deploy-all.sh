@@ -224,7 +224,39 @@ if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
       else
         echo -e "${RED}✗ Nx post-install failed (exit code $post_install_status)${NC}"
         echo -e "${YELLOW}See nx-post-install.log for details. You can run 'cat nx-post-install.log' to view the full output and errors.${NC}"
-        exit 1
+        while true; do
+          echo -e "${YELLOW}How would you like to proceed?${NC}"
+          echo -e "  [R]etry post-install"
+          echo -e "  [S]kip and continue deployment (not recommended)"
+          echo -e "  [A]bort deployment"
+          read -p "Enter your choice (R/S/A): " nx_post_choice
+          case "$nx_post_choice" in
+            [Rr])
+              echo -e "${YELLOW}Retrying Nx post-install...${NC}"
+              set -x
+              node ./node_modules/nx/bin/post-install 2>&1 | tee nx-post-install.log
+              post_install_status=${PIPESTATUS[0]}
+              set +x
+              if [ $post_install_status -eq 0 ]; then
+                echo -e "${GREEN}✓ Nx post-install completed successfully on retry${NC}"
+                break
+              else
+                echo -e "${RED}✗ Nx post-install failed again.${NC}"
+              fi
+              ;;
+            [Ss])
+              echo -e "${YELLOW}Skipping Nx post-install. Some features may not work as expected.${NC}"
+              break
+              ;;
+            [Aa])
+              echo -e "${RED}Aborting deployment due to Nx post-install failure.${NC}"
+              exit 1
+              ;;
+            *)
+              echo -e "${YELLOW}Invalid choice. Please enter R, S, or A.${NC}"
+              ;;
+          esac
+        done
       fi
     fi
   else
@@ -258,7 +290,39 @@ if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
         else
           echo -e "${RED}✗ Nx post-install failed (exit code $post_install_status)${NC}"
           echo -e "${YELLOW}See nx-post-install.log for details. You can run 'cat nx-post-install.log' to view the full output and errors.${NC}"
-          exit 1
+          while true; do
+            echo -e "${YELLOW}How would you like to proceed?${NC}"
+            echo -e "  [R]etry post-install"
+            echo -e "  [S]kip and continue deployment (not recommended)"
+            echo -e "  [A]bort deployment"
+            read -p "Enter your choice (R/S/A): " nx_post_choice
+            case "$nx_post_choice" in
+              [Rr])
+                echo -e "${YELLOW}Retrying Nx post-install...${NC}"
+                set -x
+                node ./node_modules/nx/bin/post-install 2>&1 | tee nx-post-install.log
+                post_install_status=${PIPESTATUS[0]}
+                set +x
+                if [ $post_install_status -eq 0 ]; then
+                  echo -e "${GREEN}✓ Nx post-install completed successfully on retry${NC}"
+                  break
+                else
+                  echo -e "${RED}✗ Nx post-install failed again.${NC}"
+                fi
+                ;;
+              [Ss])
+                echo -e "${YELLOW}Skipping Nx post-install. Some features may not work as expected.${NC}"
+                break
+                ;;
+              [Aa])
+                echo -e "${RED}Aborting deployment due to Nx post-install failure.${NC}"
+                exit 1
+                ;;
+              *)
+                echo -e "${YELLOW}Invalid choice. Please enter R, S, or A.${NC}"
+                ;;
+            esac
+          done
         fi
       fi
     else
@@ -285,7 +349,39 @@ else
     else
       echo -e "${RED}✗ Nx post-install failed (exit code $post_install_status)${NC}"
       echo -e "${YELLOW}See nx-post-install.log for details. You can run 'cat nx-post-install.log' to view the full output and errors.${NC}"
-      exit 1
+      while true; do
+        echo -e "${YELLOW}How would you like to proceed?${NC}"
+        echo -e "  [R]etry post-install"
+        echo -e "  [S]kip and continue deployment (not recommended)"
+        echo -e "  [A]bort deployment"
+        read -p "Enter your choice (R/S/A): " nx_post_choice
+        case "$nx_post_choice" in
+          [Rr])
+            echo -e "${YELLOW}Retrying Nx post-install...${NC}"
+            set -x
+            node ./node_modules/nx/bin/post-install 2>&1 | tee nx-post-install.log
+            post_install_status=${PIPESTATUS[0]}
+            set +x
+            if [ $post_install_status -eq 0 ]; then
+              echo -e "${GREEN}✓ Nx post-install completed successfully on retry${NC}"
+              break
+            else
+              echo -e "${RED}✗ Nx post-install failed again.${NC}"
+            fi
+            ;;
+          [Ss])
+            echo -e "${YELLOW}Skipping Nx post-install. Some features may not work as expected.${NC}"
+            break
+            ;;
+          [Aa])
+            echo -e "${RED}Aborting deployment due to Nx post-install failure.${NC}"
+            exit 1
+            ;;
+          *)
+            echo -e "${YELLOW}Invalid choice. Please enter R, S, or A.${NC}"
+            ;;
+        esac
+      done
     fi
   fi
 fi

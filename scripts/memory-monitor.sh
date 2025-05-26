@@ -1,5 +1,5 @@
 #!/bin/bash
-# memory-monitor.sh - Vibrant, modern system memory and process monitor
+# memory-monitor.sh - TRUE NORTH INSIGHTS: Craft Fusion System Monitor
 
 BOLD='\033[1m'
 NC='\033[0m'
@@ -13,9 +13,10 @@ BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
 
 clear
-printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════════════════╗\n"
-printf "║                💾 Craft Fusion Live Memory & Process Monitor           ║\n"
-printf "╚══════════════════════════════════════════════════════════════════════════╝${NC}\n"
+printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════════════════════╗\n"
+printf "║        🖥️  TRUE NORTH INSIGHTS: CRAFT FUSION SYSTEM MONITOR v2.1         ║\n"
+printf "║                by True North Insights  |  LIVE UPDATING                   ║\n"
+printf "╚══════════════════════════════════════════════════════════════════════════════╝${NC}\n"
 
 # --- System Prep: Clean up lingering processes and free memory ---
 source "$(dirname "$0")/system-prep.sh"
@@ -712,5 +713,5 @@ while true; do
     done
     echo -e "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} $colored_profiles"
     
-    sleep 10
+    sleep 2
 done
