@@ -227,9 +227,27 @@ copy_scan_reports() {
 
 # Ensure Puppeteer browser is installed and cache dir is set for PDF export
 export PUPPETEER_CACHE_DIR="$HOME/.cache/puppeteer"
-if ! npx puppeteer browsers install chrome; then
-  echo -e "${RED}✗ Puppeteer browser install failed. Check PUPPETEER_CACHE_DIR and permissions.${NC}"
-  exit 1
+PUPPETEER_CHROME_DIR="$PUPPETEER_CACHE_DIR/chrome"
+MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
+MEM_90PCT=$((MEM_TOTAL_MB * 90 / 100))
+export NODE_OPTIONS="--max-old-space-size=$MEM_90PCT"
+
+# Use aggressive nice/ionice if root, else best allowed
+if [ "$(id -u)" -eq 0 ]; then
+  PWR_NICE="nice -n -20 ionice -c2 -n0"
+else
+  PWR_NICE="nice -n 0 ionice -c2 -n4"
+fi
+
+# Only install if browser is missing
+if [ ! -d "$PUPPETEER_CHROME_DIR" ] || [ -z "$(ls -A "$PUPPETEER_CHROME_DIR" 2>/dev/null)" ]; then
+  echo -e "${YELLOW}Installing Puppeteer Chrome browser with power mode...${NC}"
+  if ! eval $PWR_NICE npx puppeteer browsers install chrome; then
+    echo -e "${RED}✗ Puppeteer browser install failed. Check PUPPETEER_CACHE_DIR and permissions.${NC}"
+    exit 1
+  fi
+else
+  echo -e "${GREEN}✓ Puppeteer Chrome browser already installed.${NC}"
 fi
 
 # Purge option: remove all OSCAL scan result XML files and clean the archive directory
