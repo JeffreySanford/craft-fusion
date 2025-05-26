@@ -186,35 +186,18 @@ if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
 
   if [ $npm_ci_status -eq 0 ]; then
     echo -e "${GREEN}✓ Dependencies installed successfully via npm ci${NC}"
-    # Start Nx post-install progress bar and echo here, after npm install is 100%
     if [ -d node_modules/nx ]; then
-      echo -e "${BOLD}${CYAN}\n═══════════════════════════════════════════════════════════════════════════════"
-      echo -e "🚦 Starting Nx post-install process. This may take a while."
-      echo -e "═══════════════════════════════════════════════════════════════════════════════${NC}"
-      sleep 2
       POST_INSTALL_ESTIMATE_SECONDS=60
       phase_start_time=$(date +%s)
       print_progress "Nx Post-Install" "$POST_INSTALL_ESTIMATE_SECONDS" "$phase_start_time" &
       progress_pid=$!
-
-      # Check for WASI/WebAssembly environment
-      if node -e "if (process.versions.wasi) process.exit(42)"; then
-        : # Not WASI
-      else
-        echo -e "${YELLOW}⚠ Nx Daemon is unsupported in WebAssembly (WASI) environments. Some things may be slower or not function as expected.${NC}"
-        echo -e "${YELLOW}Check your Node.js installation and environment variables.${NC}"
-      fi
-
-      # Run the post-install script with full output
       set -x
       node ./node_modules/nx/bin/post-install 2>&1 | tee nx-post-install.log
       post_install_status=${PIPESTATUS[0]}
       set +x
-
       kill "$progress_pid" &>/dev/null || true
       wait "$progress_pid" &>/dev/null || true
       cleanup_progress_line
-
       if [ $post_install_status -eq 0 ]; then
         echo -e "${GREEN}✓ Nx post-install completed successfully${NC}"
       else
@@ -224,54 +207,31 @@ if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
       fi
     fi
   else
-    # Fallback or retry logic if needed
     echo -e "${YELLOW}⚠ First npm ci failed, trying with reduced concurrency...${NC}"
-    echo -e "${BLUE}The progress bar is an overall estimate for this NPM installation retry phase.${NC}"
-    echo -e "${BLUE}Please be patient while NPM completes all its tasks.${NC}"
     NPM_CI_RETRY_ESTIMATE_SECONDS=300
     phase_start_time=$(date +%s)
     print_progress "NPM Install (retry)" "$NPM_CI_RETRY_ESTIMATE_SECONDS" "$phase_start_time" &
     progress_pid=$!
-
     npm ci --loglevel error --maxsockets 1 --omit=optional --no-audit --prefer-offline --no-progress
     npm_ci_retry_status=$?
-
     kill "$progress_pid" &>/dev/null || true
     wait "$progress_pid" &>/dev/null || true
     cleanup_progress_line
     echo -e "${BLUE}NPM install command (retry) finished. Verifying status...${NC}"
-
     if [ $npm_ci_retry_status -eq 0 ]; then
       echo -e "${GREEN}✓ Dependencies installed (retry successful)${NC}"
-      # Start Nx post-install progress bar and echo here, after retry
       if [ -d node_modules/nx ]; then
-        echo -e "${BOLD}${CYAN}\n═══════════════════════════════════════════════════════════════════════════════"
-        echo -e "🚦 Starting Nx post-install process. This may take a while."
-        echo -e "═══════════════════════════════════════════════════════════════════════════════${NC}"
-        sleep 2
         POST_INSTALL_ESTIMATE_SECONDS=60
         phase_start_time=$(date +%s)
         print_progress "Nx Post-Install" "$POST_INSTALL_ESTIMATE_SECONDS" "$phase_start_time" &
         progress_pid=$!
-
-        # Check for WASI/WebAssembly environment
-        if node -e "if (process.versions.wasi) process.exit(42)"; then
-          : # Not WASI
-        else
-          echo -e "${YELLOW}⚠ Nx Daemon is unsupported in WebAssembly (WASI) environments. Some things may be slower or not function as expected.${NC}"
-          echo -e "${YELLOW}Check your Node.js installation and environment variables.${NC}"
-        fi
-
-        # Run the post-install script with full output
         set -x
         node ./node_modules/nx/bin/post-install 2>&1 | tee nx-post-install.log
         post_install_status=${PIPESTATUS[0]}
         set +x
-
         kill "$progress_pid" &>/dev/null || true
         wait "$progress_pid" &>/dev/null || true
         cleanup_progress_line
-
         if [ $post_install_status -eq 0 ]; then
           echo -e "${GREEN}✓ Nx post-install completed successfully${NC}"
         else
@@ -287,35 +247,18 @@ if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
   fi
 else
   echo -e "${GREEN}✓ node_modules up-to-date, skipping npm install${NC}"
-  # If node_modules is up-to-date, still check for Nx post-install if needed
   if [ -d node_modules/nx ]; then
-    echo -e "${BOLD}${CYAN}\n═══════════════════════════════════════════════════════════════════════════════"
-    echo -e "🚦 Starting Nx post-install process. This may take a while."
-    echo -e "═══════════════════════════════════════════════════════════════════════════════${NC}"
-    sleep 2
     POST_INSTALL_ESTIMATE_SECONDS=60
     phase_start_time=$(date +%s)
     print_progress "Nx Post-Install" "$POST_INSTALL_ESTIMATE_SECONDS" "$phase_start_time" &
     progress_pid=$!
-
-    # Check for WASI/WebAssembly environment
-    if node -e "if (process.versions.wasi) process.exit(42)"; then
-      : # Not WASI
-    else
-      echo -e "${YELLOW}⚠ Nx Daemon is unsupported in WebAssembly (WASI) environments. Some things may be slower or not function as expected.${NC}"
-      echo -e "${YELLOW}Check your Node.js installation and environment variables.${NC}"
-    fi
-
-    # Run the post-install script with full output
     set -x
     node ./node_modules/nx/bin/post-install 2>&1 | tee nx-post-install.log
     post_install_status=${PIPESTATUS[0]}
     set +x
-
     kill "$progress_pid" &>/dev/null || true
     wait "$progress_pid" &>/dev/null || true
     cleanup_progress_line
-
     if [ $post_install_status -eq 0 ]; then
       echo -e "${GREEN}✓ Nx post-install completed successfully${NC}"
     else
