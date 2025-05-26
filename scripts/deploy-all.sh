@@ -135,11 +135,11 @@ if [ "$do_full_clean" = true ]; then
   rm -rf .nx/cache/
   rm -rf /tmp/nx-cache/ 2>/dev/null || true
   rm -rf node_modules
-  ./scripts/clean-build.sh
+  ./scripts/clean-build.sh --full-clean
   CLEAN_STATUS=$?
   if [ $CLEAN_STATUS -ne 0 ]; then
     echo -e "${YELLOW}⚠ clean-build.sh failed, retrying once...${NC}"
-    ./scripts/clean-build.sh
+    ./scripts/clean-build.sh --full-clean
     CLEAN_STATUS=$?
     if [ $CLEAN_STATUS -ne 0 ]; then
       echo -e "${RED}✗ clean-build.sh failed twice, aborting deployment.${NC}"

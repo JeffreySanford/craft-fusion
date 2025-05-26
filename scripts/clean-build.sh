@@ -29,8 +29,13 @@ rm -rf dist/
 echo -e "${BLUE}3. Cleaning Nx cache...${NC}"
 timeout 20s npx nx reset || echo -e "${YELLOW}⚠ nx reset timed out or failed, continuing...${NC}"
 
-echo -e "${BLUE}4. Cleaning node_modules cache...${NC}"
-npm cache clean --force
+# Only clean npm cache if --full-clean is passed
+if [[ "$*" == *--full-clean* ]]; then
+  echo -e "${BLUE}4. Cleaning node_modules cache...${NC}"
+  npm cache clean --force
+else
+  echo -e "${YELLOW}Skipping npm cache clean (not a full clean)${NC}"
+fi
 
 echo -e "${GREEN}✓ All build artifacts cleaned${NC}"
 
