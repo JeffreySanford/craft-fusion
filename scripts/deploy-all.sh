@@ -161,7 +161,12 @@ cd "$PROJECT_ROOT"
 chmod +x scripts/*.sh
 
 # --- System Prep: Clean up lingering processes and free memory ---
-source "$(dirname "$0")/system-prep.sh"
+if [ "$POWER_MODE" = true ]; then
+  # --power is passed to system-prep.sh, which will pass it to system-optimize.sh if present
+  source "$(dirname "$0")/system-prep.sh" --power
+else
+  source "$(dirname "$0")/system-prep.sh"
+fi
 
 # After sourcing system-prep.sh, print a clear, modernized summary of available tools
 printf "${CYAN}Available Tools:${NC}\n  Check resources: ${YELLOW}resource-monitor.sh${NC}\n  Emergency cleanup: ${YELLOW}memory-cleanup.sh${NC}\n  Manual memory cleanup: ${YELLOW}sudo sysctl vm.drop_caches=3${NC}\n"
@@ -728,7 +733,7 @@ for profile in "${PROFILES_TO_REPORT[@]}"; do
                 pass)           printf "    ${GREEN}✓ %-40s : %s${NC}\n" "$CONTROL_ID" "$RESULT" ;;
                 fail)           printf "    ${RED}✗ %-40s : %s${NC}\n" "$CONTROL_ID" "$RESULT" ;;
                 notapplicable)  printf "    ${YELLOW}○ %-40s : %s${NC}\n" "$CONTROL_ID" "$RESULT" ;;
-                *)              printf "    ${WHITE}? %-40s : %s${NC}\n" "$CONTROL_ID" "$RESULT" ;;
+                *)              printf "    ${WHITE}? %-40s : %s${NC}" "$CONTROL_ID" "$RESULT" ;;
             esac
         done
     elif [ "$file_type" = "json" ] && command -v jq &> /dev/null; then
@@ -737,7 +742,7 @@ for profile in "${PROFILES_TO_REPORT[@]}"; do
         NOTAPPLICABLE=$(jq -r '.scan_results.controls.not_applicable // 0' "$result_file")
         TOTAL=$(jq -r '.scan_results.controls.total // 0' "$result_file")
         echo -e "  ${GREEN}Pass:${NC} $PASS  ${RED}Fail:${NC} $FAIL  ${YELLOW}N/A:${NC} $NOTAPPLICABLE  ${BOLD}Total:${NC} $TOTAL (from JSON)"
-        jq -r '.control_results[] | "    \(if .status == "pass" then "\(.status|@text|gsub("pass";"✓"))" elif .status == "fail" then "\(.status|@text|gsub("fail";"✗"))" else "○" end) \(.control_id) : \(.status)"' "$result_file" | sed -e "s/✓/${GREEN}✓${NC}/g" -e "s/✗/${RED}✗${NC}/g" -e "s/○/${YELLOW}○${NC}/g"
+        jq -r '.control_results[] | "    \(if .status == "pass" then "\(.status|@text|gsub("pass";"✓"))" elif .status == "fail" then "\(.status|@text|gsub("fail";"✗"))" else "○" end) \(.control_id) : \(.status)"' "$result_file" | sed -e "s/✓/${GREEN}✓${NC}/g" -e "s/✗/${RED}✗${NC}/g" -e "s/○/${YELLOW}○${NC}"
     else
         echo -e "  ${YELLOW}Cannot parse details. Install xmllint (for XML) or jq (for JSON).${NC}"
     fi

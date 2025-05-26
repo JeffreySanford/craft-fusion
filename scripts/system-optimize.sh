@@ -1,7 +1,16 @@
 #!/bin/bash
 # system-optimize.sh - Optimize Fedora system for low-memory deployment
+# Accepts --power for aggressive optimization (passed from deploy-all.sh via system-prep.sh)
 
 set -e
+
+# Parse --power argument
+POWER_MODE=false
+for arg in "$@"; do
+  if [ "$arg" == "--power" ]; then
+    POWER_MODE=true
+  fi
+done
 
 echo "=== System Optimization for Low-Memory VPS ==="
 
@@ -26,25 +35,31 @@ echo -e "${BLUE}=== Memory Optimization ===${NC}"
 
 # Check and optimize swap
 SWAP_SIZE=$(free -m | awk '/^Swap:/ {print $2}')
-if [ "$SWAP_SIZE" -lt 2000 ]; then
+if [ "$SWAP_SIZE" -lt 2000 ] || [ "$POWER_MODE" = true ]; then
     echo -e "${YELLOW}⚠ Swap size is small ($SWAP_SIZE MB), creating additional swap...${NC}"
     
     if [ ! -f /swapfile-extra ]; then
-        sudo fallocate -l 1G /swapfile-extra
+        sudo fallocate -l 2G /swapfile-extra
         sudo chmod 600 /swapfile-extra
         sudo mkswap /swapfile-extra
         sudo swapon /swapfile-extra
         
         # Make permanent
         echo '/swapfile-extra none swap sw 0 0' | sudo tee -a /etc/fstab
-        echo -e "${GREEN}✓ Additional 1GB swap created${NC}"
+        echo -e "${GREEN}✓ Additional 2GB swap created${NC}"
     fi
 fi
 
 # Optimize swappiness for server workload
-echo -e "${BLUE}Optimizing swappiness...${NC}"
-sudo sysctl vm.swappiness=10
-echo 'vm.swappiness=10' | sudo tee -a /etc/sysctl.conf
+if [ "$POWER_MODE" = true ]; then
+  echo -e "${BLUE}Optimizing swappiness (power mode)...${NC}"
+  sudo sysctl vm.swappiness=1
+  echo 'vm.swappiness=1' | sudo tee -a /etc/sysctl.conf
+else
+  echo -e "${BLUE}Optimizing swappiness...${NC}"
+  sudo sysctl vm.swappiness=10
+  echo 'vm.swappiness=10' | sudo tee -a /etc/sysctl.conf
+fi
 
 # Optimize file system cache
 echo -e "${BLUE}Optimizing file system cache...${NC}"
