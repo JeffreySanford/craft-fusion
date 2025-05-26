@@ -1,6 +1,6 @@
 # OSCAL Scan Results for cusp Profile
 
-**Scan Date:** 2025-05-26 13:12:12
+**Scan Date:** 2025-05-26 13:28:30
 
 **Description:** Custom User Security Profile (Fedora-specific)
 

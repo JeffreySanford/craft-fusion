@@ -1,6 +1,6 @@
 # OSCAL Scan Results for standard Profile
 
-**Scan Date:** 2025-05-26 17:42:39
+**Scan Date:** 2025-05-26 13:29:50
 
 **Description:** Baseline security (recommended for most)
 
@@ -8,11 +8,11 @@
 
 | Metric | Count |
 |--------|-------|
-| Passed | 19 |
+| Passed | 18 |
 | Failed | 5 |
-| Not Applicable | 50 |
-| Errors | 1 |
+| Not Applicable | 52 |
+| Errors | 0 |
 | **Total** | **75** |
 
-**Pass Rate:** 25.3%
+**Pass Rate:** 24.0%
 

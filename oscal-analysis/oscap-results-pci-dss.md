@@ -1,6 +1,6 @@
 # OSCAL Scan Results for pci-dss Profile
 
-**Scan Date:** 2025-05-26 17:41:18
+**Scan Date:** 2025-05-26 13:28:35
 
 **Description:** Payment Card Industry Data Security Standard
 
@@ -8,11 +8,11 @@
 
 | Metric | Count |
 |--------|-------|
-| Passed | 21 |
+| Passed | 18 |
 | Failed | 15 |
-| Not Applicable | 82 |
-| Errors | 1 |
+| Not Applicable | 86 |
+| Errors | 0 |
 | **Total** | **119** |
 
-**Pass Rate:** 17.6%
+**Pass Rate:** 15.1%
 
