@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -65,6 +66,13 @@ type OscalResults struct {
 	} `xml:"TestResult"`
 }
 
+// OscalProfile represents a profile entry from oscal-profiles.json
+type OscalProfile struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	ID          string `json:"id"`
+}
+
 // Global variables for progress tracking
 var (
 	completedScans int32      // Atomically incremented counter for completed scans
@@ -75,56 +83,100 @@ func main() {
 	// Parse command-line flags
 	purge := flag.Bool("purge", false, "Purge existing scan results before running new scans")
 	scapContentPath := flag.String("scap-content", getDefaultScapContentPath(), "Path to SCAP content XML file (e.g., ssg-fedora-ds.xml or C:\\path\\to\\content.xml)")
+	verbose := flag.Bool("verbose", false, "Show detailed per-control output")
 	flag.Parse()
 
 	// Define base directory for scan results
 	oscalDir := filepath.Join("..", "oscal-analysis")
 	os.MkdirAll(oscalDir, 0755)
 
-	// Define available scan profiles
-	profiles := []OscalScan{
-		{
-			Profile:     "standard",
-			ProfileID:   "xccdf_org.ssgproject.content_profile_standard",
-			Description: "Baseline security (recommended for most)",
-			Color:       ColorPurple,
-		},
-		{
-			Profile:     "ospp",
-			ProfileID:   "xccdf_org.ssgproject.content_profile_ospp",
-			Description: "Protection Profile for General Purpose Operating Systems",
-			Color:       ColorCyan,
-		},
-		{
-			Profile:     "pci-dss",
-			ProfileID:   "xccdf_org.ssgproject.content_profile_pci-dss",
-			Description: "Payment Card Industry Data Security Standard",
-			Color:       ColorYellow,
-		},
-		{
-			Profile:     "cusp",
-			ProfileID:   "xccdf_org.ssgproject.content_profile_cusp_fedora",
-			Description: "Custom User Security Profile (Fedora-specific)",
-			Color:       ColorGreen,
-		},
-		{
-			Profile:     "medium-high",
-			ProfileID:   "xccdf_org.ssgproject.content_profile_PLACEHOLDER_medium_high",
-			Description: "FedRAMP Rev5 Medium/High (pre-release, forward compatible)",
-			Color:       ColorBlue,
-		},
-		{
-			Profile:     "rev5",
-			ProfileID:   "xccdf_org.ssgproject.content_profile_PLACEHOLDER_rev5",
-			Description: "FedRAMP Rev5, new standard - not yet officially defined (2025)",
-			Color:       ColorPurple,
-		},
-		{
-			Profile:     "truenorth",
-			ProfileID:   "oscal_truenorth_profile",
-			Description: "TrueNorth custom OSCAL profile (exceeds all other standards)",
-			Color:       ColorWhite,
-		},
+	// Load available scan profiles from oscal-profiles.json if present
+	oscalProfilesPath := filepath.Join("..", "oscal-profiles.json")
+	var profiles []OscalScan
+	if fileExists(oscalProfilesPath) {
+		data, err := ioutil.ReadFile(oscalProfilesPath)
+		if err == nil {
+			var parsed struct {
+				Profiles []OscalProfile `json:"profiles"`
+			}
+			if err := json.Unmarshal(data, &parsed); err == nil && len(parsed.Profiles) > 0 {
+				for _, p := range parsed.Profiles {
+					color := ColorPurple
+					switch {
+					case p.Name == "ospp":
+						color = ColorCyan
+					case p.Name == "pci-dss":
+						color = ColorYellow
+					case p.Name == "cusp":
+						color = ColorGreen
+					case p.Name == "medium-high":
+						color = ColorBlue
+					case p.Name == "rev5":
+						color = ColorPurple
+					case p.Name == "truenorth":
+						color = ColorWhite
+					}
+					profiles = append(profiles, OscalScan{
+						Profile:     p.Name,
+						ProfileID:   p.ID,
+						Description: p.Description,
+						Color:       color,
+					})
+				}
+				fmt.Printf("%sLoaded profiles from oscal-profiles.json:%s ", ColorCyan, ColorReset)
+				for _, p := range profiles {
+					fmt.Printf("%s ", p.Profile)
+				}
+				fmt.Println()
+			}
+		}
+	}
+	if len(profiles) == 0 {
+		// Fallback to hardcoded profiles if file missing or parse error
+		profiles = []OscalScan{
+			{
+				Profile:     "standard",
+				ProfileID:   "xccdf_org.ssgproject.content_profile_standard",
+				Description: "Baseline security (recommended for most)",
+				Color:       ColorPurple,
+			},
+			{
+				Profile:     "ospp",
+				ProfileID:   "xccdf_org.ssgproject.content_profile_ospp",
+				Description: "Protection Profile for General Purpose Operating Systems",
+				Color:       ColorCyan,
+			},
+			{
+				Profile:     "pci-dss",
+				ProfileID:   "xccdf_org.ssgproject.content_profile_pci-dss",
+				Description: "Payment Card Industry Data Security Standard",
+				Color:       ColorYellow,
+			},
+			{
+				Profile:     "cusp",
+				ProfileID:   "xccdf_org.ssgproject.content_profile_cusp_fedora",
+				Description: "Custom User Security Profile (Fedora-specific)",
+				Color:       ColorGreen,
+			},
+			{
+				Profile:     "medium-high",
+				ProfileID:   "xccdf_org.ssgproject.content_profile_PLACEHOLDER_medium_high",
+				Description: "FedRAMP Rev5 Medium/High (pre-release, forward compatible)",
+				Color:       ColorBlue,
+			},
+			{
+				Profile:     "rev5",
+				ProfileID:   "xccdf_org.ssgproject.content_profile_PLACEHOLDER_rev5",
+				Description: "FedRAMP Rev5, new standard - not yet officially defined (2025)",
+				Color:       ColorPurple,
+			},
+			{
+				Profile:     "truenorth",
+				ProfileID:   "oscal_truenorth_profile",
+				Description: "TrueNorth custom OSCAL profile (exceeds all other standards)",
+				Color:       ColorWhite,
+			},
+		}
 	}
 
 	// If purge flag is set, remove existing scan results
@@ -195,7 +247,7 @@ func main() {
 				runTrueNorthScan(&results[idx], oscalDir)
 			} else {
 				// For all other profiles, run an oscap scan
-				runOscapScan(&results[idx], oscalDir, *scapContentPath)
+				runOscapScan(&results[idx], oscalDir, *scapContentPath, *verbose)
 			}
 
 		}(i)
@@ -346,7 +398,7 @@ func checkExistingScans(profiles []OscalScan, oscalDir string) {
 	}
 }
 
-func runOscapScan(profile *OscalScan, oscalDir string, scapContentFile string) {
+func runOscapScan(profile *OscalScan, oscalDir string, scapContentFile string, verbose bool) {
 	profile.Results.StartTime = time.Now() // Initialize StartTime early
 
 	fmt.Printf("%s=== Running OSCAL scan for profile: %s ===%s\n",
@@ -445,6 +497,15 @@ func runOscapScan(profile *OscalScan, oscalDir string, scapContentFile string) {
 			profile.Results.Total = counts["total"]
 		} else {
 			fmt.Printf("%sProfile [%s]: Warning - could not parse result counts from %s.%s\n", ColorYellow, profile.Profile, filepath.Base(resultsFile), ColorReset)
+		}
+
+		// --- Stylized per-control progress bar (verbose only) ---
+		if verbose {
+			controls, err := extractControlsVerbose(resultsFile)
+			if err == nil && len(controls) > 0 {
+				fmt.Printf("%s\nListing all tested controls (verbose):%s\n", ColorCyan, ColorReset)
+				printControlVerbose(controls)
+			}
 		}
 
 		fmt.Printf("%sProfile [%s]: Converting %s to JSON (%s)...%s\n", profile.Color, profile.Profile, filepath.Base(resultsFile), filepath.Base(jsonFile), ColorReset)
@@ -578,6 +639,55 @@ func runTrueNorthScan(profile *OscalScan, oscalDir string) {
 		profile.Color, profile.Results.ExitCode, ColorReset)
 }
 
+// Add this function for verbose per-control output
+func printControlVerbose(controls []ControlVerbose) {
+	for _, c := range controls {
+		color := ColorWhite
+		icon := "•"
+		switch strings.ToLower(c.Result) {
+		case "pass":
+			color = ColorGreen
+			icon = "✓"
+		case "fail":
+			color = ColorRed
+			icon = "✗"
+		case "notapplicable":
+			color = ColorYellow
+			icon = "!"
+		}
+		fmt.Printf("%s%s %s%-12s%s [%s] %s\n", color, icon, ColorBold, c.ID, ColorReset, strings.ToUpper(c.Result), c.Time)
+		desc := c.Description
+		if desc == "" {
+			desc = "(no description)"
+		}
+		details := c.Details
+		if details == "" {
+			details = "(no details)"
+		}
+		// Show reason for notapplicable if present in details/message
+		reason := ""
+		if strings.ToLower(c.Result) == "notapplicable" && details != "" {
+			reason = fmt.Sprintf("Reason: %s", details)
+		}
+		fmt.Printf("    %s\n", desc)
+		if reason != "" {
+			fmt.Printf("    %s%s%s\n", ColorYellow, reason, ColorReset)
+		} else if details != "" && details != "(no details)" {
+			fmt.Printf("    Details: %s\n", details)
+		}
+	}
+	fmt.Print("\n")
+}
+
+// Helper to trim description for display
+func trimToLen(s string, n int) string {
+	r := []rune(s)
+	if len(r) > n {
+		return string(r[:n-3]) + "..."
+	}
+	return s
+}
+
 func parseResultCounts(xmlFile string) map[string]int {
 	data, err := os.ReadFile(xmlFile)
 	if err != nil {
@@ -644,22 +754,24 @@ func convertXMLtoJSON(xmlFile, jsonFile string) {
 }
 
 func convertXMLtoMarkdown(xmlFile, markdownFile string, profile *OscalScan) {
-	_, err := os.ReadFile(xmlFile) // Check if file is readable, content not directly used here if parseResultCounts reads it again
+	controls, err := extractControlsVerbose(xmlFile)
 	if err != nil {
-		fmt.Printf("%sError reading XML file %s for Markdown conversion: %v%s\n", ColorRed, xmlFile, err, ColorReset)
+		fmt.Printf("%sError extracting controls for Markdown: %v%s\n", ColorRed, err, ColorReset)
 		return
 	}
-	// Simplified approach to generate Markdown
-	// A more robust solution would properly parse the XML schema
 	counts := parseResultCounts(xmlFile)
 	if counts == nil {
 		return
 	}
 
-	md := fmt.Sprintf("# OSCAL Scan Results for %s Profile\n\n", profile.Profile)
-	md += fmt.Sprintf("**Scan Date:** %s\n\n", time.Now().Format("2006-01-02 15:04:05"))
-	md += fmt.Sprintf("**Description:** %s\n\n", profile.Description)
-	md += "## Summary\n\n"
+	// Branding and summary
+	md := ""
+	md += "![True North Insights](https://jeffreysanford.us/assets/branding/logo.png)\n\n"
+	md += "# 🛡️ True North Insights: OSCAL Scan Results\n\n"
+	md += "**Profile:** `" + profile.Profile + "`  \n"
+	md += "**Description:** " + profile.Description + "  \n"
+	md += "**Scan Date:** " + time.Now().Format("2006-01-02 15:04:05") + "\n\n"
+	md += "## 📊 Summary Table\n\n"
 	md += "| Metric | Count |\n"
 	md += "|--------|-------|\n"
 	md += fmt.Sprintf("| Passed | %d |\n", counts["pass"])
@@ -667,18 +779,95 @@ func convertXMLtoMarkdown(xmlFile, markdownFile string, profile *OscalScan) {
 	md += fmt.Sprintf("| Not Applicable | %d |\n", counts["notapplicable"])
 	md += fmt.Sprintf("| Errors | %d |\n", counts["error"])
 	md += fmt.Sprintf("| **Total** | **%d** |\n\n", counts["total"])
-
-	// Add pass rate percentage
 	if counts["total"] > 0 {
 		passRate := float64(counts["pass"]) / float64(counts["total"]) * 100
-		md += fmt.Sprintf("**Pass Rate:** %.1f%%\n\n", passRate)
+		md += fmt.Sprintf("**Pass Rate:** <span style=\"color:limegreen;font-weight:bold;\">%.1f%%</span>\n\n", passRate)
 	}
 
-	// TODO: Extract more details from XML if needed
+	// Explain report format
+	md += "## 📄 About This Report\n"
+	md += "This report lists all security controls tested in this OSCAL scan. Each control includes:\n"
+	md += "- **ID**: Control identifier\n"
+	md += "- **Usage**: What the control checks\n"
+	md += "- **Description**: Details about the control\n"
+	md += "- **Result**: Pass/Fail/Not Applicable\n"
+	md += "- **Time**: Time taken for this control (if available)\n"
+	md += "- **Details**: Extra information or evidence\n\n"
 
+	// Infographic (ASCII bar)
+	md += "### Infographic: Control Results\n"
+	md += "```text\n"
+	md += fmt.Sprintf("Passed:   %s\n", strings.Repeat("█", counts["pass"]))
+	md += fmt.Sprintf("Failed:   %s\n", strings.Repeat("█", counts["fail"]))
+	md += fmt.Sprintf("N/A:      %s\n", strings.Repeat("█", counts["notapplicable"]))
+	md += "```\n\n"
+
+	// Expanded controls section
+	md += "## 🔍 Detailed Control Results\n\n"
+	md += "| ID | Usage | Description | Result | Time | Details |\n"
+	md += "|----|-------|-------------|--------|------|---------|\n"
+	for _, c := range controls {
+		resultColor := "🟢"
+		if c.Result == "fail" {
+			resultColor = "🔴"
+		} else if c.Result == "notapplicable" {
+			resultColor = "🟡"
+		}
+		md += fmt.Sprintf("| `%s` | %s | %s | %s %s | %s | %s |\n",
+			c.ID, c.Usage, c.Description, resultColor, strings.ToUpper(c.Result), c.Time, c.Details)
+	}
+
+	// Save to file
 	if err := os.WriteFile(markdownFile, []byte(md), 0644); err != nil {
 		fmt.Printf("%sError writing Markdown report to %s: %v%s\n", ColorRed, markdownFile, err, ColorReset)
 	}
+}
+
+// ControlVerbose holds detailed info for each control
+type ControlVerbose struct {
+	ID          string
+	Usage       string
+	Description string
+	Result      string
+	Time        string
+	Details     string
+}
+
+// extractControlsVerbose parses the XML and returns a slice of ControlVerbose
+func extractControlsVerbose(xmlFile string) ([]ControlVerbose, error) {
+	data, err := os.ReadFile(xmlFile)
+	if err != nil {
+		return nil, err
+	}
+	type RuleResult struct {
+		ID          string `xml:"idref,attr"`
+		Result      string `xml:"result"`
+		Time        string `xml:"time"`
+		Description string `xml:"description"`
+		Message     string `xml:"check>message"`
+	}
+	type TestResult struct {
+		RuleResults []RuleResult `xml:"rule-result"`
+	}
+	type Benchmark struct {
+		TestResult TestResult `xml:"TestResult"`
+	}
+	var bench Benchmark
+	if err := xml.Unmarshal(data, &bench); err != nil {
+		return nil, err
+	}
+	var controls []ControlVerbose
+	for _, r := range bench.TestResult.RuleResults {
+		controls = append(controls, ControlVerbose{
+			ID:          r.ID,
+			Usage:       "See description", // Usage can be improved if available in XML
+			Description: r.Description,
+			Result:      r.Result,
+			Time:        r.Time,
+			Details:     r.Message,
+		})
+	}
+	return controls, nil
 }
 
 func generateSummaryReport(results []OscalScan, oscalDir string) {

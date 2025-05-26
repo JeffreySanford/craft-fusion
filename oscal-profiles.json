@@ -1,0 +1,39 @@
+{
+  "profiles": [
+    {
+      "name": "standard",
+      "description": "Baseline security (recommended for most)",
+      "id": "xccdf_org.ssgproject.content_profile_standard"
+    },
+    {
+      "name": "ospp",
+      "description": "Protection Profile for General Purpose Operating Systems",
+      "id": "xccdf_org.ssgproject.content_profile_ospp"
+    },
+    {
+      "name": "pci-dss",
+      "description": "Payment Card Industry Data Security Standard",
+      "id": "xccdf_org.ssgproject.content_profile_pci-dss"
+    },
+    {
+      "name": "cusp",
+      "description": "Custom User Security Profile (Fedora-specific)",
+      "id": "xccdf_org.ssgproject.content_profile_cusp_fedora"
+    },
+    {
+      "name": "medium-high",
+      "description": "FedRAMP Rev5 Medium/High (pre-release, forward compatible)",
+      "id": "xccdf_org.ssgproject.content_profile_PLACEHOLDER_medium_high"
+    },
+    {
+      "name": "rev5",
+      "description": "FedRAMP Rev5, new standard - not yet officially defined (2025)",
+      "id": "xccdf_org.ssgproject.content_profile_PLACEHOLDER_rev5"
+    },
+    {
+      "name": "truenorth",
+      "description": "TrueNorth custom OSCAL profile (exceeds all other standards)",
+      "id": "oscal_truenorth_profile"
+    }
+  ]
+}

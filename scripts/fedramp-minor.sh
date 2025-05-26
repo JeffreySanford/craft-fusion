@@ -2,7 +2,22 @@
 # fedramp-minor.sh - Run all OSCAL/FedRAMP OpenSCAP scans (all profiles) and ensure reports are user-readable
 
 
-PROFILES=(standard ospp pci-dss cusp medium-high rev5 truenorth) # 'truenorth' exceeds all standards
+# === Load available OSCAL profiles from local JSON ===
+OSCAL_PROFILES_JSON="$SCRIPT_DIR/../oscal-profiles.json"
+PROFILES=()
+if [ -f "$OSCAL_PROFILES_JSON" ]; then
+  if command -v jq &>/dev/null; then
+    mapfile -t PROFILES < <(jq -r '.profiles[].name' "$OSCAL_PROFILES_JSON")
+    echo -e "${BOLD}${CYAN}Loaded profiles from oscal-profiles.json:${NC} ${PROFILES[*]}"
+  else
+    echo -e "${YELLOW}jq not installed, falling back to default profiles.${NC}"
+    PROFILES=(standard ospp pci-dss cusp medium-high rev5 truenorth)
+  fi
+else
+  echo -e "${YELLOW}oscal-profiles.json not found, using default profiles.${NC}"
+  PROFILES=(standard ospp pci-dss cusp medium-high rev5 truenorth)
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 OSCAL_DIR="$SCRIPT_DIR/../oscal-analysis"
 
@@ -34,7 +49,7 @@ echo -e "${WHITE}This will run standard, ospp, pci-dss, cusp, medium-high, rev5,
 echo
 
 # === Actionable OSCAL Scans Summary ===
-OSCAL_PROFILES_TO_CHECK=(standard ospp pci-dss cusp medium-high rev5 truenorth) # 'truenorth' included
+OSCAL_PROFILES_TO_CHECK=("${PROFILES[@]}")
 OSCAL_MAX_AGE_DAYS=7
 actionable_scans_display=()
 all_scans_ok=true
@@ -277,9 +292,13 @@ fi
 
 # Purge option: remove all OSCAL scan result XML files and clean the archive directory
 PURGE=false
+VERBOSE=false
 for arg in "$@"; do
   if [ "$arg" == "--purge" ]; then
     PURGE=true
+  fi
+  if [ "$arg" == "--verbose" ]; then
+    VERBOSE=true
   fi
 done
 
@@ -295,6 +314,41 @@ if [ "$PURGE" = true ]; then
     echo -e "${GREEN}✓ Archive cleaned${NC}"
   fi
   echo -e "${GREEN}✓ OSCAL scan results purged${NC}"
+fi
+
+# === FETCH AVAILABLE OSCAL PROFILES FROM REMOTE ===
+REMOTE_PROFILE_URL="https://raw.githubusercontent.com/jeffreysanford/craft-fusion-profiles/main/oscal-profiles.json"
+TMP_PROFILE_JSON="/tmp/oscal-profiles.json"
+
+echo -e "${BOLD}${CYAN}🌐 Fetching available OSCAL profiles from remote...${NC}"
+if curl -fsSL "$REMOTE_PROFILE_URL" -o "$TMP_PROFILE_JSON"; then
+  echo -e "${GREEN}✓ Profiles fetched from $REMOTE_PROFILE_URL${NC}"
+  # Parse and display as a vibrant table
+  if command -v jq &>/dev/null; then
+    echo -e "${BOLD}${CYAN}Available OSCAL Profiles:${NC}"
+    printf "${WHITE}%-18s %-40s %-20s${NC}\n" "Profile" "Description" "ID"
+    jq -r '.profiles[] | @sh "\(.name)::::\(.description)::::\(.id)"' "$TMP_PROFILE_JSON" | \
+    while IFS="::::" read -r name desc id; do
+      # Colorize based on profile name
+      COLOR="$GREEN"
+      [[ "$name" == *"ospp"* ]] && COLOR="$CYAN"
+      [[ "$name" == *"pci"* ]] && COLOR="$YELLOW"
+      [[ "$name" == *"cusp"* ]] && COLOR="$PURPLE"
+      [[ "$name" == *"medium-high"* ]] && COLOR="$BLUE"
+      [[ "$name" == *"rev5"* ]] && COLOR="$MAGENTA"
+      [[ "$name" == *"truenorth"* ]] && COLOR="$WHITE"
+      printf "${COLOR}%-18s %-40s %-20s${NC}\n" "$name" "$desc" "$id"
+    done
+    echo
+    echo -e "${CYAN}To use a profile, pass its name as an argument to the scanner or scripts.${NC}"
+  else
+    echo -e "${YELLOW}jq not installed, cannot pretty-print profiles. Raw JSON:${NC}"
+    cat "$TMP_PROFILE_JSON"
+  fi
+else
+  echo -e "${RED}✗ Failed to fetch remote profiles (404 Not Found).${NC}"
+  echo -e "${YELLOW}Check if the file exists at: $REMOTE_PROFILE_URL${NC}"
+  echo -e "${YELLOW}Continuing with local default profiles.${NC}"
 fi
 
 for profile in "${PROFILES[@]}"; do
@@ -321,9 +375,15 @@ for profile in "${PROFILES[@]}"; do
   print_progress "Scan: $profile" "$PROFILE_ESTIMATE_SECONDS" "$phase_start_time" "$PROGRESS_COLOR" &
   progress_pid=$!
 
+  # Pass --verbose if set
+  VERBOSE_ARG=""
+  if [ "$VERBOSE" = true ]; then
+    VERBOSE_ARG="--verbose"
+  fi
+
   # Run the scan and capture its exit code.
   # The 'if' structure handles 'set -e' correctly by not exiting immediately on non-zero.
-  if sudo "$SCRIPT_DIR/fedramp-oscal.sh" "$profile" --no-summary; then
+  if sudo "$SCRIPT_DIR/fedramp-oscal.sh" "$profile" --no-summary $VERBOSE_ARG; then
     oscal_script_exit_code=0
   else
     oscal_script_exit_code=$?

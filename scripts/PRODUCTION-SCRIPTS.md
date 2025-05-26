@@ -19,6 +19,33 @@
 - `wss-setup.sh` - WebSocket Secure setup
 - `system-optimize.sh` - VPS optimization
 
+## OSCAL/FedRAMP Go Scanner
+
+> **Note:**  
+> If you update `scripts/oscal-scanner.go`, you must rebuild the binary before running it:
+>
+> ```bash
+> cd scripts
+> go build -o oscal-scanner oscal-scanner.go
+> ```
+> This will produce an executable `oscal-scanner` (or `oscal-scanner.exe` on Windows) in the `scripts/` directory.
+>
+> **Puppeteer Browser Dependency:**  
+> For PDF/Markdown export, Puppeteer's Chrome browser must be installed.  
+> You can add the following to your project setup:
+>
+> - **Option 1:** Add a postinstall script to your root `package.json`:
+>   ```json
+>   "scripts": {
+>     "postinstall": "npx puppeteer browsers install chrome"
+>   }
+>   ```
+> - **Option 2:** Run manually after `npm install`:
+>   ```bash
+>   npx puppeteer browsers install chrome
+>   ```
+> - **Note:** If running as root or with `sudo`, ensure the correct cache directory permissions (see script output for guidance).
+
 ## Archived Scripts
 
 Experimental and completed scripts have been moved to `scripts/archive/`:

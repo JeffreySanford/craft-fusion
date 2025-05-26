@@ -271,31 +271,29 @@ if [ $oscap_status -eq 0 ] || [ $oscap_status -eq 2 ]; then # 0 for success, 2 f
     echo -e "${BOLD}${CYAN}\nFedRAMP OSCAL Control Results:${NC}"
     echo -e "${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}  ${YELLOW}N/A: $NOTAPPLICABLE${NC}  ${WHITE}Other: $OTHER${NC}  ${WHITE}Total: $TOTAL${NC}"
     # Print a vibrant progress bar for each control
-    xmllint --xpath '//rule-result' "$RESULTS" 2>/dev/null | \
-      grep -oP '<rule-result[\s\S]*?</rule-result>' | \
-      while read -r rule; do
-        TITLE=$(echo "$rule" | grep -oP 'idref="[^"]+"' | cut -d'"' -f2)
-        RESULT=$(echo "$rule" | grep -oP '<result>[^<]+</result>' | sed 's/<\/?result>//g')
-        COLOR="$WHITE"; BAR_COLOR="$WHITE"; ICON="·"
-        REASON_MSG=""
-
-        if [ "$RESULT" = "pass" ]; then COLOR="$GREEN"; BAR_COLOR="$GREEN"; ICON="✓"; fi
-        if [ "$RESULT" = "fail" ]; then COLOR="$RED"; BAR_COLOR="$RED"; ICON="✗"; fi
-        if [ "$RESULT" = "notapplicable" ]; then
-          COLOR="$YELLOW"; BAR_COLOR="$YELLOW"; ICON="!"
-          # Attempt to extract reason for notapplicable from the <message> within <check>
-          REASON_MSG=$(echo "$rule" | xmllint --xpath 'string(check/message/text())' - 2>/dev/null)
-          if [ -n "$REASON_MSG" ]; then
-            REASON_MSG=" (${YELLOW}Reason: $REASON_MSG${NC})" # Color the reason
+    if [ "$VERBOSE" = true ]; then
+      xmllint --xpath '//rule-result' "$RESULTS" 2>/dev/null | \
+        grep -oP '<rule-result[\s\S]*?</rule-result>' | \
+        while read -r rule; do
+          TITLE=$(echo "$rule" | grep -oP 'idref="[^"]+"' | cut -d'"' -f2)
+          RESULT=$(echo "$rule" | grep -oP '<result>[^<]+</result>' | sed 's/<\/\?result>//g')
+          TIME=$(echo "$rule" | grep -oP '<time>[^<]+</time>' | sed 's/<\/\?time>//g')
+          DESC=$(echo "$rule" | grep -oP '<description>[^<]+</description>' | sed 's/<\/\?description>//g')
+          DETAILS=$(echo "$rule" | xmllint --xpath 'string(check/message/text())' - 2>/dev/null)
+          COLOR="$WHITE"; ICON="•"
+          if [ "$RESULT" = "pass" ]; then COLOR="$GREEN"; ICON="✓"; fi
+          if [ "$RESULT" = "fail" ]; then COLOR="$RED"; ICON="✗"; fi
+          if [ "$RESULT" = "notapplicable" ]; then COLOR="$YELLOW"; ICON="!"; fi
+          printf "%b%s %b%-12s%b [%s] %s\n" "$COLOR" "$ICON" "$BOLD" "$TITLE" "$NC" "$RESULT" "$TIME"
+          printf "    %s\n" "$DESC"
+          if [ "$RESULT" = "notapplicable" ] && [ -n "$DETAILS" ]; then
+            printf "    ${YELLOW}Reason: %s${NC}\n" "$DETAILS"
+          elif [ -n "$DETAILS" ]; then
+            printf "    Details: %s\n" "$DETAILS"
           fi
-        fi
-        printf "%b%-40s %b%-15s%b%b" "$COLOR" "$TITLE" "$BAR_COLOR" "$RESULT" "$NC" "$REASON_MSG"
-        # Progress bar: pass=full green, fail=full red, notapplicable=yellow
-        if [ "$RESULT" = "pass" ]; then printf " [${GREEN}████████${NC}] "; fi
-        if [ "$RESULT" = "fail" ]; then printf " [${RED}████████${NC}] "; fi
-        if [ "$RESULT" = "notapplicable" ]; then printf " [${YELLOW}████████${NC}] "; fi
-        printf "%b\n" "$NC"
-      done
+        done
+      echo
+    fi
 else
   echo -e "${RED}✗ OpenSCAP scan failed (oscap exit code: $oscap_status).${NC}"
 fi

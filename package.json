@@ -24,7 +24,8 @@
     "nginx:restart": "sudo systemctl restart nginx",
     "nginx:status": "sudo systemctl status nginx",
     "nginx:logs": "sudo tail -f /var/log/nginx/access.log",
-    "deploy:full": "npm run pm2:build && npm run deploy:frontend && npm run pm2:restart"
+    "deploy:full": "npm run pm2:build && npm run deploy:frontend && npm run pm2:restart",
+    "postinstall": "npx puppeteer browsers install chrome"
   },
   "dependencies": {
     "@angular/animations": "^19.1.0",
