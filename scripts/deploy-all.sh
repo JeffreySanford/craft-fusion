@@ -216,7 +216,10 @@ fi
 
 # After npm ci and before Nx pre-check, add post-install progress and verbosity
 if [ -d node_modules/nx ]; then
-  echo -e "${CYAN}Running Nx post-install script with verbose output...${NC}"
+  echo -e "${BOLD}${CYAN}\n═══════════════════════════════════════════════════════════════════════════════"
+  echo -e "🚦 Starting Nx post-install process. This may take a while."
+  echo -e "═══════════════════════════════════════════════════════════════════════════════${NC}"
+  sleep 2
   POST_INSTALL_ESTIMATE_SECONDS=60
   phase_start_time=$(date +%s)
   print_progress "Nx Post-Install" "$POST_INSTALL_ESTIMATE_SECONDS" "$phase_start_time" &
@@ -244,7 +247,7 @@ if [ -d node_modules/nx ]; then
     echo -e "${GREEN}✓ Nx post-install completed successfully${NC}"
   else
     echo -e "${RED}✗ Nx post-install failed (exit code $post_install_status)${NC}"
-    echo -e "${YELLOW}See nx-post-install.log for details.${NC}"
+    echo -e "${YELLOW}See nx-post-install.log for details. You can run 'cat nx-post-install.log' to view the full output and errors.${NC}"
     exit 1
   fi
 fi
