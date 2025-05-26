@@ -593,9 +593,6 @@ while true; do
     echo
     echo -e "${BOLD}${CYAN}📈 System Health Summary:${NC}"
     
-    echo
-    echo -e "${BOLD}${CYAN}📈 System Health Summary:${NC}"
-    
     # Memory pressure
     if [ $mem_available -lt 200 ]; then
         echo -e "   Memory:    ${RED}🔥 HIGH PRESSURE - System may slow down${NC}"
