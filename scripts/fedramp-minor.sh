@@ -225,6 +225,10 @@ copy_scan_reports() {
     fi
 }
 
+# Ensure Puppeteer browser is installed and cache dir is set for PDF export
+export PUPPETEER_CACHE_DIR=C:/Users/jeffrey/.cache/puppeteer
+npx puppeteer browsers install chrome
+
 for profile in "${PROFILES[@]}"; do
   echo -e "${BOLD}${CYAN}=== Running OSCAL scan for profile: $profile ===${NC}"
 
@@ -297,6 +301,8 @@ for profile in "${PROFILES[@]}"; do
   if [ "$profile" = "truenorth" ]; then
     if command -v node >/dev/null 2>&1; then
       echo -e "${CYAN}Exporting all OSCAL HTML reports to PDF and Markdown...${NC}"
+      export PUPPETEER_CACHE_DIR=C:/Users/jeffrey/.cache/puppeteer
+      npx puppeteer browsers install chrome
       node "$SCRIPT_DIR/../tools/oscal-export.js"
     else
       echo -e "${YELLOW}Node.js not found, skipping PDF/Markdown export.${NC}"

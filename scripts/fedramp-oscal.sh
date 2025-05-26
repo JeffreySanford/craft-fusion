@@ -242,6 +242,9 @@ if [ $oscap_status -eq 0 ] || [ $oscap_status -eq 2 ]; then # 0 for success, 2 f
     # --- PDF/Markdown Export ---
     if command -v node >/dev/null 2>&1; then
       echo -e "${CYAN}Exporting OSCAL report to PDF and Markdown...${NC}"
+      # Ensure Puppeteer browser is installed and cache dir is set for PDF export
+      export PUPPETEER_CACHE_DIR=C:/Users/jeffrey/.cache/puppeteer
+      npx puppeteer browsers install chrome
       node "$(dirname "$0")/../tools/oscal-export.js"
     else
       echo -e "${YELLOW}Node.js not found, skipping PDF/Markdown export.${NC}"
