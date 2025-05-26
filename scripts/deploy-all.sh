@@ -334,7 +334,9 @@ if [ ! -d node_modules/@nrwl ] && [ ! -d node_modules/nx ]; then
 fi
 
 step_header "Phase 0: FedRAMP OSCAL Compliance Scan (Optional)"
-read -p "Run a FedRAMP OSCAL scan before deployment? (y/N): " -n 1 -r
+echo
+echo -e "${YELLOW}You have 10 seconds to respond. The OSCAL scan will run automatically if no input is given.${NC}"
+read -t 10 -p "Run a FedRAMP OSCAL scan before deployment? (y/N): " -n 1 -r REPLY || REPLY="y"
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     OSCAL_ESTIMATE_SECONDS=300 # 5 minutes

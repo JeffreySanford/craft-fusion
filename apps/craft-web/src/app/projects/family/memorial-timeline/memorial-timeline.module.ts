@@ -27,7 +27,16 @@ import { MemorialTimelineComponent } from './components/memorial-timeline/memori
     MatCardModule,
     MatIconModule,
     MatButtonModule,
-    MatProgressSpinnerModule // Added for mat-spinner
+    MatProgressSpinnerModule,
+    RouterModule.forChild([
+      { path: '', component: TimelinePageComponent },
+      { path: 'memorial-timeline', component: MemorialTimelineComponent },
+      { path: 'memorial-timeline/:id', component: MemorialTimelineComponent },
+      { path: 'timeline-item', component: MemorialTimelineComponent },
+      { path: 'timeline-list', component: TimelineListComponent },
+      { path: 'timeline-page', component: TimelinePageComponent },
+      { path: '**', redirectTo: '' }
+    ]),
   ],
   exports: [
     TimelinePageComponent,
