@@ -1,6 +1,6 @@
 @use 'variables' as vars;
 @use 'sass:map';
-@use '@angular/material/core' as mat;
+@use '@angular/material/theming' as mat;
 
 // Import Google Fonts (MD3 recommends Roboto Flex plus our book-specific fonts)
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:wght@300;400;500;700&family=Merriweather:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Source+Sans+Pro:wght@300;400;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
