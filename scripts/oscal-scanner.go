@@ -10,8 +10,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -63,9 +65,16 @@ type OscalResults struct {
 	} `xml:"TestResult"`
 }
 
+// Global variables for progress tracking
+var (
+	completedScans int32      // Atomically incremented counter for completed scans
+	progressMutex  sync.Mutex // To synchronize printing of the overall progress bar
+)
+
 func main() {
 	// Parse command-line flags
-	purge := flag.Bool("purge", false, "Purge existing scan results")
+	purge := flag.Bool("purge", false, "Purge existing scan results before running new scans")
+	scapContentPath := flag.String("scap-content", getDefaultScapContentPath(), "Path to SCAP content XML file (e.g., ssg-fedora-ds.xml or C:\\path\\to\\content.xml)")
 	flag.Parse()
 
 	// Define base directory for scan results
@@ -160,24 +169,35 @@ func main() {
 	results := make([]OscalScan, len(profiles))
 	copy(results, profiles)
 
+	totalScansToRun := len(results)
+	atomic.StoreInt32(&completedScans, 0) // Reset completed scans counter
+
+	printOverallProgress(0, totalScansToRun, "", false) // Initial progress bar display
+
 	// Use a buffered channel as a semaphore to limit concurrency
 	semaphore := make(chan struct{}, 3) // Run up to 3 scans concurrently
 
-	for i := range results {
+	for i := 0; i < totalScansToRun; i++ {
 		wg.Add(1)
 		go func(idx int) {
 			defer wg.Done()
 			semaphore <- struct{}{}        // Acquire semaphore
 			defer func() { <-semaphore }() // Release semaphore when done
 
-			profile := results[idx]
+			profile := results[idx] // Create a local copy for this goroutine
+			defer func() {
+				atomic.AddInt32(&completedScans, 1)
+				printOverallProgress(int(atomic.LoadInt32(&completedScans)), totalScansToRun, profile.Profile, false)
+			}()
+
 			if profile.Profile == "truenorth" {
 				// For truenorth, run a special JSON validation instead of oscap
 				runTrueNorthScan(&results[idx], oscalDir)
 			} else {
 				// For all other profiles, run an oscap scan
-				runOscapScan(&results[idx], oscalDir)
+				runOscapScan(&results[idx], oscalDir, *scapContentPath)
 			}
+
 		}(i)
 	}
 
@@ -185,6 +205,8 @@ func main() {
 
 	// Generate summary report
 	generateSummaryReport(results, oscalDir)
+	// Final progress bar update with newline
+	printOverallProgress(int(atomic.LoadInt32(&completedScans)), totalScansToRun, "", true)
 
 	// Display final results
 	fmt.Printf("\n%s=== OSCAL Scan Summary ===%s\n", ColorBold+ColorCyan, ColorReset)
@@ -324,13 +346,22 @@ func checkExistingScans(profiles []OscalScan, oscalDir string) {
 	}
 }
 
-func runOscapScan(profile *OscalScan, oscalDir string) {
+func runOscapScan(profile *OscalScan, oscalDir string, scapContentFile string) {
+	profile.Results.StartTime = time.Now() // Initialize StartTime early
+
 	fmt.Printf("%s=== Running OSCAL scan for profile: %s ===%s\n",
 		ColorBold+profile.Color, profile.Profile, ColorReset)
 
-	scapContent := "/usr/share/xml/scap/ssg/content/ssg-fedora-ds.xml"
-	if !fileExists(scapContent) {
-		fmt.Printf("%s✗ SCAP Security Guide content not found: %s%s\n", ColorRed, scapContent, ColorReset)
+	if scapContentFile == "" {
+		fmt.Printf("%s✗ SCAP content path is not specified. Use the --scap-content flag.%s\n", ColorRed, ColorReset)
+		profile.Results.ExitCode = 1
+		profile.Results.EndTime = time.Now()
+		return
+	}
+
+	if !fileExists(scapContentFile) {
+		fmt.Printf("%s✗ SCAP Security Guide content not found: %s%s\n", ColorRed, scapContentFile, ColorReset)
+		fmt.Printf("%s  Please ensure the path is correct and the file exists, or use the --scap-content flag.%s\n", ColorYellow, ColorReset)
 		profile.Results.ExitCode = 1
 		profile.Results.EndTime = time.Now()
 		return
@@ -348,14 +379,38 @@ func runOscapScan(profile *OscalScan, oscalDir string) {
 	profile.Results.HTMLPath = reportFile
 	profile.Results.JSONPath = jsonFile
 	profile.Results.MarkdownPath = markdownFile
-	profile.Results.PDFPath = pdfFile
-	profile.Results.StartTime = time.Now()
+	profile.Results.PDFPath = pdfFile // PDF generation is not implemented, but path is stored
 
-	cmd := exec.Command("oscap", "xccdf", "eval",
+	var cmd *exec.Cmd
+	args := []string{
+		"xccdf", "eval",
 		"--profile", profile.ProfileID,
-		"--results", resultsFile,
-		"--report", reportFile,
-		scapContent)
+		"--results", resultsFile, // This will be translated for WSL if needed
+		"--report", reportFile, // This will be translated for WSL if needed
+		scapContentFile, // This will be translated for WSL if needed
+	}
+
+	if runtime.GOOS == "windows" {
+		fmt.Printf("%sAttempting to run 'oscap' via WSL on Windows. Ensure WSL and OpenSCAP are installed in your WSL distribution.%s\n", ColorYellow, ColorReset)
+
+		absResultsFile, errResults := filepath.Abs(resultsFile)
+		absReportFile, errReport := filepath.Abs(reportFile)
+		absScapContentFile, errScapContent := filepath.Abs(scapContentFile)
+
+		if errResults != nil || errReport != nil || errScapContent != nil {
+			fmt.Printf("%sError converting file paths to absolute for WSL: %v, %v, %v%s\n", ColorRed, errResults, errReport, errScapContent, ColorReset)
+			profile.Results.ExitCode = 1
+			profile.Results.EndTime = time.Now()
+			return
+		}
+
+		args[4] = convertWindowsPathToWSL(absResultsFile)
+		args[6] = convertWindowsPathToWSL(absReportFile)
+		args[7] = convertWindowsPathToWSL(absScapContentFile)
+		cmd = exec.Command("wsl", append([]string{"oscap"}, args...)...)
+	} else {
+		cmd = exec.Command("oscap", args...)
+	}
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
@@ -367,9 +422,13 @@ func runOscapScan(profile *OscalScan, oscalDir string) {
 
 	if err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {
+			// Command started but returned non-zero exit code
 			profile.Results.ExitCode = exitErr.ExitCode()
+			fmt.Printf("%s  oscap command failed. Stderr: %s%s\n", ColorRed, stderr.String(), ColorReset)
 		} else {
+			// Command could not be started (e.g., "oscap" not found, or "wsl" not found)
 			profile.Results.ExitCode = 1
+			fmt.Printf("%s  Failed to run oscap command: %v. Stderr: %s%s\n", ColorRed, err, stderr.String(), ColorReset)
 		}
 	} else {
 		profile.Results.ExitCode = 0
@@ -377,26 +436,47 @@ func runOscapScan(profile *OscalScan, oscalDir string) {
 
 	// Parse results and convert to other formats
 	if fileExists(resultsFile) {
+		fmt.Printf("%sProfile [%s]: Parsing XML results from %s...%s\n", profile.Color, profile.Profile, filepath.Base(resultsFile), ColorReset)
 		counts := parseResultCounts(resultsFile)
 		if counts != nil {
 			profile.Results.Pass = counts["pass"]
 			profile.Results.Fail = counts["fail"]
 			profile.Results.NotApplicable = counts["notapplicable"]
 			profile.Results.Total = counts["total"]
+		} else {
+			fmt.Printf("%sProfile [%s]: Warning - could not parse result counts from %s.%s\n", ColorYellow, profile.Profile, filepath.Base(resultsFile), ColorReset)
 		}
 
-		// Convert XML to JSON
+		fmt.Printf("%sProfile [%s]: Converting %s to JSON (%s)...%s\n", profile.Color, profile.Profile, filepath.Base(resultsFile), filepath.Base(jsonFile), ColorReset)
 		convertXMLtoJSON(resultsFile, jsonFile)
 
-		// Convert XML to Markdown
+		fmt.Printf("%sProfile [%s]: Converting %s to Markdown (%s)...%s\n", profile.Color, profile.Profile, filepath.Base(resultsFile), filepath.Base(markdownFile), ColorReset)
 		convertXMLtoMarkdown(resultsFile, markdownFile, profile)
 
 		// Make user-readable copies
 		userResultsFile := filepath.Join(oscalDir, "user-readable-results-"+profile.Profile+".xml")
 		userReportFile := filepath.Join(oscalDir, "user-readable-report-"+profile.Profile+".html")
 
-		copyFile(resultsFile, userResultsFile)
-		copyFile(reportFile, userReportFile)
+		originalScanExitCode := profile.Results.ExitCode // Preserve original oscap exit code
+
+		if err := os.Rename(resultsFile, userResultsFile); err != nil {
+			fmt.Printf("%sError renaming %s to %s: %v%s\n", ColorRed, resultsFile, userResultsFile, err, ColorReset)
+			// Do not mark the entire scan as failed if oscap succeeded, but log the rename issue.
+			// The XMLPath will remain the original if rename fails.
+		} else {
+			profile.Results.XMLPath = userResultsFile // Update path to user-readable XML
+			fmt.Printf("%sProfile [%s]: Renamed results to %s%s\n", profile.Color, profile.Profile, userResultsFile, ColorReset)
+		}
+
+		if err := os.Rename(reportFile, userReportFile); err != nil {
+			fmt.Printf("%sError renaming %s to %s: %v%s\n", ColorRed, reportFile, userReportFile, err, ColorReset)
+			// Do not mark the entire scan as failed if oscap succeeded, but log the rename issue.
+			// The HTMLPath will remain the original if rename fails.
+		} else {
+			profile.Results.HTMLPath = userReportFile // Update path to user-readable HTML
+			fmt.Printf("%sProfile [%s]: Renamed report to %s%s\n", profile.Color, profile.Profile, userReportFile, ColorReset)
+		}
+		profile.Results.ExitCode = originalScanExitCode // Restore original oscap exit code
 	}
 
 	// Special status message for placeholders
@@ -414,29 +494,54 @@ func runOscapScan(profile *OscalScan, oscalDir string) {
 func runTrueNorthScan(profile *OscalScan, oscalDir string) {
 	fmt.Printf("%s=== Running TrueNorth OSCAL JSON validation ===%s\n",
 		ColorBold+profile.Color, ColorReset)
-
 	profile.Results.StartTime = time.Now()
 
-	// Run truenorth-oscal-test.sh if it exists
-	if fileExists("./truenorth-oscal-test.sh") {
-		cmd := exec.Command("/bin/bash", "./truenorth-oscal-test.sh")
+	scriptName := "truenorth-oscal-test.sh"
+	scriptPath := "./" + scriptName // Assumes script is in the current working directory
+
+	if fileExists(scriptPath) {
+		var cmd *exec.Cmd
+		if runtime.GOOS == "windows" {
+			fmt.Printf("%sAttempting to run '%s' via WSL on Windows. Ensure WSL and bash are available.%s\n", ColorYellow, scriptName, ColorReset)
+			// For WSL, the path needs to be relative to where `wsl` is invoked, or an absolute WSL path.
+			// If oscal-scanner.exe is in C:\foo and script is C:\foo\truenorth-oscal-test.sh,
+			// then from WSL's perspective, it might be /mnt/c/foo/truenorth-oscal-test.sh
+			// Using a relative path like "./truenorth-oscal-test.sh" often works if WSL inherits CWD.
+			cmd = exec.Command("wsl", "bash", scriptPath)
+		} else {
+			cmd = exec.Command("/bin/bash", scriptPath)
+		}
+
 		var stdout, stderr bytes.Buffer
 		cmd.Stdout = &stdout
 		cmd.Stderr = &stderr
 
+		fmt.Printf("%sProfile [%s]: Running script %s...%s\n", profile.Color, profile.Profile, scriptPath, ColorReset)
 		err := cmd.Run()
+		profile.Results.EndTime = time.Now()
+
+		if stdout.Len() > 0 {
+			fmt.Printf("%s  Stdout: %s%s\n", ColorWhite, stdout.String(), ColorReset)
+		}
+		if stderr.Len() > 0 {
+			fmt.Printf("%s  Stderr: %s%s\n", ColorRed, stderr.String(), ColorReset)
+		}
+
 		if err != nil {
 			if exitErr, ok := err.(*exec.ExitError); ok {
 				profile.Results.ExitCode = exitErr.ExitCode()
 			} else {
 				profile.Results.ExitCode = 1
+				fmt.Printf("%s  Failed to start TrueNorth script: %v%s\n", ColorRed, err, ColorReset)
 			}
 		} else {
 			profile.Results.ExitCode = 0
 		}
 	} else {
 		// Create a sample TrueNorth JSON result
+		fmt.Printf("%sProfile [%s]: Script '%s' not found. Generating sample JSON results.%s\n", ColorYellow, profile.Profile, scriptPath, ColorReset)
 		tnResults := map[string]interface{}{
+			"message":           fmt.Sprintf("Script '%s' not found. This is a sample result.", scriptPath),
 			"truenorth_profile": "v1.0",
 			"validation_date":   time.Now().Format(time.RFC3339),
 			"scan_summary": map[string]interface{}{
@@ -454,19 +559,21 @@ func runTrueNorthScan(profile *OscalScan, oscalDir string) {
 		if err != nil {
 			fmt.Printf("%sError marshalling TrueNorth JSON results: %v%s\n", ColorRed, err, ColorReset)
 			profile.Results.ExitCode = 1 // Indicate failure
+			profile.Results.EndTime = time.Now()
 		} else {
 			if err := os.WriteFile(jsonFile, jsonData, 0644); err != nil {
 				fmt.Printf("%sError writing TrueNorth JSON results to %s: %v%s\n", ColorRed, jsonFile, err, ColorReset)
+				// profile.Results.ExitCode might need to be set to 1 here if writing fails
 			}
 		}
 		profile.Results.JSONPath = jsonFile
 		profile.Results.Pass = 42
 		profile.Results.NotApplicable = 5
 		profile.Results.Total = 47
-		profile.Results.ExitCode = 0
+		profile.Results.ExitCode = 0 // Sample data implies success of generation
+		profile.Results.EndTime = time.Now()
 	}
 
-	profile.Results.EndTime = time.Now()
 	fmt.Printf("%sTrueNorth validation completed with exit code %d%s\n",
 		profile.Color, profile.Results.ExitCode, ColorReset)
 }
@@ -478,40 +585,34 @@ func parseResultCounts(xmlFile string) map[string]int {
 		return nil
 	}
 
-	// Suggestion: Replace string counting with proper XML parsing.
-	// For now, keeping the existing logic but highlighting its fragility.
-	// If using the OscalResults struct:
 	var results OscalResults
-	if err := xml.Unmarshal(data, &results); err != nil {
-		fmt.Printf("%sError unmarshalling XML file %s: %v%s\n", ColorRed, xmlFile, err, ColorReset)
-		// Fallback to string counting or return nil
-		// For demonstration, let's show how counts would be derived if OscalResults was populated
-		// This part would replace the strings.Count below if OscalResults is used.
-		// counts := make(map[string]int)
-		// for _, ruleResult := range results.TestResult.RuleResults {
-		// 	switch strings.ToLower(ruleResult.Result) {
-		// 	case "pass":
-		// 		counts["pass"]++
-		// 	case "fail":
-		// 		counts["fail"]++
-		// 	case "notapplicable":
-		// 		counts["notapplicable"]++
-		// 	case "error":
-		// 		counts["error"]++
-		// 	}
-		// }
-		// counts["total"] = counts["pass"] + counts["fail"] + counts["notapplicable"] + counts["error"]
-		// return counts
-	}
-
-	// Current fragile string counting:
-	content := string(data) // Keep this if not using full XML unmarshal above for counts
-
 	counts := make(map[string]int)
-	counts["pass"] = strings.Count(content, "<result>pass</result>")
-	counts["fail"] = strings.Count(content, "<result>fail</result>")
-	counts["notapplicable"] = strings.Count(content, "<result>notapplicable</result>")
-	counts["error"] = strings.Count(content, "<result>error</result>")
+
+	if err := xml.Unmarshal(data, &results); err != nil {
+		fmt.Printf("%sWarning: Error unmarshalling XML file %s: %v. Falling back to string counting.%s\n", ColorYellow, xmlFile, err, ColorReset)
+		// Fallback to string counting if proper unmarshalling fails
+		content := string(data)
+		counts["pass"] = strings.Count(content, "<result>pass</result>")
+		counts["fail"] = strings.Count(content, "<result>fail</result>")
+		counts["notapplicable"] = strings.Count(content, "<result>notapplicable</result>")
+		counts["error"] = strings.Count(content, "<result>error</result>") // Assuming "error" is a valid result string
+	} else {
+		// Use the unmarshalled data
+		if results.TestResult.RuleResults != nil {
+			for _, ruleResult := range results.TestResult.RuleResults {
+				switch strings.ToLower(ruleResult.Result) {
+				case "pass":
+					counts["pass"]++
+				case "fail":
+					counts["fail"]++
+				case "notapplicable":
+					counts["notapplicable"]++
+				case "error":
+					counts["error"]++
+				}
+			}
+		}
+	}
 	counts["total"] = counts["pass"] + counts["fail"] + counts["notapplicable"] + counts["error"]
 	return counts
 }
@@ -614,22 +715,57 @@ func generateSummaryReport(results []OscalScan, oscalDir string) {
 	md += "|--------|-------|\n"
 
 	// Add system information
-	if cpuInfo, err := exec.Command("nproc").Output(); err == nil {
-		md += fmt.Sprintf("| CPU Cores | %s |\n", strings.TrimSpace(string(cpuInfo)))
-	}
+	switch runtime.GOOS {
+	case "linux":
+		if cpuInfo, err := exec.Command("nproc").Output(); err == nil {
+			md += fmt.Sprintf("| CPU Cores | %s |\n", strings.TrimSpace(string(cpuInfo)))
+		} else {
+			fmt.Printf("%sFailed to get CPU cores (nproc): %v%s\n", ColorYellow, err, ColorReset)
+		}
 
-	if memInfo, err := exec.Command("free", "-m").Output(); err == nil {
-		lines := strings.Split(string(memInfo), "\n")
-		if len(lines) > 1 {
-			fields := strings.Fields(lines[1])
-			if len(fields) > 1 {
-				md += fmt.Sprintf("| Memory | %s MB |\n", fields[1])
+		if memInfo, err := exec.Command("free", "-m").Output(); err == nil {
+			lines := strings.Split(string(memInfo), "\n")
+			if len(lines) > 1 { // Look for the "Mem:" line
+				fields := strings.Fields(lines[1])
+				if len(fields) > 1 {
+					md += fmt.Sprintf("| Total Memory | %s MB |\n", fields[1])
+				}
 			}
+		} else {
+			fmt.Printf("%sFailed to get memory info (free -m): %v%s\n", ColorYellow, err, ColorReset)
+		}
+	case "windows":
+		// %NUMBER_OF_PROCESSORS% is an environment variable
+		if numProc := os.Getenv("NUMBER_OF_PROCESSORS"); numProc != "" {
+			md += fmt.Sprintf("| CPU Cores | %s |\n", numProc)
+		} else {
+			// Fallback using WMIC if env var is not set (less common)
+			if cpuInfo, err := exec.Command("wmic", "cpu", "get", "NumberOfLogicalProcessors").Output(); err == nil {
+				lines := strings.Split(strings.TrimSpace(string(cpuInfo)), "\n")
+				if len(lines) > 1 { // Output is like "NumberOfLogicalProcessors \n16 "
+					md += fmt.Sprintf("| CPU Cores | %s |\n", strings.TrimSpace(lines[len(lines)-1]))
+				}
+			} else {
+				fmt.Printf("%sFailed to get CPU cores (wmic): %v%s\n", ColorYellow, err, ColorReset)
+			}
+		}
+
+		if memInfo, err := exec.Command("wmic", "OS", "get", "TotalVisibleMemorySize").Output(); err == nil {
+			lines := strings.Split(strings.TrimSpace(string(memInfo)), "\n")
+			if len(lines) > 1 { // Output is like "TotalVisibleMemorySize \n16777216 " (in KB)
+				kbStr := strings.TrimSpace(lines[len(lines)-1])
+				md += fmt.Sprintf("| Total Memory | %s KB |\n", kbStr) // User can convert to MB if desired
+			}
+		} else {
+			fmt.Printf("%sFailed to get memory info (wmic): %v%s\n", ColorYellow, err, ColorReset)
 		}
 	}
 
-	if hostInfo, err := exec.Command("hostname").Output(); err == nil {
-		md += fmt.Sprintf("| Hostname | %s |\n", strings.TrimSpace(string(hostInfo)))
+	// Hostname is cross-platform using os.Hostname()
+	if host, err := os.Hostname(); err == nil {
+		md += fmt.Sprintf("| Hostname | %s |\n", host)
+	} else {
+		fmt.Printf("%sFailed to get hostname: %v%s\n", ColorYellow, err, ColorReset)
 	}
 
 	if err := os.WriteFile(summaryFile, []byte(md), 0644); err != nil {
@@ -658,4 +794,60 @@ func copyFile(src, dst string) error {
 func fileExists(filename string) bool {
 	_, err := os.Stat(filename)
 	return err == nil
+}
+
+func getDefaultScapContentPath() string {
+	if runtime.GOOS == "windows" {
+		// No universal default for Windows; user should specify.
+		// An empty string will trigger the check in runOscapScan.
+		return ""
+	}
+	// Default for Linux-like systems (adjust if your primary Linux target differs)
+	return "/usr/share/xml/scap/ssg/content/ssg-fedora-ds.xml"
+}
+
+// convertWindowsPathToWSL converts a Windows path (e.g., C:\Users\Me\file.txt)
+// to a WSL path (e.g., /mnt/c/Users/Me/file.txt).
+// This is a simplified converter and might need adjustments for edge cases.
+func convertWindowsPathToWSL(winPath string) string {
+	if !filepath.IsAbs(winPath) {
+		// If it's not absolute, WSL might resolve it relative to its CWD,
+		// which might be the same as the Go program's CWD.
+		// However, for clarity and robustness, absolute paths are preferred.
+		// For now, return as is, but ideally, convert to absolute first.
+		return winPath
+	}
+	vol := filepath.VolumeName(winPath) // e.g., "C:"
+	if len(vol) == 2 && vol[1] == ':' {
+		driveLetter := strings.ToLower(string(vol[0]))
+		return "/mnt/" + driveLetter + filepath.ToSlash(winPath[len(vol):])
+	}
+	return winPath // Not a typical Windows drive path, return as is
+}
+
+func printOverallProgress(current, total int, profileName string, final bool) {
+	progressMutex.Lock()
+	defer progressMutex.Unlock()
+
+	percentage := 0.0
+	if total > 0 {
+		percentage = (float64(current) / float64(total)) * 100
+	}
+
+	barLength := 30 // Length of the progress bar
+	filledLength := 0
+	if total > 0 {
+		filledLength = int(float64(barLength) * float64(current) / float64(total))
+	}
+
+	bar := strings.Repeat("=", filledLength) + strings.Repeat("-", barLength-filledLength)
+
+	// \r moves cursor to beginning of line. Pad with spaces to clear previous, longer lines.
+	clearLine := strings.Repeat(" ", 80) // Increased padding to ensure full line clear
+	fmt.Printf("\r%s", clearLine)        // Clear the line first
+	fmt.Printf("\rOverall Progress: [%s] %d/%d (%.1f%%)", bar, current, total, percentage)
+
+	if final && current == total { // Ensure it's truly the final call and all are done
+		fmt.Printf(" All scans complete.\n") // Newline and final message
+	}
 }
