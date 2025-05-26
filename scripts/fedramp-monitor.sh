@@ -142,6 +142,13 @@ while true; do
         printf "   Report: ${CYAN}%s${NC}\n" "$current_profile_report_file"
         printf "   Report last modified: %s${NC}\n" "$(stat -c '%y' "$current_profile_result_file")"
         printf "   Local date/time: ${WHITE}%s${NC}\n" "$(date)"
+        # Show human readable date/time in SFO (America/Los_Angeles)
+        if command -v date >/dev/null 2>&1; then
+          local_time_sfo=$(TZ=America/Los_Angeles date -d "$(stat -c '%y' \"$current_profile_result_file\")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
+          printf "   Local date/time: ${WHITE}%s${NC}\n" "$local_time_sfo"
+        else
+          printf "   Local date/time: ${WHITE}%s${NC}\n" "$(stat -c '%y' \"$current_profile_result_file\")"
+        fi
         if command -v xmllint &>/dev/null; then
           # Use more robust XPath and add notapplicable
           TOTAL_XPATH="count(//rule-result)"
