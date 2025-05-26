@@ -226,8 +226,11 @@ copy_scan_reports() {
 }
 
 # Ensure Puppeteer browser is installed and cache dir is set for PDF export
-export PUPPETEER_CACHE_DIR=C:/Users/jeffrey/.cache/puppeteer
-npx puppeteer browsers install chrome
+export PUPPETEER_CACHE_DIR="$HOME/.cache/puppeteer"
+if ! npx puppeteer browsers install chrome; then
+  echo -e "${RED}✗ Puppeteer browser install failed. Check PUPPETEER_CACHE_DIR and permissions.${NC}"
+  exit 1
+fi
 
 # Purge option: remove all OSCAL scan result XML files and clean the archive directory
 PURGE=false
