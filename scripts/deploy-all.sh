@@ -67,12 +67,27 @@ print_progress() {
 cleanup_progress_line() { [ -t 1 ] && printf "\r\033[K"; }
 
 # Parse arguments
+POWER_MODE=false
 do_full_clean=false
 for arg in "$@"; do
   if [ "$arg" == "--full-clean" ]; then
     do_full_clean=true
   fi
+  if [ "$arg" == "--power" ]; then
+    POWER_MODE=true
+  fi
 done
+
+if [ "$POWER_MODE" = true ]; then
+  echo -e "${YELLOW}⚡ Power mode enabled: maximizing resource usage for deployment!${NC}"
+  export NODE_OPTIONS="--max-old-space-size=2048"
+  export NX_DAEMON=false
+  export POWER_NICE="nice -n -20 ionice -c2 -n0"
+else
+  export POWER_NICE=""
+  export NODE_OPTIONS="--max-old-space-size=512"
+  export NX_CACHE_DIRECTORY="/tmp/nx-cache"
+fi
 
 echo -e "${BOLD}${WHITE}=== Craft Fusion Complete Deployment Started ===${NC}"
 
@@ -81,10 +96,6 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 echo -e "${BLUE}Project root: $PROJECT_ROOT${NC}"
 cd "$PROJECT_ROOT"
-
-# Memory optimization settings
-export NODE_OPTIONS="--max-old-space-size=512"
-export NX_CACHE_DIRECTORY="/tmp/nx-cache"
 
 # Ensure scripts are executable
 chmod +x scripts/*.sh
@@ -312,9 +323,9 @@ print_progress "Backend & Frontend" "$PARALLEL_DEPLOY_ESTIMATE_SECONDS" "$phase_
 progress_pid=$!
 
 deploy_start_time=$(date +%s)
-./scripts/deploy-backend.sh &
+$POWER_NICE ./scripts/deploy-backend.sh &
 backend_pid=$!
-./scripts/deploy-frontend.sh &
+$POWER_NICE ./scripts/deploy-frontend.sh &
 frontend_pid=$!
 
 wait $backend_pid
