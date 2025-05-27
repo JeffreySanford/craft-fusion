@@ -1,8 +1,8 @@
 {
   "truenorth_profile": "v1.0",
-  "validation_date": "2025-05-26T23:16:25Z",
+  "validation_date": "2025-05-27T00:01:17Z",
   "scan_results": {
-    "timestamp": "2025-05-26T23:16:25Z",
+    "timestamp": "2025-05-27T00:01:17Z",
     "profile": "truenorth",
     "status": "COMPLIANT",
     "controls": {
@@ -16,7 +16,7 @@
   },
   "assessment_details": {
     "assessor": "TrueNorth Automated Scanner",
-    "assessment_date": "2025-05-26",
+    "assessment_date": "2025-05-27",
     "methodology": "AI-driven continuous monitoring"
   },
   "control_results": [
@@ -24,31 +24,31 @@
       "control_id": "tn-ac-1",
       "status": "pass",
       "score": 100,
-      "timestamp": "2025-05-26T23:16:25Z"
+      "timestamp": "2025-05-27T00:01:17Z"
     },
     {
       "control_id": "tn-cm-1",
       "status": "pass",
       "score": 100,
-      "timestamp": "2025-05-26T23:16:25Z"
+      "timestamp": "2025-05-27T00:01:17Z"
     },
     {
       "control_id": "tn-ia-1",
       "status": "pass",
       "score": 100,
-      "timestamp": "2025-05-26T23:16:25Z"
+      "timestamp": "2025-05-27T00:01:17Z"
     },
     {
       "control_id": "tn-si-1",
       "status": "pass",
       "score": 100,
-      "timestamp": "2025-05-26T23:16:25Z"
+      "timestamp": "2025-05-27T00:01:17Z"
     },
     {
       "control_id": "tn-ra-1",
       "status": "pass",
       "score": 100,
-      "timestamp": "2025-05-26T23:16:25Z"
+      "timestamp": "2025-05-27T00:01:17Z"
     }
   ]
 }
