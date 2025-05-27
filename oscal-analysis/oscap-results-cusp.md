@@ -4,9 +4,9 @@
 
 **Description:** Custom User Security Profile (Fedora-specific)
 
-**Scan Date:** 2025-05-27 08:33:16
+**Scan Date:** 2025-05-27 09:01:28
 
-**Duration:** 31.7 seconds
+**Duration:** 16.5 seconds
 
 ## Summary
 

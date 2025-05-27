@@ -4,9 +4,9 @@
 
 **Description:** Baseline security (recommended for most)
 
-**Scan Date:** 2025-05-27 08:33:16
+**Scan Date:** 2025-05-27 09:01:45
 
-**Duration:** 170.0 seconds
+**Duration:** 134.7 seconds
 
 ## Summary
 

@@ -4,9 +4,9 @@
 
 **Description:** Payment Card Industry Data Security Standard
 
-**Scan Date:** 2025-05-27 08:33:13
+**Scan Date:** 2025-05-27 09:01:27
 
-**Duration:** 101.4 seconds
+**Duration:** 58.6 seconds
 
 ## Summary
 

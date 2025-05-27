@@ -1,6 +1,6 @@
 # TrueNorth OSCAL Compliance Report
 
-**Scan Date:** 2025-05-27 13:33:14 UTC
+**Scan Date:** 2025-05-27 14:01:27 UTC
 
 ## Summary
 

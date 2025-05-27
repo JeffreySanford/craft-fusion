@@ -4,9 +4,9 @@
 
 **Description:** Protection Profile for General Purpose Operating Systems
 
-**Scan Date:** 2025-05-27 08:33:48
+**Scan Date:** 2025-05-27 09:01:28
 
-**Duration:** 55.5 seconds
+**Duration:** 37.5 seconds
 
 ## Summary
 
