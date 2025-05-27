@@ -186,7 +186,7 @@ async function bootstrap() {
 
   // Start server with error handling
   try {
-    await app.listen(PORT, '0.0.0.0');
+    await app.listen(3000, '0.0.0.0');
     Logger.log(`Server running on ${protocol}://${HOST}:${PORT}`);
   } catch (error: unknown) {
     if (isError(error) && (error as NodeJS.ErrnoException).code === 'EADDRINUSE') {
