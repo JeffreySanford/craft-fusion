@@ -16,9 +16,6 @@ NC='\033[0m'
 APP_DIR="/var/www/craft-fusion"
 LOG_DIR="/var/log/craft-fusion"
 
-# --- System Prep: Clean up lingering processes and free memory ---
-source "$(dirname "$0")/system-prep.sh"
-
 echo -e "${BLUE}1. Stopping existing services...${NC}"
 # Stop PM2 processes if they exist
 if command -v pm2 &> /dev/null; then
@@ -31,10 +28,10 @@ else
 fi
 
 echo -e "${BLUE}2. Creating application directory...${NC}"
-sudo mkdir -p "$APP_DIR"
-sudo mkdir -p "$LOG_DIR"
-sudo mkdir -p "$LOG_DIR/craft-nest"
-sudo mkdir -p "$LOG_DIR/craft-go"
+mkdir -p "$APP_DIR"
+mkdir -p "$LOG_DIR"
+mkdir -p "$LOG_DIR/craft-nest"
+mkdir -p "$LOG_DIR/craft-go"
 echo -e "${GREEN}✓ Directories created${NC}"
 
 echo -e "${BLUE}3. Cleaning backend builds only...${NC}"

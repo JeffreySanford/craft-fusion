@@ -351,10 +351,9 @@ if [ ! -d node_modules/@nrwl ] && [ ! -d node_modules/nx ]; then
 fi
 
 # =====================
-# Phase 1: Backend & Frontend Deployment (Parallel)
-# Renamed to Phase B
+# Phase B: Backend & Frontend Deployment (Sequential)
 # =====================
-step_header "Phase B: Backend & Frontend Deployment (Parallel)"
+step_header "Phase B: Backend & Frontend Deployment (Sequential)"
 
 # --- Ensure all PM2 processes are stopped for all relevant users ---
 echo -e "${CYAN}Stopping all PM2 processes for current user...${NC}"
@@ -380,34 +379,42 @@ if [ -f "$GO_BINARY_PATH" ]; then
   echo -e "${GREEN}Go binary is free to update.${NC}"
 fi
 
-# --- Build backend and frontend in parallel ---
-PARALLEL_DEPLOY_ESTIMATE_SECONDS=240 # 4 minutes (max of backend/frontend estimates)
+# --- Deploy backend first ---
+BACKEND_DEPLOY_ESTIMATE_SECONDS=180
 phase_start_time=$(date +%s)
-print_progress "Backend & Frontend" "$PARALLEL_DEPLOY_ESTIMATE_SECONDS" "$phase_start_time" &
+print_progress "Backend Deployment" "$BACKEND_DEPLOY_ESTIMATE_SECONDS" "$phase_start_time" &
 progress_pid=$!
 
-deploy_start_time=$(date +%s)
-$POWER_NICE ./scripts/deploy-backend.sh &
-backend_pid=$!
-$POWER_NICE ./scripts/deploy-frontend.sh &
-frontend_pid=$!
-
-wait $backend_pid
+$POWER_NICE ./scripts/deploy-backend.sh
 backend_status=$?
-wait $frontend_pid
-frontend_status=$?
-deploy_end_time=$(date +%s)
 
 kill "$progress_pid" &>/dev/null || true
 wait "$progress_pid" &>/dev/null || true
 cleanup_progress_line
 
-if [ $backend_status -eq 0 ] && [ $frontend_status -eq 0 ]; then
-    echo -e "${GREEN}✓ Backend and frontend deployed in $((deploy_end_time-deploy_start_time)) seconds${NC}"
+if [ $backend_status -eq 0 ]; then
+    echo -e "${GREEN}✓ Backend deployed successfully${NC}"
+    # --- Deploy frontend only if backend succeeded ---
+    FRONTEND_DEPLOY_ESTIMATE_SECONDS=120
+    phase_start_time=$(date +%s)
+    print_progress "Frontend Deployment" "$FRONTEND_DEPLOY_ESTIMATE_SECONDS" "$phase_start_time" &
+    progress_pid=$!
+
+    $POWER_NICE ./scripts/deploy-frontend.sh
+    frontend_status=$?
+
+    kill "$progress_pid" &>/dev/null || true
+    wait "$progress_pid" &>/dev/null || true
+    cleanup_progress_line
+
+    if [ $frontend_status -eq 0 ]; then
+        echo -e "${GREEN}✓ Frontend deployed successfully${NC}"
+    else
+        echo -e "${RED}✗ Frontend deployment failed (exit code $frontend_status)${NC}"
+    fi
 else
-    echo -e "${RED}✗ Errors during backend/frontend parallel deployment.${NC}"
-    [ $backend_status -ne 0 ] && echo -e "${RED}  Backend deployment failed (PID $backend_pid, exit code $backend_status)${NC}"
-    [ $frontend_status -ne 0 ] && echo -e "${RED}  Frontend deployment failed (PID $frontend_pid, exit code $frontend_status)${NC}"
+    echo -e "${RED}✗ Backend deployment failed (exit code $backend_status). Skipping frontend deployment.${NC}"
+    frontend_status=1
 fi
 
 step_header "Phase C: SSL/WSS Setup (Optional)"
