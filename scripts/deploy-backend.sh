@@ -19,8 +19,8 @@ LOG_DIR="/var/log/craft-fusion"
 echo -e "${BLUE}1. Stopping existing services...${NC}"
 # Stop PM2 processes if they exist
 if command -v pm2 &> /dev/null; then
-    pm2 stop ecosystem.config.js || true
-    pm2 delete all || true
+    sudo pm2 stop ecosystem.config.js || true
+    sudo pm2 delete all || true
     echo -e "${GREEN}✓ PM2 processes stopped${NC}"
     # Kill any lingering Go process (if still running)
     if sudo pgrep -f "dist/apps/craft-go/main" > /dev/null; then
