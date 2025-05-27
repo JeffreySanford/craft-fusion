@@ -165,11 +165,16 @@ echo -e "${BLUE}10. Starting services with PM2...${NC}"
 cd "$APP_DIR"
 
 # Start applications
-maybe_sudo -u craft-fusion pm2 start ecosystem.config.js
-maybe_sudo -u craft-fusion pm2 save
+if [ "$(id -u)" -eq 0 ]; then
+    sudo -u craft-fusion pm2 start ecosystem.config.js
+    sudo -u craft-fusion pm2 save
+    sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u craft-fusion --hp /home/craft-fusion
+else
+    pm2 start ecosystem.config.js
+    pm2 save
+    env PATH=$PATH:/usr/bin pm2 startup systemd
+fi
 
-# Setup PM2 startup
-maybe_sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u craft-fusion --hp /home/craft-fusion
 echo -e "${GREEN}✓ PM2 services started${NC}"
 
 echo -e "${BLUE}11. Verifying services...${NC}"
