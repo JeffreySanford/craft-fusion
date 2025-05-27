@@ -98,14 +98,13 @@ fi
 
 # Check Go build
 if [ ! -f "dist/apps/craft-go/main" ]; then
-    echo -e "${YELLOW}Go build output not found after build, forcing clean and rebuild...${NC}"
-    npx nx run craft-go:clean || true
+    echo -e "${YELLOW}Go build output not found after build, forcing rebuild...${NC}"
     npx nx run craft-go:build --configuration=production --skip-nx-cache
     if [ ! -f "dist/apps/craft-go/main" ]; then
-        echo -e "${RED}✗ Go build output still not found after clean rebuild${NC}"
+        echo -e "${RED}✗ Go build output still not found after rebuild${NC}"
         exit 1
     else
-        echo -e "${GREEN}✓ Go build output found after clean rebuild${NC}"
+        echo -e "${GREEN}✓ Go build output found after rebuild${NC}"
     fi
 fi
 
