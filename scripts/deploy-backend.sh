@@ -16,16 +16,25 @@ NC='\033[0m'
 APP_DIR="/var/www/craft-fusion"
 LOG_DIR="/var/log/craft-fusion"
 
+# Helper to use sudo only if not root
+maybe_sudo() {
+    if [ "$(id -u)" -eq 0 ]; then
+        "$@"
+    else
+        sudo "$@"
+    fi
+}
+
 echo -e "${BLUE}1. Stopping existing services...${NC}"
 # Stop PM2 processes if they exist
 if command -v pm2 &> /dev/null; then
-    sudo pm2 stop ecosystem.config.js || true
-    sudo pm2 delete all || true
+    maybe_sudo pm2 stop ecosystem.config.js || true
+    maybe_sudo pm2 delete all || true
     echo -e "${GREEN}✓ PM2 processes stopped${NC}"
     # Kill any lingering Go process (if still running)
-    if sudo pgrep -f "dist/apps/craft-go/main" > /dev/null; then
+    if maybe_sudo pgrep -f "dist/apps/craft-go/main" > /dev/null; then
         echo -e "${YELLOW}Killing lingering Go process...${NC}"
-        sudo pkill -f "dist/apps/craft-go/main"
+        maybe_sudo pkill -f "dist/apps/craft-go/main"
         echo -e "${GREEN}✓ Go process killed${NC}"
     fi
 else
@@ -34,10 +43,10 @@ else
 fi
 
 echo -e "${BLUE}2. Creating application directory...${NC}"
-mkdir -p "$APP_DIR"
-mkdir -p "$LOG_DIR"
-mkdir -p "$LOG_DIR/craft-nest"
-mkdir -p "$LOG_DIR/craft-go"
+maybe_sudo mkdir -p "$APP_DIR"
+maybe_sudo mkdir -p "$LOG_DIR"
+maybe_sudo mkdir -p "$LOG_DIR/craft-nest"
+maybe_sudo mkdir -p "$LOG_DIR/craft-go"
 echo -e "${GREEN}✓ Directories created${NC}"
 
 echo -e "${BLUE}3. Cleaning backend builds only...${NC}"
@@ -121,54 +130,53 @@ echo -e "${GREEN}✓ Build outputs verified${NC}"
 
 echo -e "${BLUE}8. Copying application files...${NC}"
 # Ensure no Go process is running in the target directory before copying
-if sudo pgrep -f "$APP_DIR/dist/apps/craft-go/main" > /dev/null; then
+if maybe_sudo pgrep -f "$APP_DIR/dist/apps/craft-go/main" > /dev/null; then
     echo -e "${YELLOW}Killing Go process in $APP_DIR before copying...${NC}"
-    sudo pkill -f "$APP_DIR/dist/apps/craft-go/main"
+    maybe_sudo pkill -f "$APP_DIR/dist/apps/craft-go/main"
     sleep 1
     echo -e "${GREEN}✓ Go process in $APP_DIR killed${NC}"
 fi
 # Copy built applications
-sudo cp -r dist/ "$APP_DIR"/
-sudo cp ecosystem.config.js "$APP_DIR"/
-sudo cp package.json "$APP_DIR"/
+maybe_sudo cp -r dist/ "$APP_DIR"/
+maybe_sudo cp ecosystem.config.js "$APP_DIR"/
+maybe_sudo cp package.json "$APP_DIR"/
 
 # Copy node_modules for NestJS app
-sudo cp -r node_modules/ "$APP_DIR"/
+maybe_sudo cp -r node_modules/ "$APP_DIR"/
 
 # Set executable permissions for Go binary
-sudo chmod +x "$APP_DIR/dist/apps/craft-go/main"
+maybe_sudo chmod +x "$APP_DIR/dist/apps/craft-go/main"
 
 echo -e "${GREEN}✓ Application files copied${NC}"
 
 echo -e "${BLUE}9. Setting ownership and permissions...${NC}"
 # Create craft-fusion user if it doesn't exist
 if ! id "craft-fusion" &>/dev/null; then
-    sudo useradd -r -s /bin/false craft-fusion
+    maybe_sudo useradd -r -s /bin/false craft-fusion
     echo -e "${GREEN}✓ Created craft-fusion user${NC}"
 fi
-
-sudo chown -R craft-fusion:craft-fusion "$APP_DIR"
-sudo chown -R craft-fusion:craft-fusion "$LOG_DIR"
-sudo chmod -R 755 "$APP_DIR"
-sudo chmod -R 755 "$LOG_DIR"
+maybe_sudo chown -R craft-fusion:craft-fusion "$APP_DIR"
+maybe_sudo chown -R craft-fusion:craft-fusion "$LOG_DIR"
+maybe_sudo chmod -R 755 "$APP_DIR"
+maybe_sudo chmod -R 755 "$LOG_DIR"
 echo -e "${GREEN}✓ Permissions set${NC}"
 
 echo -e "${BLUE}10. Starting services with PM2...${NC}"
 cd "$APP_DIR"
 
 # Start applications
-sudo -u craft-fusion pm2 start ecosystem.config.js
-sudo -u craft-fusion pm2 save
+maybe_sudo -u craft-fusion pm2 start ecosystem.config.js
+maybe_sudo -u craft-fusion pm2 save
 
 # Setup PM2 startup
-sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u craft-fusion --hp /home/craft-fusion
+maybe_sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u craft-fusion --hp /home/craft-fusion
 echo -e "${GREEN}✓ PM2 services started${NC}"
 
 echo -e "${BLUE}11. Verifying services...${NC}"
 sleep 5  # Give services time to start
 
 # Check PM2 status
-PM2_STATUS=$(sudo -u craft-fusion pm2 list)
+PM2_STATUS=$(maybe_sudo -u craft-fusion pm2 list)
 echo -e "${BLUE}PM2 Status:${NC}"
 echo "$PM2_STATUS"
 
@@ -180,7 +188,7 @@ if [ "$NEST_RESPONSE" = "200" ]; then
 else
     echo -e "${YELLOW}⚠ NestJS API test failed (HTTP $NEST_RESPONSE)${NC}"
     echo -e "${BLUE}Checking NestJS logs:${NC}"
-    sudo tail -n 10 "$LOG_DIR/craft-nest/out.log" || echo "No logs found"
+    maybe_sudo tail -n 10 "$LOG_DIR/craft-nest/out.log" || echo "No logs found"
 fi
 
 # Test Go service
@@ -191,13 +199,13 @@ if [ "$GO_RESPONSE" = "200" ]; then
 else
     echo -e "${YELLOW}⚠ Go API test failed (HTTP $GO_RESPONSE)${NC}"
     echo -e "${BLUE}Checking Go logs:${NC}"
-    sudo tail -n 10 "$LOG_DIR/craft-go/out.log" || echo "No logs found"
+    maybe_sudo tail -n 10 "$LOG_DIR/craft-go/out.log" || echo "No logs found"
 fi
 
 echo -e "${GREEN}=== Backend Deployment Complete ===${NC}"
 echo
 # Show PM2 process list after deployment
-sudo -u craft-fusion pm2 list
+maybe_sudo -u craft-fusion pm2 list
 echo -e "${BLUE}Deployment Summary:${NC}"
 echo -e "  NestJS API: ${GREEN}http://localhost:3000${NC}"
 echo -e "  Go API: ${GREEN}http://localhost:4000${NC}"
@@ -205,8 +213,8 @@ echo -e "  App directory: ${GREEN}$APP_DIR${NC}"
 echo -e "  Log directory: ${GREEN}$LOG_DIR${NC}"
 echo
 echo -e "${BLUE}Useful commands:${NC}"
-echo -e "  Check PM2 status: ${YELLOW}sudo -u craft-fusion pm2 list${NC}"
-echo -e "  View NestJS logs: ${YELLOW}sudo tail -f $LOG_DIR/craft-nest/out.log${NC}"
-echo -e "  View Go logs:     ${YELLOW}sudo tail -f $LOG_DIR/craft-go/out.log${NC}"
-echo -e "  Restart services: ${YELLOW}sudo -u craft-fusion pm2 restart all${NC}"
-echo -e "  Stop services:    ${YELLOW}sudo -u craft-fusion pm2 stop all${NC}"
+echo -e "  Check PM2 status: ${YELLOW}maybe_sudo -u craft-fusion pm2 list${NC}"
+echo -e "  View NestJS logs: ${YELLOW}maybe_sudo tail -f $LOG_DIR/craft-nest/out.log${NC}"
+echo -e "  View Go logs:     ${YELLOW}maybe_sudo tail -f $LOG_DIR/craft-go/out.log${NC}"
+echo -e "  Restart services: ${YELLOW}maybe_sudo -u craft-fusion pm2 restart all${NC}"
+echo -e "  Stop services:    ${YELLOW}maybe_sudo -u craft-fusion pm2 stop all${NC}"
