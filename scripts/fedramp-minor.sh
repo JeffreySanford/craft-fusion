@@ -18,6 +18,7 @@ for url in "${EXTRA_PROFILE_SOURCES[@]}"; do
   echo -e "${CYAN}Reference: $url${NC}"
 done
 
+echo -e "${YELLOW}If you are running this script as root (with sudo), Puppeteer/Chrome may fail to launch unless you use the --no-sandbox flag.\nTo fix PDF export errors, edit tools/oscal-export.js and add 'args: [\'--no-sandbox\']' to puppeteer.launch().\nOr, run the script as a non-root user if possible.\nSee: https://crbug.com/638180${NC}"
 
 # === Load available OSCAL profiles from local JSON ===
 OSCAL_PROFILES_JSON="$SCRIPT_DIR/../oscal-profiles.json"

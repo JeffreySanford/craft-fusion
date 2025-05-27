@@ -9,7 +9,7 @@ const puppeteer = require('puppeteer');
 const OSCAL_DIR = path.resolve(__dirname, '../oscal-analysis');
 
 async function exportHtmlToPdf(htmlPath, pdfPath) {
-  const browser = await puppeteer.launch({ headless: 'new' });
+  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
   const page = await browser.newPage();
   await page.goto('file://' + htmlPath, { waitUntil: 'networkidle0' });
   await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
