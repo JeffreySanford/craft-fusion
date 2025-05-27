@@ -145,9 +145,13 @@ fi
 
 # Test WebSocket connection (if WSS is configured)
 echo -e "${BLUE}12. Testing WebSocket connection...${NC}"
+if ! command -v wscat &> /dev/null; then
+    echo -e "${YELLOW}wscat not found. Installing globally...${NC}"
+    npm install -g wscat
+fi
 if command -v wscat &> /dev/null; then
     # Test WSS if HTTPS is working, otherwise test WS
-    if [ "$HTTPS_RESPONSE" = "200" ]; then
+    if [[ "$HTTPS_RESPONSE" =~ ^2|3 ]]; then
         timeout 5s wscat -c "wss://jeffreysanford.us/socket.io/?EIO=4&transport=websocket" --no-check &>/dev/null && \
         echo -e "${GREEN}✓ WSS connection test passed${NC}" || \
         echo -e "${YELLOW}⚠ WSS connection test failed - check backend${NC}"
@@ -157,8 +161,7 @@ if command -v wscat &> /dev/null; then
         echo -e "${YELLOW}⚠ WS connection test failed - check backend${NC}"
     fi
 else
-    echo -e "${YELLOW}⚠ wscat not installed - skipping WebSocket test${NC}"
-    echo -e "${BLUE}Install with: npm install -g wscat${NC}"
+    echo -e "${RED}✗ wscat installation failed - skipping WebSocket test${NC}"
 fi
 
 echo -e "${GREEN}=== Frontend Deployment Complete ===${NC}"
