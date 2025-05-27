@@ -50,6 +50,11 @@ maybe_sudo mkdir -p "$LOG_DIR/craft-go"
 echo -e "${GREEN}✓ Directories created${NC}"
 
 echo -e "${BLUE}3. Cleaning backend builds only...${NC}"
+# Fix permissions on dist before cleaning to avoid permission denied errors
+USER_NAME=$(whoami)
+USER_GROUP=$(id -gn "$USER_NAME")
+maybe_sudo chown -R "$USER_NAME:$USER_GROUP" dist/ 2>/dev/null || true
+maybe_sudo chmod -R u+rwX dist/ 2>/dev/null || true
 # Clean only backend dist directories, preserve frontend and node_modules
 rm -rf dist/apps/craft-nest/
 rm -rf dist/apps/craft-go/
