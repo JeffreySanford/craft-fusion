@@ -150,13 +150,11 @@ maybe_sudo chmod +x "$APP_DIR/dist/apps/craft-go/main"
 echo -e "${GREEN}✓ Application files copied${NC}"
 
 echo -e "${BLUE}9. Setting ownership and permissions...${NC}"
-# Create craft-fusion user if it doesn't exist
-if ! id "craft-fusion" &>/dev/null; then
-    maybe_sudo useradd -r -s /bin/false craft-fusion
-    echo -e "${GREEN}✓ Created craft-fusion user${NC}"
-fi
-maybe_sudo chown -R craft-fusion:craft-fusion "$APP_DIR"
-maybe_sudo chown -R craft-fusion:craft-fusion "$LOG_DIR"
+# Set ownership and permissions for all files to the current user and group
+USER_NAME=$(whoami)
+USER_GROUP=$(id -gn "$USER_NAME")
+maybe_sudo chown -R "$USER_NAME:$USER_GROUP" "$APP_DIR"
+maybe_sudo chown -R "$USER_NAME:$USER_GROUP" "$LOG_DIR"
 maybe_sudo chmod -R 755 "$APP_DIR"
 maybe_sudo chmod -R 755 "$LOG_DIR"
 echo -e "${GREEN}✓ Permissions set${NC}"
@@ -165,15 +163,9 @@ echo -e "${BLUE}10. Starting services with PM2...${NC}"
 cd "$APP_DIR"
 
 # Start applications
-if [ "$(id -u)" -eq 0 ]; then
-    sudo -u craft-fusion pm2 start ecosystem.config.js
-    sudo -u craft-fusion pm2 save
-    sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u craft-fusion --hp /home/craft-fusion
-else
-    pm2 start ecosystem.config.js
-    pm2 save
-    env PATH=$PATH:/usr/bin pm2 startup systemd
-fi
+pm2 start ecosystem.config.js
+pm2 save
+env PATH=$PATH:/usr/bin pm2 startup systemd
 
 echo -e "${GREEN}✓ PM2 services started${NC}"
 
@@ -223,3 +215,4 @@ echo -e "  View NestJS logs: ${YELLOW}maybe_sudo tail -f $LOG_DIR/craft-nest/out
 echo -e "  View Go logs:     ${YELLOW}maybe_sudo tail -f $LOG_DIR/craft-go/out.log${NC}"
 echo -e "  Restart services: ${YELLOW}maybe_sudo -u craft-fusion pm2 restart all${NC}"
 echo -e "  Stop services:    ${YELLOW}maybe_sudo -u craft-fusion pm2 stop all${NC}"
+
