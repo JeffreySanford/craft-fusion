@@ -13,8 +13,8 @@ module.exports = {
         HOST: '0.0.0.0',  // FIXED: Bind to all interfaces for server access
         LOG_LEVEL: 'info',
       },
-      error_file: './logs/craft-nest/error.log',
-      out_file: './logs/craft-nest/out.log',
+      error_file: '/var/log/craft-fusion/craft-nest/error.log',
+      out_file: '/var/log/craft-fusion/craft-nest/out.log',
       merge_logs: true,
       time: true,
       max_memory_restart: '150M',  // FIXED: Appropriate limit for 2GB VPS
@@ -35,8 +35,8 @@ module.exports = {
         HOST: '0.0.0.0',  // FIXED: Bind to all interfaces for server access
         LOG_LEVEL: 'info',
       },
-      error_file: './logs/craft-go/error.log',
-      out_file: './logs/craft-go/out.log',
+      error_file: '/var/log/craft-fusion/craft-go/error.log',
+      out_file: '/var/log/craft-fusion/craft-go/out.log',
       merge_logs: true,
       time: true,
       max_memory_restart: '100M',  // FIXED: Appropriate limit for 2GB VPS
