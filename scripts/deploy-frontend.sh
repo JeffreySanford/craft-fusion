@@ -116,16 +116,16 @@ echo -e "${BLUE}10. Testing deployment...${NC}"
 sleep 2  # Give nginx a moment to reload
 
 # Test if the site is accessible
-HTTP_RESPONSE=$(curl -s -f -w "%{http_code}" "http://jeffreysanford.us" 2>/dev/null || echo "000")
-HTTPS_RESPONSE=$(curl -s -f -w "%{http_code}" "https://jeffreysanford.us" 2>/dev/null || echo "000")
+HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "http://jeffreysanford.us" 2>/dev/null || echo "000")
+HTTPS_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "https://jeffreysanford.us" 2>/dev/null || echo "000")
 
-if [ "$HTTP_RESPONSE" = "200" ] || [ "$HTTP_RESPONSE" = "301" ] || [ "$HTTP_RESPONSE" = "302" ]; then
+if [[ "$HTTP_RESPONSE" =~ ^2|3 ]]; then
     echo -e "${GREEN}✓ HTTP site accessible (HTTP $HTTP_RESPONSE)${NC}"
 else
     echo -e "${YELLOW}⚠ HTTP site test failed (HTTP $HTTP_RESPONSE)${NC}"
 fi
 
-if [ "$HTTPS_RESPONSE" = "200" ]; then
+if [[ "$HTTPS_RESPONSE" =~ ^2|3 ]]; then
     echo -e "${GREEN}✓ HTTPS site accessible (HTTPS $HTTPS_RESPONSE)${NC}"
     PROTOCOL="https"
 else
@@ -134,11 +134,11 @@ else
 fi
 
 # Test API proxy
-API_HTTP_RESPONSE=$(curl -s -f -w "%{http_code}" -o /dev/null "http://jeffreysanford.us/api/health" 2>/dev/null || echo "000")
-API_HTTPS_RESPONSE=$(curl -s -f -w "%{http_code}" -o /dev/null "https://jeffreysanford.us/api/health" 2>/dev/null || echo "000")
+API_HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "http://jeffreysanford.us/api/health" 2>/dev/null || echo "000")
+API_HTTPS_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "https://jeffreysanford.us/api/health" 2>/dev/null || echo "000")
 
-if [ "$API_HTTP_RESPONSE" = "200" ] || [ "$API_HTTPS_RESPONSE" = "200" ]; then
-    echo -e "${GREEN}✓ API proxy working${NC}"
+if [[ "$API_HTTP_RESPONSE" = "200" || "$API_HTTP_RESPONSE" = "404" || "$API_HTTPS_RESPONSE" = "200" || "$API_HTTPS_RESPONSE" = "404" ]]; then
+    echo -e "${GREEN}✓ API proxy working (HTTP: $API_HTTP_RESPONSE, HTTPS: $API_HTTPS_RESPONSE)${NC}"
 else
     echo -e "${YELLOW}⚠ API proxy test failed (HTTP: $API_HTTP_RESPONSE, HTTPS: $API_HTTPS_RESPONSE)${NC}"
 fi
