@@ -2,6 +2,8 @@
 const blessed = require('blessed');
 const contrib = require('blessed-contrib');
 const si = require('systeminformation');
+const fs = require('fs');
+const path = require('path');
 
 const screen = blessed.screen({ smartCSR: true, title: 'True North Insights: Craft Fusion System Monitor' });
 const grid = new contrib.grid({ rows: 12, cols: 12, screen });
@@ -76,6 +78,56 @@ const instructions = blessed.box({
   style: { fg: 'green', bg: 'black' }
 });
 
+// Load OSCAL profiles from canonical JSON
+let oscalProfiles = [];
+try {
+  const profilesPath = path.resolve(__dirname, '../oscal-profiles.json');
+  const profilesData = JSON.parse(fs.readFileSync(profilesPath, 'utf8'));
+  oscalProfiles = profilesData.profiles.map(p => p.name);
+} catch (e) {
+  oscalProfiles = ['standard', 'ospp', 'pci-dss', 'cusp', 'medium-high', 'rev5', 'truenorth'];
+}
+
+// Determine available and pending profiles
+const oscalDir = path.resolve(__dirname, '../oscal-analysis');
+function getProfileStatus() {
+  const available = [];
+  const pending = [];
+  oscalProfiles.forEach(profile => {
+    const userXml = path.join(oscalDir, `user-readable-results-${profile}.xml`);
+    const adminXml = path.join(oscalDir, `oscap-results-${profile}.xml`);
+    const truenorthHtml = path.join(oscalDir, 'oscap-report-truenorth.html');
+    if (fs.existsSync(userXml) || fs.existsSync(adminXml) || (profile === 'truenorth' && fs.existsSync(truenorthHtml))) {
+      if (!available.includes(profile)) available.push(profile);
+    } else {
+      pending.push(profile);
+    }
+  });
+  return { available, pending };
+}
+
+// Add OSCAL scan profile table at the top
+const scanProfileTable = grid.set(1, 0, 2, 12, contrib.table, {
+  label: 'OSCAL Scan Profiles',
+  columnWidth: [24, 24],
+  keys: false,
+  tags: true,
+  style: { fg: 'white', border: { fg: 'cyan' }, header: { fg: 'green' } }
+});
+
+function updateScanProfileTable() {
+  const { available, pending } = getProfileStatus();
+  const maxLen = Math.max(available.length, pending.length);
+  const data = [];
+  for (let i = 0; i < maxLen; i++) {
+    data.push([
+      available[i] ? `{green-fg}${available[i]}{/green-fg}` : '',
+      pending[i] ? `{yellow-fg}${pending[i]}{/yellow-fg}` : ''
+    ]);
+  }
+  scanProfileTable.setData({ headers: ['Available', 'Pending'], data });
+}
+
 async function update() {
   const [mem, swap, cpu, processes, net, load] = await Promise.all([
     si.mem(),
@@ -126,6 +178,7 @@ async function update() {
     `Network: ${net.map(n => `${n.iface}: ↓${(n.rx_sec/1024).toFixed(1)}KB/s ↑${(n.tx_sec/1024).toFixed(1)}KB/s`).join('  ')}\n` +
     `{green-fg}Refresh: ${refreshInterval/1000}s | +/- to change | p to pause | q to quit{/green-fg}`
   );
+  updateScanProfileTable();
   screen.render();
 }
 

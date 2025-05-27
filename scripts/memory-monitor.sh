@@ -235,7 +235,13 @@ check_server_status() {
 
 # OSCAL/SCAP scan check (FedRAMP compliance)
 OSCAL_DIR="$(cd "$(dirname "$0")/.." && pwd)/oscal-analysis"
-OSCAL_PROFILES=("standard" "ospp" "pci-dss" "cusp" "medium-high" "rev5" "truenorth") # Added truenorth profile
+
+# Dynamically load profiles from oscal-profiles.json if jq is available
+if command -v jq &>/dev/null && [ -f "$OSCAL_DIR/../oscal-profiles.json" ]; then
+  mapfile -t OSCAL_PROFILES < <(jq -r '.profiles[].name' "$OSCAL_DIR/../oscal-profiles.json")
+else
+  OSCAL_PROFILES=("standard" "ospp" "pci-dss" "cusp" "medium-high" "rev5" "truenorth")
+fi
 OSCAL_MAX_AGE_DAYS=7
 
 # Vibrant OSCAL scan status header
@@ -250,8 +256,33 @@ printf "╚═══════════════════════
 echo -e "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${MEM_TOTAL_MB}MB${NC}   ${BLUE}Disk Free: ${GREEN}${DISK_AVAIL}${NC}"
 echo
 
-# Show available OSCAL scan profiles
-printf "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} ${YELLOW}%s${NC}\n" "${OSCAL_PROFILES[*]}"
+# Show available OSCAL scan profiles in two columns (available vs pending)
+available_profiles=()
+pending_profiles=()
+for profile in "${OSCAL_PROFILES[@]}"; do
+  if [ -f "$OSCAL_DIR/user-readable-results-$profile.xml" ] || [ -f "$OSCAL_DIR/oscap-results-$profile.xml" ]; then
+    available_profiles+=("$profile")
+  else
+    pending_profiles+=("$profile")
+  fi
+  # Mark truenorth as available if its report exists
+  if [ "$profile" = "truenorth" ] && [ -f "$OSCAL_DIR/oscap-report-truenorth.html" ]; then
+    if [[ ! " ${available_profiles[*]} " =~ " truenorth " ]]; then
+      available_profiles+=("truenorth")
+      pending_profiles=("${pending_profiles[@]/truenorth}")
+    fi
+  fi
+done
+
+# Print two-column table for scan profiles
+printf "${BOLD}${CYAN}Scan Profiles:${NC}\n"
+max_len=${#available_profiles[@]}
+[ ${#pending_profiles[@]} -gt $max_len ] && max_len=${#pending_profiles[@]}
+printf "${WHITE}%-20s %-20s${NC}\n" "Available" "Pending"
+for ((i=0; i<$max_len; i++)); do
+  a="${available_profiles[$i]}"; p="${pending_profiles[$i]}"
+  printf "${GREEN}%-20s${NC} ${YELLOW}%-20s${NC}\n" "$a" "$p"
+done
 
 # Show status for each profile
 missing_profiles=()
@@ -659,20 +690,12 @@ while true; do
                 FAIL=$(xmllint --xpath 'count(//rule-result[result=\"fail\"])' "$current_profile_result_file" 2>/dev/null || echo 0)
                 NOTAPPLICABLE=$(xmllint --xpath 'count(//rule-result[result=\"notapplicable\"])' "$current_profile_result_file" 2>/dev/null || echo 0)
                 echo -e "   ${CYAN}$profile_loop_var${NC}: ${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}  ${YELLOW}N/A: $NOTAPPLICABLE${NC}  ${WHITE}Total: $TOTAL${NC}"
-                # Check file age for freshness warning
-                LAST_RUN=$(stat -c %Y "$current_profile_result_file")
-                NOW_TS=$(date +%s)
-                AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
-                if [ $AGE_DAYS -gt $OSCAL_MAX_AGE_DAYS ]; then
-                  echo -e "   ${YELLOW}⚠️  Note: This report has not been updated since the last OSCAL run. Please re-run OSCAL for fresh results.${NC}"
-                fi
             else
                 echo -e "   ${YELLOW}xmllint not found, cannot parse $profile_loop_var results${NC}"
                 echo -e "   ${WHITE}Install with: sudo apt-get install libxml2-utils${NC}"
             fi
         else
             echo -e "   ${RED}✗ No scan results for $profile_loop_var${NC}"
-            echo -e "   ${YELLOW}⚠️  Note: This report has not been updated since the last OSCAL run. Please re-run OSCAL for fresh results.${NC}"
         fi
     done
     # At the end, print colored monitored profiles

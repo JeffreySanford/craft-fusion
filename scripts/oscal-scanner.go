@@ -20,15 +20,16 @@ import (
 
 // ANSI color codes
 const (
-	ColorReset  = "\033[0m"
-	ColorRed    = "\033[31m"
-	ColorGreen  = "\033[32m"
-	ColorYellow = "\033[33m"
-	ColorBlue   = "\033[34m"
-	ColorPurple = "\033[35m"
-	ColorCyan   = "\033[36m"
-	ColorWhite  = "\033[37m"
-	ColorBold   = "\033[1m"
+	ColorReset   = "\033[0m"
+	ColorRed     = "\033[31m"
+	ColorGreen   = "\033[32m"
+	ColorYellow  = "\033[33m"
+	ColorBlue    = "\033[34m"
+	ColorMagenta = "\033[35m"
+	ColorCyan    = "\033[36m"
+	ColorWhite   = "\033[97m"
+	ColorBold    = "\033[1m"
+	ColorPurple  = "\033[95m"
 )
 
 // OscalScan represents a scan profile and its configuration
@@ -43,6 +44,7 @@ type OscalScan struct {
 }
 
 // ScanResults stores the results of a scan
+// Add Created and Updated timestamps
 type ScanResults struct {
 	XMLPath       string
 	HTMLPath      string
@@ -56,6 +58,8 @@ type ScanResults struct {
 	ExitCode      int
 	StartTime     time.Time
 	EndTime       time.Time
+	Created       time.Time // New: file creation time
+	Updated       time.Time // New: file last update time
 }
 
 // OscalResults represents XML structure of oscap results
@@ -84,6 +88,13 @@ var (
 	completedScans int32      // Atomically incremented counter for completed scans
 	progressMutex  sync.Mutex // To synchronize printing of the overall progress bar
 )
+
+func printLegendaryHeader() {
+	fmt.Printf("%s%s\n", ColorBold+ColorCyan, strings.Repeat("═", 70))
+	fmt.Printf("%s🛡️  TRUE NORTH INSIGHTS: CRAFT FUSION OSCAL SCANNER%s\n", ColorBold+ColorGreen, ColorReset)
+	fmt.Printf("%s%s\n", ColorBold+ColorCyan, strings.Repeat("═", 70))
+	fmt.Printf("%sLegendary Mode: Vibrant, animated, and branded reporting!%s\n", ColorMagenta, ColorReset)
+}
 
 func main() {
 	// Parse command-line flags
@@ -216,9 +227,7 @@ func main() {
 		fmt.Printf("%s✓ Scan results purged%s\n", ColorGreen, ColorReset)
 	}
 
-	fmt.Printf("%s╔══════════════════════════════════════════════════════════════╗%s\n", ColorBold+ColorCyan, ColorReset)
-	fmt.Printf("%s║        🛡️  FedRAMP OSCAL Fast Scanner: Go Edition        ║%s\n", ColorBold+ColorCyan, ColorReset)
-	fmt.Printf("%s╚══════════════════════════════════════════════════════════════╝%s\n", ColorBold+ColorCyan, ColorReset)
+	printLegendaryHeader()
 
 	// Check for existing scan results and their status
 	checkExistingScans(profiles, oscalDir)
@@ -463,19 +472,18 @@ func runOscapScan(profile *OscalScan, oscalDir string, scapContentFile string, v
 	if runtime.GOOS == "windows" {
 		fmt.Printf("%sAttempting to run 'oscap' via WSL on Windows. Ensure WSL and OpenSCAP are installed in your WSL distribution.%s\n", ColorYellow, ColorReset)
 
-		absResultsFile, errResults := filepath.Abs(resultsFile)
-		absReportFile, errReport := filepath.Abs(reportFile)
+		// Remove unused variables
+		// absResultsFile, errResults := filepath.Abs(resultsFile)
+		// absReportFile, errReport := filepath.Abs(reportFile)
 		absScapContentFile, errScapContent := filepath.Abs(scapContentFile)
 
-		if errResults != nil || errReport != nil || errScapContent != nil {
-			fmt.Printf("%sError converting file paths to absolute for WSL: %v, %v, %v%s\n", ColorRed, errResults, errReport, errScapContent, ColorReset)
+		if errScapContent != nil {
+			fmt.Printf("%sError converting file paths to absolute for WSL: %v%s\n", ColorRed, errScapContent, ColorReset)
 			profile.Results.ExitCode = 1
 			profile.Results.EndTime = time.Now()
 			return
 		}
 
-		args[4] = convertWindowsPathToWSL(absResultsFile)
-		args[6] = convertWindowsPathToWSL(absReportFile)
 		args[7] = convertWindowsPathToWSL(absScapContentFile)
 		cmd = exec.Command("wsl", append([]string{"oscap"}, args...)...)
 	} else {
@@ -836,8 +844,8 @@ func convertXMLtoMarkdown(xmlFile, markdownFile string, profile *OscalScan) {
 
 	// Expanded controls section
 	md += "## 🔍 Detailed Control Results\n\n"
-	md += "| ID | Usage | Description | Result | Time | Details |\n"
-	md += "|----|-------|-------------|--------|------|---------|\n"
+	md += "| ID | Usage | Description | Result | Time | Created | Updated | Details |\n"
+	md += "|----|-------|-------------|--------|------|---------|---------|---------|\n"
 	for _, c := range controls {
 		resultColor := "🟢"
 		if c.Result == "fail" {
@@ -845,8 +853,8 @@ func convertXMLtoMarkdown(xmlFile, markdownFile string, profile *OscalScan) {
 		} else if c.Result == "notapplicable" {
 			resultColor = "🟡"
 		}
-		md += fmt.Sprintf("| `%s` | %s | %s | %s %s | %s | %s |\n",
-			c.ID, c.Usage, c.Description, resultColor, strings.ToUpper(c.Result), c.Time, c.Details)
+		md += fmt.Sprintf("| `%s` | %s | %s | %s %s | %s | %s | %s | %s |\n",
+			c.ID, c.Usage, c.Description, resultColor, strings.ToUpper(c.Result), c.Time, c.Created, c.Updated, c.Details)
 	}
 
 	// Add reference and note to the Markdown output
@@ -862,6 +870,7 @@ func convertXMLtoMarkdown(xmlFile, markdownFile string, profile *OscalScan) {
 }
 
 // ControlVerbose holds detailed info for each control
+// Add Created and Updated timestamps
 type ControlVerbose struct {
 	ID          string
 	Usage       string
@@ -869,6 +878,8 @@ type ControlVerbose struct {
 	Result      string
 	Time        string
 	Details     string
+	Created     string // ISO8601 string
+	Updated     string // ISO8601 string
 }
 
 // extractControlsVerbose parses the XML and returns a slice of ControlVerbose
@@ -896,6 +907,15 @@ func extractControlsVerbose(xmlFile string) ([]ControlVerbose, error) {
 	}
 	var controls []ControlVerbose
 	for _, r := range bench.TestResult.RuleResults {
+		created := ""
+		updated := ""
+		if r.Time != "" {
+			created = r.Time
+			updated = r.Time
+		} else {
+			created = time.Now().Format(time.RFC3339)
+			updated = created
+		}
 		controls = append(controls, ControlVerbose{
 			ID:          r.ID,
 			Usage:       "See description", // Usage can be improved if available in XML
@@ -903,6 +923,8 @@ func extractControlsVerbose(xmlFile string) ([]ControlVerbose, error) {
 			Result:      r.Result,
 			Time:        r.Time,
 			Details:     r.Message,
+			Created:     created,
+			Updated:     updated,
 		})
 	}
 	return controls, nil
@@ -914,8 +936,8 @@ func generateSummaryReport(results []OscalScan, oscalDir string) {
 	md := "# OSCAL Scan Summary Report\n\n"
 	md += fmt.Sprintf("**Report Generated:** %s\n\n", time.Now().Format("2006-01-02 15:04:05"))
 	md += "## Profile Results\n\n"
-	md += "| Profile | Status | Pass | Fail | N/A | Total | Duration | Reference | Note |\n"
-	md += "|---------|--------|------|------|-----|-------|----------|-----------|------|\n"
+	md += "| Profile | Status | Pass | Fail | N/A | Total | Duration | Created | Updated | Reference | Note |\n"
+	md += "|---------|--------|------|------|-----|-------|----------|---------|---------|-----------|------|\n"
 
 	for _, result := range results {
 		status := "❌ Failed"
@@ -927,7 +949,7 @@ func generateSummaryReport(results []OscalScan, oscalDir string) {
 
 		duration := result.Results.EndTime.Sub(result.Results.StartTime).Seconds()
 
-		md += fmt.Sprintf("| %s | %s | %d | %d | %d | %d | %.1fs | %s | %s |\n",
+		md += fmt.Sprintf("| %s | %s | %d | %d | %d | %d | %.1fs | %s | %s | %s | %s |\n",
 			result.Profile,
 			status,
 			result.Results.Pass,
@@ -935,6 +957,8 @@ func generateSummaryReport(results []OscalScan, oscalDir string) {
 			result.Results.NotApplicable,
 			result.Results.Total,
 			duration,
+			result.Results.Created.Format(time.RFC3339),
+			result.Results.Updated.Format(time.RFC3339),
 			result.Reference,
 			result.Note)
 	}
@@ -1052,31 +1076,4 @@ func convertWindowsPathToWSL(winPath string) string {
 		return "/mnt/" + driveLetter + filepath.ToSlash(winPath[len(vol):])
 	}
 	return winPath // Not a typical Windows drive path, return as is
-}
-
-func printOverallProgress(current, total int, profileName string, final bool) {
-	progressMutex.Lock()
-	defer progressMutex.Unlock()
-
-	percentage := 0.0
-	if total > 0 {
-		percentage = (float64(current) / float64(total)) * 100
-	}
-
-	barLength := 30 // Length of the progress bar
-	filledLength := 0
-	if total > 0 {
-		filledLength = int(float64(barLength) * float64(current) / float64(total))
-	}
-
-	bar := strings.Repeat("=", filledLength) + strings.Repeat("-", barLength-filledLength)
-
-	// \r moves cursor to beginning of line. Pad with spaces to clear previous, longer lines.
-	clearLine := strings.Repeat(" ", 80) // Increased padding to ensure full line clear
-	fmt.Printf("\r%s", clearLine)        // Clear the line first
-	fmt.Printf("\rOverall Progress: [%s] %d/%d (%.1f%%)", bar, current, total, percentage)
-
-	if final && current == total { // Ensure it's truly the final call and all are done
-		fmt.Printf(" All scans complete.\n") // Newline and final message
-	}
 }
