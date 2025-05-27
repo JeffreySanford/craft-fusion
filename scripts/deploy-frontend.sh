@@ -150,16 +150,13 @@ if ! command -v wscat &> /dev/null; then
     npm install -g wscat
 fi
 if command -v wscat &> /dev/null; then
-    # Test WSS if HTTPS is working, otherwise test WS
-    if [[ "$HTTPS_RESPONSE" =~ ^2|3 ]]; then
-        timeout 5s wscat -c "wss://jeffreysanford.us/socket.io/?EIO=4&transport=websocket" --no-check &>/dev/null && \
-        echo -e "${GREEN}✓ WSS connection test passed${NC}" || \
-        echo -e "${YELLOW}⚠ WSS connection test failed - check backend${NC}"
-    else
-        timeout 5s wscat -c "ws://jeffreysanford.us/socket.io/?EIO=4&transport=websocket" --no-check &>/dev/null && \
-        echo -e "${GREEN}✓ WS connection test passed${NC}" || \
-        echo -e "${YELLOW}⚠ WS connection test failed - check backend${NC}"
-    fi
+    # Always test both WSS and WS
+    timeout 5s wscat -c "wss://jeffreysanford.us/socket.io/?EIO=4&transport=websocket" --no-check &>/dev/null \
+        && echo -e "${GREEN}✓ WSS connection test passed${NC}" \
+        || echo -e "${YELLOW}⚠ WSS connection test failed - check backend or nginx proxy${NC}"
+    timeout 5s wscat -c "ws://jeffreysanford.us/socket.io/?EIO=4&transport=websocket" --no-check &>/dev/null \
+        && echo -e "${GREEN}✓ WS connection test passed${NC}" \
+        || echo -e "${YELLOW}⚠ WS connection test failed - check backend or nginx proxy${NC}"
 else
     echo -e "${RED}✗ wscat installation failed - skipping WebSocket test${NC}"
 fi
