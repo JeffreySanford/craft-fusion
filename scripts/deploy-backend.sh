@@ -121,6 +121,13 @@ fi
 echo -e "${GREEN}✓ Build outputs verified${NC}"
 
 echo -e "${BLUE}8. Copying application files...${NC}"
+# Ensure no Go process is running in the target directory before copying
+if sudo pgrep -f "$APP_DIR/dist/apps/craft-go/main" > /dev/null; then
+    echo -e "${YELLOW}Killing Go process in $APP_DIR before copying...${NC}"
+    sudo pkill -f "$APP_DIR/dist/apps/craft-go/main"
+    sleep 1
+    echo -e "${GREEN}✓ Go process in $APP_DIR killed${NC}"
+fi
 # Copy built applications
 sudo cp -r dist/ "$APP_DIR"/
 sudo cp ecosystem.config.js "$APP_DIR"/
