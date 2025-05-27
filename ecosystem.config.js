@@ -6,7 +6,7 @@ module.exports = {
       instances: 1,
       exec_mode: "fork",
       cwd: __dirname,
-      node_args: "--max-old-space-size=200", // Memory optimization for 2GB VPS
+      node_args: "--max-old-space-size=2048", // 2GB
       env: {
         NODE_ENV: "production",
         PORT: 3000,
@@ -18,7 +18,7 @@ module.exports = {
       out_file: "/var/log/craft-fusion/craft-nest/out.log",
       merge_logs: true,
       time: true,
-      max_memory_restart: "150M", // FIXED: Appropriate limit for 2GB VPS
+      max_memory_restart: "2048M", // FIXED: Appropriate limit for 2GB VPS
       autorestart: true,
       min_uptime: "10s",
       max_restarts: 10,
