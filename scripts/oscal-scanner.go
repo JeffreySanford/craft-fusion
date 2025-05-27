@@ -277,6 +277,13 @@ func main() {
 	// Final progress bar update with newline
 	printOverallProgress(int(atomic.LoadInt32(&completedScans)), totalScansToRun, "", true)
 
+	// Update the central profile file locally
+	updateOscalProfilesJSON(results, oscalProfilesPath)
+
+	// Optionally, update the central profile file remotely (placeholder)
+	// Example: uploadOscalProfilesJSON(oscalProfilesPath)
+	// Implement remote update logic here, e.g., HTTP PUT/POST or SFTP upload
+
 	// Display final results
 	fmt.Printf("\n%s=== OSCAL Scan Summary ===%s\n", ColorBold+ColorCyan, ColorReset)
 	successful := 0
@@ -535,10 +542,14 @@ func runOscapScan(profile *OscalScan, oscalDir string, scapContentFile string, v
 		}
 
 		fmt.Printf("%sProfile [%s]: Converting %s to JSON (%s)...%s\n", profile.Color, profile.Profile, filepath.Base(resultsFile), filepath.Base(jsonFile), ColorReset)
-		convertXMLtoJSON(resultsFile, jsonFile)
+		if err := convertXMLtoJSON(resultsFile, jsonFile); err != nil {
+			fmt.Printf("%sError converting XML to JSON: %v%s\n", ColorRed, err, ColorReset)
+		}
 
 		fmt.Printf("%sProfile [%s]: Converting %s to Markdown (%s)...%s\n", profile.Color, profile.Profile, filepath.Base(resultsFile), filepath.Base(markdownFile), ColorReset)
-		convertXMLtoMarkdown(resultsFile, markdownFile, profile)
+		if err := convertXMLtoMarkdown(resultsFile, markdownFile, profile); err != nil {
+			fmt.Printf("%sError converting XML to Markdown: %v%s\n", ColorRed, err, ColorReset)
+		}
 
 		// Make user-readable copies
 		userResultsFile := filepath.Join(oscalDir, "user-readable-results-"+profile.Profile+".xml")
@@ -679,255 +690,82 @@ func runTrueNorthScan(profile *OscalScan, oscalDir string) {
 		profile.Color, profile.Results.ExitCode, ColorReset)
 }
 
-// Add this function for verbose per-control output
-func printControlVerbose(controls []ControlVerbose) {
-	for _, c := range controls {
-		color := ColorWhite
-		icon := "•"
-		switch strings.ToLower(c.Result) {
-		case "pass":
-			color = ColorGreen
-			icon = "✓"
-		case "fail":
-			color = ColorRed
-			icon = "✗"
-		case "notapplicable":
-			color = ColorYellow
-			icon = "!"
-		}
-		fmt.Printf("%s%s %s%-12s%s [%s] %s\n", color, icon, ColorBold, c.ID, ColorReset, strings.ToUpper(c.Result), c.Time)
-		desc := c.Description
-		if desc == "" {
-			desc = "(no description)"
-		}
-		details := c.Details
-		if details == "" {
-			details = "(no details)"
-		}
-		// Show reason for notapplicable if present in details/message
-		reason := ""
-		if strings.ToLower(c.Result) == "notapplicable" && details != "" {
-			reason = fmt.Sprintf("Reason: %s", details)
-		}
-		fmt.Printf("    %s\n", desc)
-		if reason != "" {
-			fmt.Printf("    %s%s%s\n", ColorYellow, reason, ColorReset)
-		} else if details != "" && details != "(no details)" {
-			fmt.Printf("    Details: %s\n", details)
-		}
+// Print overall progress bar with vibrant color and profile name
+func printOverallProgress(current, total int, profileName string, final bool) {
+	progressMutex.Lock()
+	defer progressMutex.Unlock()
+
+	percentage := 0.0
+	if total > 0 {
+		percentage = (float64(current) / float64(total)) * 100
 	}
-	fmt.Print("\n")
+
+	barLength := 30 // Length of the progress bar
+	filledLength := 0
+	if total > 0 {
+		filledLength = int(float64(barLength) * float64(current) / float64(total))
+	}
+
+	bar := strings.Repeat("=", filledLength) + strings.Repeat("-", barLength-filledLength)
+
+	// Vibrant color cycling for profile name
+	profileColors := []string{ColorCyan, ColorGreen, ColorYellow, ColorPurple, ColorBlue, ColorWhite}
+	colorIdx := (current + len(profileName)) % len(profileColors)
+	profileColor := profileColors[colorIdx]
+
+	// \r moves cursor to beginning of line. Pad with spaces to clear previous, longer lines.
+	clearLine := strings.Repeat(" ", 80) // Increased padding to ensure full line clear
+	fmt.Printf("\r%s", clearLine)        // Clear the line first
+	fmt.Printf("\r%sOverall Progress: [%s%s%s] [%s] %d/%d (%.1f%%)%s", ColorBold, profileColor, profileName, ColorReset, bar, current, total, percentage, ColorReset)
+
+	if final && current == total { // Ensure it's truly the final call and all are done
+		fmt.Printf(" %sAll scans complete.%s\n", ColorGreen, ColorReset) // Newline and final message
+	}
 }
 
-// Helper to trim description for display
-func trimToLen(s string, n int) string {
-	r := []rune(s)
-	if len(r) > n {
-		return string(r[:n-3]) + "..."
+// After all scans, update oscal-profiles.json with results and timestamps
+func updateOscalProfilesJSON(results []OscalScan, oscalProfilesPath string) {
+	if oscalProfilesPath == "" {
+		return
 	}
-	return s
-}
-
-func parseResultCounts(xmlFile string) map[string]int {
-	data, err := os.ReadFile(xmlFile)
-	if err != nil {
-		fmt.Printf("%sError reading XML file %s for parsing counts: %v%s\n", ColorRed, xmlFile, err, ColorReset)
-		return nil
+	// Read existing file
+	var profilesData struct {
+		Profiles []map[string]interface{} `json:"profiles"`
 	}
-
-	var results OscalResults
-	counts := make(map[string]int)
-
-	if err := xml.Unmarshal(data, &results); err != nil {
-		fmt.Printf("%sWarning: Error unmarshalling XML file %s: %v. Falling back to string counting.%s\n", ColorYellow, xmlFile, err, ColorReset)
-		// Fallback to string counting if proper unmarshalling fails
-		content := string(data)
-		counts["pass"] = strings.Count(content, "<result>pass</result>")
-		counts["fail"] = strings.Count(content, "<result>fail</result>")
-		counts["notapplicable"] = strings.Count(content, "<result>notapplicable</result>")
-		counts["error"] = strings.Count(content, "<result>error</result>") // Assuming "error" is a valid result string
-	} else {
-		// Use the unmarshalled data
-		if results.TestResult.RuleResults != nil {
-			for _, ruleResult := range results.TestResult.RuleResults {
-				switch strings.ToLower(ruleResult.Result) {
-				case "pass":
-					counts["pass"]++
-				case "fail":
-					counts["fail"]++
-				case "notapplicable":
-					counts["notapplicable"]++
-				case "error":
-					counts["error"]++
-				}
+	data, err := os.ReadFile(oscalProfilesPath)
+	if err == nil {
+		_ = json.Unmarshal(data, &profilesData)
+	}
+	// Update or add each profile
+	for _, r := range results {
+		found := false
+		for _, p := range profilesData.Profiles {
+			if p["name"] == r.Profile {
+				p["last_scan"] = time.Now().Format(time.RFC3339)
+				p["pass"] = r.Results.Pass
+				p["fail"] = r.Results.Fail
+				p["notapplicable"] = r.Results.NotApplicable
+				p["total"] = r.Results.Total
+				p["updated"] = time.Now().Format(time.RFC3339)
+				found = true
+				break
 			}
 		}
-	}
-	counts["total"] = counts["pass"] + counts["fail"] + counts["notapplicable"] + counts["error"]
-	return counts
-}
-
-func convertXMLtoJSON(xmlFile, jsonFile string) {
-	xmlData, err := os.ReadFile(xmlFile)
-	if err != nil {
-		fmt.Printf("%sError reading XML file %s for JSON conversion: %v%s\n", ColorRed, xmlFile, err, ColorReset)
-		return
-	}
-
-	// Use a simplified approach: convert to map then to JSON
-	// A more robust solution would properly parse the XML schema
-	var data map[string]interface{}
-	xml.Unmarshal(xmlData, &data)
-	// Consider unmarshalling into a specific struct if a defined JSON output is required,
-	// e.g., var oscalData OscalResults; xml.Unmarshal(xmlData, &oscalData);
-	// then jsonData, err := json.MarshalIndent(oscalData, "", "  ")
-
-	jsonData, err := json.MarshalIndent(data, "", "  ")
-	if err != nil {
-		fmt.Printf("%sError marshalling XML data from %s to JSON: %v%s\n", ColorRed, xmlFile, err, ColorReset)
-		return
-	}
-
-	if err := os.WriteFile(jsonFile, jsonData, 0644); err != nil {
-		fmt.Printf("%sError writing JSON data to %s: %v%s\n", ColorRed, jsonFile, err, ColorReset)
-	}
-}
-
-func convertXMLtoMarkdown(xmlFile, markdownFile string, profile *OscalScan) {
-	controls, err := extractControlsVerbose(xmlFile)
-	if err != nil {
-		fmt.Printf("%sError extracting controls for Markdown: %v%s\n", ColorRed, err, ColorReset)
-		return
-	}
-	counts := parseResultCounts(xmlFile)
-	if counts == nil {
-		return
-	}
-
-	// Branding and summary
-	md := ""
-	md += "![True North Insights](https://jeffreysanford.us/assets/branding/logo.png)\n\n"
-	md += "# 🛡️ True North Insights: OSCAL Scan Results\n\n"
-	md += "**Profile:** `" + profile.Profile + "`  \n"
-	md += "**Description:** " + profile.Description + "  \n"
-	md += "**Scan Date:** " + time.Now().Format("2006-01-02 15:04:05") + "\n\n"
-	md += "## 📊 Summary Table\n\n"
-	md += "| Metric | Count |\n"
-	md += "|--------|-------|\n"
-	md += fmt.Sprintf("| Passed | %d |\n", counts["pass"])
-	md += fmt.Sprintf("| Failed | %d |\n", counts["fail"])
-	md += fmt.Sprintf("| Not Applicable | %d |\n", counts["notapplicable"])
-	md += fmt.Sprintf("| Errors | %d |\n", counts["error"])
-	md += fmt.Sprintf("| **Total** | **%d** |\n\n", counts["total"])
-	if counts["total"] > 0 {
-		passRate := float64(counts["pass"]) / float64(counts["total"]) * 100
-		md += fmt.Sprintf("**Pass Rate:** <span style=\"color:limegreen;font-weight:bold;\">%.1f%%</span>\n\n", passRate)
-	}
-
-	// Explain report format
-	md += "## 📄 About This Report\n"
-	md += "This report lists all security controls tested in this OSCAL scan. Each control includes:\n"
-	md += "- **ID**: Control identifier\n"
-	md += "- **Usage**: What the control checks\n"
-	md += "- **Description**: Details about the control\n"
-	md += "- **Result**: Pass/Fail/Not Applicable\n"
-	md += "- **Time**: Time taken for this control (if available)\n"
-	md += "- **Details**: Extra information or evidence\n\n"
-
-	// Infographic (ASCII bar)
-	md += "### Infographic: Control Results\n"
-	md += "```text\n"
-	md += fmt.Sprintf("Passed:   %s\n", strings.Repeat("█", counts["pass"]))
-	md += fmt.Sprintf("Failed:   %s\n", strings.Repeat("█", counts["fail"]))
-	md += fmt.Sprintf("N/A:      %s\n", strings.Repeat("█", counts["notapplicable"]))
-	md += "```\n\n"
-
-	// Expanded controls section
-	md += "## 🔍 Detailed Control Results\n\n"
-	md += "| ID | Usage | Description | Result | Time | Created | Updated | Details |\n"
-	md += "|----|-------|-------------|--------|------|---------|---------|---------|\n"
-	for _, c := range controls {
-		resultColor := "🟢"
-		if c.Result == "fail" {
-			resultColor = "🔴"
-		} else if c.Result == "notapplicable" {
-			resultColor = "🟡"
+		if !found {
+			profilesData.Profiles = append(profilesData.Profiles, map[string]interface{}{
+				"name":          r.Profile,
+				"last_scan":     time.Now().Format(time.RFC3339),
+				"pass":          r.Results.Pass,
+				"fail":          r.Results.Fail,
+				"notapplicable": r.Results.NotApplicable,
+				"total":         r.Results.Total,
+				"updated":       time.Now().Format(time.RFC3339),
+			})
 		}
-		md += fmt.Sprintf("| `%s` | %s | %s | %s %s | %s | %s | %s | %s |\n",
-			c.ID, c.Usage, c.Description, resultColor, strings.ToUpper(c.Result), c.Time, c.Created, c.Updated, c.Details)
 	}
-
-	// Add reference and note to the Markdown output
-	md += "**Reference:** " + profile.Reference + "  \n"
-	if profile.Note != "" {
-		md += "**Note:** " + profile.Note + "  \n"
-	}
-
-	// Save to file
-	if err := os.WriteFile(markdownFile, []byte(md), 0644); err != nil {
-		fmt.Printf("%sError writing Markdown report to %s: %v%s\n", ColorRed, markdownFile, err, ColorReset)
-	}
-}
-
-// ControlVerbose holds detailed info for each control
-// Add Created and Updated timestamps
-type ControlVerbose struct {
-	ID          string
-	Usage       string
-	Description string
-	Result      string
-	Time        string
-	Details     string
-	Created     string // ISO8601 string
-	Updated     string // ISO8601 string
-}
-
-// extractControlsVerbose parses the XML and returns a slice of ControlVerbose
-func extractControlsVerbose(xmlFile string) ([]ControlVerbose, error) {
-	data, err := os.ReadFile(xmlFile)
-	if err != nil {
-		return nil, err
-	}
-	type RuleResult struct {
-		ID          string `xml:"idref,attr"`
-		Result      string `xml:"result"`
-		Time        string `xml:"time"`
-		Description string `xml:"description"`
-		Message     string `xml:"check>message"`
-	}
-	type TestResult struct {
-		RuleResults []RuleResult `xml:"rule-result"`
-	}
-	type Benchmark struct {
-		TestResult TestResult `xml:"TestResult"`
-	}
-	var bench Benchmark
-	if err := xml.Unmarshal(data, &bench); err != nil {
-		return nil, err
-	}
-	var controls []ControlVerbose
-	for _, r := range bench.TestResult.RuleResults {
-		created := ""
-		updated := ""
-		if r.Time != "" {
-			created = r.Time
-			updated = r.Time
-		} else {
-			created = time.Now().Format(time.RFC3339)
-			updated = created
-		}
-		controls = append(controls, ControlVerbose{
-			ID:          r.ID,
-			Usage:       "See description", // Usage can be improved if available in XML
-			Description: r.Description,
-			Result:      r.Result,
-			Time:        r.Time,
-			Details:     r.Message,
-			Created:     created,
-			Updated:     updated,
-		})
-	}
-	return controls, nil
+	// Write back
+	out, _ := json.MarshalIndent(profilesData, "", "  ")
+	_ = os.WriteFile(oscalProfilesPath, out, 0644)
 }
 
 func generateSummaryReport(results []OscalScan, oscalDir string) {
@@ -1059,6 +897,104 @@ func getDefaultScapContentPath() string {
 	return "/usr/share/xml/scap/ssg/content/ssg-fedora-ds.xml"
 }
 
+// Control represents a single security control result
+type Control struct {
+	ID          string
+	Result      string
+	Description string
+	Message     string
+}
+
+// extractControlsVerbose extracts control information from XML results file
+func extractControlsVerbose(xmlPath string) ([]Control, error) {
+	data, err := ioutil.ReadFile(xmlPath)
+	if err != nil {
+		return nil, err
+	}
+
+	var result struct {
+		XMLName    xml.Name `xml:"Benchmark"`
+		TestResult struct {
+			RuleResults []struct {
+				IDRef   string `xml:"idref,attr"`
+				Result  string `xml:"result"`
+				Message string `xml:"message"`
+			} `xml:"rule-result"`
+		} `xml:"TestResult"`
+	}
+
+	if err := xml.Unmarshal(data, &result); err != nil {
+		return nil, err
+	}
+
+	var controls []Control
+	for _, rr := range result.TestResult.RuleResults {
+		controls = append(controls, Control{
+			ID:          rr.IDRef,
+			Result:      rr.Result,
+			Description: "", // Could be extracted from rule definitions if needed
+			Message:     rr.Message,
+		})
+	}
+
+	return controls, nil
+}
+
+// printControlVerbose prints detailed control information in a formatted way
+func printControlVerbose(controls []Control) {
+	if len(controls) == 0 {
+		fmt.Printf("%sNo controls found%s\n", ColorYellow, ColorReset)
+		return
+	}
+
+	fmt.Printf("%sControl Details:%s\n", ColorBold+ColorCyan, ColorReset)
+
+	passCount := 0
+	failCount := 0
+	naCount := 0
+
+	for i, control := range controls {
+		var statusColor string
+		var statusSymbol string
+
+		switch control.Result {
+		case "pass":
+			statusColor = ColorGreen
+			statusSymbol = "✓"
+			passCount++
+		case "fail":
+			statusColor = ColorRed
+			statusSymbol = "✗"
+			failCount++
+		case "notapplicable":
+			statusColor = ColorYellow
+			statusSymbol = "○"
+			naCount++
+		default:
+			statusColor = ColorWhite
+			statusSymbol = "?"
+		}
+
+		fmt.Printf("%s%s %s%s %s%s\n",
+			statusColor, statusSymbol, control.ID, ColorReset,
+			ColorWhite, control.Result)
+
+		if control.Message != "" && len(control.Message) > 0 {
+			fmt.Printf("    %s%s%s\n", ColorCyan, control.Message, ColorReset)
+		}
+
+		// Add a separator every 10 controls for readability
+		if (i+1)%10 == 0 && i+1 < len(controls) {
+			fmt.Printf("%s%s%s\n", ColorBold, strings.Repeat("-", 50), ColorReset)
+		}
+	}
+
+	fmt.Printf("\n%sSummary: %s%d passed%s, %s%d failed%s, %s%d N/A%s\n",
+		ColorBold, ColorGreen, passCount, ColorReset,
+		ColorRed, failCount, ColorReset,
+		ColorYellow, naCount, ColorReset)
+}
+
 // convertWindowsPathToWSL converts a Windows path (e.g., C:\Users\Me\file.txt)
 // to a WSL path (e.g., /mnt/c/Users/Me/file.txt).
 // This is a simplified converter and might need adjustments for edge cases.
@@ -1071,9 +1007,124 @@ func convertWindowsPathToWSL(winPath string) string {
 		return winPath
 	}
 	vol := filepath.VolumeName(winPath) // e.g., "C:"
-	if len(vol) == 2 && vol[1] == ':' {
+	if len(vol) >= 2 && vol[1] == ':' {
+		// Windows drive letter (e.g., "C:")
 		driveLetter := strings.ToLower(string(vol[0]))
 		return "/mnt/" + driveLetter + filepath.ToSlash(winPath[len(vol):])
 	}
 	return winPath // Not a typical Windows drive path, return as is
+}
+
+// convertXMLtoJSON converts an OSCAP XML results file to JSON format
+func convertXMLtoJSON(xmlPath, jsonPath string) error {
+	xmlData, err := os.ReadFile(xmlPath)
+	if err != nil {
+		return fmt.Errorf("failed to read XML file: %v", err)
+	}
+
+	var result map[string]interface{}
+	if err := xml.Unmarshal(xmlData, &result); err != nil {
+		return fmt.Errorf("failed to parse XML: %v", err)
+	}
+
+	jsonData, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal JSON: %v", err)
+	}
+
+	if err := os.WriteFile(jsonPath, jsonData, 0644); err != nil {
+		return fmt.Errorf("failed to write JSON file: %v", err)
+	}
+
+	return nil
+}
+
+// parseResultCounts parses the XML results file and returns a map of result counts
+func parseResultCounts(xmlPath string) map[string]int {
+	data, err := os.ReadFile(xmlPath)
+	if err != nil {
+		return nil
+	}
+
+	var result OscalResults
+	if err := xml.Unmarshal(data, &result); err != nil {
+		return nil
+	}
+
+	counts := map[string]int{
+		"pass":          0,
+		"fail":          0,
+		"notapplicable": 0,
+		"total":         0,
+	}
+
+	for _, ruleResult := range result.TestResult.RuleResults {
+		switch ruleResult.Result {
+		case "pass":
+			counts["pass"]++
+		case "fail":
+			counts["fail"]++
+		case "notapplicable":
+			counts["notapplicable"]++
+		}
+		counts["total"]++
+	}
+
+	return counts
+}
+
+// convertXMLtoMarkdown converts an OSCAP XML results file to Markdown format
+func convertXMLtoMarkdown(xmlPath, markdownPath string, profile *OscalScan) error {
+	xmlData, err := os.ReadFile(xmlPath)
+	if err != nil {
+		return fmt.Errorf("failed to read XML file: %v", err)
+	}
+
+	var result OscalResults
+	if err := xml.Unmarshal(xmlData, &result); err != nil {
+		return fmt.Errorf("failed to parse XML: %v", err)
+	}
+
+	md := fmt.Sprintf("# OSCAL Scan Results - %s Profile\n\n", profile.Profile)
+	md += fmt.Sprintf("**Profile ID:** %s\n\n", profile.ProfileID)
+	md += fmt.Sprintf("**Description:** %s\n\n", profile.Description)
+
+	if profile.Reference != "" {
+		md += fmt.Sprintf("**Reference:** %s\n\n", profile.Reference)
+	}
+
+	if profile.Note != "" {
+		md += fmt.Sprintf("**Note:** %s\n\n", profile.Note)
+	}
+
+	md += fmt.Sprintf("**Scan Date:** %s\n\n", profile.Results.StartTime.Format("2006-01-02 15:04:05"))
+	md += fmt.Sprintf("**Duration:** %.1f seconds\n\n", profile.Results.EndTime.Sub(profile.Results.StartTime).Seconds())
+
+	md += "## Summary\n\n"
+	md += "| Result | Count |\n"
+	md += "|--------|-------|\n"
+	md += fmt.Sprintf("| Pass | %d |\n", profile.Results.Pass)
+	md += fmt.Sprintf("| Fail | %d |\n", profile.Results.Fail)
+	md += fmt.Sprintf("| Not Applicable | %d |\n", profile.Results.NotApplicable)
+	md += fmt.Sprintf("| **Total** | **%d** |\n\n", profile.Results.Total)
+
+	md += "## Rule Results\n\n"
+	for i, ruleResult := range result.TestResult.RuleResults {
+		status := "❓"
+		switch ruleResult.Result {
+		case "pass":
+			status = "✅"
+		case "fail":
+			status = "❌"
+		case "notapplicable":
+			status = "⚪"
+		}
+		md += fmt.Sprintf("%d. %s %s\n", i+1, status, ruleResult.Result)
+	}
+
+	if err := os.WriteFile(markdownPath, []byte(md), 0644); err != nil {
+		return fmt.Errorf("failed to write markdown file: %v", err)
+	}
+
+	return nil
 }
