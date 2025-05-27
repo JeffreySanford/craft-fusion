@@ -340,6 +340,24 @@ echo -e "${BOLD}${WHITE}Estimated Time: Continuous${NC}\n"
 init_screen
 START_TIME=$(date +%s)
 
+# Helper: Find latest OSCAL result/report file for a profile
+find_latest_oscal_file() {
+    local base_dir="$1"
+    local profile="$2"
+    local type="$3" # 'xml' or 'html'
+    local user_pattern="$base_dir/user-readable-results-$profile*.${type}"
+    local admin_pattern="$base_dir/oscap-results-$profile*.${type}"
+    local user_files=( $user_pattern )
+    local admin_files=( $admin_pattern )
+    local latest_file=""
+    if compgen -G "$user_pattern" > /dev/null; then
+        latest_file=$(ls -1t $user_pattern 2>/dev/null | head -1)
+    elif compgen -G "$admin_pattern" > /dev/null; then
+        latest_file=$(ls -1t $admin_pattern 2>/dev/null | head -1)
+    fi
+    echo "$latest_file"
+}
+
 while true; do
     # Initialize network speed variables to avoid unbound variable errors
     rx_speed=0
@@ -376,6 +394,12 @@ while true; do
     echo -e "$elapsed_bar"
     echo -e "${PURPLE}${BOLD}LIVE UPDATING • LEGENDARY MODE${NC}"
     echo
+    
+    # Print timestamp at top (human readable, with timezone)
+    local_tz=$(date +"%Z")
+    local_time=$(date '+%Y-%m-%d %H:%M:%S')
+    utc_time=$(TZ=UTC date '+%Y-%m-%d %H:%M:%S UTC')
+    echo -e "${BOLD}${CYAN}Server Time: $local_time $local_tz${NC} | ${WHITE}UTC: $utc_time${NC}"
     
     # Get memory info
     if command -v free >/dev/null 2>&1; then
@@ -497,6 +521,9 @@ while true; do
     else
         echo -e "   ${YELLOW}⚪ No APIs responding${NC}"
     fi
+    # Explicitly check Go and Nest servers
+    check_server_status "NestJS" 3000 "node.*main.js"
+    check_server_status "Go" 4000 "craft-go"
     
     echo
     echo -e "${BOLD}${GREEN}🔄 Top Memory Consumers:${NC}"
@@ -603,76 +630,41 @@ while true; do
     echo -e "${CYAN}Press Ctrl+C to exit monitor${NC}"
     
     echo
+    # OSCAL/FedRAMP Compliance Scan:
     echo -e "${BOLD}${CYAN}🛡️  OSCAL/FedRAMP Compliance Scan:${NC}"
-    for profile_loop_var in "${OSCAL_PROFILES[@]}"; do # Renamed loop variable for clarity
-        current_profile_result_file=""
-        current_profile_report_file=""
-
+    for profile_loop_var in "${OSCAL_PROFILES[@]}"; do
+        current_profile_result_file="$(find_latest_oscal_file "$OSCAL_DIR" "$profile_loop_var" "xml")"
+        current_profile_report_file="$(find_latest_oscal_file "$OSCAL_DIR" "$profile_loop_var" "html")"
         # Define potential file names
         user_readable_profile_specific="$OSCAL_DIR/user-readable-results-$profile_loop_var.xml"
         admin_profile_specific="$OSCAL_DIR/oscap-results-$profile_loop_var.xml"
-        user_readable_generic_standard="$OSCAL_DIR/user-readable-results.xml" # Only for standard profile legacy
-        admin_generic_standard="$OSCAL_DIR/oscap-results.xml"               # Only for standard profile legacy
-
-        # Prefer user-readable files
+        # Use user-readable if available, else admin
         if [ -f "$user_readable_profile_specific" ]; then
             current_profile_result_file="$user_readable_profile_specific"
-            current_profile_report_file="${user_readable_profile_specific/.xml/.html}"
-        elif [ "$profile_loop_var" = "standard" ]; then # Check for legacy standard files
-            if [ -f "$user_readable_generic_standard" ]; then
-                current_profile_result_file="$user_readable_generic_standard"
-                current_profile_report_file="${user_readable_generic_standard/.xml/.html}"
-            elif [ -f "$admin_generic_standard" ]; then
-                current_profile_result_file="$admin_generic_standard"
-                current_profile_report_file="${admin_generic_standard/.xml/.html}"
-            fi
-        fi
-        # Fallback to admin profile-specific if no user-readable or generic standard found
-        if [ -z "$current_profile_result_file" ] && [ -f "$admin_profile_specific" ]; then
+        elif [ -f "$admin_profile_specific" ]; then
             current_profile_result_file="$admin_profile_specific"
-            current_profile_report_file="${admin_profile_specific/.xml/.html}"
         fi
-
-        if [ -n "$current_profile_result_file" ] && [ -f "$current_profile_result_file" ]; then
-            LAST_RUN=$(stat -c %Y "$current_profile_result_file")
-            NOW_TS=$(date +%s)
-            AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
-            if [ "$AGE_DAYS" -le "$OSCAL_MAX_AGE_DAYS" ]; then
-                echo -e "   ${GREEN}✓ OpenSCAP scan found for ${profile_loop_var} ($AGE_DAYS days ago)${NC}"
-            else
-                echo -e "   ${YELLOW}⚠️  OpenSCAP scan for ${profile_loop_var} is older than $OSCAL_MAX_AGE_DAYS days ($AGE_DAYS days ago)${NC}"
-            fi
-            echo -e "   Report: ${CYAN}$current_profile_report_file${NC}"
-            # Show human readable date/time in SFO (America/Los_Angeles)
-            if command -v date >/dev/null 2>&1; then
-                local_time_sfo=$(TZ=America/Los_Angeles date -d "$(stat -c '%y' \"$current_profile_result_file\")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
-                echo -e "   Server date/time: ${WHITE}$local_time_sfo${NC}"
-                # Indicate if the file is older than the last OSCAL run (stale)
-                if [ $LAST_RUN -lt $NOW_TS ]; then
-                    echo -e "   ${YELLOW}⚠️  Note: This report has not been updated since the last OSCAL run. Please re-run OSCAL for fresh results.${NC}"
-                fi
-            else
-                echo -e "   Server date/time: ${WHITE}$(stat -c '%y' "$current_profile_result_file")${NC}"
-            fi
-            # Show pass/fail summary if xmllint is available
+        if [ -n "$current_profile_result_file" ]; then
             if command -v xmllint &>/dev/null; then
-                # Use robust XPath for pass/fail/total/notapplicable
-                PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$current_profile_result_file" 2>/dev/null)
-                FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$current_profile_result_file" 2>/dev/null)
-                NOTAPPLICABLE=$(xmllint --xpath 'count(//rule-result[result="notapplicable"])' "$current_profile_result_file" 2>/dev/null)
-                ERROR=$(xmllint --xpath 'count(//rule-result[result="error"])' "$current_profile_result_file" 2>/dev/null)
-                TOTAL=$(xmllint --xpath 'count(//rule-result)' "$current_profile_result_file" 2>/dev/null)
-                PASS=${PASS:-0}
-                FAIL=${FAIL:-0}
-                NOTAPPLICABLE=${NOTAPPLICABLE:-0}
-                ERROR=${ERROR:-0}
-                TOTAL=${TOTAL:-0}
-                if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]] && [[ "$TOTAL" =~ ^[0-9]+$ ]]; then
-                    printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}  ${YELLOW}N/A: %s${NC}  ${MAGENTA}Error: %s${NC}  ${WHITE}Total: %s${NC}\n" "$PASS" "$FAIL" "$NOTAPPLICABLE" "$ERROR" "$TOTAL"
+                TOTAL=$(xmllint --xpath 'count(//rule-result)' "$current_profile_result_file" 2>/dev/null || echo 0)
+                PASS=$(xmllint --xpath 'count(//rule-result[result=\"pass\"])' "$current_profile_result_file" 2>/dev/null || echo 0)
+                FAIL=$(xmllint --xpath 'count(//rule-result[result=\"fail\"])' "$current_profile_result_file" 2>/dev/null || echo 0)
+                NOTAPPLICABLE=$(xmllint --xpath 'count(//rule-result[result=\"notapplicable\"])' "$current_profile_result_file" 2>/dev/null || echo 0)
+                echo -e "   ${CYAN}$profile_loop_var${NC}: ${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}  ${YELLOW}N/A: $NOTAPPLICABLE${NC}  ${WHITE}Total: $TOTAL${NC}"
+                # Check file age for freshness warning
+                LAST_RUN=$(stat -c %Y "$current_profile_result_file")
+                NOW_TS=$(date +%s)
+                AGE_DAYS=$(( (NOW_TS - LAST_RUN) / 86400 ))
+                if [ $AGE_DAYS -gt $OSCAL_MAX_AGE_DAYS ]; then
+                  echo -e "   ${YELLOW}⚠️  Note: This report has not been updated since the last OSCAL run. Please re-run OSCAL for fresh results.${NC}"
                 fi
+            else
+                echo -e "   ${YELLOW}xmllint not found, cannot parse $profile_loop_var results${NC}"
+                echo -e "   ${WHITE}Install with: sudo apt-get install libxml2-utils${NC}"
             fi
         else
-            echo -e "   ${RED}✗ No OpenSCAP scan results found for ${profile_loop_var}${NC}"
+            echo -e "   ${RED}✗ No scan results for $profile_loop_var${NC}"
+            echo -e "   ${YELLOW}⚠️  Note: This report has not been updated since the last OSCAL run. Please re-run OSCAL for fresh results.${NC}"
         fi
     done
     # At the end, print colored monitored profiles
@@ -737,5 +729,10 @@ while true; do
         echo -e "   ${YELLOW}⚠ pm2 not installed${NC}"
     fi
 
-    sleep 2
+    # Allow update interval override
+    sleep_time=30
+    if [ -n "$1" ] && [[ "$1" =~ ^[0-9]+$ ]]; then
+      sleep_time=$1
+    fi
+    sleep $sleep_time
 done
