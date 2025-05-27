@@ -6,7 +6,9 @@ import { Logger } from '@nestjs/common';
 @WebSocketGateway({
   cors: {
     origin: '*',
+    methods: ['GET', 'POST'],
   },
+  transports: ['websocket', 'polling'],
   namespace: 'timeline',
 })
 export class TimelineGateway {

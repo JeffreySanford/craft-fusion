@@ -18,6 +18,7 @@ import { Subscription } from 'rxjs';
     methods: ['GET', 'POST']
   },
   namespace: 'health',
+  transports: ['websocket', 'polling'],
 })
 export class HealthGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server!: Server;

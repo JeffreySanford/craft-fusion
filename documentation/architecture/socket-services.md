@@ -26,6 +26,7 @@ The backend implements Socket.IO through the NestJS WebSockets gateway:
   cors: {
     origin: ['https://admin.socket.io', 'http://localhost:4200'],
     credentials: true,
+    transports: ['websocket', 'polling'],
   },
 })
 export class SocketGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {

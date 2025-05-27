@@ -8,7 +8,8 @@ import { YahooService } from './yahoo.service';
   cors: {
     origin: '*',
     credentials: true
-  }
+  },
+  transports: ['websocket', 'polling'],
 })
 export class YahooGateway {
   @WebSocketServer() server!: Server;

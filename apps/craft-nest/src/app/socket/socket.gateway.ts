@@ -12,7 +12,9 @@ import { Server, Socket } from 'socket.io';
 @WebSocketGateway({
   cors: {
     origin: '*',
+    methods: ['GET', 'POST']
   },
+  transports: ['websocket', 'polling'],
 })
 export class SocketGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()

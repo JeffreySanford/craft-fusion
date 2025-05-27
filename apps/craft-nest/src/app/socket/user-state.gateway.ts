@@ -5,7 +5,9 @@ import { UserStateService } from '../user/user-state.service';
 @WebSocketGateway({
   cors: {
     origin: '*',
+    methods: ['GET', 'POST'],
   },
+  transports: ['websocket', 'polling'],
   namespace: 'user-state',
 })
 export class UserStateGateway {
