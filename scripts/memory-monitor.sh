@@ -668,7 +668,7 @@ while true; do
             echo -e "   Report: ${CYAN}$current_profile_report_file${NC}"
             # Show human readable date/time in SFO (America/Los_Angeles)
             if command -v date >/dev/null 2>&1; then
-                local_time_sfo=$(TZ=America/Los_Angeles date -d "$(stat -c '%y' "$current_profile_result_file")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
+                local_time_sfo=$(TZ=America/Los_Angeles date -d "$(stat -c '%y' \"$current_profile_result_file\")" '+%Y-%m-%d %I:%M:%S %p %Z (%A)')
                 echo -e "   Server date/time: ${WHITE}$local_time_sfo${NC}"
                 # Indicate if the file is older than the last OSCAL run (stale)
                 if [ $LAST_RUN -lt $NOW_TS ]; then
@@ -679,22 +679,19 @@ while true; do
             fi
             # Show pass/fail summary if xmllint is available
             if command -v xmllint &>/dev/null; then
-                # Use more robust XPath and add notapplicable
-                TOTAL_XPATH_LOOP="count(//rule-result)"
-                PASS_XPATH_LOOP="count(//rule-result[result='pass'])"
-                FAIL_XPATH_LOOP="count(//rule-result[result='fail'])"
-                NOTAPPLICABLE_XPATH_LOOP="count(//rule-result[result='notapplicable'])"
-                TOTAL=$(xmllint --xpath "$TOTAL_XPATH_LOOP" "$current_profile_result_file" 2>/dev/null)
-                PASS=$(xmllint --xpath "$PASS_XPATH_LOOP" "$current_profile_result_file" 2>/dev/null)
-                FAIL=$(xmllint --xpath "$FAIL_XPATH_LOOP" "$current_profile_result_file" 2>/dev/null)
-                NOTAPPLICABLE=$(xmllint --xpath "$NOTAPPLICABLE_XPATH_LOOP" "$current_profile_result_file" 2>/dev/null)
-
+                # Use robust XPath for pass/fail/total/notapplicable
+                PASS=$(xmllint --xpath 'count(//rule-result[result="pass"])' "$current_profile_result_file" 2>/dev/null)
+                FAIL=$(xmllint --xpath 'count(//rule-result[result="fail"])' "$current_profile_result_file" 2>/dev/null)
+                NOTAPPLICABLE=$(xmllint --xpath 'count(//rule-result[result="notapplicable"])' "$current_profile_result_file" 2>/dev/null)
+                ERROR=$(xmllint --xpath 'count(//rule-result[result="error"])' "$current_profile_result_file" 2>/dev/null)
+                TOTAL=$(xmllint --xpath 'count(//rule-result)' "$current_profile_result_file" 2>/dev/null)
                 PASS=${PASS:-0}
                 FAIL=${FAIL:-0}
-                TOTAL=${TOTAL:-0}
                 NOTAPPLICABLE=${NOTAPPLICABLE:-0}
-                if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]] && [[ "$TOTAL" =~ ^[0-9]+$ ]] && [[ "$NOTAPPLICABLE" =~ ^[0-9]+$ ]]; then
-                    printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}  ${YELLOW}N/A: %s${NC}  ${WHITE}Total: %s${NC}\n" "$PASS" "$FAIL" "$NOTAPPLICABLE" "$TOTAL"
+                ERROR=${ERROR:-0}
+                TOTAL=${TOTAL:-0}
+                if [[ "$PASS" =~ ^[0-9]+$ ]] && [[ "$FAIL" =~ ^[0-9]+$ ]] && [[ "$TOTAL" =~ ^[0-9]+$ ]]; then
+                    printf "   ${GREEN}Pass: %s${NC}  ${RED}Fail: %s${NC}  ${YELLOW}N/A: %s${NC}  ${MAGENTA}Error: %s${NC}  ${WHITE}Total: %s${NC}\n" "$PASS" "$FAIL" "$NOTAPPLICABLE" "$ERROR" "$TOTAL"
                 fi
             fi
         else
