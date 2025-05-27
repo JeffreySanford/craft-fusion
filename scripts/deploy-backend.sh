@@ -22,6 +22,12 @@ if command -v pm2 &> /dev/null; then
     pm2 stop ecosystem.config.js || true
     pm2 delete all || true
     echo -e "${GREEN}✓ PM2 processes stopped${NC}"
+    # Kill any lingering Go process (if still running)
+    if pgrep -f "dist/apps/craft-go/main" > /dev/null; then
+        echo -e "${YELLOW}Killing lingering Go process...${NC}"
+        pkill -f "dist/apps/craft-go/main"
+        echo -e "${GREEN}✓ Go process killed${NC}"
+    fi
 else
     echo -e "${YELLOW}⚠ PM2 not found, installing...${NC}"
     npm install -g pm2
@@ -177,6 +183,9 @@ fi
 
 echo -e "${GREEN}=== Backend Deployment Complete ===${NC}"
 echo
+# Show PM2 process list after deployment
+echo -e "${BLUE}PM2 process list after deployment:${NC}"
+sudo -u craft-fusion pm2 list
 echo -e "${BLUE}Deployment Summary:${NC}"
 echo -e "  NestJS API: ${GREEN}http://localhost:3000${NC}"
 echo -e "  Go API: ${GREEN}http://localhost:4000${NC}"
