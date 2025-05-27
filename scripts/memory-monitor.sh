@@ -526,31 +526,28 @@ while true; do
     check_server_status "Go" 4000 "craft-go"
     
     echo
+    # Top Memory Consumers Table
     echo -e "${BOLD}${GREEN}🔄 Top Memory Consumers:${NC}"
-    # Get total memory for per-process bar
     total_mem=$(free -m | awk '/^Mem:/ {print $2}')
+    printf "${WHITE}%-8s %-6s %-6s %-30s${NC}\n" "USER" "PID" "%MEM" "COMMAND"
     ps aux --sort=-%mem | head -6 | tail -5 | while read line; do
         user=$(echo $line | awk '{print $1}')
         pid=$(echo $line | awk '{print $2}')
         mem_perc=$(echo $line | awk '{print $4}')
         mem_mb=$(awk -v perc="$mem_perc" -v total="$total_mem" 'BEGIN {printf "%d", perc*total/100}')
         cmd=$(echo $line | awk '{for(i=11;i<=NF;i++) printf "%s ", $i; print ""}' | cut -c1-30)
-        printf "   ${CYAN}%8s${NC} ${YELLOW}%6s${NC} ${GREEN}%5s%%${NC} %s\n" "$user" "$pid" "$mem_perc" "$cmd"
-        printf "        "
-        print_memory_bar "$mem_mb" "$total_mem"
-        echo
+        printf "${CYAN}%-8s${NC} ${YELLOW}%-6s${NC} ${GREEN}%-6s${NC} %-30s\n" "$user" "$pid" "$mem_perc" "$cmd"
     done
     
     echo
-    # CPU Block: Show overall and per-core usage
+    # CPU Usage Table
     echo -e "${BOLD}${WHITE}🧮 CPU Usage:${NC}"
     if command -v mpstat >/dev/null 2>&1; then
-        # Show per-core and overall CPU usage
-        mpstat -P ALL 1 1 | awk 'NR==4{printf "   Total:   %s%% user, %s%% sys, %s%% idle, %s%% iowait, %s%% steal\n", $3, $5, $13, $6, $11} NR>4 && $3 ~ /[0-9]+/ {printf "   Core %s: %s%% user, %s%% sys, %s%% idle, %s%% iowait, %s%% steal\n", $3, $4, $6, $13, $7, $12}'
+        mpstat -P ALL 1 1 | awk 'NR==4{printf "${WHITE}%-8s %-8s %-8s %-8s %-8s %-8s\n", "CPU", "%USER", "%SYS", "%IDLE", "%IOWAIT", "%STEAL"} NR==4{printf "${CYAN}%-8s${NC} %-8s %-8s %-8s %-8s %-8s\n", $3, $5, $6, $13, $7, $12} NR>4 && $3 ~ /[0-9]+/ {printf "${CYAN}%-8s${NC} %-8s %-8s %-8s %-8s %-8s\n", $3, $4, $6, $13, $7, $12}'
     else
-        # Fallback: Show top 3 CPU-consuming processes
         echo -e "   ${YELLOW}mpstat not found. Showing top CPU-consuming processes:${NC}"
-        ps aux --sort=-%cpu | head -6 | tail -5 | awk '{printf "   %-8s %6s %5s%% %s\n", $1, $2, $3, $11}'
+        printf "${WHITE}%-8s %-6s %-6s %-30s${NC}\n" "USER" "PID" "%CPU" "COMMAND"
+        ps aux --sort=-%cpu | head -6 | tail -5 | awk '{printf "${CYAN}%-8s${NC} ${YELLOW}%-6s${NC} ${GREEN}%-6s${NC} %-30s\n", $1, $2, $3, $11}'
     fi
     echo
     
@@ -562,39 +559,47 @@ while true; do
     echo
     echo -e "${BOLD}${WHITE}🌍 Network Conditions:${NC}"
     
-    # Network condition analysis
+    # Network Conditions Table
+    printf "${WHITE}%-12s %-12s %-12s %-12s${NC}\n" "QUALITY" "ACTIVITY" "MEMORY" "SWAP"
+    # Fill in values for each column
+    quality="NO CONNECTION"; activity="MEASURING"; mem_status="LOW PRESSURE"; swap_status="No usage"
     if [ $success_count -eq 3 ] && [ -n "$avg_latency" ] && [ "$avg_latency" != "N/A" ]; then
         latency_num=$(echo "$avg_latency" | cut -d'.' -f1 2>/dev/null || echo "$avg_latency")
         if [ "$latency_num" -lt 50 ] 2>/dev/null; then
-            echo -e "   Quality:   ${GREEN}${BOLD}🚀 EXCELLENT${NC} - Low latency"
+            quality="EXCELLENT"
         elif [ "$latency_num" -lt 100 ] 2>/dev/null; then
-            echo -e "   Quality:   ${GREEN}${BOLD}✓ GOOD${NC} - Normal latency"
+            quality="GOOD"
         elif [ "$latency_num" -lt 200 ] 2>/dev/null; then
-            echo -e "   Quality:   ${YELLOW}${BOLD}⚠️  FAIR${NC} - Moderate latency"
+            quality="FAIR"
         else
-            echo -e "   Quality:   ${RED}${BOLD}⚠️  POOR${NC} - High latency"
+            quality="POOR"
         fi
     elif [ $success_count -gt 0 ]; then
-        echo -e "   Quality:   ${YELLOW}${BOLD}⚠️  UNSTABLE${NC} - Intermittent connectivity"
-    else
-        echo -e "   Quality:   ${RED}${BOLD}✗ NO CONNECTION${NC}"
+        quality="UNSTABLE"
     fi
-    
-    # Check current network activity level
     if [ $LAST_CHECK_TIME -gt 0 ] && [ -n "$rx_speed" ] && [ -n "$tx_speed" ]; then
         total_speed=$((rx_speed + tx_speed))
-        if [ $total_speed -gt 1048576 ]; then  # > 1MB/s
-            echo -e "   Activity:  ${GREEN}${BOLD}🔥 HIGH${NC} - Heavy data transfer"
-        elif [ $total_speed -gt 102400 ]; then  # > 100KB/s
-            echo -e "   Activity:  ${CYAN}${BOLD}📊 MODERATE${NC} - Active transfer"
-        elif [ $total_speed -gt 1024 ]; then   # > 1KB/s
-            echo -e "   Activity:  ${YELLOW}${BOLD}💭 LOW${NC} - Light activity"
+        if [ $total_speed -gt 1048576 ]; then
+            activity="HIGH"
+        elif [ $total_speed -gt 102400 ]; then
+            activity="MODERATE"
+        elif [ $total_speed -gt 1024 ]; then
+            activity="LOW"
         else
-            echo -e "   Activity:  ${WHITE}${BOLD}⚪ IDLE${NC} - Minimal traffic"
+            activity="IDLE"
         fi
-    else
-        echo -e "   Activity:  ${WHITE}${BOLD}⏳ MEASURING${NC} - Collecting data..."
     fi
+    if [ $mem_available -lt 200 ]; then
+        mem_status="HIGH PRESSURE"
+    elif [ $mem_available -lt 500 ]; then
+        mem_status="MODERATE PRESSURE"
+    fi
+    if [ $swap_used -gt 100 ]; then
+        swap_status="Heavy usage"
+    elif [ $swap_used -gt 0 ]; then
+        swap_status="Light usage"
+    fi
+    printf "${CYAN}%-12s %-12s %-12s %-12s${NC}\n" "$quality" "$activity" "$mem_status" "$swap_status"
     
     echo
     echo -e "${BOLD}${CYAN}📈 System Health Summary:${NC}"
@@ -712,16 +717,21 @@ while true; do
         echo -e "   ${RED}✗ Web root $WEB_ROOT not found${NC}"
     fi
     echo
-    echo -e "${BOLD}${CYAN}🗂️  OSCAL Files Present:${NC}"
+    # Condensed OSCAL file summary with multi-column table
     if [ -d "$OSCAL_DIR" ]; then
-        find "$OSCAL_DIR" -maxdepth 1 -type f | sort | while read f; do
-            fname=$(basename "$f")
-            echo -e "   ${WHITE}$fname${NC}"
-        done
+        html_count=$(find "$OSCAL_DIR" -maxdepth 1 -type f -iname '*.html' | wc -l)
+        xml_count=$(find "$OSCAL_DIR" -maxdepth 1 -type f -iname '*.xml' | wc -l)
+        md_count=$(find "$OSCAL_DIR" -maxdepth 1 -type f -iname '*.md' | wc -l)
+        pdf_count=$(find "$OSCAL_DIR" -maxdepth 1 -type f -iname '*.pdf' | wc -l)
+        json_count=$(find "$OSCAL_DIR" -maxdepth 1 -type f -iname '*.json' | wc -l)
+        other_count=$(find "$OSCAL_DIR" -maxdepth 1 -type f ! \( -iname '*.html' -o -iname '*.xml' -o -iname '*.md' -o -iname '*.pdf' -o -iname '*.json' \) | wc -l)
+        # Table header
+        echo -e "${BOLD}${CYAN}🗂️  OSCAL Files Summary:${NC}"
+        printf "${WHITE}%-10s %-10s %-10s %-10s %-10s %-10s${NC}\n" "HTML" "XML" "MD" "PDF" "JSON" "OTHER"
+        printf "${CYAN}%-10d %-10d %-10d %-10d %-10d %-10d${NC}\n" $html_count $xml_count $md_count $pdf_count $json_count $other_count
     else
-        echo -e "   ${RED}✗ OSCAL directory not found${NC}"
+        echo -e "${RED}✗ OSCAL directory not found${NC}"
     fi
-    echo
     echo -e "${BOLD}${CYAN}🟢 PM2 Process Status:${NC}"
     if command -v pm2 &>/dev/null; then
         pm2 list || echo -e "   ${YELLOW}⚠ pm2 list failed${NC}"
