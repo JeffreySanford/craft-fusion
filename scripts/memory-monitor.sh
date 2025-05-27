@@ -359,6 +359,9 @@ find_latest_oscal_file() {
 }
 
 while true; do
+    # Clear the screen before redraw
+    clear
+
     # Initialize network speed variables to avoid unbound variable errors
     rx_speed=0
     tx_speed=0
