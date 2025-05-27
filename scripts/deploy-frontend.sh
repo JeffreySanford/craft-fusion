@@ -1,6 +1,10 @@
 #!/bin/bash
 # deploy-frontend.sh - Complete frontend deployment script
 
+# Source common functions for progress bar
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/common-functions.sh"
+
 set -e
 
 echo "=== Frontend Deployment Started ==="
