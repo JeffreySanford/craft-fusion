@@ -1,6 +1,8 @@
 #!/bin/bash
-# memory-monitor.sh - TRUE NORTH INSIGHTS: Craft Fusion System Monitor
+# TRUE NORTH INSIGHTS: Craft Fusion System Monitor
+# This script monitors system health, memory, CPU, network, and OSCAL/FedRAMP compliance. No system or npm clean scripts are called.
 
+# Color codes for output formatting
 BOLD='\033[1m'
 NC='\033[0m'
 CYAN='\033[0;36m'
@@ -12,30 +14,28 @@ WHITE='\033[1;37m'
 BLUE='\033[0;34m'
 PURPLE='\033[0;35m'
 
+# Display header
 clear
 printf "${BOLD}${CYAN}\n╔══════════════════════════════════════════════════════════════════════════════╗\n"
 printf "║        🖥️  TRUE NORTH INSIGHTS: CRAFT FUSION SYSTEM MONITOR v2.1         ║\n"
 printf "║                by True North Insights  |  LIVE UPDATING                   ║\n"
 printf "╚══════════════════════════════════════════════════════════════════════════════╝${NC}\n"
 
-# --- System Prep: Clean up lingering processes and free memory ---
-source "$(dirname "$0")/system-prep.sh"
-
-# Network monitoring variables
+# Network monitoring state
 LAST_RX_BYTES=0
 LAST_TX_BYTES=0
 LAST_CHECK_TIME=0
 
-# Progress bar
+# Progress bar characters
 PROGRESS_CHAR="█"
 EMPTY_CHAR="░"
 
-# Network functions
+# Get the main network interface name
 get_network_interface() {
-    # Get the main network interface (usually eth0, ens3, or similar for VPS)
     ip route | grep default | awk '{print $5}' | head -1
 }
 
+# Get RX/TX bytes for a network interface
 get_network_stats() {
     local interface=$1
     if [ -f "/sys/class/net/$interface/statistics/rx_bytes" ]; then
@@ -47,6 +47,7 @@ get_network_stats() {
     fi
 }
 
+# Format bytes as human-readable string
 format_bytes() {
     local bytes=$1
     if [ $bytes -lt 1024 ]; then
@@ -60,12 +61,11 @@ format_bytes() {
     fi
 }
 
+# Check network connectivity and latency
 check_network_connectivity() {
-    # Check multiple endpoints for reliability
     local endpoints=("8.8.8.8" "1.1.1.1" "github.com")
     local success=0
     local latency_sum=0
-    
     for endpoint in "${endpoints[@]}"; do
         if ping -c 1 -W 2 "$endpoint" >/dev/null 2>&1; then
             local latency=$(ping -c 1 -W 2 "$endpoint" 2>/dev/null | grep 'time=' | sed 's/.*time=\([0-9.]*\).*/\1/')
@@ -75,14 +75,13 @@ check_network_connectivity() {
             fi
         fi
     done
-    
     echo "$success $latency_sum"
 }
 
+# Check health endpoints for backend APIs
 check_deployment_endpoints() {
     local endpoints=("localhost:3000" "localhost:4000")
     local api_status=""
-    
     for endpoint in "${endpoints[@]}"; do
         if curl -s --max-time 2 "http://$endpoint/health" >/dev/null 2>&1 || \
            curl -s --max-time 2 "http://$endpoint" >/dev/null 2>&1; then
@@ -99,17 +98,16 @@ check_deployment_endpoints() {
             fi
         fi
     done
-    
     echo "$api_status"
 }
 
+# Print a memory usage bar
 print_memory_bar() {
     local used=$1
     local total=$2
     local percent=$((used * 100 / total))
     local filled=$((used * 30 / total))
     local empty=$((30 - filled))
-    
     if [ $percent -lt 60 ]; then
         color=$GREEN
     elif [ $percent -lt 80 ]; then
@@ -117,7 +115,6 @@ print_memory_bar() {
     else
         color=$RED
     fi
-    
     printf "${color}"
     for ((i=0; i<filled; i++)); do printf "${PROGRESS_CHAR}"; done
     printf "${NC}${YELLOW}"
@@ -125,11 +122,11 @@ print_memory_bar() {
     printf "${NC} ${BOLD}%d%%${NC}" "$percent"
 }
 
+# Print a CPU usage bar
 print_cpu_bar() {
     local percent=$1
     local filled=$((percent * 30 / 100))
     local empty=$((30 - filled))
-    
     if [ $percent -lt 50 ]; then
         color=$GREEN
     elif [ $percent -lt 80 ]; then
@@ -137,7 +134,6 @@ print_cpu_bar() {
     else
         color=$RED
     fi
-    
     printf "${color}"
     for ((i=0; i<filled; i++)); do printf "${PROGRESS_CHAR}"; done
     printf "${NC}${BLUE}"
@@ -145,13 +141,13 @@ print_cpu_bar() {
     printf "${NC} ${BOLD}%d%%${NC}" "$percent"
 }
 
+# Print a disk usage bar
 print_disk_bar() {
     local used=$1
     local total=$2
     local percent=$((used * 100 / total))
     local filled=$((percent * 30 / 100))
     local empty=$((30 - filled))
-    
     if [ $percent -lt 70 ]; then
         color=$GREEN
     elif [ $percent -lt 90 ]; then
@@ -159,7 +155,6 @@ print_disk_bar() {
     else
         color=$RED
     fi
-    
     printf "${color}"
     for ((i=0; i<filled; i++)); do printf "${PROGRESS_CHAR}"; done
     printf "${NC}${PURPLE}"
@@ -167,21 +162,19 @@ print_disk_bar() {
     printf "${NC} ${BOLD}%d%%${NC}" "$percent"
 }
 
+# Print a network speed bar
 print_network_bar() {
     local speed=$1
     local max_speed=$2
     local percent=0
-    
     if [ $max_speed -gt 0 ]; then
         percent=$((speed * 100 / max_speed))
         if [ $percent -gt 100 ]; then
             percent=100
         fi
     fi
-    
     local filled=$((percent * 30 / 100))
     local empty=$((30 - filled))
-    
     if [ $percent -lt 30 ]; then
         color=$WHITE
     elif [ $percent -lt 70 ]; then
@@ -189,7 +182,6 @@ print_network_bar() {
     else
         color=$GREEN
     fi
-    
     printf "${color}"
     for ((i=0; i<filled; i++)); do printf "${PROGRESS_CHAR}"; done
     printf "${NC}${WHITE}"
@@ -197,24 +189,13 @@ print_network_bar() {
     printf "${NC} ${BOLD}%d%%${NC}" "$percent"
 }
 
-# Cursor control functions
-hide_cursor() {
-    printf "\033[?25l"
-}
+# Cursor control utilities
+hide_cursor() { printf "\033[?25l"; }
+show_cursor() { printf "\033[?25h"; }
+move_cursor_home() { printf "\033[H"; }
+clear_to_end() { printf "\033[J"; }
 
-show_cursor() {
-    printf "\033[?25h"
-}
-
-move_cursor_home() {
-    printf "\033[H"
-}
-
-clear_to_end() {
-    printf "\033[J"
-}
-
-# Initialize screen once
+# Initialize the monitor screen
 init_screen() {
     clear
     hide_cursor
@@ -226,7 +207,7 @@ init_screen() {
     echo
 }
 
-# Server status function
+# Check server status for a given process and port
 check_server_status() {
     local name=$1
     local port=$2
@@ -236,20 +217,16 @@ check_server_status() {
     local health_url="http://localhost:$port/health"
     local pid=$(pgrep -f "$process_pattern" | head -1)
     local health_resp=""
-    
     if [ -n "$pid" ]; then
-        # Process is running, check health endpoint
         health_resp=$(curl -s --max-time 2 "$health_url")
         if [ $? -eq 0 ] && [ -n "$health_resp" ]; then
             status="UP"
             color=$GREEN
         else
-            # Process running but health endpoint not responding
             status="RESTARTING"
             color=$YELLOW
         fi
     else
-        # Process not running
         status="DOWN"
         color=$RED
     fi
