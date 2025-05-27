@@ -1,5 +1,22 @@
 #!/bin/bash
 # fedramp-minor.sh - Run all OSCAL/FedRAMP OpenSCAP scans (all profiles) and ensure reports are user-readable
+# 
+# This script automates the process of running OSCAL scans for multiple profiles, checking the status of existing scan results,
+# and generating user-readable reports. It also fetches available OSCAL profiles from a remote source and can purge old scan results.
+# 
+# === FETCH ADDITIONAL OFFICIAL PROFILES (OPTIONAL) ===
+# You can add more sources here as needed
+EXTRA_PROFILE_SOURCES=(
+  "https://pages.nist.gov/OSCAL/"
+  "https://www.pcisecuritystandards.org/document_library"
+  "https://www.bsi.bund.de/EN/Topics/Certification/ITProductsProtectionProfiles/itproductsprotectionprofiles_node.html"
+  "https://docs.fedoraproject.org/en-US/security-guide/"
+  "https://www.fedramp.gov/"
+)
+
+for url in "${EXTRA_PROFILE_SOURCES[@]}"; do
+  echo -e "${CYAN}Reference: $url${NC}"
+done
 
 
 # === Load available OSCAL profiles from local JSON ===
@@ -447,16 +464,19 @@ for profile in "${PROFILES[@]}"; do
     echo -e "${BOLD}${CYAN}FedRAMP OSCAL Control Results for $profile:${NC}"
     echo -e "${GREEN}Pass: $PASS${NC}  ${RED}Fail: $FAIL${NC}  ${YELLOW}N/A: $NOTAPPLICABLE${NC}  ${WHITE}Other: $OTHER${NC}  ${WHITE}Total: $TOTAL${NC}"
   fi
-  # Export all HTML reports to PDF/Markdown after all scans
-  if [ "$profile" = "truenorth" ]; then
-    if command -v node >/dev/null 2>&1; then
-      echo -e "${CYAN}Exporting all OSCAL HTML reports to PDF and Markdown...${NC}"
-      export PUPPETEER_CACHE_DIR=C:/Users/jeffrey/.cache/puppeteer
-      npx puppeteer browsers install chrome
-      node "$SCRIPT_DIR/../scripts/tools/oscal-export.js"
+  # === Export HTML reports to PDF (and optionally Markdown) ===
+  EXPORT_SCRIPT="$SCRIPT_DIR/../tools/oscal-export.js"
+  if [ -f "$EXPORT_SCRIPT" ]; then
+    if node -e "require('puppeteer')" 2>/dev/null; then
+      echo -e "${CYAN}Exporting HTML reports to PDF using Puppeteer...${NC}"
+      if ! node "$EXPORT_SCRIPT"; then
+        echo -e "${YELLOW}Warning: PDF export failed. Check Puppeteer installation or HTML files.${NC}"
+      fi
     else
-      echo -e "${YELLOW}Node.js not found, skipping PDF/Markdown export.${NC}"
+      echo -e "${YELLOW}Warning: Puppeteer is not installed. Run 'npm install puppeteer' in your project root to enable PDF export.${NC}"
     fi
+  else
+    echo -e "${YELLOW}Warning: Export script not found at $EXPORT_SCRIPT. Skipping PDF export.${NC}"
   fi
   echo
 done

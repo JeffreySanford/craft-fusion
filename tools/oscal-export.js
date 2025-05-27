@@ -39,6 +39,10 @@ async function main() {
 }
 
 main().catch(err => {
-  console.error('Fatal error:', err);
+  if (err.code === 'MODULE_NOT_FOUND' && err.message.includes('puppeteer')) {
+    console.error('Fatal error: Puppeteer is not installed. Please run "npm install puppeteer" in your project root.');
+  } else {
+    console.error('Fatal error:', err);
+  }
   process.exit(1);
 });

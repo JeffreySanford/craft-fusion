@@ -580,14 +580,24 @@ func runOscapScan(profile *OscalScan, oscalDir string, scapContentFile string, v
 	// === PDF/Markdown Export via Puppeteer (oscal-export.js) ===
 	// Only attempt if Node.js is available and HTML report exists
 	if profile.Results.HTMLPath != "" && fileExists(profile.Results.HTMLPath) {
+		exportScript := "../tools/oscal-export.js"
+		if !fileExists(exportScript) {
+			fmt.Printf("%s  Export script not found at %s. Skipping PDF export.%s\n", ColorYellow, exportScript, ColorReset)
+			return
+		}
+		// Check if Puppeteer is installed
+		puppeteerCheck := exec.Command("node", "-e", "require('puppeteer')")
+		if err := puppeteerCheck.Run(); err != nil {
+			fmt.Printf("%s  Puppeteer is not installed. Run 'npm install puppeteer' in your project root to enable PDF export.%s\n", ColorYellow, ColorReset)
+			return
+		}
 		fmt.Printf("%sProfile [%s]: Exporting PDF/Markdown via Puppeteer...%s\n", profile.Color, profile.Profile, ColorReset)
 		var exportCmd *exec.Cmd
 		if runtime.GOOS == "windows" {
-			// Use node from PATH, run from scripts dir, pass full path to oscal-export.js
-			exportCmd = exec.Command("node", "../tools/oscal-export.js")
+			exportCmd = exec.Command("node", exportScript)
 			exportCmd.Dir = oscalDir + "/.." // scripts dir
 		} else {
-			exportCmd = exec.Command("node", "../tools/oscal-export.js")
+			exportCmd = exec.Command("node", exportScript)
 			exportCmd.Dir = oscalDir + "/.." // scripts dir
 		}
 		var exportOut, exportErr bytes.Buffer
@@ -595,7 +605,7 @@ func runOscapScan(profile *OscalScan, oscalDir string, scapContentFile string, v
 		exportCmd.Stderr = &exportErr
 		err := exportCmd.Run()
 		if err != nil {
-			fmt.Printf("%s  PDF/Markdown export failed: %v%s\n%s\n", ColorRed, err, ColorReset, exportErr.String())
+			fmt.Printf("%s  PDF/Markdown export failed: %v%s\n%s\n", ColorYellow, err, ColorReset, exportErr.String())
 		} else {
 			fmt.Printf("%s  PDF/Markdown export complete.%s\n", ColorGreen, ColorReset)
 			if exportOut.Len() > 0 {
