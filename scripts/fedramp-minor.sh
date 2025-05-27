@@ -260,16 +260,7 @@ copy_scan_reports() {
 
 # Ensure Puppeteer browser is installed and cache dir is set for PDF export
 # Use platform-agnostic home directory detection
-if [ -n "$HOME" ]; then
-  export PUPPETEER_CACHE_DIR="$HOME/.cache/puppeteer"
-else
-  # Fallback for Windows
-  if [ -n "$USERPROFILE" ]; then
-    export PUPPETEER_CACHE_DIR="$USERPROFILE/.cache/puppeteer"
-  else
-    export PUPPETEER_CACHE_DIR="/tmp/.cache/puppeteer"
-  fi
-fi
+export PUPPETEER_CACHE_DIR="/home/jeffrey/.cache/puppeteer"
 
 PUPPETEER_CHROME_DIR="$PUPPETEER_CACHE_DIR/chrome"
 MEM_TOTAL_MB=$(free -m 2>/dev/null | awk '/^Mem:/ {print $2}' || echo 2000)
