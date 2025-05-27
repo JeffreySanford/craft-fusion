@@ -713,5 +713,55 @@ while true; do
     done
     echo -e "${BOLD}${CYAN}Monitored OSCAL scan profiles:${NC} $colored_profiles"
     
+    echo
+    echo -e "${BOLD}${CYAN}🌐 Frontend (nginx) Service:${NC}"
+    # Check nginx service status
+    if command -v systemctl &>/dev/null; then
+        nginx_status=$(systemctl is-active nginx 2>/dev/null)
+        if [ "$nginx_status" = "active" ]; then
+            echo -e "   ${GREEN}✓ nginx is running${NC}"
+        else
+            echo -e "   ${RED}✗ nginx is not running${NC} (status: $nginx_status)"
+        fi
+    else
+        # Fallback for systems without systemctl
+        if pgrep -x nginx >/dev/null; then
+            echo -e "   ${GREEN}✓ nginx process found${NC}"
+        else
+            echo -e "   ${RED}✗ nginx process not found${NC}"
+        fi
+    fi
+    # Check web root and permissions
+    WEB_ROOT="/var/www/jeffreysanford.us"
+    if [ -d "$WEB_ROOT" ]; then
+        owner_group=$(stat -c '%U:%G' "$WEB_ROOT")
+        echo -e "   Web root: ${CYAN}$WEB_ROOT${NC} (owner:group ${YELLOW}$owner_group${NC})"
+        index_file="$WEB_ROOT/index.html"
+        if [ -f "$index_file" ]; then
+            echo -e "   ${GREEN}✓ index.html present${NC}"
+        else
+            echo -e "   ${YELLOW}⚠ index.html missing${NC}"
+        fi
+    else
+        echo -e "   ${RED}✗ Web root $WEB_ROOT not found${NC}"
+    fi
+    echo
+    echo -e "${BOLD}${CYAN}🗂️  OSCAL Files Present:${NC}"
+    if [ -d "$OSCAL_DIR" ]; then
+        find "$OSCAL_DIR" -maxdepth 1 -type f | sort | while read f; do
+            fname=$(basename "$f")
+            echo -e "   ${WHITE}$fname${NC}"
+        done
+    else
+        echo -e "   ${RED}✗ OSCAL directory not found${NC}"
+    fi
+    echo
+    echo -e "${BOLD}${CYAN}🟢 PM2 Process Status:${NC}"
+    if command -v pm2 &>/dev/null; then
+        pm2 list || echo -e "   ${YELLOW}⚠ pm2 list failed${NC}"
+    else
+        echo -e "   ${YELLOW}⚠ pm2 not installed${NC}"
+    fi
+
     sleep 2
 done
