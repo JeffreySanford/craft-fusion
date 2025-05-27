@@ -37,8 +37,9 @@ func main() {
 	// Middleware: CORS
 	router.Use(func(c *gin.Context) {
 		allowedOrigins := map[string]bool{
-			"http://localhost:4200":     true,
-			"https://jeffreysanford.us": true,
+			"http://localhost:4200":         true,
+			"https://jeffreysanford.us":     true,
+			"https://www.jeffreysanford.us": true,
 		}
 		origin := c.Request.Header.Get("Origin")
 		if allowedOrigins[origin] {
@@ -86,8 +87,9 @@ func main() {
 	router.GET("/api-go/records/:UID", handlers.GetRecordByUIDHandler)
 
 	// --- Add these for frontend compatibility ---
+	// If this Go server is ever hit for /api/records/generate, return 501 Not Implemented
+	router.GET("/api/records/generate", handlers.NotImplementedHandler)
 	router.GET("/api/records/time", handlers.GetCreationTimeHandler)
-	router.GET("/api/records/generate", handlers.GenerateRecordsHandler)
 	// Add /api/records and /api/records/:UID for Angular compatibility
 	router.GET("/api/records", handlers.GetRecordsHandler)
 	router.GET("/api/records/:UID", handlers.GetRecordByUIDHandler)

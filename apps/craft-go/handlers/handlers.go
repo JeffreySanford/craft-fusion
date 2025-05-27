@@ -51,6 +51,11 @@ func GetCreationTimeHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"generationTime": elapsedTime})
 }
 
+// NotImplementedHandler returns a 501 Not Implemented for unimplemented endpoints
+func NotImplementedHandler(c *gin.Context) {
+	c.JSON(http.StatusNotImplemented, gin.H{"error": "This endpoint is not implemented in the Go backend. Use the NestJS backend for this route."})
+}
+
 // Mock function to generate records
 func generateRecords(count int) []models.UserRecord {
 	gofakeit.Seed(0)
