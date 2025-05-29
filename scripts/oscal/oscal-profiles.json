@@ -1,0 +1,150 @@
+{
+  "profiles": [
+    {
+      "name": "standard",
+      "description": "Baseline security (recommended for most)",
+      "id": "xccdf_org.ssgproject.content_profile_standard",
+      "status": "active",
+      "reference": "https://pages.nist.gov/OSCAL/"
+    },
+    {
+      "name": "ospp",
+      "description": "Protection Profile for General Purpose Operating Systems",
+      "id": "xccdf_org.ssgproject.content_profile_ospp",
+      "status": "active",
+      "reference": "https://www.bsi.bund.de/EN/Topics/Certification/ITProductsProtectionProfiles/itproductsprotectionprofiles_node.html"
+    },
+    {
+      "name": "pci-dss",
+      "description": "Payment Card Industry Data Security Standard",
+      "id": "xccdf_org.ssgproject.content_profile_pci-dss",
+      "status": "active",
+      "reference": "https://www.pcisecuritystandards.org/pci_security/"
+    },
+    {
+      "name": "cusp",
+      "description": "Custom User Security Profile (Fedora-specific)",
+      "id": "xccdf_org.ssgproject.content_profile_cusp_fedora",
+      "status": "active",
+      "reference": "https://docs.fedoraproject.org/en-US/security-guide/"
+    },
+    {
+      "name": "cis",
+      "description": "Center for Internet Security Benchmark",
+      "id": "xccdf_org.ssgproject.content_profile_cis",
+      "status": "active",
+      "reference": "https://www.cisecurity.org/cis-benchmarks/"
+    },
+    {
+      "name": "medium-high",
+      "description": "FedRAMP Moderate/High (pre-release, forward compatible)",
+      "id": "",
+      "status": "placeholder",
+      "note": "No matching profile in current SCAP content. See FedRAMP for future updates.",
+      "reference": "https://www.fedramp.gov/"
+    },
+    {
+      "name": "nist-800-53-rev5",
+      "description": "NIST SP 800-53 Revision 5: Security and Privacy Controls for Information Systems and Organizations (2020). Includes requirements for real-time monitoring and continuous assessment.",
+      "id": "",
+      "status": "placeholder",
+      "note": "No matching profile in current SCAP content. NIST SP 800-53 Rev. 5 is the authoritative source for these controls, including real-time monitoring (see Section 3 and Appendix J). Official SCAP/OSCAL mappings are in progress. Estimated implementation: late 2025 or 2026.",
+      "reference": "https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final"
+    },
+    {
+      "name": "truenorth",
+      "description": "TrueNorth custom OSCAL profile (exceeds all other standards)",
+      "id": "oscal_truenorth_profile",
+      "status": "custom",
+      "reference": "https://github.com/craft-fusion"
+    },
+    {
+      "name": "gdpr",
+      "description": "EU General Data Protection Regulation (GDPR) - privacy and data protection for EU citizens",
+      "id": "",
+      "status": "placeholder",
+      "note": "No official SCAP/OSCAL profile exists as of May 2025. See the official EU site for details.",
+      "reference": "https://commission.europa.eu/law/law-topic/data-protection_en"
+    },
+    {
+      "name": "dora",
+      "description": "Digital Operational Resilience Act (DORA) - EU Regulation 2022/2554 for financial sector ICT risk management and audits",
+      "id": "",
+      "status": "placeholder",
+      "note": "No official SCAP/OSCAL profile exists as of May 2025.",
+      "reference": "https://finance.ec.europa.eu/regulation-and-supervision/financial-supervision/digital-operational-resilience-financial-sector-dora_en"
+    },
+    {
+      "name": "nis2",
+      "description": "Network and Information Security Directive 2 (NIS2) - EU Directive 2022/2555 for enhanced cybersecurity and incident reporting",
+      "id": "",
+      "status": "placeholder",
+      "note": "No official SCAP/OSCAL profile exists as of May 2025.",
+      "reference": "https://digital-strategy.ec.europa.eu/en/policies/nis2-directive"
+    },
+    {
+      "name": "3pao",
+      "description": "Third Party Assessment Organization (3PAO) - US FedRAMP accredited auditing for cloud service providers",
+      "id": "",
+      "status": "reference",
+      "note": "3PAO is a US federal auditing standard for FedRAMP. Not a SCAP/OSCAL profile, but relevant for compliance.",
+      "reference": "https://www.fedramp.gov/3pao/"
+    },
+    {
+      "name": "nist-800-53",
+      "description": "NIST SP 800-53 - US federal security and privacy controls for information systems and organizations",
+      "id": "",
+      "status": "reference",
+      "note": "NIST 800-53 is a foundational US federal standard. SCAP/OSCAL mappings exist for some controls.",
+      "reference": "https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final"
+    },
+    {
+      "name": "nist-800-53-rev5-beta",
+      "description": "NIST SP 800-53 Rev. 5 (beta/draft) - latest OSCAL content from NIST GitHub.",
+      "id": "",
+      "status": "beta",
+      "note": "Draft/beta content. See official NIST OSCAL GitHub for latest.",
+      "reference": "https://github.com/usnistgov/oscal-content"
+    },
+    {
+      "name": "fedramp-automation",
+      "description": "FedRAMP OSCAL automation content, including draft and legacy baselines.",
+      "id": "",
+      "status": "community",
+      "note": "FedRAMP OSCAL automation, including draft and legacy content.",
+      "reference": "https://github.com/GSA/fedramp-automation"
+    },
+    {
+      "name": "ism-oscal",
+      "description": "Australian ISM OSCAL content (official mirror).",
+      "id": "",
+      "status": "international",
+      "note": "Australian ISM OSCAL content, official mirror.",
+      "reference": "https://github.com/AustralianCyberSecurityCentre/ism-oscal"
+    },
+    {
+      "name": "cccs-oscal-samples",
+      "description": "Canadian CCCS OSCAL profiles (community samples).",
+      "id": "",
+      "status": "international",
+      "note": "Canadian CCCS OSCAL profiles, community samples.",
+      "reference": "https://github.com/aws-samples/cccs-oscal-samples"
+    },
+    {
+      "name": "oscalkit",
+      "description": "GoComply OSCAL SDK and CLI, supports custom and draft content.",
+      "id": "",
+      "status": "community",
+      "note": "GoComply OSCAL SDK/CLI for custom and draft content.",
+      "reference": "https://github.com/GoComply/oscalkit"
+    },
+    {
+      "name": "compliance-trestle",
+      "description": "Compliance-as-code platform using NIST OSCAL standard (beta/draft support).",
+      "id": "",
+      "status": "community",
+      "note": "Compliance-as-code platform, supports OSCAL and beta/draft content.",
+      "reference": "https://github.com/IBM/compliance-trestle"
+    }
+  ]
+}
