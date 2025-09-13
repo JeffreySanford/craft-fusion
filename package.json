@@ -89,6 +89,7 @@
     "concurrently": "^9.1.2",
     "d3": "^7.9.0",
     "esbuild": "~0.19.2",
+    "flag-icon-css": "^4.1.7",
     "fs-extra": "^11.3.0",
     "helmet": "^8.0.0",
     "highlight.js": "^11.11.1",
