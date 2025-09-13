@@ -180,7 +180,8 @@ server {
     # Nest API proxy
     location /api/ {
         # Note: no trailing slash to preserve the /api prefix (e.g., /api/health -> upstream /api/health)
-        proxy_pass http://localhost:3000;
+        # Use 127.0.0.1 (IPv4) to avoid IPv6 localhost resolution issues
+        proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -196,7 +197,8 @@ server {
     # Go API proxy
     location /api-go/ {
         # Note: no trailing slash on proxy_pass so the /api-go prefix is preserved
-        proxy_pass http://localhost:4000;
+        # Use 127.0.0.1 (IPv4) to avoid IPv6 localhost resolution issues
+        proxy_pass http://127.0.0.1:4000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -212,6 +214,7 @@ server {
     # WebSocket Secure (WSS) support
     location /socket.io/ {
         proxy_pass http://localhost:3000;
+        proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
