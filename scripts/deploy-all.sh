@@ -397,10 +397,11 @@ print_progress "Backend Deployment" "$BACKEND_DEPLOY_ESTIMATE_SECONDS" "$phase_s
 progress_pid=$!
 
 : "${POWER_NICE:=}"
+echo -e "${CYAN}Invoking backend deploy script...${NC}"
 if [ "$do_full_clean" = true ]; then
-    $POWER_NICE ./scripts/deploy-backend.sh --full-clean
+    $POWER_NICE bash ./scripts/deploy-backend.sh --full-clean
 else
-    $POWER_NICE ./scripts/deploy-backend.sh
+    $POWER_NICE bash ./scripts/deploy-backend.sh
 fi
 backend_status=$?
 
@@ -416,10 +417,11 @@ if [ $backend_status -eq 0 ]; then
     print_progress "Frontend Deployment" "$FRONTEND_DEPLOY_ESTIMATE_SECONDS" "$phase_start_time" &
     progress_pid=$!
 
+        echo -e "${CYAN}Invoking frontend deploy script...${NC}"
         if [ "$do_full_clean" = true ]; then
-            $POWER_NICE ./scripts/deploy-frontend.sh --full-clean
+            $POWER_NICE bash ./scripts/deploy-frontend.sh --full-clean
         else
-            $POWER_NICE ./scripts/deploy-frontend.sh
+            $POWER_NICE bash ./scripts/deploy-frontend.sh
         fi
     frontend_status=$?
 
