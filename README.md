@@ -6,8 +6,6 @@
   <em>A modern, patriotic web development monorepo blending Angular, NestJS, and Go with best-in-class design.</em>
 </p>
 
-
-
 <p align="center">
   <a href="https://jeffreysanford.us"><img src="https://img.shields.io/badge/Live%20Demo-jeffreysanford.us-blue?style=for-the-badge" alt="Live Demo"></a>
   <a href="https://jeffreysanford.us/api/swagger"><img src="https://img.shields.io/badge/API%20Docs-Swagger-green?style=for-the-badge" alt="API Documentation"></a>

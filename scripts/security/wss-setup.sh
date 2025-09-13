@@ -177,9 +177,25 @@ server {
         try_files $uri =404;
     }
     
-    # API proxy
+    # Nest API proxy
     location /api/ {
         proxy_pass http://localhost:3000/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 75s;
+    }
+
+    # Go API proxy
+    location /api-go/ {
+        # Note: no trailing slash on proxy_pass so the /api-go prefix is preserved
+        proxy_pass http://localhost:4000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -252,12 +268,20 @@ else
     echo -e "${YELLOW}⚠ HTTPS test failed (HTTP $HTTPS_RESPONSE)${NC}"
 fi
 
-# Test API
+# Test Nest API
 API_RESPONSE=$(curl -s -w "%{http_code}" -o /dev/null "https://jeffreysanford.us/api/health" 2>/dev/null || echo "000")
 if [ "$API_RESPONSE" = "200" ]; then
-    echo -e "${GREEN}✓ HTTPS API accessible${NC}"
+    echo -e "${GREEN}✓ HTTPS Nest API accessible (/api)${NC}"
 else
-    echo -e "${YELLOW}⚠ HTTPS API test failed (HTTP $API_RESPONSE) - make sure backend is running${NC}"
+    echo -e "${YELLOW}⚠ HTTPS Nest API test failed (HTTP $API_RESPONSE) - make sure Nest backend is running on :3000${NC}"
+fi
+
+# Test Go API
+GO_API_RESPONSE=$(curl -s -w "%{http_code}" -o /dev/null "https://jeffreysanford.us/api-go/health" 2>/dev/null || echo "000")
+if [ "$GO_API_RESPONSE" = "200" ]; then
+    echo -e "${GREEN}✓ HTTPS Go API accessible (/api-go)${NC}"
+else
+    echo -e "${YELLOW}⚠ HTTPS Go API test failed (HTTP $GO_API_RESPONSE) - make sure Go backend is running on :4000${NC}"
 fi
 
 echo -e "${GREEN}=== WSS Setup Complete ===${NC}"
@@ -270,8 +294,9 @@ echo -e "✓ Automatic renewal: Configured"
 echo
 echo -e "${BLUE}Next steps:${NC}"
 echo -e "1. Make sure your NestJS backend is running on port 3000"
-echo -e "2. Test WSS with: wscat -c 'wss://jeffreysanford.us/socket.io/?EIO=4&transport=websocket'"
-echo -e "3. Deploy your frontend using the updated deploy script"
+echo -e "2. Make sure your Go backend is running on port 4000"
+echo -e "3. Test WSS with: wscat -c 'wss://jeffreysanford.us/socket.io/?EIO=4&transport=websocket'"
+echo -e "4. Deploy your frontend using the updated deploy script"
 echo
 echo -e "${BLUE}Useful commands:${NC}"
 echo -e "  Check SSL: ${YELLOW}sudo certbot certificates${NC}"

@@ -5,34 +5,40 @@ This document explains how to use PM2 with the production-focused `ecosystem.con
 ## Overview
 
 The ecosystem configuration is optimized for production deployment with:
+
 - **craft-nest-api**: Clustered NestJS API on port 3000
 - **craft-go-api**: Go API service on port 4000
 - Both services configured for `jeffreysanford.us` host
 
 ## Production Usage
 
-### Build applications first:
+### Build applications first
+
 ```bash
 npm run pm2:build
 ```
 
-### Start services:
+### Start services
+
 ```bash
 npm run pm2:start
 ```
 
-### Monitor services:
+### Monitor services
+
 ```bash
 npm run pm2:logs     # View logs from all services
 npm run pm2:monitor  # Interactive monitoring dashboard
 ```
 
-### Stop services:
+### Stop services
+
 ```bash
 npm run pm2:stop
 ```
 
-### Restart services:
+### Restart services
+
 ```bash
 npm run pm2:restart
 ```
@@ -72,19 +78,21 @@ Note on service user:
 
 ## Key Features
 
-### Production Optimizations:
+### Production Optimizations
+
 - **Clustering**: NestJS runs in cluster mode for maximum performance
 - **Process Management**: Automatic restarts on memory limits or crashes
 - **Logging**: Structured logging to files with timestamps
 - **Health Monitoring**: Process monitoring and auto-restart
 - **Graceful Shutdown**: Proper process termination with timeouts
 
-### Service Configuration:
-- **craft-nest-api**: 
+### Service Configuration
+
+- **craft-nest-api**:
   - Port 3000 on jeffreysanford.us
   - Cluster mode with max instances
   - 1GB memory limit
-- **craft-go-api**: 
+- **craft-go-api**:
   - Port 4000 on jeffreysanford.us
   - Fork mode (single instance)
   - 1GB memory limit
@@ -99,6 +107,7 @@ pm2 deploy production
 ```
 
 This will:
+
 1. Pull latest code from main branch
 2. Install dependencies
 3. Build applications
@@ -106,14 +115,14 @@ This will:
 
 ## Troubleshooting
 
-### Common Issues:
+### Common Issues
 
 1. **Port conflicts**: Ensure ports 3000 and 4000 are available
 2. **Build failures**: Run `npm run pm2:build` before starting services
 3. **Permission issues**: Ensure log directories exist and are writable
 4. **Go binary**: Verify Go app builds correctly for your platform
 
-### Useful Commands:
+### Useful Commands
 
 ```bash
 pm2 list                 # Show all processes
@@ -142,12 +151,14 @@ npm run start:all  # Start all services in development mode
 ```
 
 This provides:
+
 - Hot reload
 - Development-optimized builds
 - Source maps
 - Debug logging
 
 ## 🚦 Script-Driven Service Management
+
 All PM2 services should be started after running `system-prep.sh` and using the provided scripts:
 
 | Script                  | Purpose                                      |
@@ -160,6 +171,7 @@ All PM2 services should be started after running `system-prep.sh` and using the 
 | truenorth-oscal-test.sh   | Validates TrueNorth OSCAL Rev5 profile/test         |
 
 ## Example: Start All Services
+
 ```bash
 bash scripts/deploy-all.sh
 ```

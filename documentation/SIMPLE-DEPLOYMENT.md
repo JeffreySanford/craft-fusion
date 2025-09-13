@@ -3,6 +3,7 @@
 ## 🚀 Vibrant Quick Start
 
 1. **Run full deployment:**
+
    ```bash
    bash scripts/deploy-all.sh
    ```
@@ -17,10 +18,14 @@
      bash scripts/deploy-all.sh --yes-ssl   # auto-run without prompt
      bash scripts/deploy-all.sh --skip-ssl  # skip SSL/WSS step
      ```
+
 2. **Monitor system health in real time:**
+
    ```bash
+
   bash scripts/tools/memory-monitor.sh
-   ```
+
+   ```bash
 3. **Run compliance scans:**
    ```bash
   sudo bash scripts/oscal/fedramp-minor.sh
@@ -30,12 +35,20 @@
 ```bash
 DEPLOY_HOST=staging.example.com bash scripts/deploy-frontend.sh
 ```
-   ```
 
-All scripts now use `system-prep.sh` for system prep, memory cleanup, and vibrant color-coded output.
+   ```bash
 
----
+  bash scripts/tools/memory-monitor.sh
 
+   ```bash
+3. **Run compliance scans:**
+   ```bash
+  sudo bash scripts/oscal/fedramp-minor.sh
+
+> Tip: Override the domain used by the frontend deployer with:
+
+```bash
+DEPLOY_HOST=staging.example.com bash scripts/deploy-frontend.sh
 ## Example Vibrant Output
 ```text
 🖥️  TRUE NORTH INSIGHTS: CRAFT FUSION SYSTEM MONITOR
@@ -54,6 +67,7 @@ All scripts now use `system-prep.sh` for system prep, memory cleanup, and vibran
 ### Health Check Commands
 
 **NestJS API Health Check:**
+
 ```bash
 curl -X GET "http://jeffreysanford.us:3000/health" \
   -H "Accept: application/json" \
@@ -62,6 +76,7 @@ curl -X GET "http://jeffreysanford.us:3000/health" \
 ```
 
 **Go API Health Check:**
+
 ```bash
 curl -X GET "http://jeffreysanford.us:4000/health" \
   -H "Accept: application/json" \
@@ -72,6 +87,7 @@ curl -X GET "http://jeffreysanford.us:4000/health" \
 ### API Information Commands
 
 **NestJS API Info:**
+
 ```bash
 curl -X GET "http://jeffreysanford.us:3000/api" \
   -H "Accept: application/json" \
@@ -79,6 +95,7 @@ curl -X GET "http://jeffreysanford.us:3000/api" \
 ```
 
 **Go API Info:**
+
 ```bash
 curl -X GET "http://jeffreysanford.us:4000/api/info" \
   -H "Accept: application/json" \
@@ -88,6 +105,7 @@ curl -X GET "http://jeffreysanford.us:4000/api/info" \
 ### Authentication Testing
 
 **NestJS Login:**
+
 ```bash
 curl -X POST "http://jeffreysanford.us:3000/auth/login" \
   -H "Content-Type: application/json" \
@@ -100,6 +118,7 @@ curl -X POST "http://jeffreysanford.us:3000/auth/login" \
 ```
 
 **NestJS Register:**
+
 ```bash
 curl -X POST "http://jeffreysanford.us:3000/auth/register" \
   -H "Content-Type: application/json" \
@@ -116,6 +135,7 @@ curl -X POST "http://jeffreysanford.us:3000/auth/register" \
 ### Authenticated Requests
 
 **Get JWT Token and Use It:**
+
 ```bash
 # First, get a token
 TOKEN=$(curl -s -X POST "http://jeffreysanford.us:3000/auth/login" \
@@ -133,6 +153,7 @@ curl -X GET "http://jeffreysanford.us:3000/users/profile" \
 ### Data Operations
 
 **Create Data (NestJS):**
+
 ```bash
 curl -X POST "http://jeffreysanford.us:3000/api/items" \
   -H "Content-Type: application/json" \
@@ -147,6 +168,7 @@ curl -X POST "http://jeffreysanford.us:3000/api/items" \
 ```
 
 **Get Data (NestJS):**
+
 ```bash
 curl -X GET "http://jeffreysanford.us:3000/api/items" \
   -H "Accept: application/json" \
@@ -155,6 +177,7 @@ curl -X GET "http://jeffreysanford.us:3000/api/items" \
 ```
 
 **Go API Data Operations:**
+
 ```bash
 # GET request with query parameters
 curl -X GET "http://jeffreysanford.us:4000/api/data?limit=10&offset=0" \
@@ -176,6 +199,7 @@ curl -X POST "http://jeffreysanford.us:4000/api/data" \
 ### Performance Testing
 
 **Load Test with Multiple Requests:**
+
 ```bash
 # Test NestJS API with 10 concurrent requests
 for i in {1..10}; do
@@ -195,6 +219,7 @@ wait
 ```
 
 **Response Time Testing:**
+
 ```bash
 # Detailed timing for NestJS
 curl -X GET "http://jeffreysanford.us:3000/health" \
@@ -210,6 +235,7 @@ curl -X GET "http://jeffreysanford.us:4000/health" \
 ### Error Testing
 
 **Test Invalid Endpoints:**
+
 ```bash
 # Test 404 responses
 curl -X GET "http://jeffreysanford.us:3000/nonexistent" \
@@ -220,6 +246,7 @@ curl -X GET "http://jeffreysanford.us:4000/invalid" \
 ```
 
 **Test Bad Request Data:**
+
 ```bash
 # Test malformed JSON
 curl -X POST "http://jeffreysanford.us:3000/auth/login" \
@@ -231,6 +258,7 @@ curl -X POST "http://jeffreysanford.us:3000/auth/login" \
 ### CORS Testing
 
 **Test CORS Headers:**
+
 ```bash
 curl -X OPTIONS "http://jeffreysanford.us:3000/health" \
   -H "Origin: http://localhost:4200" \
@@ -242,6 +270,7 @@ curl -X OPTIONS "http://jeffreysanford.us:3000/health" \
 ### WebSocket Testing (if applicable)
 
 **Test WebSocket Connection:**
+
 ```bash
 # Install wscat if not available: npm install -g wscat
 # wscat -c ws://jeffreysanford.us:3000/socket.io/?EIO=4&transport=websocket
@@ -250,6 +279,7 @@ curl -X OPTIONS "http://jeffreysanford.us:3000/health" \
 ### Complete Test Suite Script
 
 Create a test script to run all tests:
+
 ```bash
 #!/bin/bash
 # test-backends.sh
@@ -295,6 +325,7 @@ echo "=== Test Complete ==="
 The Angular frontend (`craft-web`) needs to be built and deployed to nginx for serving static files.
 
 #### 1. Clean and Build Frontend
+
 ```bash
 # Clean previous builds
 rm -rf dist/
@@ -304,6 +335,7 @@ npx nx run craft-web:build --configuration=production
 ```
 
 #### 2. Deploy to Web Server
+
 ```bash
 # Remove old deployment
 sudo rm -rf /var/www/jeffreysanford.us/*
@@ -319,6 +351,7 @@ sudo chmod -R 755 /var/www/jeffreysanford.us/
 #### 3. Nginx Configuration
 
 **Basic nginx config for Angular SPA (`/etc/nginx/sites-available/jeffreysanford.us`):**
+
 ```nginx
 server {
     listen 80;
@@ -405,6 +438,7 @@ server {
 #### 4. Nginx Commands
 
 **Test and Reload Nginx Configuration:**
+
 ```bash
 # Test nginx configuration syntax
 sudo nginx -t
@@ -426,6 +460,7 @@ sudo tail -f /var/log/nginx/access.log
 ```
 
 **Enable the site (if not already enabled):**
+
 ```bash
 # Create symlink to enable site
 sudo ln -s /etc/nginx/sites-available/jeffreysanford.us /etc/nginx/sites-enabled/
@@ -440,6 +475,7 @@ sudo nginx -t && sudo nginx -s reload
 #### 5. Complete Deployment Script
 
 Create a deployment script (`scripts/deploy-frontend.sh`):
+
 ```bash
 #!/bin/bash
 # deploy-frontend.sh - Complete frontend deployment script
@@ -522,6 +558,7 @@ echo -e "${BLUE}Logs: sudo tail -f /var/log/nginx/access.log${NC}"
 #### 6. Frontend Testing Commands
 
 **Test the deployed frontend:**
+
 ```bash
 # Test main page
 curl -I "http://jeffreysanford.us"
@@ -546,6 +583,7 @@ curl -w "DNS: %{time_namelookup}s, Connect: %{time_connect}s, Total: %{time_tota
 ```
 
 **Browser testing checklist:**
+
 ```bash
 # Open in browser and test:
 # - Main page loads
@@ -559,6 +597,7 @@ curl -w "DNS: %{time_namelookup}s, Connect: %{time_connect}s, Total: %{time_tota
 ### NPM Scripts for Frontend Deployment
 
 Add these scripts to `package.json`:
+
 ```json
 {
   "scripts": {
@@ -576,15 +615,17 @@ Add these scripts to `package.json`:
 
 ## Troubleshooting
 
-### If PM2 fails to start services:
+### If PM2 fails to start services
 
 1. **Check builds exist:**
+
    ```bash
    ls -la dist/apps/craft-nest/main.js
    ls -la dist/apps/craft-go/main
    ```
 
 2. **Test applications manually:**
+
    ```bash
    # Test NestJS
    cd dist/apps/craft-nest && node main.js
@@ -594,6 +635,7 @@ Add these scripts to `package.json`:
    ```
 
 3. **Check PM2 status:**
+
    ```bash
    pm2 list
    pm2 describe craft-nest-api
@@ -601,19 +643,20 @@ Add these scripts to `package.json`:
    ```
 
 4. **View detailed logs:**
+
    ```bash
    pm2 logs craft-nest-api --lines 50
    pm2 logs craft-go-api --lines 50
    ```
 
-### Common Issues:
+### Common Issues
 
 1. **Port conflicts**: Make sure ports 3000 and 4000 are available
 2. **Missing builds**: Run `npm run pm2:build` before starting
 3. **Permission issues**: Ensure log directories are writable
 4. **Go binary**: Verify the Go app builds correctly for your target platform
 
-### Emergency Fallback:
+### Emergency Fallback
 
 If PM2 continues to have issues, you can run the services directly:
 
@@ -642,12 +685,14 @@ pm2 startup                      # Setup auto-start on boot
 ## Environment Variables
 
 The configuration uses these environment variables:
+
 - `NODE_ENV=production`
 - `PORT=3000` (NestJS) / `PORT=4000` (Go)
 - `HOST=jeffreysanford.us`
 - `LOG_LEVEL=info`
 
 You can override these by setting them before starting PM2:
+
 ```bash
 PORT=3001 npm run pm2:start
 ```
