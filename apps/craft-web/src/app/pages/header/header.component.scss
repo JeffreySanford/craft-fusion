@@ -29,21 +29,35 @@
   border-radius: 0;
 }
 
-button {
+button.user-profile-button {
   position: relative;
   right: 0.5em;
   top: -0.1em;
   margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; // Match MD3 icon button touch target
+  height: 40px;
+  padding: 0;
 }
 
 .profile-icon {
   color: #ff00ff;
   border: 2px solid #00f7ff;
-  padding: 0.15em;
+  // Use a square to keep circle perfect and center content
+  width: 28px;
+  height: 28px;
+  line-height: 28px; // Helps vertically center glyph in MD3
+  padding: 0; // eliminate extra offset
   border-radius: 50%;
   transition: all 0.3s ease-in-out;
   animation: neonPulse 2s infinite;
   text-shadow: 0 0 10px #ff00ff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   
   &:hover {
     transform: scale(1.1) rotate(15deg);
@@ -58,6 +72,11 @@ button {
     animation: neonRotate 1s ease-out;
     text-shadow: 0 0 10px #00ff00;
   }
+}
+
+// Ensure the Material icon glyph itself is centered inside our circular wrapper
+.profile-icon.mat-icon {
+  font-size: 20px; // MD3 default icon size inside 40px button
 }
 
 @keyframes neonPulse {

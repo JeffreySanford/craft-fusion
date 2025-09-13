@@ -413,7 +413,8 @@ $table-theme: (
   width: 100%; // Ensure the collection takes full width
   padding: 0 !important;
   margin: 0 0 0.2em 0 !important;
-  background-color: transparent !important;
+  // Use a light blue background for the entire section (request)
+  background-color: map.get($table-theme, light-blue) !important;
 
   .report {
     display: flex;
@@ -422,7 +423,7 @@ $table-theme: (
     font-size: 1.25em;
     margin-bottom: 0.5em;
 
-    .report-text {
+  .report-text {
       min-height: 3em;
       flex: 1;
       border: 1px solid map.get($table-theme, patriotic-blue);
@@ -432,7 +433,8 @@ $table-theme: (
       padding: 0.25em;
       position: relative;
       overflow: hidden;
-      background-color: rgba(255, 255, 255, 0.7) !important; // Semi-transparent white background
+  // Let the parent light-blue show through
+  background-color: transparent !important;
       
       &::before {
         content: "";
@@ -465,6 +467,11 @@ $table-theme: (
           height: 2px;
           background: linear-gradient(to right, map.get($table-theme, patriotic-red), map.get($table-theme, patriotic-blue));
         }
+      }
+      // Reduce the message text size specifically (request)
+      p {
+        font-size: 0.95rem !important;
+        line-height: 1.35 !important;
       }
     }
 
