@@ -317,6 +317,8 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
   public fetchData(count: number): void {
     this.resolved = false; // Ensure resolved is reset before fetching
+    // Start timing for roundtrip calculation
+    this.startTime = new Date().getTime();
     this.spinner.show();
     this.resolvedSubject.next(false);
     
@@ -335,7 +337,35 @@ export class RecordListComponent implements OnInit, OnDestroy {
           if (dataset && dataset.length > 0) {
             this.dataSource.data = dataset;
             this.isOffline = this.recordService.isOfflineMode();
-            return this.recordService.getCreationTime();
+            // Get server-side generation time and compute labels here
+            return this.recordService.getCreationTime().pipe(
+              tap((generationTime: number) => {
+                try {
+                  const endTime = new Date().getTime();
+                  const roundtrip = endTime - this.startTime;
+
+                  const generationTimeLabel = typeof generationTime === 'number'
+                    ? `${generationTime.toFixed(2)} milliseconds`
+                    : '0.00 milliseconds';
+
+                  const roundtripLabel = `${roundtrip.toFixed(2)} milliseconds`;
+
+                  // Update component properties
+                  this.generationTimeLabel = generationTimeLabel;
+                  this.roundtripLabel = roundtripLabel;
+                  this.networkPerformance = `${roundtrip.toFixed(2)} milliseconds`;
+                  this.diskTransferTime = generationTimeLabel;
+
+                  this.logger.info('Timing computed', {
+                    generationTimeLabel: this.generationTimeLabel,
+                    roundtripLabel: this.roundtripLabel,
+                    networkPerformance: this.networkPerformance
+                  });
+                } catch (err) {
+                  this.logger.error('Error computing timing labels', err as any);
+                }
+              })
+            );
           } else {
             this.dataSource.data = [];
             return of(0);
