@@ -25,7 +25,7 @@
 All major scripts now use a centralized, color-coded system prep and monitoring approach:
 
 - `system-prep.sh` — Kills lingering processes, optimizes memory, and tunes the system before every build or deploy.
-- `memory-monitor.sh` — Real-time, vibrant system health dashboard (run in a separate terminal for live monitoring).
+- `memory-monitor.sh` — Real-time, vibrant system health dashboard (run in a separate terminal for live monitoring). Location: `scripts/tools/memory-monitor.sh`.
 - `deploy-all.sh` — Orchestrates full deployment, including system prep, build, and service restarts.
 - `fedramp-minor.sh` — Runs all OSCAL/FedRAMP compliance scans with color-coded results.
 - `clean-build.sh` — Cleans, resets, and builds all apps with system prep.
@@ -61,10 +61,21 @@ All major scripts now use a centralized, color-coded system prep and monitoring 
      - Deploy to Nginx and PM2
      - Print a vibrant summary of your environment
 
+   Flags you can add:
+
+   ```bash
+   # Give the build a gentle CPU/IO priority and do a clean install
+   bash scripts/deploy-all.sh --power --full-clean
+
+   # Control SSL/WSS automation
+   bash scripts/deploy-all.sh --yes-ssl   # auto-run without prompt
+   bash scripts/deploy-all.sh --skip-ssl  # skip SSL/WSS step
+   ```
+
 4. **(Optional) Start the live memory monitor:**
 
    ```bash
-   bash scripts/memory-monitor.sh
+   bash scripts/tools/memory-monitor.sh
    ```
 
    - Keep this running in a separate terminal for real-time system health.
@@ -72,7 +83,7 @@ All major scripts now use a centralized, color-coded system prep and monitoring 
 5. **(Optional) Run compliance scans:**
 
    ```bash
-   sudo bash scripts/fedramp-minor.sh
+   sudo bash scripts/oscal/fedramp-minor.sh
    ```
 
 ---
@@ -114,16 +125,26 @@ Date:        Sun May 25 08:14:07 PM UTC 2025
 4. **Monitor with:**
 
    ```bash
-   bash scripts/memory-monitor.sh
+   bash scripts/tools/memory-monitor.sh
    ```
 
 5. **(Optional) Run compliance scans:**
 
    ```bash
-   sudo bash scripts/fedramp-minor.sh
+   sudo bash scripts/oscal/fedramp-minor.sh
    ```
 
-6. **(Optional) Clean and rebuild:**
+---
+
+## 🔧 Tips
+
+- Override the frontend verification domain for staging checks:
+
+   ```bash
+   DEPLOY_HOST=staging.example.com bash scripts/deploy-frontend.sh
+   ```
+
+1. **(Optional) Clean and rebuild:**
 
    ```bash
    bash scripts/clean-build.sh

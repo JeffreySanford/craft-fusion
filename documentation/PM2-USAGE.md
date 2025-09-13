@@ -60,6 +60,16 @@ pm2 save
 pm2 startup
 ```
 
+Note on service user:
+
+- If you manage PM2 under a dedicated user (e.g., `craft-fusion`), prefer:
+
+  ```bash
+  sudo pm2 startup systemd -u craft-fusion --hp /home/craft-fusion
+  ```
+
+- The deployment scripts will attempt this automatically when such a user exists; otherwise they fall back to the current user.
+
 ## Key Features
 
 ### Production Optimizations:

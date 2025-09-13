@@ -6,13 +6,30 @@
    ```bash
    bash scripts/deploy-all.sh
    ```
+
+     Flags you can add:
+
+     ```bash
+     # Power-friendly priorities and full clean build
+     bash scripts/deploy-all.sh --power --full-clean
+
+     # SSL/WSS automation options
+     bash scripts/deploy-all.sh --yes-ssl   # auto-run without prompt
+     bash scripts/deploy-all.sh --skip-ssl  # skip SSL/WSS step
+     ```
 2. **Monitor system health in real time:**
    ```bash
-   bash scripts/memory-monitor.sh
+  bash scripts/tools/memory-monitor.sh
    ```
 3. **Run compliance scans:**
    ```bash
-   sudo bash scripts/fedramp-minor.sh
+  sudo bash scripts/oscal/fedramp-minor.sh
+
+> Tip: Override the domain used by the frontend deployer with:
+
+```bash
+DEPLOY_HOST=staging.example.com bash scripts/deploy-frontend.sh
+```
    ```
 
 All scripts now use `system-prep.sh` for system prep, memory cleanup, and vibrant color-coded output.

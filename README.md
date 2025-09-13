@@ -124,7 +124,43 @@ nx serve craft-go
 
 ---
 
-## 📈 Performance Testing
+## � Deployment (Scripts)
+
+Common flows using the repo’s deployment scripts:
+
+- Full deploy (sequential backend then frontend):
+
+  ```bash
+  bash scripts/deploy-all.sh
+  ```
+
+- Performance-friendly and clean build:
+
+  ```bash
+  bash scripts/deploy-all.sh --power --full-clean
+  ```
+
+- SSL/WSS setup control:
+
+  ```bash
+  # Auto-run SSL/WSS without prompt
+  bash scripts/deploy-all.sh --yes-ssl
+
+  # Skip SSL/WSS
+  bash scripts/deploy-all.sh --skip-ssl
+  ```
+
+- Frontend checks against a custom domain:
+
+  ```bash
+  DEPLOY_HOST=example.com bash scripts/deploy-frontend.sh
+  ```
+
+See the detailed guide: `documentation/deployment-digital-ocean.md` and the quick guide: `documentation/SIMPLE-DEPLOYMENT.md`.
+
+---
+
+## �📈 Performance Testing
 
 ```bash
 curl http://localhost:3000/api/records/generate?count=100000
@@ -145,7 +181,7 @@ See [CONTRIBUTING.md](documentation/CONTRIBUTING.md).
 🌐 [jeffreysanford.us](https://jeffreysanford.us)  
 💼 [LinkedIn](https://linkedin.com/in/jeffreysanford)  
 🐦 [Twitter](https://twitter.com/jeffreysanford)  
-📧 jeffreysanford@gmail.com
+📧 [jeffreysanford@gmail.com](mailto:jeffreysanford@gmail.com)
 
 ---
 
