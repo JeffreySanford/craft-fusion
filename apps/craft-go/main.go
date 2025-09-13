@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+    "os"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
@@ -33,6 +34,12 @@ import (
 // @BasePath /
 func main() {
 	router := gin.Default()
+
+	// Resolve server port from environment (default 4000)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "4000"
+	}
 
 	// Middleware: CORS
 	router.Use(func(c *gin.Context) {
@@ -98,17 +105,17 @@ func main() {
 	// Swagger
 	router.GET("/api-go/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// Log all registered routes
+	// Log all registered routes with the resolved port
 	for _, route := range router.Routes() {
-		fullURL := fmt.Sprintf("http://localhost:4000%s", route.Path)
+		fullURL := fmt.Sprintf("http://localhost:%s%s", port, route.Path)
 		log.Printf("Endpoint: %s %s", route.Method, fullURL)
 	}
 
-	log.Println("Starting Go Backend on :4000")
+	log.Printf("Starting Go Backend on :%s", port)
 
 	// Server Configuration
 	srv := &http.Server{
-		Addr:         ":4000",
+		Addr:         ":" + port,
 		Handler:      router,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
