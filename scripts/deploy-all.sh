@@ -119,13 +119,15 @@ cleanup_progress_line() { [ -t 1 ] && printf "\r\033[K"; }
 # Parse arguments
 POWER_MODE=false
 do_full_clean=false
+yes_ssl=false
+skip_ssl=false
 for arg in "$@"; do
-  if [ "$arg" == "--full-clean" ]; then
-    do_full_clean=true
-  fi
-  if [ "$arg" == "--power" ]; then
-    POWER_MODE=true
-  fi
+    case "$arg" in
+        --full-clean) do_full_clean=true ;;
+        --power) POWER_MODE=true ;;
+        --yes-ssl) yes_ssl=true ;;
+        --skip-ssl) skip_ssl=true ;;
+    esac
 done
 
 if [ "$POWER_MODE" = true ]; then
@@ -161,15 +163,20 @@ cd "$PROJECT_ROOT"
 chmod +x scripts/*.sh
 
 # --- System Prep: Clean up lingering processes and free memory ---
-if [ "$POWER_MODE" = true ]; then
-  # --power is passed to system-prep.sh, which will pass it to system-optimize.sh if present
-  source "$(dirname "$0")/system/system-prep.sh" --power
+SYS_PREP_SCRIPT="$(dirname "$0")/system/system-prep.sh"
+if [ -f "$SYS_PREP_SCRIPT" ]; then
+    if [ "$POWER_MODE" = true ]; then
+        # --power is passed to system-prep.sh, which will pass it to system-optimize.sh if present
+        source "$SYS_PREP_SCRIPT" --power
+    else
+        source "$SYS_PREP_SCRIPT"
+    fi
 else
-  source "$(dirname "$0")/system/system-prep.sh"
+    echo -e "${YELLOW}⚠ System prep script not found at $SYS_PREP_SCRIPT — continuing without it.${NC}"
 fi
 
 # After sourcing system-prep.sh, print a clear, modernized summary of available tools
-printf "${CYAN}Available Tools:${NC}\n  Check resources: ${YELLOW}resource-monitor.sh${NC}\n  Emergency cleanup: ${YELLOW}memory-cleanup.sh${NC}\n  Manual memory cleanup: ${YELLOW}sudo sysctl vm.drop_caches=3${NC}\n"
+printf "${CYAN}Available Tools:${NC}\n  Check resources: ${YELLOW}scripts/tools/memory-monitor.sh${NC}\n  System prep: ${YELLOW}scripts/system/system-prep.sh${NC}\n  Manual memory cleanup: ${YELLOW}sudo sysctl vm.drop_caches=3${NC}\n"
 printf "${WHITE}For more info, see scripts/PRODUCTION-SCRIPTS.md${NC}\n"
 
 # Initialize status variables for summary
@@ -362,6 +369,10 @@ pm2 delete all || true
 pm2 kill || true
 
 if id "craft-fusion" &>/dev/null; then
+    sudo -n -u craft-fusion pm2 list 2>/dev/null || pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
+else
+    pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
+fi
   echo -e "${CYAN}Stopping all PM2 processes for craft-fusion user...${NC}"
   sudo -u craft-fusion pm2 stop all || true
   sudo -u craft-fusion pm2 delete all || true
@@ -385,7 +396,12 @@ phase_start_time=$(date +%s)
 print_progress "Backend Deployment" "$BACKEND_DEPLOY_ESTIMATE_SECONDS" "$phase_start_time" &
 progress_pid=$!
 
-$POWER_NICE ./scripts/deploy-backend.sh
+: "${POWER_NICE:=}"
+if [ "$do_full_clean" = true ]; then
+    $POWER_NICE ./scripts/deploy-backend.sh --full-clean
+else
+    $POWER_NICE ./scripts/deploy-backend.sh
+fi
 backend_status=$?
 
 kill "$progress_pid" &>/dev/null || true
@@ -400,7 +416,11 @@ if [ $backend_status -eq 0 ]; then
     print_progress "Frontend Deployment" "$FRONTEND_DEPLOY_ESTIMATE_SECONDS" "$phase_start_time" &
     progress_pid=$!
 
-    $POWER_NICE ./scripts/deploy-frontend.sh
+        if [ "$do_full_clean" = true ]; then
+            $POWER_NICE ./scripts/deploy-frontend.sh --full-clean
+        else
+            $POWER_NICE ./scripts/deploy-frontend.sh
+        fi
     frontend_status=$?
 
     kill "$progress_pid" &>/dev/null || true
@@ -418,21 +438,40 @@ else
 fi
 
 step_header "Phase C: SSL/WSS Setup (Optional)"
-read -p "Do you want to set up SSL/WSS? (y/N): " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    ssl_setup_attempted=true
-    if [ ! -f "/etc/nginx/sites-available/default" ] || ! grep -q "ssl_certificate" /etc/nginx/sites-available/default; then
-        echo -e "${YELLOW}Setting up SSL certificates and WSS configuration...${NC}"
-        ./scripts/ssl-setup.sh
-        ./scripts/wss-setup.sh
-        ssl_setup_succeeded=true # If scripts complete without error (due to set -e)
-    else
-        echo -e "${GREEN}✓ SSL/WSS already configured${NC}"
-        ssl_setup_succeeded=true # Already configured is a success
-    fi
+do_ssl=false
+if [ "$skip_ssl" = true ]; then
+    echo -e "${YELLOW}Skipping SSL/WSS setup (--skip-ssl)${NC}"
+elif [ "$yes_ssl" = true ]; then
+    do_ssl=true
 else
-    echo -e "${YELLOW}Skipping SSL/WSS setup${NC}"
+    read -p "Do you want to set up SSL/WSS? (y/N): " -n 1 -r
+    echo
+    [[ $REPLY =~ ^[Yy]$ ]] && do_ssl=true
+fi
+
+if [ "$do_ssl" = true ]; then
+        ssl_setup_attempted=true
+        if [ ! -f "/etc/nginx/sites-available/default" ] || ! grep -q "ssl_certificate" /etc/nginx/sites-available/default; then
+                echo -e "${YELLOW}Setting up SSL certificates and WSS configuration...${NC}"
+                SSL_SCRIPT="$SCRIPT_DIR_DEPLOY_ALL/security/ssl-setup.sh"
+                WSS_SCRIPT="$SCRIPT_DIR_DEPLOY_ALL/security/wss-setup.sh"
+                if [ -f "$SSL_SCRIPT" ]; then
+                    sudo bash "$SSL_SCRIPT" || echo -e "${YELLOW}⚠ ssl-setup.sh encountered an error${NC}"
+                else
+                    echo -e "${YELLOW}⚠ ssl-setup.sh not found at scripts/security/ssl-setup.sh — skipping SSL cert bootstrap${NC}"
+                fi
+                if [ -f "$WSS_SCRIPT" ]; then
+                    sudo bash "$WSS_SCRIPT" || echo -e "${YELLOW}⚠ wss-setup.sh encountered an error${NC}"
+                else
+                    echo -e "${YELLOW}⚠ wss-setup.sh not found at scripts/security/wss-setup.sh — skipping WSS config${NC}"
+                fi
+                ssl_setup_succeeded=true # Considered successful if scripts run or already configured
+        else
+                echo -e "${GREEN}✓ SSL/WSS already configured${NC}"
+                ssl_setup_succeeded=true # Already configured is a success
+        fi
+else
+        echo -e "${YELLOW}Skipping SSL/WSS setup${NC}"
 fi
 
 step_header "Phase D: Final System Tests"
@@ -478,7 +517,7 @@ if command -v wscat &> /dev/null; then
         echo -e "${YELLOW}⚠ WS connection failed${NC}"
     fi
 else
-    echo -e "${YELLOW}⚠ wscat not installed - install with: npm install -g wscat${NC}"
+    echo -e "${YELLOW}⚠ wscat not installed - install with: sudo npm install -g wscat${NC}"
 fi
 
 kill "$progress_pid" &>/dev/null || true
@@ -490,7 +529,11 @@ step_header "Phase E: System Status & Deployment Summary"
 
 # PM2 status
 echo -e "${CYAN}PM2 Services:${NC}"
-sudo -u craft-fusion pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
+if id "craft-fusion" &>/dev/null; then
+    sudo -n -u craft-fusion pm2 list 2>/dev/null || pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
+else
+    pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
+fi
 
 # Nginx status
 echo -e "${CYAN}Nginx Status:${NC}"

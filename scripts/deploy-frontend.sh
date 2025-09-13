@@ -1,9 +1,29 @@
 #!/bin/bash
 # deploy-frontend.sh - Complete frontend deployment script
 
-# Source common functions for progress bar
+# Source common functions for progress bar (optional)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/common-functions.sh"
+[ -f "$SCRIPT_DIR/common-functions.sh" ] && source "$SCRIPT_DIR/common-functions.sh"
+# Fallback progress helpers if common-functions.sh not present
+if ! typeset -f print_progress >/dev/null 2>&1; then
+    print_progress() {
+        local title="$1"; local total="$2"; local start="$3"; local width=30
+        [ ! -t 1 ] && return
+        while true; do
+            local now elapsed pct filled empty
+            now=$(date +%s)
+            elapsed=$((now - start))
+            pct=0; [ "$total" -gt 0 ] && pct=$((elapsed * 100 / total)); [ "$pct" -gt 100 ] && pct=100
+            filled=$((pct * width / 100)); empty=$((width - filled))
+            printf "\r%-22s [" "$title:"
+            printf "%0.s#" $(seq 1 $filled); printf "%0.s." $(seq 1 $empty)
+            printf "] %3d%%" "$pct"
+            [ "$pct" -ge 100 ] && break
+            sleep 5
+        done
+    }
+    cleanup_progress_line() { [ -t 1 ] && printf "\r\033[K"; }
+fi
 
 set -e
 
@@ -19,6 +39,12 @@ WHITE=$'\033[1;37m'
 PURPLE=$'\033[0;35m'
 CYAN=$'\033[0;36m'
 MAGENTA=$'\033[0;35m' # Added MAGENTA for consistency with deploy-all
+
+# Args
+do_full_clean=false
+for arg in "$@"; do
+    [ "$arg" = "--full-clean" ] && do_full_clean=true
+done
 
 # Configuration
 WEB_ROOT="/var/www/jeffreysanford.us"
@@ -38,6 +64,10 @@ echo -e "${BLUE}2. Cleaning previous builds...${NC}"
 rm -rf dist/apps/craft-web/
 # Also clean root dist if it exists
 rm -rf dist/
+if [ "$do_full_clean" = true ]; then
+    echo -e "${YELLOW}Full clean requested -- removing node_modules and Nx caches...${NC}"
+    rm -rf node_modules .nx/cache node_modules/.cache/nx 2>/dev/null || true
+fi
 echo -e "${GREEN}✓ Build directories cleaned${NC}"
 
 echo -e "${BLUE}3. Building Angular application...${NC}"
@@ -116,16 +146,17 @@ echo -e "${BLUE}10. Testing deployment...${NC}"
 sleep 2  # Give nginx a moment to reload
 
 # Test if the site is accessible
-HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "http://jeffreysanford.us" 2>/dev/null || echo "000")
-HTTPS_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "https://jeffreysanford.us" 2>/dev/null || echo "000")
+HOSTNAME_TO_TEST="${DEPLOY_HOST:-jeffreysanford.us}"
+HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "http://$HOSTNAME_TO_TEST" 2>/dev/null || echo "000")
+HTTPS_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "https://$HOSTNAME_TO_TEST" 2>/dev/null || echo "000")
 
-if [[ "$HTTP_RESPONSE" =~ ^2|3 ]]; then
+if [[ "$HTTP_RESPONSE" =~ ^(2|3)[0-9]{2}$ ]]; then
     echo -e "${GREEN}✓ HTTP site accessible (HTTP $HTTP_RESPONSE)${NC}"
 else
     echo -e "${YELLOW}⚠ HTTP site test failed (HTTP $HTTP_RESPONSE)${NC}"
 fi
 
-if [[ "$HTTPS_RESPONSE" =~ ^2|3 ]]; then
+if [[ "$HTTPS_RESPONSE" =~ ^(2|3)[0-9]{2}$ ]]; then
     echo -e "${GREEN}✓ HTTPS site accessible (HTTPS $HTTPS_RESPONSE)${NC}"
     PROTOCOL="https"
 else
@@ -147,7 +178,7 @@ fi
 echo -e "${BLUE}12. Testing WebSocket connection...${NC}"
 if ! command -v wscat &> /dev/null; then
     echo -e "${YELLOW}wscat not found. Installing globally...${NC}"
-    npm install -g wscat
+    sudo npm install -g wscat
 fi
 if command -v wscat &> /dev/null; then
     # Always test both WSS and WS
@@ -164,7 +195,7 @@ fi
 echo -e "${GREEN}=== Frontend Deployment Complete ===${NC}"
 echo
 echo -e "${BLUE}Deployment Summary:${NC}"
-echo -e "  Site URL: ${GREEN}http://jeffreysanford.us${NC}"
+echo -e "  Site URL: ${GREEN}http://$HOSTNAME_TO_TEST${NC}"
 echo -e "  Build size: ${GREEN}$BUILD_SIZE${NC}"
 echo -e "  Files deployed: ${GREEN}$DEPLOYED_FILES${NC}"
 echo -e "  Web root: ${GREEN}$WEB_ROOT${NC}"
