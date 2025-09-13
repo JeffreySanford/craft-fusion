@@ -144,8 +144,9 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
     server_name jeffreysanford.us www.jeffreysanford.us;
+    http2 on;
     
     # SSL Configuration
     ssl_certificate /etc/letsencrypt/live/jeffreysanford.us/fullchain.pem;
@@ -213,7 +214,6 @@ server {
     
     # WebSocket Secure (WSS) support
     location /socket.io/ {
-        proxy_pass http://localhost:3000;
         proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
