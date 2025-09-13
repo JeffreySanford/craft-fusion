@@ -37,18 +37,24 @@ All major scripts now use a centralized, color-coded system prep and monitoring 
 ## 🚦 Quick Start: Legendary Deployment
 
 1. **SSH to your droplet:**
+
    ```bash
    ssh jeffrey@your_droplet_ip
    ```
+
 2. **Clone the repo and enter the directory:**
+
    ```bash
    git clone https://github.com/yourusername/craft-fusion.git
    cd craft-fusion
    ```
+
 3. **Run the full deployment script:**
+
    ```bash
    bash scripts/deploy-all.sh
    ```
+
    - This will:
      - Run system prep (memory/process cleanup, optimization)
      - Build all apps (Angular, NestJS, Go)
@@ -56,12 +62,15 @@ All major scripts now use a centralized, color-coded system prep and monitoring 
      - Print a vibrant summary of your environment
 
 4. **(Optional) Start the live memory monitor:**
+
    ```bash
    bash scripts/memory-monitor.sh
    ```
+
    - Keep this running in a separate terminal for real-time system health.
 
 5. **(Optional) Run compliance scans:**
+
    ```bash
    sudo bash scripts/fedramp-minor.sh
    ```
@@ -97,18 +106,25 @@ Date:        Sun May 25 08:14:07 PM UTC 2025
 1. **Provision Fedora 40 Droplet** (see Digital Ocean UI)
 2. **SSH in as your user**
 3. **Clone repo and run:**
+
    ```bash
    bash scripts/deploy-all.sh
    ```
+
 4. **Monitor with:**
+
    ```bash
    bash scripts/memory-monitor.sh
    ```
+
 5. **(Optional) Run compliance scans:**
+
    ```bash
    sudo bash scripts/fedramp-minor.sh
    ```
+
 6. **(Optional) Clean and rebuild:**
+
    ```bash
    bash scripts/clean-build.sh
    ```
@@ -133,6 +149,7 @@ Date:        Sun May 25 08:14:07 PM UTC 2025
 
 - All scripts use `.env` for configuration (domain, ports, etc.)
 - Example:
+
   ```env
   NODE_ENV=production
   DOMAIN=jeffreysanford.us

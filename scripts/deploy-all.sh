@@ -163,9 +163,9 @@ chmod +x scripts/*.sh
 # --- System Prep: Clean up lingering processes and free memory ---
 if [ "$POWER_MODE" = true ]; then
   # --power is passed to system-prep.sh, which will pass it to system-optimize.sh if present
-  source "$(dirname "$0")/system-prep.sh" --power
+  source "$(dirname "$0")/system/system-prep.sh" --power
 else
-  source "$(dirname "$0")/system-prep.sh"
+  source "$(dirname "$0")/system/system-prep.sh"
 fi
 
 # After sourcing system-prep.sh, print a clear, modernized summary of available tools
