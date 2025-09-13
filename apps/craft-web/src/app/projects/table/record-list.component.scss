@@ -15,6 +15,8 @@ $table-theme: (
   stars-blue: #3C3B6E,
   silver: #C0C0C0,
   light-blue: #e1f5fe, // Added missing light-blue color definition
+  medium-blue: #b3e5fc, // New: slightly darker than light-blue
+  soft-navy: #e6eef8 // New: very light navy-tinted background
 );
 
 .no-data,
@@ -279,36 +281,36 @@ $table-theme: (
       background: rgba(map.get($table-theme, patriotic-blue), 0.85) !important; // Semi-transparent blue
       border-bottom: 2px solid map.get($table-theme, patriotic-red) !important;
       box-shadow: 0 0.1875em 0.375em rgba(0, 0, 0, 0.2) !important;
-      min-height: 56px !important; // Ensure header is tall enough
+      min-height: 44px !important; // Reduced header height for denser layout
     }
     
     .flex-header-cell, .flex-cell {
       flex: 1 !important;
-      padding: 0.4em 0.5em !important; // Increased padding to fit larger text
+      padding: 0.25em 0.4em !important; // Reduced padding for compact rows
       box-sizing: border-box !important;
       overflow: hidden !important;
       text-overflow: ellipsis !important;
       white-space: nowrap !important;
       display: flex !important;
       align-items: center !important;
-      min-height: 2.5em !important; // Increased from 2.2em
-      max-height: 2.5em !important; // Increased from 2.2em
+      min-height: 2.1em !important; // Reduced from 2.5em
+      max-height: 2.1em !important; // Reduced from 2.5em
     }
     
     .flex-header-cell {
       color: map.get($table-theme, primary-white) !important; // White text for contrast
       font-weight: 400 !important; // Lighter font weight (changed from 600)
       text-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.3) !important;
-      font-size: 1.4em !important;
+      font-size: 1.1em !important; // Reduced header font size
       letter-spacing: 0.02em !important;
     }
     
     .flex-row {
       border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
       transition: background-color 0.2s !important;
-      min-height: 48px !important; // Ensure consistent row height
+      min-height: 40px !important; // Reduced row height for denser layout
       height: auto !important;
-      margin: 2px 0 !important; // Add small gap between rows
+      margin: 1px 0 !important; // Slightly smaller gap between rows
       
       &:hover {
         background-color: rgba(map.get($table-theme, stars-blue), 0.15) !important; // More visible hover
@@ -369,10 +371,18 @@ $table-theme: (
     .flex-cell {
       color: white !important; // White text color
       font-weight: 300 !important; // Lighter font weight (changed from 500)
-      font-size: 1.25em !important; // Reduced back to 1.25em from 1.35em
+      font-size: 1.0em !important; // Reduced body font size for compact view
       text-shadow: 0 0.0625em 0.0625em rgba(0, 0, 0, 0.4) !important; // Text shadow for better contrast
       letter-spacing: 0.01em !important; // Added letter spacing
     }
+  }
+
+  // Compact paginator styling to match denser table
+  mat-paginator.mat-elevation-z8 {
+    --mat-paginator-container-size: 36px; // Reduce container height
+    margin-top: 4px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
 
   // Create custom styles for the expanded detail row
@@ -413,8 +423,14 @@ $table-theme: (
   width: 100%; // Ensure the collection takes full width
   padding: 0 !important;
   margin: 0 0 0.2em 0 !important;
-  // Use a light blue background for the entire section (request)
-  background-color: map.get($table-theme, light-blue) !important;
+  // Use a darker, less transparent background for the entire section
+  // Slightly darker than previous light-blue for better contrast during server changes
+  background: linear-gradient(
+    180deg,
+    color.adjust(map.get($table-theme, patriotic-blue), $lightness: 45%),
+    color.adjust(map.get($table-theme, patriotic-blue), $lightness: 35%)
+  ) !important;
+  border: 1px solid rgba(map.get($table-theme, patriotic-blue), 0.25) !important;
 
   .report {
     display: flex;
@@ -433,8 +449,8 @@ $table-theme: (
       padding: 0.25em;
       position: relative;
       overflow: hidden;
-  // Let the parent light-blue show through
-  background-color: transparent !important;
+    // Provide a subtle panel contrast on top of the darker section
+    background-color: rgba(255, 255, 255, 0.85) !important;
       
       &::before {
         content: "";
@@ -530,7 +546,7 @@ $table-theme: (
     align-items: center;
     padding: 0.15em;
     gap: 1rem; /* Add gap between selector items */
-    background: rgba(255, 255, 255, 0.7) !important; // Semi-transparent white
+  background: rgba(255, 255, 255, 0.9) !important; // Less transparency for stronger contrast
     border-radius: 0.5em; // Changed from 8px
     padding: 1rem;
     box-shadow: 0 0.25em 0.5em rgba(0, 0, 0, 0.1); // Changed from 0 4px 8px
@@ -552,7 +568,7 @@ $table-theme: (
         }
         
         .mat-mdc-text-field-wrapper {
-          background: rgba(255, 255, 255, 0.8) !important; // Semi-transparent white
+          background: rgba(255, 255, 255, 0.92) !important; // Less transparent for better readability
           border-radius: 0.25em; // Changed from 4px
           border: 0.0625em solid rgba(map.get($table-theme, patriotic-blue), 0.3); // Changed from 1px
           transition: all 0.3s ease;
