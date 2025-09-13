@@ -491,8 +491,8 @@ SITE_HTTPS=$(curl -s -f -w "%{http_code}" -o /dev/null "https://jeffreysanford.u
 # Test APIs
 API_NEST_HTTP=$(curl -s -f -w "%{http_code}" -o /dev/null "http://jeffreysanford.us/api/health" 2>/dev/null || echo "000")
 API_NEST_HTTPS=$(curl -s -f -w "%{http_code}" -o /dev/null "https://jeffreysanford.us/api/health" 2>/dev/null || echo "000")
-API_GO_HTTP=$(curl -s -f -w "%{http_code}" -o /dev/null "http://jeffreysanford.us/go-api/health" 2>/dev/null || echo "000")
-API_GO_HTTPS=$(curl -s -f -w "%{http_code}" -o /dev/null "https://jeffreysanford.us/go-api/health" 2>/dev/null || echo "000")
+API_GO_HTTP=$(curl -s -f -w "%{http_code}" -o /dev/null "http://jeffreysanford.us/api-go/health" 2>/dev/null || echo "000")
+API_GO_HTTPS=$(curl -s -f -w "%{http_code}" -o /dev/null "https://jeffreysanford.us/api-go/health" 2>/dev/null || echo "000")
 
 # Display results
 echo -e "${CYAN}Endpoint Test Results:${NC}"
@@ -678,7 +678,7 @@ fi
 
 echo -e "${BLUE}API Endpoints:${NC}"
 echo -e "  📡 NestJS API: ${GREEN}/api/*${NC}"
-echo -e "  🚀 Go API: ${GREEN}/go-api/*${NC}"
+echo -e "  🚀 Go API: ${GREEN}/api-go/*${NC}"
 
 echo -e "${BLUE}Management Commands:${NC}"
 echo -e "  View all logs: ${YELLOW}sudo tail -f /var/log/nginx/access.log /var/log/craft-fusion/*/out.log${NC}"

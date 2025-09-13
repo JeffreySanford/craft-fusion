@@ -370,7 +370,7 @@ server {
     }
 
     # Go API proxy
-    location /go-api/ {
+  location /api-go/ {
         proxy_pass http://localhost:4000/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
@@ -534,7 +534,7 @@ curl -X GET "http://jeffreysanford.us/api/health" \
   -H "Accept: application/json"
 
 # Test Go API proxy  
-curl -X GET "http://jeffreysanford.us/go-api/health" \
+curl -X GET "http://jeffreysanford.us/api-go/health" \
   -H "Accept: application/json"
 
 # Test static assets
