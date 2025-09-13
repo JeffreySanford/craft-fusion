@@ -369,14 +369,14 @@ pm2 delete all || true
 pm2 kill || true
 
 if id "craft-fusion" &>/dev/null; then
+    echo -e "${CYAN}Stopping all PM2 processes for craft-fusion user...${NC}"
+    sudo -u craft-fusion pm2 stop all || true
+    sudo -u craft-fusion pm2 delete all || true
+    sudo -u craft-fusion pm2 kill || true
+    # Show PM2 accessibility for craft-fusion; fallback to current user
     sudo -n -u craft-fusion pm2 list 2>/dev/null || pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
 else
     pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
-fi
-  echo -e "${CYAN}Stopping all PM2 processes for craft-fusion user...${NC}"
-  sudo -u craft-fusion pm2 stop all || true
-  sudo -u craft-fusion pm2 delete all || true
-  sudo -u craft-fusion pm2 kill || true
 fi
 
 # --- Wait for Go binary to be released before copying ---
