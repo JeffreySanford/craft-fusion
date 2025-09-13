@@ -43,7 +43,7 @@
 - **Monorepo Management:** NX
 - **Frontend:** Angular 19 with Material Design 3 (Patriotic Theme)
 - **Backend Services:** NestJS & Go
-- **Database:** MongoDB
+- **Database:** (none required)
 - **Real-Time:** WebSockets
 - **Documentation:** Markdown + Swagger + Live SVGs
 
@@ -67,7 +67,6 @@ nx serve craft-web
 
 - RESTful API
 - WebSocket Gateway
-- MongoDB Integration
 - JWT Authentication + RBAC
 
 ```bash
@@ -120,7 +119,7 @@ nx serve craft-go
 | STATE-MANAGEMENT.md | App State Patterns |
 | AUTHENTICATION.md | Auth & Authorization |
 | API-SERVICE.md | API Architecture |
-| More in `/documentation/`... |
+| See more | Located in `/documentation/` |
 
 ---
 

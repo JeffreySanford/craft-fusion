@@ -3,7 +3,7 @@ set -euo pipefail
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Craft-Fusion • system-prep.sh
-# Bootstrap dev host for NX (Angular + NestJS), Go, Rust, MongoDB tools, PM2, Nginx
+# Bootstrap dev host for NX (Angular + NestJS), Go, Rust, PM2, Nginx
 # Safe to re-run; only installs what’s missing and won’t overwrite existing envs.
 # Tested on: Fedora 39/40, Ubuntu 22.04/24.04, Debian 12
 # ──────────────────────────────────────────────────────────────────────────────
@@ -24,15 +24,13 @@ case "$ID_LIKE" in
     PKG="dnf -y"
     PKG_UPDATE="$SUDO dnf -y makecache"
     DEV_PKGS="git curl wget tar gzip unzip xz make gcc gcc-c++ python3 python3-pip openssl openssl-devel bash ca-certificates"
-    EXTRA_PKGS="nginx"
-    MONGO_PKG="mongodb-mongosh"
+  EXTRA_PKGS="nginx"
     ;;
   *ubuntu*|*debian*)
     PKG="apt-get -y"
     PKG_UPDATE="$SUDO apt-get update"
     DEV_PKGS="git curl wget tar gzip unzip xz-utils build-essential python3 python3-pip pkg-config libssl-dev bash ca-certificates"
-    EXTRA_PKGS="nginx"
-    MONGO_PKG="mongosh"
+  EXTRA_PKGS="nginx"
     ;;
   *)
     warn "Unknown distro; attempting generic prerequisites."
@@ -54,10 +52,7 @@ if [[ -n "$PKG" ]]; then
     eval "$SUDO $PKG install $EXTRA_PKGS" || warn "Nginx not installed (optional)."
   else ok "Nginx already installed."; fi
 
-  if ! command -v mongosh >/dev/null 2>&1; then
-    info "Installing MongoDB shell (optional tooling)..."
-    eval "$SUDO $PKG install $MONGO_PKG" || warn "MongoDB shell not installed (optional)."
-  else ok "MongoDB shell already installed."; fi
+  # MongoDB shell not required for this repo; removing optional install.
 else
   warn "Skipping OS package install; manage prerequisites manually."
 fi
@@ -202,10 +197,7 @@ JWT_AUDIENCE=craft-fusion
 JWT_SECRET=changeme_dev_only
 JWT_EXPIRES_IN=1h
 
-# Mongo (optional local)
-MONGO_URI=mongodb://localhost:27017/craftfusion
-MONGO_USER=
-MONGO_PASS=
+# Mongo: not used by this repo (left intentionally empty)
 
 # WebSocket
 WS_ENABLED=true
@@ -232,7 +224,6 @@ if [[ ! -f .vscode/extensions.json ]]; then
     "esbenp.prettier-vscode",
     "nrwl.angular-console",
     "eamodio.gitlens",
-    "mongodb.mongodb-vscode",
     "rust-lang.rust-analyzer",
     "golang.go"
   ]
