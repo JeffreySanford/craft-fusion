@@ -303,6 +303,30 @@ else
   echo -e "${GREEN}✓ Build outputs cleaned${NC}"
 fi
 
+# --- Ensure proper permissions for workspace ---
+echo -e "${BLUE}Setting up workspace permissions...${NC}"
+# Fix ownership of common build directories that might have been created by root
+USER_NAME=$(whoami)
+USER_GROUP=$(id -gn "$USER_NAME" 2>/dev/null || echo "$USER_NAME")
+
+# Fix ownership of key directories if they exist
+for DIR in dist node_modules .nx; do
+    if [ -d "$DIR" ]; then
+        if [ ! -w "$DIR" ]; then
+            echo -e "${YELLOW}Fixing ownership of $DIR directory...${NC}"
+            sudo chown -R "$USER_NAME:$USER_GROUP" "$DIR" 2>/dev/null || true
+        fi
+    fi
+done
+
+# Create dist directory with proper permissions if it doesn't exist
+if [ ! -d "dist" ]; then
+    mkdir -p dist/apps
+    echo -e "${GREEN}✓ Created dist directory with proper permissions${NC}"
+else
+    echo -e "${GREEN}✓ Workspace permissions verified${NC}"
+fi
+
 # Function to handle Nx post-install logic
 handle_nx_post_install() {
   local estimate_seconds=60
@@ -451,6 +475,64 @@ cleanup_progress_line
 
 if [ $backend_status -eq 0 ]; then
     echo -e "${GREEN}✓ Backend deployed successfully${NC}"
+    
+    # --- Comprehensive Go Server Verification ---
+    echo -e "${BLUE}Verifying Go server deployment...${NC}"
+    
+    # Check if Go binary exists and has correct permissions
+    if [ -f "dist/apps/craft-go/main" ]; then
+        echo -e "${GREEN}✓ Go binary exists${NC}"
+        
+        # Fix ownership if needed
+        if [ ! -w "dist/apps/craft-go/main" ]; then
+            echo -e "${YELLOW}Fixing Go binary permissions...${NC}"
+            sudo chown -R $(whoami):$(whoami) dist/ 2>/dev/null || true
+            chmod +x dist/apps/craft-go/main
+        fi
+        
+        # Verify binary is executable
+        if [ -x "dist/apps/craft-go/main" ]; then
+            echo -e "${GREEN}✓ Go binary is executable${NC}"
+        else
+            echo -e "${YELLOW}Making Go binary executable...${NC}"
+            chmod +x dist/apps/craft-go/main
+        fi
+    else
+        echo -e "${RED}✗ Go binary missing - attempting rebuild...${NC}"
+        npx nx run craft-go:build --configuration=production || echo -e "${YELLOW}Go build failed${NC}"
+    fi
+    
+    # Ensure PM2 services are properly started
+    echo -e "${BLUE}Starting PM2 services...${NC}"
+    sleep 2  # Give PM2 a moment to settle
+    
+    # Start ecosystem and check both services
+    pm2 start ecosystem.config.js 2>/dev/null || true
+    sleep 3  # Allow services to start
+    
+    # Verify both services are running
+    PM2_NEST_STATUS=$(pm2 list | grep craft-nest-api | grep -c online || echo "0")
+    PM2_GO_STATUS=$(pm2 list | grep craft-go-api | grep -c online || echo "0")
+    
+    if [ "$PM2_NEST_STATUS" = "1" ] && [ "$PM2_GO_STATUS" = "1" ]; then
+        echo -e "${GREEN}✓ Both NestJS and Go servers are running${NC}"
+    else
+        echo -e "${YELLOW}⚠ Service status check:${NC}"
+        if [ "$PM2_NEST_STATUS" != "1" ]; then
+            echo -e "${RED}  ✗ NestJS server not running${NC}"
+        fi
+        if [ "$PM2_GO_STATUS" != "1" ]; then
+            echo -e "${RED}  ✗ Go server not running${NC}"
+            # Try to restart Go service specifically
+            echo -e "${YELLOW}  Attempting to restart Go service...${NC}"
+            pm2 restart craft-go-api 2>/dev/null || pm2 start ecosystem.config.js
+        fi
+    fi
+    
+    # Save PM2 configuration
+    pm2 save 2>/dev/null || true
+    
+    echo -e "${BLUE}Backend verification complete${NC}"
     # --- Deploy frontend only if backend succeeded ---
     FRONTEND_DEPLOY_ESTIMATE_SECONDS=120
     phase_start_time=$(date +%s)

@@ -16,6 +16,8 @@
     "pm2:build": "npx nx build craft-nest --configuration=production && npx nx build craft-go --configuration=production",
     "test:backends": "bash ./scripts/test-backends.sh",
     "test:apis": "npm run test:backends",
+    "test:go": "bash ./scripts/test-go-api.sh",
+    "test:go-api": "npm run test:go",
     "deploy:frontend": "bash ./scripts/deploy-frontend.sh",
     "build:prod": "rm -rf dist && npx nx run craft-web:build --configuration=production",
     "test:frontend": "curl -I http://jeffreysanford.us && curl -I http://jeffreysanford.us/api/health",

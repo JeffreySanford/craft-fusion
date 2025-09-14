@@ -544,22 +544,20 @@ $table-theme: (
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0.15em;
-    gap: 1rem; /* Add gap between selector items */
-  background: rgba(255, 255, 255, 0.9) !important; // Less transparency for stronger contrast
+    gap: 1.5rem; /* Increased gap between selector items */
+    background: rgba(255, 255, 255, 0.9) !important; // Less transparency for stronger contrast
     border-radius: 0.5em; // Changed from 8px
-    padding: 1rem;
+    padding: 1.25rem 1.5rem; // Added left/right padding for better spacing
     box-shadow: 0 0.25em 0.5em rgba(0, 0, 0, 0.1); // Changed from 0 4px 8px
     margin-bottom: 0.2em !important;
-    padding: 0.5rem !important; // Reduced padding
 
     mat-form-field {
       flex: 1;
-      margin-right: 1rem; /* Add right margin to each form field */
-      min-width: 9.375em; // Changed from 150px
+      min-width: 10rem; // Slightly increased minimum width
       
-      &:last-child {
-        margin-right: 0; /* Remove margin from last item */
+      // Better spacing between form fields
+      &:not(:last-child) {
+        margin-right: 1.5rem; /* Increased margin between form fields */
       }
       
       ::ng-deep {
@@ -591,6 +589,30 @@ $table-theme: (
         .mat-mdc-select-value-text {
           color: map.get($table-theme, patriotic-blue);
           font-weight: 500;
+        }
+
+        // Styling for selected dropdown options with light blue background
+        .mat-mdc-option {
+          &.mdc-list-item--selected {
+            background-color: #e3f2fd !important; // Light blue background for selected items
+            color: map.get($table-theme, patriotic-blue) !important;
+            
+            &:not(.mdc-list-item--disabled) {
+              background-color: #e3f2fd !important; // Ensure light blue persists
+            }
+          }
+          
+          &:hover {
+            background-color: #f3f8ff !important; // Very light blue on hover
+          }
+        }
+
+        // Override Material's default selected styling
+        .mat-pseudo-checkbox-checked {
+          .mat-pseudo-checkbox-box {
+            background-color: map.get($table-theme, patriotic-blue) !important;
+            border-color: map.get($table-theme, patriotic-blue) !important;
+          }
         }
 
         // Fix for the box around the filter input
@@ -2234,6 +2256,29 @@ mat-card {
       height: 18px;
       margin-right: 4px;
       margin-bottom: 0;
+    }
+  }
+}
+
+// Global styling for Material select panels (overlays)
+// Since select panels are rendered in the body, we need global styling
+:host ::ng-deep .mat-mdc-select-panel {
+  .mat-mdc-option {
+    &.mdc-list-item--selected {
+      background-color: #e3f2fd !important; // Light blue for selected items
+      color: #002868 !important; // Patriotic blue text
+      
+      &:not(.mdc-list-item--disabled) {
+        background-color: #e3f2fd !important;
+      }
+      
+      &:hover {
+        background-color: #bbdefb !important; // Slightly darker blue on hover when selected
+      }
+    }
+    
+    &:hover:not(.mdc-list-item--selected) {
+      background-color: #f3f8ff !important; // Very light blue on hover for unselected
     }
   }
 }
