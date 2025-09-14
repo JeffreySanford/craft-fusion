@@ -34,9 +34,9 @@ NEST_PID=$!
 
 sleep 2
 
-echo -e "${GREEN}Starting Go server on port 8080...${NC}"
+echo -e "${GREEN}Starting Go server on port 4000...${NC}"
 # Start Go server in background  
-(cd dist/apps/craft-go && PORT=8080 ./main.exe 2>/dev/null || ./main) > logs/craft-go/out.log 2> logs/craft-go/error.log &
+(cd dist/apps/craft-go && PORT=4000 ./main.exe 2>/dev/null || ./main) > logs/craft-go/out.log 2> logs/craft-go/error.log &
 GO_PID=$!
 
 sleep 3
@@ -48,8 +48,8 @@ else
     echo -e "${RED}✗ NestJS server failed to start${NC}"
 fi
 
-if curl -s http://localhost:8080/health > /dev/null 2>&1; then
-    echo -e "${GREEN}✓ Go server running on http://localhost:8080${NC}"
+if curl -s http://localhost:4000/health > /dev/null 2>&1; then
+    echo -e "${GREEN}✓ Go server running on http://localhost:4000${NC}"
 else
     echo -e "${RED}✗ Go server failed to start${NC}"
 fi

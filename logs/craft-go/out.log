@@ -17,3 +17,5 @@
 [GIN-debug] GET    /swagger                  --> main.main.func4 (6 handlers)
 [GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (6 handlers)
 [GIN-debug] GET    /api-go/swagger/*any      --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (6 handlers)
+[GIN] 2025/09/14 - 14:14:40 | 200 |            0s |             ::1 | GET      "/health"
+[GIN] 2025/09/14 - 14:14:53 | 200 |            0s |             ::1 | GET      "/health"
