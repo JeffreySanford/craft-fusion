@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
-    "os"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
 	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 
-	_ "craft-fusion/craft-go/docs"
+	docs "craft-fusion/craft-go/docs"
 
 	"github.com/gin-contrib/cors"
 )
@@ -103,6 +103,10 @@ func main() {
 	// -------------------------------------------
 
 	// Swagger
+	// Dynamically set the host to the current port to avoid mismatches in dev
+	docs.SwaggerInfo.Host = fmt.Sprintf("localhost:%s", port)
+	// Provide two paths for convenience
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.GET("/api-go/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Log all registered routes with the resolved port

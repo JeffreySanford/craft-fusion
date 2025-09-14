@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { Logger } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
@@ -183,6 +184,23 @@ async function bootstrap() {
       Logger.error(`Yahoo handler error: ${isError(error) ? error.message : String(error)}`);
     }
   });
+
+  // Swagger (OpenAPI) setup
+  try {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Craft Fusion API (Nest)')
+      .setDescription('NestJS API documentation for Craft Fusion')
+      .setVersion('1.0')
+      .build();
+    const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+    // Expose under /api/swagger to align with the global prefix
+    SwaggerModule.setup('api/swagger', app, swaggerDocument);
+    // Also expose at /api/api-docs for compatibility with previous links
+    SwaggerModule.setup('api/api-docs', app, swaggerDocument);
+    Logger.log('Swagger UI available at /api/swagger and /api/api-docs');
+  } catch (e) {
+    Logger.warn(`Failed to initialize Swagger: ${isError(e) ? e.message : String(e)}`);
+  }
 
   // Start server with error handling
   try {
