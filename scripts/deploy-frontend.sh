@@ -392,3 +392,40 @@ else
     echo -e "${BOLD}${GREEN}Local build deployment completed successfully!${NC}"
     echo -e "${YELLOW}For server-side builds, use: ./scripts/deploy-frontend.sh --server-build${NC}"
 fi
+
+echo
+echo -e "${BOLD}${MAGENTA}═══════════════════════════════════════════════════════════════════════════${NC}"
+echo -e "${BOLD}${MAGENTA}                    📋 POST-DEPLOYMENT CHECKLIST                         ${NC}"
+echo -e "${BOLD}${MAGENTA}═══════════════════════════════════════════════════════════════════════════${NC}"
+echo
+echo -e "${BOLD}${CYAN}🔍 IMMEDIATE VERIFICATION:${NC}"
+echo -e "  ${GREEN}□${NC} Test main site: ${YELLOW}curl -I https://jeffreysanford.us${NC}"
+echo -e "  ${GREEN}□${NC} Check HTTPS redirect: ${YELLOW}curl -I http://jeffreysanford.us${NC}"
+echo -e "  ${GREEN}□${NC} Verify Angular routes: ${YELLOW}curl -I https://jeffreysanford.us/about${NC}"
+echo -e "  ${GREEN}□${NC} Test API endpoint: ${YELLOW}curl https://jeffreysanford.us/api/health${NC}"
+echo
+echo -e "${BOLD}${CYAN}🔗 BACKEND CONNECTIVITY:${NC}"
+echo -e "  ${GREEN}□${NC} Check NestJS status: ${YELLOW}pm2 status craft-nest${NC}"
+echo -e "  ${GREEN}□${NC} Check Go server status: ${YELLOW}pm2 status craft-go${NC}"
+echo -e "  ${GREEN}□${NC} Test API integration: ${YELLOW}curl https://jeffreysanford.us/api-go/ping${NC}"
+echo -e "  ${GREEN}□${NC} Test WebSocket connection with your browser dev tools"
+echo
+echo -e "${BOLD}${CYAN}📊 MONITORING & LOGS:${NC}"
+echo -e "  ${GREEN}□${NC} Monitor nginx logs: ${YELLOW}sudo tail -f /var/log/nginx/access.log${NC}"
+echo -e "  ${GREEN}□${NC} Check for errors: ${YELLOW}sudo tail -f /var/log/nginx/error.log${NC}"
+echo -e "  ${GREEN}□${NC} Monitor backend logs: ${YELLOW}pm2 logs${NC}"
+echo
+echo -e "${BOLD}${CYAN}⚙️  PRODUCTION MAINTENANCE:${NC}"
+echo -e "  ${GREEN}□${NC} Verify SSL certificates: ${YELLOW}openssl x509 -in /etc/letsencrypt/live/jeffreysanford.us/fullchain.pem -text -noout${NC}"
+echo -e "  ${GREEN}□${NC} Check disk space: ${YELLOW}df -h${NC}"
+echo -e "  ${GREEN}□${NC} Monitor memory usage: ${YELLOW}free -h${NC}"
+echo -e "  ${GREEN}□${NC} Validate SELinux contexts: ${YELLOW}ls -Z /var/www/jeffreysanford.us/${NC}"
+echo
+echo -e "${BOLD}${YELLOW}💡 COMMON ISSUES & FIXES:${NC}"
+echo -e "  ${RED}503 errors:${NC} Check backend services with ${YELLOW}pm2 status${NC}"
+echo -e "  ${RED}404 on routes:${NC} Verify nginx try_files directive in nginx config"
+echo -e "  ${RED}Static assets fail:${NC} Check nginx cache headers and file permissions"
+echo -e "  ${RED}WebSocket fails:${NC} Verify proxy_set_header Upgrade and Connection headers"
+echo
+echo -e "${BOLD}${GREEN}✅ Deployment completed at $(date)${NC}"
+echo -e "${BOLD}${BLUE}Remember to update your team about this deployment!${NC}"

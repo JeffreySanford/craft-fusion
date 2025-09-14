@@ -203,6 +203,7 @@ This approach eliminates:
 > cd scripts
 > go build -o oscal-scanner oscal-scanner.go
 > ```
+>
 > This will produce an executable `oscal-scanner` (or `oscal-scanner.exe` on Windows) in the `scripts/` directory.
 >
 > **Puppeteer Browser Dependency:**  
@@ -210,20 +211,25 @@ This approach eliminates:
 > You can add the following to your project setup:
 >
 > - **Option 1:** Add a postinstall script to your root `package.json`:
+>
 >   ```json
 >   "scripts": {
 >     "postinstall": "npx puppeteer browsers install chrome"
 >   }
 >   ```
+>
 > - **Option 2:** Run manually after `npm install`:
+>
 >   ```bash
 >   npx puppeteer browsers install chrome
 >   ```
+>
 > - **Note:** If running as root or with `sudo`, ensure the correct cache directory permissions (see script output for guidance).
 
 ## Archived Scripts
 
 Experimental and completed scripts have been moved to `scripts/archive/`:
+
 - `deploy-timed.sh` - Development version with progress tracking
 - `deploy-low-memory.sh` - Memory optimization experiments
 - `deploy-with-monitor.sh` - Combined deployment with monitoring
@@ -334,12 +340,14 @@ The following frameworks are included in our compliance tracking for awareness a
 - **NIST SP 800-53**: US federal standard for security and privacy controls. Some SCAP/OSCAL mappings exist for these controls. [Learn more](https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final)
 
 **Why are these included?**
+
 - These frameworks are essential for organizations operating in the EU, US, or globally.
 - They represent current and emerging best practices for privacy, cybersecurity, and audit.
 - Including them as placeholders ensures your compliance roadmap is future-proof and ready for new automation or official profiles as they become available.
 - They help you map and document manual controls, policies, and audits that go beyond technical SCAP/OSCAL scans.
 
 **Note:**
+
 - For GDPR, DORA, and NIS2, compliance is currently achieved through policies, documentation, and manual audits. Automated technical scanning is not yet possible.
 - For 3PAO and NIST 800-53, use the referenced links for guidance and mapping to your existing controls.
 
@@ -350,6 +358,7 @@ The following frameworks are included in our compliance tracking for awareness a
 Below is a detailed, itemized list of all security controls implemented by the current set of profiles and scripts. Each category includes a subtotal, and a grand total is provided at the end.
 
 ### 1. OSCAL/SCAP Compliance Controls
+
 - Baseline OSCAL/SCAP scan (standard)
 - OSPP profile scan (ospp)
 - PCI-DSS profile scan (pci-dss)
@@ -373,6 +382,7 @@ Below is a detailed, itemized list of all security controls implemented by the c
 **Subtotal: 19 controls**
 
 ### 2. System Health & Hardening Controls
+
 - Service status checks (nginx)
 - Service status checks (PM2)
 - Service status checks (Node.js)
@@ -403,6 +413,7 @@ Below is a detailed, itemized list of all security controls implemented by the c
 **Subtotal: 26 controls**
 
 ### 3. Compliance & Audit Controls
+
 - Audit log presence check
 - Audit log rotation check
 - Audit log integrity check
@@ -419,6 +430,7 @@ Below is a detailed, itemized list of all security controls implemented by the c
 **Subtotal: 13 controls**
 
 ### 4. Encryption & Access Control
+
 - Encryption checks (PCI-DSS, FedRAMP)
 - Access control validation
 - User account validation
@@ -427,12 +439,14 @@ Below is a detailed, itemized list of all security controls implemented by the c
 **Subtotal: 5 controls**
 
 ### 5. Incident Response & Monitoring
+
 - Incident response checks (FedRAMP, Rev5)
 - Log integrity checks (advanced audit)
 - Continuous monitoring (future profiles)
 **Subtotal: 3 controls**
 
 ### 6. Reporting & Dashboard
+
 - Color-coded output for quick status review
 - Compliance dashboard output (advanced/future profiles)
 - Error and warning highlighting in reports
@@ -441,7 +455,7 @@ Below is a detailed, itemized list of all security controls implemented by the c
 
 ---
 
-**Grand Total: 70 security controls**
+### Grand Total: 70 security controls
 
 This list is cumulative and reflects all controls present in the system as of May 26, 2025. For the most up-to-date list, review the latest scan results and script documentation.
 

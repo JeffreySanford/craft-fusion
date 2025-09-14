@@ -784,3 +784,68 @@ for profile in "${PROFILES_TO_REPORT[@]}"; do
 done
 
 echo -e "${GREEN}✓ OSCAL Compliance Report Phase: Completed${NC}"
+
+# ===================================================================
+# FRONTEND DEPLOYMENT VERIFICATION CHECKLIST
+# ===================================================================
+echo
+echo -e "${BOLD}${MAGENTA}═══════════════════════════════════════════════════════════════════════════${NC}"
+echo -e "${BOLD}${MAGENTA}           🌐 FRONTEND DEPLOYMENT VERIFICATION CHECKLIST                ${NC}"
+echo -e "${BOLD}${MAGENTA}═══════════════════════════════════════════════════════════════════════════${NC}"
+echo
+
+if [ "${frontend_status:-1}" -eq 0 ]; then
+    echo -e "${BOLD}${CYAN}🔍 IMMEDIATE VERIFICATION STEPS:${NC}"
+    echo -e "  ${GREEN}□${NC} Main site loads: ${YELLOW}curl -I https://jeffreysanford.us${NC}"
+    echo -e "  ${GREEN}□${NC} HTTPS redirect works: ${YELLOW}curl -I http://jeffreysanford.us${NC}"
+    echo -e "  ${GREEN}□${NC} Angular SPA routing: ${YELLOW}curl -I https://jeffreysanford.us/about${NC}"
+    echo -e "  ${GREEN}□${NC} Static assets load: ${YELLOW}curl -I https://jeffreysanford.us/favicon.ico${NC}"
+    echo
+    
+    echo -e "${BOLD}${CYAN}🔗 BACKEND INTEGRATION TESTS:${NC}"
+    echo -e "  ${GREEN}□${NC} NestJS API health: ${YELLOW}curl https://jeffreysanford.us/api/health${NC}"
+    echo -e "  ${GREEN}□${NC} Go API health: ${YELLOW}curl https://jeffreysanford.us/api-go/ping${NC}"
+    echo -e "  ${GREEN}□${NC} WebSocket connectivity: Test in browser dev tools"
+    echo -e "  ${GREEN}□${NC} Check service status: ${YELLOW}pm2 status${NC}"
+    echo
+    
+    echo -e "${BOLD}${CYAN}📊 MONITORING & MAINTENANCE:${NC}"
+    echo -e "  ${GREEN}□${NC} Watch access logs: ${YELLOW}sudo tail -f /var/log/nginx/access.log${NC}"
+    echo -e "  ${GREEN}□${NC} Check error logs: ${YELLOW}sudo tail -f /var/log/nginx/error.log${NC}"
+    echo -e "  ${GREEN}□${NC} Monitor backend logs: ${YELLOW}pm2 logs${NC}"
+    echo -e "  ${GREEN}□${NC} Verify nginx config: ${YELLOW}sudo nginx -t${NC}"
+    echo
+    
+    echo -e "${BOLD}${CYAN}⚙️  PRODUCTION HEALTH CHECKS:${NC}"
+    echo -e "  ${GREEN}□${NC} SSL certificate status: ${YELLOW}openssl x509 -in /etc/letsencrypt/live/jeffreysanford.us/fullchain.pem -dates -noout${NC}"
+    echo -e "  ${GREEN}□${NC} Disk space check: ${YELLOW}df -h${NC}"
+    echo -e "  ${GREEN}□${NC} Memory usage: ${YELLOW}free -h${NC}"
+    echo -e "  ${GREEN}□${NC} SELinux contexts: ${YELLOW}ls -Z /var/www/jeffreysanford.us/${NC}"
+    echo
+    
+    echo -e "${BOLD}${YELLOW}💡 TROUBLESHOOTING COMMON ISSUES:${NC}"
+    echo -e "  ${RED}503 Service Unavailable:${NC} Backend down → ${YELLOW}pm2 restart all${NC}"
+    echo -e "  ${RED}404 on Angular routes:${NC} nginx try_files issue → Check nginx config"
+    echo -e "  ${RED}Static assets 404:${NC} Permissions issue → ${YELLOW}sudo chown -R nginx:nginx /var/www/jeffreysanford.us${NC}"
+    echo -e "  ${RED}WebSocket connection fails:${NC} Proxy headers → Check nginx WebSocket config"
+    echo -e "  ${RED}SSL certificate errors:${NC} Renewal needed → ${YELLOW}sudo certbot renew${NC}"
+    echo
+    
+    echo -e "${BOLD}${GREEN}✅ Frontend deployment verified! Remember to:${NC}"
+    echo -e "${BOLD}${BLUE}   • Test the application thoroughly${NC}"
+    echo -e "${BOLD}${BLUE}   • Notify your team about the deployment${NC}"
+    echo -e "${BOLD}${BLUE}   • Monitor logs for the first few minutes${NC}"
+    echo -e "${BOLD}${BLUE}   • Update documentation if needed${NC}"
+else
+    echo -e "${BOLD}${RED}❌ Frontend deployment failed!${NC}"
+    echo -e "${YELLOW}Please review the deployment logs above and fix issues before proceeding.${NC}"
+    echo
+    echo -e "${BOLD}${YELLOW}Quick debugging steps:${NC}"
+    echo -e "  ${YELLOW}1.${NC} Check build logs: ${YELLOW}npm run build:prod${NC}"
+    echo -e "  ${YELLOW}2.${NC} Verify nginx config: ${YELLOW}sudo nginx -t${NC}"
+    echo -e "  ${YELLOW}3.${NC} Check disk space: ${YELLOW}df -h${NC}"
+    echo -e "  ${YELLOW}4.${NC} Review permissions: ${YELLOW}ls -la /var/www/jeffreysanford.us/${NC}"
+    echo -e "  ${YELLOW}5.${NC} Try manual deployment: ${YELLOW}./scripts/deploy-frontend.sh --server-build${NC}"
+fi
+
+echo
