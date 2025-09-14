@@ -98,6 +98,52 @@ done
 
 ok "Node: $(node -v), NPM: $(npm -v)"
 
+# ---------- Go Language Installation ----------
+if ! command -v go >/dev/null 2>&1; then
+  info "Installing Go language..."
+  case "$ID_LIKE" in
+    *fedora*|*rhel*)
+      eval "$SUDO $PKG install golang" || warn "Go installation failed"
+      ;;
+    *ubuntu*|*debian*)
+      eval "$SUDO $PKG install golang-go" || warn "Go installation failed"
+      ;;
+    *)
+      warn "Unknown distro; install Go manually from https://golang.org/dl/"
+      ;;
+  esac
+  
+  # Verify Go installation
+  if command -v go >/dev/null 2>&1; then
+    ok "Go installed: $(go version)"
+    
+    # Set up Go environment
+    GO_PATH="${HOME}/go"
+    if [[ ! -d "$GO_PATH" ]]; then
+      mkdir -p "$GO_PATH/bin" "$GO_PATH/src" "$GO_PATH/pkg"
+      info "Created Go workspace at $GO_PATH"
+    fi
+    
+    # Add Go to PATH in shell configs
+    for RC in "${HOME}/.bashrc" "${HOME}/.zshrc"; do
+      [[ -f "$RC" ]] || continue
+      if ! grep -q 'GOPATH' "$RC"; then
+        info "Adding Go environment to ${RC##*/}..."
+        {
+          echo ''
+          echo '# Go environment'
+          echo 'export GOPATH=$HOME/go'
+          echo 'export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin'
+        } >> "$RC"
+      fi
+    done
+  else
+    warn "Go installation verification failed"
+  fi
+else
+  ok "Go already installed: $(go version)"
+fi
+
 # ---------- Package manager detection (pnpm/corepack optional) ----------
 USE_PNPM=false
 if [[ -f "pnpm-lock.yaml" ]] || [[ -f ".use-pnpm" ]] || [[ "${CF_USE_PNPM:-}" == "true" ]]; then

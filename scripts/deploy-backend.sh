@@ -12,6 +12,34 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
+# Check Go installation before proceeding
+if ! command -v go >/dev/null 2>&1; then
+    echo -e "${RED}✗ Go is not installed!${NC}"
+    echo -e "${YELLOW}Installing Go...${NC}"
+    
+    # Detect OS and install Go
+    if command -v dnf >/dev/null 2>&1; then
+        # Fedora/RHEL
+        sudo dnf install -y golang
+    elif command -v apt-get >/dev/null 2>&1; then
+        # Ubuntu/Debian
+        sudo apt-get update && sudo apt-get install -y golang-go
+    else
+        echo -e "${RED}✗ Cannot auto-install Go. Please install manually from https://golang.org/dl/${NC}"
+        exit 1
+    fi
+    
+    # Verify installation
+    if command -v go >/dev/null 2>&1; then
+        echo -e "${GREEN}✓ Go installed successfully: $(go version)${NC}"
+    else
+        echo -e "${RED}✗ Go installation failed${NC}"
+        exit 1
+    fi
+else
+    echo -e "${GREEN}✓ Go is available: $(go version)${NC}"
+fi
+
 # Configuration
 APP_DIR="/var/www/craft-fusion"
 LOG_DIR="/var/log/craft-fusion"
