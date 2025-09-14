@@ -117,16 +117,56 @@ print_progress() {
 cleanup_progress_line() { [ -t 1 ] && printf "\r\033[K"; }
 
 # Parse arguments
+# Configuration flags
 POWER_MODE=false
 do_full_clean=false
 yes_ssl=false
 skip_ssl=false
+
+# Usage function
+show_usage() {
+    echo -e "${BOLD}${CYAN}Craft Fusion Complete Deployment Script${NC}"
+    echo
+    echo -e "${BOLD}USAGE:${NC}"
+    echo -e "  sudo ./scripts/deploy-all.sh [OPTIONS]"
+    echo
+    echo -e "${BOLD}OPTIONS:${NC}"
+    echo -e "  ${YELLOW}--full-clean${NC}     Clean node_modules, .nx cache, and rebuild everything"
+    echo -e "  ${YELLOW}--power${NC}          Enable power mode (use 90% RAM, disable Nx daemon)"
+    echo -e "  ${YELLOW}--yes-ssl${NC}        Automatically set up SSL/HTTPS (skip prompt)"
+    echo -e "  ${YELLOW}--skip-ssl${NC}       Skip SSL setup (use HTTP only)"
+    echo -e "  ${YELLOW}--help${NC}           Show this help message"
+    echo
+    echo -e "${BOLD}EXAMPLES:${NC}"
+    echo -e "  ${CYAN}# Standard deployment (incremental builds)${NC}"
+    echo -e "  sudo ./scripts/deploy-all.sh"
+    echo
+    echo -e "  ${CYAN}# Force complete rebuild (recommended for production)${NC}"
+    echo -e "  sudo ./scripts/deploy-all.sh --full-clean"
+    echo
+    echo -e "  ${CYAN}# Power deployment with clean rebuild${NC}"
+    echo -e "  sudo ./scripts/deploy-all.sh --full-clean --power"
+    echo
+    echo -e "  ${CYAN}# Deploy with automatic HTTPS setup${NC}"
+    echo -e "  sudo ./scripts/deploy-all.sh --full-clean --yes-ssl"
+    echo
+    echo -e "${BOLD}${YELLOW}TROUBLESHOOTING:${NC}"
+    echo -e "  ${RED}Go server not starting?${NC} Use --full-clean to rebuild the binary"
+    echo -e "  ${RED}NPM/build errors?${NC} Use --full-clean to clear all caches"
+    echo -e "  ${RED}Memory issues?${NC} Use --power for optimized memory allocation"
+    echo -e "  ${RED}Backend APIs 503/404?${NC} Check PM2 status after deployment"
+    echo
+}
+
+# Parse command line arguments
 for arg in "$@"; do
     case "$arg" in
         --full-clean) do_full_clean=true ;;
         --power) POWER_MODE=true ;;
         --yes-ssl) yes_ssl=true ;;
         --skip-ssl) skip_ssl=true ;;
+        --help|-h) show_usage; exit 0 ;;
+        *) echo -e "${RED}Unknown option: $arg${NC}"; show_usage; exit 1 ;;
     esac
 done
 

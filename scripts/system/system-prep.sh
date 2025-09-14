@@ -142,6 +142,41 @@ else
   fi
 fi
 
+# ---------- NPM Global Package Security Check ----------
+info "Checking and updating global npm packages for security..."
+
+# Check current global packages
+if command -v npm >/dev/null 2>&1; then
+  info "Current global packages:"
+  npm list -g --depth=0 2>/dev/null || warn "Could not list global packages"
+  
+  # Update global packages for security
+  info "Updating global npm packages..."
+  if [[ -n "$SUDO" ]]; then
+    $SUDO npm update -g || warn "Global npm update failed (optional)"
+    
+    # Check latest versions
+    info "Verifying package versions:"
+    for pkg in nx pm2 wscat corepack; do
+      if npm list -g "$pkg" >/dev/null 2>&1; then
+        CURRENT=$(npm list -g "$pkg" --depth=0 2>/dev/null | grep "$pkg@" | sed 's/.*@//' | sed 's/ .*//' || echo "unknown")
+        LATEST=$(npm view "$pkg" version 2>/dev/null || echo "unknown")
+        if [[ "$CURRENT" == "$LATEST" ]]; then
+          ok "$pkg: $CURRENT (latest)"
+        else
+          info "$pkg: $CURRENT → $LATEST available"
+        fi
+      fi
+    done
+  else
+    warn "No sudo available; skipping global npm updates"
+  fi
+  
+  ok "Global npm packages checked and updated"
+else
+  warn "npm not available; skipping global package security check"
+fi
+
 # ---------- Workspace scaffold (non-destructive) ----------
 ROOT="${PWD}"
 info "Preparing Craft-Fusion workspace structure..."
