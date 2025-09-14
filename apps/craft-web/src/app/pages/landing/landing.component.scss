@@ -35,25 +35,32 @@
     font-size: 2vw;
     display: flex;
     justify-content: center;
-    gap: 1.5em;
+    align-items: center;
+    gap: 0; // Use star margins for spacing to center the star
     animation: fadeIn 2s ease-out forwards;
 
     .animated-item {
       font-size: 1em;
-      color: gold;
+      color: red; // start red
       opacity: 0;
       transform: translateY(2em);
-      animation: fadeInUp 2s ease-out forwards;
+      // Run fade-in and color transition together
+      animation: fadeInUp 2s ease-out forwards, itemColorChange 2s ease-out forwards;
+      display: inline-flex;
+      align-items: center;
+      line-height: 1;
 
       // Add a gold animated star between words (except after the last)
       &:not(:last-child)::after {
         content: '★';
         display: inline-block;
-        margin: 0 0.35em 0 0.5em;
+        margin: 0 0.75em; // balanced spacing on both sides
         color: gold;
         text-shadow: 0 0 6px rgba(255, 215, 0, 0.6), 0 0 12px rgba(255, 215, 0, 0.3);
-        animation: starTwinkle 1.6s ease-in-out infinite;
+        // Animate for ~4.8s (3 x 1.6s) and then stop, keeping the final state
+        animation: starTwinkle 1.6s ease-in-out 0s 3 forwards;
         transform-origin: 50% 50%;
+        font-size: 1em;
       }
 
       &:nth-child(1) {
@@ -289,6 +296,16 @@
   100% {
     text-shadow: 0 0 20px red;
     text-outline: 0.25em solid red;
+  }
+}
+
+// Transition the role words from red to gold
+@keyframes itemColorChange {
+  0% {
+    color: red;
+  }
+  100% {
+    color: gold;
   }
 }
 
