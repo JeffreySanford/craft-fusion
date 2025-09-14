@@ -219,13 +219,13 @@ echo -e "${BLUE}6. Deploying to web server...${NC}"
 sudo mkdir -p "$WEB_ROOT"
 
 # Remove old deployment (but keep backup)
-sudo rm -rf "$WEB_ROOT"/*
+echo -e "${BLUE}6. Synchronizing files to production...${NC}"
 
-# Synchronize new build to web root
-sudo cp -r dist/apps/craft-web/* "$WEB_ROOT"/
+# Use rsync for better file synchronization and to avoid cache issues
+sudo rsync -avz --delete --no-perms --no-owner --no-group dist/apps/craft-web/ "$WEB_ROOT"/
 deploy_status=$?
 if [ $deploy_status -ne 0 ]; then
-    echo -e "${RED}✗ Failed to copy files to web root${NC}"
+    echo -e "${RED}✗ Failed to sync files to web root${NC}"
     exit 1
 fi
 echo -e "${GREEN}✓ Files synchronized to $WEB_ROOT${NC}"
@@ -267,12 +267,10 @@ echo -e "${BLUE}5. Deploying to web server...${NC}"
 # Create web root if it doesn't exist
 sudo mkdir -p "$WEB_ROOT"
 
-# Remove old deployment
-sudo rm -rf "$WEB_ROOT"/*
-
-# Copy new build
-sudo cp -r dist/apps/craft-web/* "$WEB_ROOT"/
-echo -e "${GREEN}✓ Files copied to $WEB_ROOT${NC}"
+# Synchronize new build using rsync for better handling
+echo -e "${BLUE}5. Synchronizing files...${NC}"
+sudo rsync -avz --delete --no-perms --no-owner --no-group dist/apps/craft-web/ "$WEB_ROOT"/
+echo -e "${GREEN}✓ Files synchronized to $WEB_ROOT${NC}"
 
 echo -e "${BLUE}6. Setting permissions...${NC}"
 sudo chown -R nginx:nginx "$WEB_ROOT"/
