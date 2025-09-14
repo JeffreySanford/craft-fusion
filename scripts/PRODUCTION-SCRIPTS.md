@@ -3,21 +3,196 @@
 ## Essential Deployment Scripts
 
 ### Core Deployment
+
 - `deploy-all.sh` - **Main production deployment orchestrator**
 - `deploy-backend.sh` - Backend-only deployment
-- `deploy-frontend.sh` - Frontend-only deployment
+- `deploy-frontend.sh` - Frontend-only deployment (no archives)
 - `clean-build.sh` - Build cleanup utility
 
 ### Testing & Validation
+
 - `test-backends.sh` - API endpoint testing
 - `verify-deployment.sh` - Post-deployment validation
 - `nginx-test.sh` - Nginx configuration testing
 
 ### Infrastructure
+
 - `memory-monitor.sh` - Real-time system monitoring
 - `ssl-setup.sh` - SSL certificate configuration
 - `wss-setup.sh` - WebSocket Secure setup
 - `system-optimize.sh` - VPS optimization
+
+## Frontend Deployment Options
+
+The `deploy-frontend.sh` script supports two deployment approaches:
+
+### 1. Local Build Deployment (Default)
+
+Build the Angular application locally and deploy the artifacts:
+
+```bash
+# Standard local build and deploy
+./scripts/deploy-frontend.sh
+
+# With full cleanup (recommended for clean slate)
+./scripts/deploy-frontend.sh --full-clean
+```
+
+**Advantages:**
+
+- Faster (uses local development machine resources)
+- Good for development/testing cycles
+- Less server resource usage
+
+**Requirements:**
+
+- Local environment must match production (Node.js version, dependencies)
+- Build artifacts must be transferred to server
+
+### 2. Server Build Deployment
+
+Build the Angular application directly on the production server:
+
+```bash
+# Build on server (recommended for production)
+./scripts/deploy-frontend.sh --server-build
+
+# Server build with full cleanup
+./scripts/deploy-frontend.sh --server-build --full-clean
+```
+
+**Advantages:**
+
+- Environment consistency (builds exactly where it runs)
+- No artifact transfer needed
+- Eliminates local/server environment differences
+
+**Requirements:**
+
+- Adequate server memory (3GB+ recommended)
+- Node.js 18+ on server (Node.js 20 LTS recommended)
+- Source code available on server
+
+### 3. Deploy Existing Build
+
+Deploy pre-built artifacts without rebuilding:
+
+```bash
+# Deploy existing dist/ artifacts only
+./scripts/deploy-frontend.sh --skip-build
+```
+
+**Use Cases:**
+
+- Emergency deployments with known-good builds
+- Rapid rollback scenarios
+- CI/CD pipelines with separate build stages
+
+## Production Deployment Best Practices
+
+### Recommended Production Workflow
+
+1. **Preparation:**
+
+   ```bash
+   # On server: ensure environment is ready
+   node --version  # Should be 18+, preferably 20 LTS
+   free -h         # Check available memory
+   df -h           # Check disk space
+   ```
+
+2. **Deploy with server build:**
+
+   ```bash
+   ./scripts/deploy-frontend.sh --server-build --full-clean
+   ```
+
+3. **Verify deployment:**
+
+   ```bash
+   # Check site accessibility
+   curl -I https://jeffreysanford.us
+   
+   # Check nginx logs
+   sudo tail -f /var/log/nginx/access.log
+   sudo tail -f /var/log/nginx/error.log
+   
+   # Verify backend connectivity  
+   pm2 status
+   ```
+
+### Memory Management for Server Builds
+
+Server builds require adequate memory. The script automatically:
+
+- Sets `NODE_OPTIONS=--max_old_space_size=3072`
+- Uses limited npm concurrency (`--maxsockets=3`)
+- Checks available memory and warns if low
+
+If builds fail due to memory:
+
+1. Clear system caches: `sudo sysctl vm.drop_caches=3`
+2. Stop unnecessary services temporarily
+3. Add swap space if needed
+4. Consider using `--power` flag with `deploy-all.sh`
+
+### Troubleshooting Server Builds
+
+**Build fails with "Missing } in template expression":**
+
+```bash
+# Run with verbose output to identify the exact file/line:
+npm run build:prod -- --verbose --skip-nx-cache
+```
+
+**OOM (Out of Memory) during npm ci:**
+
+```bash
+# Clear caches and retry with limited concurrency
+npm cache clean --force
+npx nx reset
+npm ci --progress=false --no-audit --maxsockets=3
+```
+
+**Lockfile conflicts:**
+
+```bash
+# Remove conflicting lockfiles (keep only package-lock.json)
+rm -f pnpm-lock.yaml yarn.lock
+npm ci
+```
+
+### SELinux Considerations
+
+The deployment script automatically handles SELinux contexts:
+
+- Checks if SELinux is enforcing
+- Runs `restorecon -R` on web root
+- Sets proper file permissions (nginx:nginx, 755)
+
+### Backup and Rollback
+
+Each deployment automatically creates timestamped backups:
+
+- Location: `/var/backups/jeffreysanford.us/backup-YYYYMMDD-HHMMSS`
+- Includes complete previous deployment
+- Manual rollback: `sudo cp -r /var/backups/jeffreysanford.us/backup-<timestamp>/* /var/www/jeffreysanford.us/`
+
+## No Archive Approach
+
+**Important:** This deployment system does NOT use zip, tar, or other archive files. Instead:
+
+- **Local builds:** Artifacts are synchronized directly from `dist/` to web root
+- **Server builds:** Built in place and deployed immediately  
+- **Backups:** Use `cp -r` for full directory snapshots
+- **Transfers:** Use `rsync` or direct copy operations
+
+This approach eliminates:
+
+- Archive creation/extraction overhead
+- Temporary file management
+- Compression/decompression delays
+- Archive corruption risks
 
 ## OSCAL/FedRAMP Go Scanner
 
