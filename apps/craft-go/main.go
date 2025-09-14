@@ -105,9 +105,20 @@ func main() {
 	// Swagger
 	// Dynamically set the host to the current port to avoid mismatches in dev
 	docs.SwaggerInfo.Host = fmt.Sprintf("localhost:%s", port)
+	// Reviewer-friendly UI: collapse models/docs, minimize interactivity
+	swaggerHandler := ginSwagger.WrapHandler(
+		swaggerFiles.Handler,
+		ginSwagger.DocExpansion("none"),
+		ginSwagger.DefaultModelsExpandDepth(-1),
+	)
 	// Provide two paths for convenience
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	router.GET("/api-go/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// Optional: redirect bare /swagger to index with UI options to minimize interactivity
+	router.GET("/swagger", func(c *gin.Context) {
+		// supportedSubmitMethods=[] hides "Try it out" in Swagger UI
+		c.Redirect(302, "/swagger/index.html?deepLinking=true&displayRequestDuration=true&docExpansion=none&defaultModelsExpandDepth=-1&supportedSubmitMethods=%5B%5D")
+	})
+	router.GET("/swagger/*any", swaggerHandler)
+	router.GET("/api-go/swagger/*any", swaggerHandler)
 
 	// Log all registered routes with the resolved port
 	for _, route := range router.Routes() {

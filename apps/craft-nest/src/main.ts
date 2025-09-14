@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { Logger } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { SwaggerModule, DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
 import helmet from 'helmet';
 import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
@@ -193,10 +193,20 @@ async function bootstrap() {
       .setVersion('1.0')
       .build();
     const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+    // Make Swagger UI read-only for reviewers (no "Try it out"), compact view
+    const swaggerOptions: SwaggerCustomOptions = {
+      swaggerOptions: {
+        supportedSubmitMethods: [],
+        docExpansion: 'none',
+        deepLinking: true,
+        displayRequestDuration: true,
+      },
+      customSiteTitle: 'Craft Fusion API Docs',
+    };
     // Expose under /api/swagger to align with the global prefix
-    SwaggerModule.setup('api/swagger', app, swaggerDocument);
+    SwaggerModule.setup('api/swagger', app, swaggerDocument, swaggerOptions);
     // Also expose at /api/api-docs for compatibility with previous links
-    SwaggerModule.setup('api/api-docs', app, swaggerDocument);
+    SwaggerModule.setup('api/api-docs', app, swaggerDocument, swaggerOptions);
     Logger.log('Swagger UI available at /api/swagger and /api/api-docs');
   } catch (e) {
     Logger.warn(`Failed to initialize Swagger: ${isError(e) ? e.message : String(e)}`);

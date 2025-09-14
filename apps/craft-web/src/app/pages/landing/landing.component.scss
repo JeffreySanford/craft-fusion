@@ -45,6 +45,17 @@
       transform: translateY(2em);
       animation: fadeInUp 2s ease-out forwards;
 
+      // Add a gold animated star between words (except after the last)
+      &:not(:last-child)::after {
+        content: '★';
+        display: inline-block;
+        margin: 0 0.35em 0 0.5em;
+        color: gold;
+        text-shadow: 0 0 6px rgba(255, 215, 0, 0.6), 0 0 12px rgba(255, 215, 0, 0.3);
+        animation: starTwinkle 1.6s ease-in-out infinite;
+        transform-origin: 50% 50%;
+      }
+
       &:nth-child(1) {
         animation-delay: 0s;
       }
@@ -136,6 +147,34 @@
       margin-top: -2em;
       animation-delay: 7s;
     }
+  }
+}
+
+@keyframes starTwinkle {
+  0% {
+    opacity: 0.85;
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.7));
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1.15) rotate(8deg);
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.9));
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.8));
+  }
+  75% {
+    opacity: 1;
+    transform: scale(1.12) rotate(-8deg);
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.95));
+  }
+  100% {
+    opacity: 0.85;
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.7));
   }
 }
 
