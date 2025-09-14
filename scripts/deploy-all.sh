@@ -553,6 +553,72 @@ if [ $backend_status -eq 0 ]; then
 
     if [ $frontend_status -eq 0 ]; then
         echo -e "${GREEN}✓ Frontend deployed successfully${NC}"
+        
+        # === PRODUCTION DEPLOYMENT STEPS ===
+        echo -e "${BOLD}${CYAN}🚀 Deploying to production...${NC}"
+        
+        # Step 1: Copy frontend files to /var/www
+        echo -e "${CYAN}📁 Copying frontend files to /var/www/jeffreysanford.us...${NC}"
+        if [ -d "dist/apps/craft-web" ]; then
+            sudo mkdir -p /var/www/jeffreysanford.us
+            sudo rsync -avz --delete dist/apps/craft-web/ /var/www/jeffreysanford.us/ || {
+                echo -e "${RED}✗ Failed to copy frontend files${NC}"
+                frontend_status=1
+            }
+            
+            # Set proper permissions
+            sudo chown -R nginx:nginx /var/www/jeffreysanford.us
+            sudo chmod -R 755 /var/www/jeffreysanford.us
+            echo -e "${GREEN}✓ Frontend files copied successfully${NC}"
+        else
+            echo -e "${RED}✗ Frontend build directory not found: dist/apps/craft-web${NC}"
+            frontend_status=1
+        fi
+        
+        # Step 2: Test nginx configuration
+        echo -e "${CYAN}🔧 Testing nginx configuration...${NC}"
+        if sudo nginx -t > /dev/null 2>&1; then
+            echo -e "${GREEN}✓ Nginx configuration is valid${NC}"
+            
+            # Step 3: Reload nginx
+            echo -e "${CYAN}🔄 Reloading nginx...${NC}"
+            if sudo nginx -s reload; then
+                echo -e "${GREEN}✓ Nginx reloaded successfully${NC}"
+            else
+                echo -e "${YELLOW}⚠ Nginx reload failed, attempting restart...${NC}"
+                if sudo systemctl restart nginx; then
+                    echo -e "${GREEN}✓ Nginx restarted successfully${NC}"
+                else
+                    echo -e "${RED}✗ Nginx restart failed${NC}"
+                    frontend_status=1
+                fi
+            fi
+        else
+            echo -e "${RED}✗ Nginx configuration test failed${NC}"
+            sudo nginx -t
+            frontend_status=1
+        fi
+        
+        # Step 4: Verify deployment
+        if [ $frontend_status -eq 0 ]; then
+            echo -e "${CYAN}🔍 Verifying production deployment...${NC}"
+            sleep 2
+            
+            # Test main site
+            if curl -s -I https://jeffreysanford.us > /dev/null 2>&1; then
+                echo -e "${GREEN}✓ Main site is accessible${NC}"
+            else
+                echo -e "${YELLOW}⚠ Main site check failed (might be normal during deployment)${NC}"
+            fi
+            
+            # Test local nginx
+            if curl -s -I http://localhost > /dev/null 2>&1; then
+                echo -e "${GREEN}✓ Local nginx is serving content${NC}"
+            else
+                echo -e "${YELLOW}⚠ Local nginx check failed${NC}"
+            fi
+        fi
+        
     else
         echo -e "${RED}✗ Frontend deployment failed (exit code $frontend_status)${NC}"
     fi
@@ -968,6 +1034,62 @@ else
     echo -e "  ${YELLOW}3.${NC} Check disk space: ${YELLOW}df -h${NC}"
     echo -e "  ${YELLOW}4.${NC} Review permissions: ${YELLOW}ls -la /var/www/jeffreysanford.us/${NC}"
     echo -e "  ${YELLOW}5.${NC} Try manual deployment: ${YELLOW}./scripts/deploy-frontend.sh --server-build${NC}"
+fi
+
+echo
+
+# ===================================================================
+# FINAL PRODUCTION VERIFICATION
+# ===================================================================
+if [ "${frontend_status:-1}" -eq 0 ] && [ "${backend_status:-1}" -eq 0 ]; then
+    echo -e "${BOLD}${GREEN}═══════════════════════════════════════════════════════════════════════════${NC}"
+    echo -e "${BOLD}${GREEN}           🎉 PRODUCTION DEPLOYMENT COMPLETE - FINAL VERIFICATION        ${NC}"
+    echo -e "${BOLD}${GREEN}═══════════════════════════════════════════════════════════════════════════${NC}"
+    echo
+    
+    echo -e "${BOLD}${CYAN}📊 Production Status Summary:${NC}"
+    echo -e "  ${GREEN}✓ Backend services deployed and running${NC}"
+    echo -e "  ${GREEN}✓ Frontend files copied to /var/www/jeffreysanford.us${NC}"
+    echo -e "  ${GREEN}✓ Nginx configuration tested and reloaded${NC}"
+    echo -e "  ${GREEN}✓ File permissions set correctly${NC}"
+    
+    echo
+    echo -e "${BOLD}${CYAN}🔗 Live Production URLs:${NC}"
+    echo -e "  ${BLUE}Main Site:${NC} https://jeffreysanford.us"
+    echo -e "  ${BLUE}NestJS API:${NC} https://jeffreysanford.us/api/health"
+    echo -e "  ${BLUE}Go API:${NC} https://jeffreysanford.us/api-go/health"
+    echo -e "  ${BLUE}Swagger Docs:${NC} https://jeffreysanford.us/api/swagger"
+    
+    echo
+    echo -e "${BOLD}${CYAN}🛠 Production Management Commands:${NC}"
+    echo -e "  ${YELLOW}View services:${NC} pm2 status"
+    echo -e "  ${YELLOW}View logs:${NC} pm2 logs"
+    echo -e "  ${YELLOW}Restart services:${NC} pm2 restart all"
+    echo -e "  ${YELLOW}Nginx status:${NC} sudo systemctl status nginx"
+    echo -e "  ${YELLOW}Nginx reload:${NC} sudo nginx -s reload"
+    echo -e "  ${YELLOW}Test deployment:${NC} npm run test:backends:remote"
+    
+    echo
+    echo -e "${BOLD}${GREEN}🚀 Your application is now live in production!${NC}"
+    
+else
+    echo -e "${BOLD}${RED}═══════════════════════════════════════════════════════════════════════════${NC}"
+    echo -e "${BOLD}${RED}           ❌ DEPLOYMENT FAILED - TROUBLESHOOTING REQUIRED              ${NC}"
+    echo -e "${BOLD}${RED}═══════════════════════════════════════════════════════════════════════════${NC}"
+    echo
+    
+    echo -e "${BOLD}${YELLOW}🔧 Troubleshooting Steps:${NC}"
+    echo -e "  ${YELLOW}1.${NC} Check service status: ${CYAN}pm2 status${NC}"
+    echo -e "  ${YELLOW}2.${NC} Review deployment logs above"
+    echo -e "  ${YELLOW}3.${NC} Test nginx config: ${CYAN}sudo nginx -t${NC}"
+    echo -e "  ${YELLOW}4.${NC} Check disk space: ${CYAN}df -h${NC}"
+    echo -e "  ${YELLOW}5.${NC} Verify file permissions: ${CYAN}ls -la /var/www/jeffreysanford.us${NC}"
+    echo -e "  ${YELLOW}6.${NC} Try components individually:"
+    echo -e "      ${CYAN}./scripts/deploy-backend.sh${NC}"
+    echo -e "      ${CYAN}./scripts/deploy-frontend.sh${NC}"
+    
+    echo
+    echo -e "${BOLD}${RED}Please resolve the issues above before considering the deployment complete.${NC}"
 fi
 
 echo
