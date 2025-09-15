@@ -1,73 +1,73 @@
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
 Files in storage/documents/book: []
 Storage path initialized: C:\repos\craft-fusion\dist\apps\craft-nest\apps\craft-nest\storage
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSocketGatewayModule dependencies initialized[39m[38;5;3m +14ms[39m
-[2025-09-14T19:14:35.843Z] [INFO] RecipesService initialized with recipes { count: 21 }
-[2025-09-14T19:14:35.843Z] [INFO] RecipesModule initialized {
-  timestamp: '2025-09-14T19:14:35.843Z',
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSocketGatewayModule dependencies initialized[39m[38;5;3m +20ms[39m
+[2025-09-14T21:24:51.671Z] [INFO] RecipesService initialized with recipes { count: 21 }
+[2025-09-14T21:24:51.671Z] [INFO] RecipesModule initialized {
+  timestamp: '2025-09-14T21:24:51.671Z',
   user: 'system',
   module: 'RecipesModule'
 }
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHttpModule dependencies initialized[39m[38;5;3m +1ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +1ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFileModule dependencies initialized[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUserModule dependencies initialized[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthenticationModule dependencies initialized[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLoggingModule dependencies initialized[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUserStateModule dependencies initialized[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecipesModule dependencies initialized[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [32mStarting server in development mode with 120000ms timeout[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [32mHost: 0.0.0.0, Port: 3000[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [32mSwagger UI available at /api/swagger and /api/api-docs[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[SocketGateway] [39m[32mSocket.IO initialized[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mSocketGateway subscribed to the "registerGuest" message[39m[38;5;3m +1ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mSocketGateway subscribed to the "updateLoginTime" message[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mSocketGateway subscribed to the "updateVisitLength" message[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mSocketGateway subscribed to the "updateVisitedPage" message[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/api}:[39m[38;5;3m +1ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api, GET} route[39m[38;5;3m +1ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mFileController {/api/files}:[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/document/:path(*), GET} route[39m[38;5;3m +1ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/:filename, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/upload, POST} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/saveOpenedDocuments, POST} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/getOpenedDocuments, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUserStateController {/api/user}:[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveLoginDateTime, POST} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getLoginDateTime, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitLength, POST} route[39m[38;5;3m +1ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitLength, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitedPage/:page, POST} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitedPages, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthenticationController {/api/auth}:[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/login, POST} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/user, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthorizationController {/api/authorize}:[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/authorize/check, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUserStateController {/api/user}:[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveLoginDateTime, POST} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getLoginDateTime, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitLength, POST} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitLength, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitedPage/:page, POST} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitedPages, GET} route[39m[38;5;3m +1ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRecordsController {/api/records}:[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/generate, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/total-income/:UID, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/time, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/:UID, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRecipesController {/api/recipes}:[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/recipes, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/recipes/:url, GET} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLoggingController {/api/logs}:[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/logs, GET} route[39m[38;5;3m +1ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/logs, DELETE} route[39m[38;5;3m +0ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +1ms[39m
-[32m[Nest] 30512  - [39m09/14/2025, 2:14:35 PM [32m    LOG[39m [32mServer running on http://0.0.0.0:3000[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHttpModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFileModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUserModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthenticationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecordsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mLoggingModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUserStateModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mRecipesModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [32mStarting server in development mode with 120000ms timeout[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [32mHost: 0.0.0.0, Port: 3000[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [32mSwagger UI available at /api/swagger and /api/api-docs[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[SocketGateway] [39m[32mSocket.IO initialized[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mSocketGateway subscribed to the "registerGuest" message[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mSocketGateway subscribed to the "updateLoginTime" message[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mSocketGateway subscribed to the "updateVisitLength" message[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mSocketGateway subscribed to the "updateVisitedPage" message[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAppController {/api}:[39m[38;5;3m +2ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api, GET} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/health, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mFileController {/api/files}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/document/:path(*), GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/:filename, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/upload, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/saveOpenedDocuments, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/files/getOpenedDocuments, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUserStateController {/api/user}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveLoginDateTime, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getLoginDateTime, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitLength, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitLength, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitedPage/:page, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitedPages, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthenticationController {/api/auth}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/login, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/user, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthorizationController {/api/authorize}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/authorize/check, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUserStateController {/api/user}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveLoginDateTime, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getLoginDateTime, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitLength, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitLength, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/saveVisitedPage/:page, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/user/getVisitedPages, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRecordsController {/api/records}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/generate, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/total-income/:UID, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/time, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/records/:UID, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mRecipesController {/api/recipes}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/recipes, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/recipes/:url, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mLoggingController {/api/logs}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/logs, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/logs, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +3ms[39m
+[32m[Nest] 17144  - [39m09/14/2025, 4:24:51 PM [32m    LOG[39m [32mServer running on http://0.0.0.0:3000[39m
