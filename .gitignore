@@ -124,3 +124,19 @@ database.sqlite # Ignore specific sqlite db file
 
 # Archived development scripts
 scripts/archive/
+
+# Local cache & editor temp files
+/.cache/
+/.parcel-cache/
+/.eslintcache
+**/.vscode-test/
+
+# Ensure nx and workspace caches are ignored
+.nx/cache/
+.nx/workspace-data/
+
+# Ensure build artifacts are not tracked
+/dist/
+/dist/**
+apps/**/dist/
+
