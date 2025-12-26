@@ -27,14 +27,14 @@ const routes: Routes = [
   declarations: [
     ChatComponent,
     MarkdownPipe,
-    ModelSelectorComponent
+    ModelSelectorComponent,
+    SplitTextPipe
   ],
   imports: [
     CommonModule,
     FormsModule,
     RouterModule.forChild(routes),
     MaterialModule,
-    SplitTextPipe,
     MatSnackBarModule,
     MatCardModule,
     MatListModule,
@@ -46,11 +46,12 @@ const routes: Routes = [
     MatIconModule,
     MatSelectModule
   ],
-  providers: [ChatService, SplitTextPipe],
+  providers: [ChatService],
   exports: [
     ChatComponent,
     MarkdownPipe,
-    ModelSelectorComponent
+    ModelSelectorComponent,
+    SplitTextPipe
   ]
 })
 export class ChatModule {}

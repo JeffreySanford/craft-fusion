@@ -11,6 +11,8 @@ import { AdminStateService } from './common/services/admin-state.service';
 import { FooterStateService } from './common/services/footer-state.service';
 import { UserTrackingService } from './common/services/user-tracking.service';
 import { AuthService } from './common/services/auth/auth.service';
+import { SocketClientService } from './common/services/socket-client.service';
+import { ApiDiagnosticsService } from './common/services/api-diagnostics.service';
 
 @Component({
   selector: 'app-root',
@@ -51,6 +53,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private authService: AuthService,
     private footerStateService: FooterStateService,
     private userStateService: UserStateService,
+    private socketClient: SocketClientService,
+    private apiDiagnostics: ApiDiagnosticsService,
   ) {
     // Replace direct console logs with logger calls
     this.logger.info('App component initialized', { appVersion: '1.0.0' });
@@ -124,6 +128,25 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       } else {
         this.userDisplayName = 'Guest';
         this.isLoggedIn = false;
+      }
+    });
+
+    // Listen for logout events and perform a global teardown to prevent freezes
+    (this.authService as any).loggingOut$?.subscribe(() => {
+      try {
+        this.logger.warn('Global logout detected - performing emergency teardown');
+        // Pause logging and diagnostics
+        this.logger.pauseEmitting && this.logger.pauseEmitting();
+        this.apiDiagnostics.stopHealthCheck && this.apiDiagnostics.stopHealthCheck();
+        // Close global socket connection
+        this.socketClient.destroy && this.socketClient.destroy();
+
+        // Give short time for cleanup then resume logging
+        setTimeout(() => {
+          this.logger.resumeEmitting && this.logger.resumeEmitting();
+        }, 1000);
+      } catch (e) {
+        this.logger.error('Error during global logout teardown', e);
       }
     });
   }

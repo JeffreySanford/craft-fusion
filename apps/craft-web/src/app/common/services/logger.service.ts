@@ -47,6 +47,25 @@ export class LoggerService {
   private logLimit = 1000; // Maximum number of logs to store
   private loggerLevel = LogLevel.DEBUG; // Current log level
   private logSubject = new Subject<LogEntry>();
+  // Rate limiting to prevent flooding the UI and console
+  private logWindowStart = Date.now();
+  private logEmitsThisWindow = 0;
+  private readonly LOG_RATE_LIMIT = 50; // max logs per second
+  private suppressedLogs = 0; // count suppressed in current window
+
+  // Pause/resume logging control (manual emergency stop)
+  private paused = false;
+  pauseEmitting(): void {
+    this.paused = true;
+    this.warn('Logging paused by user', undefined, 'LoggerService');
+  }
+  resumeEmitting(): void {
+    this.paused = false;
+    this.info('Logging resumed by user', undefined, 'LoggerService');
+  }
+  isPaused(): boolean {
+    return this.paused;
+  }
   
   // Service call tracking
   private serviceMetrics: ServiceCallMetric[] = [];
@@ -213,17 +232,52 @@ export class LoggerService {
         this.logs.pop();
       }
       
-      // Notify subscribers
-      this.logSubject.next(entry);
-      // Emit to info/error subjects
-      if (level === LogLevel.ERROR) {
-        this.errorSubject.next(entry);
-      } else if (level === LogLevel.INFO) {
-        this.infoSubject.next(entry);
+      // Rate limit emissions to subscribers to avoid flooding UI
+      const now = Date.now();
+      if (now - this.logWindowStart > 1000) {
+        // Window reset
+        if (this.suppressedLogs > 0) {
+          // Emit a summary about suppressed logs
+          const summary: LogEntry = {
+            timestamp: new Date(),
+            level: LogLevel.WARN,
+            message: `Logging suppressed: ${this.suppressedLogs} entries in last second`,
+            component: 'LoggerService',
+            details: { suppressed: this.suppressedLogs }
+          };
+          this.logSubject.next(summary);
+          this.infoSubject.next(summary);
+          this.suppressedLogs = 0;
+        }
+        this.logWindowStart = now;
+        this.logEmitsThisWindow = 0;
       }
-      
-      // Still send to console for development visibility
-      this.outputToConsole(level, message, sanitizedDetails, component);
+
+      if (this.paused) {
+        // If paused, increase suppressed count and do not emit
+        this.suppressedLogs++;
+      } else if (this.logEmitsThisWindow < this.LOG_RATE_LIMIT) {
+        this.logEmitsThisWindow++;
+        // Notify subscribers
+        this.logSubject.next(entry);
+        // Emit to info/error subjects
+        if (level === LogLevel.ERROR) {
+          this.errorSubject.next(entry);
+        } else if (level === LogLevel.INFO) {
+          this.infoSubject.next(entry);
+        }
+      } else {
+        // Suppress emission but keep a counter
+        this.suppressedLogs++;
+      }
+
+      // Still send to console for development visibility (but do not spam when suppressed)
+      if (this.logEmitsThisWindow < this.LOG_RATE_LIMIT) {
+        this.outputToConsole(level, message, sanitizedDetails, component);
+      } else if (this.suppressedLogs === 1) {
+        // On the first suppressed occurrence, output a single warn to console
+        console.warn(`LoggerService: suppressing further log output (${this.LOG_RATE_LIMIT}/s)`);
+      }
     }
   }
 

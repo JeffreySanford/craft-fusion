@@ -1,7 +1,7 @@
 <ng-template #noData>
   <div class="no-data" *ngIf="!resolved">
-    <mat-progress-spinner mode="indeterminate" [diameter]="100" [style.color]="'teal'" *ngIf="!resolved"></mat-progress-spinner>
-    <div style="color: red; font-weight: bold; margin-top: 1em;">DEBUG: noData template is ACTIVE</div>
+    <mat-progress-spinner mode="indeterminate" [diameter]="100" class="spinner-teal" *ngIf="!resolved"></mat-progress-spinner>
+    <div class="debug-message">DEBUG: noData template is ACTIVE</div>
   </div>
 </ng-template>
 
@@ -47,7 +47,7 @@
       <div class="selectors" [@fly-in]>
         <mat-form-field appearance="outline">
           <mat-label>Select dataset size</mat-label>
-          <mat-select class="selector" [(value)]="totalRecords" (selectionChange)="onDatasetChange($event.value)">
+          <mat-select class="selector" [(value)]="totalRecords" (selectionChange)="onDatasetChange($any($event).value)">
             <mat-option *ngFor="let size of dataSetSizes" [value]="size">
               {{ size }}
             </mat-option>
@@ -56,7 +56,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Select backend server</mat-label>
-          <mat-select class="selector" [value]="server.name" (selectionChange)="onSelectedServerChange($event.value)">
+          <mat-select class="selector" [value]="server.name" (selectionChange)="onSelectedServerChange($any($event).value)">
             <mat-option *ngFor="let server of servers" [value]="server.name">
               {{ server.name }}
             </mat-option>

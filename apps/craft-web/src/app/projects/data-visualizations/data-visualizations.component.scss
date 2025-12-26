@@ -851,7 +851,7 @@
       .chart-content {
         height: 100%;
         padding: 12px; // Reduce padding in fullscreen mode
-        min-height: auto; // Reset min-height in fullscreen
+        min-height: 0; // Reset min-height in fullscreen
         
         &.bar-chart-content,
         &.line-chart-content,

@@ -98,6 +98,8 @@ export class ApiDiagnosticsService {
     map(count => count > 0)
   );
 
+  private healthCheckSubscription: any = null;
+
   constructor(
     private http: HttpClient,
     private logger: LoggerService
@@ -105,6 +107,24 @@ export class ApiDiagnosticsService {
     this.logger.registerService('ApiDiagnosticsService');
     this.logger.info('API Diagnostics Service initialized');
     this.startHealthCheck();
+  }
+
+  stopHealthCheck(): void {
+    if (this.healthCheckSubscription) {
+      try {
+        this.healthCheckSubscription.unsubscribe();
+      } catch (e) {
+        // ignore
+      }
+      this.healthCheckSubscription = null;
+      this.logger.info('API health check stopped');
+      this.diagnosticsSubject.next({
+        isConnected: false,
+        status: 'unavailable',
+        lastChecked: new Date(),
+        error: 'Health check stopped'
+      });
+    }
   }
 
   /**
@@ -171,7 +191,7 @@ export class ApiDiagnosticsService {
    * Start automated health checks
    */
   startHealthCheck(): void {
-    timer(1000, this.checkInterval).pipe(
+    this.healthCheckSubscription = timer(1000, this.checkInterval).pipe(
       switchMap(() => this.checkConnectionNow().pipe(
         retry({
           count: this.retryCount,

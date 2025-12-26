@@ -1,0 +1,61 @@
+name: Playwright Smoke Tests
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+  schedule:
+    # Timezone: UTC. Intent: nightly smoke test to detect flakiness and monitor stability.
+    - cron: '0 3 * * *' # nightly at 03:00 UTC (UTC)
+
+concurrency:
+  group: playwright-smoke-tests
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Playwright smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run smoke test (with 1 retry)
+        env:
+          CI: true
+        run: |
+          set -e
+          echo "Running smoke test (output -> smoke-test-output.txt)"
+          node ./scripts/test-service-monitoring.js > smoke-test-output.txt 2>&1 || (
+            echo "Smoke test failed; retrying once..." >> smoke-test-output.txt && 
+            node ./scripts/test-service-monitoring.js >> smoke-test-output.txt 2>&1 || (
+              echo "Smoke test failed after retry" >> smoke-test-output.txt && exit 1
+            )
+          )
+
+      - name: Upload smoke test output
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-smoke-output
+          path: |
+            smoke-test-output.txt
+            playwright-report/**
+
+      - name: Display tail of output (for logs)
+        if: always()
+        run: tail -n 200 smoke-test-output.txt || true

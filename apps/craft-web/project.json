@@ -1,14 +1,15 @@
 {
   "name": "craft-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
   "sourceRoot": "apps/craft-web/src",
-  "tags": [],
   "schematics": {
     "@schematics/angular:component": {
       "standalone": false
     }
   },
+  "tags": [],
   "implicitDependencies": ["craft-nest"],
   "generators": {
     "@nx/angular:component": {
@@ -49,7 +50,11 @@
         "tsConfig": "apps/craft-web/tsconfig.app.json",
         "assets": [
           "apps/craft-web/src/assets",
-          { "glob": "**/*", "input": "node_modules/tinymce", "output": "/tinymce/" },
+          {
+            "glob": "**/*",
+            "input": "node_modules/tinymce",
+            "output": "/tinymce/"
+          },
           {
             "glob": "**/*",
             "input": "apps/craft-web/src/assets/documents",
@@ -63,10 +68,7 @@
           "node_modules/flag-icon-css/css/flag-icons.min.css"
         ],
         "stylePreprocessorOptions": {
-          "includePaths": [
-            "apps/craft-web/src/styles",
-            "node_modules/@angular/material/typography"
-          ]
+          "includePaths": ["apps/craft-web/src/styles", "node_modules/@angular/material/typography"]
         },
         "scripts": ["node_modules/tinymce/tinymce.min.js"],
         "allowedCommonJsDependencies": [
@@ -134,6 +136,13 @@
       "executor": "@nx/angular:extract-i18n",
       "options": {
         "buildTarget": "craft-web:build"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/craft-web/jest.config.ts"
       }
     }
   }

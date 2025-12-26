@@ -33,6 +33,18 @@ $table-theme: (
   z-index: 1000;
 }
 
+/* Accessibility-friendly debug message (replace inline styles) */
+.no-data .debug-message {
+  color: map.get($table-theme, red);
+  font-weight: 700;
+  margin-top: 1rem;
+}
+
+/* Replace inline spinner color with class */
+mat-progress-spinner.spinner-teal {
+  color: map.get($table-theme, teal);
+}
+
 // Improve table wrapper for scrolling
 .table-wrapper {
   display: flex !important;
@@ -261,9 +273,13 @@ $table-theme: (
     overflow-y: auto !important;
     overflow-x: hidden !important;
     max-height: calc(100% - 48px) !important; // Leave space for paginator
-    scrollbar-width: thin;
-    scrollbar-color: linear-gradient(to bottom, map.get($table-theme, patriotic-red), 
-      map.get($table-theme, primary-white), map.get($table-theme, patriotic-blue)) transparent;
+    /* Use standard scrollbar properties where supported; webkit pseudo elements provide a nicer fallback */
+    @supports (scrollbar-width: thin) {
+      scrollbar-width: thin;
+    }
+    @supports (scrollbar-color: red) {
+      scrollbar-color: map.get($table-theme, patriotic-red) transparent;
+    }
     
     .flex-header-row, .flex-row {
       display: flex !important;
@@ -759,8 +775,8 @@ mat-card-content {
   ) !important;
   
   // Add a semi-transparent backdrop
-  backdrop-filter: blur(5px) !important;
   -webkit-backdrop-filter: blur(5px) !important;
+  backdrop-filter: blur(5px) !important;
   
   // Add subtle border to visually separate from table
   border-top: 0.0625em solid rgba(255, 255, 255, 0.5) !important; // Changed from 1px
@@ -768,8 +784,8 @@ mat-card-content {
   
   // Apply translucent background to paginator
   background: rgba(0, 0, 0, 0.5) !important; // Simple translucent black background
-  backdrop-filter: blur(10px) !important; // Increase blur effect
-  -webkit-backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important; // Increase blur effect
+  backdrop-filter: blur(10px) !important;
   position: sticky !important;
   bottom: 0 !important;
   left: 0 !important;
@@ -863,8 +879,8 @@ mat-card-content {
   padding: 1rem !important; // Increased padding
   position: relative;
   box-shadow: inset 0 0 1em rgba(0, 0, 0, 0.3) !important;
-  backdrop-filter: blur(5px) !important;
   -webkit-backdrop-filter: blur(5px) !important;
+  backdrop-filter: blur(5px) !important;
   padding-left: 0.5em !important;
   min-height: 200px !important; // Set larger minimum height
   
@@ -1017,7 +1033,7 @@ mat-card-content {
 
 // Define minimum height for the entire row when expanded
 .flex-row.expand-element-detail {
-  min-height: auto !important;
+  min-height: 0 !important;
   max-height: none !important;
   height: auto !important;
   overflow: visible !important;
@@ -1029,7 +1045,7 @@ mat-card-content {
   display: flex;
   background: linear-gradient(to right, rgba(map.get($table-theme, patriotic-red), 0.03), rgba(map.get($table-theme, patriotic-blue), 0.05)) !important;
   padding: 1.25em !important; // Increased vertical padding
-  min-height: auto !important; // Allow height to grow with content
+  min-height: 0 !important; // Allow height to grow with content
   max-height: none !important; // Remove max height restriction
   display: flex !important;
   justify-content: flex-start !important;
@@ -1038,8 +1054,8 @@ mat-card-content {
   padding: 0.75em !important; // Increased padding for better spacing
   position: relative;
   box-shadow: inset 0 0 1em rgba(0, 0, 0, 0.3) !important; // Inner shadow for depth
-  backdrop-filter: blur(5px) !important; // Slight blur effect
-  -webkit-backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important; // Slight blur effect
+  backdrop-filter: blur(5px) !important;
   padding-left: 0.5em !important; // Added left padding
   
   &::before {
@@ -1194,7 +1210,7 @@ mat-card-content {
 
 // Define minimum height for the entire row when expanded
 .flex-row.expand-element-detail {
-  min-height: auto !important; // Allow to grow based on content
+  min-height: 0 !important; // Allow to grow based on content
   max-height: none !important; // Remove height restriction
   padding: 0.5em !important; // Reduced overall padding
   overflow: visible !important; // Ensure content doesn't get cut off
@@ -1417,29 +1433,42 @@ mat-card {
   border-radius: 0.75em !important;
   border: 0.25em solid map.get($table-theme, gold) !important;
   box-shadow: 0 0 1.5em rgba(0, 0, 0, 0.8) !important;
-  backdrop-filter: blur(5px) !important;
   -webkit-backdrop-filter: blur(5px) !important;
+  backdrop-filter: blur(5px) !important;
   padding: 1.5rem !important;
   margin: 0 !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
   user-select: none !important;
   cursor: default !important;
   
   // Simplify to fix display issues
   animation: fade-in 0.3s ease-out !important;
-  backface-visibility: hidden !important;
   -webkit-backface-visibility: hidden !important;
+  backface-visibility: hidden !important;
   
   // Remove problematic properties that might be causing issues
   will-change: auto !important;
   pointer-events: auto !important;
-  touch-action: none !important;
-  -webkit-user-drag: none !important;
-  -webkit-touch-callout: none !important;
-  
-  // Re-enable display properly
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+  /* Ensure consistent behavior with nested rules */
+  & {
+    touch-action: none !important;
+  }
+  /* WebKit-only: prevents dragging in supported browsers */
+  @supports (-webkit-user-drag: none) {
+    -webkit-user-drag: none !important;
+  }
+
+  /* Ensure these declarations are treated consistently (Sass mixed-decl deprecation) */
+  & {
+    -webkit-touch-callout: none !important;
+
+    // Re-enable display properly
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
 }
 
 // Fix backdrop to ensure it's working properly
@@ -1450,10 +1479,13 @@ mat-card {
   width: 100% !important;
   height: 100% !important;
   background-color: rgba(0, 0, 0, 0.5) !important;
-  backdrop-filter: blur(2px) !important;
   -webkit-backdrop-filter: blur(2px) !important;
+  backdrop-filter: blur(2px) !important;
   z-index: 1000 !important;
   cursor: pointer !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
   user-select: none !important;
   pointer-events: auto !important;
   
@@ -1461,6 +1493,10 @@ mat-card {
   visibility: visible !important;
   opacity: 1 !important;
   display: block !important;
+  /* Ensure consistent behavior with nested rules */
+  & {
+    touch-action: none !important;
+  }
 }
 
 // Update expanded overlay styling
@@ -1479,29 +1515,43 @@ mat-card {
   border-radius: 0.75em !important;
   border: 0.25em solid map.get($table-theme, gold) !important;
   box-shadow: 0 0 1.5em rgba(0, 0, 0, 0.8) !important;
-  backdrop-filter: blur(5px) !important;
   -webkit-backdrop-filter: blur(5px) !important;
+  backdrop-filter: blur(5px) !important;
   padding: 1.5rem !important;
   margin: 0 !important;
   animation: fade-in 0.3s ease-out !important;
+  -webkit-user-select: none !important; // Prevent text selection
+  -moz-user-select: none !important; // Prevent text selection
+  -ms-user-select: none !important; // Prevent text selection
   user-select: none !important; // Prevent text selection
   cursor: default !important; // Use default cursor
   touch-action: none !important; // Disable touch actions that could cause drag
-  -webkit-user-drag: none !important; // Prevent dragging in webkit browsers
-  -webkit-touch-callout: none !important; // Disable touch callout
-  pointer-events: all !important; // Ensure clicks work in overlay
-  will-change: auto !important; // Remove will-change
-  transform-origin: initial !important; // Reset transform-origin
-  transform-style: initial !important; // Reset transform-style
-  backface-visibility: initial !important; // Reset backface-visibility
-  -webkit-backface-visibility: initial !important; // Reset webkit backface-visibility
-  transition: none !important; // Remove any transitions
-  animation: none !important; // Remove animations that might cause movement
-  transform-origin: center center !important; // Fix dragging issue - make it more specific
+  /* WebKit-only: prevents dragging in supported browsers */
+  @supports (-webkit-user-drag: none) {
+    -webkit-user-drag: none !important; // Prevent dragging in webkit browsers
+  }
+
+  /* Ensure this declaration is treated consistently with nested rules */
+  & {
+    -webkit-touch-callout: none !important; // Disable touch callout
+    pointer-events: all !important; // Ensure clicks work in overlay
+
+    /* Grouped to avoid Sass mixed-decl deprecation (declarations after nested rules) */
+    will-change: auto !important; // Remove will-change
+    transform-origin: initial !important; // Reset transform-origin
+    transform-style: initial !important; // Reset transform-style
+    -webkit-backface-visibility: initial !important; // Reset webkit backface-visibility
+    backface-visibility: initial !important; // Reset backface-visibility
+    transition: none !important; // Remove any transitions
+    animation: none !important; // Remove animations that might cause movement
+    transform-origin: center center !important; // Fix dragging issue - make it more specific
+  }
   
   // This is critical to prevent dragging
-  position: fixed !important; // Reinforce fixed position
-  z-index: 1050 !important;
+  & {
+    position: fixed !important; // Reinforce fixed position
+    z-index: 1050 !important;
+  }
   
   // Prevent mousemove from affecting the element
   &:active {
@@ -1534,11 +1584,14 @@ mat-card {
   width: 100% !important;
   height: 100% !important;
   background-color: rgba(0, 0, 0, 0.5) !important;
-  backdrop-filter: blur(2px) !important;
   -webkit-backdrop-filter: blur(2px) !important;
+  backdrop-filter: blur(2px) !important;
   z-index: 1000 !important;
   animation: fade-in 0.2s ease-out !important;
   cursor: pointer !important; // Show pointer cursor to indicate clickable area
+  -webkit-user-select: none !important; // Prevent text selection in WebKit
+  -moz-user-select: none !important; // Prevent text selection in Firefox
+  -ms-user-select: none !important; // Prevent text selection in IE/Edge
   user-select: none !important; // Prevent text selection
   pointer-events: auto !important; // Ensure it captures mouse events
   touch-action: none !important;
@@ -1562,11 +1615,21 @@ mat-card {
   transition: all 0.3s ease !important;
   z-index: 1060 !important;
   pointer-events: auto !important; // Ensure button receives click events
+  -webkit-user-select: none !important; // Prevent text selection in WebKit
+  -moz-user-select: none !important; // Prevent text selection in Firefox
+  -ms-user-select: none !important; // Prevent text selection in IE/Edge
   user-select: none !important; // Prevent text selection
-  -webkit-user-drag: none !important; // Prevent dragging in webkit browsers
-  touch-action: manipulation !important; // Improve touch behavior
-  -webkit-tap-highlight-color: transparent !important; // Remove tap highlight
-  
+  /* WebKit-only: prevents dragging in supported browsers */
+  @supports (-webkit-user-drag: none) {
+    -webkit-user-drag: none !important; // Prevent dragging in webkit browsers
+  }
+
+  /* Ensure declarations are consistent with nested rules */
+  & {
+    touch-action: manipulation !important; // Improve touch behavior
+    -webkit-tap-highlight-color: transparent !important; // Remove tap highlight
+  }
+
   &:hover {
     background-color: rgba(255, 255, 255, 0.1) !important;
     transform: scale(1.1) !important;
@@ -1578,9 +1641,19 @@ mat-card {
   width: 100% !important;
   padding: 0 !important; // Remove padding as overlay already has padding
   pointer-events: auto !important; // Allow interaction with content
+  -webkit-user-select: none !important; // Prevent text selection in WebKit
+  -moz-user-select: none !important; // Prevent text selection in Firefox
+  -ms-user-select: none !important; // Prevent text selection in IE/Edge
   user-select: none !important; // Prevent text selection
-  -webkit-user-drag: none !important; // Prevent dragging in webkit browsers
-  touch-action: pan-y !important; // Allow only vertical panning for scrolling
+  /* WebKit-only: prevents dragging in supported browsers */
+  @supports (-webkit-user-drag: none) {
+    -webkit-user-drag: none !important; // Prevent dragging in webkit browsers
+  }
+
+  /* Ensure declarations are consistent with nested rules */
+  & {
+    touch-action: pan-y !important; // Allow only vertical panning for scrolling
+  }
   
   .expand-header {
     color: map.get($table-theme, gold) !important;
@@ -1595,9 +1668,18 @@ mat-card {
   }
   
   * {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
     user-select: none !important;
-    -webkit-user-drag: none !important;
-    touch-action: none !important;
+    /* WebKit-only: prevents dragging in supported browsers */
+    @supports (-webkit-user-drag: none) {
+      -webkit-user-drag: none !important;
+    }
+    /* Ensure consistent behavior with nested rules */
+    & {
+      touch-action: none !important;
+    }
   }
 }
 
@@ -1619,9 +1701,18 @@ mat-card {
 .income-total,
 .expand-header {
   pointer-events: auto !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
   user-select: none !important;
-  -webkit-user-drag: none !important;
-  touch-action: none !important;
+  /* WebKit-only: prevents dragging in supported browsers */
+  @supports (-webkit-user-drag: none) {
+    -webkit-user-drag: none !important;
+  }
+  /* Ensure consistent behavior with nested rules */
+  & {
+    touch-action: none !important;
+  }
 }
 
 // Override the detailExpand animation to ensure proper display
@@ -1672,8 +1763,8 @@ mat-card {
   border-radius: 0.75em;
   border: 0.25em solid map.get($table-theme, gold);
   box-shadow: 0 0 1.5em rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
   padding: 1.5rem;
   margin: 0;
   animation: fade-in 0.3s ease-out;
@@ -1886,8 +1977,8 @@ mat-card {
   border-radius: 12px !important;
   border: 4px solid map.get($table-theme, gold) !important;
   box-shadow: 0 0 24px rgba(0, 0, 0, 0.8) !important;
-  backdrop-filter: blur(5px) !important;
   -webkit-backdrop-filter: blur(5px) !important;
+  backdrop-filter: blur(5px) !important;
   padding: 24px !important;
   z-index: 1050 !important;
   display: flex !important;

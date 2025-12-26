@@ -76,12 +76,10 @@ export class SidebarComponent implements OnInit {
           this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
         }
       } else {
-        // Remove the admin item if it exists
-        const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
-        if (adminItemIndex !== -1) {
-          this.menuGroups[0].items.splice(adminItemIndex, 1);
-          this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
-        }
+        // Remove any admin-only items if present
+        const adminRoutes = new Set(['/admin', '/family', '/chat', '/book']);
+        this.menuGroups[0].items = this.menuGroups[0].items.filter(item => !adminRoutes.has(item.routerLink));
+        this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
       }
       this.cdr.detectChanges();
     });

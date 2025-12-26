@@ -74,6 +74,12 @@
   z-index: 100; /* Ensure tooltip appears above other elements */
 }
 
+:host ::ng-deep .line-tooltip .tooltip-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: var(--series-color, #fff);
+}
+
 /* Improve axis styling with patriotic theme */
 :host ::ng-deep {
   .domain,

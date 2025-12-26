@@ -41,10 +41,10 @@
       <div class="logo-performance-block">
         <div class="logo-container">
           <div class="dev-logos">
-            <img *ngFor="let logo of logoLinks.slice(0, 3)" [src]="logo.src" [alt]="logo.alt" [class]="logo.class" />
+            <img *ngFor="let logo of logoLinks.slice(0, 3)" [src]="logo.src" [alt]="logo.alt" title="{{logo.title || logo.alt}}" [attr.aria-label]="logo.title || logo.alt" [class]="logo.class" role="img" />
           </div>
           <div class="agency-logos">
-            <img *ngFor="let logo of logoLinks.slice(3)" [src]="logo.src" [alt]="logo.alt" [class]="logo.class" />
+            <img *ngFor="let logo of logoLinks.slice(3)" [src]="logo.src" [alt]="logo.alt" title="{{logo.title || logo.alt}}" [attr.aria-label]="logo.title || logo.alt" [class]="logo.class" role="img" />
           </div>
         </div>
         

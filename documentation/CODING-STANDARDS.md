@@ -31,6 +31,14 @@ export class ExampleComponent implements OnInit {
 }
 ```
 
+### Styling Guidelines
+
+- **Avoid inline styles in templates.** All CSS should be placed in component `*.scss` files or shared stylesheets; do not use `style="..."` attributes in HTML templates.
+- Use semantic class names and add classes to the component SCSS with clear, short rules.
+- Inline SVG styles (e.g., `stop-color` on `<stop>` elements) are acceptable for design assets that are not part of the app templates, but prefer classes when SVGs are used in templates.
+- Example: move `style="margin-right:8px; color: green"` into `.money-icon { margin-right: 8px; color: green; }` in the component stylesheet.
+- Reason: Inline styles make it harder to maintain theming, impede linting and static checks, and violate the component-based styling model used in this repo.
+
 ### Module Configuration Example
 
 ```typescript
@@ -242,6 +250,7 @@ export class RecordListComponent implements OnInit {
 ```
 
 ## Project-wide Standards
+
 - All scripts use DRY system prep via `system-prep.sh`.
 - Vibrant, color-coded output is standard for all CLI tools.
 

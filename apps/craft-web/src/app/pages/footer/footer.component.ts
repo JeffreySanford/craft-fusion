@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, Subscription, interval, of } from 'rxjs';
+import { Observable, Subscription, interval, of, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import Chart from 'chart.js/auto';
 import { LoggerService, ServiceCallMetric } from '../../common/services/logger.service';
 import { AdminStateService } from '../../common/services/admin-state.service';
@@ -33,14 +34,18 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   isAdmin = false;
   expanded = false;
 
-  logoLinks = [
-    { src: 'assets/images/compressed/nodejs-new-pantone-white.png', alt: 'Node.js' },
-    { src: 'assets/images/mongo.svg', alt: 'MongoDB' }, // Ensure the correct file extension
-    { src: 'assets/images/compressed/angular.png', alt: 'Angular' },
-    { src: 'assets/images/compressed/us-army-logo.png', alt: 'United States Army (DOD)', class: 'army' },
-    { src: 'assets/images/compressed/US-GOVT-DLA.png', alt: 'Defense Logistics Agency', class: 'DLA' },
-    { src: 'assets/images/compressed/US-GOVT-DVA-Seal.png', alt: 'Department of Veterans Affairs', class: 'DVA' },
-    { src: 'assets/images/compressed/US-GOVT-DTIC.png', alt: 'Defense Technical Information Center', class: 'DTIC' }
+  // Subject used to gracefully unsubscribe from observables
+  private destroy$ = new Subject<void>();
+
+  // Explicit type so templates can safely reference `title`
+  logoLinks: { src: string; alt: string; title?: string; class?: string }[] = [
+    { src: 'assets/images/compressed/nodejs-new-pantone-white.png', alt: 'Node.js', title: 'Node.js' },
+    { src: 'assets/images/mongo.svg', alt: 'MongoDB', title: 'MongoDB' }, // Ensure the correct file extension
+    { src: 'assets/images/compressed/angular.png', alt: 'Angular', title: 'Angular' },
+    { src: 'assets/images/compressed/us-army-logo.png', alt: 'United States Army (DOD)', title: 'United States Army (DOD)', class: 'army' },
+    { src: 'assets/images/compressed/US-GOVT-DLA.png', alt: 'Defense Logistics Agency', title: 'Defense Logistics Agency', class: 'DLA' },
+    { src: 'assets/images/compressed/US-GOVT-DVA-Seal.png', alt: 'Department of Veterans Affairs', title: 'Department of Veterans Affairs', class: 'DVA' },
+    { src: 'assets/images/compressed/US-GOVT-DTIC.png', alt: 'Defense Technical Information Center', title: 'Defense Technical Information Center', class: 'DTIC' }
   ];
 
   // Registry of all available services for monitoring
@@ -93,9 +98,15 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     this.startFrameRateMonitoring();
     this.startServiceMetricsMonitoring();
     
-    // Subscribe to admin state
-    this.adminStateService.isAdmin$.subscribe(isAdmin => {
+    // Subscribe to admin state (auto-unsubscribe on destroy)
+    this.adminStateService.isAdmin$.pipe(takeUntil(this.destroy$)).subscribe(isAdmin => {
       this.isAdmin = isAdmin;
+      // Start/stop metrics monitoring based on admin status to reduce unnecessary load
+      if (isAdmin) {
+        this.startServiceMetricsMonitoring();
+      } else {
+        this.stopServiceMetricsMonitoring();
+      }
     });
     
     // Explicitly provide component name for important logs
@@ -108,8 +119,8 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
       this.initializeChart();
     }, 500);
 
-    // Increase update frequency
-    interval(500).subscribe(() => {
+    // Increase update frequency (auto-unsubscribe on destroy)
+    interval(500).pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.updateChartData();
     });
 
@@ -117,10 +128,18 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
+    // Signal all takeUntil subscriptions to complete
+    this.destroy$.next();
+    this.destroy$.complete();
+
     this.stopPerformanceMonitoring();
     this.stopFrameRateMonitoring();
     if (this.metricUpdateSubscription) {
-      this.metricUpdateSubscription.unsubscribe();
+      try {
+        this.metricUpdateSubscription.unsubscribe();
+      } catch (e) {
+        // ignore unsubscribe errors
+      }
     }
     if (this.chart) {
       this.chart.destroy();
@@ -558,13 +577,31 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private startServiceMetricsMonitoring() {
-    this.metricUpdateSubscription = this.logger.serviceCalls$.subscribe(metrics => {
+    // Avoid multiple subscriptions
+    if (this.metricUpdateSubscription) return;
+
+    // Use takeUntil so the subscription stops when the component is destroyed
+    this.metricUpdateSubscription = this.logger.serviceCalls$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(metrics => {
       this.serviceMetrics = metrics.slice(-20); // Keep last 20 calls
       
       if (this.chartInitialized) {
         this.updateServiceMetricsChart();
       }
     });
+  }
+
+  private stopServiceMetricsMonitoring() {
+    if (this.metricUpdateSubscription) {
+      try {
+        this.metricUpdateSubscription.unsubscribe();
+      } catch (e) {
+        // ignore unsubscribe errors
+      }
+      this.metricUpdateSubscription = undefined;
+    }
+    this.serviceMetrics = [];
   }
 
   private updateServiceMetricsChart() {

@@ -124,8 +124,8 @@ export class AdminComponent implements OnInit {
   }
 
   serviceMetrics: ServiceCallMetric[] = [
-    this.createDefaultMetric('Authentication', 'POST', '/auth/login', 10, 200, 0),
-    this.createDefaultMetric('Auditing', 'POST', '/audit/event', 20, 201, 0),
+    this.createDefaultMetric('AuthenticationService', 'POST', '/auth/login', 10, 200, Date.now()),
+    this.createDefaultMetric('LoggerService', 'POST', '/audit/event', 20, 201, Date.now()),
   ];
 
   registeredServices = [
@@ -163,6 +163,10 @@ export class AdminComponent implements OnInit {
 
   // Add a property to track selected API call
   selectedApiCall: ServiceCallMetric | null = null;
+
+  // Cached metrics for display to avoid recreating arrays every change-detection
+  displayMetrics: DisplayMetric[] = [];
+  private tabSubscription: Subscription | null = null;
 
   dataSource = new MatTableDataSource<ServiceCallMetric>([]);
   displayedColumns: string[] = ['service', 'method', 'url', 'duration', 'status'];
@@ -253,28 +257,37 @@ export class AdminComponent implements OnInit {
       { id: 3, icon: 'info', label: 'Info', value: 0, color: 'blue' },
     ];
 
-    // Add tab change subscription with debug logging
-    this.tabGroup?.selectedIndexChange.subscribe((index: number) => {
-      console.debug('Tab changed to:', index);
-      
-      // Service Monitoring tab is index 1
-      if (index === 1) {
-        console.debug('Entering Service Monitoring tab');
-        debugger; // Add breakpoint for tab entry
-        
-        // Only start monitoring if not already active
-        if (!this.isTabActive) {
-          this.isTabActive = true;
-          this.initializeServiceMonitoring();
-        }
-      } else {
-        this.isTabActive = false;
-        this.pauseSimulation();
-      }
-    });
+    // Tab change subscription moved to ngAfterViewInit where the ViewChild is guaranteed to exist.
 
     // Subscribe to API logs
     this.monitorApiEndpoints();
+
+    // Pause monitoring and heavy updates when a logout occurs
+    if (this.authService && (this.authService as any).loggingOut$) {
+      (this.authService as any).loggingOut$.subscribe(() => {
+        try {
+          this.logger.info('Auth logout observed by AdminComponent - pausing monitoring');
+          // Pause UI updates and stop polling
+          this.isTabActive = false;
+          this.pauseSimulation();
+          if (this.statisticsInterval) {
+            clearInterval(this.statisticsInterval);
+            this.statisticsInterval = null;
+          }
+          if (this.metricsSubscription) {
+            this.metricsSubscription.unsubscribe();
+          }
+          if (this.serviceMetricsSubscription) {
+            this.serviceMetricsSubscription.unsubscribe();
+          }
+          if (this.apiLogsSubscription) {
+            this.apiLogsSubscription.unsubscribe();
+          }
+        } catch (e) {
+          this.logger.error('Error handling logout in AdminComponent', e);
+        }
+      });
+    }
   }
 
   ngAfterViewInit(): void {
@@ -283,6 +296,24 @@ export class AdminComponent implements OnInit {
       this.initializeSystemMetricsChart();
       this.initializeServiceMetricsChart();
     }, 500);
+
+    // Move tab change handling here so ViewChild is available
+    if (this.tabGroup && this.tabGroup.selectedIndexChange) {
+      this.tabSubscription = this.tabGroup.selectedIndexChange.subscribe((index: number) => {
+        console.debug('Tab changed to:', index);
+        if (index === 1) {
+          console.debug('Entering Service Monitoring tab');
+          if (!this.isTabActive) {
+            this.isTabActive = true;
+          }
+          this.initializeServiceMonitoring();
+          this.updateDisplayMetrics();
+        } else {
+          this.isTabActive = false;
+          this.pauseSimulation();
+        }
+      });
+    }
   }
 
   ngOnDestroy(): void {
@@ -1290,21 +1321,13 @@ export class AdminComponent implements OnInit {
     ];
   }
 
+  private _getServiceMetricsCount = 0;
   getServiceMetrics(): DisplayMetric[] {
-    return this.serviceMetrics.map(metric => {
-      const errorRate = metric.errorRate || 0;
-      const authAttempts = metric.authAttempts || 0;
-      const trend = Math.random() * 20 - 10; // Simulated trend between -10 and +10
-
-      return {
-        color: errorRate > 20 ? '#ef4444' : errorRate > 10 ? '#f59e0b' : '#10b981',
-        icon: this.getMetricIcon(metric),
-        label: this.getMetricLabel(metric),
-        value: this.getMetricValue(metric),
-        unit: this.getMetricUnit(metric),
-        trend: trend
-      };
-    });
+    this._getServiceMetricsCount++;
+    if (this._getServiceMetricsCount % 50 === 0) {
+      console.debug(`getServiceMetrics called ${this._getServiceMetricsCount} times`);
+    }
+    return this.displayMetrics;
   }
 
   private getMetricIcon(metric: ServiceCallMetric): string {
@@ -1640,12 +1663,15 @@ export class AdminComponent implements OnInit {
 
   // Add method to get service health status
   getServiceHealth(serviceName: string): string {
-    const metrics = this.serviceMetricsMap.get(serviceName);
+    // Prefer the computed statistics that are kept up-to-date by polling
+    const metrics = this.serviceStatistics[serviceName];
     if (!metrics) return 'unknown';
 
-    if (metrics.errorRate > 20) return 'critical';
-    if (metrics.errorRate > 10) return 'warning';
-    if (metrics.securityEvents > 5) return 'warning';
+    const errorRate = (metrics.errorRate !== undefined) ? metrics.errorRate : (100 - (metrics.successRate ?? 100));
+
+    if (errorRate > 20) return 'critical';
+    if (errorRate > 10) return 'warning';
+    if ((metrics.securityEvents ?? 0) > 5) return 'warning';
     return 'healthy';
   }
 
@@ -1700,7 +1726,11 @@ export class AdminComponent implements OnInit {
   }
 
   // Add a lightweight version of the stats update that doesn't trigger heavy chart updates
+  private _updateServiceStatsCount = 0;
   private updateServiceStatsLite(): void {
+    this._updateServiceStatsCount++;
+    console.debug(`updateServiceStatsLite called ${this._updateServiceStatsCount} times`);
+
     if (!this.isTabActive) return;
     
     // Only process active services we need
@@ -1761,12 +1791,19 @@ export class AdminComponent implements OnInit {
         if (this.isTabActive) this.updateServiceMetricsChart();
       }, 0);
     }
+
+    // Keep the cached display metrics in sync
+    this.updateDisplayMetrics();
   }
 
   private _lastChartUpdate = 0;
 
   // Optimize chart update to be less intensive
+  private _updateServiceMetricsChartCount = 0;
   private updateServiceMetricsChart(): void {
+    this._updateServiceMetricsChartCount++;
+    console.debug(`updateServiceMetricsChart called ${this._updateServiceMetricsChartCount} times`);
+
     if (!this.serviceMetricsChart || !this.isTabActive) return;
 
     const activeServices = this.registeredServices.filter(s => s.active).slice(0, 6); // Limit displayed services
@@ -1787,7 +1824,43 @@ export class AdminComponent implements OnInit {
     // Update with no animation for better performance
     this.serviceMetricsChart.data = chartData;
     this.serviceMetricsChart.update('none');
+
+    // Update cached display metrics to reflect latest stats
+    this.updateDisplayMetrics();
   }
+
+  // Update cached display metrics used by the template
+  private updateDisplayMetrics(): void {
+    const activeServices = this.registeredServices.filter(s => s.active).slice(0, 6);
+    const metrics = activeServices.map(s => {
+      const stats = this.serviceStatistics[s.name] || {};
+      const errorRate = (stats.errorRate !== undefined) ? stats.errorRate : (100 - (stats.successRate ?? 100));
+      const value = stats.avgResponseTime ?? 0;
+      const trend = 0;
+
+      return {
+        color: errorRate > 20 ? '#ef4444' : errorRate > 10 ? '#f59e0b' : '#10b981',
+        icon: this.serviceIconMap[s.name.toLowerCase()] || 'api',
+        label: s.name,
+        value,
+        unit: 'ms',
+        trend
+      };
+    });
+
+    // Only update if changed to avoid unnecessary change detection churn
+    try {
+      const prev = JSON.stringify(this.displayMetrics);
+      const next = JSON.stringify(metrics);
+      if (prev !== next) {
+        this.displayMetrics = metrics;
+      }
+    } catch (e) {
+      this.displayMetrics = metrics;
+    }
+  }
+
+
 
   // Generate sparkline SVG for API service
   generateSparklineSVG(timelineData: any[]): string {

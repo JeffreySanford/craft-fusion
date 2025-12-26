@@ -411,12 +411,11 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
           .style('opacity', 0.9);
           
         this.tooltip.html(`
-          <div style="font-weight:bold; margin-bottom:5px; color:${data.color}">
-            ${data.seriesName}
-          </div>
+          <div class="tooltip-title">${data.seriesName}</div>
           <div>Date: <strong>${date}</strong></div>
           <div>Value: <strong>${value}</strong></div>
         `)
+          .style('--series-color', data.color)
           .style('left', (event.pageX + 10) + 'px')
           .style('top', (event.pageY - 28) + 'px');
           

@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, Input, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { Subscription, interval } from 'rxjs';
+import { bufferTime } from 'rxjs/operators';
 import { LoggerService, LogEntry, LogLevel } from '../../common/services/logger.service';
 
 @Component({
@@ -31,18 +32,32 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
     // Pre-compute all time strings
     this.updateAllLogTimes();
     
-    // Subscribe to new logs
-    this.logSubscription = this.logger.logStream$.subscribe(log => {
-      this.logs.unshift(log); // Add newest logs to the top
-      
-      // Pre-compute and store the time string
-      const logId = this.getLogId(0, log);
-      this.logTimes[logId] = this.computeTimeAgo(log.timestamp);
-      
-      // Apply auto-scroll if enabled
-      if (this.autoScroll) {
-        this.scrollToTop();
-      }
+    // Subscribe to new logs but buffer to avoid UI flooding
+    this.logSubscription = this.logger.logStream$.pipe(
+      bufferTime(500)
+    ).subscribe(batch => {
+      if (!batch || batch.length === 0) return;
+
+      // Process outside Angular to minimize change detection churn
+      this.zone.runOutsideAngular(() => {
+        const incoming = batch.slice().reverse(); // newest first
+
+        // Bring UI update back into Angular zone and apply batched changes
+        this.zone.run(() => {
+          // Prepend the batch and limit total logs
+          this.logs = incoming.concat(this.logs).slice(0, 2000);
+
+          // Pre-compute times for the new logs
+          incoming.forEach((log, idx) => {
+            const logId = this.getLogId(idx, log);
+            this.logTimes[logId] = this.computeTimeAgo(log.timestamp);
+          });
+
+          if (this.autoScroll) this.scrollToTop();
+          // Trigger change detection for the batched update
+          this.cdr.markForCheck();
+        });
+      });
     });
     
     // Start a background timer for updating the "time ago" texts

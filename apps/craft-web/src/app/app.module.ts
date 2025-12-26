@@ -1,4 +1,4 @@
-import { NgModule, provideAppInitializer, inject } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
@@ -13,7 +13,7 @@ import { HeaderModule } from './pages/header/header.module';
 import { SidebarModule } from './pages/sidebar/sidebar.module';
 import { FooterModule } from './pages/footer/footer.module';
 import { LoggerService } from './common/services/logger.service';
-import { NgxSpinnerModule } from 'ngx-spinner';
+import { NgxSpinnerWrapperModule } from './modules/ngx-spinner-wrapper.module';
 import { SocketClientService } from './common/services/socket-client.service';
 
 // Import shared types from craft-library
@@ -61,39 +61,48 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
     HeaderModule,
     SidebarModule,
     FooterModule,
-    NgxSpinnerModule // Add NgxSpinnerModule
+    NgxSpinnerWrapperModule // Re-exported wrapper for NgxSpinner
   ],
   providers: [
-    provideAppInitializer(() => {
-      const router = inject(Router);
-      router.events.subscribe(event => {
-        console.log('Router event:', event);
-      });
-      const logger = inject(LoggerService);
-      
-      // Register the Router with the logger, return a hot observable that emits the router instance
-      // This is a workaround to ensure the logger has access to the router instance
-      // and can log navigation events
-      router.events.subscribe(event => {
-        if (event instanceof NavigationStart) {
-          logger.info('Navigation started', event);
-        } else if (event instanceof NavigationEnd) {
-          logger.info('Navigation ended', event);
-        } else if (event instanceof NavigationError) {
-          logger.error('Navigation error', event);
-          router.navigate(['/error'], { queryParams: { error: event.error } });
-        } else if (event instanceof NavigationCancel) {
-          logger.info('Navigation cancelled', event);
-        }
-      });
-
-      logger.registerService('Router');
-    }),
     SocketClientService,
-    provideAppInitializer(() => {
-      const socketClient = inject(SocketClientService);
-      socketClientFactory(socketClient)();
-    })
+    {
+      provide: APP_INITIALIZER,
+      useFactory: function appInitializerFactory(router: Router, logger: LoggerService) {
+        return () => {
+          router.events.subscribe(event => {
+            if (event instanceof NavigationStart) {
+              logger.info('Navigation started', event);
+            } else if (event instanceof NavigationEnd) {
+              logger.info('Navigation ended', event);
+            } else if (event instanceof NavigationError) {
+              logger.error('Navigation error', event);
+              // Avoid navigating to a non-existent /error route which can cause navigation loops
+              try {
+                if (router.url !== '/404') {
+                  router.navigate(['/404']);
+                }
+              } catch (e) {
+                logger.warn('Failed to navigate to /404 after navigation error', e);
+              }
+            } else if (event instanceof NavigationCancel) {
+              logger.info('Navigation cancelled', event);
+            }
+          });
+
+          logger.registerService('Router');
+        };
+      },
+      deps: [Router, LoggerService],
+      multi: true
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: function socketInitializerFactory(socketClient: SocketClientService) {
+        return () => socketClientFactory(socketClient)();
+      },
+      deps: [SocketClientService],
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

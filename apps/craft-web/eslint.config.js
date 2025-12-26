@@ -1,7 +1,10 @@
 const nx = require('@nx/eslint-plugin');
 const angularPlugin = require('@angular-eslint/eslint-plugin');
 const angularTemplatePlugin = require('@angular-eslint/eslint-plugin-template');
+const angularTemplateParser = require('@angular-eslint/template-parser');
+const path = require('path');
 const typescriptPlugin = require('@typescript-eslint/eslint-plugin');
+const typescriptParser = require('@typescript-eslint/parser');
 const importPlugin = require('eslint-plugin-import');
 
 module.exports = [
@@ -11,12 +14,16 @@ module.exports = [
   // TypeScript Configuration
   {
     files: ['**/*.ts'],
-    plugins: ['@angular-eslint', '@typescript-eslint', 'import'],
+    plugins: {
+      '@angular-eslint': angularPlugin,
+      '@typescript-eslint': typescriptPlugin,
+      'import': importPlugin,
+    },
     languageOptions: {
-      parser: '@typescript-eslint/parser',
+      parser: typescriptParser,
       parserOptions: {
-        project: '../../tsconfig.base.json',
-        "tsconfigRootDir": "./",
+        project: 'tsconfig.base.json',
+        "tsconfigRootDir": path.resolve(__dirname, '../../'),
         sourceType: 'module',
         ecmaVersion: 'latest',
       },
@@ -47,7 +54,12 @@ module.exports = [
   // Angular Template Configuration
   {
     files: ['**/*.html'],
-    plugins: ['@angular-eslint/template'],
+    plugins: {
+      '@angular-eslint/template': angularTemplatePlugin,
+    },
+    languageOptions: {
+      parser: angularTemplateParser,
+    },
     rules: {
       '@angular-eslint/template/no-negated-async': 'warn',
     },

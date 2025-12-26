@@ -99,12 +99,21 @@ export class AuthenticationService {
   logout(): void {
     this.logger.info('Logging out user');
     this.clearAuthToken();
+
+    // Ensure persisted admin flag is removed from localStorage
+    try {
+      localStorage.removeItem('isAdmin');
+    } catch (e) {
+      this.logger.warn('Failed to remove isAdmin from localStorage during logout', { error: e });
+    }
+
     this.currentUserSubject.next(null);
     this.isLoggedInSubject.next(false);
     this.isAuthenticatedSubject.next(false);
     this.isAdminSubject.next(false);
     this.adminStateService.setAdminStatus(false); // Update AdminStateService on logout
-    this.router.navigate(['/login']);
+    // Redirect to home - login page is not available in SPA routes
+    try { this.router.navigate(['/home']); } catch (e) { this.logger.warn('Failed to navigate to /home', { error: e }); }
   }
 
   //TODO: Implement token validation logic

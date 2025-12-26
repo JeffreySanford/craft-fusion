@@ -125,6 +125,11 @@ database.sqlite # Ignore specific sqlite db file
 # Archived development scripts
 scripts/archive/
 
+# Ignore local generated binaries and reports
+*.exe
+trufflehog-report.json
+.cursor/
+
 # Local cache & editor temp files
 /.cache/
 /.parcel-cache/

@@ -41,6 +41,8 @@ export const appRoutes: Routes = [
     path: 'chat',
     loadChildren: () => import('./projects/chat/chat.module').then(m => m.ChatModule),
   },
+  // Explicit route for 404 page to avoid redirect loops
+  { path: '404', loadChildren: () => import('./pages/not-found/not-found.module').then(m => m.NotFoundModule) },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/404' },
 ];

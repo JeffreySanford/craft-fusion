@@ -191,16 +191,20 @@ export class RecordListComponent implements OnInit, OnDestroy {
   }
 
   // tABLE PAGEsIZE HAS BEEN CHANGED
-  onTableChange(event: PageEvent): void {
+  onTableChange(event: any): void {
     console.log('Event: Display row change with event:', event);
-    this.paginator.pageSize = event.pageSize;
+    const pageEvent = event as PageEvent;
+    if (pageEvent && typeof pageEvent.pageSize === 'number') {
+      this.paginator.pageSize = pageEvent.pageSize;
+    }
   }
 
-  onSelectedServerChange(event: string): void {
-    console.log('Event (Server Name): Selected server changed with event:', event);
+  onSelectedServerChange(event: any): void {
+    const value = typeof event === 'string' ? event : (event?.value ?? '');
+    console.log('Event (Server Name): Selected server changed with event:', value);
     console.log('Available servers:', this.servers);
 
-    const server = this.servers.find(element => event === element.name);
+    const server = this.servers.find(element => value === element.name);
 
     if (server) {
       console.log('Found server:', server);
@@ -210,7 +214,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
       console.log('Server: Selected server updated to:', this.server.name);
       this.fetchData(this.totalRecords);
     } else {
-      console.error('Error: No matching server found for event:', event);
+      console.error('Error: No matching server found for event:', value);
     }
   }
 
@@ -260,7 +264,8 @@ export class RecordListComponent implements OnInit, OnDestroy {
     this.changeDetectorRef.detectChanges();
   }
 
-  onDatasetChange(count: number): void {
+  onDatasetChange(event: any): void {
+    const count = typeof event === 'number' ? event : (event?.value ?? this.totalRecords);
     this.resolved = false;
     this.totalRecords = 0;
     this.clearDataSource();
@@ -268,7 +273,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('Event: Dataset change requested with count:', count);
     this.startTime = new Date().getTime();
     this.recordService
-      .generateNewRecordSet(count)
+      .generateNewRecordSet(Number(count))
       .pipe(
         takeUntil(this.destroy$),
         switchMap((dataset: Record[]) => {
@@ -276,9 +281,11 @@ export class RecordListComponent implements OnInit, OnDestroy {
             this.dataSource.data = dataset;
             this.newData = true;
 
-            this.paginator.pageIndex = 0;
-            this.paginator.pageSize = 5;
-            this.paginator.length = dataset.length;
+            if (this.paginator) {
+              this.paginator.pageIndex = 0;
+              this.paginator.pageSize = 5;
+              this.paginator.length = dataset.length;
+            }
 
             this.dataSource.filterPredicate = (data: Record, filter: string) => {
               return data.UID.toLowerCase().includes(filter);

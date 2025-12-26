@@ -1,22 +1,10 @@
 export default {
   displayName: 'craft-web',
   preset: '../../jest.preset.js',
-  // Remove the following unused file
-  // setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   coverageDirectory: '../../coverage/apps/craft-web',
+  setupFilesAfterEnv: ['<rootDir>/../../jest.setup.ts'],
   transform: {
-    '^.+\\.(ts|mjs|js|html)$': [
-      'jest-preset-angular',
-      {
-        tsconfig: '<rootDir>/tsconfig.json',
-        stringifyContentPathRegex: '\\.(html|svg)$',
-      },
-    ],
+    '^.+\\.(ts|mjs|js|html)$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },
-  transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
-  snapshotSerializers: [
-    'jest-preset-angular/build/serializers/no-ng-attributes',
-    'jest-preset-angular/build/serializers/ng-snapshot',
-    'jest-preset-angular/build/serializers/html-comment',
-  ],
+  transformIgnorePatterns: ['node_modules/(?!(@angular|jest-preset-angular))'],
 };

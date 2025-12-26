@@ -66,6 +66,23 @@ async function bootstrap() {
   Logger.log(`Starting server in ${NODE_ENV} mode with ${serverTimeout}ms timeout`);
   Logger.log(`Host: ${HOST}, Port: ${PORT}`);
 
+  // Security check: ensure JWT_SECRET and MONGO_URI are set in production
+  try {
+    const jwtSecret = configService.get<string>('JWT_SECRET');
+    if (isProduction && (!jwtSecret || jwtSecret === 'default_secret_for_dev' || jwtSecret === 'changeme_dev_only')) {
+      Logger.error('FATAL: JWT_SECRET is not configured for production. Exiting.');
+      process.exit(1);
+    }
+
+    const mongoUri = configService.get<string>('MONGO_URI') || configService.get<string>('MONGODB_URI');
+    if (isProduction && !mongoUri) {
+      Logger.error('FATAL: MONGO_URI/MONGODB_URI is not configured for production. Exiting.');
+      process.exit(1);
+    }
+  } catch (e) {
+    Logger.warn('Unable to verify JWT_SECRET/MONGO_URI during startup', e as Error);
+  }
+
   // Configure CORS
   app.enableCors({
     origin: (origin, callback) => {

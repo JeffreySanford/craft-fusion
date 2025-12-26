@@ -104,7 +104,8 @@ export class AuthenticationService {
     private router: Router,
     private sessionService: SessionService,
     private logger: LoggerService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private adminStateService: import('./admin-state.service').AdminStateService
   ) {
     this.logger.registerService('AuthService');
     this.logger.info('Authentication Service initialized');
@@ -163,7 +164,7 @@ export class AuthenticationService {
           error: () => {
             this.logger.warn('Failed to refresh expired token, clearing auth state');
             this.clearAuthState();
-            this.router.navigate(['/login']);
+            try { this.router.navigate(['/home']); } catch (e) { this.logger.warn('Failed to navigate to /home', { error: e }); }
           }
         });
         return;
@@ -292,6 +293,10 @@ export class AuthenticationService {
   /**
    * Log out the current user
    */
+  private loggingOutSubject = new Subject<void>();
+  public loggingOut$ = this.loggingOutSubject.asObservable();
+  private _isLoggingOut = false;
+
   public logout(): void {
     const currentUser = this.authState.value.user;
     this.logger.info('User logout initiated', {
@@ -299,22 +304,77 @@ export class AuthenticationService {
       wasAuthenticated: this.authState.value.isLoggedIn,
       timestamp: new Date().toISOString()
     });
-    
-    // Close WebSocket connection if open
-    this.closeAuthSocket();
-    
+
+    // Signal to interested parties that we are logging out
+    this._isLoggingOut = true;
+
+    // Temporarily raise logger level to reduce noise during logout
+    let previousLogLevel: any;
+    try {
+      previousLogLevel = this.logger.getLevel();
+      // Use WARN to suppress verbose output during cleanup
+      this.logger.setLevel((this.logger as any).LogLevel?.WARN ?? previousLogLevel);
+    } catch (e) {
+      // ignore
+    }
+
+    // Pause logging to prevent floods during logout
+    try {
+      (this.logger as any).pauseEmitting && (this.logger as any).pauseEmitting();
+    } catch (e) {
+      // ignore
+    }
+
+    // Emit logout notification asynchronously to avoid blocking the current stack
+    setTimeout(() => {
+      try {
+        this.loggingOutSubject.next();
+      } catch (e) {
+        this.logger.warn('Error notifying listeners of logout', { error: e });
+      }
+
+      // Close WebSocket connection if open (best-effort)
+      try {
+        this.closeAuthSocket();
+      } catch (e) {
+        this.logger.warn('Error closing auth socket during logout', { error: e });
+      }
+
+      // Restore previous logger level and resume emitting after a short delay
+      setTimeout(() => {
+        try {
+          if (previousLogLevel !== undefined) this.logger.setLevel(previousLogLevel);
+          (this.logger as any).resumeEmitting && (this.logger as any).resumeEmitting();
+        } catch (e) {
+          // ignore
+        }
+      }, 500);
+    }, 0);
+
+
     // Cancel any pending token refresh
     if (this.refreshTokenTimeout) {
       clearTimeout(this.refreshTokenTimeout);
       this.refreshTokenTimeout = null;
     }
-    
-    // Clear auth state and navigate to login
+
+    // Defer heavy cleanup to let Angular finish current work and avoid freezes
+    setTimeout(() => {
+      try {
+// Clear auth state and navigate home (login route is not configured in SPA)
     this.clearAuthState();
     this.sessionService.clearUserSession();
-    this.router.navigate(['/login']);
-    
-    this.logger.debug('User logout completed, authentication state reset');
+    try {
+      this.router.navigate(['/home']);
+    } catch (e) {
+      this.logger.warn('Failed to navigate to /home on logout', { error: e });
+    }
+
+        this.logger.debug('User logout completed, authentication state reset');
+      } finally {
+        this._isLoggingOut = false;
+      }
+    }, 0);
   }
 
   /**
@@ -376,7 +436,7 @@ export class AuthenticationService {
           // If refresh fails with 401/403, user needs to re-authenticate
           if (error.status === 401 || error.status === 403) {
             this.clearAuthState();
-            this.router.navigate(['/login']);
+            try { this.router.navigate(['/home']); } catch (e) { this.logger.warn('Failed to navigate to /home', { error: e }); }
             this.notificationService.showWarning(
               'Your session has expired. Please log in again.', 
               'Session Expired'
@@ -434,14 +494,31 @@ export class AuthenticationService {
    * Update the authentication state
    */
   private updateAuthState(state: Partial<AuthState>): void {
-    this.authState.next({
-      ...this.authState.value,
-      ...state
-    });
-    
-    // Update offline mode flag
-    if (state.isOffline !== undefined) {
-      this._isOfflineMode = state.isOffline;
+    // If we are in the middle of logout, defer state updates to avoid synchronous
+    // cascades that can freeze the UI (many subscribers reacting at once).
+    const shouldDefer = this._isLoggingOut || (state.isLoggedIn === false);
+
+    const applyState = () => {
+      try {
+        this.authState.next({
+          ...this.authState.value,
+          ...state
+        });
+
+        // Update offline mode flag
+        if (state.isOffline !== undefined) {
+          this._isOfflineMode = state.isOffline;
+        }
+      } catch (e) {
+        this.logger.warn('Error applying auth state update', { error: e });
+      }
+    };
+
+    if (shouldDefer) {
+      this.logger.debug('Deferring auth state update to avoid sync cascade', { state });
+      setTimeout(() => applyState(), 0);
+    } else {
+      applyState();
     }
   }
 
@@ -457,15 +534,28 @@ export class AuthenticationService {
     });
     
     // Update auth state
+    const isAdmin = this.hasAdminRole(response.user);
     this.updateAuthState({
       user: response.user,
       isLoggedIn: true,
-      isAdmin: this.hasAdminRole(response.user),
+      isAdmin: isAdmin,
       isOffline: false,
       lastSyncTime: new Date()
     });
+    // Also inform AdminStateService to keep UI in sync
+    try { this.adminStateService.setAdminStatus(isAdmin); } catch (e) { this.logger.debug('AdminStateService not available', { error: e }); }
     
     this.sessionService.setUserSession(response.user);
+
+    // Update global admin state so UI and guards respond immediately
+    try {
+      // reuse `isAdmin` computed earlier
+      this.adminStateService.setAdminStatus(isAdmin);
+      // Also cache the admin flag locally in case of reloads
+      localStorage.setItem('isAdmin', isAdmin ? '1' : '0');
+    } catch (e) {
+      this.logger.debug('Failed to update AdminStateService after login', { error: e });
+    }
     
     this.logger.info('Login process completed successfully', { 
       username: response.user.username,
@@ -614,11 +704,17 @@ export class AuthenticationService {
    * Reset authentication state to default values
    */
   private clearAuthState(): void {
-    // Clear stored tokens
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    localStorage.removeItem(this.TOKEN_EXPIRES_KEY);
-    
+    // Clear stored tokens securely
+    try {
+      localStorage.removeItem(this.TOKEN_KEY);
+      localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+      localStorage.removeItem(this.TOKEN_EXPIRES_KEY);
+      // Remove any cached admin flag
+      localStorage.removeItem('isAdmin');
+    } catch (e) {
+      this.logger.warn('Failed to clear localStorage during logout', { error: e });
+    }
+
     // Reset auth state
     this.updateAuthState({
       user: {
@@ -634,6 +730,13 @@ export class AuthenticationService {
       isLoggedIn: false,
       isAdmin: false
     });
+
+    // Ensure global admin state is cleared so guarded UI updates immediately
+    try {
+      this.adminStateService.setAdminStatus(false);
+    } catch (e) {
+      this.logger.debug('Failed to set AdminStateService to false during clearAuthState', { error: e });
+    }
   }
 
   /**

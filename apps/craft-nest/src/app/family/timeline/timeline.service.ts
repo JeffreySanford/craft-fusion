@@ -20,7 +20,7 @@ export class TimelineService {
     
     const createdEvent = new this.timelineEventModel(createTimelineEventDto);
     return from(createdEvent.save()).pipe(
-      tap(result => this.logger.debug('Timeline event created', { id: result.id }))
+      tap(result => this.logger.debug('Timeline event created', { id: (result as any)._id || (result as any).id }))
     );
   }
 

@@ -30,15 +30,15 @@ import { RecordService } from '../services/record.service';
   ]
 })
 export class RecordDetailComponent implements OnChanges, OnInit {
-  @Input() user!: Record;
+  @Input() user: Record | null = null;
   @Input() loading = false;
 
   totalAnnualSalary = 0;
   salaryDisplayedColumns: string[] = ['company', 'salary'];
-  salaryArray!: MatTableDataSource<Company>;
+  salaryArray: MatTableDataSource<Company> = new MatTableDataSource<Company>([]);
 
   // Array for displaying stars based on salary
-  wealthIndicator: number[] = [];
+  wealthIndicator: number[] = []; 
 
   constructor(private route: ActivatedRoute, private recordService: RecordService) {}
 
@@ -74,7 +74,7 @@ export class RecordDetailComponent implements OnChanges, OnInit {
         salary: Array.isArray(this.user.salary) ? this.user.salary : [],
       };
       // Calculate and generate wealth indicator stars (1-5)
-      if (this.user.salary) {
+      if (this.user && this.user.salary) {
         this.salaryArray = new MatTableDataSource<Company>(this.user.salary);
         this.totalAnnualSalary = this.getTotalSalary();
         const starCount = Math.min(5, Math.max(1, Math.floor(this.totalAnnualSalary / 20000)));
@@ -85,9 +85,8 @@ export class RecordDetailComponent implements OnChanges, OnInit {
 
   public getTotalSalary(): number {
     let total = 0;
-    this.user?.salary.forEach((company: Company) => {
-      // Use the correct property based on the company structure
-      total += company.annualSalary;
+    (this.user?.salary || []).forEach((company: Company) => {
+      total += (company.annualSalary || 0);
     });
 
     return total;
