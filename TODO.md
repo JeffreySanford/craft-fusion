@@ -26,6 +26,7 @@ This file collects current action items discovered across the repository and rec
 - [ ] Add the Playwright smoke test to the official e2e suite and gating on merges — owner: frontend/test, effort: low
 - [ ] Add flaky-test detection and timeouts to prevent CI hangs — owner: test infra, effort: medium
 - [ ] Clean up tracked build artifacts and ensure `.gitignore` excludes `dist/`, `.angular/cache`, and other generated files — owner: repo maintainers, effort: low
+- [ ] Implement Admin Security Tab — SCA Top 10 & SBOMs (owner: Security / Backend / Frontend, estimate: 3–6 days) — **IN-PROGRESS: backend + frontend scaffolding created**, see `documentation/RFCs/rfc-admin-security-tab-sca-sboms.md` for details.
 
 ## Low priority / Nice to have
 
@@ -52,7 +53,3 @@ This file collects current action items discovered across the repository and rec
    - Add `.github/workflows/secret-scan.yml`
    - Add `.gitignore` cleanup PR removing tracked dist files and ensure they are ignored going forward
 3. Plan the longer refresh-token migration as a design RFC with tests and rollback plan.
-
----
-
-If you'd like, I can open the PRs for the CI changes and `.gitignore` cleanup next. Let me know which to do first.

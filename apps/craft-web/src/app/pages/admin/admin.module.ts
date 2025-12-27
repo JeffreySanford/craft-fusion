@@ -19,7 +19,9 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RouterModule } from '@angular/router';
+import { AdminSecurityComponent } from './security/security.component';
 
 // Import the ComponentsModule that contains the LoggerDisplayComponent
 import { ComponentsModule } from '../../components/components.module';
@@ -31,7 +33,8 @@ import { AuthService } from '../../common/services/auth/auth.service';
   declarations: [
     ServicesDashboardComponent,
     LogsComponent,
-    AdminComponent
+    AdminComponent,
+    AdminSecurityComponent
   ],
   imports: [
     CommonModule,
@@ -53,6 +56,7 @@ import { AuthService } from '../../common/services/auth/auth.service';
     MatButtonModule,
     MatListModule,
     MatCardModule,
+    MatProgressBarModule,
     ComponentsModule, // Import ComponentsModule to access LoggerDisplayComponent
     RouterModule.forChild([
       { path: '', component: AdminComponent }

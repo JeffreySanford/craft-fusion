@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "private": true,
+  "type": "module",
   "scripts": {
     "start": "npx nx serve craft-web",
     "start:all": "npm run build:backend && concurrently \"npm run serve:nest\" \"npm run serve:go\" \"npx nx serve craft-web\"",
@@ -108,6 +109,7 @@
     "turndown": "^7.2.0",
     "turndown-plugin-gfm": "^1.0.2",
     "typeorm": "^0.3.24",
+    "uuid": "^13.0.0",
     "zone.js": "0.15.0"
   },
   "devDependencies": {
@@ -155,6 +157,7 @@
     "@types/showdown": "^2.0.6",
     "@types/socket.io-client": "^1.4.36",
     "@types/turndown": "^5.0.5",
+    "@types/uuid": "^11.0.0",
     "@typescript-eslint/eslint-plugin": "^8.33.0",
     "@typescript-eslint/parser": "^8.33.0",
     "angular-eslint": "^19.8.1",

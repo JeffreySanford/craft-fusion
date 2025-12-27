@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { UserStateModule } from './user-state/user-state.module';
 import { RecordsModule } from './records/records.module';
 import { RecipesModule } from './recipes/recipes.module';
+import { SecurityScanModule } from './security-scan/security-scan.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -20,6 +22,9 @@ import { RecipesModule } from './recipes/recipes.module';
     UserStateModule,
     RecordsModule,
     RecipesModule, // <-- Register RecipesModule
+    // Security scan module (manual job driven SCA / SBOM scans)
+    SecurityScanModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

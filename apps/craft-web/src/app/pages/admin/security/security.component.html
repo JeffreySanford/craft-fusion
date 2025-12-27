@@ -1,0 +1,79 @@
+<div class="admin-security">
+  <mat-card>
+    <mat-card-title>Security Checks</mat-card-title>
+    <mat-card-content>
+      <div class="actions">
+        <button mat-raised-button color="primary" (click)="runSCA()">Run SCA Scan</button>
+        <button mat-button (click)="refreshLatest()">Refresh</button>
+      </div>
+
+      <div *ngIf="runningJob" class="job-panel">
+        <h3>Job {{runningJob.jobId}} — Progress: {{runningJob.progress}}%</h3>
+        <mat-progress-bar mode="determinate" [value]="runningJob.progress"></mat-progress-bar>
+        <div class="logs">
+          <div *ngFor="let l of jobLogs">[{{l.event}}] {{l.message || (l.progress ? (l.progress + '%') : '')}}</div>
+        </div>
+      </div>
+
+      <div *ngIf="latest" class="latest">
+        <h3>Latest Summary</h3>
+        <pre>{{ latest | json }}</pre>
+      </div>
+
+      <div class="security-container">
+        <div class="security-stats">
+          <div class="stat-card">
+            <div class="stat-icon secure">
+              <mat-icon>verified_user</mat-icon>
+            </div>
+            <div class="stat-info">
+              <h3>Session Security</h3>
+              <div class="stat-value">{{sessionSecurity}}</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon neutral">
+              <mat-icon>people</mat-icon>
+            </div>
+            <div class="stat-info">
+              <h3>Active Users</h3>
+              <div class="stat-value">{{activeUsers}}</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon secure">
+              <mat-icon>https</mat-icon>
+            </div>
+            <div class="stat-info">
+              <h3>Connection</h3>
+              <div class="stat-value">{{connection}}</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon warning">
+              <mat-icon>gpp_maybe</mat-icon>
+            </div>
+            <div class="stat-info">
+              <h3>Permission Requests</h3>
+              <div class="stat-value">{{permissionRequests}} Pending</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="security-features">
+          <h3>Security Features</h3>
+          <div class="feature-grid">
+            <div class="feature-card" *ngFor="let f of features">
+              <mat-icon>{{f.icon}}</mat-icon>
+              <h4>{{f.title}}</h4>
+              <div class="feature-status" [ngClass]="{'active': f.status === 'Active', 'inactive': f.status !== 'Active'}">{{ f.value || f.status }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
