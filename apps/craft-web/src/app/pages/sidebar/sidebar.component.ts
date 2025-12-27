@@ -43,10 +43,18 @@ export class SidebarComponent implements OnInit {
         { icon: 'bar_chart', label: 'Data Visualizations', routerLink: '/data-visualizations', active: false },
         { icon: 'restaurant', label: 'Peasant Kitchen', routerLink: '/peasant-kitchen', active: false },
         { icon: 'movie', label: 'HTML Video', routerLink: '/space-video', active: false },
+        { icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false, requiresAdmin: true },
+        { icon: 'family_restroom', label: 'Family', routerLink: '/family', active: false, requiresAdmin: true },
+        { icon: 'chat_bubble', label: 'Chat', routerLink: '/chat', active: false, requiresAdmin: true },
+        { icon: 'book', label: 'Book', routerLink: '/book', active: false, requiresAdmin: true },
       ],
     }
   ];
-  menuItems: MenuItem[] = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
+  private allMenuItems: MenuItem[] = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
+
+  get menuItems(): MenuItem[] {
+    return this.allMenuItems.filter(item => !item.requiresAdmin || this.isAdmin);
+  }
   constructor(
     private breakpointObserver: BreakpointObserver, 
     private router: Router,
@@ -64,23 +72,8 @@ export class SidebarComponent implements OnInit {
       });
 
     this.adminStateService.isAdmin$.subscribe(isAdmin => {
+      console.log('Sidebar: isAdmin changed to', isAdmin);
       this.isAdmin = isAdmin;
-      if (isAdmin) {
-        // Check if the admin item already exists to avoid duplicates
-        const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
-        if (adminItemIndex === -1) {
-          this.menuGroups[0].items.push({ icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false });
-          this.menuGroups[0].items.push({ icon: 'family_restroom', label: 'Family', routerLink: '/family', active: false });
-          this.menuGroups[0].items.push({ icon: 'chat_bubble', label: 'Chat', routerLink: '/chat', active: false });
-          this.menuGroups[0].items.push({ icon: 'book', label: 'Book', routerLink: '/book', active: false });
-          this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
-        }
-      } else {
-        // Remove any admin-only items if present
-        const adminRoutes = new Set(['/admin', '/family', '/chat', '/book']);
-        this.menuGroups[0].items = this.menuGroups[0].items.filter(item => !adminRoutes.has(item.routerLink));
-        this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
-      }
       this.cdr.detectChanges();
     });
 

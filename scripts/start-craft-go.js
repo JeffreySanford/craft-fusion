@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-const { spawn } = require('child_process');
-const { existsSync, chmodSync } = require('fs');
-const { join } = require('path');
+import { spawn } from 'child_process';
+import { existsSync, chmodSync } from 'fs';
+import { join, basename } from 'path';
 
-const cwd = join(__dirname, '..', 'dist', 'apps', 'craft-go');
+const cwd = join(import.meta.dirname, '..', 'dist', 'apps', 'craft-go');
 const exeWin = join(cwd, 'main.exe');
 const exeUnix = join(cwd, 'main');
 
@@ -28,7 +28,7 @@ if (process.platform === 'win32') {
 }
 
 if (!cmdPath) {
-  exitWith(`No craft-go executable found in ${cwd}. Please build the Go binary first (e.g. ",npx nx build craft-go").`);
+  exitWith(`No craft-go executable found in ${cwd}. Please build the Go binary first (e.g. "npx nx build craft-go").`);
 }
 
 // Ensure Unix executable bit
@@ -51,7 +51,7 @@ function spawnAndMonitor(command, args = [], options = { cwd, stdio: 'inherit' }
     if (process.platform === 'win32' && command === cmdPath && cmdPath === exeUnix) {
       console.warn('Initial spawn failed; attempting to run via bash fallback...');
       try {
-        const bashProc = spawn('bash', ['-lc', `./${require('path').basename(exeUnix)}`], options);
+        const bashProc = spawn('bash', ['-lc', `./${basename(exeUnix)}`], options);
         bashProc.on('close', (code) => {
           console.log(`craft-go (bash) exited with code ${code}`);
           process.exit(code);

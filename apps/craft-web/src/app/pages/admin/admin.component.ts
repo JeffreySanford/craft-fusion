@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, ElementRef, ViewChild } from '@angular/core';
-import { Observable, Subscription, interval, of } from 'rxjs';
+import { Observable, Subscription, interval, of, take } from 'rxjs';
 import Chart, { Color } from 'chart.js/auto';
 import { LoggerService, ServiceCallMetric } from '../../common/services/logger.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -10,6 +10,8 @@ import { UserStateService } from '../../common/services/user-state.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { ApiLoggerService } from '../../common/services/api-logger.service';
 import { SocketClientService } from '../../common/services/socket-client.service';
+import { Router } from '@angular/router';
+import { AdminStateService } from '../../common/services/admin-state.service';
 
 interface PerformanceMetrics {
   memoryUsage: string;
@@ -220,13 +222,13 @@ export class AdminComponent implements OnInit {
   private apiLogsSubscription!: Subscription;
 
   constructor(
-    // Use @Inject with a string token that matches what's registered in your providers
-    @Inject('AuthService') private authService: any,
     private logger: LoggerService,
     private userActivity: UserActivityService,
     private userState: UserStateService,
     private apiLogger: ApiLoggerService,
-    private socketClient: SocketClientService
+    private socketClient: SocketClientService,
+    private router: Router,
+    private adminState: AdminStateService
   ) {
     // Subscribe to real-time metrics
     this.socketClient.on<any>('metrics:update').subscribe(metric => {
@@ -240,54 +242,35 @@ export class AdminComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.startMetricsMonitoring();
-    this.startFrameRateMonitoring();
-    this.monitorServiceCalls();
-    this.startStatisticsPolling();
+    // Check if user is admin
+    this.adminState.isAdmin$.pipe(take(1)).subscribe(isAdmin => {
+      if (!isAdmin) {
+        this.router.navigate(['/home']);
+        return;
+      }
+      // Proceed with initialization
+      this.startMetricsMonitoring();
+      this.startFrameRateMonitoring();
+      this.monitorServiceCalls();
+      this.startStatisticsPolling();
 
-    // Add sample API calls data if none are showing
-    if (this.serviceMetrics.length === 0) {
-      this.generateSampleApiCalls();
-    }
+      // Add sample API calls data if none are showing
+      if (this.serviceMetrics.length === 0) {
+        this.generateSampleApiCalls();
+      }
 
-    // Initialize logStats with some default values
-    this.logStats = [
-      { id: 1, icon: 'error', label: 'Errors', value: 0, color: 'red' },
-      { id: 2, icon: 'warning', label: 'Warnings', value: 0, color: 'orange' },
-      { id: 3, icon: 'info', label: 'Info', value: 0, color: 'blue' },
-    ];
+      // Initialize logStats with some default values
+      this.logStats = [
+        { id: 1, icon: 'error', label: 'Errors', value: 0, color: 'red' },
+        { id: 2, icon: 'warning', label: 'Warnings', value: 0, color: 'orange' },
+        { id: 3, icon: 'info', label: 'Info', value: 0, color: 'blue' },
+      ];
 
-    // Tab change subscription moved to ngAfterViewInit where the ViewChild is guaranteed to exist.
+      // Tab change subscription moved to ngAfterViewInit where the ViewChild is guaranteed to exist.
 
-    // Subscribe to API logs
-    this.monitorApiEndpoints();
-
-    // Pause monitoring and heavy updates when a logout occurs
-    if (this.authService && (this.authService as any).loggingOut$) {
-      (this.authService as any).loggingOut$.subscribe(() => {
-        try {
-          this.logger.info('Auth logout observed by AdminComponent - pausing monitoring');
-          // Pause UI updates and stop polling
-          this.isTabActive = false;
-          this.pauseSimulation();
-          if (this.statisticsInterval) {
-            clearInterval(this.statisticsInterval);
-            this.statisticsInterval = null;
-          }
-          if (this.metricsSubscription) {
-            this.metricsSubscription.unsubscribe();
-          }
-          if (this.serviceMetricsSubscription) {
-            this.serviceMetricsSubscription.unsubscribe();
-          }
-          if (this.apiLogsSubscription) {
-            this.apiLogsSubscription.unsubscribe();
-          }
-        } catch (e) {
-          this.logger.error('Error handling logout in AdminComponent', e);
-        }
-      });
-    }
+      // Subscribe to API logs
+      this.monitorApiEndpoints();
+    });
   }
 
   ngAfterViewInit(): void {

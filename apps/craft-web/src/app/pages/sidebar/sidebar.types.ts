@@ -4,6 +4,7 @@ export interface MenuItem {
   label: string;
   routerLink: string;
   active?: boolean;
+  requiresAdmin?: boolean;
 }
 
 export interface MenuGroup {

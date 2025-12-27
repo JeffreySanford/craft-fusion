@@ -25,8 +25,6 @@ import { AdminSecurityComponent } from './security/security.component';
 
 // Import the ComponentsModule that contains the LoggerDisplayComponent
 import { ComponentsModule } from '../../components/components.module';
-// Import the AuthService that AdminComponent depends on
-import { AuthService } from '../../common/services/auth/auth.service';
 
 
 @NgModule({
@@ -66,7 +64,6 @@ import { AuthService } from '../../common/services/auth/auth.service';
     ServicesDashboardComponent
   ],
   providers: [
-    { provide: 'AuthService', useExisting: AuthService }
   ]
 })
 export class AdminModule { }

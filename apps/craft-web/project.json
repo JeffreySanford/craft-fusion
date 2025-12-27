@@ -86,7 +86,8 @@
           "mapbox-gl-traffic",
           "mapbox-gl-traffic",
           "turndown",
-          "turndown-plugin-gfm"
+          "turndown-plugin-gfm",
+          "debug"
         ]
       },
       "configurations": {

@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, ReplaySubject, of, timer } from 'rxjs';
 import { map, switchMap, takeUntil, catchError, tap, filter } from 'rxjs/operators';
 import { HttpContext, HttpContextToken } from '@angular/common/http';
@@ -93,9 +93,7 @@ export class LoggerService {
   info$ = this.infoSubject.asObservable();
   changelog$ = this.changelogSubject.asObservable();
   
-  constructor(
-    private injector: Injector
-  ) {
+  constructor() {
     this.info('LoggerService initialized');
   }
   
@@ -426,7 +424,7 @@ export class LoggerService {
     ];
     return Boolean(this.containsTerms(securityTerms, message) || 
            (component && this.containsTerms(securityTerms, component)) ||
-           (component && ['AuthService', 'SecurityService', 'AuthGuard', 'PermissionService'].includes(component)));
+           (component && ['AuthenticationService', 'SecurityService', 'AuthGuard', 'PermissionService'].includes(component)));
   }
 
   private isAuthRelated(message: string, component: string = ''): boolean {
@@ -436,7 +434,7 @@ export class LoggerService {
     ];
     return Boolean(this.containsTerms(authTerms, message) || 
            (component && this.containsTerms(authTerms, component)) ||
-           (component && ['AuthService', 'LoginComponent', 'AuthGuard'].includes(component)));
+           (component && ['AuthenticationService', 'LoginComponent', 'AuthGuard'].includes(component)));
   }
 
   private isPerformanceRelated(message: string, component: string = '', details?: any): boolean {
@@ -444,9 +442,16 @@ export class LoggerService {
       'performance', 'latency', 'speed', 'slow', 'fast', 'metrics', 'benchmark',
       'timeout', 'memory', 'cpu', 'load', 'resource', 'optimize', 'render time'
     ];
-    return Boolean(this.containsTerms(perfTerms, message) || 
-           (component && this.containsTerms(perfTerms, component)) ||
-           (details && JSON.stringify(details).toLowerCase().includes('performance')));
+    try {
+      return Boolean(this.containsTerms(perfTerms, message) || 
+             (component && this.containsTerms(perfTerms, component)) ||
+             (details && typeof details === 'string' && details.toLowerCase().includes('performance')) ||
+             (details && typeof details === 'object' && JSON.stringify(details).toLowerCase().includes('performance')));
+    } catch (e) {
+      // Handle circular references
+      return Boolean(this.containsTerms(perfTerms, message) || 
+             (component && this.containsTerms(perfTerms, component)));
+    }
   }
 
   private isUserRelated(message: string, component: string = ''): boolean {

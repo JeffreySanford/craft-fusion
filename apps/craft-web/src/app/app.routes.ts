@@ -15,12 +15,14 @@ export const appRoutes: Routes = [
   },
   {
     path: 'book',
-    loadChildren: () => import('./projects/book/book.module').then(m => m.BookModule) },
+    loadChildren: () => import('./projects/book/book.module').then(m => m.BookModule),
+    canActivate: [AdminGuard]
+  },
 
   {
     path: 'family',
     loadChildren: () => import('./projects/family/memorial-timeline/memorial-timeline.module').then(m => m.MemorialTimelineModule),
-
+    canActivate: [AdminGuard]
   },
   {
     path: 'peasant-kitchen',
@@ -35,11 +37,12 @@ export const appRoutes: Routes = [
   },
   {
     path: 'admin',
-    loadChildren: () => import('./pages/admin/admin.module').then(m => m.AdminModule),
+    loadChildren: () => import('./pages/admin/admin.module').then(m => m.AdminModule)
   },
   {
     path: 'chat',
     loadChildren: () => import('./projects/chat/chat.module').then(m => m.ChatModule),
+    canActivate: [AdminGuard]
   },
   // Explicit route for 404 page to avoid redirect loops
   { path: '404', loadChildren: () => import('./pages/not-found/not-found.module').then(m => m.NotFoundModule) },

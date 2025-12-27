@@ -10,7 +10,7 @@ import { LoggerService } from './common/services/logger.service';
 import { AdminStateService } from './common/services/admin-state.service';
 import { FooterStateService } from './common/services/footer-state.service';
 import { UserTrackingService } from './common/services/user-tracking.service';
-import { AuthService } from './common/services/auth/auth.service';
+import { AuthenticationService } from './common/services/auth/authentication.service';
 import { SocketClientService } from './common/services/socket-client.service';
 import { ApiDiagnosticsService } from './common/services/api-diagnostics.service';
 
@@ -50,7 +50,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private adminStateService: AdminStateService,
     private userActivityService: UserActivityService,
     private logger: LoggerService,
-    private authService: AuthService,
+    private authService: AuthenticationService,
     private footerStateService: FooterStateService,
     private userStateService: UserStateService,
     private socketClient: SocketClientService,

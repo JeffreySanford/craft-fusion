@@ -7,6 +7,7 @@ import { SessionService } from './session.service';
 import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
 import { ApiService } from './api.service';
+import { AdminStateService } from './admin-state.service';
 import { User } from '../interfaces/user.interface';
 import { environment } from '../../../environments/environment';
 
@@ -105,9 +106,9 @@ export class AuthenticationService {
     private sessionService: SessionService,
     private logger: LoggerService,
     private notificationService: NotificationService,
-    private adminStateService: import('./admin-state.service').AdminStateService
+    private adminStateService: AdminStateService
   ) {
-    this.logger.registerService('AuthService');
+    this.logger.registerService('AuthenticationService');
     this.logger.info('Authentication Service initialized');
     this.initializeAuthentication();
   }

@@ -4,7 +4,7 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { BehaviorSubject, Observable, of, EMPTY } from 'rxjs';
 import { catchError, tap, switchMap, scan, shareReplay } from 'rxjs/operators';
 import { TimelineEvent } from '../models/timeline-event.model';
-import { AuthService } from '../../../../common/services/auth/auth.service';
+import { AuthenticationService } from '../../../../common/services/auth/authentication.service';
 import { LoggerService } from '../../../../common/services/logger.service';
 import { environment } from '../../../../../environments/environment';
 
@@ -23,7 +23,7 @@ export class TimelineService {
   
   constructor(
     private http: HttpClient,
-    private authService: AuthService,
+    private authService: AuthenticationService,
     private logger: LoggerService
   ) { }
   

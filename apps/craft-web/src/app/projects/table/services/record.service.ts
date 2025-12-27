@@ -5,7 +5,7 @@ import { ApiService } from '../../../common/services/api.service';
 import { Record } from '@craft-fusion/craft-library';
 import { NotificationService } from '../../../common/services/notification.service'; 
 import { LoggerService } from '../../../common/services/logger.service';
-import { AuthService } from '@craft-web/services/auth';
+import { AuthenticationService } from '../../../common/services/auth/authentication.service';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +33,7 @@ export class RecordService {
   
   constructor(
     public apiService: ApiService,
-    private auth: AuthService,
+    private auth: AuthenticationService,
     private notificationService: NotificationService,
     private logger: LoggerService
   ) {

@@ -11,7 +11,7 @@
     "serve:go": "node ./scripts/start-craft-go.js",
     "build": "npx nx build craft-web",
     "build:prod": "npx nx build craft-web --configuration=production",
-    "build:backend": "node ./scripts/check-dist-lock.js && npx nx build craft-nest && npx nx build craft-go",
+    "build:backend": "npx nx build craft-nest && npx nx build craft-go",
     "lint": "npx nx lint craft-web",
     "lint:fix": "npx nx lint craft-web --fix",
     "test": "npx nx test craft-web",

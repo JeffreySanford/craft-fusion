@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 // Add ResponseType import for better typing
 import { Observable, tap, catchError, throwError, timer, switchMap, finalize } from 'rxjs';
@@ -70,7 +70,7 @@ export class ApiService {
 
   constructor(
     private http: HttpClient,
-    @Inject(forwardRef(() => LoggerService)) private logger: LoggerService
+    private logger: LoggerService
   ) {
     // Register service with logger
     this.logger.registerService('ApiService');

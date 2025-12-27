@@ -15,6 +15,7 @@ import { FooterModule } from './pages/footer/footer.module';
 import { LoggerService } from './common/services/logger.service';
 import { NgxSpinnerWrapperModule } from './modules/ngx-spinner-wrapper.module';
 import { SocketClientService } from './common/services/socket-client.service';
+import { AuthenticationService } from './common/services/auth/authentication.service';
 
 // Import shared types from craft-library
 import { HealthData } from '@craft-fusion/craft-library';
@@ -65,6 +66,7 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
   ],
   providers: [
     SocketClientService,
+    AuthenticationService,
     {
       provide: APP_INITIALIZER,
       useFactory: function appInitializerFactory(router: Router, logger: LoggerService) {
