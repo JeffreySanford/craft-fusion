@@ -20,7 +20,7 @@ export class TimelineService {
     
     const createdEvent = new this.timelineEventModel(createTimelineEventDto);
     return from(createdEvent.save()).pipe(
-      tap(result => this.logger.debug('Timeline event created', { id: (result as any)._id || (result as any).id }))
+      tap((result: TimelineEvent) => this.logger.debug('Timeline event created', { id: (result as any)._id || (result as any).id }))
     );
   }
 
@@ -28,7 +28,7 @@ export class TimelineService {
     this.logger.debug('Finding all timeline events');
     
     return from(this.timelineEventModel.find().exec()).pipe(
-      tap(events => this.logger.debug(`Found ${events.length} timeline events`))
+      tap((events: TimelineEvent[]) => this.logger.debug(`Found ${events.length} timeline events`))
     );
   }
 
@@ -36,7 +36,7 @@ export class TimelineService {
     this.logger.debug(`Finding timeline event with ID: ${id}`);
     
     return from(this.timelineEventModel.findById(id).exec()).pipe(
-      tap(event => {
+      tap((event: TimelineEvent | null) => {
         if (!event) {
           this.logger.warn(`Timeline event with ID ${id} not found`);
         } else {
@@ -53,7 +53,7 @@ export class TimelineService {
       .findByIdAndUpdate(id, updateTimelineEventDto, { new: true })
       .exec()
     ).pipe(
-      tap(updatedEvent => {
+      tap((updatedEvent: TimelineEvent | null) => {
         if (!updatedEvent) {
           this.logger.warn(`Timeline event with ID ${id} not found during update`);
         } else {
@@ -67,7 +67,7 @@ export class TimelineService {
     this.logger.debug(`Removing timeline event with ID: ${id}`);
     
     return from(this.timelineEventModel.findByIdAndDelete(id).exec()).pipe(
-      tap(removedEvent => {
+      tap((removedEvent: TimelineEvent | null) => {
         if (!removedEvent) {
           this.logger.warn(`Timeline event with ID ${id} not found during deletion`);
         } else {

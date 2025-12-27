@@ -52,6 +52,7 @@ import { AuthService } from '../../common/services/auth/auth.service';
     MatTabsModule,
     MatButtonModule,
     MatListModule,
+    MatCardModule,
     ComponentsModule, // Import ComponentsModule to access LoggerDisplayComponent
     RouterModule.forChild([
       { path: '', component: AdminComponent }

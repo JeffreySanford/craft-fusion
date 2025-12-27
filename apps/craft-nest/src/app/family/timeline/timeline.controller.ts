@@ -37,8 +37,8 @@ export class TimelineController {
     this.logger.log(`Creating new timeline event: ${createTimelineEventDto.title}`);
     
     return this.timelineService.create(createTimelineEventDto).pipe(
-      tap(event => this.logger.log(`Timeline event created with ID: ${(event as any)._id || (event as any).id}`)),
-      map(event => {
+      tap((event: TimelineEventSchema) => this.logger.log(`Timeline event created with ID: ${(event as any)._id || (event as any).id}`)),
+      map((event: TimelineEventSchema) => {
         const entityEvent = this.mapToEntity(event);
         this.timelineGateway.notifyNewEvent(entityEvent);
         return event;
@@ -50,7 +50,7 @@ export class TimelineController {
   findAll(): Observable<any[]> {
     this.logger.log('Retrieving all timeline events');
     return this.timelineService.findAll().pipe(
-      tap(events => this.logger.debug(`Found ${events.length} timeline events`))
+      tap((events: TimelineEventSchema[]) => this.logger.debug(`Found ${events.length} timeline events`))
     );
   }
 
@@ -59,7 +59,7 @@ export class TimelineController {
     this.logger.log(`Retrieving timeline event with ID: ${id}`);
     
     return this.timelineService.findOne(id).pipe(
-      map(event => {
+      map((event: TimelineEventSchema | null) => {
         if (!event) {
           this.logger.warn(`Timeline event with ID ${id} not found`);
           throw new NotFoundException(`Timeline event with ID ${id} not found`);
@@ -75,7 +75,7 @@ export class TimelineController {
     this.logger.log(`Updating timeline event with ID: ${id}`);
     
     return this.timelineService.update(id, updateTimelineEventDto).pipe(
-      map(updatedEvent => {
+      map((updatedEvent: TimelineEventSchema | null) => {
         if (!updatedEvent) {
           this.logger.warn(`Timeline event with ID ${id} not found for update`);
           throw new NotFoundException(`Timeline event with ID ${id} not found`);
@@ -94,7 +94,7 @@ export class TimelineController {
     this.logger.log(`Deleting timeline event with ID: ${id}`);
     
     return this.timelineService.remove(id).pipe(
-      map(removedEvent => {
+      map((removedEvent: TimelineEventSchema | null) => {
         if (!removedEvent) {
           this.logger.warn(`Timeline event with ID ${id} not found for deletion`);
           throw new NotFoundException(`Timeline event with ID ${id} not found`);
