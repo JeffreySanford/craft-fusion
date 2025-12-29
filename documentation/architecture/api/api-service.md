@@ -1,6 +1,7 @@
 # API Service Architecture & Enterprise Scalability Guide
 
 ## Table of Contents
+
 - [Overview](#overview)
 - [Architecture](#architecture)
 - [Enterprise Scalability Considerations](#enterprise-scalability-considerations)
@@ -44,6 +45,7 @@ The `ApiService` is the central communication layer between the frontend applica
 **Challenge**: Enterprise applications often interface with multiple microservices.
 
 **Solution**:
+
 - Implement service registry pattern for dynamic endpoint discovery
 - Add support for multiple base URLs targeting different microservices
 - Consider implementing API gateway pattern for unified access
@@ -60,16 +62,11 @@ public getServiceUrl(serviceName: string, endpoint: string): string {
   const baseUrl = this.serviceRegistry.get(serviceName);
   if (!baseUrl) {
     throw new Error(`Unknown service: ${serviceName}`);
-  }
-  return `${baseUrl}/${endpoint.replace(/^\/+/, '')}`;
-}
-```
-
-### 2. Horizontal Scaling
 
 **Challenge**: Load balancing across multiple API instances.
 
 **Solution**:
+
 - Implement sticky sessions where needed (for stateful operations)
 - Support distributed tracing headers (X-Request-ID)
 - Consider server affinity when needed for certain operations
@@ -81,7 +78,7 @@ private getTracingHeaders(): HttpHeaders {
   // Generate or propagate trace ID
   const traceId = this.traceContext.getCurrentTraceId() || uuid();
   return headers.set('X-Request-ID', traceId);
-} 
+}
 ```
 
 ### 3. Rate Limiting & Throttling
@@ -89,6 +86,7 @@ private getTracingHeaders(): HttpHeaders {
 **Challenge**: Prevent API abuse and ensure fair resource usage.
 
 **Solution**:
+
 - Implement client-side throttling for aggressive operations
 - Handle 429 Too Many Requests with exponential backoff
 - Queue and batch requests when appropriate
@@ -101,11 +99,11 @@ private readonly THROTTLE_WINDOW_MS = 1000; // 1 second window
 private shouldThrottleRequest(endpoint: string): boolean {
   const now = Date.now();
   const lastRequest = this.requestThrottler.get(endpoint) || 0;
-  
+
   if (now - lastRequest < this.THROTTLE_WINDOW_MS) {
     return true; // Should throttle
   }
-  
+
   this.requestThrottler.set(endpoint, now);
   return false;
 }
@@ -123,12 +121,12 @@ For enterprise applications, every API request should follow a consistent pipeli
    - Add authentication headers
    - Add correlation IDs for tracing
    - Format request body if needed
-   
+
 2. **Request Interception**:
    - Implement request caching where appropriate
    - Support for offline mode operation
    - Request deduplication for duplicate calls
-   
+
 3. **Response Processing**:
    - Type conversion and validation
    - Error classification and handling
@@ -152,18 +150,18 @@ interface RequestInterceptor {
 // Example cache interceptor
 class CacheInterceptor implements RequestInterceptor {
   constructor(private cache: HttpCacheService) {}
-  
+
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Only cache GET requests
     if (req.method !== 'GET') {
       return next.handle(req);
     }
-    
+
     const cachedResponse = this.cache.get(req.url);
     if (cachedResponse) {
       return of(cachedResponse);
     }
-    
+
     return next.handle(req).pipe(
       tap(event => {
         if (event instanceof HttpResponse) {
@@ -183,11 +181,11 @@ Enterprise systems need sophisticated error handling:
 
 1. **Transient Errors**: Network issues, temporary service unavailability
    - Automatic retry with exponential backoff
-   
+
 2. **Client Errors**: Invalid requests, authentication issues (4xx status)
    - Clear error messages to user
    - Automatic logout for 401 errors
-   
+
 3. **Server Errors**: Backend failures (5xx status)
    - Graceful degradation
    - Alerting to monitoring systems
@@ -211,19 +209,19 @@ createRetryStrategy(maxRetries = 3, baseDelay = 1000, maxDelay = 10000) {
         if (retryAttempt > maxRetries) {
           return throwError(() => error);
         }
-        
+
         // Log retry attempt
-        this.logger.warn(`Retry attempt ${retryAttempt}/${maxRetries} for failed request`, { 
-          url: error.url, 
-          status: error.status 
+        this.logger.warn(`Retry attempt ${retryAttempt}/${maxRetries} for failed request`, {
+          url: error.url,
+          status: error.status
         });
-        
+
         // Calculate delay with exponential backoff and jitter
         const delay = Math.min(
-          maxDelay, 
+          maxDelay,
           baseDelay * Math.pow(2, retryAttempt) * (0.8 + Math.random() * 0.4)
         );
-        
+
         // Return timer for delay
         return timer(delay);
       })
@@ -241,12 +239,12 @@ class CircuitBreaker {
   private failures = 0;
   private lastFailureTime = 0;
   private state: 'CLOSED' | 'OPEN' | 'HALF_OPEN' = 'CLOSED';
-  
+
   constructor(
     private threshold: number = 5,
     private timeout: number = 30000
   ) {}
-  
+
   execute<T>(request: () => Observable<T>): Observable<T> {
     if (this.state === 'OPEN') {
       // Check if timeout has elapsed to move to half-open
@@ -256,7 +254,7 @@ class CircuitBreaker {
         return throwError(() => new Error('Circuit breaker is OPEN'));
       }
     }
-    
+
     return request().pipe(
       tap(() => {
         // Success - reset circuit breaker if in HALF_OPEN
@@ -270,16 +268,16 @@ class CircuitBreaker {
       })
     );
   }
-  
+
   private recordFailure(): void {
     this.failures++;
     this.lastFailureTime = Date.now();
-    
+
     if (this.failures >= this.threshold || this.state === 'HALF_OPEN') {
       this.state = 'OPEN';
     }
   }
-  
+
   private reset(): void {
     this.failures = 0;
     this.state = 'CLOSED';
@@ -304,7 +302,7 @@ batchRequests<T>(requests: Array<{endpoint: string, method: string, body?: any}>
     method: req.method,
     body: req.body
   }));
-  
+
   return this.post<any[], T[]>('batch', batchBody).pipe(
     catchError(error => {
       this.logger.error('Batch request failed', { error });
@@ -342,11 +340,11 @@ interface CacheService {
 cachedGet<T>(endpoint: string, options: {ttl?: number, refresh?: boolean} = {}): Observable<T> {
   const cacheKey = `api_cache:${endpoint}`;
   const cachedData = options.refresh ? null : this.cacheService.get<T>(cacheKey);
-  
+
   if (cachedData) {
     return of(cachedData);
   }
-  
+
   return this.get<T>(endpoint).pipe(
     tap(response => {
       this.cacheService.set(cacheKey, response, options.ttl || 300000); // Default 5min TTL
@@ -393,11 +391,11 @@ private getSecureHeaders(): Observable<HttpHeaders> {
       const headers: { [key: string]: string } = {
         'Content-Type': 'application/json'
       };
-      
+
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
-      
+
       return new HttpHeaders(headers);
     })
   );
@@ -459,11 +457,11 @@ updateConfiguration(config: {
   if (config.baseUrl) {
     this.apiUrl = config.baseUrl;
   }
-  
+
   if (config.timeout) {
     this.setRequestTimeout(config.timeout);
   }
-  
+
   // Update other configuration parameters
   this.logger.info('API Service configuration updated', config);
 }
@@ -515,9 +513,9 @@ private logApiMetrics(endpoint: string, startTime: number, status: number, error
       stack: this.isProduction ? undefined : error.stack
     } : undefined
   };
-  
+
   this.metricsService.recordApiCall(metrics);
-  
+
   if (duration > this.slowRequestThreshold) {
     this.logger.warn(`Slow API request to ${endpoint}`, { duration });
   }
@@ -568,7 +566,7 @@ liveResource<T>(resourceEndpoint: string, topic: string): Observable<T> {
       const wsUpdates = this.websocketService.subscribe<Partial<T>>(topic).pipe(
         scan((acc, update) => ({...acc, ...update}), initialData)
       );
-      
+
       // Combine initial REST data with WebSocket updates
       return merge(
         of(initialData),
@@ -602,10 +600,10 @@ publishEvent<T>(eventType: string, payload: T): Observable<void> {
  */
 subscribeToEvents(eventTypes: string[]): Observable<any> {
   const url = this.getFullUrl(`events/subscribe?types=${eventTypes.join(',')}`);
-  
+
   return new Observable(observer => {
     const eventSource = new EventSource(url);
-    
+
     eventSource.onmessage = event => {
       try {
         const data = JSON.parse(event.data);
@@ -614,11 +612,11 @@ subscribeToEvents(eventTypes: string[]): Observable<any> {
         observer.error(error);
       }
     };
-    
+
     eventSource.onerror = error => {
       observer.error(error);
     };
-    
+
     return () => {
       eventSource.close();
     };

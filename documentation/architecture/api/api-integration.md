@@ -30,16 +30,20 @@ The `ApiService` is the foundational service responsible for monitoring API heal
 
 **Properties:**
 
+```text
 | Property | Type | Description |
 |----------|------|-------------|
 | `isOffline$` | `Observable<boolean>` | Subscribe to monitor the API connectivity status |
+```
 
 **HTTP Context Tokens:**
 
+```text
 | Token | Description |
 |-------|-------------|
 | `BYPASS_RETRY_TOKEN` | Used to bypass the retry logic for specific requests |
 | `BYPASS_RETRY` | Preconfigured context that sets BYPASS_RETRY_TOKEN to true |
+```
 
 #### Usage Example
 
