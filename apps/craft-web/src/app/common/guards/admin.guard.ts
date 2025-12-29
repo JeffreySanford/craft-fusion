@@ -1,28 +1,23 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { AdminStateService } from '../services/admin-state.service';
-import { map } from 'rxjs/operators';
+import { AuthenticationService } from '../services/authentication.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminGuard implements CanActivate {
 
-  constructor(private adminState: AdminStateService, private router: Router) {}
+  constructor(private authService: AuthenticationService, private router: Router) {}
 
   canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> | boolean {
-    return this.adminState.isAdmin$.pipe(
-      map(isAdmin => {
-        if (isAdmin) {
-          return true;
-        } else {
-          this.router.navigate(['/home']);
-          return false;
-        }
-      })
-    );
+    state: RouterStateSnapshot): boolean {
+    // Since login always creates admin user, just check authentication
+    if (this.authService.isAuthenticated) {
+      return true;
+    } else {
+      this.router.navigate(['/home']);
+      return false;
+    }
   }
 }

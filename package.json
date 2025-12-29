@@ -7,7 +7,7 @@
     "start": "npx nx serve craft-web",
     "start:all": "npm run build:backend && concurrently \"npm run serve:nest\" \"npm run serve:go\" \"npx nx serve craft-web\"",
     "serve:nest": "cd dist/apps/craft-nest && node src/main.js",
-    "serve:go": "cd dist/apps/craft-go && (./main.exe || ./main)",
+    "serve:go": "cd dist/apps/craft-go && (main.exe || main)",
     "build": "npx nx build craft-web",
     "build:prod": "npx nx build craft-web --configuration=production",
     "build:backend": "npx nx build craft-nest && npx nx build craft-go",

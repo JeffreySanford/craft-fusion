@@ -3,10 +3,12 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError, timer, Subject } from 'rxjs';
 import { catchError, map, tap, timeout, delay, concatMap, switchMap, takeUntil, shareReplay, filter } from 'rxjs/operators';
+import { AdminStateService } from './admin-state.service';
+import { UserTrackingService } from './user-tracking.service';
+import { ApiService } from './api.service';
 import { SessionService } from './session.service';
 import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
-import { ApiService } from './api.service';
 import { User } from '../interfaces/user.interface';
 import { environment } from '../../../environments/environment';
 
@@ -43,9 +45,7 @@ export interface AuthState {
   lastSyncTime?: Date;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class AuthenticationService {
   // CONSTANTS
   private readonly TOKEN_KEY = 'auth_token';
@@ -89,6 +89,7 @@ export class AuthenticationService {
   );
   public readonly isAdmin$ = this.authState$.pipe(
     map(state => state.isAdmin),
+    tap(isAdmin => console.log('🔐 AuthService: isAdmin$ emitted:', isAdmin)),
     shareReplay(1)
   );
   
@@ -104,9 +105,12 @@ export class AuthenticationService {
     private router: Router,
     private sessionService: SessionService,
     private logger: LoggerService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private adminStateService: AdminStateService,
+    private userTrackingService: UserTrackingService
   ) {
     this.logger.registerService('AuthService');
+    console.log('🔐 AuthService: Constructor called');
     this.logger.info('Authentication Service initialized');
     this.initializeAuthentication();
   }
@@ -122,8 +126,15 @@ export class AuthenticationService {
    * Helper method to determine if a user has admin role based on roles array
    */
   private hasAdminRole(user: User | null): boolean {
-    if (!user) return false;
-    return Array.isArray(user.roles) && user.roles.includes('admin');
+    if (!user) {
+      console.log('hasAdminRole: No user provided');
+      return false;
+    }
+
+    const isAdmin = Array.isArray(user.roles) && user.roles.includes('admin');
+    console.log('hasAdminRole:', { username: user.username, roles: user.roles, isAdmin });
+
+    return isAdmin;
   }
 
   /**
@@ -141,59 +152,81 @@ export class AuthenticationService {
   }
 
   /**
-   * Initialize authentication state from stored token
+   * Initialize authentication state - check for existing valid tokens
    */
   public initializeAuthentication(): void {
-    this.logger.debug('Initializing authentication process');
-    
-    // Check for existing auth token
+    console.log('🔐 AuthService: initializeAuthentication called');
+    this.logger.debug('Initializing authentication - checking for existing tokens');
+
+    // Check for existing tokens
     const tokenInfo = this.getStoredTokenInfo();
-    
+    console.log('🔐 AuthService: Token info found:', {
+      hasToken: !!tokenInfo?.token,
+      hasRefreshToken: !!tokenInfo?.refreshToken,
+      expiresAt: tokenInfo?.expiresAt
+    });
+
     if (tokenInfo && tokenInfo.token) {
-      this.logger.debug('Found existing auth token, validating token integrity', {
-        tokenLength: tokenInfo.token.length,
-        tokenPrefix: tokenInfo.token.substring(0, 10) + '...',
-        expiresIn: tokenInfo.expiresAt ? Math.floor((tokenInfo.expiresAt - Date.now()) / 1000) + 's' : 'unknown'
-      });
-      
-      // Check if token is expired
-      if (tokenInfo.expiresAt && Date.now() >= tokenInfo.expiresAt) {
-        this.logger.debug('Token is expired, attempting to refresh');
-        this.refreshToken().subscribe({
-          error: () => {
-            this.logger.warn('Failed to refresh expired token, clearing auth state');
+      this.logger.debug('Found existing token, validating with API');
+
+      // Validate token with API and get user details
+      this.apiService.get<User>('auth/user')
+        .pipe(
+          timeout(this.AUTH_TIMEOUT),
+          catchError((error) => {
+            console.log('initializeAuthentication: Token validation failed', error);
+            this.logger.warn('Token validation failed, clearing auth state', {
+              error: error.message,
+              status: error.status
+            });
+
+            // Clear invalid tokens
             this.clearAuthState();
-            this.router.navigate(['/login']);
+            return throwError(() => error);
+          })
+        )
+        .subscribe({
+          next: (user) => {
+            console.log('initializeAuthentication: Token validation successful', {
+              username: user.username,
+              roles: user.roles,
+              isAdmin: this.hasAdminRole(user)
+            });
+
+            this.logger.info('Token validation successful, restoring user session', {
+              username: user.username,
+              isAdmin: this.hasAdminRole(user)
+            });
+
+            // Restore authentication state from API response
+            this.updateAuthState({
+              user,
+              isLoggedIn: true,
+              isAdmin: this.hasAdminRole(user),
+              isOffline: false,
+              lastSyncTime: new Date()
+            });
+
+            this.sessionService.setUserSession(user);
+
+            // Schedule token refresh if expiration exists
+            if (tokenInfo.expiresAt) {
+              this.scheduleTokenRefresh(tokenInfo.expiresAt);
+            }
+          },
+          error: () => {
+            console.log('initializeAuthentication: Token validation failed, clearing state');
+            // Token validation failed, user needs to login again
+            this.clearAuthState();
+            this.router.navigate(['/home']);
           }
         });
-        return;
-      }
-      
-      // Schedule token refresh before expiration
-      this.scheduleTokenRefresh(tokenInfo.expiresAt);
-      
-      // Attempt to validate token
-      this.sessionService.validateToken(tokenInfo.token).pipe(
-        catchError((error) => {
-          this.logger.warn('Token validation failed, clearing session', { 
-            error: error.message || 'Unknown error',
-            errorType: error.constructor.name
-          });
-          this.clearAuthState();
-          return of(false);
-        })
-      ).subscribe(isValid => {
-        this.logger.debug('Token validation completed', { isValid });
-        if (isValid) {
-          this.logger.info('Token validated successfully, fetching user details');
-          this.fetchUserDetails();
-        } else {
-          this.logger.warn('Token validation returned invalid, clearing authentication');
-          this.clearAuthState();
-        }
-      });
     } else {
-      this.logger.debug('No auth token found, user is not authenticated');
+      console.log('initializeAuthentication: No existing tokens found');
+      this.logger.debug('No existing tokens found, user not authenticated');
+      // No tokens, ensure clean state
+      this.clearAuthState();
+      this.router.navigate(['/home']);
     }
   }
 
@@ -220,6 +253,12 @@ export class AuthenticationService {
     // Development mode fallback for testing
     if (username === 'test' && password === 'test') {
       this.logger.debug('Using development mode login for test credentials');
+      return this.handleDevLogin(username);
+    }
+
+    // Development mode fallback for admin credentials
+    if (username === 'admin' && password === 'admin') {
+      this.logger.debug('Using development mode login for admin credentials');
       return this.handleDevLogin(username);
     }
 
@@ -309,12 +348,19 @@ export class AuthenticationService {
       this.refreshTokenTimeout = null;
     }
     
-    // Clear auth state and navigate to login
+    // Clear all authentication-related state
     this.clearAuthState();
     this.sessionService.clearUserSession();
-    this.router.navigate(['/login']);
     
-    this.logger.debug('User logout completed, authentication state reset');
+    // Clear admin state
+    this.adminStateService.setAdminStatus(false);
+    
+    // Clear user tracking state
+    this.userTrackingService.setCurrentUser(null);
+    
+    this.router.navigate(['/home']);
+    
+    this.logger.debug('User logout completed, all authentication and administrative state reset');
   }
 
   /**
@@ -434,10 +480,21 @@ export class AuthenticationService {
    * Update the authentication state
    */
   private updateAuthState(state: Partial<AuthState>): void {
+    const oldAdminState = this.authState.value.isAdmin;
+    const oldLoggedInState = this.authState.value.isLoggedIn;
+    console.log('🔐 AuthService: updateAuthState called with:', state);
     this.authState.next({
       ...this.authState.value,
       ...state
     });
+    
+    // Log state changes
+    if (state.isAdmin !== undefined && state.isAdmin !== oldAdminState) {
+      console.log('🔐 AuthService: isAdmin changed from', oldAdminState, 'to', state.isAdmin);
+    }
+    if (state.isLoggedIn !== undefined && state.isLoggedIn !== oldLoggedInState) {
+      console.log('🔐 AuthService: isLoggedIn changed from', oldLoggedInState, 'to', state.isLoggedIn);
+    }
     
     // Update offline mode flag
     if (state.isOffline !== undefined) {
@@ -449,13 +506,19 @@ export class AuthenticationService {
    * Handle successful login
    */
   private handleSuccessfulLogin(response: AuthResponse, expiresAt?: number): void {
+    console.log('handleSuccessfulLogin: Processing login response', {
+      username: response.user?.username,
+      roles: response.user?.roles,
+      hasToken: !!response.token
+    });
+
     // Store token information
     this.storeTokenInfo({
       token: response.token,
       refreshToken: response.refreshToken,
       expiresAt: expiresAt
     });
-    
+
     // Update auth state
     this.updateAuthState({
       user: response.user,
@@ -464,10 +527,10 @@ export class AuthenticationService {
       isOffline: false,
       lastSyncTime: new Date()
     });
-    
+
     this.sessionService.setUserSession(response.user);
-    
-    this.logger.info('Login process completed successfully', { 
+
+    this.logger.info('Login process completed successfully', {
       username: response.user.username,
       hasRoles: Array.isArray(response.user.roles),
       permissions: response.user.permissions?.join(',') || 'none specified',
@@ -521,32 +584,35 @@ export class AuthenticationService {
    */
   private handleDevLogin(username: string): Observable<AuthResponse> {
     this.logger.debug('Using development mode login');
+    const isAdmin = username === 'admin';
     const mockUser: User = { 
       id: 1, 
       username: username, 
-      name: 'Test User', 
-      firstName: 'Test',
+      name: isAdmin ? 'Admin User' : 'Test User', 
+      firstName: isAdmin ? 'Admin' : 'Test',
       lastName: 'User',
-      email: 'test@example.com',
-      roles: ['admin'],
-      permissions: ['user:read', 'user:write', 'admin:access'],
+      email: isAdmin ? 'admin@example.com' : 'test@example.com',
+      roles: isAdmin ? ['admin'] : ['user'],
+      permissions: isAdmin 
+        ? ['user:read', 'user:write', 'admin:access'] 
+        : ['user:read'],
       password: 'test'
     };
     
-    // Generate a mock token that expires in 1 hour
-    const expiresAt = Date.now() + (3600 * 1000);
+    // Generate a mock token that expires in 15 minutes (more secure)
+    const expiresAt = Date.now() + (900 * 1000);
     const mockResponse: AuthResponse = {
       success: true,
       token: 'mock-token-for-development-only-' + Date.now(),
       refreshToken: 'mock-refresh-token-' + Date.now(),
       user: mockUser,
-      expiresIn: 3600
+      expiresIn: 900
     };
     
     this.handleSuccessfulLogin(mockResponse, expiresAt);
     
     this.notificationService.showInfo(
-      'Logged in using development mode credentials',
+      `Logged in using development mode credentials as ${isAdmin ? 'admin' : 'regular user'}`,
       'Development Mode'
     );
     
@@ -614,13 +680,15 @@ export class AuthenticationService {
    * Reset authentication state to default values
    */
   private clearAuthState(): void {
-    // Clear stored tokens
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    localStorage.removeItem(this.TOKEN_EXPIRES_KEY);
+    console.log('AuthService: Clearing authentication state');
     
-    // Reset auth state
-    this.updateAuthState({
+    // Clear stored tokens from sessionStorage
+    sessionStorage.removeItem(this.TOKEN_KEY);
+    sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    sessionStorage.removeItem(this.TOKEN_EXPIRES_KEY);
+    
+    // Reset auth state to initial values
+    this.authState.next({
       user: {
         id: 0,
         username: '',
@@ -629,41 +697,61 @@ export class AuthenticationService {
         lastName: '',
         email: '',
         password: '',
-        roles: []
+        roles: [],
+        role: ''
       },
       isLoggedIn: false,
-      isAdmin: false
+      isAdmin: false,
+      isOffline: this._isOfflineMode
     });
+    
+    // Clear any pending token refresh
+    if (this.refreshTokenTimeout) {
+      clearTimeout(this.refreshTokenTimeout);
+      this.refreshTokenTimeout = null;
+    }
+    
+    // Close WebSocket connection
+    this.closeAuthSocket();
+    
+    this.logger.debug('Authentication state cleared');
   }
 
   /**
-   * Store token information in localStorage
+   * Store token information in sessionStorage (more secure than localStorage)
    */
   private storeTokenInfo(tokenInfo: TokenInfo): void {
-    localStorage.setItem(this.TOKEN_KEY, tokenInfo.token);
+    sessionStorage.setItem(this.TOKEN_KEY, tokenInfo.token);
     
     if (tokenInfo.refreshToken) {
-      localStorage.setItem(this.REFRESH_TOKEN_KEY, tokenInfo.refreshToken);
+      sessionStorage.setItem(this.REFRESH_TOKEN_KEY, tokenInfo.refreshToken);
     }
     
     if (tokenInfo.expiresAt) {
-      localStorage.setItem(this.TOKEN_EXPIRES_KEY, tokenInfo.expiresAt.toString());
+      sessionStorage.setItem(this.TOKEN_EXPIRES_KEY, tokenInfo.expiresAt.toString());
     }
   }
 
   /**
-   * Retrieve stored token information from localStorage
+   * Retrieve stored token information from sessionStorage
    */
   private getStoredTokenInfo(): TokenInfo | null {
-    const token = localStorage.getItem(this.TOKEN_KEY);
+    const token = sessionStorage.getItem(this.TOKEN_KEY);
     
     if (!token) {
       return null;
     }
-    
-    const refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
-    const expiresAtStr = localStorage.getItem(this.TOKEN_EXPIRES_KEY);
+
+    const refreshToken = sessionStorage.getItem(this.REFRESH_TOKEN_KEY);
+    const expiresAtStr = sessionStorage.getItem(this.TOKEN_EXPIRES_KEY);
     const expiresAt = expiresAtStr ? parseInt(expiresAtStr, 10) : undefined;
+    
+    // Check if token has expired
+    if (expiresAt && Date.now() > expiresAt) {
+      console.log('Stored token has expired, clearing authentication state');
+      this.clearAuthState();
+      return null;
+    }
     
     return {
       token,
@@ -673,10 +761,26 @@ export class AuthenticationService {
   }
 
   /**
-   * Get the authentication token
+   * Get the authentication token from sessionStorage
    */
   public getAuthToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    const token = sessionStorage.getItem(this.TOKEN_KEY);
+    
+    // Check if token exists and hasn't expired
+    if (token) {
+      const expiresAtStr = sessionStorage.getItem(this.TOKEN_EXPIRES_KEY);
+      const expiresAt = expiresAtStr ? parseInt(expiresAtStr, 10) : undefined;
+      
+      if (expiresAt && Date.now() > expiresAt) {
+        console.log('Token has expired, clearing authentication state');
+        this.clearAuthState();
+        return null;
+      }
+      
+      return token;
+    }
+    
+    return null;
   }
 
   /**

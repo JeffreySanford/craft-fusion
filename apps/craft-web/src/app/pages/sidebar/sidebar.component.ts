@@ -1,4 +1,5 @@
-import { Component, HostListener, EventEmitter, Output, Input, OnInit, ViewChild, ChangeDetectorRef, Renderer2, ElementRef } from '@angular/core';
+import { Component, HostListener, EventEmitter, Output, Input, OnInit, ViewChild, ChangeDetectorRef, Renderer2, ElementRef, ChangeDetectionStrategy } from '@angular/core';
+import { Observable } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer } from '@angular/material/sidenav';
@@ -6,6 +7,7 @@ import { MenuItem, MenuGroup } from './sidebar.types'
 import { Router } from '@angular/router';
 import { SidebarStateService } from '../../common/services/sidebar-state.service';
 import { AdminStateService } from '../../common/services/admin-state.service';
+import { AuthenticationService } from '../../common/services/authentication.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -22,7 +24,8 @@ import { AdminStateService } from '../../common/services/admin-state.service';
   host: {
     '[class.collapsed]': 'isCollapsed'
   },
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class SidebarComponent implements OnInit {
@@ -32,6 +35,9 @@ export class SidebarComponent implements OnInit {
   @ViewChild('drawer') drawer!: MatDrawer;
   isMobile = false;
   isAdmin = false; // For demonstration, set or derive from user state
+
+  // Observable for admin state - initialized in constructor
+  isAdmin$!: Observable<boolean>;
 
   menuGroups: MenuGroup[] = [
     {
@@ -52,37 +58,50 @@ export class SidebarComponent implements OnInit {
     private router: Router,
     private sidebarStateService: SidebarStateService,
     private adminStateService: AdminStateService,
+    private authService: AuthenticationService,
     private cdr: ChangeDetectorRef,
     private renderer: Renderer2,
     private el: ElementRef
-  ) {}
+  ) {
+    console.log('🔧 Sidebar: Constructor called');
+    // Initialize the admin observable in constructor
+    this.isAdmin$ = this.authService.isAdmin$;
+  }
 
   ngOnInit() {
+    console.log('🔧 Sidebar: ngOnInit called');
     this.breakpointObserver.observe([Breakpoints.Handset])
       .subscribe(result => {
         this.isMobile = result.matches;
       });
 
-    this.adminStateService.isAdmin$.subscribe(isAdmin => {
+    // Subscribe to admin state changes for menu updates
+    console.log('🔧 Sidebar: Setting up admin state subscription');
+    this.isAdmin$.subscribe(isAdmin => {
+      console.log('🔧 Sidebar: Admin state changed to:', isAdmin);
       this.isAdmin = isAdmin;
       if (isAdmin) {
         // Check if the admin item already exists to avoid duplicates
         const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
         if (adminItemIndex === -1) {
-          this.menuGroups[0].items.push({ icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false });
-          this.menuGroups[0].items.push({ icon: 'family_restroom', label: 'Family', routerLink: '/family', active: false });
-          this.menuGroups[0].items.push({ icon: 'chat_bubble', label: 'Chat', routerLink: '/chat', active: false });
-          this.menuGroups[0].items.push({ icon: 'book', label: 'Book', routerLink: '/book', active: false });
-          this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
+          console.log('🔧 Sidebar: Adding admin menu items');
+          this.menuGroups[0].items.push(
+            { icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false },
+            { icon: 'family_restroom', label: 'Family', routerLink: '/family', active: false },
+            { icon: 'chat_bubble', label: 'Chat', routerLink: '/chat', active: false },
+            { icon: 'book', label: 'Book', routerLink: '/book', active: false }
+          );
         }
       } else {
-        // Remove the admin item if it exists
-        const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
-        if (adminItemIndex !== -1) {
-          this.menuGroups[0].items.splice(adminItemIndex, 1);
-          this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
-        }
+        // Remove all admin items if they exist
+        console.log('🔧 Sidebar: Removing admin menu items');
+        this.menuGroups[0].items = this.menuGroups[0].items.filter(item => 
+          !['Admin', 'Family', 'Chat', 'Book'].includes(item.label)
+        );
       }
+      // Create new array reference to trigger change detection
+      this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
+      console.log('🔧 Sidebar: Menu items updated, length:', this.menuItems.length);
       this.cdr.detectChanges();
     });
 

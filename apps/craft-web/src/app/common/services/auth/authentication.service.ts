@@ -104,7 +104,7 @@ export class AuthenticationService {
     this.isAuthenticatedSubject.next(false);
     this.isAdminSubject.next(false);
     this.adminStateService.setAdminStatus(false); // Update AdminStateService on logout
-    this.router.navigate(['/login']);
+    this.router.navigate(['/home']);
   }
 
   //TODO: Implement token validation logic

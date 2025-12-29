@@ -63,11 +63,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       // Replace any existing console.log with logger calls
       this.logger.debug('Application started', { timestamp: new Date().toISOString() });
 
-      // Update to use authService instead of authFacade
-      this.authService.isAdmin$.subscribe(isAdmin => {
-        this.adminStateService.setAdminStatus(isAdmin);
-      });
-
       this.userTrackingService.getCurrentUser().subscribe(
         user => {
           if (user?.username) {
@@ -104,6 +99,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'));
       }, 100);
+    });
+
+    // Subscribe to admin state changes
+    this.authService.isAdmin$.subscribe(isAdmin => {
+      this.adminStateService.setAdminStatus(isAdmin);
     });
 
     // Console log for user interaction - debugging purposes
