@@ -1,0 +1,81 @@
+{
+  "profiles": [
+    {
+      "description": "Baseline security (recommended for most)",
+      "fail": 5,
+      "id": "xccdf_org.ssgproject.content_profile_standard",
+      "last_scan": "2025-05-27T09:04:00-05:00",
+      "name": "standard",
+      "notapplicable": 52,
+      "pass": 18,
+      "total": 994,
+      "updated": "2025-05-27T09:04:00-05:00"
+    },
+    {
+      "description": "Protection Profile for General Purpose Operating Systems",
+      "fail": 22,
+      "id": "xccdf_org.ssgproject.content_profile_ospp",
+      "last_scan": "2025-05-27T09:04:00-05:00",
+      "name": "ospp",
+      "notapplicable": 176,
+      "pass": 8,
+      "total": 994,
+      "updated": "2025-05-27T09:04:00-05:00"
+    },
+    {
+      "description": "Payment Card Industry Data Security Standard",
+      "fail": 15,
+      "id": "xccdf_org.ssgproject.content_profile_pci-dss",
+      "last_scan": "2025-05-27T09:04:00-05:00",
+      "name": "pci-dss",
+      "notapplicable": 86,
+      "pass": 18,
+      "total": 994,
+      "updated": "2025-05-27T09:04:00-05:00"
+    },
+    {
+      "description": "Custom User Security Profile (Fedora-specific)",
+      "fail": 18,
+      "id": "xccdf_org.ssgproject.content_profile_cusp_fedora",
+      "last_scan": "2025-05-27T09:04:00-05:00",
+      "name": "cusp",
+      "notapplicable": 184,
+      "pass": 65,
+      "total": 994,
+      "updated": "2025-05-27T09:04:00-05:00"
+    },
+    {
+      "description": "FedRAMP Rev5 Medium/High (pre-release, forward compatible)",
+      "fail": 0,
+      "id": "xccdf_org.ssgproject.content_profile_PLACEHOLDER_medium_high",
+      "last_scan": "2025-05-27T09:04:00-05:00",
+      "name": "medium-high",
+      "notapplicable": 0,
+      "pass": 0,
+      "total": 0,
+      "updated": "2025-05-27T09:04:00-05:00"
+    },
+    {
+      "description": "FedRAMP Rev5, new standard - not yet officially defined (2025)",
+      "fail": 0,
+      "id": "xccdf_org.ssgproject.content_profile_PLACEHOLDER_rev5",
+      "last_scan": "2025-05-27T09:04:00-05:00",
+      "name": "rev5",
+      "notapplicable": 0,
+      "pass": 0,
+      "total": 0,
+      "updated": "2025-05-27T09:04:00-05:00"
+    },
+    {
+      "description": "TrueNorth custom OSCAL profile (exceeds all other standards)",
+      "fail": 0,
+      "id": "oscal_truenorth_profile",
+      "last_scan": "2025-05-27T09:04:00-05:00",
+      "name": "truenorth",
+      "notapplicable": 0,
+      "pass": 0,
+      "total": 0,
+      "updated": "2025-05-27T09:04:00-05:00"
+    }
+  ]
+}

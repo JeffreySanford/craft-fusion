@@ -1,0 +1,147 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+tmp
+/out-tsc
+/dist
+
+# dependencies
+node_modules
+
+# Local development
+.nest.pid
+.go.pid
+logs/
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
+
+.nx/cache
+.nx/workspace-data
+
+.angular
+
+# Environment files
+**/environments/environment.*.ts
+!**/environments/environment.ts
+!**/environments/environment.prod.ts
+
+# Keys and certificates
+*.pem
+*.key
+*.crt
+*.csr
+*.cert
+**/secrets/*
+apps/craft-nest/src/cert/* # Explicitly ignore certs in source
+
+# Local env files
+.env
+.env.local
+.env.*.local
+
+# Distribution directories
+/dist
+/dist-*
+/out-tsc
+/out
+/build
+/artifacts
+**/dist/
+**/dist-*/ 
+**/.dist/
+**/.out/
+**/.compiled/
+**/.build/
+**/build/
+
+# Angular output directories
+/bazel-out
+/browser
+/server
+/.angular/cache
+.sass-cache/
+
+# Temporary folders that might contain build artifacts
+/tmp
+/temp
+/target
+/.tmp
+/**/.tmp/
+
+# Next.js
+/.next/
+/out/
+
+# NestJS
+/dist
+/node_modules
+
+# Log files
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Databases
+*.sqlite
+*.sqlite3
+database.sqlite # Ignore specific sqlite db file
+
+.cursor\rules\nx-rules.mdc
+.github\instructions\nx.instructions.md
+
+.cursor\rules\nx-rules.mdc
+.github\instructions\nx.instructions.md
+
+# Archived development scripts
+scripts/archive/
+
+# Ignore local generated binaries and reports
+*.exe
+trufflehog-report.json
+.cursor/
+
+# Local cache & editor temp files
+/.cache/
+/.parcel-cache/
+/.eslintcache
+**/.vscode-test/
+
+# Ensure nx and workspace caches are ignored
+.nx/cache/
+.nx/workspace-data/
+
+# Ensure build artifacts are not tracked
+/dist/
+/dist/**
+apps/**/dist/

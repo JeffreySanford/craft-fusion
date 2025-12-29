@@ -1,0 +1,38 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2022",
+    "module": "esnext",
+    "lib": ["es2022", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@craft-fusion/craft-library": ["libs/craft-library/src/index.ts"],
+      "@craft-fusion/shared/data": ["libs/shared/data/src/index.ts"],
+      "@craft-fusion/shared/ui": ["libs/shared/ui/src/index.ts"],
+      "@craft-fusion/utils": ["libs/utils/src/index.ts"],
+      "@craft-web/auth/*": ["apps/craft-web/src/app/common/auth/*"],
+      "@craft-web/components/*": ["apps/craft-web/src/app/common/components/*"],
+      "@craft-web/guards/*": ["apps/craft-web/src/app/common/guards/*"],
+      "@craft-web/interceptors/*": [
+        "apps/craft-web/src/app/common/interceptors/*"
+      ],
+      "@craft-web/models/*": ["apps/craft-web/src/app/common/models/*"],
+      "@craft-web/services/*": ["apps/craft-web/src/app/common/services/*"]
+    },
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "types": ["node", "jest"]
+  },
+  "exclude": ["node_modules", "tmp"]
+}
