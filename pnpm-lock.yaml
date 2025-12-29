@@ -111,7 +111,7 @@ importers:
         specifier: ^1.4.0
         version: 1.7.1(@types/node@18.19.130)
       axios:
-        specifier: ^1.7.9
+        specifier: ^1.13.2
         version: 1.13.2
       chalk:
         specifier: ^5.4.1
