@@ -1,0 +1,94 @@
+@use 'sass:map';
+
+$table-theme: (
+  dark-blue: #00008b,
+  primary-white: #ffffff
+);
+
+.table-container {
+  padding: 0.55em;
+  width: 99%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+  background-color: map.get($table-theme, dark-blue);
+}
+
+.selectors {
+  display: flex;
+  flex-direction: row;
+  align-items: space-between;
+  justify-content: space-between;
+  margin-bottom: 1em;
+  width: 100%;
+}
+
+.record-collection {
+  height: 14em;
+  margin-bottom: 1em;
+}
+
+.report {
+  display: inline-block;
+  width: 100%;
+  font-size: 1.6em;
+  color: black;
+  margin-bottom: 1em;
+}
+
+.table-wrapper {
+  display: block;
+  max-height: 29em;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-grow: 1;
+
+  th {
+    position: sticky;
+    top: 0;
+    background-color: map.get($table-theme, dark-blue);
+    color: map.get($table-theme, primary-white);
+    font-size: 1.2em;
+    text-align: left;
+    z-index: 1;
+  }
+
+  th:last-child, td:last-child {
+    text-align: right;
+  }
+
+  tbody {
+    display: block;
+    max-height: 29em;
+    overflow-y: auto;
+  }
+
+  thead, tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+}
+
+.mat-paginator {
+  background-color: map.get($table-theme, dark-blue);
+  color: map.get($table-theme, primary-white);
+  font-size: 1em;
+  text-align: left;
+  z-index: 1;
+}
+
+@keyframes flyIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.flyIn {
+  animation: flyIn 1s ease-in-out;
+}

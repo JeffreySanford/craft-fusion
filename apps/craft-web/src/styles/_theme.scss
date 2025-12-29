@@ -1,0 +1,12 @@
+@use '@angular/material' as mat;
+@use '@angular/material/prebuilt-themes/indigo-pink.css';
+
+$navy-palette: mat.define-palette(mat.$indigo-palette);
+$theme: mat.define-light-theme((
+  color: (
+    primary: $navy-palette,
+    accent: mat.define-palette(mat.$pink-palette)
+  )
+));
+
+@include mat.all-component-themes($theme);
