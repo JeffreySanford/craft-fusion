@@ -112,14 +112,20 @@ export class AuthenticationService {
     this.logger.registerService('AuthService');
     console.log('🔐 AuthService: Constructor called');
     this.logger.info('Authentication Service initialized');
-    this.initializeAuthentication();
+
+    // For development, don't auto-restore admin sessions on app restart
+    // This prevents users from being automatically logged in as admin
+    this.clearAuthState();
+
+    // Comment out automatic authentication initialization
+    // this.initializeAuthentication();
   }
 
   /**
-   * Returns current authentication state
+   * Manually initialize authentication (for development/testing)
    */
-  public get isAuthenticated(): boolean {
-    return this.authState.value.isLoggedIn;
+  public manualInitialize(): void {
+    this.initializeAuthentication();
   }
 
   /**
@@ -583,40 +589,63 @@ export class AuthenticationService {
    * Development mode login for testing
    */
   private handleDevLogin(username: string): Observable<AuthResponse> {
-    this.logger.debug('Using development mode login');
-    const isAdmin = username === 'admin';
-    const mockUser: User = { 
-      id: 1, 
-      username: username, 
-      name: isAdmin ? 'Admin User' : 'Test User', 
-      firstName: isAdmin ? 'Admin' : 'Test',
-      lastName: 'User',
-      email: isAdmin ? 'admin@example.com' : 'test@example.com',
-      roles: isAdmin ? ['admin'] : ['user'],
-      permissions: isAdmin 
-        ? ['user:read', 'user:write', 'admin:access'] 
-        : ['user:read'],
-      password: 'test'
-    };
-    
-    // Generate a mock token that expires in 15 minutes (more secure)
-    const expiresAt = Date.now() + (900 * 1000);
-    const mockResponse: AuthResponse = {
-      success: true,
-      token: 'mock-token-for-development-only-' + Date.now(),
-      refreshToken: 'mock-refresh-token-' + Date.now(),
-      user: mockUser,
-      expiresIn: 900
-    };
-    
-    this.handleSuccessfulLogin(mockResponse, expiresAt);
-    
-    this.notificationService.showInfo(
-      `Logged in using development mode credentials as ${isAdmin ? 'admin' : 'regular user'}`,
-      'Development Mode'
-    );
-    
-    return of(mockResponse);
+    this.logger.debug('Using development mode login - attempting API call first');
+
+    // First try to make a real API call to get user data
+    const loginRequest: LoginRequest = { username, password: 'test' };
+
+    return this.apiService.authRequest<AuthResponse>('POST', 'auth/login', loginRequest)
+      .pipe(
+        tap((response: AuthResponse) => {
+          if (response && response.token) {
+            this.logger.info('Development mode: Real API login successful', {
+              username: response.user?.username,
+              isAdmin: this.hasAdminRole(response.user)
+            });
+          }
+        }),
+        catchError((error) => {
+          this.logger.debug('Development mode: API call failed, using mock data', {
+            username,
+            error: error.message
+          });
+
+          // Fall back to mock data if API call fails
+          const isAdmin = username === 'admin';
+          const mockUser: User = {
+            id: 1,
+            username: username,
+            name: isAdmin ? 'Admin User' : 'Test User',
+            firstName: isAdmin ? 'Admin' : 'Test',
+            lastName: 'User',
+            email: isAdmin ? 'admin@example.com' : 'test@example.com',
+            roles: isAdmin ? ['admin'] : ['user'],
+            permissions: isAdmin
+              ? ['user:read', 'user:write', 'admin:access']
+              : ['user:read'],
+            password: 'test'
+          };
+
+          // Generate a mock token that expires in 15 minutes
+          const expiresAt = Date.now() + (900 * 1000);
+          const mockResponse: AuthResponse = {
+            success: true,
+            token: 'mock-token-for-development-only-' + Date.now(),
+            refreshToken: 'mock-refresh-token-' + Date.now(),
+            user: mockUser,
+            expiresIn: 900
+          };
+
+          this.handleSuccessfulLogin(mockResponse, expiresAt);
+
+          this.notificationService.showInfo(
+            `Logged in using development mode credentials as ${isAdmin ? 'admin' : 'regular user'}`,
+            'Development Mode (Offline)'
+          );
+
+          return of(mockResponse);
+        })
+      );
   }
 
   /**

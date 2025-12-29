@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject, ElementRef, ViewChild } from '@angular/core';
 import { Observable, Subscription, interval, of } from 'rxjs';
+import { Router } from '@angular/router';
 import Chart, { Color } from 'chart.js/auto';
 import { LoggerService, ServiceCallMetric } from '../../common/services/logger.service';
 import { MatPaginator } from '@angular/material/paginator';
@@ -222,7 +223,8 @@ export class AdminComponent implements OnInit {
     private userActivity: UserActivityService,
     private userState: UserStateService,
     private apiLogger: ApiLoggerService,
-    private socketClient: SocketClientService
+    private socketClient: SocketClientService,
+    private router: Router
   ) {
     // Subscribe to real-time metrics
     this.socketClient.on<any>('metrics:update').subscribe(metric => {
@@ -236,6 +238,15 @@ export class AdminComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Check admin permissions before initializing
+    this.authService.isAdmin$.subscribe(isAdmin => {
+      if (!isAdmin) {
+        this.logger.warn('Admin component: User does not have admin permissions, redirecting');
+        this.router.navigate(['/home']);
+        return;
+      }
+    });
+
     this.startMetricsMonitoring();
     this.startFrameRateMonitoring();
     this.monitorServiceCalls();
