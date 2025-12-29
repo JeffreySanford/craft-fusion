@@ -67,7 +67,7 @@
     "highlight.js": "^11.11.1",
     "intersection-observer": "^0.12.2",
     "jsdom": "^26.0.0",
-    "koa": "^3.0.0",
+    "koa": "^3.0.3",
     "mammoth": "^1.9.0",
     "mapbox-gl": "^3.9.2",
     "markdown-it": "^14.1.0",
