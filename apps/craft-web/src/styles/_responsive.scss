@@ -1,0 +1,264 @@
+@use 'variables' as vars;
+@use 'sass:map';
+
+// Breakpoint mixins for consistent responsive behavior
+// Usage: @include respond-to(md) { ... }
+@mixin respond-to($breakpoint) {
+  $value: map.get(vars.$breakpoints, $breakpoint);
+  
+  @if $value {
+    @media (min-width: $value) {
+      @content;
+    }
+  } @else {
+    @error "Unknown breakpoint: #{$breakpoint}. Available breakpoints: #{map.keys(vars.$breakpoints)}";
+  }
+}
+
+// Mobile-first approach with max-width queries
+// Usage: @include respond-below(md) { ... }
+@mixin respond-below($breakpoint) {
+  $value: map.get(vars.$breakpoints, $breakpoint);
+  
+  @if $value {
+    @media (max-width: ($value - 1px)) {
+      @content;
+    }
+  } @else {
+    @error "Unknown breakpoint: #{$breakpoint}. Available breakpoints: #{map.keys(vars.$breakpoints)}";
+  }
+}
+
+// Between two breakpoints
+// Usage: @include respond-between(sm, md) { ... }
+@mixin respond-between($min-breakpoint, $max-breakpoint) {
+  $min-value: map.get(vars.$breakpoints, $min-breakpoint);
+  $max-value: map.get(vars.$breakpoints, $max-breakpoint);
+  
+  @if $min-value and $max-value {
+    @media (min-width: $min-value) and (max-width: ($max-value - 1px)) {
+      @content;
+    }
+  } @else {
+    @error "Unknown breakpoint: #{$min-breakpoint} or #{$max-breakpoint}";
+  }
+}
+
+// Orientation-based queries
+@mixin respond-to-orientation($orientation) {
+  @media (orientation: $orientation) {
+    @content;
+  }
+}
+
+// Common responsive patterns
+@mixin responsive-container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1em;
+  padding-right: 1em;
+  
+  @include respond-to(sm) {
+    max-width: map.get(vars.$container-max-widths, sm);
+  }
+  
+  @include respond-to(md) {
+    max-width: map.get(vars.$container-max-widths, md);
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+  }
+  
+  @include respond-to(lg) {
+    max-width: map.get(vars.$container-max-widths, lg);
+  }
+  
+  @include respond-to(xl) {
+    max-width: map.get(vars.$container-max-widths, xl);
+  }
+  
+  @include respond-to(xxl) {
+    max-width: map.get(vars.$container-max-widths, xxl);
+  }
+}
+
+// Responsive flexbox grid
+@mixin responsive-grid($columns: 12, $gap: 1em) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: $gap;
+  
+  @include respond-below(md) {
+    grid-template-columns: repeat(6, 1fr);
+  }
+  
+  @include respond-below(sm) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+// Responsive typography scaling
+@mixin responsive-typography {
+  // Title scaling
+  h1, .h1 {
+    font-size: 2em; // 32px at base 16px
+    
+    @include respond-to(md) {
+      font-size: 2.5em; // 40px
+    }
+    
+    @include respond-to(lg) {
+      font-size: 3em; // 48px
+    }
+  }
+  
+  h2, .h2 {
+    font-size: 1.5em; // 24px
+    
+    @include respond-to(md) {
+      font-size: 1.75em; // 28px
+    }
+    
+    @include respond-to(lg) {
+      font-size: 2em; // 32px
+    }
+  }
+  
+  // Continue for other headings...
+}
+
+// Responsive spacing
+@mixin responsive-spacing($property, $size-name) {
+  $size: map.get(vars.$spacing, $size-name);
+  
+  @if $size {
+    #{$property}: $size;
+    
+    @include respond-below(md) {
+      #{$property}: $size * 0.75;
+    }
+    
+    @include respond-below(sm) {
+      #{$property}: $size * 0.5;
+    }
+  } @else {
+    @error "Unknown spacing size: #{$size-name}";
+  }
+}
+
+// Responsive logo containers - Extracted from footer component
+@mixin responsive-logo-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  
+  img {
+    height: 24px;
+    width: auto;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+    margin: 4px;
+    flex: 0 0 auto;
+    
+    &:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+  }
+  
+  @include respond-below(md) {
+    justify-content: center;
+    
+    img {
+      height: 20px;
+      margin: 3px;
+    }
+  }
+  
+  @include respond-below(sm) {
+    img {
+      height: 18px;
+      margin: 2px;
+    }
+  }
+}
+
+// Responsive cards layout
+@mixin responsive-card-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5em;
+  
+  @include respond-below(md) {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1em;
+  }
+  
+  @include respond-below(sm) {
+    grid-template-columns: 1fr;
+    gap: 0.75em;
+  }
+}
+
+// Responsive two-column layout
+@mixin responsive-two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2em;
+  
+  @include respond-below(md) {
+    grid-template-columns: 1fr;
+    gap: 1.5em;
+  }
+}
+
+// Responsive header/footer/sidebar alignment
+@mixin responsive-app-shell {
+  // Header positioning
+  .header-card {
+    position: fixed;
+    top: 0.5em;
+    left: 0.5em;
+    right: 0.5em;
+    z-index: map.get(vars.$z-layers, header);
+    
+    @include respond-below(sm) {
+      top: 0.25em;
+      left: 0.25em;
+      right: 0.25em;
+    }
+  }
+  
+  // Footer positioning
+  .footer-container {
+    position: fixed;
+    bottom: 0.5em;
+    left: 0.5em;
+    right: 0.5em;
+    z-index: map.get(vars.$z-layers, footer);
+    
+    @include respond-below(sm) {
+      bottom: 0.25em;
+      left: 0.25em;
+      right: 0.25em;
+    }
+  }
+  
+  // Sidebar and main container positioning
+  .layout-container {
+    padding: 0 0.5em;
+    box-sizing: border-box;
+    
+    .sidebar, .main-stage {
+      margin-bottom: 0.5em; /* Space above footer */
+    }
+    
+    @include respond-below(sm) {
+      padding: 0 0.25em;
+      
+      .sidebar, .main-stage {
+        margin-bottom: 0.25em;
+      }
+    }
+  }
+}

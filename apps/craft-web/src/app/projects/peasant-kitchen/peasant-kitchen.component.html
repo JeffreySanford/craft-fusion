@@ -1,7 +1,26 @@
-<div class="landing">
-  <div class="header">
-    <img class="site-logo" src="../../../../assets/images/compressed/kitchen-table-site-logo.png" alt="Kitchen Table Logo" />
-    <img class="grape-masthead" src="../../../assets/images/compressed/grape-masthead.jpg" alt="Grape Masthead" />
+<!-- Using full height container structure -->
+
+<div class="container-wrapper">
+  <div class="container">
+    <div class="masthead">
+      <div class="site-logo-box">
+        <img class="site-logo" src="../../../assets/images/compressed/kitchen-table-site-logo.png" alt="Kitchen Table Logo" />
+      </div>
+      <h1 class="site-title">Peasant Kitchen</h1>
+      <div class="grape-masthead-container">
+        <img class="grape-masthead" src="../../../assets/images/compressed/grape-masthead.png" alt="Grape Masthead" />
+      </div>
+      <button *ngIf="showBackButton" class="top-back-button" mat-raised-button color="warn" (click)="goBackToRecipes()">
+        <mat-icon>arrow_back</mat-icon>
+        Back
+      </button>
+    </div>
+    <div class="content patriotic-theme">
+      <div class="router-outlet-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
   </div>
-  <router-outlet></router-outlet>
 </div>
+
+

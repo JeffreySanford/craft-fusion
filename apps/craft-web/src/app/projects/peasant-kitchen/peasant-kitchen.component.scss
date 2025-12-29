@@ -1,55 +1,373 @@
-.landing {
+.container {
   position: relative;
-  background-color: rgba(255,255,255, 0.6);
   width: 100%;
-  height: 100%;
+  height: auto; /* Changed from fixed height to auto */
   padding: 1em;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   box-sizing: border-box;
-  overflow: visible;
+  overflow: visible; /* Allow content to overflow */
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,240,255,0.85) 100%),
+              url('../../../assets/patterns/patriotic-pattern.svg');
+  background-size: auto; /* SVG pattern will repeat naturally */
+  background-blend-mode: overlay;
+  font-family: var(--recipe-body-font, 'Crimson Text', 'Georgia', serif);
+  animation: fadeIn 1s ease-in-out, slideDown 1s ease-out;
 
-  .site-logo {
+  &:before {
+    content: '';
     position: absolute;
-    top: 2em;
-    left: 2em;
-    height: 10em;
-    width: auto;
-    z-index: 5;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('../../../assets/patterns/patriotic-pattern.svg');
+    background-size: auto; /* SVG pattern will repeat naturally */
+    z-index: -2; /* Move background pattern further back */
+    opacity: 0.7;
   }
 
-  .grape-masthead {
-    height: 30em;
-    width: 30em;
+  /* Add animated background pattern */
+  &:after {
+    content: '';
     position: absolute;
-    right: -2em;
-    top: -1em;
-    overflow: visible;
-    z-index: 100;
-  }
-}
-
-@media (max-width: 900px) {
-  .landing {
-    width: 90vw;
-    height: 80vh;
-    padding: 1em;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../../../assets/patterns/patriotic-pattern.svg');
+    background-size: auto;
+    z-index: -3;
+    opacity: 0.3;
+    animation: patternMove 80s infinite linear;
   }
 
-  .site-logo {
-    height: 15vw;
-  }
+  .masthead {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: 3px solid #b22234; /* Red stripe */
+    padding: 0.5em 1em;
+    margin-bottom: 0.5em;
+    min-height: 4em;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    overflow: visible; /* Allow grape masthead to extend outside */
+    animation: fadeIn 0.6s ease-out;
 
-  .grape-masthead {
-    height: 50vw;
-    width: 50vw;
-    right: -1em;
-    top: -0.5em;
+    /* Add visual flair to masthead */
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #b22234, #ffffff, #3c3b6e, transparent);
+      opacity: 0.8;
+    }
+
+    .site-logo {
+      height: 6em;
+      width: auto;
+      margin-right: 1em;
+      transition: transform 0.3s ease;
+      animation: logoAppear 1s ease-out;
+      background: rgba(255, 255, 255, 0.5); /* Transparent background */
+      padding: 1em;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background-color: rgba(0,0,0,0.4);
+      
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+    
+    .site-title {
+      color: #3c3b6e;
+      font-family: var(--recipe-heading-font, 'Playfair Display', 'Georgia', serif);
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+      font-size: 2.2em;
+      margin-left: 0.5em;
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 25; /* Place above the grape masthead */
+      animation: fadeSlideDown 0.8s ease-out 0.3s both;
+      background: linear-gradient(45deg, #3c3b6e, #7a7ab8, #3c3b6e);
+      background-size: 200% auto;
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmerHeading 3s infinite;
+    }
+
+    /* Adjust grape masthead styling */
+    .grape-masthead-container {
+      position: absolute;
+      top: -2em; /* Adjust top position */
+      right: -5em; /* Adjust right position */
+      width: 40em; /* Make it larger */
+      height: auto;
+      z-index: 50; /* Ensure it overlays everything */
+      transform: rotate(-5deg);
+    }
+
+    .grape-masthead {
+      width: 100%;
+      height: auto;
+    }
+
+    .top-back-button {
+      position: relative; 
+      margin-left: auto;
+      top: auto; 
+      right: auto; 
+      background-color: #b22234 !important; /* Red background */
+      color: #fff !important;
+      z-index: 60;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      padding: 0.4em 0.8em;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      width: 8em; /* Set a fixed width */
+
+      &:hover {
+        background-color: #a11f2f !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      }
+
+      .mat-icon {
+        margin-right: 0.3em;
+        animation: bounceLeft 0.6s infinite;
+      }
+
+      &:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        transition: all 0.6s ease;
+      }
+
+      &:hover:after {
+        left: 100%;
+      }
+    }
   }
 
   .content {
-    margin-top: 5em;
-    padding: 1em;
+    position: relative;
+    padding: 1em; /* More padding for content */
+    border: 2px solid #3c3b6e; /* Navy blue */
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    overflow: visible; /* Allow content to be visible */
+    flex-grow: 1; /* Allow content to grow and fill available space */
+    display: flex;
+    flex-direction: column;
+    height: auto; /* Let content determine height */
+    z-index: 10; /* Ensure content is above background elements */
+    animation: fadeIn 1s ease-in-out 0.3s, expandUp 1s ease-out 0.3s;
+    transition: all 0.5s ease;
+    margin-bottom: 1em; /* Add bottom margin for spacing */
+    flex: 1 1 auto; /* Use flex shorthand to ensure proper growing */
+    
+    /* Add a subtle patriotic gradient border */
+    &:before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      background: linear-gradient(45deg, #b22234, transparent 40%, #3c3b6e 80%);
+      border-radius: 10px;
+      z-index: -1;
+      opacity: 0.7;
+      animation: borderGlow 8s infinite alternate;
+    }
+    
+    &:hover {
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    
+    & > * {
+      z-index: 15;
+      position: relative;
+    }
+
+    router-outlet {
+      display: block;
+      min-height: 1px;
+    }
+
+    .router-outlet-wrapper {
+      width: 100%;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      flex: 1 1 auto;
+      height: auto;
+      min-height: 100%;
+      position: relative;
+      overflow: visible;
+    }
+
+    .tile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1em;
+      max-width: 60%;
+      margin: 0 auto;
+
+      .tile {
+        width: 8em;
+        margin: 0 auto;
+        text-align: center;
+
+        .flag {
+          width: 2em;
+          height: auto;
+          margin-bottom: 0.5em;
+        }
+      }
+    }
+  }
+}
+
+/* Patriotic color variables */
+:root {
+  --patriotic-red: #b22234;
+  --patriotic-blue: #3c3b6e;
+  --patriotic-white: #ffffff;
+}
+
+.patriotic-theme {
+  position: relative;
+  background: url('../../../assets/patterns/patriotic-pattern.svg');
+  background-size: 100px 100px; /* Match the SVG dimensions */
+  background-attachment: fixed;
+  
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('../../../assets/patterns/patriotic-pattern.svg');
+    background-size: 100px 100px; /* Match the SVG dimensions */
+    background-attachment: fixed;
+    z-index: -1;
+    opacity: 0.7;
+  }
+  
+  /* Add a subtle overlay to ensure content readability */
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, 
+                rgba(255, 255, 255, 0.9),
+                rgba(240, 240, 255, 0.85));
+    z-index: -1;
+    mix-blend-mode: overlay;
+  }
+}
+
+.router-outlet-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+@media (max-width: 700px) {
+  .container .masthead .grape-masthead {
+    width: 20em;
+    top: 0;
+    right: -5em; /* Still visible but adjusted for smaller screens */
+    transform: rotate(-5deg) translate(0, -20%);
+  }
+  
+  .container .masthead .site-title {
+    font-size: 1.5em;
+  }
+
+  .content {
+    margin-top: 3em;
+    padding: 0.8em;
+  }
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-30px); }
+  to { transform: translateY(0); }
+}
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes expandUp {
+  from { transform: scaleY(0.9); transform-origin: bottom; }
+  to { transform: scaleY(1); transform-origin: bottom; }
+}
+
+@keyframes logoAppear {
+  0% { opacity: 0; transform: scale(0.8) rotate(-10deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@keyframes shimmerHeading {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes borderGlow {
+  0% { opacity: 0.7; }
+  50% { opacity: 0.9; }
+  100% { opacity: 0.7; }
+}
+
+@keyframes patternMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 1000px 1000px; }
+}
+
+@keyframes pulseGlow {
+  0% { filter: brightness(1); }
+  100% { filter: brightness(1.2); }
+}
+
+@keyframes bounceLeft {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-5px);
   }
 }

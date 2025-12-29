@@ -1,0 +1,71 @@
+<mat-card>
+  <mat-card-header>
+    <div class="mat-mdc-card-header-text">
+      <div class="mat-mdc-card-header-title">
+        <div class="header-content">
+          <span class="location">{{ selectedCity.name }}, {{ selectedCity.state }} ({{ selectedCity.timezone }})</span>
+          <span class="time">
+            {{ currentTime }} {{ selectedCity.timezone }} / 
+            {{ utcTime }} UTC
+          </span>
+        </div>
+        <div class="alert-filter">
+          <span class="filter-label" matTooltip="Filter alerts by priority level">Priority:</span>
+          <mat-button-toggle-group [(ngModel)]="selectedPriorityLevel" class="priority-selector">
+            <mat-button-toggle value="All" matTooltip="Show all alerts">All</mat-button-toggle>
+            <mat-button-toggle value="Low Priority" matTooltip="Show low priority alerts">Low</mat-button-toggle>
+            <mat-button-toggle value="Medium Priority" matTooltip="Show medium priority alerts">Med</mat-button-toggle>
+            <mat-button-toggle value="High Priority" matTooltip="Show high priority alerts">High</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+      </div>
+    </div>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="fire-alert-container">
+      <mat-tab-group (selectedTabChange)="onTabChange($event)" animationDuration="0ms">
+        <mat-tab *ngFor="let city of cities" label="{{ city.name }}">
+          <ng-template matTabContent>
+            <div class="tab-content-wrapper">
+              <!-- Mapbox Map -->
+              <div *ngIf="city.alerts && city.alerts.length > 0" 
+                id="map-{{ city.alerts[0].id }}" class="map-container"></div>
+              
+              <div class="status-container two-columns">
+                <!-- Left Column -->
+                <div class="status-column">
+                  <!-- Flights List -->
+                  <div class="flights-list">
+                    <h3>Nearby Flights</h3>
+                    <ul>
+                      <li *ngFor="let flight of flights">
+                        {{ flight.callSign }} - Altitude: {{ flight.altitude }}
+                      </li>
+                      <li *ngIf="flights.length === 0">No flights currently in the area</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="status-column">
+                  <!-- Alerts List -->
+                  <div class="alerts-list">
+                    <h3>Active Alerts <span class="alert-count">({{ filteredAlerts(city).length }})</span></h3>
+                    <ul>
+                      <li *ngFor="let alert of filteredAlerts(city)" 
+                          (click)="focusAlert(alert)"
+                          [class]="getPriorityClass(alert.level)">
+                        {{ alert.name }} - {{ alert.time }}
+                      </li>
+                      <li *ngIf="filteredAlerts(city).length === 0">No active alerts match the current filter</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </mat-card-content>
+</mat-card>

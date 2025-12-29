@@ -43,13 +43,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Run the scanner with provided arguments
-if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "win32" ]]; then
-  # Windows (MSYS/MinGW or native Windows)
-  ./oscal-scanner.exe "$@"
-else
-  # Unix-like systems
-  ./oscal-scanner "$@"
-fi
+./oscal-scanner "$@"
 
 # Check exit status
 if [ $? -eq 0 ]; then

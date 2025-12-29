@@ -1,0 +1,453 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+  grid-row: span 2; /* Make this component span 2 rows in a grid */
+  grid-column: 1; /* Position in first column by default */
+  overflow: hidden;
+  /* Set minimum width to ensure small tiles wrap instead of shrinking this tile */
+  min-width: 600px;
+  /* Ensure the tile maintains its size */
+  flex: 0 0 auto;
+}
+
+.alert-panel {
+  margin-top: 1em;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  .alert-panel {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    z-index: 1;
+    color: purple;
+  }
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+.map-container {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 200px; /* Slightly reduced for grid layout */
+  max-height: calc(100% - 180px); /* Adjusted for better grid fit */
+  margin-bottom: 0.75em;
+  position: relative; /* Ensure proper positioning */
+  overflow: hidden; /* Prevent overflow issues */
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+.mat-mdc-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.mat-mdc-card-header {
+  display: flex;
+  align-items: center;
+  padding: 1em;
+  border-bottom: 1px solid #ddd;
+  background-color: #036;
+  color: #fff;
+}
+
+.mat-mdc-card-header-text {
+  flex: 1;
+}
+
+.mat-mdc-card-title {
+  font-size: 1.25em;
+  font-weight: 500;
+}
+
+.mat-mdc-card-content {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.fire-alert-container {
+  height: 100%;
+  position: relative;
+  padding: 0.75em;
+  border: 1px solid #ccc;
+  border-radius: 0.5em;
+  background-color: #fff;
+  box-shadow: 0 0.25em 0.5em rgb(0 0 0 / 10%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  h2 {
+    font-size: 1.25em;
+    color: #036;
+    margin-bottom: 1em;
+  }
+
+  .mat-tab-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+  }
+
+  ::ng-deep .mat-tab-body-wrapper {
+    flex-grow: 1;
+    height: 100%;
+    min-height: 0;
+  }
+
+  ::ng-deep .mat-tab-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  ::ng-deep .mat-tab-body-content {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+
+  ::ng-deep .mat-tab-body-content > * {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .legend {
+    position: absolute;
+    bottom: 1em;
+    right: 1em;
+    background-color: white;
+    border-radius: 0.5em;
+    max-width: 250px;
+    max-height: 180px;
+    overflow: auto;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+    @media (max-width: 768px) {
+      max-width: 180px;
+      max-height: 150px;
+      bottom: 0.5em;
+      right: 0.5em;
+    }
+
+    .mat-expansion-panel {
+      background-color: rgba(255, 255, 255, 0.95);
+    }
+
+    [contains='mat-expansion-panel-header'] {
+      font-size: 0.75em;
+    }
+  }
+
+  .flights-list, .alerts-list {
+    flex: 1 1 48%;
+    margin: 0.5em;
+    max-height: 160px; /* Slightly reduced for grid layout */
+    overflow: auto;
+    background-color: rgba(240, 240, 245, 0.95);
+    padding: 0.5em;
+    border-radius: 0.5em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    @media (max-width: 768px) {
+      flex: 1 1 100%;
+      max-height: 80px; /* Smaller on mobile within grid */
+    }
+
+    h3 {
+      color: #036;
+      margin-bottom: 0.5em;
+      font-size: 1rem;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 0.3em;
+    }
+
+    ul {
+      padding-left: 1em;
+
+      li {
+        color: #333;
+        margin-bottom: 0.3em;
+        font-size: 0.9rem;
+        cursor: pointer;
+
+        &:hover {
+          color: #0366d6;
+        }
+      }
+    }
+  }
+
+  .status-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: auto;
+    flex-wrap: wrap;
+    min-height: 100px; /* Smaller minimum height for grid */
+    max-height: 180px; /* Reduced for better grid fit */
+
+    &.two-columns {
+      flex-direction: row;
+      
+      .status-column {
+        flex: 1 1 48%;
+        display: flex;
+        flex-direction: column;
+        
+        @media (max-width: 768px) {
+          flex: 1 1 100%;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  }
+
+  ::ng-deep .tab-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    overflow: hidden; /* Prevent overflow issues */
+  }
+
+  :host .mat-expansion-panel .mat-content {
+    font-size: 0.5em;
+  }
+
+  .mat-list-item {
+    font-size: 0.5em;
+  }
+}
+
+.alert-count {
+  font-size: 0.8rem;
+  color: #777;
+  margin-left: 0.5em;
+}
+
+.mat-mdc-card-header-title {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .header-content {
+    display: flex;
+    flex-direction: column;
+    margin-right: 15px;
+  }
+
+  .alert-filter {
+    display: flex;
+    align-items: center;
+    
+    .filter-label {
+      margin-right: 8px;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+  }
+
+  .priority-selector {
+    background-color: #e0f2f1; // Light teal background
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
+    .mat-button-toggle {
+      color: #00796b; // Teal text
+      font-size: 0.8rem;
+      padding: 0 12px;
+      min-width: 40px;
+      
+      &.mat-button-toggle-checked {
+        background-color: #009688; // Teal background when selected
+        color: white;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    
+    .header-content {
+      margin-bottom: 10px;
+    }
+    
+    span {
+      margin-bottom: 0.25em;
+    }
+  }
+}
+
+::ng-deep .mat-tab-label {
+  @media (max-width: 768px) {
+    padding: 0 12px !important;
+    min-width: 100px !important;
+  }
+}
+
+.high {
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+
+.medium {
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+
+.low {
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+
+/* Style alert items based on priority */
+.high {
+  border-left: 3px solid #d9534f; /* Red border */
+  padding-left: 8px;
+  background-color: rgba(217, 83, 79, 0.05);
+}
+
+.medium {
+  border-left: 3px solid #f0ad4e; /* Orange border */
+  padding-left: 8px;
+  background-color: rgba(240, 173, 78, 0.05);
+}
+
+.low {
+  border-left: 3px solid #5bc0de; /* Blue border */
+  padding-left: 8px;
+  background-color: rgba(91, 192, 222, 0.05);
+}
+
+/* Grid-specific responsive adjustments */
+@media (max-width: 992px) {
+  :host {
+    grid-column: span 2; /* Take full width on medium screens */
+  }
+}
+
+@media (max-width: 768px) {
+  :host {
+    grid-row: span 1; /* Reduce height span on small screens */
+  }
+  
+  .map-container {
+    min-height: 180px !important; /* Force smaller maps on mobile */
+  }
+}
+
+/* Add custom grid area name for easier grid template positioning */
+:host.fire-alert-area {
+  grid-area: fire-alert;
+}
+
+/* Add additional class for when this needs to be a main feature */
+:host.main-feature {
+  grid-column: 1 / 3; /* Span first two columns */
+  grid-row: 1 / 3; /* Span first two rows */
+  z-index: 1; /* Ensure it's above other elements if needed */
+}
+
+.status-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: auto;
+  min-height: 100px;
+  max-height: 180px;
+
+  &.two-columns {
+    flex-direction: row;
+    flex-wrap: nowrap; // Prevent wrapping for two columns layout
+    gap: 15px; // Add gap between columns
+    
+    .status-column {
+      flex: 1;
+      min-width: 0; // Allow columns to shrink if needed
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    
+    &.two-columns {
+      flex-direction: column;
+      
+      .status-column {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+    }
+  }
+}
+
+.flights-list, .alerts-list {
+  flex: 1;
+  margin: 0;
+  max-height: 160px;
+  overflow: auto;
+  background-color: rgba(240, 240, 245, 0.95);
+  padding: 0.5em;
+  border-radius: 0.5em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 768px) {
+    max-height: 120px;
+  }
+
+  h3 {
+    color: #036;
+    margin-bottom: 0.5em;
+    font-size: 1rem;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0.3em;
+  }
+
+  ul {
+    padding-left: 1em;
+
+    li {
+      color: #333;
+      margin-bottom: 0.3em;
+      font-size: 0.9rem;
+      cursor: pointer;
+
+      &:hover {
+        color: #0366d6;
+      }
+    }
+  }
+}

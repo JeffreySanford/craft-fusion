@@ -1,0 +1,3008 @@
+{
+  "Dilmun": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.3"
+    ],
+    "occurrences": 9,
+    "type": "location",
+    "description": "A mythical paradise land associated with purity and immortality."
+  },
+  "Sumer": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.3",
+      "t.2.1.1",
+      "t.2.1.5",
+      "t.2.1.6",
+      "t.2.1.7"
+    ],
+    "occurrences": 12,
+    "type": "region",
+    "description": "The region of southern Mesopotamia, home to the earliest cities."
+  },
+  "Enki": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.2",
+      "t.1.1.3",
+      "t.1.1.4",
+      "t.2.1.5",
+      "t.2.1.7"
+    ],
+    "occurrences": 98,
+    "type": "deity",
+    "description": "Enki, the god of freshwaters (Abzu), wisdom, magic, and creation, was a trickster deity known for his intellect and his role in shaping human civilization."
+  },
+  "Ninsikila": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.3",
+      "t.2.1.7"
+    ],
+    "occurrences": 7,
+    "type": "deity",
+    "description": "A deity linked to Dilmun, sometimes associated with purity and fertility."
+  },
+  "Utu": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.3",
+      "t.2.1.1",
+      "t.2.1.4",
+      "t.2.1.5",
+      "t.2.1.6",
+      "t.2.1.7"
+    ],
+    "occurrences": 26,
+    "type": "deity",
+    "description": "The sun god and god of justice, Utu was worshiped as the divine judge who upheld truth and fairness."
+  },
+  "Ezen's": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Nanna's": {
+    "myths": [
+      "t.1.1.1",
+      "t.2.1.7"
+    ],
+    "occurrences": 4,
+    "type": "unknown"
+  },
+  "Tukriš": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 1,
+    "type": "location",
+    "description": "An ancient region known for its gold."
+  },
+  "Ḫarali": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 1,
+    "type": "location",
+    "description": "An ancient region known for its lapis lazuli."
+  },
+  "Meluḫa": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.3",
+      "t.2.1.7"
+    ],
+    "occurrences": 7,
+    "type": "location",
+    "description": "An ancient region, often associated with the Indus Valley Civilization."
+  },
+  "Magan": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.3",
+      "t.2.1.7"
+    ],
+    "occurrences": 5,
+    "type": "location",
+    "description": "An ancient land, often associated with Oman."
+  },
+  "Marḫaši": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.3"
+    ],
+    "occurrences": 2,
+    "type": "location",
+    "description": "An ancient region known for its precious stones."
+  },
+  "Sea-land": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 1,
+    "type": "location",
+    "description": "A region associated with the southern marshes of Mesopotamia."
+  },
+  "'Tent'-lands": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Elam": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.3",
+      "t.2.1.1",
+      "t.2.1.5",
+      "t.2.1.7"
+    ],
+    "occurrences": 5,
+    "type": "region",
+    "description": "An ancient civilization located in present-day Iran."
+  },
+  "Urim": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.3",
+      "t.2.1.1"
+    ],
+    "occurrences": 11,
+    "type": "location",
+    "description": "The Sumerian name for the city of Ur."
+  },
+  "Dilmun's": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Nintur": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.3",
+      "t.1.1.4"
+    ],
+    "occurrences": 6,
+    "type": "deity",
+    "description": "A goddess of birth and creation."
+  },
+  "Damgalnuna": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ninḫursaĝa's": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ninnisig": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Isimud": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.4"
+    ],
+    "occurrences": 6,
+    "type": "deity",
+    "description": "The two-faced messenger of Enki."
+  },
+  "Ninkura": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 4,
+    "type": "deity",
+    "description": "A goddess associated with mountains and fertility."
+  },
+  "Uttu": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.3"
+    ],
+    "occurrences": 8,
+    "type": "deity",
+    "description": "A goddess associated with weaving and textiles."
+  },
+  "Ninimma": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.2"
+    ],
+    "occurrences": 3,
+    "type": "deity",
+    "description": "A goddess associated with healing and medicine."
+  },
+  "Ninimma's": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Uttu's": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Ninḫursaĝa": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.3",
+      "t.2.1.7"
+    ],
+    "occurrences": 7,
+    "type": "unknown"
+  },
+  "Enlil": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.2",
+      "t.1.1.3",
+      "t.1.1.4",
+      "t.2.1.1",
+      "t.2.1.2",
+      "t.2.1.3",
+      "t.2.1.4",
+      "t.2.1.5",
+      "t.2.1.6",
+      "t.2.1.7"
+    ],
+    "occurrences": 57,
+    "type": "deity",
+    "description": "The god of wind, storms, and earth, Enlil was a powerful force in Sumerian mythology, acting as both a creator and destroyer. He was the divine authority behind kingship and order."
+  },
+  "Nibru": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.2",
+      "t.1.1.3",
+      "t.1.1.4",
+      "t.2.1.5",
+      "t.2.1.7"
+    ],
+    "occurrences": 12,
+    "type": "location",
+    "description": "Sumerian name for Nippur, an important religious center."
+  },
+  "Nanna": {
+    "myths": [
+      "t.1.1.1",
+      "t.2.1.1",
+      "t.2.1.3",
+      "t.2.1.5"
+    ],
+    "occurrences": 5,
+    "type": "deity",
+    "description": "The moon god, also known as Suen, associated with wisdom and timekeeping."
+  },
+  "Larsam": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Unug": {
+    "myths": [
+      "t.1.1.1",
+      "t.2.1.1",
+      "t.2.1.3",
+      "t.2.1.4",
+      "t.2.1.5",
+      "t.2.1.6"
+    ],
+    "occurrences": 16,
+    "type": "unknown"
+  },
+  "Inana": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.3",
+      "t.2.1.3",
+      "t.2.1.4",
+      "t.2.1.5",
+      "t.2.1.6",
+      "t.2.1.7"
+    ],
+    "occurrences": 24,
+    "type": "deity",
+    "description": "Goddess of love, war, and divine justice, Inana was a bold and unpredictable deity, known for her passionate affairs, military conquests, and descent into the underworld."
+  },
+  "Anuna": {
+    "myths": [
+      "t.1.1.1",
+      "t.1.1.3",
+      "t.1.1.4",
+      "t.2.1.7"
+    ],
+    "occurrences": 17,
+    "type": "group",
+    "description": "The collective name for the major deities of the Sumerian pantheon."
+  },
+  "Ab-u": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Ningiriutud": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 2,
+    "type": "deity",
+    "description": "A deity associated with crafts and artisans."
+  },
+  "Ninkasi": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 2,
+    "type": "deity",
+    "description": "The goddess of beer and brewing."
+  },
+  "Nazi": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 2,
+    "type": "deity",
+    "description": "A deity associated with justice and fairness."
+  },
+  "Azimua": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 2,
+    "type": "deity",
+    "description": "A goddess associated with healing and medicine."
+  },
+  "Ninti": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 2,
+    "type": "deity",
+    "description": "A goddess associated with life and fertility."
+  },
+  "Ensag": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 2,
+    "type": "deity",
+    "description": "A deity associated with agriculture and fertility."
+  },
+  "Ninazu": {
+    "myths": [
+      "t.1.1.1",
+      "t.2.1.2",
+      "t.2.1.6"
+    ],
+    "occurrences": 3,
+    "type": "deity",
+    "description": "A god associated with the underworld and healing."
+  },
+  "Nindara": {
+    "myths": [
+      "t.1.1.1"
+    ],
+    "occurrences": 1,
+    "type": "deity",
+    "description": "A lesser-known Sumerian deity associated with judgment and protection."
+  },
+  "Ninĝišzida": {
+    "myths": [
+      "t.1.1.1",
+      "t.2.1.7"
+    ],
+    "occurrences": 5,
+    "type": "deity",
+    "description": "A god associated with the underworld and vegetation."
+  },
+  "Namma": {
+    "myths": [
+      "t.1.1.2",
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 5,
+    "type": "unknown"
+  },
+  "Ninmaḫ": {
+    "myths": [
+      "t.1.1.2",
+      "t.2.1.7"
+    ],
+    "occurrences": 12,
+    "type": "unknown"
+  },
+  "Šu-zi-ana": {
+    "myths": [
+      "t.1.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ninmada": {
+    "myths": [
+      "t.1.1.2",
+      "t.2.1.7"
+    ],
+    "occurrences": 2,
+    "type": "deity",
+    "description": "A deity associated with wisdom and knowledge."
+  },
+  "Ninbarag": {
+    "myths": [
+      "t.1.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ninmug": {
+    "myths": [
+      "t.1.1.2",
+      "t.1.1.3"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Ninguna": {
+    "myths": [
+      "t.1.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "An": {
+    "myths": [
+      "t.1.1.2",
+      "t.1.1.3",
+      "t.1.1.4",
+      "t.2.1.2",
+      "t.2.1.4",
+      "t.2.1.5",
+      "t.2.1.7"
+    ],
+    "occurrences": 34,
+    "type": "deity",
+    "description": "The supreme sky deity and father of the gods, An ruled the heavens and granted kingship to mortals."
+  },
+  "Nudimmud": {
+    "myths": [
+      "t.1.1.2",
+      "t.1.1.3",
+      "t.1.1.4"
+    ],
+    "occurrences": 5,
+    "type": "deity",
+    "description": "Another name for Enki, the god of freshwaters, wisdom, and creation."
+  },
+  "Ninmaḫ's": {
+    "myths": [
+      "t.1.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "E-kur": {
+    "myths": [
+      "t.1.1.2",
+      "t.1.1.3",
+      "t.2.1.3",
+      "t.2.1.5",
+      "t.2.1.7"
+    ],
+    "occurrences": 17,
+    "type": "location",
+    "description": "The temple of Enlil in Nippur."
+  },
+  "Eridug": {
+    "myths": [
+      "t.1.1.3",
+      "t.1.1.4",
+      "t.2.1.1",
+      "t.2.1.7"
+    ],
+    "occurrences": 21,
+    "type": "location",
+    "description": "A city associated with Enki and wisdom."
+  },
+  "Abzu": {
+    "myths": [
+      "t.1.1.3"
+    ],
+    "occurrences": 4,
+    "type": "cosmic",
+    "description": "The primeval sea beneath the earth, associated with Enki."
+  },
+  "An's": {
+    "myths": [
+      "t.1.1.3",
+      "t.2.1.7"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Niĝir-sig": {
+    "myths": [
+      "t.1.1.3"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Martu": {
+    "myths": [
+      "t.1.1.3",
+      "t.2.1.5"
+    ],
+    "occurrences": 3,
+    "type": "deity",
+    "description": "God of the nomadic Amorites."
+  },
+  "Sirsir": {
+    "myths": [
+      "t.1.1.3"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Euphrates": {
+    "myths": [
+      "t.1.1.3",
+      "t.1.1.4",
+      "t.2.1.7"
+    ],
+    "occurrences": 6,
+    "type": "location",
+    "description": "Another major river of Mesopotamia."
+  },
+  "Tigris": {
+    "myths": [
+      "t.1.1.3",
+      "t.1.1.4",
+      "t.2.1.5",
+      "t.2.1.6",
+      "t.2.1.7"
+    ],
+    "occurrences": 9,
+    "type": "location",
+    "description": "One of the major rivers of Mesopotamia."
+  },
+  "Enbilulu": {
+    "myths": [
+      "t.1.1.3"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "E-engura": {
+    "myths": [
+      "t.1.1.3",
+      "t.1.1.4",
+      "t.2.1.7"
+    ],
+    "occurrences": 5,
+    "type": "location",
+    "description": "The temple of Enki in Eridug."
+  },
+  "Sirara": {
+    "myths": [
+      "t.1.1.3",
+      "t.2.1.7"
+    ],
+    "occurrences": 5,
+    "type": "unknown"
+  },
+  "Nanše": {
+    "myths": [
+      "t.1.1.3",
+      "t.2.1.2",
+      "t.2.1.7"
+    ],
+    "occurrences": 17,
+    "type": "deity",
+    "description": "A goddess associated with social justice, water, and divination."
+  },
+  "Iškur": {
+    "myths": [
+      "t.1.1.3",
+      "t.2.1.1",
+      "t.2.1.5",
+      "t.2.1.6",
+      "t.2.1.7"
+    ],
+    "occurrences": 10,
+    "type": "deity",
+    "description": "The storm god, later syncretized with Adad."
+  },
+  "Enkimdu": {
+    "myths": [
+      "t.1.1.3"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Enlil's": {
+    "myths": [
+      "t.1.1.3",
+      "t.2.1.3",
+      "t.2.1.5",
+      "t.2.1.7"
+    ],
+    "occurrences": 23,
+    "type": "unknown"
+  },
+  "Ezina": {
+    "myths": [
+      "t.1.1.3",
+      "t.2.1.2",
+      "t.2.1.5"
+    ],
+    "occurrences": 4,
+    "type": "deity",
+    "description": "Also known as Ashnan, the Sumerian goddess of grain and agricultural abundance."
+  },
+  "Kulla": {
+    "myths": [
+      "t.1.1.3"
+    ],
+    "occurrences": 1,
+    "type": "deity",
+    "description": "The patron deity of brickmakers and builders, Kulla was invoked in construction rites and temple-building ceremonies."
+  },
+  "Mušdama": {
+    "myths": [
+      "t.1.1.3"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Šakkan": {
+    "myths": [
+      "t.1.1.3",
+      "t.2.1.7"
+    ],
+    "occurrences": 2,
+    "type": "deity",
+    "description": "The god of shepherds and livestock."
+  },
+  "E-ana": {
+    "myths": [
+      "t.1.1.3",
+      "t.2.1.1",
+      "t.2.1.4"
+    ],
+    "occurrences": 4,
+    "type": "unknown"
+  },
+  "Suen": {
+    "myths": [
+      "t.1.1.3",
+      "t.2.1.1",
+      "t.2.1.3",
+      "t.2.1.5",
+      "t.2.1.7"
+    ],
+    "occurrences": 16,
+    "type": "deity",
+    "description": "The moon god associated with wisdom, timekeeping, and the passage of night."
+  },
+  "Kulaba": {
+    "myths": [
+      "t.1.1.3",
+      "t.2.1.1",
+      "t.2.1.6"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Dumuzid-ušumgal-ana": {
+    "myths": [
+      "t.1.1.3"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ningal": {
+    "myths": [
+      "t.1.1.3"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Aruru": {
+    "myths": [
+      "t.1.1.3"
+    ],
+    "occurrences": 1,
+    "type": "deity",
+    "description": "A goddess of creation and midwifery."
+  },
+  "Ninisina": {
+    "myths": [
+      "t.1.1.3"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Nisaba": {
+    "myths": [
+      "t.1.1.3",
+      "t.2.1.2",
+      "t.2.1.5",
+      "t.2.1.7"
+    ],
+    "occurrences": 8,
+    "type": "deity",
+    "description": "The goddess of writing, knowledge, and grain."
+  },
+  "Enki's": {
+    "myths": [
+      "t.1.1.4"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Nirah": {
+    "myths": [
+      "t.1.1.4"
+    ],
+    "occurrences": 1,
+    "type": "deity",
+    "description": "A serpent deity associated with the god Ninazu."
+  },
+  "Imdudu": {
+    "myths": [
+      "t.1.1.4"
+    ],
+    "occurrences": 1,
+    "type": "deity",
+    "description": "A storm god, sometimes associated with the god Iškur."
+  },
+  "Uraš": {
+    "myths": [
+      "t.1.1.4"
+    ],
+    "occurrences": 1,
+    "type": "deity",
+    "description": "An earth goddess or a personification of the land."
+  },
+  "Ubšu-unkena": {
+    "myths": [
+      "t.1.1.4",
+      "t.2.1.7"
+    ],
+    "occurrences": 2,
+    "type": "location",
+    "description": "A divine assembly hall for the gods."
+  },
+  "Alulim": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Alalĝar": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Bad-tibira": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-men-lu-ana": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-men-gal-ana": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Dumuzid": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Larag": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-sipad-zid-ana": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Zimbir": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-men-dur-ana": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Šuruppag": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ubara-Tutu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Tutu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Kiš": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.4",
+      "t.2.1.5"
+    ],
+    "occurrences": 10,
+    "type": "unknown"
+  },
+  "Ĝušur": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Kullassina-bēl": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Nanĝišlišma": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-taraḫ-ana": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Babum": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Puannum": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Kalibum": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Kalūmum": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Zuqāqīp": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Atab": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "A-ba": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Mašda": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Arwium": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Etana": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Baliḫ": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-me-nuna": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Melem-Kiš": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Barsal-nuna": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Zamug": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Tizqār": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ilku": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Iltasadum": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-me-barage-si": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Aga": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Meš-ki-aĝ-gašer": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Enmerkar": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lugalbanda": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Kuara": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Gilgameš": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3",
+      "t.2.1.6",
+      "t.2.1.7"
+    ],
+    "occurrences": 4,
+    "type": "unknown"
+  },
+  "Ur-Nungal": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Nungal": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Udul-kalama": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ur-lugal": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Lā-ba’šum": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-nun-taraḫ-ana": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Meš-ḫe": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Melem-ana": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Til-kug": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lugal-kitun": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Meš-Ane-pada": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Ane": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.2"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Meš-ki-aĝ-Nanna": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Meš-ki-aĝ-nuna": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Elulu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Balulu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Awan": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Susuda": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Dadasig": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Mamagal": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Kalbum": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Magalgal": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Tuge": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Men-nuna": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lugalĝu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ḫamazi": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Hadaniš": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-šag-kuš-ana": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lugal-ure": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lugal-kiniše-dudu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Argandea": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Nanni": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Adab": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.6"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Lugal-Ane-mundu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Mari": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Anbu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Anba": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Bazi": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Zizi": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Limer": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Šarrum-īter": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Kug-Bau": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Bau": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.2",
+      "t.2.1.7"
+    ],
+    "occurrences": 9,
+    "type": "unknown"
+  },
+  "Akšak": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Unzi": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Undalulu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Urur": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Puzur-Niraḫ": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Niraḫ": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.7"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Išu-Il": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Il": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Šu-Suen": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Puzur-Suen": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Ur-Zababa": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.4"
+    ],
+    "occurrences": 10,
+    "type": "unknown"
+  },
+  "Zababa": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.4"
+    ],
+    "occurrences": 10,
+    "type": "unknown"
+  },
+  "Zimudar": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ziĝu-iake": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Usi-watar": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Eštar-muti": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Eštar": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Išme-Šamaš": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Šamaš": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Šu-ilīšu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Nanniya": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lugal-zage-si": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.4"
+    ],
+    "occurrences": 4,
+    "type": "unknown"
+  },
+  "Agade": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.5"
+    ],
+    "occurrences": 14,
+    "type": "unknown"
+  },
+  "Sargon": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.4",
+      "t.2.1.5"
+    ],
+    "occurrences": 10,
+    "type": "unknown"
+  },
+  "Rīmuš": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Man-ištiššu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Narām-Suen": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Šar-kali-šarrī": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Irgigi": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Imi": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Nanûm": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ilulu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Dudu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Šu-Durul": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Durul": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ur-niĝin": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ur-gigir": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Kuda": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Puzur-ilī": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ur-Utu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lugal-melem": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Gutium": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.6"
+    ],
+    "occurrences": 8,
+    "type": "unknown"
+  },
+  "Inkišuš": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Zarlagab": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Šulme": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Yarlagaš": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Silulumeš": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Silulu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Inimabakeš": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Duga": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Igešauš": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ilu-an": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Yarlagab": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ibate": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Yarla": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Yarlangab": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Kurum": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Apilkin": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lā-erabum": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Irarum": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ibranum": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ḫablum": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Yarlaganda": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Tirigan": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.6"
+    ],
+    "occurrences": 4,
+    "type": "unknown"
+  },
+  "Utu-ḫeĝal": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.6"
+    ],
+    "occurrences": 5,
+    "type": "unknown"
+  },
+  "Ur-Namma": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Šulgi": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Amar-Suena": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Suena": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Ibbi-Suen": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Isin": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Išbi-Erra": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Erra": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.3"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Iddin-Dagan": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Dagan": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Išme-Dagan": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lipit-Eštar": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ur-Ninurta": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ninurta": {
+    "myths": [
+      "t.2.1.1",
+      "t.2.1.5"
+    ],
+    "occurrences": 4,
+    "type": "unknown"
+  },
+  "Būr-Suen": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lipit-Enlil": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Erra-imitti": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Enlil-bāni": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Zambiya": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Iter-piša": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ur-du-kuga": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Suen-magir": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Damiq-ilišu": {
+    "myths": [
+      "t.2.1.1"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ninĝirsu": {
+    "myths": [
+      "t.2.1.2",
+      "t.2.1.7"
+    ],
+    "occurrences": 68,
+    "type": "unknown"
+  },
+  "Lagaš": {
+    "myths": [
+      "t.2.1.2",
+      "t.2.1.7"
+    ],
+    "occurrences": 29,
+    "type": "unknown"
+  },
+  "Ĝirsu": {
+    "myths": [
+      "t.2.1.2",
+      "t.2.1.7"
+    ],
+    "occurrences": 5,
+    "type": "unknown"
+  },
+  "En-akigalaguba": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Niĝin-ĝiš-tukuam": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-Ninĝirsu-ki-aĝ": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-Enlile-ki-aĝ": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Enlile": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Ur-Bau": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "A-gal": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ig-alim": {
+    "myths": [
+      "t.2.1.2",
+      "t.2.1.7"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Kue": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ama-alim": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Maḫ": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Piriĝgin-ĝen": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Piriĝ": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lugal": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Gana-hili-ana": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Nanše-pada": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ur-Nanše": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "E-Sirara": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Niĝin": {
+    "myths": [
+      "t.2.1.2",
+      "t.2.1.7"
+    ],
+    "occurrences": 4,
+    "type": "unknown"
+  },
+  "Ane-tum": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Šul-utul": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-entar-zid": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Meš-an-du": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Urmaḫ-banda": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Tabta-kug-ĝal": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-Enlile-su": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Puzur-Ninlil": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ninlil": {
+    "myths": [
+      "t.2.1.2",
+      "t.2.1.3"
+    ],
+    "occurrences": 7,
+    "type": "unknown"
+  },
+  "En-Meš-an-du": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Dadu": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Tuggur": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Puzur-Mama": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Mama": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ninki": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Zazaru": {
+    "myths": [
+      "t.2.1.2",
+      "t.2.1.7"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Lamku-niĝgena": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ḫenĝal": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Pabilsaĝ": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ur-Ninmarki": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ninmarki": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ḫaya": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ur-Ninĝirsu": {
+    "myths": [
+      "t.2.1.2"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Gudea": {
+    "myths": [
+      "t.2.1.2",
+      "t.2.1.7"
+    ],
+    "occurrences": 64,
+    "type": "unknown"
+  },
+  "Iri-nanam": {
+    "myths": [
+      "t.2.1.3"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Tummal": {
+    "myths": [
+      "t.2.1.3"
+    ],
+    "occurrences": 6,
+    "type": "unknown"
+  },
+  "Bur-šušua": {
+    "myths": [
+      "t.2.1.3"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Numunbura": {
+    "myths": [
+      "t.2.1.3"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-am-gal-ana": {
+    "myths": [
+      "t.2.1.3"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-me-gal-ana": {
+    "myths": [
+      "t.2.1.3"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lu-Inana": {
+    "myths": [
+      "t.2.1.3"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "La’ibum": {
+    "myths": [
+      "t.2.1.4"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ezina's": {
+    "myths": [
+      "t.2.1.4"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Beliš-tikal": {
+    "myths": [
+      "t.2.1.4"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "E-sikil": {
+    "myths": [
+      "t.2.1.4"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Ulmaš": {
+    "myths": [
+      "t.2.1.5"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Marhaši": {
+    "myths": [
+      "t.2.1.5"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Agade's": {
+    "myths": [
+      "t.2.1.5"
+    ],
+    "occurrences": 5,
+    "type": "unknown"
+  },
+  "Naram-Suen": {
+    "myths": [
+      "t.2.1.5"
+    ],
+    "occurrences": 4,
+    "type": "unknown"
+  },
+  "Meluḫans": {
+    "myths": [
+      "t.2.1.5"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Subir": {
+    "myths": [
+      "t.2.1.5"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Gu-edina": {
+    "myths": [
+      "t.2.1.5",
+      "t.2.1.7"
+    ],
+    "occurrences": 5,
+    "type": "unknown"
+  },
+  "E-šu-me-ša": {
+    "myths": [
+      "t.2.1.5"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Mountains of Cedar-felling": {
+    "myths": [
+      "t.2.1.5"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Akkadians": {
+    "myths": [
+      "t.2.1.5"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Gubin": {
+    "myths": [
+      "t.2.1.5"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Gutians": {
+    "myths": [
+      "t.2.1.5"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ki-ur": {
+    "myths": [
+      "t.2.1.5"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Nuska": {
+    "myths": [
+      "t.2.1.5"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Ninilduma": {
+    "myths": [
+      "t.2.1.5"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Dumuzid-ama-ušumgal-ana": {
+    "myths": [
+      "t.2.1.6"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ninsumun": {
+    "myths": [
+      "t.2.1.6",
+      "t.2.1.7"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Naĝsu": {
+    "myths": [
+      "t.2.1.6"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Surungal": {
+    "myths": [
+      "t.2.1.6"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ili-tappê": {
+    "myths": [
+      "t.2.1.6"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Ur-Ninazu": {
+    "myths": [
+      "t.2.1.6"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Nabi-Enlil": {
+    "myths": [
+      "t.2.1.6"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Karkara": {
+    "myths": [
+      "t.2.1.6"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Dabrum": {
+    "myths": [
+      "t.2.1.6"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "E-ninnu": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 44,
+    "type": "unknown"
+  },
+  "Id-Niĝin-dua": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Bagara": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Ĝatumdug": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 6,
+    "type": "unknown"
+  },
+  "Nindub": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "E-ninnu-the-white-Anzud-bird": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Ušumgal-kalama": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Tiraš": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "E-ḫuš": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "E-babbar": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ištaran": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "E-bagara": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ninĝirsu's": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 9,
+    "type": "unknown"
+  },
+  "Nanše's": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Gu-ĝišbara": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lugal-kur-dub": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Elamites": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Susians": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Susa": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ninzaga": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Madga": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Kimaš": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Iri-kug": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 2,
+    "type": "unknown"
+  },
+  "Utu's": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Sumer's": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Gudea's": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "E-uru-ga": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Tar-sirsir": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Bau's": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Keš": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Aratta": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "E-ninnu's": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Edin": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "E-mi": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Asari": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Šul-šaga": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Kur-šuna-buruam": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lugal-si-sa": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "E-duga": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 3,
+    "type": "unknown"
+  },
+  "Kinda-zid": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-šeg-nun": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "En-lulim": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lugal-igi-ḫuš": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Iškur-pa-e": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ur-agrunta-ea": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ḫe-Ĝir-nuna": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ḫe-šaga": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Zurĝu": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Zarĝu": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ezina-Kusu": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Ĝišbar-e": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lama": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Dim-gal-abzu": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  },
+  "Lugal-ennu-iri-kugakam": {
+    "myths": [
+      "t.2.1.7"
+    ],
+    "occurrences": 1,
+    "type": "unknown"
+  }
+}

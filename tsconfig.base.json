@@ -20,19 +20,16 @@
       "@craft-fusion/shared/data": ["libs/shared/data/src/index.ts"],
       "@craft-fusion/shared/ui": ["libs/shared/ui/src/index.ts"],
       "@craft-fusion/utils": ["libs/utils/src/index.ts"],
+      
+      // App-specific path aliases to avoid deep imports
       "@craft-web/auth/*": ["apps/craft-web/src/app/common/auth/*"],
-      "@craft-web/components/*": ["apps/craft-web/src/app/common/components/*"],
       "@craft-web/guards/*": ["apps/craft-web/src/app/common/guards/*"],
-      "@craft-web/interceptors/*": [
-        "apps/craft-web/src/app/common/interceptors/*"
-      ],
+      "@craft-web/services/*": ["apps/craft-web/src/app/common/services/*"],
+      "@craft-web/interceptors/*": ["apps/craft-web/src/app/common/interceptors/*"],
       "@craft-web/models/*": ["apps/craft-web/src/app/common/models/*"],
-      "@craft-web/services/*": ["apps/craft-web/src/app/common/services/*"]
+      "@craft-web/components/*": ["apps/craft-web/src/app/common/components/*"]
     },
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "types": ["node", "jest"]
+    "allowSyntheticDefaultImports": true
   },
   "exclude": ["node_modules", "tmp"]
 }

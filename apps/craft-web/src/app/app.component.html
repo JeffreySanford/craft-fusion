@@ -1,15 +1,22 @@
-<div class="page-container">
-  <app-header></app-header>
-  <div class="layout-container">
+<div class="app-container flex-col">
+  <header>
+    <app-header></app-header>
+  </header>
+  <div class="layout-container flex-row flex-1 gap-1em">
     <aside class="sidebar">
-      <app-sidebar [isSmallScreen]="isSmallScreen" [isCollapsed]="isCollapsed" [ngClass]="{ 'collapsed': !isCollapsed }"></app-sidebar>
+      <app-sidebar [isSmallScreen]="isSmallScreen" [isCollapsed]="isCollapsed"></app-sidebar>
     </aside>
-    <main class="main-stage">
-      <router-outlet></router-outlet>
+    <main class="main-stage flex-1" [class.footer-expanded]="isFooterExpanded" [class.sidebar-collapsed]="isCollapsed">
+      <div class="router-content-wrapper flex-col flex-1">
+        <!-- Main router outlet -->
+        <router-outlet (activate)="onRouterActivate($event)" (deactivate)="onRouterDeactivate($event)"></router-outlet>
+      </div>
     </main>
   </div>
-  <app-footer></app-footer>
-  <video id="background-video" autoplay loop muted>
+  <footer>
+    <app-footer></app-footer>
+  </footer>
+  <video id="background-video" autoplay loop muted playsinline>
     <source src="assets/us-flag-disa-navy.mp4" type="video/mp4" />
     Your browser does not support the video tag.
   </video>

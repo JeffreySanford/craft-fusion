@@ -1,0 +1,38 @@
+<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Small stars pattern - improved visibility -->
+  <defs>
+    <pattern id="smallStars" width="50" height="50" patternUnits="userSpaceOnUse">
+      <!-- Blue star with better visibility -->
+      <path d="M10,8 L11.5,13.5 L17,14 L13,17 L14,22 L10,19.5 L6,22 L7,17 L3,14 L8.5,13.5 Z" 
+            fill="#3c3b6e" fill-opacity="0.15"/>
+      <!-- Red star with better visibility -->
+      <path d="M35,28 L36.5,33.5 L42,34 L38,37 L39,42 L35,39.5 L31,42 L32,37 L28,34 L33.5,33.5 Z" 
+            fill="#b22234" fill-opacity="0.15"/>
+    </pattern>
+    
+    <!-- Improved texture lines -->
+    <pattern id="textureLines" width="100" height="100" patternUnits="userSpaceOnUse">
+      <!-- Horizontal lines - more visible -->
+      <line x1="0" y1="20" x2="100" y2="20" stroke="#3c3b6e" stroke-width="0.5" stroke-opacity="0.08"/>
+      <line x1="0" y1="60" x2="100" y2="60" stroke="#b22234" stroke-width="0.5" stroke-opacity="0.08"/>
+      
+      <!-- Vertical lines - more visible -->
+      <line x1="20" y1="0" x2="20" y2="100" stroke="#3c3b6e" stroke-width="0.5" stroke-opacity="0.08"/>
+      <line x1="60" y1="0" x2="60" y2="100" stroke="#b22234" stroke-width="0.5" stroke-opacity="0.08"/>
+      
+      <!-- Diagonal lines with better spacing -->
+      <line x1="0" y1="0" x2="100" y2="100" stroke="#3c3b6e" stroke-width="0.5" stroke-opacity="0.08"/>
+      <line x1="100" y1="0" x2="0" y2="100" stroke="#b22234" stroke-width="0.5" stroke-opacity="0.08"/>
+    </pattern>
+    
+    <!-- Combine patterns with proper layering -->
+    <pattern id="combinedPattern" width="100" height="100" patternUnits="userSpaceOnUse">
+      <rect width="100" height="100" fill="#f8f8ff" fill-opacity="0.2"/> <!-- Base color -->
+      <rect width="100" height="100" fill="url(#textureLines)"/>
+      <rect width="100" height="100" fill="url(#smallStars)"/>
+    </pattern>
+  </defs>
+  
+  <!-- Apply the combined pattern -->
+  <rect width="100" height="100" fill="url(#combinedPattern)"/>
+</svg>

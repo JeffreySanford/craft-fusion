@@ -1,90 +1,57 @@
 name: CI
-
 on:
   push:
     branches:
+      # Change this if your primary branch is not main
       - master
   pull_request:
 
+# Needed for nx-set-shas when run on the main branch
 permissions:
   actions: read
   contents: read
 
 jobs:
   main:
-    runs-on: ubuntu-latest
-
+    runs-on: fedora-latest
     steps:
-      # 📥 Checkout Repository
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      # ⚙️ Setup Node Environment
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: 'npm'
+      # This line enables distribution
+      # The "--stop-agents-after" is optional, but allows idle agents to shut down once the "e2e-ci" targets have been requested
+      # - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
+      - run: npm ci
 
-      # 📦 Cache npm Dependencies
-      - name: Cache npm dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            npm-
+      - uses: nrwl/nx-set-shas@v4
 
-      # 📦 Install Dependencies
-      - name: Install Dependencies
-        run: npm ci
-
-      # 🔄 Set NX SHAs
-      - name: Set NX SHAs
-        uses: nrwl/nx-set-shas@v4
-        with:
-          error-on-no-successful-workflow: false
-
-      # ✅ Run Format Check
-      - name: Format Check
-        run: npx nx-cloud record -- nx format:check
-
-      # 🧪 Run Jest Tests with Coverage
-      - name: Run Jest Tests
-        run: npx nx affected -t test --configuration=ci --coverage --coverageReporters=text-summary,lcov --outputFile=reports/jest/results.xml
-
-      # 📊 Upload Jest Test Results
-      - name: Upload Jest Test Results
+      - run: npx nx-cloud record -- nx format:check
+      
+      # Run tests with result reporting
+      - name: Run Tests
+        run: npx nx affected -t test --configuration=ci --json --coverageReporters=text-summary,lcov > test-results.json
+      
+      # Upload test results
+      - name: Test Report
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
-          name: Jest Test Results
-          path: reports/jest/results.xml
-          reporter: jest-junit
+          name: Test Results
+          path: test-results.json
+          reporter: jest-json
           fail-on-error: false
 
-      # 📈 Upload Coverage Reports
-      - name: Upload Coverage Reports
+      # Upload coverage reports
+      - name: Upload coverage reports
         uses: codecov/codecov-action@v3
         with:
           files: ./coverage/lcov.info
           fail_ci_if_error: false
           verbose: true
 
-      # 🏗️ Build Affected Projects
-      - name: Build Affected Projects
-        run: npx nx affected -t build --configuration=ci
-
-      # 🧪 Run E2E Tests
-      - name: Run E2E Tests
-        run: npx nx affected -t e2e-ci --configuration=ci
-
-      # 📤 Upload Build Artifacts
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v3
-        if: success()
-        with:
-          name: build-artifacts
-          path: dist
+      # Continue with remaining steps
+      - run: npx nx affected -t build e2e-ci

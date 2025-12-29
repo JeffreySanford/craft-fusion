@@ -1,19 +1,26 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { User } from './user.interface';
 
-export interface User {
-  username: string;
-  password: string;
-  id: number;
-  firstName: string;
-  lastName: string;
-  role: string;
-}
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class SessionService {
+  
+  // Helper method to get full name from a user
+  getFullName(user: User): string {
+    if (user.firstName && user.lastName) {
+      return `${user.firstName} ${user.lastName}`;
+    } else if (user.firstName) {
+      return user.firstName;
+    } else if (user.lastName) {
+      return user.lastName;
+    } else {
+      return user.username; // Fallback to username
+    }
+  }
 
 
   status() {

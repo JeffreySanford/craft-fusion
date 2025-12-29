@@ -1,76 +1,95 @@
-<ng-container *ngIf="isMobile; else desktopView">
-  <!-- Ionic View for Mobile -->
-  <ion-content>
-    <ion-grid>
-      <ion-row>
-        <ion-col
-          size="12"
-          size-md="6"
-          size-lg="4"
-          *ngFor="let chart of charts; let i = index"
-        >
-          <ion-card
-            (click)="openTile(i)"
-            (keydown.enter)="openTile(i)"
-            (keydown.space)="openTile(i)"
-            tabindex="0"
-            class="chart-card"
-            [class.expanded]="expandedTileIndex === i"
-          >
-            <ion-card-header>
-              <ion-card-title>{{ chart.name }}</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              <ng-container *ngIf="chart.component === 'app-line-chart'">
-                <app-line-chart [data]="chart.data"></app-line-chart>
-              </ng-container>
-              <ng-container *ngIf="chart.component === 'app-bar-chart'">
-                <app-bar-chart [data]="chart.data"></app-bar-chart>
-              </ng-container>
-              <ng-container *ngIf="chart.component === 'app-fintech-chart'">
-                <app-fintech-chart [data]="chart.data"></app-fintech-chart>
-              </ng-container>
-              <ng-container *ngIf="chart.component === 'app-map-chart'">
-                <app-map-chart [data]="chart.data"></app-map-chart>
-              </ng-container>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ion-content>
-</ng-container>
+<div class="dashboard-layout">
+  <!-- Visualization Container -->
+  <div class="visualization-container" cdkDropList (cdkDropListDropped)="drop($event)">
+    <!-- Empty state when no charts are displayed -->
+    <div class="empty-state" *ngIf="displayedCharts.length === 0">
+      <mat-icon>view_quilt</mat-icon>
+      <h3>No Visualizations Selected</h3>
+      <p>Select visualizations from the sidebar to get started</p>
+    </div>
 
-<ng-template #desktopView>
-  <!-- Angular Material View for Desktop -->
-  <mat-grid-list cols="3" rowHeight="2:1">
-    <mat-grid-tile *ngFor="let chart of charts; let i = index">
-      <mat-card
-        (click)="openTile(i)"
-        (keydown.enter)="openTile(i)"
-        (keydown.space)="openTile(i)"
-        tabindex="0"
-        class="chart-card"
-        [class.expanded]="expandedTileIndex === i"
-      >
-        <mat-card-header>
-          <mat-card-title>{{ chart.name }}</mat-card-title>
+    <!-- Rendered Charts with proper grid sizing based on chart size -->
+    <div *ngFor="let chart of displayedCharts; let i = index"
+         class="visualization-item"
+         [ngClass]="getTileClasses(chart, i)"
+         cdkDrag [cdkDragDisabled]="fullExpandedTileIndex !== null">
+      <mat-card class="chart-card" [class.expanded]="expandedTileIndex === i">
+        <mat-card-header cdkDragHandle class="custom-colored" [style.color]="chart.color">
+          <div class="chart-title">
+            <mat-icon>{{getIconForChart(chart)}}</mat-icon>
+            {{chart.name}}
+          </div>
+          <button mat-icon-button class="restore-button" *ngIf="fullExpandedTileIndex === i" 
+                  (click)="restoreTile(i, $event)" aria-label="Restore visualization">
+            <mat-icon>fullscreen_exit</mat-icon>
+          </button>
+          <button mat-icon-button class="remove-button" (click)="removeTile(chart, $event)" aria-label="Remove visualization">
+            <mat-icon>close</mat-icon>
+          </button>
         </mat-card-header>
-        <mat-card-content>
-          <ng-container *ngIf="chart.component === 'app-line-chart'">
-            <app-line-chart [data]="chart.data"></app-line-chart>
-          </ng-container>
-          <ng-container *ngIf="chart.component === 'app-bar-chart'">
-            <app-bar-chart [data]="chart.data"></app-bar-chart>
-          </ng-container>
-          <ng-container *ngIf="chart.component === 'app-fintech-chart'">
-            <app-fintech-chart [data]="chart.data"></app-fintech-chart>
-          </ng-container>
-          <ng-container *ngIf="chart.component === 'app-map-chart'">
-            <app-map-chart [data]="chart.data"></app-map-chart>
-          </ng-container>
+        
+        <mat-card-content (click)="handleTileClick(i, $event)">
+          <!-- Use the pre-calculated chart class -->
+          <div class="chart-content" [ngClass]="chart.chartClass">
+            <!-- Dynamic component rendering with size inputs -->
+            <ng-container [ngSwitch]="chart.component">
+              <!-- Pass width to all chart components but not explicit height -->
+              <app-line-chart 
+                *ngSwitchCase="'app-line-chart'" 
+                [data]="chart.data"
+                [width]="tileWidth">
+              </app-line-chart>
+              
+              <app-bar-chart 
+                *ngSwitchCase="'app-bar-chart'" 
+                [data]="chart.data"
+                [width]="tileWidth">
+              </app-bar-chart>
+              
+              <app-finance-chart 
+                *ngSwitchCase="'app-finance-chart'" 
+                [data]="chart.data"
+                [width]="tileWidth">
+              </app-finance-chart>
+              
+              <app-fire-alert 
+                *ngSwitchCase="'app-fire-alert'"
+                [width]="tileWidth">
+              </app-fire-alert>
+            </ng-container>
+          </div>
         </mat-card-content>
       </mat-card>
-    </mat-grid-tile>
-  </mat-grid-list>
-</ng-template>
+    </div>
+  </div>
+
+  <!-- Visualization Sidebar -->
+  <div class="visualization-sidebar" [class.collapsed]="isSidebarCollapsed">
+    <div class="sidebar-header">
+      <h2>Available Visualizations</h2>
+      <button mat-icon-button class="sidebar-toggle" (click)="toggleVisualizationSidebar()">
+        <mat-icon>{{isSidebarCollapsed ? 'chevron_right' : 'chevron_left'}}</mat-icon>
+      </button>
+    </div>
+    <div class="sidebar-content">
+      <mat-list>
+        <mat-list-item *ngFor="let chart of availableCharts" 
+                       (click)="toggleChart(chart)" 
+                       [class.active]="isChartActive(chart)"
+                       [style.color]="isChartActive(chart) ? chart.color : 'inherit'">
+          <mat-icon matListItemIcon class="visualization-icon" [style.color]="isChartActive(chart) ? chart.color : 'inherit'">{{getIconForChart(chart)}}</mat-icon>
+          <span matListItemTitle>{{chart.name}}</span>
+          <mat-icon matListItemMeta class="selection-indicator"
+                   [class.active-icon]="isChartActive(chart)"
+                   [style.color]="isChartActive(chart) ? chart.color : 'inherit'">
+            {{isChartActive(chart) ? 'check_circle' : 'radio_button_unchecked'}}
+          </mat-icon>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </div>
+</div>
+
+<!-- Full Screen Modal Backdrop -->
+<div class="fullscreen-backdrop" *ngIf="fullExpandedTileIndex !== null" 
+     (click)="handleBackdropClick($event)"></div>

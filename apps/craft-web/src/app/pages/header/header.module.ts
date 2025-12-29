@@ -1,14 +1,20 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { HeaderComponent } from './header.component';
-import { MaterialModule } from '../../material.module';
+import { MatMenuModule } from '@angular/material/menu'; // Import MatMenuModule
+import { MatButtonModule } from '@angular/material/button'; // Import MatButtonModule
 
 @NgModule({
   declarations: [HeaderComponent],
   imports: [
     CommonModule,
-    MaterialModule
+    MatCardModule,
+    MatIconModule,
+    MatMenuModule, // Add MatMenuModule here
+    MatButtonModule // Add MatButtonModule for mat-icon-button
   ],
-  exports: [HeaderComponent] // Export HeaderComponent
+  exports: [HeaderComponent]
 })
-export class HeaderModule { }
+export class HeaderModule {}

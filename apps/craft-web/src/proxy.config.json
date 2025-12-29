@@ -1,17 +1,36 @@
 {
   "/api": {
-    "target": "https://localhost:3000",
+    "target": "http://127.0.0.1:3000",
     "secure": false,
     "changeOrigin": true,
-    "logLevel": "debug"
+    "logLevel": "info",
+    "timeout": 120000,
+    "proxyTimeout": 120000
   },
-  "/api/go": {
-    "target": "http://localhost:4000",
+  "/api-go": {
+    "target": "http://127.0.0.1:4000",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",
     "pathRewrite": {
-      "^/api/go": ""
-    }
+      "^/api-go": "/api-go"
+    },
+    "timeout": 120000,
+    "proxyTimeout": 120000
+  },
+  "/socket": {
+    "target": "ws://127.0.0.1:3000",
+    "secure": false,
+    "ws": true,
+    "changeOrigin": true,
+    "timeout": 120000,
+    "proxyTimeout": 120000
+  },
+  "/assets": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false,
+    "changeOrigin": true,
+    "timeout": 120000,
+    "proxyTimeout": 120000
   }
 }

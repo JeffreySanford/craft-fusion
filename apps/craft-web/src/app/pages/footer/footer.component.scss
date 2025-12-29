@@ -1,14 +1,37 @@
-/* Styles for the footer component */
+@use '../../../styles/_utilities.scss' as utilities;
+@use '../../../styles/_animations.scss'; // Import shared animations
+
 .footer-container {
   position: fixed;
-  bottom: 1em;
+  bottom: 0.5em; // Changed from 1em to 0.5em for consistency
+  left: 0.5em; // Added to ensure consistent spacing
+  right: 0.5em; // Added to ensure consistent spacing
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  width: 99%;
-  border-radius: 0;
+  width: calc(100% - 1em); // Changed from 99% to ensure exact 0.5em margins on both sides
   overflow: visible;
+  transition: height 0.3s ease;
+  z-index: 1000;
+  background: linear-gradient(
+    to right,
+    rgba(255, 0, 0, 0.7) 0%,
+    rgba(255, 255, 255, 0.7) 20%,
+    rgba(0, 0, 255, 0.7) 30%,
+    rgba(0, 128, 128, 0.7) 100%
+  );
+  
+  &.expanded {
+    // When expanded, footer takes up more space
+    height: auto;
+  }
+
+  @include utilities.footer-expansion-panel(
+    linear-gradient(to right, rgba(0,0,255,0.7) 0%, rgba(0,0,0,0.7) 100%),
+    rgba(0,0,0,0.7),
+    gold
+  );
 
   .top-containers {
     display: flex;
@@ -18,112 +41,277 @@
   .contact-block {
     display: flex;
     flex-direction: column;
-    border: 0.125em solid lime;
+    justify-content: flex-start;
     padding: 0.625em;
+    width: 10em;
 
     p {
-      font-size: 0.8em;
-      color: gold;
-      margin: 0;
-      padding-left: 1em;
+      font-size: 1.25em;
+      margin: 0 0 0 0.15em;
     }
 
     button {
       font-size: 1em;
       display: flex;
-      align-items: center;
-      margin: 0;
+      margin-bottom: 0.5em;
       padding: 0.125em 0;
-      color: gold;
-      background: none;
+      color: lightskyblue;
+      background-color: rgba(255, 255, 255, 0.1);
       border: none;
       cursor: pointer;
       text-decoration: none;
+      font-weight: lighter;
 
       &:hover {
         text-decoration: underline;
       }
+    }
 
-      mat-icon {
-        margin-right: 0.5em;
-      }
+    .mat-icon {
+      margin-right: 0.5em;
+      color: brightblue;
+    }
+  }
+
+  .mat-panel-title {
+    display: flex;
+    align-items: center;
+
+    mat-icon {
+      margin-right: 1em;
+      background-color: teal;
     }
   }
 
   .logo-performance-block {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-end; /* Changed to flex-end */
     position: relative;
     z-index: 10;
-    margin-top: -4em;
     overflow: visible;
+    width: 100%; // Make it full width
+
+    @include utilities.logo-containers();
 
     .logo-row {
       display: flex !important;
-      justify-content: center;
+      flex-wrap: wrap; /* Allow wrapping to multiple rows */
+      justify-content: flex-end; /* Changed to flex-end */
       align-items: center;
-      margin: 0.5em 0 0 0;
+      margin: 0.5em 0 1em 0;
       overflow: visible;
 
       img {
         width: auto;
         height: 3.5em;
         padding: 0.25em;
-        margin: 0 0.5em;
-        border: 0.0625em solid gold;
-        background: linear-gradient(to bottom, green, black);
+        margin: 0 1.5em; /* Changed to 1.5em */
+        border: 0.0625em solid blue;
         transition: transform 0.3s, z-index 0.3s;
         position: relative;
 
         &:hover {
           transform: scale(3);
-          z-index: 20;
+          z-index: 9999;
+          background-color: black;
+        }
+      }
+    }
+
+    mat-card {
+      @include utilities.performance-chart(5em); // Increased height
+      .performance-metrics {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 0.8em;
+        margin-right: 0.25em;
+        height: 100%;
+        width: 100%;
+
+        .metric {
+          display: flex;
+          align-items: center;
+          margin: 0.5em;
+          padding: 0.5em;
+          color: white; /* Default color */
+
+          label {
+            margin-right: 0.5em; /* Slight indent before the metric */
+          }
+
+          .cpu-load-visualization {
+            width: 100%;
+            height: 0.5em;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 0.25em;
+            overflow: hidden;
+            margin-bottom: 0.5em;
+
+            .cpu-load-bar {
+              height: 100%;
+              background-color: lime;
+              transition: width 0.3s ease;
+            }
+          }
+
+          .cpu-load-label {
+            display: block;
+            text-align: center;
+            margin-top: 0.25em;
+          }
+        }
+
+        .green-text {
+          color: lime;
+        }
+
+        .yellow-text {
+          color: yellow;
+        }
+
+        .red-text {
+          color: #ff0000;
+        }
+
+        canvas {
+          width: 100% !important;
+          height: 100% !important;
+        }
+
+        .simulation-badge {
+          position: absolute;
+          top: 5px;
+          left: 5px;
+          background-color: rgba(0, 0, 255, 0.7);
+          color: white;
+          font-size: 0.7em;
+          padding: 2px 5px;
+          border-radius: 3px;
+          z-index: 10;
+        }
+
+        .data-mode-toggle {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          position: absolute;
+          top: 5px;
+          left: 5px;
+          z-index: 10;
+          padding: 2px 5px;
+          border-radius: 3px;
+          background-color: rgba(0, 0, 0, 0.5);
+          min-width: 120px;
+          
+          @include utilities.data-overlay(0.5);
+
+          mat-slide-toggle {
+            font-size: 0.7em;
+            color: white;
+          }
+          
+          .advanced-link {
+            font-size: 0.7em;
+            color: #33AAFF;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            
+            mat-icon {
+              font-size: 14px;
+              height: 14px;
+              width: 14px;
+              margin-left: 2px;
+            }
+            
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+
+        .service-metrics-overlay {
+          position: absolute;
+          bottom: 5px;
+          right: 5px;
+          background-color: rgba(0, 0, 0, 0.6);
+          border-radius: 4px;
+          padding: 5px;
+          z-index: 10;
+          max-width: 200px;
+          
+          @include utilities.data-overlay(0.6);
+
+          .service-metric {
+            display: flex;
+            align-items: center;
+            margin: 2px 0;
+            font-size: 0.8em;
+            color: white;
+            
+            mat-icon {
+              font-size: 14px;
+              height: 14px;
+              width: 14px;
+              margin-right: 4px;
+            }
+            
+            .service-name {
+              flex: 1;
+              margin-right: 4px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+            
+            .service-time {
+              color: #33AAFF;
+              font-weight: bold;
+            }
+          }
         }
       }
     }
   }
 
   .performance-card {
-    margin-top: 1em;
     background-color: rgba(0, 0, 0, 0.4);
-    height: 2em;
-    width: 65vw;
-    justify-content: center;
-    position: absolute;
-    right: 1em;
-    bottom: 0.25em;
+    height: 8em;
+    width: 80%;
+    margin-top: 1em;
+    transition: border-color 0.3s ease;
+    position: relative;
   }
 
-  .performance-metrics {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 0.8em;
-    margin-right: 0.25em;
-
-    .metric {
+  .panel-header {
+    padding: 0 16px;
+    
+    .title-content {
       display: flex;
       align-items: center;
-      margin: 0.5em;
-      padding: 0.5em;
-      color: white; /* Default color */
-
-      label {
-        margin-right: 0.5em; /* Slight indent before the metric */
+      width: 100%;
+      
+      mat-icon {
+        color: gold;
+        margin-right: 8px;
       }
-    }
-
-    .green-text {
-      color: lime;
-    }
-
-    .yellow-text {
-      color: yellow;
-    }
-
-    .red-text {
-      color: #FF0000;
+      
+      p {
+        font-size: 1.25em;
+        margin: 0 0 0 0.15em;
+        color: gold;
+      }
+      
+      .quick-metrics {
+        display: flex;
+        gap: 8px;
+        margin-left: auto;
+        
+        @include utilities.metric-pill(gold);
+      }
     }
   }
 }
@@ -152,26 +340,97 @@ mat-expansion-panel[expanded] {
   }
 }
 
-mat-expansion-panel {
-  width: 100%;
-  color: gold;
-  background: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0.7) 0%,      
-    rgba(0, 50, 0, 0.7) 25%,    
-    rgba(0, 100, 0, 0.7) 50%, 
-    rgba(0, 128, 0, 0.7) 75%,
-    rgba(0, 128, 128, 0.7) 100%
-  );
-}
-
 .footer-content {
   display: flex;
+  flex-direction: row; // Ensure elements are inline
   justify-content: space-between;
-  width: auto;
+  align-items: flex-start; // Align items to the top
+  width: 100%;
+  gap: 1.5em;
+  padding: 1em;
+  
+  .contact-block {
+    display: flex;
+    flex-direction: row; // Make contacts inline
+    flex-wrap: wrap; // Allow wrapping on small screens
+    gap: 0.75em;
+    min-width: 200px;
+    
+    button {
+      min-width: auto;
+      flex: 0 0 auto;
+    }
+  }
+  
+  .logo-performance-block {
+    flex: 1;
+    
+    .logo-container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 1em;
 
-  > div {
-    display: inline-block;
-    vertical-align: top;
+      .dev-logos, .agency-logos {
+        flex: 1;
+        min-width: 200px;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+// Responsive behavior
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    
+    .contact-block {
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .logo-performance-block {
+      width: 100%;
+    }
+  }
+}
+
+// Responsive enhancements
+@media (max-width: 480px) {
+  .footer-content {
+    padding: 0.5em;
+    
+    .performance-card {
+      height: 4em !important; // Override for mobile
+    }
+  }
+}
+
+::ng-deep .mat-expansion-indicator {
+  transform: scale(1.5);
+  transition: transform 0.3s ease-in-out;
+}
+
+::ng-deep .mat-expansion-indicator::after {
+
+  color: gold !important;
+  // background-color: white !important;
+  
+  svg {
+    fill: gold !important;
+  }
+}
+
+// Style for admin button
+button[color="warn"] {
+  background-color: rgba(220, 53, 69, 0.8);
+  
+  &:hover {
+    background-color: rgba(220, 53, 69, 1);
+  }
+  
+  mat-icon {
+    color: white;
   }
 }

@@ -110,7 +110,6 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
 
 # Databases
 *.sqlite
@@ -125,23 +124,3 @@ database.sqlite # Ignore specific sqlite db file
 
 # Archived development scripts
 scripts/archive/
-
-# Ignore local generated binaries and reports
-*.exe
-trufflehog-report.json
-.cursor/
-
-# Local cache & editor temp files
-/.cache/
-/.parcel-cache/
-/.eslintcache
-**/.vscode-test/
-
-# Ensure nx and workspace caches are ignored
-.nx/cache/
-.nx/workspace-data/
-
-# Ensure build artifacts are not tracked
-/dist/
-/dist/**
-apps/**/dist/

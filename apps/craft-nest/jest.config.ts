@@ -1,17 +1,13 @@
-import baseConfig from '../../jest.config';
-
+/* eslint-disable */
 export default {
-  ...baseConfig,
   displayName: 'craft-nest',
-  testMatch: ['**/*.spec.ts'],
-  preset: '../../jest.preset',
-  testEnvironment: 'node',
-  moduleNameMapper: {
-    "@craft-nest/environments/environment": "<rootDir>/src/environments/environment"
-  },
+  preset: '../../jest.preset.js',
+  testEnvironment: 'node', // Explicitly set test environment to node
   transform: {
-    '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.json' }],
+    '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apps/craft-nest',
+  // Add setup file if needed for NestJS specific mocks or environment setup
+  // setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
 };

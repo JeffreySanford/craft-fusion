@@ -1,0 +1,49 @@
+{
+  "github.copilot.advanced": {
+    "gpuAcceleration": "off",
+    "maxCompletionItems": 10,
+    "maxTokenLength": 1024,
+    "responseSpeed": "fast",
+    "memoryManagement": "moderate",
+    "completionTimeout": 15000,
+    "useJetBrains": true
+  },
+  "github.copilot.inlineSuggest.count": 5,
+  "github.copilot.enable": {
+    "plaintext": true,
+    "markdown": true,
+    "scminput": true,
+    "typescript": true,
+    "javascript": true,
+    "html": true,
+    "css": true,
+    "scss": true,
+    "json": true,
+    "jsonc": true
+  },
+  "github.copilot.chat": {
+    "modelProvider": "github-copilot",
+    "defaultModelConfiguration": {
+      "model": "default",
+      "parameters": {
+        "topK": 40,
+        "temperature": 0.1
+      }
+    },
+    "enablePrefillOnSelection": true,
+    "previewMaxTokensToProcess": 8192,
+    "useGPU": false,
+    "autoReplyStrategy": "smart"
+  },
+  "github.copilot.ui": {
+    "showResponsesInEditor": true,
+    "showMinimalResponsesInline": true,
+    "showCompletionHover": true,
+    "showCompletionDetails": true,
+    "showInlineProgress": false
+  },
+  "github.copilot.editor": {
+    "enableAutoCompletions": true,
+    "enableCodeEngine": true
+  }
+}

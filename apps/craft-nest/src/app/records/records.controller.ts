@@ -17,29 +17,22 @@ export class RecordsController {
   @Get('generate')
   generateMultipleRecords(@Query('count') count: number): Record[] {
     console.log('Received request to generate records with count:', count);
-
-    // Convert count to a number and provide a default if necessary
-    const recordCount = Number(count) || 10; // Default to 10 if count is not provided
-    console.log('Parsed record count:', recordCount);
-
-    this.recordGenerationTime = 0;
-  
-    const startTime = performance.now();
-    // Generate records logic here...
-    const endTime = performance.now();
-    this.recordGenerationTime = endTime - startTime;
-
+    const recordCount = Number(count) || 10;
     return this.recordService.generateMultipleRecords(recordCount);
   }
 
   @Get('total-income/:UID')
   getTotalIncome(@Param('UID') UID: string): number {
+    console.log('Received request to get total income for UID:', UID);
     return this.recordService.calculateTotalIncome(UID);
   }
 
   @Get('time')
-  getCreationTime(): number {
-    return this.recordGenerationTime;
+  getCreationTime(): { generationTime: number } {
+    console.log('Received request to get creation time');
+    const generationTime = this.recordService.getCreationTime();
+    console.log('Returning creation time:', generationTime);
+    return { generationTime };
   }
 
   @Get(':UID')

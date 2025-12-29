@@ -1,0 +1,39 @@
+// MD3 Design tokens based on https://m3.material.io/
+// This file should contain all foundational design tokens
+
+// Color tokens
+$md-sys-color: (
+  // Core colors (light theme)
+  primary: #002868,
+  on-primary: #ffffff,
+  primary-container: #d6e2ff,
+  on-primary-container: #001849,
+  // ...other colors
+
+  // Surface tokens
+  surface: #fdfbff,
+  on-surface: #1b1b1f,
+  surface-variant: #e1e2ec,
+  on-surface-variant: #44474f,
+  // ...other surface variants
+  
+  // State layers
+  state-layers: (
+    hover-opacity: 0.08,
+    focus-opacity: 0.12,
+    pressed-opacity: 0.12,
+    dragged-opacity: 0.16
+  ),
+  
+  // Typography tokens
+  typography: (
+    display-large: (
+      font-family: "Roboto Flex, sans-serif",
+      font-size: 57px,
+      line-height: 64px,
+      font-weight: 400,
+      letter-spacing: -0.25px
+    ),
+    // ...other type styles
+  )
+);

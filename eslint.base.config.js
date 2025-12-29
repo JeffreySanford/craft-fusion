@@ -1,29 +1,10 @@
-module.exports = [
-  {
-    files: ['**/*.ts', '**/*.js'],
-    parser: '@typescript-eslint/parser',
-    parserOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      project: './tsconfig.base.json',
-    },
-    plugins: ['@typescript-eslint', 'import'],
-    extends: [
-      'eslint:recommended',
-      'plugin:@typescript-eslint/recommended',
-    ],
-    settings: {
-      'import/resolver': {
-        typescript: {
-          project: './tsconfig.base.json',
-        },
-      },
-    },
-    env: {
-      browser: true,
-      node: true,
-      es6: true,
-    },
-    overrides: [],
+module.exports = {
+  rules: {
+    // Common rules for both frontend and backend
+    '@typescript-eslint/explicit-function-return-type': 'error',
+    '@typescript-eslint/explicit-module-boundary-types': 'error',
+    '@typescript-eslint/no-explicit-any': 'warn',
+    'no-console': 'warn',
+    'prefer-const': 'error'
   }
-];
+};

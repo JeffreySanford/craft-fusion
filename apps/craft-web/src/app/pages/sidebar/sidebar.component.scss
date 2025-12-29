@@ -1,8 +1,11 @@
 .sidebar-container {
   background-color: rgba(0, 0, 255, 0.2);
   padding: 1em;
-  height: 60%;
-  margin: 0 1em;
+  height: 60vh;
+  width: 100%;
+  margin: 0 0 0 0.125em;
+  border-radius: 0.25em;
+  position: relative; // Ensure relative positioning for absolute children
 
   &.collapsed {
     width: 7em;
@@ -10,14 +13,33 @@
 
   .toggle {
     position: absolute;
-    bottom: 9em;
-    color: white;
-    font-size: 1em;
+    bottom: 1em; // Position at the bottom
+    left: 1em; // Position at the left
+    color: #00FFFF;
+    border: 1px solid #00FFFF;
+    font-size: 0.85em; // Increased font size
     cursor: pointer;
-    transition: color 3s ease;
+    transition: color 300ms ease;
+    padding: 0.35em; // Increased padding
+    min-width: unset; // Override default button styles
+    height: 2.25em; // Increased height
+    width: 2.25em; // Increased width
+    line-height: 1em;
+    display: flex; // Use flexbox to center the icon
+    align-items: center; // Vertically center
+    justify-content: center; // Horizontally center
+
+    .mat-icon {
+      margin: 0 0 0 -0.05em; // Remove any default margins on the icon and nudge left
+      font-size: 1.1em; // Reduced icon size
+      color: #00FF7F; // Blue-green color
+      display: flex;        // Use flexbox on the icon itself
+      align-items: center;  // Vertically center the icon content
+      justify-content: center; // Horizontally center the icon content
+    }
 
     &:hover {
-      color: red;
+      color: greenyellow;
     }
   }
 }
@@ -29,11 +51,13 @@
   margin: 0 0.25em;
   width: 13em;
   height: 3em;
+  line-height: 1.25em;
   text-align: right;
-  border-radius: 1em;
-  outline: 0.1em solid rgba(33, 150, 243, 0.5);
-  background-color: rgba(0, 0, 0, 0.6) !important;
-  color: white; /* Replaced with stock color */
+  border-radius: 0.25em;
+  border: 1px solid darkblue;
+  outline: 0.1em solid rgba(4, 0, 252, 0.3);;
+  background-color: rgba(4, 0, 252, 0.7) !important;
+  color: white;
 
   &.collapsed {
     width: 5em;
@@ -42,19 +66,22 @@
 
   &:hover {
     transform: scale(1.1);
-    outline-color: rgba(33, 150, 243, 0.8);
-    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15),
-      0 0 0.9375em rgba(33, 150, 243, 0.3);
+    outline-color: rgba(96, 33, 243, 0.8);
+    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(33, 150, 243, 0.3);
   }
 
   &.active {
     outline-color: rgba(33, 236, 243, 0.8);
-    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15),
-      0 0 0.9375em rgba(33, 194, 243, 0.3);
+    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(33, 194, 243, 0.3);
+    color: #00FFFF; // Neon cyan
+    
+    .mat-icon, .menu-text {
+      color: #00FFFF;
+    }
   }
 
   .mat-icon {
-    color: #0000ff; // or your fallback
+    color: white;
     font-size: 2.25em;
     height: 1em;
     width: 2em;
@@ -64,17 +91,67 @@
   }
 
   .menu-text {
-    color: white; /* Replaced with stock color */
+    color: white;
     flex-grow: 1;
     text-align: right;
     opacity: 1;
     transform: translateX(-1.25em);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
+  &[routerLink="/admin"] {
+    background-color: rgba(252, 4, 0, 0.7) !important;
+    border: 1px solid darkred;
+    outline: 0.1em solid rgba(252, 0, 0, 0.3);
+    color: white;
+
+    &:hover {
+      transform: scale(1.1);
+      outline-color: rgba(243, 33, 33, 0.8);
+      box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(243, 33, 33, 0.3);
+    }
+
+    &.active {
+      outline-color: rgba(33, 236, 243, 0.8);
+      box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(33, 194, 243, 0.3);
+      background-color: rgba(252, 4, 0, 0.7) !important;
+      color: #00FFFF; // Neon cyan
+
+      .mat-icon,
+      .menu-text {
+        color: #00FFFF;
+      }
+    }
+  }
+}
+
+.admin-link {
+  background-color: rgba(252, 4, 0, 0.7) !important;
+  border: 1px solid darkred;
+  outline: 0.1em solid rgba(252, 0, 0, 0.3);
+  color: white;
+
+  &:hover {
+    transform: scale(1.1);
+    outline-color: rgba(243, 33, 33, 0.8);
+    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(243, 33, 33, 0.3);
+  }
+
+  &.active {
+    outline-color: rgba(33, 236, 243, 0.8);
+    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(33, 194, 243, 0.3);
+    background-color: rgba(252, 4, 0, 0.7) !important;
+    color: #00FFFF; // Neon cyan
+
+    .mat-icon,
+    .menu-text {
+      color: #00FFFF;
+    }
+  }
 }
 
 .sidebar {
-  color: white; /* Replaced with stock color */
+  color: white;
   width: 250px;
   background-color: #f8f9fa;
   padding: 15px;
@@ -93,11 +170,15 @@
 
     .sidebar-item {
       padding: 10px;
-      border-radius: 4px;
       transition: background-color 0.3s;
 
       &:hover {
         background-color: #e9ecef;
+      }
+
+      &.collapsed {
+        width: 7em;
+        border: 1px solid #00FFFF;
       }
     }
   }
@@ -106,5 +187,13 @@
     margin-top: auto;
     font-size: 14px;
     color: #6c757d;
+  }
+}
+
+// Add collapsed class styles
+:host ::ng-deep .collapsed {
+  .menu-item.mdc-button {
+    padding: 0 0 0 1.25em;
+    max-width: 7em;
   }
 }

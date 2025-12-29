@@ -1,0 +1,170 @@
+.logs-container {
+  padding: 1em;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.logs-title {
+  color: var(--md-sys-color-on-surface);
+  margin: 0 0 1em 0;
+}
+
+.filter-panel {
+  background-color: var(--md-sys-color-surface-variant);
+  padding: 1em;
+  border-radius: 8px;
+  margin-bottom: 1em;
+}
+
+.filter-form {
+  .filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5em; // Increased gap for better spacing
+    padding: 0 0.75rem; // Add left/right padding
+  }
+  
+  // Enhanced styling for form fields
+  mat-form-field {
+    ::ng-deep {
+      .mat-mdc-text-field-wrapper {
+        background: rgba(255, 255, 255, 0.92) !important;
+        border-radius: 0.25rem;
+        border: 1px solid rgba(0, 40, 104, 0.3);
+        transition: all 0.3s ease;
+        
+        &:hover {
+          border-color: rgba(0, 40, 104, 0.6);
+          box-shadow: 0 0 0.5rem rgba(0, 40, 104, 0.2);
+        }
+      }
+      
+      .mdc-floating-label {
+        color: #002868;
+        font-weight: 500;
+      }
+      
+      .mat-mdc-select-arrow {
+        color: #bf0a30;
+      }
+      
+      .mat-mdc-select-value-text {
+        color: #002868;
+        font-weight: 500;
+      }
+      
+      .mat-mdc-input-element {
+        color: #002868;
+      }
+    }
+  }
+  
+  .filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1em;
+    margin-top: 0.5em;
+    flex-wrap: wrap;
+  }
+}
+
+.table-container {
+  flex: 1;
+  overflow: auto;
+  background-color: var(--md-sys-color-surface);
+  border-radius: 8px;
+  position: relative;
+}
+
+.logs-table {
+  width: 100%;
+  
+  .mat-column-timestamp {
+    width: 180px;
+    white-space: nowrap;
+  }
+  
+  .mat-column-level {
+    width: 100px;
+    text-align: center;
+  }
+  
+  .mat-column-component {
+    width: 150px;
+  }
+  
+  .mat-column-message {
+    max-width: 400px;
+  }
+  
+  .message-cell {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  
+  .details-cell {
+    max-width: 300px;
+    overflow: hidden;
+    
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.85em;
+      max-height: 100px;
+      overflow: auto;
+    }
+  }
+}
+
+// Log level styling
+.log-level-debug {
+  color: var(--md-sys-color-primary);
+}
+
+.log-level-info {
+  color: var(--md-sys-color-tertiary);
+}
+
+.log-level-warn {
+  color: orange;
+  font-weight: 500;
+}
+
+.log-level-error {
+  color: var(--md-sys-color-error);
+  font-weight: 700;
+}
+
+.no-logs-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--md-sys-color-on-surface-variant);
+  font-style: italic;
+}
+
+// Global styling for select panel overlays
+:host ::ng-deep .mat-mdc-select-panel {
+  .mat-mdc-option {
+    &.mdc-list-item--selected {
+      background-color: #e3f2fd !important; // Light blue for selected items
+      color: #002868 !important; // Patriotic blue text
+      
+      &:not(.mdc-list-item--disabled) {
+        background-color: #e3f2fd !important;
+      }
+      
+      &:hover {
+        background-color: #bbdefb !important; // Slightly darker blue on hover when selected
+      }
+    }
+    
+    &:hover:not(.mdc-list-item--selected) {
+      background-color: #f3f8ff !important; // Very light blue on hover for unselected
+    }
+  }
+}

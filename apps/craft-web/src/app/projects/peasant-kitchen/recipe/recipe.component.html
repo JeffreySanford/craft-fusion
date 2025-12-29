@@ -1,28 +1,76 @@
 <!-- recipe.component.html -->
-<mat-card *ngIf="recipe" class="card mat-elevation-z4">
-  <mat-card-title-group>
-    <mat-icon class="recipe-icon">local_restaurant</mat-icon>
-    <mat-card-title>{{ recipe.name }}</mat-card-title>
-  </mat-card-title-group>
-  <mat-card-content class="card-description">
-    <div class="description">{{ recipe.description }}</div>
-    <div class="country-of-origin">
-      <strong>Country of Origin:</strong> {{ recipe.countryOfOrigin }}
-    </div>
-    <div class="serving-size">
-      <strong>Serving Size:</strong> {{ recipe.servingSize }}
-    </div>
-    <div class="ingredients">
-      <strong>Ingredients:</strong>
-      <ul>
-        <li *ngFor="let ingredient of recipe.ingredients">{{ ingredient }}</li>
-      </ul>
-    </div>
-    <div class="directions">
-      <strong>Directions:</strong>
-      <div *ngFor="let step of recipe.directions">
-        <p class="step">{{ step }}</p>
+<!-- Loading state -->
+<div *ngIf="loading" class="loading-container">
+  <mat-spinner color="accent" diameter="40"></mat-spinner>
+  <p class="loading-text">Loading recipe...</p>
+</div>
+
+<!-- Error state -->
+<div *ngIf="!this.recipe.name" class="error-container">
+  <mat-icon color="warn" class="error-icon">error</mat-icon>
+  <p class="error-text">{{ error }}</p>
+  <button mat-raised-button color="primary">
+    <mat-icon>arrow_back</mat-icon> Return to Recipes
+  </button>
+</div>
+
+<!-- Recipe card - only show if we have a recipe and no error -->
+<div class="recipe-content-wrapper" *ngIf="recipe && !error && !loading">
+  <mat-card class="card mat-elevation-z4 patriotic-card">
+    <!-- Remove corner decorations -->
+
+    <!-- Added decorative elements -->
+    <div class="card-background"></div>
+
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="recipe-icon">local_restaurant</mat-icon>
+        <span class="recipe-name">{{ recipe.name }}</span>
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="card-description">
+        <div class="details-box">
+          <div class="description">
+            {{ recipe.description }}
+          </div>
+
+          <div class="recipe-detail">
+            <label>Country of Origin:</label>
+            <div class="recipe-value">
+              <span *ngIf="recipe.countryCode" class="flag-icon flag-icon-{{ recipe.countryCode | lowercase }}"></span>&nbsp;
+              {{ service.getCountryName(recipe.countryCode) }}
+            </div>
+          </div>
+
+          <div class="recipe-detail">
+            <label>Serving Size:</label>
+            <div class="recipe-value">
+              {{ recipe.servingSize }}
+            </div>
+          </div>
+
+        </div>
+        <div class="ingredients">
+          <strong>Ingredients:</strong>
+          <ul class="ingredients-list">
+            <li *ngFor="let ingredient of recipe.ingredients" class="ingredient-item">{{ ingredient }}</li>
+          </ul>
+        </div>
+        <div class="directions">
+          <strong>Directions:</strong>
+          <div *ngFor="let step of recipe.directions; let i = index">
+            <p class="step"><span class="step-number">{{ i + 1 }}</span>{{ step }}</p>
+          </div>
+        </div>
       </div>
-    </div>
-  </mat-card-content>
-</mat-card>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-button color="primary">
+        <mat-icon>arrow_back</mat-icon> Back to Recipes
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

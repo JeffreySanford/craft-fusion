@@ -13,15 +13,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var recordGenerationTime int64
-
-func init() {
-	// Initialize the record generation time
-	recordGenerationTime = time.Now().Unix()
-}
+var startTime int64
 
 // GenerateRecordsHandler handles the request to generate multiple records
 func GenerateRecordsHandler(c *gin.Context) {
+	// Set the start time
+	startTime = time.Now().Unix()
 	// Parse the count parameter
 	count := c.DefaultQuery("count", "10")
 	recordCount, err := strconv.Atoi(count)
@@ -30,20 +27,17 @@ func GenerateRecordsHandler(c *gin.Context) {
 		return
 	}
 
-	// Start the timer
-	startTime := time.Now()
-
 	// Generate the records
 	records := generateRecords(recordCount)
-
-	// End the timer
-	endTime := time.Now()
-
+	endTime := time.Now().Unix()
 	// Calculate the elapsed time
-	elapsedTime := endTime.Sub(startTime).Milliseconds()
+	elapsedTime := time.Now().UnixMilli() - (startTime * 1000)
+
+	var recordGenerationTime int64
 	atomic.StoreInt64(&recordGenerationTime, elapsedTime)
 
 	// Log the number of records generated and the elapsed time
+	log.Printf("Start time: %v, End time: %v", startTime, endTime)
 	log.Printf("%d records generated in: %d ms", recordCount, elapsedTime)
 
 	// Return the generated records
@@ -52,8 +46,14 @@ func GenerateRecordsHandler(c *gin.Context) {
 
 // GetCreationTimeHandler handles the request to get the record generation time
 func GetCreationTimeHandler(c *gin.Context) {
+	var recordGenerationTime int64
 	elapsedTime := atomic.LoadInt64(&recordGenerationTime)
 	c.JSON(http.StatusOK, gin.H{"generationTime": elapsedTime})
+}
+
+// NotImplementedHandler returns a 501 Not Implemented for unimplemented endpoints
+func NotImplementedHandler(c *gin.Context) {
+	c.JSON(http.StatusNotImplemented, gin.H{"error": "This endpoint is not implemented in the Go backend. Use the NestJS backend for this route."})
 }
 
 // Mock function to generate records
@@ -72,10 +72,19 @@ func generateRecords(count int) []models.UserRecord {
 				Zipcode: gofakeit.Zip(),
 			},
 			Phone: models.Phone{
-				Number:       gofakeit.Phone(),
-				AreaCode:     strconv.Itoa(gofakeit.Number(200, 999)),
-				HasExtension: gofakeit.Bool(),
-				Extension:    func() *string { ext := strconv.Itoa(gofakeit.Number(1000, 9999)); return &ext }(),
+				Number: gofakeit.Phone(),
+				AreaCode: func() *string {
+					areaCode := strconv.Itoa(gofakeit.Number(200, 999))
+					return &areaCode
+				}(),
+				HasExtension: func() *bool {
+					hasExt := gofakeit.Bool()
+					return &hasExt
+				}(),
+				Extension: func() *string {
+					ext := strconv.Itoa(gofakeit.Number(1000, 9999))
+					return &ext
+				}(),
 			},
 			Salary: []models.Salary{
 				{Amount: float64(gofakeit.Number(50000, 100000)), Year: 2021},

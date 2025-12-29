@@ -1,0 +1,35 @@
+<div class="fintech-chart-container" [class.in-overlay]="inOverlay">
+  <div class="legend-container" *ngIf="sortedStocks && sortedStocks.length > 0">
+    <div *ngFor="let stock of sortedStocks" 
+         class="legend-item" 
+         [class.active]="activeStock === stock.symbol"
+         (mouseenter)="highlightStock(stock.symbol, sortedStocks.indexOf(stock))" 
+         (mouseleave)="unhighlightStock()">
+      <span class="legend-color" [style.background-color]="stock.color"></span>
+      <span class="legend-text">{{ stock.symbol }} ({{ stock.currentPrice | currency }})</span>
+    </div>
+    
+    <!-- Add date and source information -->
+    <div class="legend-footer" *ngIf="latestDataDate">
+      <span class="legend-date">Last updated: {{ latestDataDate | date:'mediumDate' }}</span>
+      <span class="legend-source">Source: Alpha Vantage API</span>
+    </div>
+  </div>
+  <div class="chart-controls">
+    <mat-slide-toggle 
+      [(ngModel)]="showMarketPhases" 
+      (change)="onMarketPhasesChange()"
+      color="primary"
+      class="market-phases-toggle">
+      Market Phases
+    </mat-slide-toggle>
+  </div>
+  <div class="fintech-chart" #chart></div>
+  
+  <!-- Stock status box moved inside the chart container to keep positioning relative -->
+  <div class="stock-status-box" [class.visible]="showStatusBox">
+    <div class="stock-status-symbol">{{statusStock}}</div>
+    <div class="stock-status-price">${{statusPrice}}</div>
+    <div class="stock-status-date">{{statusDate}}</div>
+  </div>
+</div>

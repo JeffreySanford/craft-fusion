@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { LoggerService } from '@craft-web/services/logger.service';
 
 @Component({
   selector: 'app-landing',
@@ -6,6 +7,14 @@ import { Component } from '@angular/core';
   styleUrls: ['./landing.component.scss'],
   standalone: false
 })
-export class LandingComponent {
+export class LandingComponent implements OnInit {
   items = ['Architect', 'Developer', 'Designer'];
+  
+  constructor(private logger: LoggerService) {
+
+  }
+
+  ngOnInit(): void {
+    this.logger.info('LandingComponent', 'LandingComponent initialized');
+  }
 }

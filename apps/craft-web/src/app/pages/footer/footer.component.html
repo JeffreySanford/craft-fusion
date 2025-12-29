@@ -1,81 +1,67 @@
-<div class="footer-container">
-  <mat-expansion-panel>
-    <mat-expansion-panel-header>
+<div class="footer-container" [class.expanded]="expanded">
+  <mat-expansion-panel class="enhanced-panel" 
+                      (opened)="onPanelToggled(true)" 
+                      (closed)="onPanelToggled(false)">
+    <mat-expansion-panel-header class="panel-header">
       <mat-panel-title>
-        <mat-icon>star</mat-icon>
-        <p>Jeffrey Sanford</p>
+        <div class="title-content">
+          <mat-icon>star</mat-icon>
+          <p>Jeffrey Sanford</p>
+          
+          <!-- Quick metrics display -->
+          <div class="quick-metrics">
+            <span class="metric-pill" [ngClass]="getCpuLoadClass()">
+              <mat-icon>speed</mat-icon> {{performanceMetrics.cpuLoad}}
+            </span>
+            <span class="metric-pill" [ngClass]="getMemoryUsageClass()">
+              <mat-icon>memory</mat-icon> {{performanceMetrics.memoryUsage}}
+            </span>
+            <span class="metric-pill" [ngClass]="getNetworkLatencyClass()">
+              <mat-icon>network_check</mat-icon> {{performanceMetrics.networkLatency}}
+            </span>
+          </div>
+        </div>
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div class="footer-content">
       <div class="contact-block">
         <button mat-raised-button (click)="sendEmail()">
           <mat-icon>email</mat-icon>
-          <p>jeffreysanford&#64;gmail.com</p>
+          <p>e-mail</p>
         </button>
         <button mat-raised-button (click)="openGitHub()">
           <mat-icon>code</mat-icon>
-          <p>GitHub</p>
+          <p>github</p>
         </button>
         <button mat-raised-button (click)="navigateToResume()">
           <mat-icon>description</mat-icon>
-          <p>Resume</p>
+          <p>resume</p>
         </button>
       </div>
       <div class="logo-performance-block">
-        <div class="logo-row">
-          <img
-            src="../../../../assets/images/compressed/nodejs-new-pantone-white.png"
-            alt="Node.js"
-          />
-          <img
-            src="../../../../assets/images/compressed/MongoDB_Logo_RGB_Logo_Forest-Green.svg"
-            alt="MongoDB"
-          />
-          <img src="../../../../assets/images/compressed/angular.png" alt="Angular" />
-          <img
-            src="../../../../assets/images/compressed/google-material-design-logo-material-design-logo.png"
-            alt="Material Design"
-          />
+        <div class="logo-container">
+          <div class="dev-logos">
+            <img *ngFor="let logo of logoLinks.slice(0, 3)" [src]="logo.src" [alt]="logo.alt" [class]="logo.class" />
+          </div>
+          <div class="agency-logos">
+            <img *ngFor="let logo of logoLinks.slice(3)" [src]="logo.src" [alt]="logo.alt" [class]="logo.class" />
+          </div>
         </div>
-        <div class="logo-row">
-          <img
-            src="../../../../assets/images/compressed/us-army-logo.png"
-            alt="United States Army (DOD)"
-            class="army"
-          />
-          <img
-            src="../../../../assets/images/compressed/US-GOVT-DLA.png"
-            alt="Defense Logistics Agency"
-            class="DLA"
-          />
-          <img
-            src="../../../../assets/images/compressed/US-GOVT-DVA-Seal.png"
-            alt="Department of Veterans Affairs"
-            class="DVA"
-          />
-          <img
-            src="../../../../assets/images/compressed/US-GOVT-DTIC.png"
-            alt="Defense Technical Information Center"
-            class="DTIC"
-          />
-        </div>
-        <mat-card class="performance-card">
+        
+        <mat-card class="performance-card" [ngStyle]="{'border': '2px solid ' + chartBorderColor}">
           <div class="performance-metrics">
-            <div class="metric" [ngClass]="getMemoryUsageClass()">
-              <label for="memoryUsage">Memory Usage:</label>
-              <span id="memoryUsage">{{ performanceMetrics.memoryUsage }}</span>
+            <div class="data-mode-toggle">
+              <mat-slide-toggle [checked]="isSimulatingData" (change)="toggleDataSimulation()">
+                {{isSimulatingData ? 'SIMULATED DATA' : 'LIVE DATA'}}
+              </mat-slide-toggle>
             </div>
-            <div class="metric" [ngClass]="getCpuLoadClass()">
-              <label for="cpuLoad">CPU Load:</label>
-              <span id="cpuLoad">{{ performanceMetrics.cpuLoad }}</span>
-            </div>
-            <div class="metric">
-              <label for="appUptime">App Uptime:</label>
-              <span id="appUptime">{{ performanceMetrics.appUptime }}</span>
-            </div>
-            <div class="metric" [ngClass]="getNetworkLatencyClass()">
-              <label for="networkLatency">Network Latency:</label>
-              <span id="networkLatency">{{ performanceMetrics.networkLatency }}</span>
+            <canvas #performanceChart height="400"></canvas>
+            <div *ngIf="!isSimulatingData && serviceMetrics.length > 0" class="service-metrics-overlay">
+              <div *ngFor="let metric of serviceMetrics.slice(-3)" class="service-metric">
+                <mat-icon>{{serviceIconMap[metric.serviceName] || 'api'}}</mat-icon>
+                <span class="service-name">{{metric.serviceName}}</span>
+                <span class="service-time">{{metric.duration?.toFixed(1)}}ms</span>
+              </div>
             </div>
           </div>
         </mat-card>

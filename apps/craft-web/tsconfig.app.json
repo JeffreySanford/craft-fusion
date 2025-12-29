@@ -1,17 +1,22 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": []
+    "types": [
+      "node"
+    ]
   },
-  "files": [
-    "src/main.ts",
-    "src/polyfills.ts"
-  ],
   "include": [
-    "src/**/*.d.ts"
+    "src/main.ts",
+    "src/polyfills.ts",
+    "../../libs/craft-library/src/index.ts",
+    "../../libs/craft-library/src/**/*.ts"
   ],
   "exclude": [
+    "src/test-setup.ts",
     "**/*.spec.ts"
+  ],
+  "files": [
+    // No changes needed for SCSS import resolution
   ]
 }

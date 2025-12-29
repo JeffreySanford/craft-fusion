@@ -5,14 +5,25 @@
   "sourceRoot": "apps/craft-web-e2e/src",
   "implicitDependencies": ["craft-web"],
   "targets": {
-    "targets": {
-      "test": {
-        "executor": "@nx/jest:jest",
-        "outputs": ["{workspaceRoot}/coverage/craft-web-e2e"],
-        "options": {
-          "jestConfig": "apps/craft-web-e2e/jest.config.ts",
-          "passWithNoTests": true
+    "e2e": {
+      "executor": "@nx/playwright:playwright",
+      "options": {
+        "config": "apps/craft-web-e2e/playwright.config.ts"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "craft-web:serve:production"
+        },
+        "development": {
+          "devServerTarget": "craft-web:serve:development"
         }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "tsConfig": "apps/craft-web-e2e/tsconfig.spec.json",
+        "jestConfig": "apps/craft-web-e2e/jest.config.ts"
       }
     }
   }

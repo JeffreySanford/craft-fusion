@@ -1,0 +1,63 @@
+export interface Recipe {
+  id: number;
+  name: string;
+  description: string;
+  countryCode: string;
+  countryName: string;
+  servingSize: string;
+  ingredients: string[];
+  directions: string[];
+  url: string;
+  preparationTime?: number;
+  cookingTime?: number;
+  servingTemperature?: string;
+  dietaryRestrictions?: string[];
+  cuisineType?: string;
+  cookingMethod?: string;
+  nutritionalInfo?: {
+    calories?: number;
+    protein?: number;
+    fat?: number;
+    carbohydrates?: number;
+    fiber?: number;
+    sugar?: number;
+    sodium?: number;        
+    cholesterol?: number;
+    vitamins?: string[];
+    servingSize?: string;
+    servingWeight?: number;
+    servingCalories?: number;
+    servingProtein?: number;
+    servingFat?: number;
+    servingCarbohydrates?: number;
+    servingFiber?: number;
+    servingSugar?: number;
+    servingSodium?: number;
+    servingCholesterol?: number;
+    servingVitamins?: string[];
+  };
+  cookingTips?: string[];
+  foodPairings?: string[];
+  storageInstructions?: string[];
+  history?: string;
+  variations?: string[];
+  equipmentNeeded?: string[];
+  prepInstructions?: string[];
+  cookingInstructions?: string[];
+  servingSuggestions?: string[];
+  garnishes?: string[];
+  allergens?: string[];
+  source?: string;
+  author?: string;
+  sourceUrl?: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  reviews?: {
+    rating?: number;
+    comment?: string;
+    reviewer?: string;
+    date?: string;
+  }[];  
+
+  difficulty?: string;
+}

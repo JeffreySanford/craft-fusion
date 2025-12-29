@@ -1,9 +1,31 @@
 {
-  "extends": ["stylelint-config-standard", "stylelint-config-prettier"],
+  "extends": [
+    "stylelint-config-standard-scss"
+  ],
+  "plugins": [
+    "@angular-eslint/stylelint-plugin"
+  ],
+  "configBasedir": "../../",
   "rules": {
-    "at-rule-no-unknown": true,
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": [
+          "mixin",
+          "include",
+          "function",
+          "return"
+        ]
+      }
+    ],
+    "selector-class-pattern": "^[a-z][a-zA-Z0-9]*$",
+    "font-family-name-quotes": "always-where-required",
+    "color-function-notation": "modern",
+    "alpha-value-notation": "number",
+    "color-hex-length": "short",
     "at-rule-empty-line-before": null,
     "no-duplicate-selectors": true,
-    "block-no-empty": true
+    "block-no-empty": true,
+    "@angular-eslint/stylelint-plugin/use-component-view-encapsulation": true
   }
 }

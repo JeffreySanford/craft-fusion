@@ -2,14 +2,18 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "rootDir": ".",
-    "target": "ES2022",
-    "useDefineForClassFields": false
+    "types": []
+  },
+  "angularCompilerOptions": {
+    "enableIvy": true,
+    "strictTemplates": true
   },
   "include": [
     "src/**/*.ts",
-    "src/main.ts",
-    "jest.config.ts"
+    "src/**/*.d.ts"
   ],
-  "exclude": ["tmp"]
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
 }

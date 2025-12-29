@@ -1,0 +1,55 @@
+@use 'variables' as vars;
+@use 'mixins' as mix;
+.memorial-timeline-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1rem;
+}
+
+.memorial-timeline-header {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background-color: var(--md-sys-color-surface);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+
+  /* Flag-inspired accent border */
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(
+      to bottom,
+      var(--md-sys-color-primary),
+      var(--md-sys-color-primary) 33%,
+      var(--md-sys-color-on-primary) 33%,
+      var(--md-sys-color-on-primary) 66%,
+      var(--md-sys-color-secondary) 66%,
+      var(--md-sys-color-secondary)
+    );
+  }
+
+  h1 {
+    color: var(--md-sys-color-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: var(--md-sys-color-on-surface-variant);
+  }
+}
+
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2em;
+  color: var(--md-sys-color-primary);
+}

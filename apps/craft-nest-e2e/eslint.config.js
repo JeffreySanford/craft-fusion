@@ -1,4 +1,4 @@
-const baseConfig = require('../../eslint.config.js');
+const baseConfig = require('../../eslint.base.config.js');
 const tsParser = require('@typescript-eslint/parser');
 
 module.exports = [
@@ -9,13 +9,10 @@ module.exports = [
       parser: tsParser,
       parserOptions: {
         project: './tsconfig.json',
-        tsconfigRootDir: __dirname,
+        "tsconfigRootDir": "./",
         ecmaVersion: 'latest',
         sourceType: 'module'
       },
-    },
-    plugins: {
-      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
     },
     rules: {
       '@typescript-eslint/no-unused-vars': 'warn',

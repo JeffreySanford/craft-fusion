@@ -1,18 +1,18 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateRecordDto } from './create-record.dto';
-import { Company } from '../entities/company.interface';
-import { Phone, Address } from '../entities/record.interface';
 
+// Make sure UpdateRecordDto extends CreateRecordDto using PartialType
 export class UpdateRecordDto extends PartialType(CreateRecordDto) {
-    override UID?: string;
-    override name?: string;
-    override firstName?: string;
-    override lastName?: string;
-    override address?: Address;
-    city?: string;
-    state?: string;
-    zip?: string;
-    override phone?: Phone;
-    override salary?: Company[];
-    override totalHouseholdIncome?: number;
+  // Remove all 'override' modifiers as they're not needed when using PartialType
+  // PartialType already makes all properties optional
+  id?: string;
+  title?: string;
+  description?: string;
+  date?: Date;
+  category?: string;
+  
+  // These should also not have 'override' modifiers
+  tags?: string[];
+  status?: string;
+  priority?: number;
 }

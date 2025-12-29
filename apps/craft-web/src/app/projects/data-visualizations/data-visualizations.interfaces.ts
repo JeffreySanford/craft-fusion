@@ -3,13 +3,16 @@ export interface ChartData {
   component: string;
   color: string;
   data: any[];
+  size?: string; // Make size optional with '?' to accommodate undefined values
+  active?: boolean; // Track if chart is active
 }
 
 export interface BarChartData {
-  date: string;
-  value1: number;
-  value2: number;
-  value3: number;
+  month: string;
+  values: {
+    label: string;
+    amount: number;
+  }[];
 }
 
 export interface LineChartData {
@@ -19,10 +22,15 @@ export interface LineChartData {
   series3: number;
 }
 
-export interface FintechChartData {
+export interface FinanceChartData {
+  stockIndicator: string;
+  trade: 'buy' | 'sell'; // Ensure trade is either 'buy' or 'sell'
   task: string;
   startTime: Date;
   endTime: Date;
+  startValue: number;
+  endValue: number;
+  group: 'normal' | 'extreme'; // Ensure group is either 'normal' or 'extreme'
 }
 
 export interface MapChartData {

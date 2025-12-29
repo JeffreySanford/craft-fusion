@@ -11,16 +11,12 @@ module.exports = [
   // TypeScript Configuration
   {
     files: ['**/*.ts'],
-    plugins: {
-      '@angular-eslint': angularPlugin,
-      '@typescript-eslint': typescriptPlugin,
-      'import': importPlugin,
-    },
+    plugins: ['@angular-eslint', '@typescript-eslint', 'import'],
     languageOptions: {
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: '../../tsconfig.base.json',
-        tsconfigRootDir: __dirname,
+        "tsconfigRootDir": "./",
         sourceType: 'module',
         ecmaVersion: 'latest',
       },
@@ -51,9 +47,7 @@ module.exports = [
   // Angular Template Configuration
   {
     files: ['**/*.html'],
-    plugins: {
-      '@angular-eslint/template': angularTemplatePlugin,
-    },
+    plugins: ['@angular-eslint/template'],
     rules: {
       '@angular-eslint/template/no-negated-async': 'warn',
     },

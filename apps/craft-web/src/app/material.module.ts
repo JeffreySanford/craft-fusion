@@ -17,28 +17,13 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @NgModule({
-  imports: [
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatIconModule,
-    MatInputModule,
-    MatListModule,
-    MatMenuModule,
-    MatPaginatorModule,
-    MatSidenavModule,
-    MatSortModule,
-    MatTableModule,
-    MatTabsModule,
-    MatToolbarModule,
-    MatSelectModule,
-    MatSliderModule,
-    MatExpansionModule,
-    MatProgressSpinnerModule,
-    MatGridListModule
-  ],
   exports: [
     MatButtonModule,
     MatCardModule,
@@ -57,7 +42,12 @@ import { MatGridListModule } from '@angular/material/grid-list';
     MatSliderModule,
     MatExpansionModule,
     MatProgressSpinnerModule,
-    MatGridListModule
+    MatGridListModule,
+    DragDropModule,
+    MatSnackBarModule,
+    MatSlideToggleModule,
+    MatTooltipModule,
+    MatFormFieldModule
   ]
 })
 export class MaterialModule { }

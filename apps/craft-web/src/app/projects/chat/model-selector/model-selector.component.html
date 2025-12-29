@@ -1,0 +1,8 @@
+<mat-form-field appearance="outline">
+  <mat-label>Select Model</mat-label>
+  <mat-select [(ngModel)]="selectedModel" (selectionChange)="onModelSelectChange($event)">
+    <mat-option *ngFor="let model of models" [value]="model.name">
+      {{ model.name }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>

@@ -1,13 +1,10 @@
-import baseConfig from './jest.config';
-
 export default {
-  ...baseConfig,
   displayName: 'craft-fusion',
-  preset: '../../jest.preset',
+  preset: './jest.preset.js',
   setupFilesAfterEnv: ['./test-setup.ts'],
   coverageDirectory: './coverage/craft-fusion',
   transform: {
-    '^.+\\.(ts|js|html)$': [
+    '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',
       {
         tsconfig: '<rootDir>/tsconfig.json',

@@ -1,26 +1,29 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "esModuleInterop": true,
-    "target": "ES2022",
-    "baseUrl": "./",
-    "paths": {
-      "@craft-nest/*": ["src/*"]
-    },
-    "outDir": "dist/out-tsc",
-    "types": ["jest", "node"],
-    "rootDir": "../../apps/craft-nest",
-    "sourceMap": true,
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "noEmit": true
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2022", // Updated target
+    "sourceMap": true,
+    "outDir": "../../dist/apps/craft-nest", // Keep this, but build executor overrides
+    "baseUrl": "./src", // Changed baseUrl to src
+    "incremental": true,
+    "skipLibCheck": true,
+    "strict": true, // Enable strict mode
+    "esModuleInterop": true, // Ensure ES Module interop
+    "moduleResolution": "node", // Ensure Node module resolution
+    "resolveJsonModule": true, // Already present, ensures JSON modules can be imported
+    "typeRoots": ["../../node_modules/@types", "node_modules/@types"], // Ensure local and root node_modules/@types are checked
+    "types": ["node", "jest"], // Added jest types
+    "composite": true // Added for composite project support
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts",
-    "src/**/*.d.ts",
-    "src/ecosystem.config.js"
+    "src/**/*.ts", 
+    "src/**/*.json"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
 }

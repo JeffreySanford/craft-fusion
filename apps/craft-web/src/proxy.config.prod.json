@@ -1,17 +1,49 @@
-{
+﻿{
   "/api": {
     "target": "https://jeffreysanford.us",
-    "secure": false,
+    "secure": true,
     "changeOrigin": true,
-    "logLevel": "debug"
-  },
-  "/census": {
-    "target": "https://www2.census.gov",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "debug",
+    "logLevel": "info",
     "pathRewrite": {
-      "^/census": ""
-    }
+      "^/api": "/api"
+    },
+    "timeout": 120000,
+    "proxyTimeout": 120000
+  },
+  "/api-go": {
+    "target": "https://jeffreysanford.us",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "info",
+    "pathRewrite": {
+      "^/api-go": "/api-go"
+    },
+    "timeout": 120000,
+    "proxyTimeout": 120000
+  },
+  "/socket.io": {
+    "target": "https://jeffreysanford.us",
+    "secure": true,
+    "ws": true,
+    "changeOrigin": true,
+    "timeout": 120000,
+    "proxyTimeout": 120000
+  },
+  "/assets": {
+    "target": "https://jeffreysanford.us",
+    "secure": true,
+    "changeOrigin": true,
+    "timeout": 120000,
+    "proxyTimeout": 120000
+  },
+  "/": {
+    "target": "https://jeffreysanford.us",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/": ""
+    },
+    "timeout": 120000,
+    "proxyTimeout": 120000
   }
 }
