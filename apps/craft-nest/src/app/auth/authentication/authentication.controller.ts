@@ -7,8 +7,8 @@ export class AuthenticationController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  login(@Body() body: { username: string; password: string }) {
-    return this.authService.login(body.username, body.password);
+  login(@Body() body: { username: string }) {
+    return this.authService.login(body.username);
   }
 
   @Get('user')

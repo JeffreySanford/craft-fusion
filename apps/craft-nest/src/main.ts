@@ -20,16 +20,16 @@ function isError(error: unknown): error is Error {
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  let httpsOptions;
+  const app = await NestFactory.create(AppModule, httpsOptions ? { httpsOptions } : undefined);
   app.setGlobalPrefix('api'); // Add this line to ensure all routes have /api prefix
   // Define HTTPS options before creating the app
-  let httpsOptions;
-  const NODE_ENV = process.env.NODE_ENV || 'development';
+  const NODE_ENV = process.env['NODE_ENV'] || 'development';
   const isProduction = NODE_ENV === 'production';
   
   if (isProduction && environment.useHttps) {
-    const keyPath = process.env.SSL_KEY_PATH || environment.sslKeyPath;
-    const certPath = process.env.SSL_CERT_PATH || environment.sslCertPath;
+    const keyPath = process.env['SSL_KEY_PATH'] || environment.sslKeyPath;
+    const certPath = process.env['SSL_CERT_PATH'] || environment.sslCertPath;
     
     if (keyPath && certPath) {
       try {

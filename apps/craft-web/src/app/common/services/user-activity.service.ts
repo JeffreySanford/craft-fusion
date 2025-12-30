@@ -7,7 +7,7 @@ export interface UserActivity {
   timestamp: number;
   type: 'pageview' | 'click' | 'scroll' | 'input' | 'hover' | 'other';
   target?: string;
-  value?: any;
+  value?: unknown;
   page?: string;
   position?: number;
 }
@@ -36,7 +36,7 @@ export class UserActivityService {
   private initRouterTracking(): void {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
-    ).subscribe((event: any) => {
+    ).subscribe((event: unknown) => {
       const now = Date.now();
       
       // Calculate duration for previous page
@@ -67,7 +67,7 @@ export class UserActivityService {
     });
     
     // Track scrolls (debounced)
-    let scrollTimeout: any;
+    let scrollTimeout: unknown;
     document.addEventListener('scroll', () => {
       if (scrollTimeout) {
         clearTimeout(scrollTimeout);
@@ -82,7 +82,7 @@ export class UserActivityService {
     });
     
     // Track form inputs (debounced)
-    let inputTimeout: any;
+    let inputTimeout: unknown;
     document.addEventListener('input', (event) => {
       if (inputTimeout) {
         clearTimeout(inputTimeout);
@@ -146,7 +146,7 @@ export class UserActivityService {
     return this.userActivities;
   }
   
-  getActivitySummary(): any {
+  getActivitySummary(): unknown {
     const clickCount = this.userActivities.filter(a => a.type === 'click').length;
     const pageViewCount = this.userActivities.filter(a => a.type === 'pageview').length;
     const inputCount = this.userActivities.filter(a => a.type === 'input').length;

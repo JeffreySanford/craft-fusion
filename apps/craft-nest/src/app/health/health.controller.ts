@@ -41,13 +41,13 @@ export class HealthController {
               } 
             : undefined;
         
-        // Return the properly typed result
-        const result: HealthCheckResult = {
+        // Return the properly typed result and only include 'error' when present
+        const result = ({
           status: health.status === 'healthy' ? 'ok' : 'error',
           info: servicesStatus,
-          error: errorResult,
+          ...(errorResult ? { error: errorResult } : {}),
           details: servicesStatus
-        };
+        } as unknown) as HealthCheckResult;
         
         return result;
       })

@@ -17,7 +17,7 @@ export interface LoginResponse {
 
 @Injectable()
 export class AuthenticationService {
-  login(username: string, password: string): LoginResponse {
+  login(username: string): LoginResponse {
     // Mock user data based on username
     const user: User = {
       id: username === 'guest' ? '1' : username === 'test' ? '2' : '3',

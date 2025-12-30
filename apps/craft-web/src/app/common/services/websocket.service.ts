@@ -11,12 +11,12 @@ export class WebsocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private baseReconnectDelay = 1000;
-  private reconnectTimer: any;
+  private reconnectTimer: unknown;
   
   private connectionStatusSubject = new BehaviorSubject<boolean>(false);
   public connectionStatus$ = this.connectionStatusSubject.asObservable();
   
-  private messageSubject = new BehaviorSubject<any>(null);
+  private messageSubject = new BehaviorSubject<unknown>(null);
   public messages$ = this.messageSubject.asObservable();
   
   constructor(private logger: LoggerService) {}
@@ -90,7 +90,7 @@ export class WebsocketService {
     this.connectionStatusSubject.next(false);
   }
   
-  send(data: any): boolean {
+  send(data: unknown): boolean {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       try {
         this.socket.send(JSON.stringify(data));

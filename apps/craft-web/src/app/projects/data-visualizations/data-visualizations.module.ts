@@ -58,7 +58,7 @@ const dataVisualizationsRoutes: Routes = [
   ],
   imports: [
     CommonModule,
-    RouterModule.forChild([{ path: '', component: DataVisualizationsComponent }]),
+    RouterModule.forChild(dataVisualizationsRoutes),
     MaterialModule,
     DragDropModule,
     MatDialogModule,

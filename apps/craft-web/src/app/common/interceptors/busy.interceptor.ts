@@ -15,7 +15,7 @@ export class BusyHttpInterceptor implements HttpInterceptor {
         this.logger.info('BusyHttpInterceptor initialized');
     }
     
-    intercept(request: HttpRequest<any>, next: HttpHandler) {
+    intercept(request: HttpRequest<unknown>, next: HttpHandler) {
         const msg = request.method === 'GET' ? 'Loading...' : 'Saving...';
         this.busyService.increment(msg);
         

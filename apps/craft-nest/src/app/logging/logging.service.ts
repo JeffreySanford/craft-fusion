@@ -255,6 +255,6 @@ export class LoggingService {
   }
   
   private isProductionEnv(): boolean {
-    return process.env.NODE_ENV === 'production';
+    return process.env['NODE_ENV'] === 'production';
   }
 }

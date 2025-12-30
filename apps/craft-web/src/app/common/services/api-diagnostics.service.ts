@@ -113,7 +113,7 @@ export class ApiDiagnosticsService {
   checkConnectionNow(): Observable<ConnectionDiagnostics> {
     const startTime = Date.now();
     
-    return this.http.get<any>(`${environment.apiUrl}/api`, {
+    return this.http.get<unknown>(`${environment.apiUrl}/api`, {
       headers: { 'Cache-Control': 'no-cache' }
     }).pipe(
       map(response => {
@@ -196,7 +196,7 @@ export class ApiDiagnosticsService {
   runNetworkDiagnostics(): Observable<string> {
     this.logger.info('Running network diagnostics');
     
-    return this.http.get<any>(`${environment.apiUrl}/api`, { 
+    return this.http.get<unknown>(`${environment.apiUrl}/api`, { 
       headers: { 'X-Diagnostics': 'true' } 
     }).pipe(
       map(() => 'Connection successful'),
@@ -211,7 +211,7 @@ export class ApiDiagnosticsService {
           diagnosticMessage += '  • Firewall is blocking the connection\n';
           diagnosticMessage += '  • Port 3000 is in use by another process\n';
           diagnosticMessage += '\n- Recommendations:\n';
-          diagnosticMessage += '  • Verify NestJS is still running with "npx nx run craft-nest:serve"\n';
+          diagnosticMessage += '  • Verify NestJS is still running with "pnpm dlx nx run craft-nest:serve"\n';
           diagnosticMessage += '  • Check server binding in main.ts (should use 0.0.0.0)\n';
           diagnosticMessage += '  • Check firewall settings\n';
           diagnosticMessage += '  • Run "netstat -ano | findstr :3000" to check for port conflicts\n';
@@ -261,7 +261,7 @@ export class ApiDiagnosticsService {
    */
   checkPortAvailability(): Observable<string> {
     // No change needed here, as /api/health/ports returns JSON
-    return this.http.get<any>(`${environment.apiUrl}/api/health/ports`, {
+    return this.http.get<unknown>(`${environment.apiUrl}/api/health/ports`, {
       headers: { 'X-Diagnostics': 'true' }
     }).pipe(
       map(response => {
@@ -291,7 +291,7 @@ export class ApiDiagnosticsService {
     const suggestions: string[] = [];
     
     if (!currentDiagnostics.isConnected) {
-      suggestions.push('Ensure the NestJS backend is running with "npx nx run craft-nest:serve"');
+      suggestions.push('Ensure the NestJS backend is running with "pnpm dlx nx run craft-nest:serve"');
       suggestions.push('Check if the server is binding to 0.0.0.0 instead of localhost in main.ts');
       suggestions.push('Verify the proxy configuration in angular.json or proxy.configjson');
       suggestions.push('Try restarting both frontend and backend services');
@@ -324,7 +324,7 @@ export class ApiDiagnosticsService {
    * Get WebSocket connection status
    */
   checkSocketConnection(): Observable<boolean> {
-    return this.http.get<any>(`${environment.apiUrl}/api/socket-status`).pipe(
+    return this.http.get<unknown>(`${environment.apiUrl}/api/socket-status`).pipe(
       map(response => response.connected === true),
       catchError(() => of(false))
     );
@@ -470,7 +470,7 @@ export class ApiDiagnosticsService {
             observer.complete();
           };
           
-          const onError = (error: any) => { // Add type annotation
+          const onError = (error: unknown) => { // Add type annotation
             this.socketInstance?.off('connect', onConnect);
             this.socketInstance?.off('connect_error', onError);
             observer.error(error);
@@ -651,7 +651,7 @@ export class ApiDiagnosticsService {
             observer.complete();
           };
           
-          const onError = (error: any) => { // Add type annotation
+          const onError = (error: unknown) => { // Add type annotation
             nsSocket.off('connect', onConnect);
             nsSocket.off('connect_error', onError);
             observer.error(error);
@@ -734,7 +734,7 @@ export class ApiDiagnosticsService {
   /**
    * Get enhanced diagnostic data including namespace statuses
    */
-  getEnhancedDiagnosticData(): Observable<any> {
+  getEnhancedDiagnosticData(): Observable<unknown> {
     return this.getDiagnosticDashboardData().pipe(
       map(dashboardData => ({
         ...dashboardData,
@@ -781,7 +781,7 @@ export class ApiDiagnosticsService {
   /**
    * Get diagnostic data formatted for dashboard display
    */
-  getDiagnosticDashboardData(): Observable<any> {
+  getDiagnosticDashboardData(): Observable<unknown> {
     const connectionDiagnostics = this.diagnosticsSubject.value;
     const socketDiagnostics = this.socketDiagnosticsSubject.value;
     
@@ -844,7 +844,7 @@ export class ApiDiagnosticsService {
     return responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length;
   }
 
-  private extractServerBinding(response: any): string {
+  private extractServerBinding(response: unknown): string {
     // Try to extract server binding info if available in response
     if (response?.serverInfo?.binding) {
       return response.serverInfo.binding;
@@ -858,7 +858,7 @@ export class ApiDiagnosticsService {
     }
   }
 
-  private formatError(error: any): string {
+  private formatError(error: unknown): string {
     if (!error) return 'Unknown error';
     
     if (error.status === 0) {

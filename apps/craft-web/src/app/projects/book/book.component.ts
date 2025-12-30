@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Renderer2, AfterViewInit, ChangeDetectorRef, HostBinding } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { EditorComponent } from '@tinymce/tinymce-angular';
-import { EventObj } from '@tinymce/tinymce-angular/editor/Events';
+
 import tinymce, { Editor, EditorOptions } from 'tinymce';
 import { DocParseService } from '../../common/services/doc-parse.service';
 import { PdfParseService } from '../../common/services/pdf-parse.service';
@@ -34,13 +34,14 @@ export class BookComponent implements OnInit, AfterViewInit {
   @ViewChild('markdownPreview', { static: false }) markdownPreview!: ElementRef;
 
   isDarkTheme = false; // Set light theme as default
+  selectedDocument: Document | undefined = undefined;
   @HostBinding('class.light-theme') isLightTheme: boolean = !this.isDarkTheme;
   @HostBinding('class.dark-theme') get isDarkThemeClass() { return this.isDarkTheme; }
   @HostBinding('style.--book-font-family') fontFamily: string = "'IBM Plex Serif', serif";
   @HostBinding('style.--book-font-size') fontSize: string = "1.25em";
 
   editorData = '<p>Initial content</p>';
-  selectedDocument?: Document;
+
   selectedDocuments: string[] = [];
   chapters: string[] = [];
   isMarkdownView = false;
@@ -116,14 +117,14 @@ export class BookComponent implements OnInit, AfterViewInit {
         tooltip: 'My sidebar',
         icon: 'comment',
         onSetup: (api: any) => {
-          return () => {
-          };
+          return () => {};
         },
         onShow: (api: any) => {
-          api.element().appendChild(this.sidebar.nativeElement);
+          if (api && typeof api.element === 'function') {
+            api.element().appendChild(this.sidebar.nativeElement);
+          }
         },
-        onHide: (api: any) => {
-        }
+        onHide: (_api: any) => {}
       });
       editor.on('init', () => {
         // Apply font family to editor body
@@ -151,7 +152,7 @@ export class BookComponent implements OnInit, AfterViewInit {
   rsvpSpeed = 300; // Default 300ms per word
   words: string[] = [];
   wordIndex = 0;
-  rsvpInterval: any;
+  rsvpInterval: number | undefined;
   areImagesVisible = false;
 
   constructor(
@@ -228,7 +229,7 @@ export class BookComponent implements OnInit, AfterViewInit {
     return 500;
   }
 
-  onInit(event: EventObj<any>): void {
+  onInit(_event: any): void {
     this.logger.info('EditorComponent initialized');
     tinymce.init({
       selector: 'textarea',
@@ -240,7 +241,7 @@ export class BookComponent implements OnInit, AfterViewInit {
       }
     });
 
-    setInterval(() => {
+    window.setInterval(() => {
       this.isWinking = !this.isWinking;
     }, 2000);
 
@@ -340,7 +341,7 @@ export class BookComponent implements OnInit, AfterViewInit {
     this.sidenav.toggle();
   }
 
-  onFileSelected(event: any): void {
+  onFileSelected(event: unknown): void {
     const files: File[] = Array.from(event.target.files);
     for (const file of files) {
       let content$;
@@ -515,7 +516,13 @@ export class BookComponent implements OnInit, AfterViewInit {
     if (this.isRSVPMode) {
       this.startRSVP();
     } else {
-      clearInterval(this.rsvpInterval);
+      if (this.rsvpInterval !== undefined) {
+        if (this.rsvpInterval !== undefined) {
+          clearInterval(this.rsvpInterval);
+          this.rsvpInterval = undefined;
+        }
+        this.rsvpInterval = undefined;
+      }
       this.isRSVPPlaying = false;
     }
   }
@@ -529,12 +536,15 @@ export class BookComponent implements OnInit, AfterViewInit {
   }
 
   runRSVP() {
-    clearInterval(this.rsvpInterval);
+    if (this.rsvpInterval !== undefined) {
+      clearInterval(this.rsvpInterval);
+      this.rsvpInterval = undefined;
+    }
     this.logger.info(`RSVP Speed: ${this.rsvpSpeed} WPM`); // Log the current speed
     const interval = 600000 / Math.pow(this.rsvpSpeed, 1.5); // Exponential function for interval calculation
-    this.rsvpInterval = setInterval(() => {
+    this.rsvpInterval = window.setInterval(() => {
       if (this.wordIndex < this.words.length) {
-        this.rsvpWord = this.words[this.wordIndex++];
+        this.rsvpWord = this.words[this.wordIndex++] || '';
       } else {
         this.toggleRSVP(); // Auto-exit on completion
       }

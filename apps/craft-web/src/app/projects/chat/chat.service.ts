@@ -18,8 +18,8 @@ export class ChatService {
   sendMessage(message: string): void {
     const selectedModel = this.settingsService.getSelectedModel();
     this.deepSeekService.sendMessage(message, selectedModel.apiUrl).pipe(
-      map(response => this.cleanUpResponse(response.response)),
-      tap(cleanedResponse => this.responseSubject.next(cleanedResponse)),
+      map((response: any) => this.cleanUpResponse(response?.response ?? '')),
+      tap((cleanedResponse: string) => this.responseSubject.next(cleanedResponse)),
       catchError(error => {
         console.error('Error from DeepSeekService:', error);
         this.responseSubject.next('Error: Unable to get response from DeepSeek.');

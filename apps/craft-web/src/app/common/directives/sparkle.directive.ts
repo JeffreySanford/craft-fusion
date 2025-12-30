@@ -6,7 +6,7 @@ import { Directive, ElementRef, OnInit, Renderer2, OnDestroy } from '@angular/co
 })
 export class SparkleDirective implements OnInit, OnDestroy {
   private sparkles: HTMLElement[] = [];
-  private intervalId: any;
+  private intervalId: unknown;
   
   constructor(private el: ElementRef, private renderer: Renderer2) {}
   

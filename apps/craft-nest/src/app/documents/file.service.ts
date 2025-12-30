@@ -2,7 +2,13 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { Observable, of, throwError } from 'rxjs';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Multer} from 'multer';
+
+// Minimal Multer file interface to avoid depending on external @types/multer
+interface MulterFile {
+  originalname: string;
+  buffer: Buffer;
+  mimetype?: string;
+} 
 
 @Injectable()
 export class FileService {
@@ -30,7 +36,7 @@ export class FileService {
     console.log('Storage path initialized:', this.STORAGE_PATH);
   }
 
-  saveFile(file: Express.Multer.File): Observable<void> {
+  saveFile(file: MulterFile): Observable<void> {
     console.log('STATE: Saving file:', file.originalname);
     this.files.set(file.originalname, file.buffer);
     return of(undefined);

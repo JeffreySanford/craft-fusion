@@ -36,5 +36,6 @@
     "apps/training/models/**": true,
     "apps/training/training_data/**": true
   },
-  "nxConsole.generateAiAgentRules": true
+  "nxConsole.generateAiAgentRules": true,
+  "angular.enable-strict-mode-prompt": false
 }

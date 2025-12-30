@@ -21,12 +21,17 @@ export class MetricsInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Generate service name from URL
-    const url = new URL(req.url, window.location.origin);
-    const pathParts = url.pathname.split('/');
-    const serviceName = pathParts.length > 1 ? pathParts[1] : 'api';
+    let serviceName = 'api';
+    try {
+      const url = new URL(req.url || '', window.location.origin);
+      const pathParts = url.pathname.split('/');
+      serviceName = pathParts.length > 1 ? pathParts[1] : 'api';
+    } catch (error) {
+      this.logger.warn('Failed to parse URL for service name', { url: req.url, error });
+    }
     
     // Start tracking the call - use the enhanced method
-    const callId = this.logger.startServiceCall(serviceName, req.method, req.url);
+    const callId = this.logger.startServiceCall(serviceName, req.method, req.url || '');
 
     return next.handle(req).pipe(
       tap((event) => {
@@ -35,7 +40,7 @@ export class MetricsInterceptor implements HttpInterceptor {
           this.logger.endServiceCall(callId, event.status);
         }
       }),
-      catchError((error: any) => {
+      catchError((error: unknown) => {
         let status = 500; // Default server error
         if (error instanceof HttpErrorResponse) {
           status = error.status;

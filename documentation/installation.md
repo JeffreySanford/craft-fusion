@@ -31,13 +31,13 @@ npm --version   # Should show 10.x.x
 
 ```bash
 # Angular CLI
-npm install -g @angular/cli@19.0.6
+pnpm add -g @angular/cli@19.0.6
 
 # NX CLI
-npm install -g nx@20.3.0
+pnpm add -g nx@20.3.0
 
 # NestJS CLI
-npm install -g @nestjs/cli@10.0.2
+pnpm add -g @nestjs/cli@10.0.2
 
 # Go Global Tools
 go install github.com/golang/mock/mockgen@v1.6.0
@@ -77,10 +77,10 @@ swag --version
 # Clone and Install
 git clone https://github.com/your-repo/craft-fusion.git
 cd craft-fusion
-npm run install:deps
+pnpm run install:deps
 
 # Start Development
-npm start
+pnpm start
 ```
 
 ## 🌈 Post-Install System Prep
@@ -128,7 +128,7 @@ go mod tidy
 ng cache clean
 
 # Clear NX cache
-npm run clean:cache
+pnpm run clean:cache
 ```
 
 ## 🎨 Project Structure
@@ -160,7 +160,7 @@ sequenceDiagram
     participant NX as Nx Cache
     participant Build as Build Process
     
-    Dev->>NPM: npm start
+    Dev->>NPM: pnpm start
     NPM->>NX: Check cache
     NX->>Build: Build if needed
     Build->>Dev: Started! 🎉
@@ -170,10 +170,10 @@ sequenceDiagram
 
 | Command | Description | Usage |
 |---------|-------------|-------|
-| `npm run clean:all` | Nuclear option - cleans everything | When nothing works |
-| `npm run clean:cache` | Clears NX cache | When builds act weird |
-| `npm run clean:build` | Removes build artifacts | Before production build |
-| `npm run clean:deps` | Resets dependencies | When packages fight |
+| `pnpm run clean:all` | Nuclear option - cleans everything | When nothing works |
+| `pnpm run clean:cache` | Clears NX cache | When builds act weird |
+| `pnpm run clean:build` | Removes build artifacts | Before production build |
+| `pnpm run clean:deps` | Resets dependencies | When packages fight |
 
 ## 🎨 Theme Customization
 
@@ -191,9 +191,9 @@ $primary-red: #BF0A30;   // Red
 ```mermaid
 flowchart TD
     A[Error!] --> B{Did you clean?}
-    B -->|No| C[npm run clean:all]
+    B -->|No| C[pnpm run clean:all]
     B -->|Yes| D{Did you update?}
-    D -->|No| E[npm install]
+    D -->|No| E[pnpm install]
     D -->|Yes| F[Stack Overflow time]
 ```
 
@@ -214,19 +214,19 @@ graph LR
 
 ```bash
 # Development
-npm start                  # Start development server
-npm run build             # Build for production
-npm test                  # Run tests
+pnpm start                  # Start development server
+pnpm run build             # Build for production
+pnpm test                  # Run tests
 
 # Cleanup
-npm run clean:all         # Clean everything
-npm run clean:cache       # Clear NX cache
-npm run clean:build       # Remove build files
-npm run clean:deps        # Reset dependencies
+pnpm run clean:all         # Clean everything
+pnpm run clean:cache       # Clear NX cache
+pnpm run clean:build       # Remove build files
+pnpm run clean:deps        # Reset dependencies
 
 # Other
-npm run affected:apps     # Check affected apps
-npm run affected:libs     # Check affected libs
+pnpm run affected:apps     # Check affected apps
+pnpm run affected:libs     # Check affected libs
 ```
 
 ## 🎭 The Dev Cycle
@@ -245,7 +245,7 @@ npm run affected:libs     # Check affected libs
 ## 🆘 Need Help?
 
 1. Try turning it off and on again
-2. Run `npm run clean:all`
+2. Run `pnpm run clean:all`
 3. Check StackOverflow
 4. Panic
 5. Read this doc again

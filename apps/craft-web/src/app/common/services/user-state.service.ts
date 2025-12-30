@@ -21,7 +21,7 @@ export class UserStateService implements OnDestroy {
   readonly loginDateTime$ = this.loginDateTimeSubject.asObservable();
   readonly visitLength$ = this.visitLengthSubject.asObservable();
   readonly visitedPages$ = this.visitedPagesSubject.asObservable();
-  readonly user$: Observable<any>;
+  readonly user$: Observable<unknown>;
   
   
   constructor(
@@ -78,7 +78,7 @@ export class UserStateService implements OnDestroy {
       });
 
     // Handle state change events
-    userStateSocket.on<any>('state-change')
+    userStateSocket.on<unknown>('state-change')
       .pipe(takeUntil(this.destroy$))
       .subscribe(change => {
         this.processStateChange(change);

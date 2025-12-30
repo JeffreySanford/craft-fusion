@@ -59,7 +59,7 @@ export class AuthenticationService {
     }
   }
 
-  login(username: string, password: string): Observable<any> {
+  login(username: string, password: string): Observable<unknown> {
     this.logger.info('Login attempt', { username });
     // Use ApiService for login
     return this.apiService.authRequest<{ token: string, user: User }>('POST', 'auth/login', { username, password }).pipe(

@@ -1,0 +1,36 @@
+<div class="performance-dashboard">
+  <div class="metrics-summary">
+    <div class="metric-card memory">
+      <div class="metric-icon"><mat-icon>memory</mat-icon></div>
+      <div class="metric-info">
+        <span class="metric-label">Memory</span>
+        <span class="metric-value">{{performanceMetrics.memoryUsage}}</span>
+      </div>
+    </div>
+    <div class="metric-card cpu">
+      <div class="metric-icon"><mat-icon>speed</mat-icon></div>
+      <div class="metric-info">
+        <span class="metric-label">CPU</span>
+        <span class="metric-value">{{performanceMetrics.cpuLoad}}</span>
+      </div>
+    </div>
+    <div class="metric-card uptime">
+      <div class="metric-icon"><mat-icon>schedule</mat-icon></div>
+      <div class="metric-info">
+        <span class="metric-label">Uptime</span>
+        <span class="metric-value">{{performanceMetrics.appUptime}}</span>
+      </div>
+    </div>
+    <div class="metric-card network">
+      <div class="metric-icon"><mat-icon>network_check</mat-icon></div>
+      <div class="metric-info">
+        <span class="metric-label">Network</span>
+        <span class="metric-value">{{performanceMetrics.networkLatency}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-area">
+    <canvas #systemCanvas></canvas>
+  </div>
+</div>

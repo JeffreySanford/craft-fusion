@@ -1,6 +1,6 @@
 import { Controller, Post, Body, HttpException, HttpStatus, Logger, HttpCode } from '@nestjs/common';
 import { AuthService, User } from './auth.service';
-import { Observable, catchError, map, of, throwError } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
 
 interface LoginRequest {
   username: string;
@@ -23,6 +23,7 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK) // Always return 200 on successful login
   login(@Body() loginRequest: LoginRequest): Observable<LoginResponse> {
+    // Ensure password is passed to the service for validation
     this.logger.debug(`Login request received`, {
       username: loginRequest.username,
       timestamp: new Date().toISOString()

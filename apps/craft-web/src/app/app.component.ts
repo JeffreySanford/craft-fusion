@@ -38,7 +38,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Reduce network polling
   private videoCheckInterval: number = 10000;
-  private inactivityTimeout: any = null;
+  private inactivityTimeout: unknown = null;
   private videoCheckSubscription: Subscription | null = null;
   private destroy$ = new Subject<void>();
 
@@ -81,7 +81,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     console.log('debug-router: AppComponent ngOnInit');
-    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
+    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: unknown) => {
       this.isSmallScreen = result.matches;
       this.isCollapsed = this.isSmallScreen;
     });
@@ -173,7 +173,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  setActive(item: any) {
+  setActive(item: unknown) {
     this.menuItems.forEach(menuItem => (menuItem.active = false));
     item.active = true;
   }
@@ -297,13 +297,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('App component initialized');
   }
 
-  onRouterActivate(event: any) {
+  onRouterActivate(event: unknown) {
     console.log('debug-router: router-outlet activated', event);
     const fallback = document.getElementById('debug-router-fallback');
     if (fallback) fallback.style.display = 'none';
   }
 
-  onRouterDeactivate(event: any) {
+  onRouterDeactivate(event: unknown) {
     console.log('debug-router: router-outlet deactivated', event);
     setTimeout(() => {
       const fallback = document.getElementById('debug-router-fallback');

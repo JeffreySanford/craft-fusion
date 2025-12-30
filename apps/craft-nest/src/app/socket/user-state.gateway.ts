@@ -23,7 +23,7 @@ export class UserStateGateway {
     client.data.userId = guestId;
     
     // Associate socket with a guest ID
-    client.join(`guest:${guestId}`);
+    void client.join(`guest:${guestId}`);
     
     // Send back the guest ID to the client
     client.emit('guestRegistered', { guestId });
@@ -40,7 +40,7 @@ export class UserStateGateway {
     const userId = client.data.userId || 'unknown';
     
     const dateTime = new Date(data.dateTime);
-    this.userStateService.setLoginDateTime(dateTime, userId, isGuest).subscribe();
+    void this.userStateService.setLoginDateTime(dateTime, userId, isGuest).subscribe();
     
     console.log(`Socket: Updated login time for ${isGuest ? 'guest' : 'user'} ${userId}: ${dateTime}`);
   }
@@ -53,7 +53,7 @@ export class UserStateGateway {
     const isGuest = client.data.isGuest;
     const userId = client.data.userId || 'unknown';
     
-    this.userStateService.setVisitLength(data.length, userId, isGuest).subscribe();
+    void this.userStateService.setVisitLength(data.length, userId, isGuest).subscribe();
     
     console.log(`Socket: Updated visit length for ${isGuest ? 'guest' : 'user'} ${userId}: ${data.length}`);
   }
@@ -66,7 +66,7 @@ export class UserStateGateway {
     const isGuest = client.data.isGuest;
     const userId = client.data.userId || 'unknown';
     
-    this.userStateService.setVisitedPage(data.page, userId, isGuest).subscribe();
+    void this.userStateService.setVisitedPage(data.page, userId, isGuest).subscribe();
     
     console.log(`Socket: Updated visited page for ${isGuest ? 'guest' : 'user'} ${userId}: ${data.page}`);
   }

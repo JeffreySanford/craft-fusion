@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { AuthenticationService } from '../../common/services/auth/authentication.service';
 import { LoggerService } from '../../common/services/logger.service';
 import { ThemeService } from '../../common/services/theme.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -21,7 +22,7 @@ export class HeaderComponent implements OnInit {
   ];
   polling = true;
 
-  userMenuItems: any[] = []; // Initialize as empty array
+  userMenuItems: { label: string; icon: string; action: string; active?: boolean }[] = []; // Typed user menu items
   isLoggedIn$: Observable<boolean>;
   isDarkTheme = false; // Add theme tracking property
 
@@ -88,15 +89,17 @@ export class HeaderComponent implements OnInit {
 
   setActive(item: any) {
     this.menuItems.forEach(menuItem => (menuItem.active = false));
-    item.active = true;
-    this.logger.debug('Menu item activated', { label: item.label });
+    if (item) {
+      item.active = true;
+      this.logger.debug('Menu item activated', { label: item.label });
+    }
   }
 
   handleUserMenuAction(action: string) {
     this.logger.info('User menu action selected', { action });
     
     if (action === 'login') {
-      this.authService.login('admin', 'admin').subscribe({
+      this.authService.login(environment.devLogin.username, environment.devLogin.password).subscribe({
         next: () => {
           this.updateUserMenuItems();
           this.logger.info('User logged in');

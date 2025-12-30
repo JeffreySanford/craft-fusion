@@ -18,7 +18,7 @@ export class TimelineService {
   private eventsSubject = new BehaviorSubject<TimelineEvent[]>([]);
   public events$ = this.eventsSubject.asObservable().pipe(shareReplay(1));
   
-  private socket$?: WebSocketSubject<any>;
+  private socket$?: WebSocketSubject<unknown>;
   private messagesSubject = new BehaviorSubject<TimelineEvent[]>([]);
   
   constructor(
@@ -83,7 +83,7 @@ export class TimelineService {
   /**
    * Creates a new WebSocket subject with error handling
    */
-  private getNewWebSocket(): WebSocketSubject<any> {
+  private getNewWebSocket(): WebSocketSubject<unknown> {
     return webSocket({
       url: this.WS_URL,
       openObserver: {

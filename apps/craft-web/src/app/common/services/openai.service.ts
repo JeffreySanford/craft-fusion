@@ -19,7 +19,7 @@ export class OpenAIService {
       max_tokens: 150
     };
 
-    return this.http.post<any>(this.apiUrl, requestPayload, { headers }).pipe(
+    return this.http.post<unknown>(this.apiUrl, requestPayload, { headers }).pipe(
       map(response => response.choices[0].text.trim()), // Adjust based on actual API response structure
       catchError((error: HttpErrorResponse) => {
         console.error('Error from OpenAI API:', error);

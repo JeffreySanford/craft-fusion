@@ -204,23 +204,23 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
     const x = d3.scaleTime().range([0, width]);
     const y = d3.scaleLinear().range([height, 0]);
 
-    // Create line generators for each series
+      // Create line generators for each series
     const line1 = d3
       .line<LineChartData>()
-      .x(d => x(d.date))
-      .y(d => y(d.series1))
+      .x((d: LineChartData) => x(d.date))
+      .y((d: LineChartData) => y(d.series1))
       .curve(d3.curveMonotoneX); // Smoother curve
 
     const line2 = d3
       .line<LineChartData>()
-      .x(d => x(d.date))
-      .y(d => y(d.series2))
+      .x((d: LineChartData) => x(d.date))
+      .y((d: LineChartData) => y(d.series2))
       .curve(d3.curveMonotoneX);
 
     const line3 = d3
       .line<LineChartData>()
-      .x(d => x(d.date))
-      .y(d => y(d.series3))
+      .x((d: LineChartData) => x(d.date))
+      .y((d: LineChartData) => y(d.series3))
       .curve(d3.curveMonotoneX);
 
     const xDomain = d3.extent(this.data, d => d.date) as [Date, Date];
@@ -311,7 +311,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       .style('stroke-dasharray', '2,2');
 
     // Draw the lines with enhanced styling and animation durations based on chart size
-    const drawLine = (lineFunc: any, data: any, color: string, index: number) => {
+    const drawLine = (lineFunc: (d: LineChartData[]) => string | null, data: LineChartData[], color: string, index: number) => {
       const seriesKey = `series${index + 1}`;
       const seriesName = this.seriesNames[seriesKey as keyof typeof this.seriesNames] || seriesKey;
       
@@ -327,7 +327,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
         .attr('stroke-linejoin', 'round')
         .attr('stroke-linecap', 'round')
         .attr('class', 'line')
-        .attr('d', lineFunc);
+        .attr('d', (d: LineChartData[]) => lineFunc(d) as string);
       
       // Animate the line drawing
       const pathLength = path.node()?.getTotalLength() || 0;
@@ -350,7 +350,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
           .attr('class', 'area')
           .attr('fill', color)
           .attr('fill-opacity', 0.1)
-          .attr('d', areaGenerator)
+          .attr('d', (d: LineChartData[]) => areaGenerator(d) as string)
           .attr('clip-path', 'url(#clip)')
           .style('opacity', 0)
           .transition()
@@ -364,11 +364,11 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       
       // Add data points with tooltips using Renderer2
       const circles = g.selectAll(`.dot-series${index + 1}`)
-        .data(data)
+        .data(data as LineChartData[])
         .enter().append('circle')
         .attr('class', `dot-series${index + 1}`)
-        .attr('cx', (d: any) => x(d.date))
-        .attr('cy', (d: any) => y(d[seriesKey]))
+        .attr('cx', (d: LineChartData) => x(d.date))
+        .attr('cy', (d: LineChartData) => y(d[seriesKey as keyof LineChartData] as number))
         .attr('r', 0) // Start with radius 0 for animation
         .attr('fill', color)
         .attr('stroke', '#fff')
@@ -376,10 +376,10 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
         .attr('opacity', 0.7);
       
       // Store series information with each data point
-      circles.each(function(d: any) {
+      circles.each(function(this: any, d: LineChartData) {
         const circle = d3.select(this);
         circle.datum({
-          ...d,
+          ...(d as any),
           seriesKey: seriesKey,
           seriesName: seriesName,
           color: color
@@ -388,23 +388,23 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       
       // Animate the points appearing
       circles.transition()
-        .delay((d, i) => animDuration * 0.5 + (i * (animDuration / data.length)))
+        .delay((_, i) => animDuration * 0.5 + (i * (animDuration / data.length)))
         .duration(300)
         .attr('r', pointSize);
       
       // Handle events with Renderer2
-      circles.on('mouseover', (event: MouseEvent, d: any) => {
+      circles.on('mouseover', (event: MouseEvent, d: LineChartData) => {
         const target = event.target as SVGCircleElement;
         const data = d3.select(target).datum() as any;
         
         // Show tooltip with formatted data
-        const date = data.date.toLocaleDateString('en-US', {
+        const date = (data.date as Date).toLocaleDateString('en-US', {
           month: 'long',
           year: 'numeric'
         });
         
         // Format the value based on the series (different units)
-        const value = this.formatSeriesValue(data.seriesKey, data[data.seriesKey]);
+        const value = this.formatSeriesValue(data.seriesKey as string, data[data.seriesKey as string]);
         
         this.tooltip.transition()
           .duration(200)
@@ -425,7 +425,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
         this.renderer.setStyle(target, 'opacity', '1');
         
         // Highlight the corresponding line
-        g.selectAll(`.line`).filter((lineData: any, i: number) => i === index)
+        g.selectAll(`.line`).filter((lineData: unknown, i: number) => i === index)
           .attr('stroke-width', isFullscreen ? 5 : 3)
           .attr('stroke-opacity', 1);
       })
@@ -447,9 +447,9 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
     };
 
     // Draw the three lines with their respective data
-    drawLine(line1, this.data, this.colors[0], 0);
-    drawLine(line2, this.data, this.colors[1], 1);
-    drawLine(line3, this.data, this.colors[2], 2);
+    drawLine(line1, this.data, this.colors[0] as string, 0);
+    drawLine(line2, this.data, this.colors[1] as string, 1);
+    drawLine(line3, this.data, this.colors[2] as string, 2);
     
     // Remove conditional logic for placing legend; always use top-right
     const legendX = width - 150;
@@ -470,7 +470,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       legendRow.append('rect')
         .attr('width', legendFontSize)
         .attr('height', legendFontSize * 0.8)
-        .attr('fill', this.colors[i]);
+        .attr('fill', this.colors[i] as string);
         
       // Add text with size based on available space
       legendRow.append('text')

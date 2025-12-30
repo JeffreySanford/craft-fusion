@@ -101,49 +101,20 @@ function greet(name: string) {
   }
 
   adjustAllTextareas() {
-    this.messageTextareas.forEach(textarea => this.adjustTextareaHeight({
-      target: textarea.nativeElement,
-      bubbles: false,
-      cancelBubble: false,
-      cancelable: false,
-      composed: false,
-      currentTarget: null,
-      defaultPrevented: false,
-      eventPhase: 0,
-      isTrusted: false,
-      returnValue: false,
-      srcElement: null,
-      timeStamp: 0,
-      type: '',
-      composedPath: function (): EventTarget[] {
-        throw new Error('Function not implemented.');
-      },
-      initEvent: function (type: string, bubbles?: boolean, cancelable?: boolean): void {
-        throw new Error('Function not implemented.');
-      },
-      preventDefault: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      stopImmediatePropagation: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      stopPropagation: function (): void {
-        throw new Error('Function not implemented.');
-      },
-      NONE: 0,
-      CAPTURING_PHASE: 1,
-      AT_TARGET: 2,
-      BUBBLING_PHASE: 3
-    }));
+    this.messageTextareas.forEach((textarea: any) => {
+      const el = textarea && textarea.nativeElement as HTMLTextAreaElement | undefined;
+      if (el) {
+        el.style.height = 'auto';
+        el.style.height = `${el.scrollHeight}px`;
+      }
+    });
   }
 
   sendMessage() {
     if (!this.userInput.trim()) return;
 
     let messageText = this.userInput;
-    let isCitation = false;
     if (this.userInput.toLowerCase().includes('cite')) {
-      isCitation = true;
       // Example citation data (replace with actual data from the AI)
       const author = 'Smith, J.';
       const year = 2023;

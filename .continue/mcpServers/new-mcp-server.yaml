@@ -1,0 +1,11 @@
+name: New MCP server
+version: 0.0.1
+schema: v1
+mcpServers:
+  - name: New MCP server
+    command: pnpm
+    args:
+      - dlx
+      - -y
+      - <your-mcp-server>
+    env: {}

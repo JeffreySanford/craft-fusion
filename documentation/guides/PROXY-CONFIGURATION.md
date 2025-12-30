@@ -151,10 +151,10 @@ For production environments, use `proxy.config.prod.json` with appropriate produ
 1. **Verify Backend Services**: Ensure backend services are running
    ```bash
    # Terminal 1 - Start NestJS backend
-   npx nx run craft-nest:serve
+   pnpm dlx nx run craft-nest:serve
    
    # Terminal 2 - Start Go backend (if using)
-   npx nx run craft-go:serve
+   pnpm dlx nx run craft-go:serve
    ```
 
 2. **Check Health Endpoints**:
@@ -169,7 +169,7 @@ For production environments, use `proxy.config.prod.json` with appropriate produ
 3. **Test Frontend Proxy**:
    ```bash
    # Start frontend with verbose output
-   npx nx run craft-web:serve --verbose
+   pnpm dlx nx run craft-web:serve --verbose
    ```
 
 4. **Monitor Network Traffic**:
@@ -186,13 +186,13 @@ When troubleshooting connection issues, check both frontend and backend logs:
 
 ```bash
 # Frontend logs with proxy debugging
-npx nx run craft-web:serve --verbose
+pnpm dlx nx run craft-web:serve --verbose
 
 # Backend logs with Socket.IO debugging
-DEBUG=socket.io* npx nx run craft-nest:serve
+DEBUG=socket.io* pnpm dlx nx run craft-nest:serve
 
 # Socket.IO specific logs
-DEBUG=socket.io:client* npx nx run craft-web:serve
+DEBUG=socket.io:client* pnpm dlx nx run craft-web:serve
 ```
 
 ### WebSocket Client Testing

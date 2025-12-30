@@ -53,7 +53,7 @@ export class AuthService {
   }
 
   // Authentication methods
-  login(username: string, password: string): Observable<any> {
+  login(username: string, password: string): Observable<unknown> {
     return this.authenticationService.login(username, password);
   }
 

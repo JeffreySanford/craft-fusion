@@ -2,7 +2,7 @@
 
 # For more information, see https://angular.dev/tools/cli/build#configuring-browser-compatibility
 
-# You can see what browsers were selected by running: npx browserslist
+# You can see what browsers were selected by running: pnpm dlx browserslist
 
 > 0.5%
 last 2 versions

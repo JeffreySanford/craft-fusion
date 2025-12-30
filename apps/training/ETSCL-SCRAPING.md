@@ -41,9 +41,9 @@ node new-etscl.js --source github --output ./training_data/etscl/github-issues.j
 node new-etscl.js --source stackexchange --output ./training_data/etscl/stackexchange-qa.jsonl
 
 # Using NPM scripts
-npm run scrape-etscl
-npm run scrape-github
-npm run scrape-stackexchange
+pnpm run scrape-etscl
+pnpm run scrape-github
+pnpm run scrape-stackexchange
 
 # Using TypeScript (requires ts-node)
 ts-node new-etscl.ts --source website --output ./training_data/etscl/scraped-support.jsonl
@@ -61,7 +61,7 @@ nx run training:merge-datasets
 node merge-datasets.js --input ./training_data/etscl --output ./training_data/combined.jsonl --deduplicate --randomize
 
 # Using NPM script
-npm run merge-datasets
+pnpm run merge-datasets
 ```
 
 The merge script supports several options:

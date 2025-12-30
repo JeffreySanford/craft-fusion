@@ -99,7 +99,7 @@ export class RecordService {
    * @param UID The UID of the record to get
    * @returns An observable of the record
    */
-  getRecordByUID(UID: string): Observable<Record> {
+  getRecordByUID(UID: string): Observable<Record | undefined> {
     this.selectedUID = UID;
     this.logger.debug('Getting record by UID', { UID });
     
@@ -286,17 +286,17 @@ export class RecordService {
       
       mockRecords.push({
         UID: `MOCK-${i + 10000}`,
-        firstName,
-        lastName,
-        name: `${firstName} ${lastName}`,
+        firstName: firstName as string,
+        lastName: lastName as string,
+        name: `${firstName as string} ${lastName as string}`,
         address: {
           street: `${1000 + i} Main St`,
-          city,
-          state,
+          city: city as string,
+          state: state as string,
           zipcode
         },
-        city,
-        state,
+        city: city as string,
+        state: state as string,
         zip: zipcode,
         phone: {
           UID: phoneUID,
@@ -304,7 +304,7 @@ export class RecordService {
           type: 'mobile'
         },
         salary: salary,
-        email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
+        email: `${(firstName as string).toLowerCase()}.${(lastName as string).toLowerCase()}@example.com`,
         birthDate: new Date(1960 + Math.floor(Math.random() * 40), Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString(),
         registrationDate: new Date().toISOString(),
         // Add missing required properties
@@ -329,7 +329,7 @@ export class RecordService {
   public checkNetworkStatus(): Observable<boolean> {
     this.logger.debug('Checking network connectivity status...');
     
-    return this.apiService.get<any>('health', {
+    return this.apiService.get<unknown>('health', {
       headers: { 'Cache-Control': 'no-cache' },
       timeout: 3000
     }).pipe(
