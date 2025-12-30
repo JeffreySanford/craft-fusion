@@ -23,7 +23,7 @@ import { Subscription } from 'rxjs';
 export class HealthGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server!: Server;
   private clientsCount = 0;
-  private metricsSubscription?: Subscription;
+  private metricsSubscription: Subscription | undefined = undefined;
   private readonly logger = new Logger(HealthGateway.name);
 
   constructor(private healthService: HealthService) {}
@@ -58,7 +58,7 @@ export class HealthGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   }
 
   @SubscribeMessage('health:request')
-  handleHealthRequest(client: Socket) {
+  handleHealthRequest(_client: Socket) {
     return this.healthService.getHealthStatus();
   }
 

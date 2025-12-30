@@ -12,7 +12,7 @@ export class AuthGuard implements CanActivate {
       const client: Socket = context.switchToWs().getClient();
       
       // Get token from handshake auth
-      const token = client.handshake.auth?.token;
+      const token = client.handshake.auth?.['token'];
       if (!token) {
         return false;
       }

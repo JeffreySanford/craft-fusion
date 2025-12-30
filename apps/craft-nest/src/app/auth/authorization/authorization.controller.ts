@@ -6,7 +6,7 @@ export class AuthorizationController {
   constructor(private readonly authorizationService: AuthorizationService) {}
 
   @Get('check')
-  checkAccess(@Query('role') role: string, @Query('resource') resource: string) {
-    return this.authorizationService.canAccessResource(role, resource);
+  checkAccess(@Query('role') role: string) {
+    return this.authorizationService.canAccessResource(role);
   }
 }

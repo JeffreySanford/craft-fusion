@@ -18,7 +18,7 @@ export interface LogEntry {
   level: LogLevel;
   message: string;
   component?: string;
-  details?: any;
+  details?: unknown;
 }
 
 export interface ServiceCallMetric {
@@ -29,7 +29,7 @@ export interface ServiceCallMetric {
   url: string;
   status?: number;
   duration?: number;
-  error?: any;
+  error?: unknown;
   // Additional properties needed by admin component
   errorRate?: number;
   authAttempts?: number;
@@ -64,10 +64,10 @@ export class LoggerService {
   serviceCalls$ = this.serviceCallsSubject.asObservable();
   
   // Hot observables for integration
-  private connectSubject = new Subject<any>();
-  private errorSubject = new Subject<any>();
-  private infoSubject = new Subject<any>();
-  private changelogSubject = new ReplaySubject<any>(100);
+  private connectSubject = new Subject<unknown>();
+  private errorSubject = new Subject<unknown>();
+  private infoSubject = new Subject<unknown>();
+  private changelogSubject = new ReplaySubject<unknown>(100);
 
   connect$ = this.connectSubject.asObservable();
   error$ = this.errorSubject.asObservable();
@@ -89,23 +89,23 @@ export class LoggerService {
     return this.loggerLevel;
   }
 
-  debug(message: string, details?: any, component: string = this.getCallerComponent()) {
+  debug(message: string, details?: unknown, component: string = this.getCallerComponent()) {
     this.log(LogLevel.DEBUG, message, details, component);
   }
 
-  info(message: string, details?: any, component: string = this.getCallerComponent()) {
+  info(message: string, details?: unknown, component: string = this.getCallerComponent()) {
     this.log(LogLevel.INFO, message, details, component);
   }
 
-  warn(message: string, details?: any, component: string = this.getCallerComponent()) {
+  warn(message: string, details?: unknown, component: string = this.getCallerComponent()) {
     this.log(LogLevel.WARN, message, details, component);
   }
 
-  error(message: string, details?: any, component: string = this.getCallerComponent()) {
+  error(message: string, details?: unknown, component: string = this.getCallerComponent()) {
     this.log(LogLevel.ERROR, message, details, component);
   }
   
-  highlight(message: string, details?: any, component: string = this.getCallerComponent()) {
+  highlight(message: string, details?: unknown, component: string = this.getCallerComponent()) {
     this.log(LogLevel.INFO, `⭐ ${message} ⭐`, details, component);
   }
   
@@ -134,7 +134,7 @@ export class LoggerService {
     return callId;
   }
   
-  endServiceCall(callId: string, status: number, error?: any): void {
+  endServiceCall(callId: string, status: number, error?: unknown): void {
     const startMetric = this.serviceCallsInProgress.get(callId);
     
     if (startMetric) {
@@ -185,7 +185,7 @@ export class LoggerService {
     this.info('Service metrics cleared');
   }
 
-  private log(level: LogLevel, message: string, details?: any, component?: string) {
+  private log(level: LogLevel, message: string, details?: unknown, component?: string) {
     // Only log if the level is greater than or equal to the logger level
     if (level >= this.loggerLevel) {
       // If component not provided, try to determine it
@@ -227,7 +227,7 @@ export class LoggerService {
     }
   }
 
-  private outputToConsole(level: LogLevel, message: string, details?: any, component: string = '') {
+  private outputToConsole(level: LogLevel, message: string, details?: unknown, component: string = '') {
     const componentPrefix = component ? `[${component}] ` : '';
     
     // Enhanced color definitions for different log categories
@@ -365,7 +365,7 @@ export class LoggerService {
   }
 
   // Helper methods for categorizing log messages
-  private isSecurityRelated(message: string, component: string = '', details?: any): boolean {
+  private isSecurityRelated(message: string, component: string = '', details?: unknown): boolean {
     const securityTerms = [
       'security', 'permission', 'access', 'credential', 'protect', 'firewall',
       'encrypt', 'decrypt', 'hash', 'salt', 'csrf', 'xss', 'injection', 'vulnerability'
@@ -385,7 +385,7 @@ export class LoggerService {
            (component && ['AuthService', 'LoginComponent', 'AuthGuard'].includes(component)));
   }
 
-  private isPerformanceRelated(message: string, component: string = '', details?: any): boolean {
+  private isPerformanceRelated(message: string, component: string = '', details?: unknown): boolean {
     const perfTerms = [
       'performance', 'latency', 'speed', 'slow', 'fast', 'metrics', 'benchmark',
       'timeout', 'memory', 'cpu', 'load', 'resource', 'optimize', 'render time'
@@ -523,19 +523,20 @@ export class LoggerService {
       // Look for class name in stack trace - improved detection pattern
       for (let i = 3; i < Math.min(10, stackLines.length); i++) { // Check more lines but limit for performance
         const line = stackLines[i];
-        
+        if (!line) continue;
+
         // Enhanced pattern matching to detect components and services
         const componentMatch = line.match(/at\s+(\w+(?:Component|Service|Guard|Directive|Pipe|Resolver))\./);
         if (componentMatch && componentMatch[1]) {
           return componentMatch[1];
         }
-        
+
         // Try to match class methods with 'this' context
         const methodMatch = line.match(/at\s+([A-Z]\w*)\.((?:\w+))/);
         if (methodMatch && methodMatch[1]) {
           return methodMatch[1]; // Return class name if found
         }
-        
+
         // Last resort: Try to extract file name for context
         const fileMatch = line.match(/\((.+?)(?:\.ts|\.[jt]sx?):(\d+):(\d+)\)$/);
         if (fileMatch && fileMatch[1]) {
@@ -566,37 +567,37 @@ export class LoggerService {
   }
   
   // Add a log sanitizer helper to avoid sensitive info in logs
-  private sanitizeLogDetails(details: any): any {
+  private sanitizeLogDetails(details: unknown): unknown {
     if (!details) return details;
     
     try {
       // Make a copy to avoid modifying the original object
-      let sanitized = JSON.parse(JSON.stringify(details));
-      
+      const sanitized = JSON.parse(JSON.stringify(details)) as Record<string, any>;
+
       // List of sensitive field names to mask
       const sensitiveFields = ['password', 'token', 'secret', 'key', 'authorization', 'auth'];
-      
+
       // Helper to sanitize an object recursively
-      const sanitizeObject = (obj: any) => {
+      const sanitizeObject = (obj: Record<string, any>) => {
         if (!obj || typeof obj !== 'object') return;
-        
-        Object.keys(obj).forEach(key => {
-          const lowerKey = key.toLowerCase();
-          
+
+        for (const key of Object.keys(obj)) {
+          const lowerKey = String(key).toLowerCase();
+
           // If sensitive field, mask the value
           if (sensitiveFields.some(field => lowerKey.includes(field))) {
             obj[key] = '[REDACTED]';
           } 
           // Recurse if object or array
-          else if (typeof obj[key] === 'object' && obj[key] !== null) {
-            sanitizeObject(obj[key]);
+          else if (obj[key] && typeof obj[key] === 'object') {
+            sanitizeObject(obj[key] as Record<string, any>);
           }
-        });
+        }
       };
-      
+
       sanitizeObject(sanitized);
       return sanitized;
-      
+
     } catch (error) {
       // If any error during sanitization, return original but add warning
       return { original: details, warning: 'Could not sanitize log details' };
@@ -787,7 +788,7 @@ export class LoggerService {
   }
 
   // Example: emit connect event (call this when appropriate in your app)
-  emitConnectEvent(data: any) {
+  emitConnectEvent(data: unknown) {
     this.connectSubject.next(data);
   }
 }

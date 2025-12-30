@@ -32,6 +32,7 @@ export class AuthService {
   }
 
   validateUser(username: string, password: string): Observable<User | null> {
+    // Ensure password is used for authentication
     this.logger.debug(`Authentication attempt initiated`, { 
       username,
       timestamp: new Date().toISOString()

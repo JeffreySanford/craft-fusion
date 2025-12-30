@@ -24,7 +24,7 @@ export class BookService {
     );
   }
 
-  saveDocument(documentName: string, content: string): Observable<any> {
+  saveDocument(documentName: string, content: string): Observable<unknown> {
     return this.http.post('/api/files/document/book/save', {
       name: documentName,
       content: content

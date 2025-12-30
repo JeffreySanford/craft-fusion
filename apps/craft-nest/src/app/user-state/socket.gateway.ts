@@ -1,6 +1,5 @@
 import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { LoggingService } from '../logging/logging.service';
 
 @WebSocketGateway({
   cors: {

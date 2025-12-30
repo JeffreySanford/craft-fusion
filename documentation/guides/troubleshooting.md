@@ -8,7 +8,7 @@ This guide addresses common development environment issues you might encounter w
 ### "The system cannot find the file specified" (OS Error 2)
 
 **Symptoms:** 
-- Error when running NX commands like `npx nx run craft-nest:serve`
+- Error when running NX commands like `pnpm dlx nx run craft-nest:serve`
 - Message containing "The system cannot find the file specified. (os error 2)"
 - Process terminating with exit code 1
 
@@ -24,10 +24,10 @@ This guide addresses common development environment issues you might encounter w
 1. **Reset the NX cache**
    ```bash
    # Clear NX cache and rebuild
-   npx nx reset
+   pnpm dlx nx reset
    
    # Run the command again
-   npx nx run craft-nest:serve
+   pnpm dlx nx run craft-nest:serve
    ```
 
 2. **Verify project structure**
@@ -42,10 +42,10 @@ This guide addresses common development environment issues you might encounter w
 3. **Rebuild the affected application**
    ```bash
    # Force a clean rebuild of the application
-   npx nx build craft-nest --skip-nx-cache
+   pnpm dlx nx build craft-nest --skip-nx-cache
    
    # Then try serving again
-   npx nx run craft-nest:serve
+   pnpm dlx nx run craft-nest:serve
    ```
 
 4. **Check workspace.json or nx.json**
@@ -63,9 +63,7 @@ This guide addresses common development environment issues you might encounter w
 
 6. **Reinstall dependencies**
    ```bash
-   npm ci
-   # OR 
-   npm install
+   pnpm install --frozen-lockfile
    ```
 
 ### "Too many open files" Error
@@ -103,7 +101,7 @@ Error: EMFILE: too many open files, open '/repos/craft-fusion/dist/apps/craft-we
 3. **Modify Node.js settings**
    ```bash
    # Set higher limit before starting application
-   NODE_OPTIONS=--max-old-space-size=4096 npx nx run craft-web:serve
+   NODE_OPTIONS=--max-old-space-size=4096 pnpm dlx nx run craft-web:serve
    ```
 
 4. **Optimize file watching in nx.json**
@@ -156,7 +154,7 @@ Error: EMFILE: too many open files, open '/repos/craft-fusion/dist/apps/craft-we
 
 3. **Check server logs with increased verbosity**
    ```bash
-   npx nx run craft-nest:serve --verbose
+   pnpm dlx nx run craft-nest:serve --verbose
    ```
 
 4. **Ensure storage directories exist**
@@ -168,7 +166,7 @@ Error: EMFILE: too many open files, open '/repos/craft-fusion/dist/apps/craft-we
 5. **Check for syntax or compilation errors**
    ```bash
    # Run linting to catch syntax errors
-   npx nx lint craft-nest
+   pnpm dlx nx lint craft-nest
    ```
 
 ## Angular Web Frontend Issues
@@ -187,9 +185,9 @@ Error: EMFILE: too many open files, open '/repos/craft-fusion/dist/apps/craft-we
 1. **Start the backend server**
    ```bash
    # Start NestJS API
-   npx nx run craft-nest:serve
+   pnpm dlx nx run craft-nest:serve
    # OR start Go API
-   npx nx run craft-go:serve
+   pnpm dlx nx run craft-go:serve
    ```
 
 2. **Check if ports are already in use**
@@ -235,12 +233,12 @@ Error: EMFILE: too many open files, open '/repos/craft-fusion/dist/apps/craft-we
 
 2. **Update Angular CLI global version**
    ```bash
-   npm install -g @angular/cli@latest
+   pnpm add -g @angular/cli@latest
    ```
 
 3. **Check for TypeScript version mismatches**
    ```bash
-   npx nx report
+   pnpm dlx nx report
    ```
 
 ## Go Backend Issues
@@ -267,10 +265,10 @@ Error: listen tcp :4000: bind: address already in use
    ```bash
    # Set PORT environment variable
    set PORT=4001
-   npx nx run craft-go:serve
+   pnpm dlx nx run craft-go:serve
    
    # Or in Linux/Mac:
-   PORT=4001 npx nx run craft-go:serve
+   PORT=4001 pnpm dlx nx run craft-go:serve
    ```
 
 ## NX Workspace Issues
@@ -285,12 +283,12 @@ Error: listen tcp :4000: bind: address already in use
 
 1. **Update NX workspace**
    ```bash
-   npx nx g @nx/workspace:refresh
+   pnpm dlx nx g @nx/workspace:refresh
    ```
 
 2. **Verify project exists in workspace.json/nx.json**
    ```bash
-   npx nx show project craft-nest
+   pnpm dlx nx show project craft-nest
    ```
 
 3. **Remove NX cache folders**
@@ -311,13 +309,13 @@ Cannot find module './lib/daemon/process-run-end'
 
 1. **Restart NX daemon**
    ```bash
-   npx nx reset
+   pnpm dlx nx reset
    ```
 
 2. **Disable NX Cloud temporarily**
    ```bash
    # Use the --no-cloud flag
-   npx nx --no-cloud run craft-nest:serve
+   pnpm dlx nx --no-cloud run craft-nest:serve
    ```
 
 3. **Update NX dependencies**
@@ -328,7 +326,7 @@ Cannot find module './lib/daemon/process-run-end'
 4. **Kill and restart NX daemon process**
    ```bash
    # Windows
-   npx nx-stop-daemon
+   pnpm dlx nx-stop-daemon
    # Linux/Mac
    pkill -f "nx-daemon"
    ```
@@ -346,7 +344,7 @@ FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaS
 
 1. **Increase Node.js memory limit**
    ```bash
-   NODE_OPTIONS="--max-old-space-size=8192" npx nx run craft-web:serve
+   NODE_OPTIONS="--max-old-space-size=8192" pnpm dlx nx run craft-web:serve
    ```
 
 2. **Enable memory optimization in apps**
@@ -363,7 +361,7 @@ FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaS
 3. **Profile memory usage**
    ```bash
    # Start with inspector
-   NODE_OPTIONS="--inspect" npx nx run craft-web:serve
+   NODE_OPTIONS="--inspect" pnpm dlx nx run craft-web:serve
    ```
    Then open Chrome at chrome://inspect and analyze memory usage.
 
@@ -386,16 +384,16 @@ FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaS
 
 2. **Install required global tools**
    ```bash
-   npm install -g nx@latest
-   npm install -g @angular/cli@latest
-   npm install -g @nestjs/cli
+   pnpm add -g nx@latest
+   pnpm add -g @angular/cli@latest
+   pnpm add -g @nestjs/cli
    ```
 
 3. **Reinstall project dependencies**
    ```bash
    rm -rf node_modules
-   npm cache clean --force
-   npm install
+   pnpm store prune
+   pnpm install --frozen-lockfile
    ```
 
 ### PATH and Environment Issues
@@ -469,7 +467,7 @@ After applying fixes, verify your environment:
    ```
 
 2. **Frontend-to-Backend Connection**
-   - Start the frontend with `npx nx run craft-web:serve`
+   - Start the frontend with `pnpm dlx nx run craft-web:serve`
    - Navigate to http://localhost:4200
    - Open browser developer tools (F12) and check Network tab
    - Verify API calls succeed with 200 status codes

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Get } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Get, Headers } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 
 @Controller('auth')
@@ -7,21 +7,16 @@ export class AuthenticationController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  login(@Body() body: { username: string; password: string }) {
+  async login(@Body() body: { username: string; password?: string }) {
+    // Accept username + password; controller surfaces Unauthorized for invalid creds
     return this.authService.login(body.username, body.password);
   }
 
   @Get('user')
   @HttpCode(HttpStatus.OK)
-  getUser() {
-    // Return a mock user for now since this is mainly used for token validation
-    return {
-      id: '1',
-      username: 'authenticated-user',
-      firstName: 'Authenticated',
-      lastName: 'User',
-      email: 'user@example.com',
-      roles: ['user']
-    };
+  getUser(@Headers('authorization') authorization?: string) {
+    // If an Authorization header with a Bearer token is provided, resolve the
+    // actual user from the JWT. Otherwise return a generic authenticated user.
+    return this.authService.getUserFromToken(authorization);
   }
 }

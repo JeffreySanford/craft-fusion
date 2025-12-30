@@ -29,7 +29,8 @@ export class ModelSelectorComponent implements OnInit {
   }
 
   onModelSelectChange(event: any): void {
-    const selectedModel = this.models.find(model => model.name === event.target.value);
+    const value = event && (event.value || event.target?.value);
+    const selectedModel = this.models.find(model => model.name === value);
     if (selectedModel) {
       this.settingsService.setSelectedModel(selectedModel);
     }

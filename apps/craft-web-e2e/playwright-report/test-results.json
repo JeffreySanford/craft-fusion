@@ -142,7 +142,7 @@
     "version": "1.49.1",
     "workers": 8,
     "webServer": {
-      "command": "npx nx run craft-web:serve",
+      "command": "pnpm dlx nx run craft-web:serve",
       "url": "http://localhost:4200",
       "reuseExistingServer": true,
       "timeout": 120000,

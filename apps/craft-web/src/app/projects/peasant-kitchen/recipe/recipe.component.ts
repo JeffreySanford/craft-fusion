@@ -39,7 +39,7 @@ export class RecipeComponent implements OnInit {
           console.log('Recipe in RecipeComponent:', this.recipe);
         }
       },
-      error: (err: any) => {
+      error: (err: unknown) => {
         console.error('Error in subscription:', err);
       },
       complete: () => {

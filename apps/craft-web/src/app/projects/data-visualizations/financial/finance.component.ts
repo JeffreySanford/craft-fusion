@@ -6,6 +6,22 @@ interface Stock {
   data: { date: Date; close: number }[];
 }
 
+interface Quarter {
+  start: Date;
+  end: Date;
+  label: string;
+  index: number;
+}
+
+interface Month {
+  start: Date;
+  end: Date;
+  label: string;
+  quarter: number;
+}
+
+type Phase = { start: Date; end: Date; type: 'bull' | 'bear' | 'consolidation'; label: string };
+
 @Component({
   selector: 'app-finance-chart',
   templateUrl: './finance.component.html',
@@ -14,19 +30,19 @@ interface Stock {
 })
 
 export class FinanceComponent implements OnInit, OnChanges {
-  @Input() data: any[] = [];
+  @Input() data: Stock[] = [];
   @Input() width: number = 0;
   @Input() height: number = 0;
   @Input() inOverlay: boolean = false; // New input to detect overlay mode
   @Input() showMarketPhases: boolean = false; // Default to hide market phases on initial load
   @Input() showMarketPhasesControl: boolean = true; // Make control visible by default
   @ViewChild('chart', { static: true }) chartContainer!: ElementRef;
-  stocks: any[] = [];
+  stocks: string[] = [];
   resolved: boolean = false;
   activeStock: string | null = null;
   
   // Store paths for animation replay
-  private stockPaths: Map<string, any> = new Map();
+  private stockPaths: Map<string, d3.Selection<SVGPathElement, any, null, undefined>> = new Map();
   
   // Patriotic color scheme - enhanced contrast
   private colorScheme = ['#d62828', '#003049', '#0077b6', '#588157', '#1d3557'];
@@ -51,7 +67,7 @@ export class FinanceComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.data && (changes['data'] || changes['width'] || changes['inOverlay'])) {
-      this.stocks = this.data.map((stock: any) => stock.symbol);
+      this.stocks = this.data.map((stock: Stock) => stock.symbol);
       if(this.stocks.length > 0) {
         // Sort stocks by price before rendering
         this.sortStocksByCurrentPrice();
@@ -63,20 +79,20 @@ export class FinanceComponent implements OnInit, OnChanges {
   // New method to sort stocks by their current (latest) price
   private sortStocksByCurrentPrice(): void {
     // Create an array of objects with symbol and current price
-    this.sortedStocks = this.data.map((stock: any) => {
-      // Get the most recent price data point
-      const latestDataPoint = stock.data
-        .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+    this.sortedStocks = this.data.map((stock: Stock) => {
+      // Guard: ensure we don't mutate original data; copy and sort by date descending
+      const latestDataPoint = stock.data && stock.data.length > 0 ?
+        stock.data.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] :
+        undefined;
       
       // Update the latest data date if needed
-      if (latestDataPoint && (!this.latestDataDate || 
-          new Date(latestDataPoint.date) > this.latestDataDate)) {
+      if (latestDataPoint && (!this.latestDataDate || new Date(latestDataPoint.date) > this.latestDataDate)) {
         this.latestDataDate = new Date(latestDataPoint.date);
       }
       
       return {
         symbol: stock.symbol,
-        currentPrice: latestDataPoint ? latestDataPoint.close : 0,
+        currentPrice: latestDataPoint ? +latestDataPoint.close : 0,
         color: '' // Will be set after sorting
       };
     });
@@ -86,13 +102,13 @@ export class FinanceComponent implements OnInit, OnChanges {
     
     // Assign colors based on the sorted order
     this.sortedStocks.forEach((stock, index) => {
-      stock.color = this.colorScheme[index % this.colorScheme.length];
+      stock.color = (this.colorScheme[index % this.colorScheme.length] || this.colorScheme[0]) as string;
     });
   }
   
   getStockColor(symbol: string): string {
     const stockEntry = this.sortedStocks.find(s => s.symbol === symbol);
-    return stockEntry ? stockEntry.color : this.colorScheme[0];
+    return (stockEntry ? stockEntry.color : this.colorScheme[0]) as string;
   }
   
   // Highlight stock on legend hover
@@ -233,7 +249,7 @@ export class FinanceComponent implements OnInit, OnChanges {
   }
 
   // New method to render market phases (Gantt chart) view with improved layout
-  private renderMarketPhasesView(svg: any, x: any, width: number, height: number, timeExtent: [Date, Date]): void {
+  private renderMarketPhasesView(svg: d3.Selection<SVGGElement, unknown, null, undefined>, x: d3.ScaleTime<number, number>, width: number, height: number, timeExtent: [Date, Date]): void {
     // Remove any existing tooltips first
     d3.select(this.chartContainer.nativeElement).selectAll('.tooltip, .gantt-tooltip').remove();
 
@@ -292,7 +308,8 @@ export class FinanceComponent implements OnInit, OnChanges {
     const contentHeight = height - 60;
     
     // Create time period bands with full height
-    const timeContainer = contentContainer.append('g')
+    // timeContainer intentionally unused — groups are appended directly to DOM
+    contentContainer.append('g')
       .attr('class', 'time-container');
       
     // Draw time axis with quarters and months
@@ -325,7 +342,7 @@ export class FinanceComponent implements OnInit, OnChanges {
       .style('font-weight', 'bold');
       
     // Draw quarter and month boundaries
-    timeData.quarters.forEach(quarter => {
+    timeData.quarters.forEach((quarter: Quarter) => {
       contentContainer.append('rect')
         .attr('x', x(quarter.start))
         .attr('y', 0)
@@ -337,19 +354,19 @@ export class FinanceComponent implements OnInit, OnChanges {
     });
 
     // Generate market phases that cover the full time period
-    const marketPhases = this.generateMarketPhases(minYear, maxYear);
+    const marketPhases: Phase[] = this.generateMarketPhases(minYear, maxYear);
     
     // Create a container for each phase type with full height
     const phasesContainer = contentContainer.append('g')
       .attr('class', 'phases-container');
       
     // Draw market phases with full height (stacked vertically)
-    const phaseTypes = ['bull', 'bear', 'consolidation'];
+    const phaseTypes: Phase['type'][] = ['bull', 'bear', 'consolidation'];
     const typeHeight = contentHeight / phaseTypes.length;
     
     phaseTypes.forEach((type, index) => {
       // Filter phases by type
-      const typePhases = marketPhases.filter(phase => phase.type === type);
+      const typePhases = marketPhases.filter((phase: Phase) => phase.type === type);
       
       // Create container for this phase type
       const typeContainer = phasesContainer.append('g')
@@ -363,8 +380,7 @@ export class FinanceComponent implements OnInit, OnChanges {
         .attr('fill', this.getPhaseBackgroundColor(type))
         .attr('stroke', this.getPhaseStrokeColor(type))
         .attr('stroke-width', 1)
-        .attr('stroke-opacity', 0.6);
-      
+        .attr('stroke-opacity', 0.6);      
       // Add type label on the left
       typeContainer.append('text')
         .attr('class', 'phase-type-label')
@@ -378,7 +394,7 @@ export class FinanceComponent implements OnInit, OnChanges {
         .text(type.charAt(0).toUpperCase() + type.slice(1));
       
       // Draw phase bars for this type
-      typePhases.forEach(phase => {
+      typePhases.forEach((phase: Phase) => {
         // Calculate phase width with safety margins
         const rawPhaseWidth = x(phase.end) - x(phase.start);
         const phaseWidth = Math.max(2, Math.min(rawPhaseWidth, width - x(phase.start)));
@@ -399,8 +415,7 @@ export class FinanceComponent implements OnInit, OnChanges {
           .attr('fill', this.getPhaseColor(type))
           .attr('stroke', this.getPhaseStrokeColor(type))
           .attr('stroke-width', 2)
-          .attr('opacity', 0.9);
-        
+          .attr('opacity', 0.9);        
         // Add phase label if there's enough space, with improved text constraints
         if (phaseWidth > 60) {
           // Create clipping path for the text to ensure it stays within the phase
@@ -425,41 +440,19 @@ export class FinanceComponent implements OnInit, OnChanges {
             .attr('fill', '#000000')
             .attr('clip-path', `url(#${clipId})`)
             .style('text-shadow', '0 0 5px rgba(255,255,255,1), 0 0 5px rgba(255,255,255,1)')
-            .text(phase.label);
-        }
-        
-        // Add tooltip interaction
-        phaseGroup.on('mouseover', (event: MouseEvent) => {
-          phaseRect.transition()
-            .duration(200)
-            .attr('opacity', 1)
-            .attr('stroke-width', 3)
-            .attr('height', typeHeight * 0.9)
-            .attr('y', typeHeight * 0.05);
-            
-          this.showPhaseTooltip(event, phase, type);
-        })
-        .on('mouseout', () => {
-          phaseRect.transition()
-            .duration(200)
-            .attr('opacity', 0.9)
-            .attr('stroke-width', 2)
-            .attr('height', typeHeight * 0.8)
-            .attr('y', typeHeight * 0.1);
-            
-          this.hidePhaseTooltip();
-        });
+            .text(phase.label as string);
+          }
       });
     });
     
     // Add stock performance mini-charts overlaid on phases
-    this.addStockPerformanceOverlay(contentContainer, x, width, contentHeight, timeExtent);
+    this.addStockPerformanceOverlay(contentContainer, x, width, contentHeight);
   }
 
   // New helper method to generate time data with quarters and months
-  private generateTimeData(startYear: number, endYear: number): { quarters: any[], months: any[] } {
-    const quarters = [];
-    const months = [];
+  private generateTimeData(startYear: number, endYear: number): { quarters: Quarter[], months: Month[] } {
+    const quarters: Quarter[] = [];
+    const months: Month[] = [];
     
     for (let year = startYear; year <= endYear; year++) {
       for (let quarter = 0; quarter < 4; quarter++) {
@@ -503,11 +496,11 @@ export class FinanceComponent implements OnInit, OnChanges {
   }
 
   // New method to add stock performance mini-charts overlaid on the phases
-  private addStockPerformanceOverlay(container: any, x: any, width: number, height: number, timeExtent: [Date, Date]): void {
+  private addStockPerformanceOverlay(container: d3.Selection<SVGGElement, unknown, null, undefined>, x: d3.ScaleTime<number, number>, width: number, height: number): void {
     // Calculate scale for stock prices
     const allStockData: { date: Date; close: number; symbol: string }[] = [];
-    this.data.forEach((stock: any) => {
-      stock.data.forEach((dataPoint: any) => {
+    this.data.forEach((stock: Stock) => {
+      (stock.data || []).forEach((dataPoint) => {
         allStockData.push({
           date: dataPoint.date instanceof Date ? dataPoint.date : new Date(dataPoint.date),
           close: +dataPoint.close,
@@ -536,7 +529,7 @@ export class FinanceComponent implements OnInit, OnChanges {
       .attr('transform', `translate(0, 0)`);
     
     // Create a line generator with smoother curve
-    const line = d3.line<any>()
+    const line = d3.line<{ date: Date; close: number }>()
       .x(d => x(d.date))
       .y(d => y(d.close))
       .curve(d3.curveCatmullRom.alpha(0.5)); // Smoother curve
@@ -590,13 +583,13 @@ export class FinanceComponent implements OnInit, OnChanges {
   }
 
   // Helper method to get only key points (start, end, and major changes)
-  private getKeyPoints(data: any[], maxPoints: number = 3): any[] {
+  private getKeyPoints(data: { date: Date; close: number }[], maxPoints: number = 3): { date: Date; close: number }[] {
     if (data.length <= maxPoints) {
       return data;
     }
     
-    // Always include first and last points
-    const points = [data[0], data[data.length - 1]];
+    // Always include first and last points (non-null assertion used because length > maxPoints)
+    const points: { date: Date; close: number }[] = [data[0]!, data[data.length - 1]!];
     
     // If we need more points, add the most significant change
     if (maxPoints > 2 && data.length > 2) {
@@ -604,9 +597,9 @@ export class FinanceComponent implements OnInit, OnChanges {
       let maxChangePoint = data[0];
       
       for (let i = 1; i < data.length - 1; i++) {
-        const prevPoint = data[i - 1];
-        const currPoint = data[i];
-        const nextPoint = data[i + 1];
+        const prevPoint = data[i - 1]!;
+        const currPoint = data[i]!;
+        const nextPoint = data[i + 1]!;
         
         const changeBeforeCurr = Math.abs(currPoint.close - prevPoint.close);
         const changeAfterCurr = Math.abs(nextPoint.close - currPoint.close);
@@ -618,14 +611,14 @@ export class FinanceComponent implements OnInit, OnChanges {
         }
       }
       
-      points.push(maxChangePoint);
+      points.push(maxChangePoint!);
     }
     
     return points.sort((a, b) => a.date.getTime() - b.date.getTime());
   }
 
   // New helper method for better tooltip display
-  private showPhaseTooltip(event: MouseEvent, phase: any, phaseType: string): void {
+  private showPhaseTooltip(event: MouseEvent, phase: Phase, phaseType: Phase['type']): void {
     const tooltip = d3.select(this.chartContainer.nativeElement)
       .append('div')
       .attr('class', 'gantt-tooltip')
@@ -702,26 +695,25 @@ export class FinanceComponent implements OnInit, OnChanges {
   }
 
   // Helper method to calculate stock performance in a phase
-  private calculateStockPerformanceInPhase(phase: any): any[] {
-    const results: any[] = [];
+  private calculateStockPerformanceInPhase(phase: Phase): { symbol: string; firstPrice: number; lastPrice: number; percentChange: number; color: string }[] {
+    const results: { symbol: string; firstPrice: number; lastPrice: number; percentChange: number; color: string }[] = [];
     
     this.sortedStocks.forEach(stock => {
       // Find data points for this stock within the phase period
-      const stockData = this.data
-        .find((s: any) => s.symbol === stock.symbol)?.data
-        .filter((d: any) => {
-          const date = d.date instanceof Date ? d.date : new Date(d.date);
-          return date >= phase.start && date <= phase.end;
-        })
-        .sort((a: any, b: any) => {
-          const dateA = a.date instanceof Date ? a.date : new Date(a.date);
-          const dateB = b.date instanceof Date ? b.date : new Date(b.date);
-          return dateA.getTime() - dateB.getTime();
-        });
+      const stockEntry = this.data.find((s: Stock) => s.symbol === stock.symbol);
+      const stockData = stockEntry ? (stockEntry.data || []).filter(d => {
+        const date = d.date instanceof Date ? d.date : new Date(d.date);
+        return date >= phase.start && date <= phase.end;
+      }).sort((a, b) => {
+        const dateA = a.date instanceof Date ? a.date : new Date(a.date);
+        const dateB = b.date instanceof Date ? b.date : new Date(b.date);
+        return dateA.getTime() - dateB.getTime();
+      }) : undefined;
         
       if (stockData && stockData.length > 1) {
-        const firstPrice = +stockData[0].close;
-        const lastPrice = +stockData[stockData.length - 1].close;
+        const stockDataNonNull = stockData as { date: Date; close: number }[];
+        const firstPrice = +stockDataNonNull[0]!.close;
+        const lastPrice = +stockDataNonNull[stockDataNonNull.length - 1]!.close;
         const percentChange = ((lastPrice - firstPrice) / firstPrice) * 100;
         
         results.push({
@@ -739,7 +731,7 @@ export class FinanceComponent implements OnInit, OnChanges {
   }
 
   // Updated helper method for phase background colors
-  private getPhaseBackgroundColor(phaseType: string): string {
+  private getPhaseBackgroundColor(phaseType: Phase['type']): string {
     switch(phaseType) {
       case 'bull': return 'rgba(235, 251, 238, 0.7)'; // Light green background
       case 'bear': return 'rgba(253, 235, 236, 0.7)'; // Light red background  
@@ -749,7 +741,7 @@ export class FinanceComponent implements OnInit, OnChanges {
   }
 
   // New method to render stocks line chart view
-  private renderStocksView(svg: any, x: any, width: number, height: number, 
+  private renderStocksView(svg: d3.Selection<SVGGElement, unknown, null, undefined>, x: d3.ScaleTime<number, number>, width: number, height: number, 
                           stocks: { symbol: string; data: { date: Date; close: number }[] }[], 
                           allDataPoints: { date: Date; close: number }[]): void {
     // Remove any existing tooltips first
@@ -766,7 +758,7 @@ export class FinanceComponent implements OnInit, OnChanges {
     // Use patriotic color scheme
     const color = (symbol: string) => {
       const stockEntry = this.sortedStocks.find(s => s.symbol === symbol);
-      return stockEntry ? stockEntry.color : this.colorScheme[0];
+      return (stockEntry?.color ?? this.colorScheme[0]) as string;
     };
         
     const globalMin = d3.min(allDataPoints, d => +d.close) || 0;
@@ -780,7 +772,7 @@ export class FinanceComponent implements OnInit, OnChanges {
     
     // Add grid
     function makeGrid(scale: any, axis: string) {
-      return d3.axisBottom(scale)
+      return (axis === 'x' ? d3.axisBottom(scale) : d3.axisLeft(scale))
         .ticks(10)
         .tickSize(axis === 'x' ? -height : -width)
         .tickFormat(() => '');
@@ -835,9 +827,8 @@ export class FinanceComponent implements OnInit, OnChanges {
       }));
       
       // Create path with animation
-      const drawLine = (data: any[], stockSymbol: string, lineIndex: number) => {
-        // ...existing line drawing code...
-        const line = d3
+      const drawLine = (data: { date: Date; close: number }[], stockSymbol: string, _lineIndex: number) => {
+        const lineGen = d3
           .line<{ date: Date; close: number }>()
           .x(d => x(d.date))
           .y(d => y(d.close))
@@ -848,17 +839,18 @@ export class FinanceComponent implements OnInit, OnChanges {
           .append('path')
           .datum(data)
           .attr('class', `line stock-${stockSymbol.toLowerCase()}`)
-          .attr('d', line)
+          .attr('d', lineGen as any)
           .attr('stroke', color(stockSymbol)) // Use consistent color based on sorted price
           .attr('stroke-width', 3)
           .attr('fill', 'none')
           .style('opacity', 0.85);
         
         // Store path for later animation replay
-        this.stockPaths.set(stockSymbol, path);
+        // Keep it as any to avoid over-specific d3 generics in the map
+        this.stockPaths.set(stockSymbol, path as any);
         
         // Animate the line drawing
-        const totalLength = path.node()?.getTotalLength() || 0;
+        const totalLength = (path.node() as SVGPathElement)?.getTotalLength?.() || 0;
         path
           .attr("stroke-dasharray", totalLength + " " + totalLength)
           .attr("stroke-dashoffset", totalLength)
@@ -870,16 +862,16 @@ export class FinanceComponent implements OnInit, OnChanges {
             // Clear dash array after animation
             path.attr("stroke-dasharray", null);
             // Add stock symbol labels after animation completes
-            addStockLabels(data, stockSymbol, lineIndex);
+            addStockLabels(data, stockSymbol, _lineIndex);
           });
         
         return path;
       };
       
       // Add stock symbols along the line with contrasting background box
-      const addStockLabels = (data: any[], stockSymbol: string, lineIndex: number) => {
+      const addStockLabels = (data: unknown[], stockSymbol: string, lineIndex: number) => {
         // Add symbol at the end of the line
-        const lastPoint = data[data.length - 1];
+          const lastPoint = data[data.length - 1] as { date: Date; close: number };
         
         // Create a group for the label and its background
         const labelGroup = svg.append('g')
@@ -892,7 +884,7 @@ export class FinanceComponent implements OnInit, OnChanges {
           .style('visibility', 'hidden'); // Invisible, just for measuring
         
         // Get text dimensions for proper background sizing
-        const textNode = tempText.node();
+        const textNode = tempText.node() as SVGTextElement | null;
         const textBBox = textNode ? textNode.getBBox() : {width: 50, height: 14};
         tempText.remove(); // Remove the measuring text
         
@@ -962,7 +954,8 @@ export class FinanceComponent implements OnInit, OnChanges {
           indices[indices.length - 1] = dataLength - 1;
         }
         
-        dataPointsToShow = indices.map(i => formattedData[i]);
+        // Filter out any undefined values that may arise from indexing
+        dataPointsToShow = indices.map(i => formattedData[i]).filter((x): x is { date: Date; close: number } => !!x);
       }
       
       // Add data points with animation
@@ -979,9 +972,9 @@ export class FinanceComponent implements OnInit, OnChanges {
         .attr('stroke', color(stock.symbol)) // Use consistent color based on sorted price
         .attr('stroke-width', 2)
         .style('opacity', 0)
-        .each(function(this: SVGCircleElement, d: any) {
+        .each(function(this: SVGCircleElement, d) {
           d3.select(this).datum({
-            ...d,
+            ...(d as any),
             stockSymbol: stock.symbol
           });
         })
@@ -995,6 +988,7 @@ export class FinanceComponent implements OnInit, OnChanges {
       svg.selectAll(`.dot-${index}`)
         .on('mouseover', (event: MouseEvent, d: any) => {
           // ...existing mouseover code...
+          const datum = d as { date: Date; close: number; stockSymbol: string };
           const target = event.target as SVGCircleElement;
           
           tooltip.transition()
@@ -1003,7 +997,7 @@ export class FinanceComponent implements OnInit, OnChanges {
             .style('transform', 'scale(1.05)');
           
           // Format date nicely
-          const formattedDate = d.date.toLocaleDateString('en-US', {
+          const formattedDate = (datum.date instanceof Date ? datum.date : new Date(datum.date)).toLocaleDateString('en-US', {
             weekday: 'short',
             year: 'numeric',
             month: 'short',
@@ -1012,16 +1006,16 @@ export class FinanceComponent implements OnInit, OnChanges {
           
           // Enhanced tooltip with header and formatted values
           tooltip.html(
-            `<div class="tooltip-header">${d.stockSymbol}</div>` +
+            `<div class="tooltip-header">${datum.stockSymbol}</div>` +
             `<div>Date: ${formattedDate}</div>` +
-            `<div>Price: $${d.close.toFixed(2)}</div>`
+            `<div>Price: $${datum.close.toFixed(2)}</div>`
           )
           .style('left', `${event.pageX}px`)
           .style('top', `${event.pageY - 28}px`);
           
           // Update status box in bottom left
-          this.statusStock = d.stockSymbol;
-          this.statusPrice = d.close.toFixed(2);
+          this.statusStock = datum.stockSymbol;
+          this.statusPrice = datum.close.toFixed(2);
           this.statusDate = formattedDate;
           this.showStatusBox = true;
           
@@ -1038,8 +1032,8 @@ export class FinanceComponent implements OnInit, OnChanges {
           // Add hover line with animation
           svg.append('line')
             .attr('class', 'hover-line')
-            .attr('x1', x(d.date))
-            .attr('x2', x(d.date))
+            .attr('x1', x(datum.date))
+            .attr('x2', x(datum.date))
             .attr('y1', height)
             .attr('y2', height)
             .attr('stroke', color(stock.symbol)) // Use consistent color based on sorted price
@@ -1107,8 +1101,8 @@ export class FinanceComponent implements OnInit, OnChanges {
   }
 
   // Helper method to generate realistic market phases based on data range
-  private generateMarketPhases(startYear: number, endYear: number): any[] {
-    let phases = [];
+  private generateMarketPhases(startYear: number, endYear: number): Phase[] {
+    const phases: Phase[] = [];
     let currentYear = startYear;
     
     while (currentYear <= endYear) {
@@ -1141,8 +1135,11 @@ export class FinanceComponent implements OnInit, OnChanges {
   }
 
   // Add method to better format market phase labels
-  formatMarketPhaseLabel(phase: any): string {
-    return `${phase.type.charAt(0).toUpperCase() + phase.type.slice(1)} Market`;
+  formatMarketPhaseLabel(phase: unknown): string {
+    if (!phase || typeof phase !== 'object') return 'Unknown Market';
+    const p = phase as { type?: string };
+    const type = typeof p.type === 'string' ? p.type : 'unknown';
+    return `${type.charAt(0).toUpperCase() + type.slice(1)} Market`;
   }
 
   // Update the status position function for consistent placement

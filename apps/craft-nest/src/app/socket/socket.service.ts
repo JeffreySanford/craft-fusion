@@ -67,7 +67,7 @@ export class SocketService {
     }
     const socket = this.server.sockets.sockets.get(clientId);
     if (socket) {
-      socket.join(room);
+      void socket.join(room);
       this.logger.debug(`Added client to room`, { clientId, room });
     } else {
       this.logger.warn(`Unable to add client to room: client not found`, { clientId, room });
@@ -84,7 +84,7 @@ export class SocketService {
     }
     const socket = this.server.sockets.sockets.get(clientId);
     if (socket) {
-      socket.leave(room);
+      void socket.leave(room);
       this.logger.debug(`Removed client from room`, { clientId, room });
     } else {
       this.logger.warn(`Unable to remove client from room: client not found`, { clientId, room });

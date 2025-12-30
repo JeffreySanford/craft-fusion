@@ -11,7 +11,7 @@ export class DeepSeekService {
     console.log('DeepSeekService initialized');
   }
 
-  sendMessage(prompt: string, apiUrl: string): Observable<any> {
+  sendMessage(prompt: string, apiUrl: string): Observable<unknown> {
     console.log('Sending message to API:', apiUrl);
     const requestPayload = {
       model: "deepseek-r1:1.5b",
@@ -19,11 +19,18 @@ export class DeepSeekService {
     };
     console.log('Request payload:', requestPayload);
 
-    return this.http.post<any>(apiUrl, requestPayload, { responseType: 'text' as 'json' }).pipe(
-      map(response => {
-        console.log('Received raw response from API:', response);
-        const jsonObjects = response.split('\n').filter((line: string) => line.trim() !== '');
-        const combinedResponse = jsonObjects.map((json: string) => JSON.parse(json).response).join(' ');
+    return this.http.post<unknown>(apiUrl, requestPayload, { responseType: 'text' as 'json' }).pipe(
+      map((response: unknown) => {
+        const text = String(response || '');
+        console.log('Received raw response from API:', text);
+        const jsonObjects = text.split('\n').filter((line: string) => line.trim() !== '');
+        const combinedResponse = jsonObjects.map((json: string) => {
+          try {
+            return JSON.parse(json).response;
+          } catch (e) {
+            return '';
+          }
+        }).join(' ');
         console.log('Combined response from API:', combinedResponse);
         return { response: combinedResponse };
       }),

@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import * as pdfjsLib from 'pdfjs-dist';
-import TurndownService from 'turndown';
+import { TurndownWrapperService } from './turndown-wrapper.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PdfParseService {
-  constructor() { }
+  constructor(private readonly turndownWrapper: TurndownWrapperService) { }
 
   async parsePdf(file: File): Promise<string> {
     const arrayBuffer = await file.arrayBuffer();
@@ -16,10 +16,10 @@ export class PdfParseService {
     for (let pageIndex = 1; pageIndex <= pdfDocument.numPages; pageIndex++) {
       const page = await pdfDocument.getPage(pageIndex);
       const text = await page.getTextContent();
-      textContent += text.items.map(item => (item as any).str).join(' ');
+      const textObj: any = text;
+      textContent += (textObj.items || []).map((item: any) => item.str).join(' ');
     }
 
-    const turndown = new TurndownService();
-    return turndown.turndown(textContent);
+    return this.turndownWrapper.turndownHtml(textContent);
   }
 }

@@ -33,8 +33,8 @@ export interface RefreshTokenRequest {
 
 export interface TokenInfo {
   token: string;
-  refreshToken?: string; 
-  expiresAt?: number; // Expiration timestamp
+  refreshToken?: string | undefined; 
+  expiresAt?: number | undefined; // Expiration timestamp
 }
 
 export interface AuthState {
@@ -97,7 +97,25 @@ export class AuthenticationService {
   private _isOfflineMode = false;
   private connectionRetryCount = 0;
   private tokenRefreshInProgress = false;
-  private refreshTokenTimeout: any;
+  // Use ReturnType<typeof setTimeout> to be compatible with browser and Node typings
+  private refreshTokenTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  /**
+   * Normalize unknown errors into a predictable shape for logging and handling
+   */
+  private normalizeError(error: unknown): { status?: number; message?: string; error?: any; name?: string } {
+    if (!error) return { message: String(error) };
+    if (typeof error === 'object' && error !== null) {
+      const e = error as any;
+      return {
+        status: e.status,
+        message: e.message || (e.error && e.error.message) || String(e),
+        error: e.error || e,
+        name: e.name || (e.constructor && e.constructor.name) || typeof e
+      };
+    }
+    return { message: String(error), name: typeof error };
+  }
 
   constructor(
     private apiService: ApiService,
@@ -151,6 +169,13 @@ export class AuthenticationService {
   }
 
   /**
+   * Returns current authentication state
+   */
+  public get isAuthenticated(): boolean {
+    return this.authState.value.isLoggedIn;
+  }
+
+  /**
    * Check if the app is currently in offline mode
    */
   public get isOffline(): boolean {
@@ -179,11 +204,11 @@ export class AuthenticationService {
       this.apiService.get<User>('auth/user')
         .pipe(
           timeout(this.AUTH_TIMEOUT),
-          catchError((error) => {
+          catchError((error: any) => {
             console.log('initializeAuthentication: Token validation failed', error);
             this.logger.warn('Token validation failed, clearing auth state', {
-              error: error.message,
-              status: error.status
+              error: (error && error.message) || 'Unknown error',
+              status: (error && error.status) || 0
             });
 
             // Clear invalid tokens
@@ -307,28 +332,31 @@ export class AuthenticationService {
             this.logger.warn('Server returned success but no token was provided');
           }
         }),
-        catchError((error) => {
+        catchError((error: any) => {
+          const status = error?.status;
+          const message = error?.message || 'Unknown error';
+
           // Check if this is a connection issue
-          if (error.status === 0 || error.status === 504) {
+          if (status === 0 || status === 504) {
             this._isOfflineMode = true;
             this.logger.warn('Network connectivity issue detected during authentication', {
-              errorStatus: error.status,
-              errorMessage: error.message,
-              errorType: error.name,
+              errorStatus: status,
+              errorMessage: message,
+              errorType: error?.name,
               timestamp: new Date().toISOString(),
               offlineModeActivated: true
             });
-            
+
             // Show more helpful message
             this.notificationService.showWarning(
               `Server appears to be unavailable. Using offline mode for demonstration.`,
               'Switching to Offline Mode'
             );
-            
+
             // Always allow fallback login during connection issues
             return this.handleOfflineLogin(username, password);
           }
-          
+
           return this.handleLoginError(error, username);
         })
       );
@@ -418,15 +446,18 @@ export class AuthenticationService {
           
           this.tokenRefreshInProgress = false;
         }),
-        catchError((error) => {
+        catchError((error: any) => {
+          const status = error?.status;
+          const message = error?.message || 'Unknown error';
+
           this.logger.error('Failed to refresh authentication token', {
-            error: error.message,
-            status: error.status
+            error: message,
+            status
           });
           this.tokenRefreshInProgress = false;
-          
+
           // If refresh fails with 401/403, user needs to re-authenticate
-          if (error.status === 401 || error.status === 403) {
+          if (status === 401 || status === 403) {
             this.clearAuthState();
             this.router.navigate(['/login']);
             this.notificationService.showWarning(
@@ -434,7 +465,7 @@ export class AuthenticationService {
               'Session Expired'
             );
           }
-          
+
           return throwError(() => error);
         })
       );
@@ -448,18 +479,21 @@ export class AuthenticationService {
     this.apiService.get<User>('auth/user')
       .pipe(
         timeout(this.AUTH_TIMEOUT),
-        catchError((error) => {
+        catchError((error: any) => {
+          const status = error?.status;
+          const message = error?.message || 'Unknown error';
+
           this.logger.error('Failed to fetch user details', {
-            error: error.message,
-            status: error.status,
+            error: message,
+            status,
             timestamp: new Date().toISOString()
           });
-          
+
           // Only clear auth if this is an auth error
-          if (error.status === 401 || error.status === 403) {
+          if (status === 401 || status === 403) {
             this.clearAuthState();
           }
-          
+
           return throwError(() => error);
         })
       )
@@ -536,6 +570,23 @@ export class AuthenticationService {
 
     this.sessionService.setUserSession(response.user);
 
+    // Update admin state service so other parts of the app can react
+    const isAdmin = this.hasAdminRole(response.user);
+    try {
+      this.adminStateService.setAdminStatus(isAdmin);
+    } catch (err) {
+      this.logger.warn('Failed to update AdminStateService', { error: err });
+    }
+
+    // Show a visible toast when an admin logs in
+    if (isAdmin) {
+      try {
+        this.notificationService.showSuccess('Signed in with administrator privileges', 'Admin Login');
+      } catch (err) {
+        this.logger.warn('Failed to show admin login notification', { error: err });
+      }
+    }
+
     this.logger.info('Login process completed successfully', {
       username: response.user.username,
       hasRoles: Array.isArray(response.user.roles),
@@ -547,13 +598,14 @@ export class AuthenticationService {
   /**
    * Handle login error with appropriate messaging
    */
-  private handleLoginError(error: any, username: string): Observable<never> {
-    const statusCode = error.status;
-    const errorMessage = error.message || 'Unknown error';
+  private handleLoginError(error: unknown, username: string): Observable<never> {
+    const err = this.normalizeError(error);
+    const statusCode = err.status;
+    const errorMessage = err.message || 'Unknown error';
     
     this.logger.error('Authentication failed', { 
       username,
-      errorType: error.constructor.name,
+      errorType: err.name || 'Error',
       status: statusCode, 
       message: errorMessage,
       timestamp: new Date().toISOString()
@@ -562,22 +614,22 @@ export class AuthenticationService {
     // Provide a user-friendly error message based on the error type
     let userMessage = 'Login failed. Please try again.'; 
     
-    if (error.status === 0) {
+    if (statusCode === 0) {
       userMessage = 'Unable to connect to the server. Please check your connection.';
-    } else if (error.status === 504) {
+    } else if (statusCode === 504) {
       userMessage = 'Server is taking too long to respond. Please try again later.';
-    } else if (error.status === 401) {
+    } else if (statusCode === 401) {
       userMessage = 'Invalid username or password.';
       this.logger.warn('Invalid credentials provided', { username });
-    } else if (error.status === 403) {
+    } else if (statusCode === 403) {
       userMessage = 'Your account is not authorized to access this system.';
       this.logger.warn('Authorization failure during login', { username });
-    } else if (error.status >= 500) {
+    } else if (statusCode && statusCode >= 500) {
       userMessage = 'Server error. Please contact support if the problem persists.';
       this.logger.error('Server error during authentication', {
         username,
-        status: error.status,
-        serverMessage: error.error?.message || 'No server message'
+        status: statusCode,
+        serverMessage: err.error?.message || 'No server message'
       });
     }
     
@@ -948,7 +1000,7 @@ export class AuthenticationService {
    */
   public checkNetworkStatus(): Observable<boolean> {
     this.logger.debug('Checking network connectivity status');
-    return this.apiService.get<any>('health-check', { 
+    return this.apiService.get<unknown>('health-check', { 
       headers: { 'Cache-Control': 'no-cache' }
     }).pipe(
       timeout(3000),

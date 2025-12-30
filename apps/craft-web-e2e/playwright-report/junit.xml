@@ -11,7 +11,7 @@
     apps\craft-web-e2e\playwright\test-results\example-has-title-chromium\trace.zip
     Usage:
 
-        npx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-chromium\trace.zip
+        pnpm dlx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-chromium\trace.zip
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 ]]>
@@ -35,7 +35,7 @@
     apps\craft-web-e2e\playwright\test-results\example-has-title-firefox\trace.zip
     Usage:
 
-        npx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-firefox\trace.zip
+        pnpm dlx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-firefox\trace.zip
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 ]]>
@@ -59,7 +59,7 @@
     apps\craft-web-e2e\playwright\test-results\example-has-title-webkit\trace.zip
     Usage:
 
-        npx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-webkit\trace.zip
+        pnpm dlx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-webkit\trace.zip
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 ]]>
@@ -83,7 +83,7 @@
     apps\craft-web-e2e\playwright\test-results\example-has-title-mobile-chrome\trace.zip
     Usage:
 
-        npx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-mobile-chrome\trace.zip
+        pnpm dlx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-mobile-chrome\trace.zip
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 ]]>
@@ -107,7 +107,7 @@
     apps\craft-web-e2e\playwright\test-results\example-has-title-mobile-safari\trace.zip
     Usage:
 
-        npx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-mobile-safari\trace.zip
+        pnpm dlx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-mobile-safari\trace.zip
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 ]]>
@@ -131,7 +131,7 @@
     apps\craft-web-e2e\playwright\test-results\example-has-title-tablet\trace.zip
     Usage:
 
-        npx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-tablet\trace.zip
+        pnpm dlx playwright show-trace apps\craft-web-e2e\playwright\test-results\example-has-title-tablet\trace.zip
 
     ────────────────────────────────────────────────────────────────────────────────────────────────
 ]]>

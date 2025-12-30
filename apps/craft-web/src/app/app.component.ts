@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, SimpleChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription, Subject, interval, take, takeUntil, timer } from 'rxjs';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UserStateService } from './common/services/user-state.service';
 import { User } from './common/services/user.interface';
@@ -38,7 +38,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Reduce network polling
   private videoCheckInterval: number = 10000;
-  private inactivityTimeout: any = null;
+  // Use ReturnType<typeof setTimeout> for cross-platform timer type
+  private inactivityTimeout: ReturnType<typeof setTimeout> | null = null;
   private videoCheckSubscription: Subscription | null = null;
   private destroy$ = new Subject<void>();
 
@@ -81,8 +82,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     console.log('debug-router: AppComponent ngOnInit');
-    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: any) => {
-      this.isSmallScreen = result.matches;
+    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: BreakpointState) => {
+      this.isSmallScreen = !!result && !!result.matches;
       this.isCollapsed = this.isSmallScreen;
     });
 
@@ -117,10 +118,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    this.userStateService.user$.subscribe((user: User) => {
-      if (user) {
-        this.userDisplayName = user.username || 'Guest';
-        this.isLoggedIn = !!user.username;
+    this.userStateService.user$.subscribe((user: unknown) => {
+      const u = user as User | null | undefined;
+      if (u) {
+        this.userDisplayName = u.username || 'Guest';
+        this.isLoggedIn = !!u.username;
       } else {
         this.userDisplayName = 'Guest';
         this.isLoggedIn = false;
@@ -152,10 +154,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.stopVideoCheckPolling();
     this.cancelAllTimeouts();
 
-    // Log user activity summary on exit
-    const activitySummary = this.userActivityService.getActivitySummary();
+    // Log user activity summary on exit (guard unknown shape)
+    const activitySummaryRaw = this.userActivityService.getActivitySummary();
+    const activitySummary = (activitySummaryRaw as any) || { pageViews: 0, clicks: 0, sessionDuration: 0 };
     this.logger.info(
-      `Session summary: ${activitySummary.pageViews} page views, ${activitySummary.clicks} clicks, ${Math.round(activitySummary.sessionDuration / 1000)} seconds duration`,
+      `Session summary: ${activitySummary.pageViews ?? 0} page views, ${activitySummary.clicks ?? 0} clicks, ${Math.round((activitySummary.sessionDuration ?? 0) / 1000)} seconds duration`,
     );
 
     if (this.footerStateSubscription) {
@@ -175,7 +178,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setActive(item: any) {
     this.menuItems.forEach(menuItem => (menuItem.active = false));
-    item.active = true;
+    // Guard before assigning
+    if (item && typeof item === 'object') {
+      (item as any).active = true;
+    }
   }
 
   // New helper method to handle connection timeouts
@@ -297,13 +303,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.logger.info('App component initialized');
   }
 
-  onRouterActivate(event: any) {
+  onRouterActivate(event: unknown) {
     console.log('debug-router: router-outlet activated', event);
     const fallback = document.getElementById('debug-router-fallback');
     if (fallback) fallback.style.display = 'none';
   }
 
-  onRouterDeactivate(event: any) {
+  onRouterDeactivate(event: unknown) {
     console.log('debug-router: router-outlet deactivated', event);
     setTimeout(() => {
       const fallback = document.getElementById('debug-router-fallback');

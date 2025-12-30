@@ -57,15 +57,19 @@ export class SidebarComponent implements OnInit {
     private breakpointObserver: BreakpointObserver, 
     private router: Router,
     private sidebarStateService: SidebarStateService,
-    private adminStateService: AdminStateService,
+    private _adminStateService: AdminStateService,
     private authService: AuthenticationService,
     private cdr: ChangeDetectorRef,
-    private renderer: Renderer2,
-    private el: ElementRef
+    private _renderer: Renderer2,
+    private _el: ElementRef
   ) {
     console.log('🔧 Sidebar: Constructor called');
     // Initialize the admin observable in constructor
     this.isAdmin$ = this.authService.isAdmin$;
+    // Reference unused injected services to avoid 'declared but never read' TS errors
+    void this._adminStateService;
+    void this._renderer;
+    void this._el;
   }
 
   ngOnInit() {
@@ -82,26 +86,34 @@ export class SidebarComponent implements OnInit {
       this.isAdmin = isAdmin;
       if (isAdmin) {
         // Check if the admin item already exists to avoid duplicates
-        const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
-        if (adminItemIndex === -1) {
-          console.log('🔧 Sidebar: Adding admin menu items');
-          this.menuGroups[0].items.push(
-            { icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false },
-            { icon: 'family_restroom', label: 'Family', routerLink: '/family', active: false },
-            { icon: 'chat_bubble', label: 'Chat', routerLink: '/chat', active: false },
-            { icon: 'book', label: 'Book', routerLink: '/book', active: false }
-          );
+        if (this.menuGroups?.[0]?.items) {
+          const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
+          if (adminItemIndex === -1) {
+            console.log('🔧 Sidebar: Adding admin menu items');
+            this.menuGroups[0].items.push(
+              { icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false },
+              { icon: 'family_restroom', label: 'Family', routerLink: '/family', active: false },
+              { icon: 'chat_bubble', label: 'Chat', routerLink: '/chat', active: false },
+              { icon: 'book', label: 'Book', routerLink: '/book', active: false }
+            );
+          }
         }
       } else {
         // Remove all admin items if they exist
-        console.log('🔧 Sidebar: Removing admin menu items');
-        this.menuGroups[0].items = this.menuGroups[0].items.filter(item => 
-          !['Admin', 'Family', 'Chat', 'Book'].includes(item.label)
-        );
+        if (this.menuGroups?.[0]?.items) {
+          console.log('🔧 Sidebar: Removing admin menu items');
+          this.menuGroups[0].items = this.menuGroups[0].items.filter(item => 
+            !['Admin', 'Family', 'Chat', 'Book'].includes(item.label)
+          );
+        }
       }
       // Create new array reference to trigger change detection
       this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
       console.log('🔧 Sidebar: Menu items updated, length:', this.menuItems.length);
+      // Log specifically which admin-protected buttons are present for debugging
+      const adminDebugLabels = ['Admin', 'Family', 'Chat'];
+      const present = adminDebugLabels.filter(l => this.menuItems.some(m => m.label === l));
+      console.log('🔧 Sidebar: Admin-protected buttons present:', present);
       this.cdr.detectChanges();
     });
 
@@ -132,6 +144,15 @@ export class SidebarComponent implements OnInit {
   setActive(item: MenuItem) {
     this.menuItems.forEach(menuItem => menuItem.active = false);
     item.active = true;
+  }
+
+  onMenuItemClick(item: MenuItem) {
+    // preserve existing behavior
+    this.setActive(item);
+    // log clicks for admin-protected buttons
+    if (['Admin', 'Family', 'Chat'].includes(item.label)) {
+      console.log('🔧 Sidebar: Admin button clicked:', item.label);
+    }
   }
 
   getActiveItemLabel(): string {

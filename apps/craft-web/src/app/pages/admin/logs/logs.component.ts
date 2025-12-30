@@ -7,7 +7,8 @@ import { LoggerService, LogEntry, LogLevel } from '../../../common/services/logg
   selector: 'app-logs',
   templateUrl: './logs.component.html',
   styleUrls: ['./logs.component.scss'],
-  standalone: false
+  // component is declared in AdminModule rather than standalone to satisfy AOT and project conventions
+  standalone: false,
 })
 export class LogsComponent implements OnInit, OnDestroy {
   logs: LogEntry[] = [];
@@ -16,14 +17,12 @@ export class LogsComponent implements OnInit, OnDestroy {
   
   displayedColumns: string[] = ['timestamp', 'level', 'component', 'message', 'details'];
   
-  // Filter options
   logLevels = [
     { value: LogLevel.DEBUG, viewValue: 'Debug' },
     { value: LogLevel.INFO, viewValue: 'Info' },
     { value: LogLevel.WARN, viewValue: 'Warning' },
     { value: LogLevel.ERROR, viewValue: 'Error' }
   ];
-  
   componentOptions: string[] = [];
   refreshSubscription?: Subscription;
   autoRefresh = true;
@@ -45,14 +44,12 @@ export class LogsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.fetchLogs();
     
-    // Set up auto refresh
     this.refreshSubscription = interval(5000).subscribe(() => {
       if (this.autoRefresh) {
         this.fetchLogs();
       }
     });
     
-    // Subscribe to filter changes
     this.filterForm.valueChanges.subscribe(() => {
       this.autoRefresh = this.filterForm.get('autoRefresh')?.value;
       this.applyFilters();
@@ -78,7 +75,6 @@ export class LogsComponent implements OnInit, OnDestroy {
   }
   
   updateComponentOptions() {
-    // Extract unique component names
     const componentSet = new Set<string>();
     this.logs.forEach(log => {
       if (log.component) {
@@ -92,23 +88,23 @@ export class LogsComponent implements OnInit, OnDestroy {
     const filters = this.filterForm.value;
     
     this.filteredLogs = this.logs.filter(log => {
-      // Apply level filter
+      
       if (filters.level && log.level !== filters.level) {
         return false;
       }
       
-      // Apply component filter
+      
       if (filters.component && log.component !== filters.component) {
         return false;
       }
       
-      // Apply message filter
+      
       if (filters.message && 
           !log.message.toLowerCase().includes(filters.message.toLowerCase())) {
         return false;
       }
       
-      // Apply date filters
+      
       if (filters.startDate) {
         const startDate = new Date(filters.startDate);
         if (log.timestamp < startDate) {
@@ -118,7 +114,7 @@ export class LogsComponent implements OnInit, OnDestroy {
       
       if (filters.endDate) {
         const endDate = new Date(filters.endDate);
-        endDate.setHours(23, 59, 59, 999); // End of day
+        endDate.setHours(23, 59, 59, 999);
         if (log.timestamp > endDate) {
           return false;
         }
@@ -127,7 +123,7 @@ export class LogsComponent implements OnInit, OnDestroy {
       return true;
     });
     
-    // Sort by timestamp descending (newest first)
+    this.filteredLogs.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
     this.filteredLogs.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   }
   
@@ -175,7 +171,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     this.fetchLogs();
   }
   
-  formatDetails(details: any): string {
+  formatDetails(details: unknown): string {
     if (!details) return '';
     try {
       return JSON.stringify(details, null, 2);

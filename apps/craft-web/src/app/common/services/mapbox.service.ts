@@ -11,8 +11,9 @@ export class MapboxService {
   private map: mapboxgl.Map | undefined;
 
   constructor() {
-    // Set your Mapbox token here
-    (mapboxgl as any).accessToken = (environment as any).mapboxToken;
+    // Set Mapbox access token using Object.assign to avoid esbuild import mutation
+    const token = (environment as any)?.mapboxToken ?? '';
+    Object.assign(mapboxgl, { accessToken: token });
   }
 
   initializeMap(container: string, center: [number, number], zoom: number): mapboxgl.Map {

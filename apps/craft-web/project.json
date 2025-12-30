@@ -26,21 +26,18 @@
     }
   },
   "targets": {
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "options": {
-        "lintFilePatterns": ["apps/craft-web/**/*.ts", "apps/craft-web/**/*.html", "apps/craft-web/**/*.scss", "apps/craft-web/**/*.css"]
-      }
-    },
-    "stylelint": {
+    "generate-env": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx stylelint 'apps/craft-web/**/*.scss' 'apps/craft-web/**/*.css'"
+        "command": "node apps/craft-web/generate-env.js"
       }
     },
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
+      "dependsOn": ["generate-env"],
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": ["generate-env"],
       "options": {
         "outputPath": "dist/apps/craft-web",
         "index": "apps/craft-web/src/index.html",

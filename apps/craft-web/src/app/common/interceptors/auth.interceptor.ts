@@ -7,7 +7,7 @@ import { AuthenticationService } from '../services/authentication.service';
 export class AuthHttpInterceptor implements HttpInterceptor {
   constructor(private authService: AuthenticationService) {}
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Get the current token
     const token = this.authService.getAuthToken();
 

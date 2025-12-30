@@ -20,6 +20,18 @@
       </div>
     </mat-card-content>
   </mat-card>
+  
+    <!-- Service Metrics Chart -->
+    <mat-card class="service-metrics-card">
+      <mat-card-header>
+        <mat-card-title>Service Metrics</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container">
+          <canvas #serviceMetricsCanvas></canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
 
   <!-- Core Services -->
   <mat-card class="service-category">
@@ -88,8 +100,8 @@
         
         <!-- Other columns -->
         
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-header-row *matHeaderRowDef="['name','status']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['name','status']"></tr>
       </table>
     </mat-card-content>
   </mat-card>
@@ -116,8 +128,8 @@
         
         <!-- Other columns -->
         
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-header-row *matHeaderRowDef="['name','status']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['name','status']"></tr>
       </table>
     </mat-card-content>
   </mat-card>

@@ -3,7 +3,6 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 // Add ResponseType import for better typing
 import { Observable, tap, catchError, throwError, timer, switchMap, finalize } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { environment as production } from '../../../environments/environment.prod';
 import { LoggerService } from './logger.service';
 import { User } from './user.interface'; // Import User directly from user.interface
 
@@ -60,7 +59,7 @@ export class ApiService {
     },
   ];
 
-  private currentServer: Server = this.servers[0];
+  private currentServer: Server = this.servers[0]!;
 
   // Add request throttling to prevent too many simultaneous requests
   private requestThrottler = new Map<string, number>();
@@ -81,10 +80,18 @@ export class ApiService {
   }
 
   private getHeaders(): HttpHeaders {
-    return new HttpHeaders({
+    // Prefer token from localStorage (kept by AuthenticationService)
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const authHeader = token ? `Bearer ${token}` : '';
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      Authorization: 'Bearer YOUR_TOKEN_HERE', // Replace with dynamic token logic
-    });
+    };
+    if (authHeader) {
+      headers['Authorization'] = authHeader;
+    }
+    // Log for debugging which Authorization header is being attached
+    this.logger.debug('ApiService.getHeaders', { hasToken: !!token, tokenPreview: token ? token.slice(0, 24) + '...' : null });
+    return new HttpHeaders(headers);
   }
 
   private addSecurityHeaders(headers: HttpHeaders): HttpHeaders {
@@ -100,6 +107,35 @@ export class ApiService {
     const traceId = (window.crypto?.randomUUID?.() || Math.random().toString(36).slice(2));
     headers = headers.set('X-Request-ID', traceId);
     return this.addSecurityHeaders(headers);
+  }
+
+  // Normalize various header shapes (Headers, HttpHeaders, Record<...>) into a type acceptable by Angular HttpClient
+  private normalizeHeaders(headers?: HeadersInit | HttpHeaders | Record<string, string | string[]>): HttpHeaders | Record<string, string | string[]> | undefined {
+    if (!headers) return undefined;
+    if (headers instanceof HttpHeaders) return headers;
+    // Browser Headers
+    try {
+      // @ts-ignore - Headers may not be available in all environments but will work in browser
+      if (typeof (headers as any).forEach === 'function') {
+        const h = headers as Headers;
+        const obj: Record<string, string> = {};
+        h.forEach((value: string, key: string) => { obj[key] = value; });
+        return new HttpHeaders(obj);
+      }
+    } catch (e) {
+      // fallthrough
+    }
+
+    // Assume it's already a plain record or compatible type
+    return headers as Record<string, string | string[]>;
+  }
+
+  private normalizeOptions(options?: any): { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any } {
+    const opts: any = { ...(options || {}) };
+    if (opts.headers) {
+      opts.headers = this.normalizeHeaders(opts.headers);
+    }
+    return opts;
   }
 
   // FIX: Get current URL construction for clarity
@@ -126,13 +162,12 @@ export class ApiService {
    * @param options - Optional HTTP request options
    * @returns Observable<T> - Observable that can be subscribed to by state stores
    */
-  get<T>(endpoint: string, options?: any): Observable<T> {
+  get<T>(endpoint: string, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'GET', url);
-    const httpOptions = { 
-      ...options,
-      headers: this.getTracingHeaders(),
-    };
+    const httpOptions = this.normalizeOptions(options);
+    // ensure tracing headers are applied (override or set)
+    httpOptions.headers = this.getTracingHeaders();
     
     // Check if we should throttle this request
     if (this.shouldThrottleRequest(url)) {
@@ -195,14 +230,12 @@ export class ApiService {
     ) as Observable<T>;
   }
 
-  put<T>(endpoint: string, body: T, options?: any): Observable<T> {
+  put<T>(endpoint: string, body: T, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'PUT', url);
 
-    const httpOptions = {
-      ...options,
-      headers: this.getTracingHeaders(),
-    };
+    const httpOptions = this.normalizeOptions(options);
+    httpOptions.headers = this.getTracingHeaders();
     
     return this.http.put<T>(url, body, httpOptions).pipe(
       tap(response => {
@@ -220,14 +253,12 @@ export class ApiService {
     ) as Observable<T>;
   }
 
-  delete<T>(endpoint: string, options?: any): Observable<T> {
+  delete<T>(endpoint: string, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'DELETE', url);
 
-    const httpOptions = {
-      ...options,
-      headers: this.getTracingHeaders(),
-    };
+    const httpOptions = this.normalizeOptions(options);
+    httpOptions.headers = this.getTracingHeaders();
     
     return this.http.delete<T>(url, httpOptions).pipe(
       tap(response => {
@@ -249,9 +280,9 @@ export class ApiService {
    * Fetches the current user state.
    * @returns An observable of the user state.
    */
-  getUserState(): Observable<any> {
+  getUserState(): Observable<unknown> {
     // Use getFullUrl for proxy compatibility
-    return this.http.get<any>(this.getFullUrl('users'), { headers: this.getHeaders() });
+    return this.http.get<unknown>(this.getFullUrl('users'), { headers: this.getHeaders() });
   }
 
   /**
@@ -259,18 +290,18 @@ export class ApiService {
    * @param userState - The new user state.
    * @returns An observable of the updated user state.
    */
-  updateUserState(userState: any): Observable<any> {
+  updateUserState(userState: unknown): Observable<unknown> {
     // Use getFullUrl for proxy compatibility
-    return this.http.put<any>(this.getFullUrl('users'), userState, { headers: this.getHeaders() });
+    return this.http.put<unknown>(this.getFullUrl('users'), userState, { headers: this.getHeaders() });
   }
 
   /**
    * Deletes the user state.
    * @returns An observable of the deletion result.
    */
-  deleteUserState(): Observable<any> {
+  deleteUserState(): Observable<unknown> {
     // Use getFullUrl for proxy compatibility
-    return this.http.delete<any>(this.getFullUrl('users'), { headers: this.getHeaders() });
+    return this.http.delete<unknown>(this.getFullUrl('users'), { headers: this.getHeaders() });
   }
 
   /**
@@ -350,14 +381,14 @@ export class ApiService {
    * @param data - An array of strings.
    * @returns A processed result.
    */
-  handleStringArray(data: string[]): any {
+  handleStringArray(data: string[]): unknown {
     // Implement your logic here
     console.log('Handling string array:', data);
     // Example: Return the length of each string
     return data.map(str => str.length);
   }
 
-  getLogs(limit: number, level?: string): Observable<any> {
+  getLogs(limit: number, level?: string): Observable<unknown> {
     let params = new HttpParams().set('limit', limit.toString());
     if (level && level.trim()) {
       params = params.set('level', level);
@@ -391,21 +422,21 @@ export class ApiService {
    * @param options Additional options
    * @returns Observable of response
    */
-  public authRequest<T>(method: string, endpoint: string, body?: any, options = {}): Observable<T> {
+  public authRequest<T>(method: string, endpoint: string, body?: unknown, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<T> {
     // Log detailed debugging information
     console.log('🔍 Auth request details', {
       method,
       endpoint,
       fullUrl: this.getFullUrl(endpoint),
-      bodyKeys: body ? Object.keys(body) : 'none',
+      bodyKeys: body ? Object.keys(body as Record<string, unknown>) : 'none',
       timestamp: new Date().toISOString(),
       options,
       isProduction: this.isProduction
     });
     
     // Enhanced retry options for auth requests
-    const enhancedOptions = { 
-      ...options,
+    const enhancedOptions: Record<string, unknown> = { 
+      ...(options as Record<string, unknown> || {}),
       timeout: this.BASE_TIMEOUT * 2, // Double timeout for auth requests
       retries: this.maxStartupRetries
     };
@@ -431,11 +462,11 @@ export class ApiService {
         // Allow a breakpoint here for debugging
         // debugger;
         console.log(`🔐 Making ${method} request to ${this.getFullUrl(endpoint)}`);
-        return this.post<any, T>(endpoint, body, finalOptions);
+        return this.post<unknown, T>(endpoint, body, finalOptions) as unknown as Observable<T>;
       case 'PUT':
-        return this.put<any>(endpoint, body, finalOptions);
+        return this.put<unknown>(endpoint, body, finalOptions) as unknown as Observable<T>;
       case 'DELETE':
-        return this.delete<T>(endpoint, finalOptions);
+        return this.delete<T>(endpoint, finalOptions) as unknown as Observable<T>;
       default:
         this.logger.error(`Unsupported HTTP method for auth request: ${method}`);
         return throwError(() => new Error(`Unsupported HTTP method: ${method}`));
@@ -450,14 +481,12 @@ export class ApiService {
    * @param options - Optional HTTP request options
    * @returns Observable<R> - Observable of response type R
    */
-  post<T extends object, R>(endpoint: string, body: T, options?: any): Observable<R> {
+  post<T = unknown, R = unknown>(endpoint: string, body: T, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<R> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'POST', url);
 
-    const httpOptions = {
-      ...options,
-      headers: this.getTracingHeaders(),
-    };
+    const httpOptions = this.normalizeOptions(options);
+    httpOptions.headers = this.getTracingHeaders();
     
     this.logger.debug(`Making POST request to ${url}`, {
       endpoint,
@@ -472,7 +501,7 @@ export class ApiService {
         url,
         method: 'POST',
         bodyType: typeof body,
-        hasCredentials: !!(body && 'username' in body),
+        hasCredentials: !!(body && typeof body === 'object' && 'username' in (body as any)),
         timestamp: Date.now(),
         options: Object.keys(httpOptions || {})
       });
@@ -522,7 +551,7 @@ export class ApiService {
   private checkServerAvailability(): void {
     this.logger.debug('Checking server availability...');
     // Try to ping the server root to check if it's up
-    fetch('/api/health', { method: 'HEAD', signal: AbortSignal.timeout ? AbortSignal.timeout(3000) : undefined })
+    fetch('/api/health', { method: 'HEAD', signal: (AbortSignal as any).timeout ? (AbortSignal as any).timeout(3000) : null })
       .then(response => {
         this.logger.info('Server availability check: Server is responding', {
           status: response.status, 
@@ -532,7 +561,7 @@ export class ApiService {
       })
       .catch(error => {
         // Fallback: try to fetch a static asset to check if frontend is responsive
-        fetch('/assets/ping.txt', { method: 'HEAD', signal: AbortSignal.timeout ? AbortSignal.timeout(2000) : undefined })
+        fetch('/assets/ping.txt', { method: 'HEAD', signal: (AbortSignal as any).timeout ? (AbortSignal as any).timeout(2000) : null })
           .then(() => {
             this.logger.warn('Backend unavailable, but frontend assets are reachable');
           })

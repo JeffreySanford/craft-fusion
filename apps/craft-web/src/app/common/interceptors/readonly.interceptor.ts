@@ -12,7 +12,7 @@ export class ReadOnlyInterceptor implements HttpInterceptor {
     this.logger.info('ReadOnlyInterceptor initialized');
   }
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const readOnly = this.sessionService.status();
 
     if (!readOnly) { //|| okIfReadOnly(request)

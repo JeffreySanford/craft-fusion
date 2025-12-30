@@ -15,32 +15,32 @@ The ecosystem configuration is optimized for production deployment with:
 ### Build applications first
 
 ```bash
-npm run pm2:build
+pnpm run pm2:build
 ```
 
 ### Start services
 
 ```bash
-npm run pm2:start
+pnpm run pm2:start
 ```
 
 ### Monitor services
 
 ```bash
-npm run pm2:logs     # View logs from all services
-npm run pm2:monitor  # Interactive monitoring dashboard
+pnpm run pm2:logs     # View logs from all services
+pnpm run pm2:monitor  # Interactive monitoring dashboard
 ```
 
 ### Stop services
 
 ```bash
-npm run pm2:stop
+pnpm run pm2:stop
 ```
 
 ### Restart services
 
 ```bash
-npm run pm2:restart
+pnpm run pm2:restart
 ```
 
 ## Direct PM2 Commands
@@ -118,7 +118,7 @@ This will:
 ### Common Issues
 
 1. **Port conflicts**: Ensure ports 3000 and 4000 are available
-2. **Build failures**: Run `npm run pm2:build` before starting services
+2. **Build failures**: Run `pnpm run pm2:build` before starting services
 3. **Permission issues**: Ensure log directories exist and are writable
 4. **Go binary**: Verify Go app builds correctly for your platform
 
@@ -147,7 +147,7 @@ Services use these production environment variables:
 For development, use the Nx serve commands instead:
 
 ```bash
-npm run start:all  # Start all services in development mode
+pnpm run start:all  # Start all services in development mode
 ```
 
 This provides:

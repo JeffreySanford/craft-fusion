@@ -1,0 +1,12 @@
+.performance-dashboard { 
+  display: block;
+}
+.metrics-summary {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.metric-card { display:flex; align-items:center; padding:8px; border-radius:6px; background:#0f172a; color:#fff; }
+.metric-icon { margin-right:8px }
+.chart-area { height: 320px; }
+canvas { width: 100%; height: 100%; }

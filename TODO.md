@@ -126,3 +126,5 @@ This file collects current action items discovered across the repository and rec
 - **Performance**: ✅ Hot observables with shareReplay(1) implemented
 - **Accessibility**: ✅ Fixed axe/forms and axe/structure issues in HTML templates
 - **Documentation**: ✅ Fixed markdownlint MD022, MD031, MD032 issues
+
+**NOTE (temporary relax):** TypeScript/Angular strictness was temporarily relaxed in `apps/craft-web/tsconfig.json` and `apps/craft-web/tsconfig.app.json`. See `TODO_reenable_strict.md` for remediation steps and timeline.

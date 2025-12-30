@@ -11,7 +11,7 @@ export class LoggingHttpInterceptor implements HttpInterceptor {
         this.logger.info('LoggingHttpInterceptor initialized');
     }
     
-    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
         this.logRequest(request);
         const callId = this.logger.startServiceCall('LoggingHttpInterceptor', request.method, request.url);
 
@@ -32,11 +32,11 @@ export class LoggingHttpInterceptor implements HttpInterceptor {
         );
     }
 
-    logRequest(request: HttpRequest<any>) {
+    logRequest(request: HttpRequest<unknown>) {
         this.logger.debug(`Request: ${request.method} ${request.urlWithParams}`);
     }
 
-    logResponse(response: HttpEvent<any>) {
+    logResponse(response: HttpEvent<unknown>) {
         if (response instanceof HttpResponse) {
             this.logger.debug(`Response: ${response.status} ${response.url}`);
         }

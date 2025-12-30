@@ -103,7 +103,7 @@ export interface User {
    * Dynamic property access for custom fields
    * Allows adding additional properties not explicitly defined in the interface
    */
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**

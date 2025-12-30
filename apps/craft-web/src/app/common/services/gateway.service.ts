@@ -31,10 +31,10 @@ export class GatewayService {
     method: string, 
     endpoint: string, 
     options: {
-      body?: any;
+      body?: unknown;
       headers?: HttpHeaders;
       params?: HttpParams;
-      responseType?: any;
+      responseType?: unknown;
       timeout?: number;
       retries?: number;
       isAuthRequest?: boolean;
@@ -209,14 +209,14 @@ export class GatewayService {
     return this.request<T>('GET', endpoint, options);
   }
   
-  public post<T>(endpoint: string, body: any, options = {}): Observable<T> {
+  public post<T>(endpoint: string, body: unknown, options = {}): Observable<T> {
     return this.request<T>('POST', endpoint, { ...options, body });
   }
   
   /**
    * Special method for authentication requests with enhanced retry logic
    */
-  public authRequest<T>(method: string, endpoint: string, body?: any, options = {}): Observable<T> {
+  public authRequest<T>(method: string, endpoint: string, body?: unknown, options = {}): Observable<T> {
     return this.request<T>(method, endpoint, { 
       ...options, 
       body, 
@@ -252,7 +252,7 @@ export class GatewayService {
    * Check if the backend is available
    */
   public checkBackendHealth(): Observable<boolean> {
-    return this.get<any>('health-check', { timeout: 3000 }).pipe(
+    return this.get<unknown>('health-check', { timeout: 3000 }).pipe(
       map(() => {
         this.isOfflineMode = false;
         return true;

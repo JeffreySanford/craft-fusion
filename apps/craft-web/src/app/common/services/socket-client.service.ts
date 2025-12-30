@@ -13,7 +13,7 @@ export class SocketClientService implements OnDestroy {
   private backoffDelay = 2000; // Start with 2 seconds
   private reconnecting = false;
   private destroy$ = new Subject<void>();
-  user$: Observable<any>;
+  user$ = new BehaviorSubject<unknown>(null);
 
   constructor(private injector: Injector) {
     this.initializeSocket();
@@ -63,9 +63,10 @@ export class SocketClientService implements OnDestroy {
     });
   }
 
-  private handleSocketError(error: any): void {
+  private handleSocketError(error: unknown): void {
     this.connectionStatus.next(false);
-    console.error('Socket error', { error: error?.message || error });
+    const message = (error && typeof error === 'object' && 'message' in error && typeof (error as any).message === 'string') ? (error as any).message : String(error);
+    console.error('Socket error', { error: message });
   }
 
   private attemptReconnection(): void {
@@ -90,8 +91,8 @@ export class SocketClientService implements OnDestroy {
   }
 
   private extractNamespace(url: string): string {
-    return url.includes('/') && url.split('/').length > 3 ?
-      url.split('/')[3] : 'default';
+    const parts = url.split('/');
+    return parts.length > 3 ? (parts[3] ?? 'default') : 'default';
   }
 
   private closeSocket(): void {
@@ -108,7 +109,7 @@ export class SocketClientService implements OnDestroy {
         return;
       }
       const handler = (data: T) => observer.next(data);
-      const errorHandler = (error: any) => observer.error(error);
+      const errorHandler = (error: unknown) => observer.error(error);
       this.socket.on(event, handler);
       this.socket.on('connect_error', errorHandler);
       // Teardown logic
@@ -126,7 +127,7 @@ export class SocketClientService implements OnDestroy {
     );
   }
 
-  emit(event: string, data?: any): void {
+  emit(event: string, data?: unknown): void {
     if (this.socket && this.connectionStatus.value) {
       this.socket.emit(event, data);
     } else {

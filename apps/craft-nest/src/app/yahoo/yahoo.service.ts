@@ -1,7 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Observable, throwError, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { HttpService } from '@nestjs/axios';
+import { Observable, of } from 'rxjs';
 
 // Add export to the interface declarations
 export interface StockDataPoint {
@@ -22,7 +20,7 @@ export interface StockData {
 export class YahooService {
   private readonly logger = new Logger(YahooService.name);
   
-  constructor(private readonly httpService: HttpService) {}
+  constructor() {}
 
   /**
    * Get historical stock data from Yahoo Finance
@@ -81,13 +79,10 @@ export class YahooService {
   }
 
   // Helper method to generate mock data for testing
-  private generateMockData(symbol: string, count: number): StockDataPoint[] {
+  private generateMockData(_symbol: string, _count: number): StockDataPoint[] {
     // Instead of generating mock data, return empty array
     return [];
   }
 
-  private getBasePrice(symbol: string): number {
-    // Since we're not generating mock data, this can be simplified
-    return 0;
-  }
+
 }

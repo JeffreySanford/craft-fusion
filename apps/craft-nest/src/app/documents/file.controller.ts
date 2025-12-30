@@ -1,8 +1,15 @@
-import { Controller, Get, Param, Post, Body, HttpException, HttpStatus, Header, Res } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, HttpException, HttpStatus, Res } from '@nestjs/common';
 import { FileService } from './file.service';
 import { Observable } from 'rxjs';
-import { Express, Response } from 'express';
+import { Response } from 'express';
 import * as path from 'path';
+
+// Minimal Multer file interface to avoid depending on external @types/multer
+interface MulterFile {
+  originalname: string;
+  buffer: Buffer;
+  mimetype?: string;
+} 
 
 @Controller('files')
 export class FileController {
@@ -52,7 +59,7 @@ export class FileController {
   }
 
   @Post('upload')
-  uploadFile(@Body() file: Express.Multer.File): Observable<void> {
+  uploadFile(@Body() file: MulterFile): Observable<void> {
     console.log('STATE: Uploading file:', file.originalname);
     if (!file || !file.originalname || !file.buffer) {
       throw new HttpException('Invalid file data', HttpStatus.BAD_REQUEST);

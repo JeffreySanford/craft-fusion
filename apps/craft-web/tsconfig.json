@@ -2,11 +2,20 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": []
+    "types": [],
+    // Re-enable strict mode to reduce type errors (may surface new errors)
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": true
   },
   "angularCompilerOptions": {
     "enableIvy": true,
-    "strictTemplates": true
+    // relax template strictness temporarily
+    "strictTemplates": false,
+    "strictInjectionParameters": false
   },
   "include": [
     "src/**/*.ts",

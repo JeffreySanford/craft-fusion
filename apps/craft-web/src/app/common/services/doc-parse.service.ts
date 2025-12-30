@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as mammoth from 'mammoth';
-import TurndownService from 'turndown';
+import { TurndownWrapperService } from './turndown-wrapper.service';
 
 @Injectable({
   providedIn: 'root'
@@ -36,13 +36,17 @@ export class DocParseService {
     mythKeywordSection: /^(?<content>.*(?:Enki|Enlil|Anu|Ninhursag|netherworld|shrines|Land|heavens|earth).*)$/smi
   };
 
-  private log(...args: any[]) {
+  private log(...args: unknown[]) {
     if (this.debugMode) {
       console.log('[DocParser]', ...args);
     }
   }
 
-  constructor() { }
+  private isElement(obj: unknown): obj is Record<string, any> {
+    return typeof obj === 'object' && obj !== null;
+  }
+
+  constructor(private readonly turndownWrapper: TurndownWrapperService) { }
 
   async parseDoc(file: File): Promise<string> {
     console.log('\n=== Starting Document Parse ===');
@@ -55,22 +59,22 @@ export class DocParseService {
         this.log('Starting pre-processing', input.byteLength, 'bytes');
         return input;
       },
-      transformDocument: (element: any) => {
+      transformDocument: (element: unknown) => {
         // Only process paragraphs
-        if (element.type !== 'paragraph') {
+        if (!this.isElement(element) || element['type'] !== 'paragraph') {
           return element;
         }
 
         // Extract text and log structure
         const text = this.extractText(element);
-        this.log('Paragraph:', { text, type: element.type });
+        this.log('Paragraph:', { text, type: element['type'] });
 
         // Check for myth section start
         const mythMatch = this.detectMythSection(text);
         if (mythMatch) {
           const {verse, content} = mythMatch;
           console.log('Found myth:', {verse, content});
-          
+
           return {
             type: 'html',
             value: `
@@ -90,7 +94,7 @@ export class DocParseService {
       const result = await mammoth.convertToHtml({ arrayBuffer: fileArrayBuffer }, options);
       console.log('HTML conversion complete. Length:', result.value.length);
 
-      const turndownService = new TurndownService({
+      const markdown = this.turndownWrapper.turndownWithOptions(result.value, {
         keepReplacement: (content: string, node: Node) => {
           if (node instanceof HTMLElement) {
             if (node.classList?.contains('myth-line')) {
@@ -101,8 +105,6 @@ export class DocParseService {
           return content;
         }
       });
-
-      const markdown = turndownService.turndown(result.value);
       console.log('=== Parse Complete ===');
       console.log('Output length:', markdown.length);
       return markdown;
@@ -113,14 +115,15 @@ export class DocParseService {
     }
   }
 
-  private getParagraphText(element: any): string {
-    if (!element.children) return '';
+  private getParagraphText(element: unknown): string {
+    if (!this.isElement(element) || !Array.isArray(element['children'])) return '';
 
-    return element.children
-      .map((child: any) => {
-        this.log('Child node:', child.type);
-        if (child.type === 'text') return child.value;
-        if (child.type === 'hyperlink') return this.getParagraphText(child);
+    return element['children']
+      .map((child: unknown) => {
+        if (!this.isElement(child)) return '';
+        this.log('Child node:', child['type']);
+        if (child['type'] === 'text') return child['value'] || '';
+        if (child['type'] === 'hyperlink') return this.getParagraphText(child);
         return '';
       })
       .join('')
@@ -140,50 +143,52 @@ export class DocParseService {
     const rangeMatch = text.match(this.mythPatterns.verseRange);
     if (rangeMatch) {
       const [_, start, end, content] = rangeMatch;
-      return [`${start}-${end}`, content];
+      return [`${start || ''}-${end || ''}`, content || ''];
     }
 
     // Try matching single verse
-    const singleMatch = text.match(this.mythPatterns.singleVerse); 
+    const singleMatch = text.match(this.mythPatterns.singleVerse);
     if (singleMatch) {
       const [_, verse, content] = singleMatch;
-      return [verse, content];
+      return [verse || '', content || ''];
     }
 
     // Try matching ETCSL reference
     const etcslMatch = text.match(this.mythPatterns.etcslRef);
     if (etcslMatch) {
       const [_, ref, content] = etcslMatch;
-      return [ref, content];
+      return [ref || '', content || ''];
     }
 
     return ['', text];
   }
 
-  private extractFullText(element: any): string {
+  private extractFullText(element: unknown): string {
     if (!element) return '';
     if (typeof element === 'string') return element;
-    
-    const text = element.value || '';
-    const childTexts = element.children?.map((c: any) => this.extractFullText(c)) || [];
-    
+    if (!this.isElement(element)) return '';
+
+    const text = element['value'] || '';
+    const childTexts = Array.isArray(element['children']) ? element['children'].map((c: unknown) => this.extractFullText(c)) : [];
+
     return [text, ...childTexts].filter(t => t).join(' ').trim();
   }
 
-  private extractText(element: any): string {
+  private extractText(element: unknown): string {
     if (!element) return '';
     if (typeof element === 'string') return element;
+    if (!this.isElement(element)) return '';
 
-    let text = element.value || '';
-    if (element.children) {
-      element.children.forEach((child: any) => {
+    let text = element['value'] || '';
+    if (Array.isArray(element['children'])) {
+      element['children'].forEach((child: unknown) => {
         text += this.extractText(child);
       });
     }
     return text.trim();
   }
 
-  private transformMythSection(element: any) {
+  private transformMythSection(element: unknown) {
     const text = this.extractText(element);
     
     // Try matching different myth patterns
@@ -236,8 +241,8 @@ export class DocParseService {
     return null;
   }
 
-  private transformDocument(element: any) {
-    if (element.type !== 'paragraph') {
+  private transformDocument(element: unknown) {
+    if (!this.isElement(element) || element['type'] !== 'paragraph') {
       return element;
     }
 
@@ -293,9 +298,9 @@ export class DocParseService {
       const verseMatch = verse.match(/(?:\[(\d+(?:-\d+)?)\]|\b(\d+(?:-\d+)?)\.)(?:\((.*?)\))?\s*(.+)/s);
       
       if (verseMatch) {
-        const verseNum = verseMatch[1] || verseMatch[2];
+        const verseNum = verseMatch[1] || verseMatch[2] || '';
         const link = verseMatch[3];
-        const content = verseMatch[4].trim();
+        const content = verseMatch[4]?.trim() || '';
         const labelPart = link
           ? `<span class="verse-label darkgreen-label">${verseNum}<a href="${link}" title="View source">†</a></span>`
           : `<span class="verse-label">${verseNum}</span>`;

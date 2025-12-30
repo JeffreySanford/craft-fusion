@@ -1,19 +1,17 @@
 import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { BarChartData, LineChartData, MapChartData, ChartData } from './data-visualizations.interfaces';
+import { BarChartData, LineChartData, ChartData } from './data-visualizations.interfaces';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Observable, Subscription, forkJoin, of } from 'rxjs';
-import { YahooService } from '../../common/services/yahoo.service';
-import moment from 'moment';
+import { Observable, Subscription, of } from 'rxjs';
+import { YahooService, HistoricalData } from '../../common/services/yahoo.service';
 import { catchError } from 'rxjs/operators';
 import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
 import { SidebarStateService } from '../../common/services/sidebar-state.service';
 import { ChartLayoutService } from './services/chart-layout.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TileLimitDialogComponent } from './dialogs/tile-limit-dialog.component';
 import { SocketClientService } from '../../common/services/socket-client.service';
-import { active } from 'd3';
+// import { active } from 'd3'; // unused import removed
 
 @Component({
   selector: 'app-data-visualizations',
@@ -82,8 +80,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [], size: 'large', active: false },
   ];
 
-  public fintechChartData: any[] = [];
-  financeData: any;
+  public fintechChartData: HistoricalData[] = [];  financeData: unknown;
 
   // New properties to track dimensions
   tileWidth: number = 0;
@@ -98,7 +95,6 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef, 
     private yahooService: YahooService,
     private iconRegistry: MatIconRegistry,
-    private sanitizer: DomSanitizer,
     private sidebarStateService: SidebarStateService,
     private chartLayoutService: ChartLayoutService,
     private dialog: MatDialog,
@@ -114,27 +110,29 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     
     this.loadFintechChartData()
       .pipe()
-      .subscribe(data => {
+      .subscribe((data: HistoricalData[]) => {
         this.fintechChartData = data;
         
         // Update finance chart data in both arrays
         const financeChartIndex = this.availableCharts.findIndex(c => c.component === 'app-finance-chart');
         if (financeChartIndex !== -1) {
-          this.availableCharts[financeChartIndex].data = this.fintechChartData;
+          const chart = this.availableCharts[financeChartIndex];
+          if (chart) chart.data = this.fintechChartData as any[];
         }
         
         const displayedFinanceIndex = this.displayedCharts.findIndex(c => c.component === 'app-finance-chart');
         if (displayedFinanceIndex !== -1) {
-          this.displayedCharts[displayedFinanceIndex].data = this.fintechChartData;
+          const chart = this.displayedCharts[displayedFinanceIndex];
+          if (chart) chart.data = this.fintechChartData as any[];
         }
         
         setTimeout(() => this.cdr.detectChanges());
       });
 
     // Listen for real-time updates
-    this.socketClient.on<any>('yahoo:data').subscribe(data => {
-      // Update chart data in real-time
-      this.fintechChartData = data;
+    this.socketClient.on<any>('yahoo:data').subscribe((data: any) => {
+      // Update chart data in real-time (ensure it is an array of HistoricalData)
+      this.fintechChartData = Array.isArray(data) ? (data as HistoricalData[]) : [];
       setTimeout(() => this.cdr.detectChanges());
     });
 
@@ -517,15 +515,14 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  private loadFintechChartData(): Observable<any> {
+  private loadFintechChartData(): Observable<HistoricalData[]> {
     const stockSymbols = ['AAPL', 'GOOGL', 'MSFT']; // Add more stock symbols as needed
-    const endDate = moment().format('YYYY-MM-DD');
-    const startDate = moment().subtract(1, 'years').format('YYYY-MM-DD');
+    // date range variables intentionally removed — the Yahoo service receives its own defaults
 
     return this.yahooService.getHistoricalData(stockSymbols, '1d', '1y').pipe(
       catchError(error => {
         console.error(`Error loading data for ${stockSymbols}:`, error);
-        return of([]);
+        return of([] as HistoricalData[]);
       }),
     );
   }
@@ -561,13 +558,15 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       
       listItems.forEach((item, index) => {
         const chart = this.availableCharts[index];
+        if (!chart) return; // Guard against mismatched DOM and data arrays
         if (this.isChartActive(chart)) {
+          const c = chart as ExtendedChartData;
           // Apply vibrant chart color to the border, text, and icons
-          (item as HTMLElement).style.borderLeftColor = chart.color;
-          (item as HTMLElement).style.color = chart.color;
+          (item as HTMLElement).style.borderLeftColor = c.color;
+          (item as HTMLElement).style.color = c.color;
           
           // Add glow effect with the chart color
-          (item as HTMLElement).style.boxShadow = `0 0 10px rgba(${this.hexToRgb(chart.color)}, 0.3)`;
+          (item as HTMLElement).style.boxShadow = `0 0 10px rgba(${this.hexToRgb(c.color)}, 0.3)`;
           
           // Add active class
           item.classList.add('active');
@@ -611,20 +610,21 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   }
   
   // Helper function to convert hex color to RGB
-  private hexToRgb(hex: string): string {
-    // Remove # if present
-    hex = hex.replace('#', '');
-    
-    // Handle shorthand hex
-    if (hex.length === 3) {
-      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-    }
-    
-    // Parse the hex values
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    
+  private hexToRgb(hex: string = '#000000'): string {
+    if (!hex || typeof hex !== 'string') hex = '#000000';
+    // Remove leading # if present
+    const cleaned = hex.startsWith('#') ? hex.slice(1) : hex;
+
+    // Handle shorthand hex like 'abc' -> 'aabbcc'
+    const full = cleaned.length === 3
+      ? cleaned.split('').map(c => c + c).join('')
+      : cleaned.padEnd(6, '0').slice(0, 6);
+
+    // Parse the hex values safely
+    const r = parseInt(full.substring(0, 2), 16) || 0;
+    const g = parseInt(full.substring(2, 4), 16) || 0;
+    const b = parseInt(full.substring(4, 6), 16) || 0;
+
     return `${r}, ${g}, ${b}`;
   }
   

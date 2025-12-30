@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ElementRef, OnDestroy, OnChanges, SimpleChanges, AfterViewInit, Renderer2 } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, OnDestroy, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
 import * as d3 from 'd3';
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
@@ -15,7 +15,7 @@ interface MetricData {
   standalone: false
 })
 export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
-  @Input() data: any; // Keep for compatibility
+  @Input() data: MetricData[] = []; // Use explicit typing for metric data
   @Input() width: number = 0;
   @Input() height: number = 0;
   @Input() showLegend: boolean = false; // Set default to false
@@ -77,7 +77,7 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
     'internet': '#3498db' // Bright blue (modern tech feel)
   };
   
-  constructor(private el: ElementRef, private renderer: Renderer2) {}
+  constructor(private el: ElementRef) {}
 
   ngOnInit(): void {
     // Make sure legendItems is initialized
@@ -242,7 +242,7 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
       .style('filter', 'drop-shadow(0 2px 3px rgba(0,0,0,0.3))') // Add subtle shadow for depth
       .transition()
       .duration(1000)
-      .delay((d, i) => i * 100)
+      .delay((_, i) => i * 100)
       .attr('y', d => yScale(d.value))
       .attr('height', d => height - yScale(d.value));
     

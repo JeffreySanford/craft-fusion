@@ -62,7 +62,7 @@ export class YahooService {
   /**
    * Generates mock financial data for development and fallback scenarios
    */
-  private generateMockFinancialData(symbols: string[], limit: number): Record<string, any> {
+  private generateMockFinancialData(_symbols: string[], _limit: number): Record<string, any> {
     // Instead of generating mock data, return null or empty object
     Logger.log('Backend connection failed - returning empty dataset');
     return {};

@@ -24,16 +24,16 @@ jobs:
           cache: 'npm'
       # This line enables distribution
       # The "--stop-agents-after" is optional, but allows idle agents to shut down once the "e2e-ci" targets have been requested
-      # - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
+      # - run: pnpm dlx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
       - run: npm ci
 
       - uses: nrwl/nx-set-shas@v4
 
-      - run: npx nx-cloud record -- nx format:check
+      - run: pnpm dlx nx-cloud record -- nx format:check
       
       # Run tests with result reporting
       - name: Run Tests
-        run: npx nx affected -t test --configuration=ci --json --coverageReporters=text-summary,lcov > test-results.json
+      - run: pnpm dlx nx affected -t test --configuration=ci --json --coverageReporters=text-summary,lcov > test-results.json
       
       # Upload test results
       - name: Test Report
@@ -54,4 +54,4 @@ jobs:
           verbose: true
 
       # Continue with remaining steps
-      - run: npx nx affected -t build e2e-ci
+      - run: pnpm dlx nx affected -t build e2e-ci
