@@ -154,7 +154,7 @@ export class ApiService {
    * @param options - Optional HTTP request options
    * @returns Observable<T> - Observable that can be subscribed to by state stores
    */
-  get<T>(endpoint: string, options?: RequestInit | Record<string, unknown>): Observable<T> {
+  get<T>(endpoint: string, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'GET', url);
     const httpOptions = this.normalizeOptions(options);
@@ -222,7 +222,7 @@ export class ApiService {
     ) as Observable<T>;
   }
 
-  put<T>(endpoint: string, body: T, options?: RequestInit | Record<string, unknown>): Observable<T> {
+  put<T>(endpoint: string, body: T, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'PUT', url);
 
@@ -245,7 +245,7 @@ export class ApiService {
     ) as Observable<T>;
   }
 
-  delete<T>(endpoint: string, options?: RequestInit | Record<string, unknown>): Observable<T> {
+  delete<T>(endpoint: string, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'DELETE', url);
 
@@ -414,7 +414,7 @@ export class ApiService {
    * @param options Additional options
    * @returns Observable of response
    */
-  public authRequest<T>(method: string, endpoint: string, body?: unknown, options?: RequestInit | Record<string, unknown>): Observable<T> {
+  public authRequest<T>(method: string, endpoint: string, body?: unknown, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<T> {
     // Log detailed debugging information
     console.log('🔍 Auth request details', {
       method,
@@ -473,7 +473,7 @@ export class ApiService {
    * @param options - Optional HTTP request options
    * @returns Observable<R> - Observable of response type R
    */
-  post<T = unknown, R = unknown>(endpoint: string, body: T, options?: RequestInit | Record<string, unknown>): Observable<R> {
+  post<T = unknown, R = unknown>(endpoint: string, body: T, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<R> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'POST', url);
 

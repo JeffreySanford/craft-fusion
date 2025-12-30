@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { AuthenticationService } from '../../common/services/auth/authentication.service';
 import { LoggerService } from '../../common/services/logger.service';
 import { ThemeService } from '../../common/services/theme.service';
@@ -29,7 +31,8 @@ export class HeaderComponent implements OnInit {
   constructor(
     public authService: AuthenticationService,
     private logger: LoggerService, // Add LoggerService
-    private themeService: ThemeService // Add ThemeService for theme toggle
+    private themeService: ThemeService, // Add ThemeService for theme toggle
+    private router: Router
   ) {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
   }
@@ -103,6 +106,13 @@ export class HeaderComponent implements OnInit {
         next: () => {
           this.updateUserMenuItems();
           this.logger.info('User logged in');
+
+          // If the user is an admin, navigate them to the admin dashboard automatically
+          this.authService.isAdmin$.pipe(take(1)).subscribe(isAdmin => {
+            if (isAdmin) {
+              this.router.navigate(['/admin']);
+            }
+          });
         },
         error: err => {
           this.logger.error('Login failed', err);

@@ -112,7 +112,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:resize', ['$event'])
-  onResize(event: Event): void {
+  onResize(_event: Event): void {
     console.log('Event: Window resized');
     this.updateDisplayedColumns();
   }

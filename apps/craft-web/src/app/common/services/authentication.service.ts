@@ -570,6 +570,23 @@ export class AuthenticationService {
 
     this.sessionService.setUserSession(response.user);
 
+    // Update admin state service so other parts of the app can react
+    const isAdmin = this.hasAdminRole(response.user);
+    try {
+      this.adminStateService.setAdminStatus(isAdmin);
+    } catch (err) {
+      this.logger.warn('Failed to update AdminStateService', { error: err });
+    }
+
+    // Show a visible toast when an admin logs in
+    if (isAdmin) {
+      try {
+        this.notificationService.showSuccess('Signed in with administrator privileges', 'Admin Login');
+      } catch (err) {
+        this.logger.warn('Failed to show admin login notification', { error: err });
+      }
+    }
+
     this.logger.info('Login process completed successfully', {
       username: response.user.username,
       hasRoles: Array.isArray(response.user.roles),

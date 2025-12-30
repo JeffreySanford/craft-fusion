@@ -618,7 +618,7 @@ export class FinanceComponent implements OnInit, OnChanges {
   }
 
   // New helper method for better tooltip display
-  private showPhaseTooltip(event: MouseEvent, phase: { start: Date; end: Date; label: string; type: string }, phaseType: string): void {
+  private showPhaseTooltip(event: MouseEvent, phase: Phase, phaseType: Phase['type']): void {
     const tooltip = d3.select(this.chartContainer.nativeElement)
       .append('div')
       .attr('class', 'gantt-tooltip')
@@ -695,7 +695,7 @@ export class FinanceComponent implements OnInit, OnChanges {
   }
 
   // Helper method to calculate stock performance in a phase
-  private calculateStockPerformanceInPhase(phase: { start: Date; end: Date; type: string; label: string }): { symbol: string; firstPrice: number; lastPrice: number; percentChange: number; color: string }[] {
+  private calculateStockPerformanceInPhase(phase: Phase): { symbol: string; firstPrice: number; lastPrice: number; percentChange: number; color: string }[] {
     const results: { symbol: string; firstPrice: number; lastPrice: number; percentChange: number; color: string }[] = [];
     
     this.sortedStocks.forEach(stock => {
@@ -731,7 +731,7 @@ export class FinanceComponent implements OnInit, OnChanges {
   }
 
   // Updated helper method for phase background colors
-  private getPhaseBackgroundColor(phaseType: string): string {
+  private getPhaseBackgroundColor(phaseType: Phase['type']): string {
     switch(phaseType) {
       case 'bull': return 'rgba(235, 251, 238, 0.7)'; // Light green background
       case 'bear': return 'rgba(253, 235, 236, 0.7)'; // Light red background  

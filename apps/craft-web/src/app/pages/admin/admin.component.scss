@@ -988,6 +988,9 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     margin-left: 8px;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
     user-select: none;
     z-index: 2;
   }
@@ -1086,6 +1089,9 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     margin-left: 8px;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
     user-select: none;
     z-index: 2;
   }

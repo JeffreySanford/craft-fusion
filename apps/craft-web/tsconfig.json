@@ -3,8 +3,8 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "types": [],
-    // Temporarily relax strictness for iterative fixes
-    "strict": false,
+    // Re-enable strict mode to reduce type errors (may surface new errors)
+    "strict": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "forceConsistentCasingInFileNames": true,
