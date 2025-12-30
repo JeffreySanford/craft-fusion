@@ -601,13 +601,17 @@ table thead tr {
     padding-bottom: 0.5em;
   }
 
-  .log-entries {
+    .log-entries {
     max-height: 300px;
     overflow-y: auto;
     padding: 0.5em;
-    scrollbar-width: thin; /* "auto" or "thin" */
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent; /* thumb and track color */
+    /* Firefox-only properties: apply only when supported */
+    @supports (scrollbar-color: auto) {
+      scrollbar-width: thin; /* "auto" or "thin" */
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent; /* thumb and track color */
+    }
 
+    /* WebKit-based browsers */
     &::-webkit-scrollbar {
       width: 8px;
     }
@@ -717,11 +721,14 @@ table thead tr {
     color: vars.$patriot-white;
   }
 
-  mat-list {
+    mat-list {
     max-height: 400px;
     overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    /* Firefox-only properties applied via feature query */
+    @supports (scrollbar-color: auto) {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
 
     &::-webkit-scrollbar {
       width: 8px;
@@ -749,14 +756,17 @@ table thead tr {
 }
 
 // Update tab content to ensure proper containment
-.tab-content {
+  .tab-content {
   height: calc(100vh - 280px); // Reduced from 300px for less top space
   overflow-y: auto;
   padding: 0.5rem 0.75rem; // Reduced padding
   width: 100%; // Ensure full width
   margin: 0; // Remove any margin
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  /* Firefox-only scrollbar styling */
+  @supports (scrollbar-color: auto) {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
 
   &::-webkit-scrollbar {
     width: 8px;

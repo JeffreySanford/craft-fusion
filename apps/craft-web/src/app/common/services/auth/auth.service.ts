@@ -39,7 +39,8 @@ export class AuthService {
     private logger: LoggerService
   ) {
     // Initialize properties in the constructor after services are injected
-    this.isAuthenticated$ = this.authenticationService.isAuthenticated$;
+    // authenticationService exposes `isLoggedIn$`; map facade `isAuthenticated$` to it
+    this.isAuthenticated$ = this.authenticationService.isLoggedIn$;
     this.isAdmin$ = this.authenticationService.isAdmin$;
     this.isLoggedIn$ = this.authenticationService.isLoggedIn$;
     
@@ -47,7 +48,8 @@ export class AuthService {
     this.logger.info('Auth Service facade initialized');
     
     // Initialize properties after constructor parameters are available
-    this.isAuthenticated$ = this.authenticationService.isAuthenticated$;
+    // Ensure facade observables reference the underlying authentication service
+    this.isAuthenticated$ = this.authenticationService.isLoggedIn$;
     this.isAdmin$ = this.authenticationService.isAdmin$;
     this.isLoggedIn$ = this.authenticationService.isLoggedIn$;
   }

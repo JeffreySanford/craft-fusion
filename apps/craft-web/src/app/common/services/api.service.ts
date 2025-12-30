@@ -80,10 +80,18 @@ export class ApiService {
   }
 
   private getHeaders(): HttpHeaders {
-    return new HttpHeaders({
+    // Prefer token from localStorage (kept by AuthenticationService)
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const authHeader = token ? `Bearer ${token}` : '';
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      Authorization: 'Bearer YOUR_TOKEN_HERE', // Replace with dynamic token logic
-    });
+    };
+    if (authHeader) {
+      headers['Authorization'] = authHeader;
+    }
+    // Log for debugging which Authorization header is being attached
+    this.logger.debug('ApiService.getHeaders', { hasToken: !!token, tokenPreview: token ? token.slice(0, 24) + '...' : null });
+    return new HttpHeaders(headers);
   }
 
   private addSecurityHeaders(headers: HttpHeaders): HttpHeaders {

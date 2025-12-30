@@ -79,4 +79,50 @@ export class AuthenticationService {
       user: user
     };
   }
+
+  /**
+   * Resolve a user object from an Authorization header containing a Bearer JWT.
+   * If no header is provided, returns a generic authenticated user (backwards-compatible).
+   */
+  getUserFromToken(authHeader?: string) {
+    if (!authHeader) {
+      return {
+        id: '1',
+        username: 'authenticated-user',
+        firstName: 'Authenticated',
+        lastName: 'User',
+        email: 'user@example.com',
+        roles: ['user'],
+        role: 'user'
+      };
+    }
+
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
+    try {
+      const payload: any = this.jwtService.verify(token);
+      const username = payload.username || 'authenticated-user';
+      const roles = Array.isArray(payload.roles) && payload.roles.length ? payload.roles : ['user'];
+      return {
+        id: payload.sub ? String(payload.sub) : '1',
+        username,
+        firstName: username === 'admin' ? 'Admin' : 'Authenticated',
+        lastName: 'User',
+        email: `${username}@example.com`,
+        roles,
+        role: roles[0]
+      };
+    } catch (e) {
+      // If token verification fails, fall back to generic authenticated user
+      this.logger.warn('Failed to verify JWT in getUserFromToken', String(e));
+      return {
+        id: '1',
+        username: 'authenticated-user',
+        firstName: 'Authenticated',
+        lastName: 'User',
+        email: 'user@example.com',
+        roles: ['user'],
+        role: 'user'
+      };
+    }
+  }
 }

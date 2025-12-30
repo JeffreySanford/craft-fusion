@@ -12,7 +12,11 @@ import { RecipesModule } from './recipes/recipes.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      // Try multiple paths so running from dist or the repo root finds the .env file
+      envFilePath: ['.env', '../.env', '../../.env', '../../../.env'],
+    }),
     FileModule,  // Add FileModule import to make FileService available
     UserModule,
     SocketGatewayModule,

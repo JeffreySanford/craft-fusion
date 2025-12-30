@@ -110,6 +110,10 @@ export class SidebarComponent implements OnInit {
       // Create new array reference to trigger change detection
       this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
       console.log('🔧 Sidebar: Menu items updated, length:', this.menuItems.length);
+      // Log specifically which admin-protected buttons are present for debugging
+      const adminDebugLabels = ['Admin', 'Family', 'Chat'];
+      const present = adminDebugLabels.filter(l => this.menuItems.some(m => m.label === l));
+      console.log('🔧 Sidebar: Admin-protected buttons present:', present);
       this.cdr.detectChanges();
     });
 
@@ -140,6 +144,15 @@ export class SidebarComponent implements OnInit {
   setActive(item: MenuItem) {
     this.menuItems.forEach(menuItem => menuItem.active = false);
     item.active = true;
+  }
+
+  onMenuItemClick(item: MenuItem) {
+    // preserve existing behavior
+    this.setActive(item);
+    // log clicks for admin-protected buttons
+    if (['Admin', 'Family', 'Chat'].includes(item.label)) {
+      console.log('🔧 Sidebar: Admin button clicked:', item.label);
+    }
   }
 
   getActiveItemLabel(): string {
