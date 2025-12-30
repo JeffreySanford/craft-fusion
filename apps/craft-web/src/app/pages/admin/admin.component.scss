@@ -2,7 +2,7 @@
    This file now imports those partials. The original large stylesheet
    was moved into smaller files under the same folder.
 */
-
+@use 'variables' as vars;
 @use './_admin-header';
 @use './_admin-metrics';
 @use './_admin-charts';

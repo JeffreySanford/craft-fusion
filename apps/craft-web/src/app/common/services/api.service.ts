@@ -101,6 +101,35 @@ export class ApiService {
     return this.addSecurityHeaders(headers);
   }
 
+  // Normalize various header shapes (Headers, HttpHeaders, Record<...>) into a type acceptable by Angular HttpClient
+  private normalizeHeaders(headers?: HeadersInit | HttpHeaders | Record<string, string | string[]>): HttpHeaders | Record<string, string | string[]> | undefined {
+    if (!headers) return undefined;
+    if (headers instanceof HttpHeaders) return headers;
+    // Browser Headers
+    try {
+      // @ts-ignore - Headers may not be available in all environments but will work in browser
+      if (typeof (headers as any).forEach === 'function') {
+        const h = headers as Headers;
+        const obj: Record<string, string> = {};
+        h.forEach((value: string, key: string) => { obj[key] = value; });
+        return new HttpHeaders(obj);
+      }
+    } catch (e) {
+      // fallthrough
+    }
+
+    // Assume it's already a plain record or compatible type
+    return headers as Record<string, string | string[]>;
+  }
+
+  private normalizeOptions(options?: any): { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any } {
+    const opts: any = { ...(options || {}) };
+    if (opts.headers) {
+      opts.headers = this.normalizeHeaders(opts.headers);
+    }
+    return opts;
+  }
+
   // FIX: Get current URL construction for clarity
   private getFullUrl(endpoint: string): string {
     // Remove leading slashes
@@ -128,10 +157,9 @@ export class ApiService {
   get<T>(endpoint: string, options?: RequestInit | Record<string, unknown>): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'GET', url);
-    const httpOptions: RequestInit & Record<string, unknown> = { 
-      ...(options as Record<string, unknown>),
-      headers: this.getTracingHeaders(),
-    };
+    const httpOptions = this.normalizeOptions(options);
+    // ensure tracing headers are applied (override or set)
+    httpOptions.headers = this.getTracingHeaders();
     
     // Check if we should throttle this request
     if (this.shouldThrottleRequest(url)) {
@@ -198,10 +226,8 @@ export class ApiService {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'PUT', url);
 
-    const httpOptions: RequestInit & Record<string, unknown> = {
-      ...(options as Record<string, unknown>),
-      headers: this.getTracingHeaders(),
-    };
+    const httpOptions = this.normalizeOptions(options);
+    httpOptions.headers = this.getTracingHeaders();
     
     return this.http.put<T>(url, body, httpOptions).pipe(
       tap(response => {
@@ -223,10 +249,8 @@ export class ApiService {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'DELETE', url);
 
-    const httpOptions: RequestInit & Record<string, unknown> = {
-      ...(options as Record<string, unknown>),
-      headers: this.getTracingHeaders(),
-    };
+    const httpOptions = this.normalizeOptions(options);
+    httpOptions.headers = this.getTracingHeaders();
     
     return this.http.delete<T>(url, httpOptions).pipe(
       tap(response => {
@@ -430,11 +454,11 @@ export class ApiService {
         // Allow a breakpoint here for debugging
         // debugger;
         console.log(`🔐 Making ${method} request to ${this.getFullUrl(endpoint)}`);
-        return this.post<unknown, T>(endpoint, body, finalOptions);
+        return this.post<unknown, T>(endpoint, body, finalOptions) as unknown as Observable<T>;
       case 'PUT':
-        return this.put<unknown>(endpoint, body, finalOptions);
+        return this.put<unknown>(endpoint, body, finalOptions) as unknown as Observable<T>;
       case 'DELETE':
-        return this.delete<T>(endpoint, finalOptions);
+        return this.delete<T>(endpoint, finalOptions) as unknown as Observable<T>;
       default:
         this.logger.error(`Unsupported HTTP method for auth request: ${method}`);
         return throwError(() => new Error(`Unsupported HTTP method: ${method}`));
@@ -453,10 +477,8 @@ export class ApiService {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'POST', url);
 
-    const httpOptions: RequestInit & Record<string, unknown> = {
-      ...(options as Record<string, unknown>),
-      headers: this.getTracingHeaders(),
-    };
+    const httpOptions = this.normalizeOptions(options);
+    httpOptions.headers = this.getTracingHeaders();
     
     this.logger.debug(`Making POST request to ${url}`, {
       endpoint,
@@ -471,7 +493,7 @@ export class ApiService {
         url,
         method: 'POST',
         bodyType: typeof body,
-        hasCredentials: !!(body && 'username' in body),
+        hasCredentials: !!(body && typeof body === 'object' && 'username' in (body as any)),
         timestamp: Date.now(),
         options: Object.keys(httpOptions || {})
       });

@@ -6,7 +6,7 @@ import { Directive, ElementRef, OnInit, Renderer2, OnDestroy } from '@angular/co
 })
 export class SparkleDirective implements OnInit, OnDestroy {
   private sparkles: HTMLElement[] = [];
-  private intervalId: unknown;
+  private intervalId: ReturnType<typeof setInterval> | null = null;
   
   constructor(private el: ElementRef, private renderer: Renderer2) {}
   
@@ -40,8 +40,9 @@ export class SparkleDirective implements OnInit, OnDestroy {
   }
   
   ngOnDestroy() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
+    if (this.intervalId !== null) {
+      clearInterval(this.intervalId as unknown as number);
+      this.intervalId = null;
     }
     
     // Clean up sparkle elements

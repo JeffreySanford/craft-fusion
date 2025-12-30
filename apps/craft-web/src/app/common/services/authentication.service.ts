@@ -97,7 +97,25 @@ export class AuthenticationService {
   private _isOfflineMode = false;
   private connectionRetryCount = 0;
   private tokenRefreshInProgress = false;
-  private refreshTokenTimeout: number | undefined;
+  // Use ReturnType<typeof setTimeout> to be compatible with browser and Node typings
+  private refreshTokenTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  /**
+   * Normalize unknown errors into a predictable shape for logging and handling
+   */
+  private normalizeError(error: unknown): { status?: number; message?: string; error?: any; name?: string } {
+    if (!error) return { message: String(error) };
+    if (typeof error === 'object' && error !== null) {
+      const e = error as any;
+      return {
+        status: e.status,
+        message: e.message || (e.error && e.error.message) || String(e),
+        error: e.error || e,
+        name: e.name || (e.constructor && e.constructor.name) || typeof e
+      };
+    }
+    return { message: String(error), name: typeof error };
+  }
 
   constructor(
     private apiService: ApiService,
@@ -564,12 +582,13 @@ export class AuthenticationService {
    * Handle login error with appropriate messaging
    */
   private handleLoginError(error: unknown, username: string): Observable<never> {
-    const statusCode = error.status;
-    const errorMessage = error.message || 'Unknown error';
+    const err = this.normalizeError(error);
+    const statusCode = err.status;
+    const errorMessage = err.message || 'Unknown error';
     
     this.logger.error('Authentication failed', { 
       username,
-      errorType: error.constructor.name,
+      errorType: err.name || 'Error',
       status: statusCode, 
       message: errorMessage,
       timestamp: new Date().toISOString()
@@ -578,22 +597,22 @@ export class AuthenticationService {
     // Provide a user-friendly error message based on the error type
     let userMessage = 'Login failed. Please try again.'; 
     
-    if (error.status === 0) {
+    if (statusCode === 0) {
       userMessage = 'Unable to connect to the server. Please check your connection.';
-    } else if (error.status === 504) {
+    } else if (statusCode === 504) {
       userMessage = 'Server is taking too long to respond. Please try again later.';
-    } else if (error.status === 401) {
+    } else if (statusCode === 401) {
       userMessage = 'Invalid username or password.';
       this.logger.warn('Invalid credentials provided', { username });
-    } else if (error.status === 403) {
+    } else if (statusCode === 403) {
       userMessage = 'Your account is not authorized to access this system.';
       this.logger.warn('Authorization failure during login', { username });
-    } else if (error.status >= 500) {
+    } else if (statusCode && statusCode >= 500) {
       userMessage = 'Server error. Please contact support if the problem persists.';
       this.logger.error('Server error during authentication', {
         username,
-        status: error.status,
-        serverMessage: error.error?.message || 'No server message'
+        status: statusCode,
+        serverMessage: err.error?.message || 'No server message'
       });
     }
     

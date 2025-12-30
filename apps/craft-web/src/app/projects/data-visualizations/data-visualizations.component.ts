@@ -616,7 +616,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     
     // Handle shorthand hex
     if (hex.length === 3) {
-      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+      hex = hex.charAt(0).repeat(2) + hex.charAt(1).repeat(2) + hex.charAt(2).repeat(2);
     }
     
     // Parse the hex values

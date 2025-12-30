@@ -18,7 +18,7 @@ export class TimelineService {
   private eventsSubject = new BehaviorSubject<TimelineEvent[]>([]);
   public events$ = this.eventsSubject.asObservable().pipe(shareReplay(1));
   
-  private socket$?: WebSocketSubject<unknown>;
+  private socket$?: WebSocketSubject<TimelineEvent>;
   private messagesSubject = new BehaviorSubject<TimelineEvent[]>([]);
   
   constructor(
@@ -36,9 +36,9 @@ export class TimelineService {
       
       this.socket$.pipe(
         tap(message => this.logger.info('Received timeline event', message)),
-        catchError(error => {
+        catchError((error, _caught): Observable<TimelineEvent> => {
           this.logger.error('Socket error:', error);
-          return EMPTY;
+          return EMPTY as unknown as Observable<TimelineEvent>;
         }),
         // Use scan to accumulate events
         scan((acc: TimelineEvent[], event: TimelineEvent) => [...acc, event], [])
@@ -83,8 +83,8 @@ export class TimelineService {
   /**
    * Creates a new WebSocket subject with error handling
    */
-  private getNewWebSocket(): WebSocketSubject<unknown> {
-    return webSocket({
+  private getNewWebSocket(): WebSocketSubject<TimelineEvent> {
+    return webSocket<TimelineEvent>({
       url: this.WS_URL,
       openObserver: {
         next: () => this.logger.info('Timeline WebSocket connection opened')

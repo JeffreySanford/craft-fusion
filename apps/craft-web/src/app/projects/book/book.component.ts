@@ -278,8 +278,13 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   assignDocumentColor(document: string): void {
     if (!this.openedDocuments.some(doc => doc.name === document)) {
-      const color = this.documentColors[this.openedDocuments.length % this.documentColors.length].color;
-      const contrast = this.documentColors.find(colorObj => colorObj.color === color)?.contrast || '#000000';
+      if (this.documentColors.length === 0) {
+        this.openedDocuments.push({ name: document, color: '#000000', contrast: '#000000' });
+        return;
+      }
+      const colorObj = this.documentColors[this.openedDocuments.length % this.documentColors.length] || { color: '#000000', contrast: '#000000' };
+      const color = colorObj.color;
+      const contrast = colorObj.contrast || '#000000';
       this.openedDocuments.push({ name: document, color, contrast });
     }
   }
@@ -341,8 +346,13 @@ export class BookComponent implements OnInit, AfterViewInit {
     this.sidenav.toggle();
   }
 
-  onFileSelected(event: unknown): void {
-    const files: File[] = Array.from(event.target.files);
+  onFileSelected(event: Event | unknown): void {
+    const target = (event as Event)?.target as HTMLInputElement | null;
+    if (!target || !target.files) {
+      this.logger.warn('onFileSelected called without files');
+      return;
+    }
+    const files: File[] = Array.from(target.files);
     for (const file of files) {
       let content$;
       if (file.type === 'application/pdf') {
@@ -375,7 +385,10 @@ export class BookComponent implements OnInit, AfterViewInit {
                 ...doc,
                 contrast: this.documentColors.find(color => color.name === doc.color)?.contrast || '#000000'
               }));
-              this.onDocumentSelected(this.openedDocuments[this.openedDocuments.length - 1].name);
+              const last = this.openedDocuments[this.openedDocuments.length - 1];
+              if (last) {
+                this.onDocumentSelected(last.name);
+              }
             });
           });
         } else {
@@ -599,10 +612,11 @@ export class BookComponent implements OnInit, AfterViewInit {
       // Process myths before rendering
       const processedContent = this.processMythContent(content);
       this.renderMarkdown(processedContent);
+      const colorObj = this.documentColors.length ? (this.documentColors[this.openedDocuments.length % this.documentColors.length] || { color: '#000000', contrast: '#000000' }) : { color: '#000000', contrast: '#000000' };
       const newDocument = {
         name: file.name,
-        color: this.documentColors[this.openedDocuments.length % this.documentColors.length].color,
-        contrast: this.documentColors[this.openedDocuments.length % this.documentColors.length].contrast
+        color: colorObj.color,
+        contrast: colorObj.contrast || '#000000'
       };
 
       // Check if the document already exists in openedDocuments
@@ -618,9 +632,12 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   extractFileNameFromUrl(url: string): string {
     const parts = url.split('/');
-    let filename = parts[parts.length - 1];
+    let filename = parts[parts.length - 1] || '';
+    if (!filename) return '';
     // Remove file extension
-    filename = filename.split('.').slice(0, -1).join('.');
+    if (filename.includes('.')) {
+      filename = filename.split('.').slice(0, -1).join('.');
+    }
     return filename;
   }
 
