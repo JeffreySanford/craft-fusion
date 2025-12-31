@@ -6,18 +6,10 @@ Angular uses a dev-server proxy to reach the NestJS and Go backends and to suppo
 
 ## Current configuration
 
-File: `apps/craft-web/src/proxy.config.json`
+File: `apps/craft-web/src/proxy.config.json` (note: ordering matters — longer prefixes must come first)
 
 ```json
 {
-  "/api": {
-    "target": "http://127.0.0.1:3000",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "info",
-    "timeout": 120000,
-    "proxyTimeout": 120000
-  },
   "/api-go": {
     "target": "http://127.0.0.1:4000",
     "secure": false,
@@ -26,6 +18,14 @@ File: `apps/craft-web/src/proxy.config.json`
     "pathRewrite": {
       "^/api-go": "/api-go"
     },
+    "timeout": 120000,
+    "proxyTimeout": 120000
+  },
+  "/api": {
+    "target": "http://127.0.0.1:3000",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "info",
     "timeout": 120000,
     "proxyTimeout": 120000
   },
