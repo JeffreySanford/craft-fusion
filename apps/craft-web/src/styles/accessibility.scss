@@ -4,7 +4,7 @@
 @media (forced-colors: active) {
   // Enhanced focus indicators for better visibility
   :focus {
-    outline: 2px solid CanvasText;
+    outline: 2px solid canvastext;
     outline-offset: 2px;
   }
 
@@ -20,7 +20,7 @@
     border: 1px solid transparent;
 
     &:focus {
-      border-color: CanvasText;
+      border-color: canvastext;
     }
   }
 
@@ -29,10 +29,10 @@
   .flex-row,
   .flex-header-cell,
   .flex-cell {
-    border-color: CanvasText;
+    border-color: canvastext;
 
     &:focus {
-      outline: 2px solid CanvasText;
+      outline: 2px solid canvastext;
       outline-offset: 1px;
     }
   }
@@ -42,8 +42,8 @@
   textarea,
   select,
   .mat-form-field {
-    border-color: CanvasText;
-    outline-color: CanvasText;
+    border-color: canvastext;
+    outline-color: canvastext;
   }
 
   // Icons need proper contrast
@@ -54,12 +54,12 @@
 
 @media (forced-colors: active) and (prefers-color-scheme: light) {
   .light-contrast-border {
-    border-color: CanvasText;
+    border-color: canvastext;
   }
 }
 
 @media (forced-colors: active) and (prefers-color-scheme: dark) {
   .dark-contrast-border {
-    border-color: CanvasText;
+    border-color: canvastext;
   }
 }

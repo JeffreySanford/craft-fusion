@@ -1,8 +1,8 @@
 // Lightweight MD3 token mappings used across the app
 // Map a few commonly used semantic names to CSS MD3 variables (with sensible fallbacks)
 $md-primary: var(--md-sys-color-primary, #6750a4);
-$md-on-primary: var(--md-sys-color-on-primary, #ffffff);
-$md-surface: var(--md-sys-color-surface, #ffffff);
+$md-on-primary: var(--md-sys-color-on-primary, #fff);
+$md-surface: var(--md-sys-color-surface, #fff);
 $md-background: var(--md-sys-color-background, #f5f5fa);
 
 // Semantic helper colors for UI states (fallbacks chosen to preserve previous visuals)

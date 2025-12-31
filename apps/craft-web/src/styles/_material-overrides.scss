@@ -1,6 +1,6 @@
-@use 'variables' as vars;
-@use 'sass:map';
-@use '@angular/material' as mat;
+@use "variables" as vars;
+@use "sass:map";
+@use "@angular/material" as mat;
 
 // Material Button overrides
 .mat-mdc-button {
@@ -26,8 +26,8 @@
 // Material Card overrides
 .mat-mdc-card {
   border-radius: 8px;
-  overflow: hidden;
   box-shadow: var(--md-sys-elevation-level1);
+  overflow: hidden;
   transition: box-shadow 0.2s ease;
 
   &:hover {
@@ -37,19 +37,19 @@
 
 // Material Table overrides
 .mat-mdc-table {
-  width: 100%;
   background: var(--md-sys-color-surface);
   border-radius: 8px;
-  overflow: hidden;
   box-shadow: var(--md-sys-elevation-level1);
+  overflow: hidden;
+  width: 100%;
 
   .mat-mdc-header-row {
     background-color: var(--md-sys-color-primary);
 
     .mat-mdc-header-cell {
       color: var(--md-sys-color-on-primary);
-      font-weight: 500;
       font-size: 14px;
+      font-weight: 500;
       padding: 16px;
     }
   }
@@ -66,8 +66,8 @@
     }
 
     .mat-mdc-cell {
-      padding: 12px 16px;
       border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      padding: 12px 16px;
     }
   }
 
@@ -79,8 +79,8 @@
 // Material Toolbar overrides
 .mat-mdc-toolbar {
   background-color: var(--md-sys-color-surface);
-  color: var(--md-sys-color-on-surface);
   box-shadow: var(--md-sys-elevation-level2);
+  color: var(--md-sys-color-on-surface);
 
   &.transparent {
     background-color: transparent;
@@ -90,16 +90,16 @@
 
 // Material Sidenav overrides
 .mat-mdc-sidenav {
-  width: 250px;
   background-color: var(--md-sys-color-surface);
   border-right: 1px solid var(--md-sys-color-outline-variant);
+  width: 250px;
 
   .mat-mdc-nav-list {
     padding-top: 16px;
 
     .mat-mdc-list-item {
-      margin: 4px 8px;
       border-radius: 4px;
+      margin: 4px 8px;
 
       &:hover {
         background-color: var(--md-sys-color-on-surface-variant, #cac4d0);
@@ -115,8 +115,8 @@
 
 // Material Form Field overrides
 .mat-mdc-form-field {
-  width: 100%;
   margin-bottom: 16px;
+  width: 100%;
 
   &.dense {
     .mat-mdc-form-field-flex {
@@ -135,9 +135,9 @@
   overflow: hidden;
 
   .mat-mdc-dialog-title {
+    color: var(--md-sys-color-on-surface);
     font-size: 24px;
     margin-bottom: 16px;
-    color: var(--md-sys-color-on-surface);
   }
 
   .mat-mdc-dialog-content {
@@ -145,8 +145,8 @@
   }
 
   .mat-mdc-dialog-actions {
-    padding: 16px 24px;
     border-top: 1px solid var(--md-sys-color-outline-variant);
+    padding: 16px 24px;
   }
 }
 
@@ -286,6 +286,7 @@ mat-paginator.mat-elevation-z8.mat-mdc-paginator,
 .table-wrapper mat-paginator.mat-elevation-z8 {
   --mat-paginator-container-background-color: var(--md-sys-color-primary) !important;
   --mat-paginator-container-text-color: var(--md-sys-color-on-primary) !important;
+
   background-color: var(--md-sys-color-primary) !important;
   color: var(--md-sys-color-on-primary) !important;
 }
@@ -310,8 +311,8 @@ mat-paginator.mat-elevation-z8.mat-mdc-paginator,
 .mat-mdc-paginator.mat-elevation-z8 svg path,
 .mat-mdc-paginator.mat-elevation-z8 svg circle,
 .mat-mdc-paginator.mat-elevation-z8 svg rect {
-  fill: currentColor !important;
-  stroke: currentColor !important;
+  fill: currentcolor !important;
+  stroke: currentcolor !important;
 }
 
 /* If a component scoped rule is still forcing a dark background, explicitly reset it at root level */
@@ -324,21 +325,21 @@ mat-paginator.mat-elevation-z8.mat-mdc-paginator,
 // Material Drawer and Container overrides
 .mat-drawer-container,
 .mat-drawer-content {
+  background-color: var(--md-sys-color-background);
   display: flex;
-  flex-direction: column;
   flex: 1;
+  flex-direction: column;
   height: auto;
   min-height: 100%;
   overflow: visible;
-  background-color: var(--md-sys-color-background);
 }
 
 // Ensure proper sizing for Material icons
 .material-icons {
   font-size: 24px;
-  width: 24px;
   height: 24px;
   overflow: hidden;
+  width: 24px;
 }
 
 // Fix list item styling

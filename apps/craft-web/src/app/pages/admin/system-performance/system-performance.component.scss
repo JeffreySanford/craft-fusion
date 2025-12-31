@@ -1,16 +1,19 @@
 .system-performance {
   display: block;
 }
+
 .metrics-summary {
   display: flex;
   gap: 12px;
   margin-bottom: 12px;
 }
+
 .metric-card {
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgb(255 255 255 / 3%);
   border-radius: 6px;
+  padding: 8px;
 }
+
 .chart-container {
   height: 240px;
 }

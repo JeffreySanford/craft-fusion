@@ -1,14 +1,15 @@
-@use 'sass:map';
-@use './variables' as vars;
+@use "sass:map";
+@use "./variables" as vars;
 
 @keyframes fly-in {
   from {
-    transform: translateX(-100%);
     opacity: 0;
+    transform: translateX(-100%);
   }
+
   to {
-    transform: translateX(0);
     opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -21,10 +22,12 @@
     color: inherit;
     text-shadow: none;
   }
+
   50% {
     color: map.get(vars.$table-theme, patriotic-red);
     text-shadow: 0 0 5px rgba(map.get(vars.$table-theme, patriotic-red), 0.5);
   }
+
   100% {
     color: inherit;
     text-shadow: none;
@@ -36,6 +39,7 @@
     opacity: 0.7;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -46,6 +50,7 @@
   from {
     left: -50%;
   }
+
   to {
     left: 150%;
   }
@@ -55,6 +60,7 @@
   0% {
     left: -100%;
   }
+
   100% {
     left: 100%;
   }
@@ -65,6 +71,7 @@
     opacity: 0;
     transform: translateY(-0.5rem);
   }
+
   to {
     opacity: 1;
     transform: none;

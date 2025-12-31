@@ -4,13 +4,13 @@
   --book-light-bg: #f5f5f5;
   --book-light-text: #1e1e1e;
   --book-light-border: #ddd;
-  --book-light-myth-bg: rgba(0, 255, 0, 0.02);
+  --book-light-myth-bg: rgb(0 255 0 / 2%);
   --book-light-myth-border: #0f0;
   --book-light-myth-text: #0c0;
   --book-light-myth-verse: #090;
-  --book-light-sidenav: rgba(255, 255, 255, 0.95);
-  --book-light-toolbar: rgba(245, 245, 245, 0.95);
-  --book-light-outline-bg: rgba(255, 255, 255, 0.95);
+  --book-light-sidenav: rgb(255 255 255 / 95%);
+  --book-light-toolbar: rgb(245 245 245 / 95%);
+  --book-light-outline-bg: rgb(255 255 255 / 95%);
   --book-light-outline-text: #333;
   --book-light-outline-border: #ddd;
 
@@ -18,13 +18,13 @@
   --book-dark-bg: #1e1e1e;
   --book-dark-text: #e0e0e0;
   --book-dark-border: #333;
-  --book-dark-myth-bg: rgba(0, 255, 0, 0.05);
+  --book-dark-myth-bg: rgb(0 255 0 / 5%);
   --book-dark-myth-border: #0f0;
   --book-dark-myth-text: #0f0;
   --book-dark-myth-verse: #2f2;
-  --book-dark-sidenav: rgba(30, 30, 30, 0.95);
-  --book-dark-toolbar: rgba(30, 30, 30, 0.95);
-  --book-dark-outline-bg: rgba(30, 30, 30, 0.95);
+  --book-dark-sidenav: rgb(30 30 30 / 95%);
+  --book-dark-toolbar: rgb(30 30 30 / 95%);
+  --book-dark-outline-bg: rgb(30 30 30 / 95%);
   --book-dark-outline-text: #e0e0e0;
   --book-dark-outline-border: #444;
 }

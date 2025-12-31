@@ -4,34 +4,34 @@ $primary-color-light: #007bff; // Vibrant blue
 $primary-color-dark: #66b3ff; // Lighter vibrant blue
 
 @mixin themed-button($icon-color) {
-  display: inline-flex;
-  justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
   background-color: transparent;
+  border-radius: 50%;
   color: $icon-color;
-  position: relative;
+  display: inline-flex;
+  height: 50px;
+  justify-content: center;
   overflow: hidden;
+  position: relative;
   transition:
     box-shadow 0.3s ease,
     color 0.3s ease;
+  width: 50px;
 
   &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 50%;
-    z-index: -1;
-    transition: all 0.3s ease;
     background: linear-gradient(45deg, transparent 45%, $icon-color 55%);
+    border-radius: 50%;
+    bottom: 0;
+    content: "";
+    left: 0;
     mask: linear-gradient(45deg, transparent 45%, black 55%);
-    mask-mode: alpha;
     mask-composite: exclude;
+    mask-mode: alpha;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: all 0.3s ease;
+    z-index: -1;
   }
 
   &:hover {
@@ -39,6 +39,7 @@ $primary-color-dark: #66b3ff; // Lighter vibrant blue
       background: linear-gradient(45deg, transparent 35%, $icon-color 65%);
       mask: linear-gradient(45deg, transparent 35%, black 65%);
     }
+
     box-shadow: 0 0 5px rgba($icon-color, 60%);
   }
 }
@@ -46,16 +47,17 @@ $primary-color-dark: #66b3ff; // Lighter vibrant blue
 @keyframes sparkle {
   0% {
     box-shadow:
-      0 0 5px rgba(0, 123, 255, 60%),
-      0 0 10px rgba(0, 123, 255, 40%),
-      0 0 15px rgba(0, 123, 255, 20%);
+      0 0 5px rgb(0 123 255 / 60%),
+      0 0 10px rgb(0 123 255 / 40%),
+      0 0 15px rgb(0 123 255 / 20%);
   }
+
   100% {
     box-shadow:
-      0 0 10px rgba(0, 123, 255, 80%),
-      0 0 20px rgba(0, 123, 255, 60%),
-      0 0 30px rgba(0, 123, 255, 40%),
-      0 0 40px rgba(0, 123, 255, 20%);
+      0 0 10px rgb(0 123 255 / 80%),
+      0 0 20px rgb(0 123 255 / 60%),
+      0 0 30px rgb(0 123 255 / 40%),
+      0 0 40px rgb(0 123 255 / 20%);
   }
 }
 

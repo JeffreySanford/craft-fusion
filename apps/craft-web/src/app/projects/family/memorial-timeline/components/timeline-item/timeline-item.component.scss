@@ -1,60 +1,60 @@
-@use 'variables' as vars;
-@use 'mixins' as mix;
+@use "variables" as vars;
+@use "mixins" as mix;
 
 :host {
   display: flex;
-  position: relative;
   margin-bottom: 2rem;
   padding-left: 30px; // Space for the node and line
+  position: relative;
 
   /* Timeline node */
   &::before {
-    content: '';
-    position: absolute;
+    background-color: var(--md-sys-color-primary);
+    border: 2px solid var(--md-sys-color-surface);
+    border-radius: 50%;
+    content: "";
+    height: 12px;
     left: 4px; // Adjust to center on the line
+    position: absolute;
     top: 0;
     width: 12px;
-    height: 12px;
-    background-color: var(--md-sys-color-primary);
-    border-radius: 50%;
-    border: 2px solid var(--md-sys-color-surface);
     z-index: 2;
   }
 }
 
 .timeline-item-content {
   background-color: var(--md-sys-color-surface-container-highest);
-  padding: 1rem;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   flex-grow: 1;
+  padding: 1rem;
   position: relative;
 
   /* Arrow pointing to the timeline */
   &::before {
-    content: '';
-    position: absolute;
-    left: -10px;
-    top: 10px;
-    width: 0;
-    height: 0;
-    border-top: 10px solid transparent;
     border-bottom: 10px solid transparent;
     border-right: 10px solid var(--md-sys-color-surface-container-highest);
+    border-top: 10px solid transparent;
+    content: "";
+    height: 0;
+    left: -10px;
+    position: absolute;
+    top: 10px;
+    width: 0;
   }
 }
 
 .timeline-item-date {
-  font-weight: bold;
   color: var(--md-sys-color-primary);
+  font-weight: bold;
   margin-bottom: 0.5rem;
 }
 
 .timeline-item-title {
+  color: var(--md-sys-color-on-surface);
   font-size: 1.1em;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: var(--md-sys-color-on-surface);
 }
 
 .timeline-item-description {
@@ -64,7 +64,7 @@
 }
 
 .timeline-item-image {
-  max-width: 100%;
   border-radius: 4px;
   margin-top: 1rem;
+  max-width: 100%;
 }

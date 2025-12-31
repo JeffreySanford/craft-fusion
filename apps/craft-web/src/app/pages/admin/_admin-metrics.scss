@@ -1,58 +1,66 @@
-@use 'variables' as vars;
+@use "variables" as vars;
 
 .metrics-summary {
   display: flex;
-  justify-content: space-between;
   gap: 2%;
-  width: 100%;
+  justify-content: space-between;
   min-height: 120px;
+  width: 100%;
 
   .metric-card {
-    flex: 1;
-    min-width: 200px;
-    max-width: calc(25% - 2%);
-    display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 1.5rem;
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    border-left: 5px solid;
     animation: slide-in-left 0.5s ease-out forwards;
     animation-delay: calc(var(--i, 0) * 0.1s);
+    background: rgb(255 255 255 / 10%);
+    border-left: 5px solid;
+    border-radius: 10px;
+    display: flex;
+    flex: 1;
+    max-width: calc(25% - 2%);
+    min-width: 200px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
 
     &:hover {
+      box-shadow: 0 5px 15px rgb(0 0 0 / 20%);
       transform: translateY(-5px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 
     &.memory {
       border-color: vars.$usa-blue;
+
       --i: 1;
     }
+
     &.cpu {
       border-color: vars.$usa-gold;
+
       --i: 2;
     }
+
     &.uptime {
       border-color: limegreen;
+
       --i: 3;
     }
+
     &.network {
       border-color: vars.$usa-red;
+
       --i: 4;
     }
 
     .metric-icon {
-      flex: 0 0 50px;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      justify-content: center;
       align-items: center;
       border-radius: 50%;
+      display: flex;
+      flex: 0 0 50px;
+      height: 50px;
+      justify-content: center;
       margin-right: 1rem;
+      width: 50px;
     }
+
     .metric-info {
       flex: 1;
       min-width: 0;
@@ -65,6 +73,7 @@
     flex-wrap: wrap;
     gap: 20px 2%;
     row-gap: 30px;
+
     .metric-card {
       flex: 1 1 calc(50% - 2%);
       max-width: calc(50% - 2%);

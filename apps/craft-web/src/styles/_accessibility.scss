@@ -5,23 +5,23 @@
 @media (forced-colors: active) {
   // Enhanced focus indicators for better visibility
   *:focus {
-    outline: 2px solid CanvasText;
+    outline: 2px solid canvastext;
     outline-offset: 2px;
   }
 
   // Ensure proper contrast for interactive elements
   button,
-  a[role='button'],
+  a[role="button"],
   .mat-button,
   .mat-raised-button,
   .mat-icon-button,
   .mat-stroked-button,
   .mat-fab,
   .mat-mini-fab {
-    forced-color-adjust: none;
-    border: 1px solid CanvasText;
-    color: ButtonText;
     background-color: ButtonFace;
+    border: 1px solid canvastext;
+    color: ButtonText;
+    forced-color-adjust: none;
 
     &:hover,
     &:focus {
@@ -33,22 +33,22 @@
   table,
   th,
   td {
-    border-color: CanvasText;
+    border-color: canvastext;
   }
 
   // Make sure cards have visible borders
   .mat-card {
-    border: 1px solid CanvasText;
+    border: 1px solid canvastext;
   }
 
   // Ensure icons are visible
   mat-icon {
-    color: CanvasText;
+    color: canvastext;
   }
 
   // Ensure spinner is visible
   mat-progress-spinner::ng-deep circle {
-    stroke: CanvasText !important;
+    stroke: canvastext !important;
   }
 }
 
@@ -59,7 +59,7 @@
   *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
   }
 }

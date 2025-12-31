@@ -1,21 +1,21 @@
-@use '../../../styles/_utilities.scss' as utilities;
-@use '../../../styles/_animations.scss'; // Import shared animations
-@use '../../../styles/md3-mapping' as md3;
+@use "../../../styles/_utilities.scss" as utilities;
+@use "../../../styles/_animations.scss"; // Import shared animations
+@use "../../../styles/md3-mapping" as md3;
 
 .footer-container {
-  position: fixed;
+  align-items: center;
+  background: linear-gradient(to right, rgb(255 0 0 / 70%) 0%, rgb(255 255 255 / 70%) 20%, rgb(0 0 255 / 70%) 30%, rgb(0 128 128 / 70%) 100%);
   bottom: 0.5em; // Changed from 1em to 0.5em for consistency
-  left: 0.5em; // Added to ensure consistent spacing
-  right: 0.5em; // Added to ensure consistent spacing
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  width: calc(100% - 1em); // Changed from 99% to ensure exact 0.5em margins on both sides
+  left: 0.5em; // Added to ensure consistent spacing
   overflow: visible;
+  position: fixed;
+  right: 0.5em; // Added to ensure consistent spacing
   transition: height 0.3s ease;
+  width: calc(100% - 1em); // Changed from 99% to ensure exact 0.5em margins on both sides
   z-index: 1000;
-  background: linear-gradient(to right, rgba(255, 0, 0, 0.7) 0%, rgba(255, 255, 255, 0.7) 20%, rgba(0, 0, 255, 0.7) 30%, rgba(0, 128, 128, 0.7) 100%);
 
   &.expanded {
     // When expanded, footer takes up more space
@@ -42,16 +42,16 @@
     }
 
     button {
-      font-size: 1em;
+      background-color: rgb(255 255 255 / 10%);
+      border: none;
+      color: lightskyblue;
+      cursor: pointer;
       display: flex;
+      font-size: 1em;
+      font-weight: lighter;
       margin-bottom: 0.5em;
       padding: 0.125em 0;
-      color: lightskyblue;
-      background-color: rgba(255, 255, 255, 0.1);
-      border: none;
-      cursor: pointer;
       text-decoration: none;
-      font-weight: lighter;
 
       &:hover {
         text-decoration: underline;
@@ -59,55 +59,55 @@
     }
 
     .mat-icon {
-      margin-right: 0.5em;
       color: brightblue;
+      margin-right: 0.5em;
     }
   }
 
   .mat-panel-title {
-    display: flex;
     align-items: center;
+    display: flex;
 
     mat-icon {
-      margin-right: 1em;
       background-color: teal;
+      margin-right: 1em;
     }
   }
 
   .logo-performance-block {
+    align-items: flex-end; /* Changed to flex-end */
     display: flex;
     flex-direction: column;
-    align-items: flex-end; /* Changed to flex-end */
-    position: relative;
-    z-index: 10;
     overflow: visible;
+    position: relative;
     width: 100%; // Make it full width
+    z-index: 10;
 
-    @include utilities.logo-containers();
+    @include utilities.logo-containers;
 
     .logo-row {
+      align-items: center;
       display: flex !important;
       flex-wrap: wrap; /* Allow wrapping to multiple rows */
       justify-content: flex-end; /* Changed to flex-end */
-      align-items: center;
-      margin: 0.5em 0 1em 0;
+      margin: 0.5em 0 1em;
       overflow: visible;
 
       img {
-        width: auto;
-        height: 3.5em;
-        padding: 0.25em;
-        margin: 0 1.5em; /* Changed to 1.5em */
         border: 0.0625em solid blue;
+        height: 3.5em;
+        margin: 0 1.5em; /* Changed to 1.5em */
+        padding: 0.25em;
+        position: relative;
         transition:
           transform 0.3s,
           z-index 0.3s;
-        position: relative;
+        width: auto;
 
         &:hover {
+          background-color: black;
           transform: scale(3);
           z-index: 9999;
-          background-color: black;
         }
       }
     }
@@ -115,44 +115,44 @@
     mat-card {
       @include utilities.performance-chart(5em); // Increased height
       .performance-metrics {
-        display: flex;
-        justify-content: center;
         align-items: center;
+        display: flex;
         font-size: 0.8em;
-        margin-right: 0.25em;
         height: 100%;
+        justify-content: center;
+        margin-right: 0.25em;
         width: 100%;
 
         .metric {
-          display: flex;
           align-items: center;
+          color: white; /* Default color */
+          display: flex;
           margin: 0.5em;
           padding: 0.5em;
-          color: white; /* Default color */
 
           label {
             margin-right: 0.5em; /* Slight indent before the metric */
           }
 
           .cpu-load-visualization {
-            width: 100%;
-            height: 0.5em;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgb(255 255 255 / 10%);
             border-radius: 0.25em;
-            overflow: hidden;
+            height: 0.5em;
             margin-bottom: 0.5em;
+            overflow: hidden;
+            width: 100%;
 
             .cpu-load-bar {
-              height: 100%;
               background-color: lime;
+              height: 100%;
               transition: width 0.3s ease;
             }
           }
 
           .cpu-load-label {
             display: block;
-            text-align: center;
             margin-top: 0.25em;
+            text-align: center;
           }
         }
 
@@ -165,44 +165,44 @@
         }
 
         .red-text {
-          color: #ff0000;
+          color: #f00;
         }
 
         canvas {
-          width: 100% !important;
           height: 100% !important;
+          width: 100% !important;
         }
 
         .simulation-badge {
-          position: absolute;
-          top: 5px;
-          left: 5px;
-          background-color: rgba(0, 0, 255, 0.7);
+          background-color: rgb(0 0 255 / 70%);
+          border-radius: 3px;
           color: white;
           font-size: 0.7em;
+          left: 5px;
           padding: 2px 5px;
-          border-radius: 3px;
+          position: absolute;
+          top: 5px;
           z-index: 10;
         }
 
         .data-mode-toggle {
-          display: flex;
           align-items: center;
+          background-color: rgb(0 0 0 / 50%);
+          border-radius: 3px;
+          display: flex;
           justify-content: space-between;
+          left: 5px;
+          min-width: 120px;
+          padding: 2px 5px;
           position: absolute;
           top: 5px;
-          left: 5px;
           z-index: 10;
-          padding: 2px 5px;
-          border-radius: 3px;
-          background-color: rgba(0, 0, 0, 0.5);
-          min-width: 120px;
 
           @include utilities.data-overlay(0.5);
 
           mat-slide-toggle {
-            font-size: 0.7em;
             color: white;
+            font-size: 0.7em;
           }
 
           .live-toggle ::ng-deep .mat-slide-toggle-thumb {
@@ -210,7 +210,7 @@
           }
 
           .live-toggle ::ng-deep .mat-slide-toggle-bar {
-            background-color: rgba(76, 175, 80, 0.25) !important;
+            background-color: rgb(76 175 80 / 25%) !important;
           }
 
           .sim-toggle ::ng-deep .mat-slide-toggle-thumb {
@@ -218,6 +218,7 @@
           }
 
           /* Stronger rules to override Material theming and dark backgrounds */
+
           /* Add broader selectors to target Material toggle internals regardless of DOM nesting */
           .live-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-thumb,
           .live-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-thumb::after,
@@ -228,7 +229,7 @@
           }
 
           .live-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-bar {
-            background-color: rgba(76, 175, 80, 0.25) !important;
+            background-color: rgb(76 175 80 / 25%) !important;
           }
 
           .sim-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-thumb,
@@ -240,11 +241,11 @@
           }
 
           .sim-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-bar {
-            background-color: rgba(255, 165, 0, 0.25) !important;
+            background-color: rgb(255 165 0 / 25%) !important;
           }
 
           .sim-toggle ::ng-deep .mat-slide-toggle-bar {
-            background-color: rgba(255, 165, 0, 0.25) !important;
+            background-color: rgb(255 165 0 / 25%) !important;
           }
 
           .live-label {
@@ -260,18 +261,18 @@
           }
 
           .advanced-link {
-            font-size: 0.7em;
-            color: #33aaff;
-            margin-left: 10px;
+            align-items: center;
+            color: #3af;
             cursor: pointer;
             display: flex;
-            align-items: center;
+            font-size: 0.7em;
+            margin-left: 10px;
 
             mat-icon {
               font-size: 14px;
               height: 14px;
-              width: 14px;
               margin-left: 2px;
+              width: 14px;
             }
 
             &:hover {
@@ -281,41 +282,41 @@
         }
 
         .service-metrics-overlay {
-          position: absolute;
-          bottom: 5px;
-          right: 5px;
-          background-color: rgba(0, 0, 0, 0.6);
+          background-color: rgb(0 0 0 / 60%);
           border-radius: 4px;
-          padding: 5px;
-          z-index: 10;
+          bottom: 5px;
           max-width: 200px;
+          padding: 5px;
+          position: absolute;
+          right: 5px;
+          z-index: 10;
 
           @include utilities.data-overlay(0.6);
 
           .service-metric {
-            display: flex;
             align-items: center;
-            margin: 2px 0;
-            font-size: 0.8em;
             color: white;
+            display: flex;
+            font-size: 0.8em;
+            margin: 2px 0;
 
             mat-icon {
               font-size: 14px;
               height: 14px;
-              width: 14px;
               margin-right: 4px;
+              width: 14px;
             }
 
             .service-name {
               flex: 1;
               margin-right: 4px;
-              white-space: nowrap;
               overflow: hidden;
               text-overflow: ellipsis;
+              white-space: nowrap;
             }
 
             .service-time {
-              color: #33aaff;
+              color: #3af;
               font-weight: bold;
             }
           }
@@ -325,12 +326,12 @@
   }
 
   .performance-card {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgb(0 0 0 / 40%);
     height: 8em;
-    width: 80%;
     margin-top: 1em;
-    transition: border-color 0.3s ease;
     position: relative;
+    transition: border-color 0.3s ease;
+    width: 80%;
   }
 
   /* Class-based border styles to avoid inline styles in templates */
@@ -346,8 +347,8 @@
     padding: 0 16px;
 
     .title-content {
-      display: flex;
       align-items: center;
+      display: flex;
       width: 100%;
 
       mat-icon {
@@ -356,9 +357,9 @@
       }
 
       p {
+        color: gold;
         font-size: 1.25em;
         margin: 0 0 0 0.15em;
-        color: gold;
       }
 
       .quick-metrics {
@@ -373,12 +374,12 @@
 }
 
 .mat-panel-title {
-  display: flex;
   align-items: center;
+  display: flex;
 
   mat-icon {
-    margin-right: 1em;
     background-color: teal;
+    margin-right: 1em;
   }
 }
 
@@ -397,37 +398,38 @@ mat-expansion-panel[expanded] {
 }
 
 .footer-content {
+  align-items: flex-start; // Align items to the top
   display: flex;
   flex-direction: row; // Ensure elements are inline
-  justify-content: space-between;
-  align-items: flex-start; // Align items to the top
-  width: 100%;
   gap: 1.5em;
+  justify-content: space-between;
   padding: 1em;
+  width: 100%;
 
   .contact-block {
-    /* Make the contact block a compact column anchored to the left */
-    display: flex;
-    flex-direction: column;
     align-items: flex-start;
-    justify-content: flex-start;
-    gap: 0.5em;
-    width: fit-content;
-    padding: 1em;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
-    background-color: rgba(0, 0, 0, 0.15);
 
     /* Ensure block sits to the far left of the footer content */
     align-self: flex-start;
+    background-color: rgb(0 0 0 / 15%);
+    border: 1px solid rgb(255 255 255 / 8%);
+    border-radius: 6px;
+
+    /* Make the contact block a compact column anchored to the left */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    justify-content: flex-start;
+    padding: 1em;
+    width: fit-content;
 
     button {
+      align-items: center;
+      display: flex;
+      gap: 0.5em;
+      justify-content: flex-start;
       min-width: auto;
       width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 0.5em;
     }
   }
 
@@ -443,8 +445,8 @@ mat-expansion-panel[expanded] {
       .dev-logos,
       .agency-logos {
         flex: 1;
-        min-width: 200px;
         justify-content: center;
+        min-width: 200px;
       }
     }
   }
@@ -456,8 +458,8 @@ mat-expansion-panel[expanded] {
     flex-direction: column;
 
     .contact-block {
-      width: 100%;
       justify-content: center;
+      width: 100%;
     }
 
     .logo-performance-block {
@@ -484,6 +486,7 @@ mat-expansion-panel[expanded] {
 
 ::ng-deep .mat-expansion-indicator::after {
   color: gold !important;
+
   // background-color: white !important;
 
   svg {
@@ -492,11 +495,11 @@ mat-expansion-panel[expanded] {
 }
 
 // Style for admin button
-button[color='warn'] {
-  background-color: rgba(220, 53, 69, 0.8);
+button[color="warn"] {
+  background-color: rgb(220 53 69 / 80%);
 
   &:hover {
-    background-color: rgba(220, 53, 69, 1);
+    background-color: rgb(220 53 69 / 100%);
   }
 
   mat-icon {

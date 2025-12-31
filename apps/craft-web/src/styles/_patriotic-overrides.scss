@@ -4,7 +4,7 @@
 $vibrant-navy: #0033a0; // More saturated navy blue
 $vibrant-red: #e40032; // Brighter, more vivid red
 $vibrant-gold: #ffcc01; // More vibrant gold
-$pure-white: #ffffff; // Pure white for maximum contrast
+$pure-white: #fff; // Pure white for maximum contrast
 
 // Brighten specific colors for dark theme
 $dark-navy-glow: #3a78ff; // Glowing blue for dark mode
@@ -17,19 +17,18 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
   .enhanced-panel,
   .sidebar,
   .main-stage {
-    color: $pure-white;
     border: none;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 15px rgb(0 0 0 / 40%);
+    color: $pure-white;
   }
 
   // Enhanced gradients with more vibrant colors
   :root,
   .light-theme,
-  [data-theme='light'] {
+  [data-theme="light"] {
     // Vibrant light mode gradients
     --vibrant-header-gradient: linear-gradient(135deg, $vibrant-navy 0%, #0046cc 30%, #c80028 70%, $vibrant-red 100%);
-
-    --vibrant-menu-gradient: linear-gradient(135deg, rgba(0, 51, 160, 0.97) 0%, rgba(228, 0, 50, 0.97) 50%, rgba(0, 51, 160, 0.97) 100%);
+    --vibrant-menu-gradient: linear-gradient(135deg, rgb(0 51 160 / 97%) 0%, rgb(228 0 50 / 97%) 50%, rgb(0 51 160 / 97%) 100%);
 
     // Override primary colors with more vibrant versions
     --md-sys-color-primary: #{$vibrant-navy};
@@ -38,16 +37,15 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
 
     // Shared background gradients for core components
     --sidebar-gradient: var(--vibrant-header-gradient);
-    --dashboard-gradient: linear-gradient(135deg, rgba(0, 51, 160, 0.15) 0%, rgba(228, 0, 50, 0.15) 100%);
+    --dashboard-gradient: linear-gradient(135deg, rgb(0 51 160 / 15%) 0%, rgb(228 0 50 / 15%) 100%);
   }
 
   // Dark theme gets even more vibrant with glow effects
   .dark-theme,
-  [data-theme='dark'] {
+  [data-theme="dark"] {
     // Vibrant dark mode gradients with glow effect
     --vibrant-header-gradient: linear-gradient(135deg, #001e60 0%, $dark-navy-glow 30%, $dark-red-glow 70%, #b3002a 100%);
-
-    --vibrant-menu-gradient: linear-gradient(135deg, rgba(30, 65, 190, 0.97) 0%, rgba(255, 59, 92, 0.97) 50%, rgba(30, 65, 190, 0.97) 100%);
+    --vibrant-menu-gradient: linear-gradient(135deg, rgb(30 65 190 / 97%) 0%, rgb(255 59 92 / 97%) 50%, rgb(30 65 190 / 97%) 100%);
 
     // Override primary colors with glowing versions for dark theme
     --md-sys-color-primary: #{$dark-navy-glow};
@@ -56,7 +54,7 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
 
     // Shared background gradients for core components
     --sidebar-gradient: var(--vibrant-header-gradient);
-    --dashboard-gradient: linear-gradient(135deg, rgba(30, 65, 190, 0.2) 0%, rgba(255, 59, 92, 0.2) 100%);
+    --dashboard-gradient: linear-gradient(135deg, rgb(30 65 190 / 20%) 0%, rgb(255 59 92 / 20%) 100%);
   }
 
   // Apply vibrant gradients to specific components
@@ -81,9 +79,9 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
   // Ensure the router content wrapper inside main-stage is visible
   .main-stage .router-content-wrapper {
     display: block !important;
-    width: 100%;
     flex: 1;
     overflow-y: auto;
+    width: 100%;
   }
 
   ::ng-deep .patriotic-menu.mat-mdc-menu-panel {
@@ -102,17 +100,17 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
 
     &::before {
       color: $vibrant-gold;
-      text-shadow: 0 0 10px rgba(255, 204, 1, 0.8);
+      text-shadow: 0 0 10px rgb(255 204 1 / 80%);
     }
   }
 
   // Vibrant app title with enhanced shimmer
   .app-title {
     background: linear-gradient(90deg, $pure-white, $vibrant-gold);
-    -webkit-background-clip: text;
+    background-clip: text;
     background-clip: text;
     color: transparent;
-    text-shadow: 0 0 20px rgba(255, 204, 1, 0.6);
+    text-shadow: 0 0 20px rgb(255 204 1 / 60%);
   }
 
   // Text utility classes get more vibrant
@@ -129,7 +127,7 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
   // Make patriotic text more vibrant
   .text-patriotic {
     background: linear-gradient(90deg, $vibrant-navy, $vibrant-red);
-    -webkit-background-clip: text;
+    background-clip: text;
     background-clip: text;
     color: transparent;
     font-weight: bold;

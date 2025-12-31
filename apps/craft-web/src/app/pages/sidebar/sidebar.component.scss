@@ -1,41 +1,41 @@
 .sidebar-container {
-  background-color: rgba(0, 0, 255, 0.2);
-  padding: 1em;
-  height: 60vh;
-  width: 100%;
-  margin: 0 0 0 0.125em;
+  background-color: rgb(0 0 255 / 20%);
   border-radius: 0.25em;
+  height: 60vh;
+  margin: 0 0 0 0.125em;
+  padding: 1em;
   position: relative; // Ensure relative positioning for absolute children
+  width: 100%;
 
   &.collapsed {
     width: 7em;
   }
 
   .toggle {
-    position: absolute;
-    bottom: 1em; // Position at the bottom
-    left: 1em; // Position at the left
-    color: #00ffff;
-    border: 1px solid #00ffff;
-    font-size: 0.85em; // Increased font size
-    cursor: pointer;
-    transition: color 300ms ease;
-    padding: 0.35em; // Increased padding
-    min-width: unset; // Override default button styles
-    height: 2.25em; // Increased height
-    width: 2.25em; // Increased width
-    line-height: 1em;
-    display: flex; // Use flexbox to center the icon
     align-items: center; // Vertically center
+    border: 1px solid #0ff;
+    bottom: 1em; // Position at the bottom
+    color: #0ff;
+    cursor: pointer;
+    display: flex; // Use flexbox to center the icon
+    font-size: 0.85em; // Increased font size
+    height: 2.25em; // Increased height
     justify-content: center; // Horizontally center
+    left: 1em; // Position at the left
+    line-height: 1em;
+    min-width: unset; // Override default button styles
+    padding: 0.35em; // Increased padding
+    position: absolute;
+    transition: color 300ms ease;
+    width: 2.25em; // Increased width
 
     .mat-icon {
-      margin: 0 0 0 -0.05em; // Remove any default margins on the icon and nudge left
-      font-size: 1.1em; // Reduced icon size
+      align-items: center; // Vertically center the icon content
       color: #00ff7f; // Blue-green color
       display: flex; // Use flexbox on the icon itself
-      align-items: center; // Vertically center the icon content
+      font-size: 1.1em; // Reduced icon size
       justify-content: center; // Horizontally center the icon content
+      margin: 0 0 0 -0.05em; // Remove any default margins on the icon and nudge left
     }
 
     &:hover {
@@ -45,43 +45,43 @@
 }
 
 .menu-item {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin: 0 0.25em;
-  width: 13em;
-  height: 3em;
-  line-height: 1.25em;
-  text-align: right;
-  border-radius: 0.25em;
+  background-color: rgb(4 0 252 / 70%) !important;
   border: 1px solid darkblue;
-  outline: 0.1em solid rgba(4, 0, 252, 0.3);
-  background-color: rgba(4, 0, 252, 0.7) !important;
+  border-radius: 0.25em;
   color: white;
+  display: flex;
+  height: 3em;
+  justify-content: space-between;
+  line-height: 1.25em;
+  margin: 0 0.25em;
+  outline: 0.1em solid rgb(4 0 252 / 30%);
+  text-align: right;
+  width: 13em;
 
   &.collapsed {
-    width: 5em;
     margin: 0 auto;
+    width: 5em;
   }
 
   &:hover {
-    transform: scale(1.1);
-    outline-color: rgba(96, 33, 243, 0.8);
     box-shadow:
-      0 0.375em 1.25em rgba(0, 0, 0, 0.15),
-      0 0 0.9375em rgba(33, 150, 243, 0.3);
+      0 0.375em 1.25em rgb(0 0 0 / 15%),
+      0 0 0.9375em rgb(33 150 243 / 30%);
+    outline-color: rgb(96 33 243 / 80%);
+    transform: scale(1.1);
   }
 
   &.active {
-    outline-color: rgba(33, 236, 243, 0.8);
     box-shadow:
-      0 0.375em 1.25em rgba(0, 0, 0, 0.15),
-      0 0 0.9375em rgba(33, 194, 243, 0.3);
-    color: #00ffff; // Neon cyan
+      0 0.375em 1.25em rgb(0 0 0 / 15%),
+      0 0 0.9375em rgb(33 194 243 / 30%);
+    color: #0ff; // Neon cyan
+    outline-color: rgb(33 236 243 / 80%);
 
     .mat-icon,
     .menu-text {
-      color: #00ffff;
+      color: #0ff;
     }
   }
 
@@ -89,86 +89,86 @@
     color: white;
     font-size: 2.25em;
     height: 1em;
-    width: 2em;
-    margin: 0.25em 0.25em 0.25em 0em;
+    margin: 0.25em 0.25em 0.25em 0;
     text-align: left;
     transition: transform 0.3s ease;
+    width: 2em;
   }
 
   .menu-text {
     color: white;
     flex-grow: 1;
-    text-align: right;
     opacity: 1;
+    text-align: right;
     transform: translateX(-1.25em);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  &[routerLink='/admin'] {
-    background-color: rgba(252, 4, 0, 0.7) !important;
+  &[routerLink="/admin"] {
+    background-color: rgb(252 4 0 / 70%) !important;
     border: 1px solid darkred;
-    outline: 0.1em solid rgba(252, 0, 0, 0.3);
     color: white;
+    outline: 0.1em solid rgb(252 0 0 / 30%);
 
     &:hover {
-      transform: scale(1.1);
-      outline-color: rgba(243, 33, 33, 0.8);
       box-shadow:
-        0 0.375em 1.25em rgba(0, 0, 0, 0.15),
-        0 0 0.9375em rgba(243, 33, 33, 0.3);
+        0 0.375em 1.25em rgb(0 0 0 / 15%),
+        0 0 0.9375em rgb(243 33 33 / 30%);
+      outline-color: rgb(243 33 33 / 80%);
+      transform: scale(1.1);
     }
 
     &.active {
-      outline-color: rgba(33, 236, 243, 0.8);
+      background-color: rgb(252 4 0 / 70%) !important;
       box-shadow:
-        0 0.375em 1.25em rgba(0, 0, 0, 0.15),
-        0 0 0.9375em rgba(33, 194, 243, 0.3);
-      background-color: rgba(252, 4, 0, 0.7) !important;
-      color: #00ffff; // Neon cyan
+        0 0.375em 1.25em rgb(0 0 0 / 15%),
+        0 0 0.9375em rgb(33 194 243 / 30%);
+      color: #0ff; // Neon cyan
+      outline-color: rgb(33 236 243 / 80%);
 
       .mat-icon,
       .menu-text {
-        color: #00ffff;
+        color: #0ff;
       }
     }
   }
 }
 
 .admin-link {
-  background-color: rgba(252, 4, 0, 0.7) !important;
+  background-color: rgb(252 4 0 / 70%) !important;
   border: 1px solid darkred;
-  outline: 0.1em solid rgba(252, 0, 0, 0.3);
   color: white;
+  outline: 0.1em solid rgb(252 0 0 / 30%);
 
   &:hover {
-    transform: scale(1.1);
-    outline-color: rgba(243, 33, 33, 0.8);
     box-shadow:
-      0 0.375em 1.25em rgba(0, 0, 0, 0.15),
-      0 0 0.9375em rgba(243, 33, 33, 0.3);
+      0 0.375em 1.25em rgb(0 0 0 / 15%),
+      0 0 0.9375em rgb(243 33 33 / 30%);
+    outline-color: rgb(243 33 33 / 80%);
+    transform: scale(1.1);
   }
 
   &.active {
-    outline-color: rgba(33, 236, 243, 0.8);
+    background-color: rgb(252 4 0 / 70%) !important;
     box-shadow:
-      0 0.375em 1.25em rgba(0, 0, 0, 0.15),
-      0 0 0.9375em rgba(33, 194, 243, 0.3);
-    background-color: rgba(252, 4, 0, 0.7) !important;
-    color: #00ffff; // Neon cyan
+      0 0.375em 1.25em rgb(0 0 0 / 15%),
+      0 0 0.9375em rgb(33 194 243 / 30%);
+    color: #0ff; // Neon cyan
+    outline-color: rgb(33 236 243 / 80%);
 
     .mat-icon,
     .menu-text {
-      color: #00ffff;
+      color: #0ff;
     }
   }
 }
 
 .sidebar {
-  color: white;
-  width: 250px;
   background-color: #f8f9fa;
-  padding: 15px;
   border-right: 1px solid #dee2e6;
+  color: white;
+  padding: 15px;
+  width: 250px;
 
   .sidebar-header {
     font-size: 18px;
@@ -190,23 +190,23 @@
       }
 
       &.collapsed {
+        border: 1px solid #0ff;
         width: 7em;
-        border: 1px solid #00ffff;
       }
     }
   }
 
   .sidebar-footer {
-    margin-top: auto;
-    font-size: 14px;
     color: #6c757d;
+    font-size: 14px;
+    margin-top: auto;
   }
 }
 
 // Add collapsed class styles
 :host ::ng-deep .collapsed {
   .menu-item.mdc-button {
-    padding: 0 0 0 1.25em;
     max-width: 7em;
+    padding: 0 0 0 1.25em;
   }
 }

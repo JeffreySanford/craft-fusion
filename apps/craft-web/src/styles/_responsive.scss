@@ -1,5 +1,5 @@
-@use 'variables' as vars;
-@use 'sass:map';
+@use "variables" as vars;
+@use "sass:map";
 
 // Breakpoint mixins for consistent responsive behavior
 // Usage: @include respond-to(md) { ... }
@@ -10,7 +10,9 @@
     @media (min-width: $value) {
       @content;
     }
-  } @else {
+  }
+
+  @else {
     @error "Unknown breakpoint: #{$breakpoint}. Available breakpoints: #{map.keys(vars.$breakpoints)}";
   }
 }
@@ -24,7 +26,9 @@
     @media (max-width: ($value - 1px)) {
       @content;
     }
-  } @else {
+  }
+
+  @else {
     @error "Unknown breakpoint: #{$breakpoint}. Available breakpoints: #{map.keys(vars.$breakpoints)}";
   }
 }
@@ -39,7 +43,9 @@
     @media (min-width: $min-value) and (max-width: ($max-value - 1px)) {
       @content;
     }
-  } @else {
+  }
+
+  @else {
     @error "Unknown breakpoint: #{$min-breakpoint} or #{$max-breakpoint}";
   }
 }
@@ -53,11 +59,11 @@
 
 // Common responsive patterns
 @mixin responsive-container {
-  width: 100%;
   margin-left: auto;
   margin-right: auto;
   padding-left: 1em;
   padding-right: 1em;
+  width: 100%;
 
   @include respond-to(sm) {
     max-width: map.get(vars.$container-max-widths, sm);
@@ -85,8 +91,8 @@
 // Responsive flexbox grid
 @mixin responsive-grid($columns: 12, $gap: 1em) {
   display: grid;
-  grid-template-columns: repeat($columns, 1fr);
   gap: $gap;
+  grid-template-columns: repeat($columns, 1fr);
 
   @include respond-below(md) {
     grid-template-columns: repeat(6, 1fr);
@@ -143,7 +149,9 @@
     @include respond-below(sm) {
       #{$property}: $size * 0.5;
     }
-  } @else {
+  }
+
+  @else {
     @error "Unknown spacing size: #{$size-name}";
   }
 }
@@ -155,12 +163,12 @@
   gap: 12px;
 
   img {
-    height: 24px;
-    width: auto;
-    transition: all 0.3s ease;
-    opacity: 0.7;
-    margin: 4px;
     flex: 0 0 auto;
+    height: 24px;
+    margin: 4px;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    width: auto;
 
     &:hover {
       opacity: 1;
@@ -188,29 +196,29 @@
 // Responsive cards layout
 @mixin responsive-card-layout {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5em;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 
   @include respond-below(md) {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1em;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
 
   @include respond-below(sm) {
-    grid-template-columns: 1fr;
     gap: 0.75em;
+    grid-template-columns: 1fr;
   }
 }
 
 // Responsive two-column layout
 @mixin responsive-two-column {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 2em;
+  grid-template-columns: 1fr 1fr;
 
   @include respond-below(md) {
-    grid-template-columns: 1fr;
     gap: 1.5em;
+    grid-template-columns: 1fr;
   }
 }
 
@@ -218,24 +226,24 @@
 @mixin responsive-app-shell {
   // Header positioning
   .header-card {
-    position: fixed;
-    top: 0.5em;
     left: 0.5em;
+    position: fixed;
     right: 0.5em;
+    top: 0.5em;
     z-index: map.get(vars.$z-layers, header);
 
     @include respond-below(sm) {
-      top: 0.25em;
       left: 0.25em;
       right: 0.25em;
+      top: 0.25em;
     }
   }
 
   // Footer positioning
   .footer-container {
-    position: fixed;
     bottom: 0.5em;
     left: 0.5em;
+    position: fixed;
     right: 0.5em;
     z-index: map.get(vars.$z-layers, footer);
 
@@ -248,8 +256,8 @@
 
   // Sidebar and main container positioning
   .layout-container {
-    padding: 0 0.5em;
     box-sizing: border-box;
+    padding: 0 0.5em;
 
     .sidebar,
     .main-stage {

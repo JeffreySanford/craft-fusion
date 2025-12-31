@@ -5,29 +5,29 @@
 }
 
 .fintech-chart-container {
-  width: 100%; /* Ensure full width */
-  height: 100%; /* Ensure full height */
-  min-height: 250px; /* Slightly increased minimum height */
+  background: linear-gradient(180deg, rgb(241 250 238 / 90%) 0%, rgb(230 240 240 / 70%) 100%); /* Increased opacity for better contrast */
+  border-radius: 6px; /* Reduced border radius to maximize space */
+  box-shadow: inset 0 0 8px rgb(0 0 0 / 10%); /* Increased shadow opacity */
   display: flex;
   flex-direction: column;
-  position: relative;
-  background: linear-gradient(180deg, rgba(241, 250, 238, 0.9) 0%, rgba(230, 240, 240, 0.7) 100%); /* Increased opacity for better contrast */
-  border-radius: 6px; /* Reduced border radius to maximize space */
-  overflow: hidden;
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1); /* Increased shadow opacity */
-  padding: 0; /* Remove padding to maximize space */
+  height: 100%; /* Ensure full height */
   margin: 0; /* Remove margin to maximize space */
+  min-height: 250px; /* Slightly increased minimum height */
+  overflow: hidden;
+  padding: 0; /* Remove padding to maximize space */
+  position: relative;
+  width: 100%; /* Ensure full width */
 
   // Full height when in overlay mode
   &.in-overlay {
+    border-radius: 0; // Remove border radius in overlay
     height: 100%;
     min-height: 400px; // Ensure a minimum height in overlay
-    border-radius: 0; // Remove border radius in overlay
 
     .legend-container {
-      top: 20px;
-      right: 20px;
       padding: 10px 12px;
+      right: 20px;
+      top: 20px;
 
       .legend-text {
         font-size: 14px;
@@ -36,8 +36,8 @@
 
     .tooltip {
       font-size: 14px;
-      padding: 15px;
       max-width: 260px;
+      padding: 15px;
 
       .tooltip-header {
         font-size: 16px;
@@ -77,57 +77,57 @@
 }
 
 .fintech-chart {
-  width: 100%;
-  height: 100%;
   flex: 1; // Ensure chart takes all available space
-  position: relative; // Needed for proper positioning of SVG content
+  height: 100%;
+  margin: 0; /* Remove margin to maximize space */
   overflow: visible; // Allow SVG to overflow if needed
   padding: 0; /* Remove padding to maximize space */
-  margin: 0; /* Remove margin to maximize space */
+  position: relative; // Needed for proper positioning of SVG content
+  width: 100%;
 }
 
 // Make sure SVG uses full available space
 svg {
-  width: 100% !important;
-  height: 100% !important;
   display: block; // Remove any extra spacing
+  height: 100% !important;
   overflow: visible; // Allow drawing outside boundaries for labels
+  width: 100% !important;
 }
 
 /* Enhanced legend with price information */
 .legend-container {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(255, 255, 255, 0.9); /* Slightly more opaque for readability */
-  padding: 8px 12px; /* Increased padding for better readability */
+  background-color: rgb(255 255 255 / 90%); /* Slightly more opaque for readability */
   border-radius: 6px;
-  z-index: 5;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
   min-width: 120px; /* Ensure enough space for price display */
+  padding: 8px 12px; /* Increased padding for better readability */
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  transition: all 0.3s ease;
+  z-index: 5;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background-color: rgb(255 255 255 / 95%);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
     transform: translateY(-2px);
   }
 
   .legend-footer {
+    border-top: 1px solid rgb(0 0 0 / 10%);
+    color: #333;
+    font-size: 10px;
+    line-height: 1.2;
     margin-top: 8px;
     padding-top: 8px;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    font-size: 10px;
-    color: #333;
-    line-height: 1.2;
 
     .legend-date,
     .legend-source {
       display: block;
       font-weight: 500;
-      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .legend-source {
@@ -138,12 +138,12 @@ svg {
 }
 
 .legend-item {
-  display: flex;
   align-items: center;
-  margin-bottom: 8px; /* Increased from 6px for better spacing */
-  padding: 3px 6px; /* Increased from 2px 4px for better tap target */
   border-radius: 4px;
   cursor: pointer;
+  display: flex;
+  margin-bottom: 8px; /* Increased from 6px for better spacing */
+  padding: 3px 6px; /* Increased from 2px 4px for better tap target */
   transition: all 0.2s ease;
 
   &:last-child {
@@ -151,99 +151,100 @@ svg {
   }
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgb(0 0 0 / 5%);
   }
 
   &.active {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgb(0 0 0 / 10%);
     font-weight: bold;
   }
 }
 
 .legend-color {
-  width: 14px;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
   height: 14px;
   margin-right: 8px;
-  border-radius: 3px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  width: 14px;
 }
 
 .legend-text {
+  color: #333; /* Darker text for better contrast */
   font-size: 12px;
   font-weight: 600;
-  color: #333; /* Darker text for better contrast */
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5); /* Subtle text shadow for readability */
+  text-shadow: 0 1px 0 rgb(255 255 255 / 50%); /* Subtle text shadow for readability */
   white-space: nowrap; /* Keep on one line */
 }
 
 /* Fix tooltip positioning and appearance */
 .tooltip {
+  backdrop-filter: blur(2px); /* Blur background slightly for better readability */
+  background: rgb(255 255 255 / 98%); /* More opaque for better visibility */
+  border: 1px solid #a8dadc;
+  border: 2px solid rgb(29 53 87 / 50%); /* Stronger border */
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 25%); /* Stronger shadow */
+  color: #1d3557; /* Dark text for contrast */
+  font: 12px/1.4 sans-serif; /* Improved line height */
+  max-width: 220px;
+  padding: 12px;
+  pointer-events: none;
   position: absolute;
   text-align: left; /* Left-align text for better readability */
-  padding: 12px;
-  font: 12px/1.4 sans-serif; /* Improved line height */
-  color: #1d3557; /* Dark text for contrast */
-  background: rgba(255, 255, 255, 0.98); /* More opaque for better visibility */
-  border: 1px solid #a8dadc;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* Stronger shadow */
-  pointer-events: none;
-  z-index: 1500 !important; /* Higher z-index to appear above overlay */
-  max-width: 220px;
+  transform-origin: center bottom;
   transition:
     opacity 0.2s ease,
     transform 0.2s ease; /* Faster transition */
-  transform-origin: center bottom;
-  backdrop-filter: blur(2px); /* Blur background slightly for better readability */
-  border: 2px solid rgba(29, 53, 87, 0.5); /* Stronger border */
+
+  z-index: 1500 !important; /* Higher z-index to appear above overlay */
 }
 
 .tooltip-header {
-  font-weight: bold;
-  margin-bottom: 6px;
+  border-bottom: 1px solid #a8dadc;
   color: #1d3557;
   font-size: 13px;
-  border-bottom: 1px solid #a8dadc;
+  font-weight: bold;
+  margin-bottom: 6px;
   padding-bottom: 4px;
 }
 
 .bar.stock-aapl,
 .line.stock-aapl,
 .avg-line.stock-aapl {
-  stroke: var(--color-aapl);
   fill: var(--color-aapl);
+  stroke: var(--color-aapl);
 }
 
 .bar.stock-googl,
 .line.stock-googl,
 .avg-line.stock-googl {
-  stroke: var(--color-googl);
   fill: var(--color-googl);
+  stroke: var(--color-googl);
 }
 
 .bar.stock-msft,
 .line.stock-msft,
 .avg-line.stock-msft {
-  stroke: var(--color-msft);
   fill: var(--color-msft);
+  stroke: var(--color-msft);
 }
 
 /* Lines and points */
 .line {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 30%));
   stroke-width: 3;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
   transition: all 0.3s ease;
 
   &.highlighted {
+    filter: drop-shadow(0 2px 4px rgb(0 0 0 / 40%));
     stroke-width: 5;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
   }
 }
 
 .data-point {
   cursor: pointer;
+  filter: drop-shadow(0 1px 3px rgb(0 0 0 / 20%));
   transition: all 0.3s ease;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
 
   &.highlighted {
     stroke-width: 3;
@@ -267,20 +268,20 @@ svg {
 
 /* Enhanced Stock Symbol labels with contrasting background box */
 .stock-symbol-label {
+  dominant-baseline: middle;
   font-size: 12px;
   font-weight: 600;
-  text-shadow: 0 0 2px white; /* Reduced shadow for cleaner look with background */
-  dominant-baseline: middle;
   text-anchor: middle;
+  text-shadow: 0 0 2px white; /* Reduced shadow for cleaner look with background */
 }
 
 .stock-label-background {
-  fill: rgba(255, 255, 255, 0.85); /* Semi-transparent white background */
-  stroke: rgba(0, 0, 0, 0.15); /* Light border for definition */
-  stroke-width: 0.5;
+  fill: rgb(255 255 255 / 85%); /* Semi-transparent white background */
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 15%));
   rx: 4; /* Rounded corners */
   ry: 4;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+  stroke: rgb(0 0 0 / 15%); /* Light border for definition */
+  stroke-width: 0.5;
 }
 
 /* Stock label group with hover effect */
@@ -292,8 +293,8 @@ svg {
     transform: scale(1.05);
 
     .stock-label-background {
-      fill: rgba(255, 255, 255, 0.95);
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      fill: rgb(255 255 255 / 95%);
+      filter: drop-shadow(0 2px 4px rgb(0 0 0 / 20%));
     }
   }
 }
@@ -303,6 +304,7 @@ svg {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -312,6 +314,7 @@ svg {
   from {
     stroke-dashoffset: var(--total-length);
   }
+
   to {
     stroke-dashoffset: 0;
   }
@@ -321,22 +324,24 @@ svg {
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.2);
   }
+
   100% {
     transform: scale(1);
   }
 }
 
 .axis {
-  opacity: 0.8;
   animation: fadeIn 0.8s forwards;
+  opacity: 0.8;
 }
 
 .axis path,
 .axis line {
-  stroke: rgba(0, 0, 0, 0.25); /* Increased contrast for axis lines */
+  stroke: rgb(0 0 0 / 25%); /* Increased contrast for axis lines */
 }
 
 .axis text {
@@ -345,7 +350,7 @@ svg {
 
 /* Grid styling */
 .grid line {
-  stroke: rgba(0, 0, 0, 0.08); /* Increased opacity for better contrast */
+  stroke: rgb(0 0 0 / 8%); /* Increased opacity for better contrast */
   stroke-dasharray: 3, 3;
 }
 
@@ -361,22 +366,23 @@ svg {
 
 /* Stock status box in bottom left */
 .stock-status-box {
-  position: absolute; /* Change from fixed to absolute */
-  bottom: 20px; /* Positioned at the bottom of the viewport */
-  left: 20px;
-  background-color: rgba(255, 255, 255, 0.98); /* More opaque */
+  backdrop-filter: blur(2px); /* Blur background slightly for better readability */
+  background-color: rgb(255 255 255 / 98%); /* More opaque */
   border: 2px solid #1d3557; /* Thicker border */
   border-radius: 4px; /* Reduced from 6px */
-  padding: 6px 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); /* Stronger shadow */
+  bottom: 20px; /* Positioned at the bottom of the viewport */
+  box-shadow: 0 2px 8px rgb(0 0 0 / 25%); /* Stronger shadow */
+  left: 20px;
   opacity: 0;
+  padding: 6px 10px;
+  pointer-events: none;
+  position: absolute; /* Change from fixed to absolute */
   transform: translateY(10px); /* Reduced animation distance */
   transition:
     opacity 0.2s ease,
     transform 0.2s ease; /* Faster transition */
-  pointer-events: none;
+
   z-index: 1600 !important; /* Even higher z-index than tooltips */
-  backdrop-filter: blur(2px); /* Blur background slightly for better readability */
 
   &.visible {
     opacity: 1;
@@ -384,47 +390,47 @@ svg {
   }
 
   .stock-status-symbol {
-    font-weight: 700;
-    font-size: 12px; /* Reduced from 14px */
     color: #d62828;
+    font-size: 12px; /* Reduced from 14px */
+    font-weight: 700;
     margin-bottom: 1px; /* Reduced from 2px */
   }
 
   .stock-status-price {
-    font-weight: 600;
-    font-size: 11px; /* Reduced from 13px */
     color: #1d3557;
+    font-size: 11px; /* Reduced from 13px */
+    font-weight: 600;
   }
 
   .stock-status-date {
-    font-size: 9px; /* Reduced from 11px */
     color: #666;
+    font-size: 9px; /* Reduced from 11px */
     margin-top: 1px; /* Reduced from 2px */
   }
 }
 
 /* Status box with consistent sizing and proper z-index */
 .stock-status-box {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  background-color: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(3px);
+  background-color: rgb(255 255 255 / 98%);
   border: 2px solid #1d3557;
   border-radius: 4px;
-  padding: 8px 12px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  bottom: 20px;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 30%);
+  left: 20px;
+  min-height: 60px;
   opacity: 0;
+  padding: 8px 12px;
+  pointer-events: none;
+  position: absolute;
   transform: translateY(10px);
   transition:
     opacity 0.2s ease,
     transform 0.2s ease;
-  pointer-events: none;
-  z-index: 2000 !important; /* Highest z-index to appear above everything */
-  backdrop-filter: blur(3px);
 
   /* Fixed dimensions for consistency */
   width: 140px;
-  min-height: 60px;
+  z-index: 2000 !important; /* Highest z-index to appear above everything */
 
   &.visible {
     opacity: 1;
@@ -432,25 +438,25 @@ svg {
   }
 
   .stock-status-symbol {
-    font-weight: 700;
-    font-size: 14px;
     color: #d62828;
+    font-size: 14px;
+    font-weight: 700;
     margin-bottom: 2px;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .stock-status-price {
-    font-weight: 600;
-    font-size: 12px;
     color: #1d3557;
+    font-size: 12px;
+    font-weight: 600;
     margin-bottom: 2px;
   }
 
   .stock-status-date {
-    font-size: 10px;
     color: #666;
+    font-size: 10px;
   }
 }
 
@@ -473,42 +479,41 @@ svg {
 
 .phase-label {
   font-weight: 500;
-  pointer-events: none;
-  text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  letter-spacing: 0.02em;
   max-width: 90%; /* Ensure label doesn't exceed phase width */
   overflow: hidden;
-  text-overflow: ellipsis;
   pointer-events: none;
-  font-weight: 600;
+  text-overflow: ellipsis;
+  text-shadow: 0 0 3px rgb(255 255 255 / 80%);
   text-shadow:
-    0 0 4px rgba(255, 255, 255, 0.9),
-    0 0 4px rgba(255, 255, 255, 0.9);
+    0 0 4px rgb(255 255 255 / 90%),
+    0 0 4px rgb(255 255 255 / 90%);
   user-select: none;
-  letter-spacing: 0.02em;
 }
 
 /* Chart controls */
 .chart-controls {
+  background-color: rgb(255 255 255 / 85%);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  display: block; /* Ensure it's displayed */
+  left: 10px;
+  padding: 8px 12px;
   position: absolute;
   top: 10px;
-  left: 10px;
-  background-color: rgba(255, 255, 255, 0.85);
-  padding: 8px 12px;
-  border-radius: 6px;
-  z-index: 5;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
-  display: block; /* Ensure it's displayed */
+  z-index: 5;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background-color: rgb(255 255 255 / 95%);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
   }
 
   .control-toggle {
-    display: flex;
     align-items: center;
     cursor: pointer;
+    display: flex;
     user-select: none;
 
     input {
@@ -516,9 +521,9 @@ svg {
     }
 
     span {
+      color: #333;
       font-size: 12px;
       font-weight: 600;
-      color: #333;
     }
   }
 }
@@ -533,25 +538,25 @@ svg {
 
 /* Chart controls with Material toggle */
 .chart-controls {
+  background-color: rgb(255 255 255 / 85%);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  left: 10px;
+  padding: 8px 12px;
   position: absolute;
   top: 10px;
-  left: 10px;
-  background-color: rgba(255, 255, 255, 0.85);
-  padding: 8px 12px;
-  border-radius: 6px;
-  z-index: 5;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
+  z-index: 5;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background-color: rgb(255 255 255 / 95%);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
   }
 
   .market-phases-toggle {
+    color: #333;
     font-size: 12px;
     font-weight: 600;
-    color: #333;
 
     ::ng-deep .mat-slide-toggle-label {
       margin-bottom: 0;
@@ -563,72 +568,73 @@ svg {
 .gantt-chart {
   .market-phase {
     cursor: pointer;
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 20%)); // Add subtle shadow
     transition: opacity 0.3s ease;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2)); // Add subtle shadow
 
     &:hover {
-      opacity: 1;
       filter: brightness(1.05);
+      opacity: 1;
     }
   }
 
   .phase-label {
     font-weight: 600; // Increased from 500 for better contrast
+    letter-spacing: 0.02em; // Slight letter spacing for better legibility
     pointer-events: none;
     text-shadow:
-      0 0 4px rgba(255, 255, 255, 0.9),
-      0 0 4px rgba(255, 255, 255, 0.9); // Double shadow for clarity
+      0 0 4px rgb(255 255 255 / 90%),
+      0 0 4px rgb(255 255 255 / 90%); // Double shadow for clarity
+
     user-select: none;
-    letter-spacing: 0.02em; // Slight letter spacing for better legibility
   }
 
   .gantt-title {
+    fill: #555;
     font-size: 10px;
     font-weight: bold;
-    fill: #555;
-    text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+    text-shadow: 0 0 2px rgb(255 255 255 / 80%);
   }
 
   .gantt-main-title {
     font-family: Arial, sans-serif;
     font-weight: bold;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
     letter-spacing: 0.02em; // Slight letter spacing for better legibility
+    text-shadow: 0 1px 0 rgb(255 255 255 / 80%);
   }
 }
 
 .gantt-tooltip {
-  background-color: rgba(255, 255, 255, 0.99); /* Almost fully opaque for better contrast */
-  padding: 12px 15px;
+  backdrop-filter: blur(2px); /* Blur background slightly for better readability */
+  background-color: rgb(255 255 255 / 99%); /* Almost fully opaque for better contrast */
+  border: 2px solid rgb(29 53 87 / 70%); /* Increased border opacity for better contrast */
   border-radius: 4px; /* Reduced border radius to match overall design */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* Increased shadow opacity for better contrast */
-  pointer-events: none;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 40%); /* Increased shadow opacity for better contrast */
   font-size: 12px;
   line-height: 1.4;
   max-width: 300px;
+  padding: 12px 15px;
+  pointer-events: none;
   z-index: 1500 !important; /* Higher z-index to appear above overlay */
-  backdrop-filter: blur(2px); /* Blur background slightly for better readability */
-  border: 2px solid rgba(29, 53, 87, 0.7); /* Increased border opacity for better contrast */
 
   strong {
     color: #003049; /* Darker color for better contrast */
-    font-weight: bold;
     display: block;
-    margin-bottom: 5px;
     font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 5px;
   }
 
   .stock-performance {
+    border-top: 1px solid #a8dadc; /* Match tooltip border color */
     margin-top: 10px;
     padding-top: 5px;
-    border-top: 1px solid #a8dadc; /* Match tooltip border color */
   }
 
   .stock-perf-item {
-    margin: 4px 0;
+    align-items: center;
     display: flex;
     gap: 5px;
-    align-items: center;
+    margin: 4px 0;
   }
 
   .perf-positive {
@@ -643,15 +649,15 @@ svg {
 }
 
 .stock-mini-line {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 20%)); // Increased shadow for better visibility
   pointer-events: none;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2)); // Increased shadow for better visibility
 }
 
 .trend-indicator {
-  pointer-events: none;
-  text-shadow: 0 0 4px rgba(255, 255, 255, 1); // Increased shadow for better contrast
-  user-select: none;
   letter-spacing: 0.01em; // Slight letter spacing for better legibility
+  pointer-events: none;
+  text-shadow: 0 0 4px rgb(255 255 255 / 100%); // Increased shadow for better contrast
+  user-select: none;
 }
 
 /* Enhanced Gantt chart styling */
@@ -686,79 +692,80 @@ svg {
 
 /* Enhanced Gantt chart styling with container design */
 .gantt-container {
-  background-color: rgba(255, 255, 255, 0.9); /* Increased opacity for better contrast */
+  background-color: rgb(255 255 255 / 90%); /* Increased opacity for better contrast */
   border-radius: 6px; /* Reduced border radius to maximize space */
-  padding: 8px; /* Reduced padding to maximize space */
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15); /* Increased shadow opacity */
-  margin-top: 5px; /* Reduced margin to maximize space */
-  width: calc(100% + 20px); /* Extend width to compensate for parent padding */
+  box-shadow: 0 3px 12px rgb(0 0 0 / 15%); /* Increased shadow opacity */
   margin-left: -10px; /* Offset to account for extended width */
+  margin-top: 5px; /* Reduced margin to maximize space */
+  padding: 8px; /* Reduced padding to maximize space */
+  width: calc(100% + 20px); /* Extend width to compensate for parent padding */
 
   .gantt-header {
+    align-items: center;
+    border-bottom: 1px solid rgb(0 0 0 / 10%);
     display: flex;
     justify-content: space-between;
-    align-items: center;
     margin-bottom: 10px;
     padding-bottom: 8px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
     .gantt-title {
+      color: #1d3557;
       font-size: 14px;
       font-weight: bold;
-      color: #1d3557;
     }
 
     .gantt-subtitle {
-      font-size: 12px;
       color: #666;
+      font-size: 12px;
     }
   }
 }
 
 .gantt-chart {
+  height: 100%;
   position: relative;
   width: 100%;
-  height: 100%;
 
   .market-phase {
     cursor: pointer;
+    filter: drop-shadow(0 2px 3px rgb(0 0 0 / 15%));
     transition: all 0.3s ease;
-    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
 
     &:hover {
+      filter: brightness(1.05) drop-shadow(0 3px 5px rgb(0 0 0 / 20%));
       opacity: 1;
-      filter: brightness(1.05) drop-shadow(0 3px 5px rgba(0, 0, 0, 0.2));
       transform: translateY(-1px);
     }
   }
 
   .phase-row-header {
-    font-weight: 700; /* Increased from 600 for better contrast */
-    font-size: 13px;
     fill: #1d3557;
-    text-shadow: 0 1px 1px rgba(255, 255, 255, 1);
+    font-size: 13px;
+    font-weight: 700; /* Increased from 600 for better contrast */
+    text-shadow: 0 1px 1px rgb(255 255 255 / 100%);
   }
 
   .phase-label {
     font-weight: 700; /* Increased from 600 for better contrast */
-    text-shadow:
-      0 0 5px rgba(255, 255, 255, 1),
-      0 0 5px rgba(255, 255, 255, 1); /* Stronger shadow for better contrast */
-    pointer-events: none;
-    user-select: none;
     letter-spacing: 0.02em;
+    pointer-events: none;
+    text-shadow:
+      0 0 5px rgb(255 255 255 / 100%),
+      0 0 5px rgb(255 255 255 / 100%); /* Stronger shadow for better contrast */
+
+    user-select: none;
   }
 
   .gantt-grid line {
-    stroke: rgba(0, 0, 0, 0.06);
+    stroke: rgb(0 0 0 / 6%);
     stroke-dasharray: 3, 3;
   }
 
   .gantt-main-title {
     font-family: Arial, sans-serif;
     font-weight: bold;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
     letter-spacing: 0.02em;
+    text-shadow: 0 1px 0 rgb(255 255 255 / 80%);
   }
 
   .stock-indicator {
@@ -767,80 +774,80 @@ svg {
   }
 
   .phase-container {
-    stroke: rgba(0, 0, 0, 0.1);
+    stroke: rgb(0 0 0 / 10%);
     stroke-width: 1;
   }
 
   .phase-bull {
-    filter: drop-shadow(0 2px 2px rgba(42, 157, 143, 0.2));
+    filter: drop-shadow(0 2px 2px rgb(42 157 143 / 20%));
 
     &:hover {
-      filter: drop-shadow(0 3px 4px rgba(42, 157, 143, 0.3));
+      filter: drop-shadow(0 3px 4px rgb(42 157 143 / 30%));
     }
   }
 
   .phase-bear {
-    filter: drop-shadow(0 2px 2px rgba(231, 111, 81, 0.2));
+    filter: drop-shadow(0 2px 2px rgb(231 111 81 / 20%));
 
     &:hover {
-      filter: drop-shadow(0 3px 4px rgba(231, 111, 81, 0.3));
+      filter: drop-shadow(0 3px 4px rgb(231 111 81 / 30%));
     }
   }
 
   .phase-consolidation {
-    filter: drop-shadow(0 2px 2px rgba(244, 162, 97, 0.2));
+    filter: drop-shadow(0 2px 2px rgb(244 162 97 / 20%));
 
     &:hover {
-      filter: drop-shadow(0 3px 4px rgba(244, 162, 97, 0.3));
+      filter: drop-shadow(0 3px 4px rgb(244 162 97 / 30%));
     }
   }
 
   .stock-legend {
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 5px 10px;
+    background-color: rgb(255 255 255 / 80%);
     border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+    padding: 5px 10px;
   }
 
   .stock-mini-line {
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 20%));
     pointer-events: none;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
   }
 }
 
 // Enhance tooltip for Gantt chart
 .gantt-tooltip {
-  background-color: rgba(255, 255, 255, 0.98);
-  padding: 12px 15px;
+  backdrop-filter: blur(2px);
+  background-color: rgb(255 255 255 / 98%);
+  border: 2px solid rgb(29 53 87 / 50%);
   border-radius: 6px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-  pointer-events: none;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 30%);
   font-size: 12px;
   line-height: 1.5;
   max-width: 300px;
+  padding: 12px 15px;
+  pointer-events: none;
   z-index: 1500 !important;
-  backdrop-filter: blur(2px);
-  border: 2px solid rgba(29, 53, 87, 0.5);
 
   strong {
     color: #1d3557;
-    font-weight: bold;
     display: block;
-    margin-bottom: 5px;
     font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 5px;
   }
 
   .stock-performance {
+    border-top: 1px solid #a8dadc;
     margin-top: 10px;
     padding-top: 5px;
-    border-top: 1px solid #a8dadc;
   }
 
   .stock-perf-item {
-    margin: 4px 0;
+    align-items: center;
     display: flex;
     gap: 5px;
-    align-items: center;
+    margin: 4px 0;
   }
 
   .perf-positive {
@@ -855,30 +862,30 @@ svg {
 }
 
 .trend-indicator {
-  pointer-events: none;
-  text-shadow: 0 0 4px rgba(255, 255, 255, 1);
-  user-select: none;
-  letter-spacing: 0.01em;
   font-weight: 600;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  text-shadow: 0 0 4px rgb(255 255 255 / 100%);
+  user-select: none;
 }
 
 /* Enhanced Gantt chart styling with better visual pop */
 .chart-background-container {
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+  filter: drop-shadow(0 4px 12px rgb(0 0 0 / 15%));
 }
 
 .gantt-container {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%);
+  background: linear-gradient(180deg, rgb(255 255 255 / 95%) 0%, rgb(248 249 250 / 90%) 100%);
   border-radius: 8px;
-  position: relative;
   overflow: visible;
+  position: relative;
 
   .gantt-header {
-    background-color: rgba(29, 53, 87, 0.9);
+    background-color: rgb(29 53 87 / 90%);
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
     color: white;
     padding: 10px 15px;
-    border-radius: 8px 8px 0 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
     .gantt-title {
       font-size: 16px;
@@ -926,41 +933,41 @@ svg {
 
 /* Enhanced tooltip styling with headers for different phase types */
 .gantt-tooltip {
-  padding: 12px 15px;
-  background: rgba(255, 255, 255, 0.98);
-  border-radius: 6px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  background: rgb(255 255 255 / 98%);
   border: none;
+  border-radius: 6px;
+  box-shadow: 0 4px 15px rgb(0 0 0 / 20%);
   max-width: 320px;
+  padding: 12px 15px;
 
   .tooltip-header {
+    border-bottom: 1px solid rgb(0 0 0 / 10%);
     font-size: 15px;
     font-weight: 700;
-    padding-bottom: 8px;
     margin-bottom: 8px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 8px;
 
     &.bull-header {
-      color: #2a9d8f;
       border-bottom-color: #a8e6cf;
+      color: #2a9d8f;
     }
 
     &.bear-header {
-      color: #e76f51;
       border-bottom-color: #ffaaa5;
+      color: #e76f51;
     }
 
     &.consolidation-header {
-      color: #f4a261;
       border-bottom-color: #ffd3b6;
+      color: #f4a261;
     }
   }
 
   .tooltip-period,
   .tooltip-duration,
   .tooltip-type {
-    margin-bottom: 5px;
     font-size: 12px;
+    margin-bottom: 5px;
 
     strong {
       font-weight: 600;
@@ -989,9 +996,9 @@ svg {
 
 /* Ensure the main legend is more visible in Gantt mode */
 .in-overlay .legend-container {
+  box-shadow: 0 3px 12px rgb(0 0 0 / 25%); /* Stronger shadow for better contrast */
   opacity: 1;
   z-index: 2100; /* Higher z-index to ensure visibility */
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25); /* Stronger shadow for better contrast */
 }
 
 /* Time period styling */
@@ -1004,9 +1011,9 @@ svg {
     }
 
     .quarter-label {
-      font-weight: 600;
-      font-size: 12px;
       fill: #666;
+      font-size: 12px;
+      font-weight: 600;
     }
   }
 }
@@ -1014,8 +1021,8 @@ svg {
 /* Responsive adjustments for small screens */
 @media (max-width: 768px) {
   .gantt-tooltip {
-    max-width: 260px;
     font-size: 11px;
+    max-width: 260px;
 
     .tooltip-header {
       font-size: 13px;
@@ -1025,19 +1032,19 @@ svg {
 
 /* Improved styling for stock performance overlay with reduced prominence */
 .stock-performance-overlay {
-  pointer-events: none;
   opacity: 0.6; /* Reduced from 1.0 to be less prominent */
+  pointer-events: none;
 
   .stock-line {
-    transition: opacity 0.3s ease;
-    stroke-opacity: 0.5; /* Reduced from 0.8 for subtlety */
     filter: none; /* Remove shadow to make lines less prominent */
+    stroke-opacity: 50%; /* Reduced from 0.8 for subtlety */
+    transition: opacity 0.3s ease;
   }
 
   .stock-point {
-    transition: all 0.3s ease;
-    r: 3; /* Smaller points */
     opacity: 0.6; /* More transparent points */
+    r: 3; /* Smaller points */
+    transition: all 0.3s ease;
   }
 
   &:hover {
@@ -1056,49 +1063,49 @@ svg {
 
   /* Gradient overlays for smoother phase transitions */
   .phase-gradient-left {
-    position: absolute;
-    left: 0;
-    top: 0;
     height: 100%;
-    width: 20px;
+    left: 0;
     pointer-events: none;
+    position: absolute;
+    top: 0;
+    width: 20px;
   }
 
   .phase-gradient-right {
+    height: 100%;
+    pointer-events: none;
     position: absolute;
     right: 0;
     top: 0;
-    height: 100%;
     width: 20px;
-    pointer-events: none;
   }
 }
 
 /* Enhanced phase background colors */
 .phase-bull {
-  background: linear-gradient(to right, rgba(235, 251, 238, 0.4), rgba(235, 251, 238, 0.7), rgba(235, 251, 238, 0.4));
+  background: linear-gradient(to right, rgb(235 251 238 / 40%), rgb(235 251 238 / 70%), rgb(235 251 238 / 40%));
 }
 
 .phase-bear {
-  background: linear-gradient(to right, rgba(253, 235, 236, 0.4), rgba(253, 235, 236, 0.7), rgba(253, 235, 236, 0.4));
+  background: linear-gradient(to right, rgb(253 235 236 / 40%), rgb(253 235 236 / 70%), rgb(253 235 236 / 40%));
 }
 
 .phase-consolidation {
-  background: linear-gradient(to right, rgba(252, 248, 232, 0.4), rgba(252, 248, 232, 0.7), rgba(252, 248, 232, 0.4));
+  background: linear-gradient(to right, rgb(252 248 232 / 40%), rgb(252 248 232 / 70%), rgb(252 248 232 / 40%));
 }
 
 /* Custom styling for clearer market phase divisions */
 .market-phase {
   cursor: pointer;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 10%)); /* Lighter shadow */
+  max-width: calc(100% - 4px); /* Slight padding to avoid edge touching */
+  overflow: visible;
   transition: all 0.3s ease;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1)); /* Lighter shadow */
 
   &:hover {
+    filter: brightness(1.05) drop-shadow(0 3px 5px rgb(0 0 0 / 15%));
     opacity: 1;
-    filter: brightness(1.05) drop-shadow(0 3px 5px rgba(0, 0, 0, 0.15));
   }
-  overflow: visible;
-  max-width: calc(100% - 4px); /* Slight padding to avoid edge touching */
 
   &:hover {
     max-width: 100%; /* Allow full width on hover */

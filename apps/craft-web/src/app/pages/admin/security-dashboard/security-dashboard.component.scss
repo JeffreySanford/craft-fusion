@@ -1,22 +1,22 @@
 .security-container {
   display: flex;
-  gap: 24px;
   flex-wrap: wrap;
+  gap: 24px;
 }
 
 .security-stats {
   display: flex;
-  gap: 12px;
   flex: 1 1 40%;
+  gap: 12px;
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.04);
+  align-items: center;
+  background: rgb(255 255 255 / 4%);
   border-radius: 8px;
-  padding: 12px;
   display: flex;
   gap: 12px;
-  align-items: center;
+  padding: 12px;
 }
 
 .stat-icon {
@@ -29,12 +29,12 @@
 
 .feature-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .feature-card {
-  background: rgba(255, 255, 255, 0.03);
-  padding: 12px;
+  background: rgb(255 255 255 / 3%);
   border-radius: 8px;
+  padding: 12px;
 }

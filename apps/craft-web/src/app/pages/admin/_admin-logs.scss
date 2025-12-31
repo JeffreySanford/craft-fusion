@@ -1,18 +1,18 @@
-@use 'variables' as vars;
+@use "variables" as vars;
 
 .logger-display {
-  background: rgba(30, 41, 59, 0.5);
+  background: rgb(30 41 59 / 50%);
+  border: 1px solid rgb(255 255 255 / 10%);
   border-radius: 10px;
-  padding: 1em;
+  box-shadow: 0 0.5em 1em rgb(0 0 0 / 20%);
   margin-top: 1em;
-  box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
+  padding: 1em;
 
   h2 {
     color: vars.$patriot-white;
-    margin-top: 0;
     margin-bottom: 0.75em;
+    margin-top: 0;
   }
 
   .log-entries {
@@ -22,23 +22,23 @@
   }
 
   .log-entry {
-    font-size: 0.85em;
     color: silver;
+    font-size: 0.85em;
     margin-bottom: 0.5em;
   }
 }
 
 .logger-tab {
   .logger-controls {
+    align-items: center;
     display: flex;
     justify-content: space-between;
-    align-items: center;
     margin-bottom: 1.5rem;
   }
 }
 
 .clear-logs-container {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(17, 24, 39, 0.9));
+  background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border-radius: 8px;
   padding: 4px 12px;
 }

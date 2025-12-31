@@ -1,71 +1,70 @@
-@use 'sass:map';
-@use './variables' as vars;
+@use "sass:map";
+@use "./variables" as vars;
 
 .flex-table {
-  display: flex !important;
-  flex-direction: column !important;
-  width: 100% !important;
-  border-collapse: collapse !important;
   background-color: transparent !important;
-  position: relative !important;
+  border-collapse: collapse !important;
+  display: flex !important;
   flex: 1 1 auto !important;
-  min-height: 0 !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
+  flex-direction: column !important;
   max-height: none !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
   padding-bottom: calc(var(--paginator-offset, 2.5em) + 0.75rem) !important; /* reserve space so last rows aren't hidden under paginator/footer */
+  position: relative !important;
+  width: 100% !important;
 
   .flex-header-row,
   .flex-row {
+    align-items: center !important;
     display: flex !important;
-    width: 100% !important;
+    margin: 0 !important;
     min-height: 0 !important;
     padding: 0 !important;
-    margin: 0 !important;
-    align-items: center !important;
+    width: 100% !important;
   }
 
   .flex-header-row {
+    background: rgba(map.get(vars.$table-theme, patriotic-blue), 0.85) !important;
+    border-bottom: 2px solid map.get(vars.$table-theme, patriotic-red) !important;
+    box-shadow: 0 0.1875em 0.375em rgb(0 0 0 / 20%) !important;
+    min-height: 40px !important;
     position: sticky !important;
     top: 0 !important;
     z-index: 10 !important;
-    background: rgba(map.get(vars.$table-theme, patriotic-blue), 0.85) !important;
-    border-bottom: 2px solid map.get(vars.$table-theme, patriotic-red) !important;
-    box-shadow: 0 0.1875em 0.375em rgba(0, 0, 0, 0.2) !important;
-    min-height: 40px !important;
   }
 
   .flex-header-cell,
   .flex-cell {
-    flex: 1 !important;
-    padding: 0.15em 0.35em !important;
+    align-items: center !important;
     box-sizing: border-box !important;
+    display: flex !important;
+    flex: 1 !important;
+    max-height: 1.6em !important;
+    min-height: 1.6em !important;
     overflow: hidden !important;
+    padding: 0.15em 0.35em !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
-    display: flex !important;
-    align-items: center !important;
-    min-height: 1.6em !important;
-    max-height: 1.6em !important;
   }
 
   .flex-header-cell {
     color: map.get(vars.$table-theme, primary-white) !important;
+    font-size: 1.1em !important;
     font-weight: 400 !important;
-    font-size: 1.1em !important;
-    font-size: 1.1em !important;
     letter-spacing: 0.02em !important;
   }
 
   .flex-row {
-    min-height: 28px !important;
-    margin: 1px 0 !important;
     height: auto !important;
+    margin: 1px 0 !important;
+    min-height: 28px !important;
   }
 
   @supports (scrollbar-width: thin) {
-    scrollbar-width: thin;
     scrollbar-color: map.get(vars.$table-theme, patriotic-red) transparent;
+    scrollbar-width: thin;
   }
 
   @supports (-webkit-user-drag: none) {
@@ -87,15 +86,18 @@
   @media screen and (max-width: 500px) {
     .flex-header-cell,
     .flex-cell {
-      padding: 0.3em 0.4em !important;
       font-size: 0.9em !important;
+      padding: 0.3em 0.4em !important;
     }
+
     flex: 3 !important;
+    flex: 1 !important;
+
     .flex-header-cell:first-child,
     .flex-cell:first-child {
       flex: 3 !important;
     }
-    flex: 1 !important;
+
     .flex-header-cell:last-child,
     .flex-cell:last-child {
       flex: 1 !important;
@@ -131,28 +133,33 @@
       flex: 1 !important;
       min-width: 80px !important;
     }
+
     &:nth-child(2) {
       flex: 2 !important;
       min-width: 120px !important;
     }
+
     &:nth-child(3) {
       flex: 3 !important;
       min-width: 180px !important;
     }
+
     &:nth-child(4),
     &:nth-child(5) {
       flex: 1.5 !important;
       min-width: 100px !important;
     }
+
     &:nth-child(6),
     &:nth-child(7) {
       flex: 1.2 !important;
       min-width: 90px !important;
     }
+
     &:last-child {
       flex: 0.8 !important;
-      min-width: 60px !important;
       justify-content: center !important;
+      min-width: 60px !important;
     }
   }
 }

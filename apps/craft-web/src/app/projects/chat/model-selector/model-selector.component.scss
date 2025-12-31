@@ -1,17 +1,17 @@
 mat-form-field {
-  width: 200px;
   padding: 0 0.75rem; // Add left/right padding for better spacing
+  width: 200px;
 
   ::ng-deep {
     .mat-mdc-text-field-wrapper {
-      background: rgba(255, 255, 255, 0.92) !important;
+      background: rgb(255 255 255 / 92%) !important;
+      border: 1px solid rgb(0 40 104 / 30%); // Light patriotic blue border
       border-radius: 0.25rem;
-      border: 1px solid rgba(0, 40, 104, 0.3); // Light patriotic blue border
       transition: all 0.3s ease;
 
       &:hover {
-        border-color: rgba(0, 40, 104, 0.6);
-        box-shadow: 0 0 0.5rem rgba(0, 40, 104, 0.2);
+        border-color: rgb(0 40 104 / 60%);
+        box-shadow: 0 0 0.5rem rgb(0 40 104 / 20%);
       }
     }
 

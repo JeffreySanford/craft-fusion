@@ -1,5 +1,6 @@
-@use 'variables' as vars;
-@use 'mixins' as mix;
+@use "variables" as vars;
+@use "mixins" as mix;
+
 .memorial-timeline-container {
   display: flex;
   flex-direction: column;
@@ -8,31 +9,32 @@
 }
 
 .memorial-timeline-header {
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
   background-color: var(--md-sys-color-surface);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: relative;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  margin-bottom: 1.5rem;
   overflow: hidden;
+  padding: 1.5rem;
+  position: relative;
 
   /* Flag-inspired accent border */
   &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
+    background:
+      linear-gradient(
+        to bottom,
+        var(--md-sys-color-primary),
+        var(--md-sys-color-primary) 33%,
+        var(--md-sys-color-on-primary) 33%,
+        var(--md-sys-color-on-primary) 66%,
+        var(--md-sys-color-secondary) 66%,
+        var(--md-sys-color-secondary)
+      );
+    content: "";
     height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
     width: 4px;
-    background: linear-gradient(
-      to bottom,
-      var(--md-sys-color-primary),
-      var(--md-sys-color-primary) 33%,
-      var(--md-sys-color-on-primary) 33%,
-      var(--md-sys-color-on-primary) 66%,
-      var(--md-sys-color-secondary) 66%,
-      var(--md-sys-color-secondary)
-    );
   }
 
   h1 {
@@ -46,10 +48,10 @@
 }
 
 .loading-indicator {
-  display: flex;
-  justify-content: center;
   align-items: center;
-  height: 200px;
-  font-size: 1.2em;
   color: var(--md-sys-color-primary);
+  display: flex;
+  font-size: 1.2em;
+  height: 200px;
+  justify-content: center;
 }

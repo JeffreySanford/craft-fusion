@@ -7,15 +7,15 @@ h2 {
 }
 
 .jeffrey-ai-header {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: 12px;
 }
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   margin-top: 12px;
 }
 

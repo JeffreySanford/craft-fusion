@@ -25,11 +25,11 @@ dd {
 
 /* Set core body defaults */
 body {
+  font-family: Roboto, sans-serif;
+  line-height: 1.5;
   min-height: 100vh;
   scroll-behavior: smooth;
-  text-rendering: optimizeSpeed;
-  line-height: 1.5;
-  font-family: 'Roboto', sans-serif;
+  text-rendering: optimizespeed;
 }
 
 /* Create a root stacking context */
@@ -42,15 +42,15 @@ body {
 ul,
 ol {
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
 /* Make images easier to work with */
 img,
 picture {
-  max-width: 100%;
   display: block;
+  max-width: 100%;
 }
 
 /* Inherit fonts for inputs and buttons */
@@ -66,8 +66,8 @@ select {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -81,6 +81,6 @@ button {
 
 /* Remove default anchor styles */
 a {
-  text-decoration: none;
   color: inherit;
+  text-decoration: none;
 }
