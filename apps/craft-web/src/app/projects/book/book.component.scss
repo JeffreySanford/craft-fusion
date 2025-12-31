@@ -239,7 +239,7 @@ $vibrant-yellow: #fc0;
         color: #00bcd4 !important; // Cyan
         font-size: 1.75em;
         font-weight: 400;
-        letter-spacing: 0.009375em;
+        letter-spacing: 0.0094em;
         text-shadow: 1px 1px 2px rgb(0 188 212 / 30%);
 
         &:first-of-type {
@@ -452,17 +452,17 @@ $vibrant-yellow: #fc0;
       background-color: rgb(139 0 0 / 60%);
     }
 
-    & > .tox-editor-container {
+    > .tox-editor-container {
       background-color: inherit;
       color: inherit;
     }
 
-    & > .tox-toolbar {
+    > .tox-toolbar {
       background-color: inherit;
       border: none;
     }
 
-    & > .tox-menubar {
+    > .tox-menubar {
       background-color: inherit;
       border: none;
     }

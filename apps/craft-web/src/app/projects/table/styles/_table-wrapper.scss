@@ -1,4 +1,5 @@
 @use "sass:map";
+@use "sass:color" as color;
 @use "./variables" as vars;
 
 .table-wrapper {
@@ -19,7 +20,13 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, map.get(vars.$table-theme, patriotic-red), map.get(vars.$table-theme, primary-white), map.get(vars.$table-theme, patriotic-blue));
+    background:
+      linear-gradient(
+        to bottom,
+        map.get(vars.$table-theme, patriotic-red),
+        map.get(vars.$table-theme, primary-white),
+        map.get(vars.$table-theme, patriotic-blue)
+      );
     background-clip: content-box;
     border: 3px solid rgb(0 40 104 / 50%);
     border-radius: 16px;
@@ -129,7 +136,8 @@
 
     tr.mat-row:hover {
       background-color: rgba(map.get(vars.$table-theme, stars-blue), 0.05);
-      box-shadow: inset 0 0 0 1px rgba(map.get(vars.$table-theme, gold), 0.5);
+      box-shadow:
+        inset 0 0 0 1px rgba(map.get(vars.$table-theme, gold), 0.25);
       transition: all 0.3s ease;
 
       td:first-child {

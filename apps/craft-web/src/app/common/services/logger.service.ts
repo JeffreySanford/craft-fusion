@@ -226,29 +226,37 @@ export class LoggerService {
   private outputToConsole(level: LogLevel, message: string, details?: unknown, component: string = '') {
     const componentPrefix = component ? `[${component}] ` : '';
 
-    // Enhanced color definitions for different log categories
-    const styles = {
-      // Core log levels - Updated for patriotic theme
-      debug: 'color: #3b82f6; font-weight: normal;', // blue
-      info: 'color: #0052B4; font-weight: normal;', // more vibrant blue for info (patriotic blue)
-      warn: 'color: #FF8C00; font-weight: bold;', // more vibrant orange for warnings
-      error: 'color: #BF0A30; font-weight: bold;', // patriotic red for errors
+    // Resolve CSS custom properties where possible so console styles follow active theme
+    const css = (name: string, fallback: string) => {
+      try {
+        if (typeof window === 'undefined' || !window.getComputedStyle) return fallback;
+        const v = getComputedStyle(document.documentElement).getPropertyValue(name);
+        return v ? v.trim() : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    };
 
-      // Special categories with patriotic colors
-      highlight: 'color: #3C3B6E; font-weight: bold; text-decoration: underline;', // patriotic navy blue
-      security: 'color: #8B008B; font-weight: bold; background-color: rgba(139, 0, 139, 0.1); padding: 2px 4px;', // vibrant purple
-      performance: 'color: #3C3B6E; font-weight: normal; font-style: italic;', // patriotic navy
-      user: 'color: #008080; font-weight: normal;', // vibrant teal
-      api: 'color: #0052B4; font-weight: normal;', // patriotic blue
-      navigation: 'color: #FF8C00; font-weight: normal;', // vibrant orange
-      data: 'color: #0052B4; font-weight: normal;', // patriotic blue
-      storage: 'color: #006400; font-weight: normal;', // vibrant green
-      rendering: 'color: #0052B4; font-weight: normal;', // patriotic blue
-      initialization: 'color: #3C3B6E; font-weight: normal;', // patriotic navy blue
-      lifecycle: 'color: #3C3B6E; font-weight: normal;', // patriotic navy blue
-      usa: 'background: linear-gradient(90deg, #0052B4, #3C3B6E); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;', // modified patriotic gradient (blue only)
-      system: 'color: #3C3B6E; font-weight: normal;', // patriotic navy blue
-      component: 'color: #FFFFFF; font-style: italic; background-color: rgba(60, 59, 110, 0.5); padding: 2px 4px; border-radius: 2px;', // white on navy background for component name
+    const styles = {
+      debug: `color: ${css('--md-sys-primary', '#3b82f6')}; font-weight: normal;`,
+      info: `color: ${css('--md-sys-primary', '#0052B4')}; font-weight: normal;`,
+      warn: `color: ${css('--md-sys-warning', '#FF8C00')}; font-weight: bold;`,
+      error: `color: ${css('--md-sys-error', '#BF0A30')}; font-weight: bold;`,
+
+      highlight: `color: ${css('--md-sys-on-surface', '#3C3B6E')}; font-weight: bold; text-decoration: underline;`,
+      security: `color: ${css('--md-sys-security', '#8B008B')}; font-weight: bold; background-color: rgba(139, 0, 139, 0.1); padding: 2px 4px;`,
+      performance: `color: ${css('--md-sys-on-surface', '#3C3B6E')}; font-weight: normal; font-style: italic;`,
+      user: `color: ${css('--md-sys-success', '#008080')}; font-weight: normal;`,
+      api: `color: ${css('--md-sys-primary', '#0052B4')}; font-weight: normal;`,
+      navigation: `color: ${css('--md-sys-warning', '#FF8C00')}; font-weight: normal;`,
+      data: `color: ${css('--md-sys-primary', '#0052B4')}; font-weight: normal;`,
+      storage: `color: ${css('--md-sys-success', '#006400')}; font-weight: normal;`,
+      rendering: `color: ${css('--md-sys-primary', '#0052B4')}; font-weight: normal;`,
+      initialization: `color: ${css('--md-sys-on-surface', '#3C3B6E')}; font-weight: normal;`,
+      lifecycle: `color: ${css('--md-sys-on-surface', '#3C3B6E')}; font-weight: normal;`,
+      usa: `background: linear-gradient(90deg, ${css('--md-sys-primary', '#0052B4')}, ${css('--md-sys-on-surface', '#3C3B6E')}); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;`,
+      system: `color: ${css('--md-sys-on-surface', '#3C3B6E')}; font-weight: normal;`,
+      component: `color: ${css('--md-sys-on-primary', '#fff')}; font-style: italic; background-color: rgba(60, 59, 110, 0.5); padding: 2px 4px; border-radius: 2px;`,
     };
 
     // Format component prefix with style

@@ -1,0 +1,12 @@
+{
+  "pages": [
+    { "path": "/", "label": "Home / App Shell" }
+  ],
+  "checks": [
+    { "selector": "body", "type": "text", "threshold": 4.5, "desc": "body text" },
+    { "selector": "h1, h2, h3, h4, h5, h6", "type": "text-large", "threshold": 3.0, "desc": "headings" },
+    { "selector": ".mat-button, button, .btn, .primary", "type": "text", "threshold": 4.5, "desc": "buttons / primary actions" },
+    { "selector": "table, td, th", "type": "text", "threshold": 4.5, "desc": "table text" },
+    { "selector": ".chip, .badge, .icon", "type": "icon", "threshold": 3.0, "desc": "icons and chips" }
+  ]
+}

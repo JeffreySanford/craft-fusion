@@ -1,3 +1,4 @@
+/* stylelint-disable selector-class-pattern, scss/selector-no-redundant-nesting-selector */
 @use "sass:map";
 @use "sass:color";
 @use "./styles/variables" as *;
@@ -205,6 +206,7 @@
       }
 
       .expand-element-detail {
+        /* stylelint-disable-next-line property-no-vendor-prefix */
         -webkit-backdrop-filter: blur(5px) !important;
         backdrop-filter: blur(5px) !important;
         background: linear-gradient(to right, rgba(map.get($table-theme, patriotic-red), 0.03), rgba(map.get($table-theme, patriotic-blue), 0.05)) !important;
@@ -553,6 +555,7 @@
 
       .flex-row.expand-element-detail {
         animation: fade-in 0.3s ease-out !important;
+        /* stylelint-disable-next-line property-no-vendor-prefix */
         -webkit-backdrop-filter: blur(5px) !important;
         backdrop-filter: blur(5px) !important;
         backface-visibility: hidden !important;
@@ -578,10 +581,6 @@
         transform: translate(-50%, -50%) !important;
         -webkit-user-select: none !important;
         user-select: none !important;
-        -webkit-user-select: none !important;
-        user-select: none !important;
-        -webkit-user-select: none !important;
-        user-select: none !important;
         visibility: visible !important;
         width: 80% !important;
         will-change: auto !important;
@@ -602,10 +601,6 @@
         top: 0 !important;
         -webkit-user-select: none !important;
         user-select: none !important;
-        -webkit-user-select: none !important;
-        user-select: none !important;
-        -webkit-user-select: none !important;
-        user-select: none !important;
         visibility: visible !important;
         width: 100% !important;
         z-index: 1000 !important;
@@ -614,6 +609,7 @@
       .flex-row.expand-element-detail {
         animation: fade-in 0.3s ease-out !important;
         animation: none !important;
+        /* stylelint-disable-next-line property-no-vendor-prefix */
         -webkit-backdrop-filter: blur(5px) !important;
         backdrop-filter: blur(5px) !important;
         backface-visibility: initial !important;
@@ -638,8 +634,6 @@
         transform-origin: center center !important;
         transform-style: initial !important;
         transition: none !important;
-        -webkit-user-select: none !important;
-        user-select: none !important;
         -webkit-user-select: none !important;
         user-select: none !important;
         width: 80% !important;
@@ -680,8 +674,6 @@
         touch-action: none !important;
         -webkit-user-select: none !important;
         user-select: none !important;
-        -webkit-user-select: none !important;
-        user-select: none !important;
         width: 100% !important;
         z-index: 1000 !important;
       }
@@ -705,8 +697,6 @@
         transition: all 0.3s ease !important;
         -webkit-user-select: none !important;
         user-select: none !important;
-        -webkit-user-select: none !important;
-        user-select: none !important;
         width: 2.5rem !important;
         z-index: 1060 !important;
 
@@ -720,10 +710,6 @@
         padding: 0 !important;
         pointer-events: auto !important;
         touch-action: pan-y !important;
-        -webkit-user-select: none !important;
-        user-select: none !important;
-        -webkit-user-select: none !important;
-        user-select: none !important;
         -webkit-user-select: none !important;
         user-select: none !important;
         width: 100% !important;
@@ -744,10 +730,6 @@
 
         * {
           touch-action: none !important;
-          -webkit-user-select: none !important;
-          user-select: none !important;
-          -webkit-user-select: none !important;
-          user-select: none !important;
           -webkit-user-select: none !important;
           user-select: none !important;
         }
@@ -771,10 +753,6 @@
       .expand-header {
         pointer-events: auto !important;
         touch-action: none !important;
-        -webkit-user-select: none !important;
-        user-select: none !important;
-        -webkit-user-select: none !important;
-        user-select: none !important;
         -webkit-user-select: none !important;
         user-select: none !important;
       }
@@ -1398,7 +1376,7 @@
         }
 
         p {
-          color: #555;
+          color: var(--md-sys-color-on-surface, #555);
           margin: 8px 0 16px;
         }
 
@@ -1416,20 +1394,20 @@
       :host ::ng-deep .mat-mdc-select-panel {
         .mat-mdc-option {
           &.mdc-list-item--selected {
-            background-color: #e3f2fd !important;
-            color: #002868 !important;
+            background-color: var(--md-sys-color-surface-variant, #e3f2fd) !important;
+            color: var(--md-sys-color-primary, #002868) !important;
 
             &:not(.mdc-list-item--disabled) {
-              background-color: #e3f2fd !important;
+              background-color: var(--md-sys-color-surface-variant, #e3f2fd) !important;
             }
 
             &:hover {
-              background-color: #bbdefb !important;
+              background-color: var(--md-sys-color-surface, #bbdefb) !important;
             }
           }
 
           &:hover:not(.mdc-list-item--selected) {
-            background-color: #f3f8ff !important;
+            background-color: var(--md-sys-color-background, #f3f8ff) !important;
           }
         }
       }

@@ -58,7 +58,6 @@
 
 .text-patriotic {
   background: linear-gradient(90deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
-  background-clip: text;
   background-clip: text; // Added standard property
   color: transparent;
 }
@@ -276,9 +275,13 @@
   transition: all 0.3s ease;
 
   &:hover {
-    background: color-mix(in srgb, var(--md-sys-color-primary) 90%, white);
+    /* Fallback for browsers that don't support color-mix */
+    background: var(--md-sys-color-primary);
     box-shadow: var(--md-sys-elevation-level2);
     transform: translateY(-2px);
+    @supports (background: color-mix(in srgb, var(--md-sys-color-primary) 90%, white)) {
+      background: color-mix(in srgb, var(--md-sys-color-primary) 90%, white);
+    }
   }
 
   &:active {
@@ -289,7 +292,11 @@
     background: var(--md-sys-color-secondary);
 
     &:hover {
-      background: color-mix(in srgb, var(--md-sys-color-secondary) 90%, white);
+      /* Fallback for browsers that don't support color-mix */
+      background: var(--md-sys-color-secondary);
+      @supports (background: color-mix(in srgb, var(--md-sys-color-secondary) 90%, white)) {
+        background: color-mix(in srgb, var(--md-sys-color-secondary) 90%, white);
+      }
     }
   }
 }
@@ -679,7 +686,6 @@
 
       span {
         background: linear-gradient(90deg, white, gold);
-        background-clip: text;
         background-clip: text; // Added standard property
         color: white !important;
         font-weight: 500;

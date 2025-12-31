@@ -26,6 +26,9 @@
 // Import animations last
 @use "animations" as *;
 
+// Apply patriotic overrides globally (provides vibrant-theme variables and components)
+@include apply-patriotic-colors;
+
 // Global styles
 body {
   box-sizing: border-box;

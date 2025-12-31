@@ -2,13 +2,17 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { LoggerService } from './logger.service';
 
+export type ThemeName = 'vibrant' | 'light' | 'dark';
+
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
-  // Theme state
-  private _isDarkTheme = new BehaviorSubject<boolean>(false);
-  readonly isDarkTheme$ = this._isDarkTheme.asObservable();
+  // Theme state (string name for three-way theming)
+  private _theme = new BehaviorSubject<ThemeName>('vibrant');
+  readonly theme$ = this._theme.asObservable();
+  // Expose previous boolean observable for backward compatibility (consumer can derive)
+  readonly isDarkTheme$ = this._theme.asObservable();
 
   // System preference
   private prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
@@ -36,47 +40,48 @@ export class ThemeService {
     const callId = this.logger.startServiceCall('ThemeService', 'GET', 'localStorage:theme-preference');
 
     if (savedTheme) {
-      // Use saved preference
-      this.setTheme(savedTheme === 'dark');
+      // Use saved preference (support both legacy 'dark'/'light' and new names)
+      if (savedTheme === 'dark' || savedTheme === 'light' || savedTheme === 'vibrant') {
+        this.setThemeByName(savedTheme as ThemeName);
+      } else {
+        this.setThemeByName('vibrant');
+      }
       this.logger.endServiceCall(callId, 200);
       this.logger.info('Theme initialized from user preference', { theme: savedTheme });
     } else {
-      // Use system preference
-      this.setTheme(this.prefersDarkScheme.matches);
+      // Default to 'vibrant' when no user preference exists
+      this.setThemeByName('vibrant');
       this.logger.endServiceCall(callId, 204);
-      this.logger.info('Theme initialized from system preference', { isDark: this.prefersDarkScheme.matches });
+      this.logger.info('Theme initialized to default vibrant (no user preference)');
     }
   }
 
   public setTheme(isDark: boolean): void {
-    // Update state
-    this._isDarkTheme.next(isDark);
-
-    // Save preference
-    localStorage.setItem('theme-preference', isDark ? 'dark' : 'light');
-
-    // Apply theme to document
-    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-
-    // Update body class
-    if (isDark) {
-      document.body.classList.add('dark-theme');
-      document.body.classList.remove('light-theme');
-    } else {
-      document.body.classList.add('light-theme');
-      document.body.classList.remove('dark-theme');
-    }
-
-    this.logger.info(`Theme set to ${isDark ? 'dark' : 'light'} mode`);
+    // Backwards-compatible API: map boolean to 'dark'/'light'
+    this.setThemeByName(isDark ? 'dark' : 'light');
   }
 
   public toggleTheme(): void {
-    const currentTheme = this._isDarkTheme.value;
-    this.setTheme(!currentTheme);
-    this.logger.info('Theme toggled', { newIsDark: !currentTheme });
+    const curr = this._theme.value;
+    const next = curr === 'dark' ? 'light' : curr === 'light' ? 'vibrant' : 'dark';
+    this.setThemeByName(next);
+    this.logger.info('Theme toggled', { newTheme: next });
+  }
+
+  public setThemeByName(name: ThemeName): void {
+    this._theme.next(name);
+    // Save preference
+    localStorage.setItem('theme-preference', name);
+
+    // Apply theme attribute and classes
+    document.documentElement.setAttribute('data-theme', name);
+    document.body.classList.remove('light-theme', 'dark-theme', 'vibrant-theme');
+    document.body.classList.add(name + '-theme');
+
+    this.logger.info(`Theme set to ${name}`);
   }
 
   public getCurrentTheme(): string {
-    return this._isDarkTheme.value ? 'dark' : 'light';
+    return this._theme.value;
   }
 }

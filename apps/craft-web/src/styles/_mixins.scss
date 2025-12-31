@@ -1,3 +1,4 @@
+/* stylelint-disable at-rule-empty-line-before, block-closing-brace-newline-after */
 @use "variables" as vars;
 @use "sass:map";
 @use "sass:math";
@@ -23,13 +24,7 @@
 }
 
 // Flexbox mixins
-@mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
-  align-items: $align;
-  display: flex;
-  flex-direction: $direction;
-  flex-wrap: $wrap;
-  justify-content: $justify;
-}
+// (kept a single `flex` mixin later in the file)
 
 @mixin flex-center {
   align-items: center;
@@ -53,24 +48,8 @@
 }
 
 @mixin slide-in($direction: "left", $distance: 20px, $duration: 0.3s) {
-  $start-x: 0;
-  $start-y: 0;
-
-  @if $direction == "left" {
-    $start-x: -$distance;
-  }
-
-  @else if $direction == "right" {
-    $start-x: $distance;
-  }
-
-  @else if $direction == "up" {
-    $start-y: $distance;
-  }
-
-  @else if $direction == "down" {
-    $start-y: -$distance;
-  }
+  $start-x: if($direction == "left", -$distance, if($direction == "right", $distance, 0));
+  $start-y: if($direction == "up", $distance, if($direction == "down", -$distance, 0));
 
   animation: slideIn $duration ease-out;
 
@@ -110,28 +89,10 @@
 }
 
 // Card mixin
-@mixin card {
-  background-color: var(--md-sys-color-surface);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
-  padding: 1rem;
-}
+// (card mixin defined later with parameters)
 
 // Patriotic theme mixins
-@mixin patriotic-border {
-  border-image:
-    linear-gradient(
-      to bottom,
-      var(--md-sys-color-primary),
-      var(--md-sys-color-primary) 33%,
-      var(--md-sys-color-secondary) 33%,
-      var(--md-sys-color-secondary) 67%,
-      var(--md-sys-color-tertiary) 67%,
-      var(--md-sys-color-tertiary) 100%
-    );
-  border-image-slice: 1;
-  border-left: 4px solid transparent;
-}
+// (patriotic variants defined later)
 
 // Core mixins for the application
 
@@ -139,8 +100,7 @@
 @mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
   align-items: $align;
   display: flex;
-  flex-direction: $direction;
-  flex-wrap: $wrap;
+  flex-flow: #{$direction} #{$wrap};
   justify-content: $justify;
 }
 
@@ -181,9 +141,7 @@
     @media (min-width: $value) {
       @content;
     }
-  }
-
-  @else {
+  } @else {
     @error "Unknown breakpoint: #{$breakpoint}. Available breakpoints: #{map.keys(vars.$breakpoints)}";
   }
 }
@@ -199,16 +157,12 @@
     font-size: map.get(vars.$font-sizes, "4xl");
     font-weight: 700;
     line-height: 1.2;
-  }
-
-  @else if $style == "h2" {
+  } @else if $style == "h2" {
     font-family: map.get(vars.$font-families, "merriweather");
     font-size: map.get(vars.$font-sizes, "3xl");
     font-weight: 700;
     line-height: 1.2;
-  }
-
-  @else if $style == "body" {
+  } @else if $style == "body" {
     font-family: map.get(vars.$font-families, "roboto-flex");
     font-size: map.get(vars.$font-sizes, "base");
     font-weight: 400;
@@ -253,8 +207,9 @@
   transition: $property $duration $timing;
 }
 
-@mixin hover-effect($scale: 1.05, $shadow-level: 2) {
-  @include animate(transform box-shadow);
+@mixin hover-effect($scale: 1.05, $shadow-level: 2, $duration: 0.3s, $timing: ease) {
+  /* Explicit transitions for transform and box-shadow to avoid malformed animate calls */
+  transition: transform $duration $timing, box-shadow $duration $timing;
 
   &:hover {
     box-shadow: var(--md-sys-elevation-level#{$shadow-level});
@@ -272,9 +227,7 @@
 
   @if map.has-key(vars.$container-max-widths, $max-width) {
     max-width: map.get(vars.$container-max-widths, $max-width);
-  }
-
-  @else {
+  } @else {
     max-width: $max-width;
   }
 }
@@ -288,15 +241,15 @@
 // Truncate text with ellipsis
 @mixin truncate($lines: 1) {
   @if $lines == 1 {
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  @else {
+    white-space: nowrap;
+  } @else {
+    /* Use -webkit-box for multiline truncation (modern browsers) */
+    -webkit-box-orient: vertical;
+    /* stylelint-disable-next-line value-no-vendor-prefix */
     display: -webkit-box;
     -webkit-line-clamp: $lines;
-    -webkit-box-orient: vertical;
     overflow: hidden;
   }
 }

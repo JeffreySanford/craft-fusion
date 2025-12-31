@@ -1,6 +1,8 @@
 @use "variables" as vars;
 @use "sass:map";
 
+/* stylelint-disable scss/at-else-empty-line-before, scss/at-if-closing-brace-space-after, scss/at-if-closing-brace-newline-after */
+
 // Breakpoint mixins for consistent responsive behavior
 // Usage: @include respond-to(md) { ... }
 @mixin respond-to($breakpoint) {

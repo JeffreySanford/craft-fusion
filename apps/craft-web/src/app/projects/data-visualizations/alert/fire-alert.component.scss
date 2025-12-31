@@ -391,14 +391,13 @@
   width: 100%;
 
   &.two-columns {
-    flex-direction: row;
-    flex-wrap: nowrap; // Prevent wrapping for two columns layout
+    flex-flow: row nowrap; // two columns layout
     gap: 15px; // Add gap between columns
 
     .status-column {
       display: flex;
       flex: 1;
-      flex-direction: column;
+      flex-flow: column nowrap;
       min-width: 0; // Allow columns to shrink if needed
     }
   }

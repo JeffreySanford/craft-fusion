@@ -29,6 +29,10 @@
           <mat-icon>description</mat-icon>
           <p>resume</p>
         </button>
+        <button mat-icon-button class="theme-cycle" (click)="cycleTheme()" aria-label="Cycle theme" title="Cycle theme">
+          <mat-icon>palette</mat-icon>
+          <span class="theme-label">{{ currentTheme ? (currentTheme.replace('-theme','') | titlecase) : 'Vibrant' }}</span>
+        </button>
       </div>
       <div class="logo-performance-block">
         <div class="logo-container">

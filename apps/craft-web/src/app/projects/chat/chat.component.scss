@@ -205,7 +205,11 @@
       transition: background-color 0.3s ease;
 
       &:hover {
-        background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
+        /* Fallback for browsers without color-mix support */
+        background-color: var(--md-sys-color-primary, #0d47a1);
+        @supports (color: color-mix(in srgb, red 0%, black 0%)) {
+          background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
+        }
       }
     }
   }
@@ -298,43 +302,43 @@
     margin-left: 1.5em;
   }
 
-  :deep(h1),
-  :deep(h2),
-  :deep(h3),
-  :deep(h4),
-  :deep(h5),
-  :deep(h6) {
+  ::ng-deep h1,
+  ::ng-deep h2,
+  ::ng-deep h3,
+  ::ng-deep h4,
+  ::ng-deep h5,
+  ::ng-deep h6 {
     font-weight: bold;
     margin: 0.5em 0;
   }
 
-  :deep(h1) {
+  ::ng-deep h1 {
     font-size: 1.5em;
   }
 
-  :deep(h2) {
+  ::ng-deep h2 {
     font-size: 1.3em;
   }
 
-  :deep(h3) {
+  ::ng-deep h3 {
     font-size: 1.1em;
   }
 
-  :deep(ul),
-  :deep(ol) {
+  ::ng-deep ul,
+  ::ng-deep ol {
     margin: 0.5em 0;
     padding-left: 1.5em;
   }
 
-  :deep(li) {
+  ::ng-deep li {
     margin: 0.25em 0;
   }
 
-  :deep(p) {
+  ::ng-deep p {
     margin: 0.5em 0;
   }
 
-  :deep(strong) {
+  ::ng-deep strong {
     font-weight: bold;
   }
 

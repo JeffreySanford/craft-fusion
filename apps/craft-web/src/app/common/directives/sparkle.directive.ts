@@ -78,7 +78,18 @@ export class SparkleDirective implements OnInit, OnDestroy {
     sparkle.style.width = '4px';
     sparkle.style.height = '4px';
     sparkle.style.borderRadius = '50%';
-    sparkle.style.backgroundColor = Math.random() > 0.5 ? '#BF0A30' : '#002868';
+    const css = (name: string, fallback: string) => {
+      try {
+        if (typeof window === 'undefined' || !window.getComputedStyle) return fallback;
+        const v = getComputedStyle(document.documentElement).getPropertyValue(name);
+        return v ? v.trim() : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    };
+    const primary = css('--md-sys-primary', '#002868');
+    const error = css('--md-sys-error', '#BF0A30');
+    sparkle.style.backgroundColor = Math.random() > 0.5 ? error : primary;
     sparkle.style.boxShadow = '0 0 3px 1px rgba(255,255,255,0.8)';
     sparkle.style.pointerEvents = 'none';
     sparkle.style.setProperty('--tx', `${tx}px`);

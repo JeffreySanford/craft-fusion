@@ -1,5 +1,5 @@
 .sidebar-container {
-  background-color: rgb(0 0 255 / 20%);
+  background-color: var(--md-sys-primary-container);
   border-radius: 0.25em;
   height: 60vh;
   margin: 0 0 0 0.125em;
@@ -13,9 +13,9 @@
 
   .toggle {
     align-items: center; // Vertically center
-    border: 1px solid #0ff;
+    border: 1px solid var(--md-sys-secondary);
     bottom: 1em; // Position at the bottom
-    color: #0ff;
+    color: var(--md-sys-secondary);
     cursor: pointer;
     display: flex; // Use flexbox to center the icon
     font-size: 0.85em; // Increased font size
@@ -29,9 +29,9 @@
     transition: color 300ms ease;
     width: 2.25em; // Increased width
 
-    .mat-icon {
+      .mat-icon {
       align-items: center; // Vertically center the icon content
-      color: #00ff7f; // Blue-green color
+      color: var(--md-sys-secondary); // Accent color
       display: flex; // Use flexbox on the icon itself
       font-size: 1.1em; // Reduced icon size
       justify-content: center; // Horizontally center the icon content
@@ -39,23 +39,23 @@
     }
 
     &:hover {
-      color: greenyellow;
+      color: var(--md-sys-tertiary);
     }
   }
 }
 
-.menu-item {
+  .menu-item {
   align-items: center;
-  background-color: rgb(4 0 252 / 70%) !important;
-  border: 1px solid darkblue;
+  background-color: var(--md-sys-color-primary) !important;
+  border: 1px solid var(--md-sys-color-primary);
   border-radius: 0.25em;
-  color: white;
+  color: var(--md-sys-on-primary);
   display: flex;
   height: 3em;
   justify-content: space-between;
   line-height: 1.25em;
   margin: 0 0.25em;
-  outline: 0.1em solid rgb(4 0 252 / 30%);
+  outline: 0.1em solid var(--md-sys-color-primary);
   text-align: right;
   width: 13em;
 
@@ -64,29 +64,29 @@
     width: 5em;
   }
 
-  &:hover {
+    &:hover {
     box-shadow:
-      0 0.375em 1.25em rgb(0 0 0 / 15%),
-      0 0 0.9375em rgb(33 150 243 / 30%);
-    outline-color: rgb(96 33 243 / 80%);
+      0 0.375em 1.25em rgba(0,0,0,0.15),
+      0 0 0.9375em rgba(33,150,243,0.30);
+    outline-color: var(--md-sys-color-primary);
     transform: scale(1.1);
   }
 
-  &.active {
+    &.active {
     box-shadow:
-      0 0.375em 1.25em rgb(0 0 0 / 15%),
-      0 0 0.9375em rgb(33 194 243 / 30%);
-    color: #0ff; // Neon cyan
-    outline-color: rgb(33 236 243 / 80%);
+      0 0.375em 1.25em rgba(0,0,0,0.15),
+      0 0 0.9375em rgba(33,194,243,0.30);
+    color: var(--md-sys-secondary);
+    outline-color: rgba(33,236,243,0.8);
 
     .mat-icon,
     .menu-text {
-      color: #0ff;
+      color: var(--md-sys-secondary);
     }
   }
 
-  .mat-icon {
-    color: white;
+    .mat-icon {
+    color: var(--md-sys-on-primary);
     font-size: 2.25em;
     height: 1em;
     margin: 0.25em 0.25em 0.25em 0;
@@ -95,8 +95,8 @@
     width: 2em;
   }
 
-  .menu-text {
-    color: white;
+    .menu-text {
+    color: var(--md-sys-on-primary);
     flex-grow: 1;
     opacity: 1;
     text-align: right;
@@ -105,68 +105,68 @@
   }
 
   &[routerLink="/admin"] {
-    background-color: rgb(252 4 0 / 70%) !important;
-    border: 1px solid darkred;
-    color: white;
-    outline: 0.1em solid rgb(252 0 0 / 30%);
+    background-color: var(--md-sys-error) !important;
+    border: 1px solid var(--md-sys-error);
+    color: var(--md-sys-on-error, white);
+    outline: 0.1em solid rgba(var(--md-sys-error-rgb, 252,4,0), 0.3);
 
     &:hover {
       box-shadow:
-        0 0.375em 1.25em rgb(0 0 0 / 15%),
-        0 0 0.9375em rgb(243 33 33 / 30%);
-      outline-color: rgb(243 33 33 / 80%);
+        0 0.375em 1.25em rgba(0,0,0,0.15),
+        0 0 0.9375em rgba(243,33,33,0.30);
+      outline-color: rgba(243,33,33,0.8);
       transform: scale(1.1);
     }
 
     &.active {
-      background-color: rgb(252 4 0 / 70%) !important;
+      background-color: var(--md-sys-error) !important;
       box-shadow:
-        0 0.375em 1.25em rgb(0 0 0 / 15%),
-        0 0 0.9375em rgb(33 194 243 / 30%);
-      color: #0ff; // Neon cyan
-      outline-color: rgb(33 236 243 / 80%);
+        0 0.375em 1.25em rgba(0,0,0,0.15),
+        0 0 0.9375em rgba(33,194,243,0.30);
+      color: var(--md-sys-secondary);
+      outline-color: rgba(33,236,243,0.8);
 
       .mat-icon,
       .menu-text {
-        color: #0ff;
+        color: var(--md-sys-secondary);
       }
     }
   }
 }
 
-.admin-link {
-  background-color: rgb(252 4 0 / 70%) !important;
-  border: 1px solid darkred;
-  color: white;
-  outline: 0.1em solid rgb(252 0 0 / 30%);
+  .admin-link {
+  background-color: var(--md-sys-error) !important;
+  border: 1px solid var(--md-sys-error);
+  color: var(--md-sys-on-error, white);
+  outline: 0.1em solid rgba(var(--md-sys-error-rgb,252,0,0), 0.3);
 
   &:hover {
     box-shadow:
-      0 0.375em 1.25em rgb(0 0 0 / 15%),
-      0 0 0.9375em rgb(243 33 33 / 30%);
-    outline-color: rgb(243 33 33 / 80%);
+      0 0.375em 1.25em rgba(0,0,0,0.15),
+      0 0 0.9375em rgba(243,33,33,0.30);
+    outline-color: rgba(243,33,33,0.8);
     transform: scale(1.1);
   }
 
   &.active {
-    background-color: rgb(252 4 0 / 70%) !important;
+    background-color: var(--md-sys-error) !important;
     box-shadow:
-      0 0.375em 1.25em rgb(0 0 0 / 15%),
-      0 0 0.9375em rgb(33 194 243 / 30%);
-    color: #0ff; // Neon cyan
-    outline-color: rgb(33 236 243 / 80%);
+      0 0.375em 1.25em rgba(0,0,0,0.15),
+      0 0 0.9375em rgba(33,194,243,0.30);
+    color: var(--md-sys-secondary);
+    outline-color: rgba(33,236,243,0.8);
 
     .mat-icon,
     .menu-text {
-      color: #0ff;
+      color: var(--md-sys-secondary);
     }
   }
 }
 
-.sidebar {
-  background-color: #f8f9fa;
-  border-right: 1px solid #dee2e6;
-  color: white;
+  .sidebar {
+  background-color: var(--md-sys-surface);
+  border-right: 1px solid var(--md-sys-surface-variant);
+  color: var(--md-sys-on-surface);
   padding: 15px;
   width: 250px;
 
@@ -186,7 +186,7 @@
       transition: background-color 0.3s;
 
       &:hover {
-        background-color: #e9ecef;
+        background-color: var(--md-sys-surface-variant);
       }
 
       &.collapsed {
@@ -196,8 +196,8 @@
     }
   }
 
-  .sidebar-footer {
-    color: #6c757d;
+    .sidebar-footer {
+    color: var(--md-sys-on-surface-variant, #6c757d);
     font-size: 14px;
     margin-top: auto;
   }

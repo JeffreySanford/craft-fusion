@@ -1,6 +1,6 @@
 @use "variables" as vars;
 @use "sass:color";
-@use "../../../styles/md3-mapping" as md3;
+@use "../../../../styles/md3-mapping" as md3;
 
 $flag-wave-duration: 6s;
 
@@ -44,9 +44,9 @@ $flag-wave-duration: 6s;
 // Patriotic Header
 .admin-header {
   animation: slide-in-top 0.5s ease-out forwards;
-  background: vars.$usa-blue;
+  background: var(--sidebar-gradient, vars.$usa-blue);
   border-radius: 10px;
-  box-shadow: 0 6px 10px rgb(0 0 0 / 30%);
+  box-shadow: 0 6px 10px rgba(0,0,0,0.30);
   margin-bottom: 20px;
   padding: 15px 20px;
 
@@ -102,14 +102,14 @@ $flag-wave-duration: 6s;
         height: 40px;
         justify-content: center;
 
-        h1 {
-          color: vars.$usa-white;
+            h1 {
+              color: var(--md-sys-on-primary, vars.$usa-white);
           font-size: 1.6em;
           margin: 0;
         }
 
         .subtitle {
-          color: vars.$usa-gold;
+          color: var(--md-sys-tertiary, vars.$usa-gold);
           font-size: 0.9em;
           margin: 0;
         }
@@ -128,10 +128,10 @@ $flag-wave-duration: 6s;
 .actions-section {
   .action-button {
     align-items: center;
-    background-color: rgb(220 53 69 / 90%);
+    background-color: var(--md-sys-error);
     border-radius: 0.25em;
-    box-shadow: 0 2px 6px rgb(0 0 0 / 25%);
-    color: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    color: var(--md-sys-on-error, white);
     display: inline-flex;
     font-size: 0.9em;
     gap: 0.4em;
@@ -142,15 +142,19 @@ $flag-wave-duration: 6s;
       background-color 0.15s ease;
 
     mat-icon {
-      color: white;
+      color: var(--md-sys-on-error, white);
       font-size: 1.1em;
       height: 1.1em;
       width: 1.1em;
     }
 
     &:hover {
-      background-color: rgb(220 53 69 / 100%);
-      box-shadow: 0 6px 12px rgb(0 0 0 / 30%);
+      /* Fallback for browsers that don't support color-mix */
+      background-color: var(--md-sys-error, #b00020);
+      @supports (color: color-mix(in srgb, red 0%, black 0%)) {
+        background-color: color-mix(in srgb, var(--md-sys-error) 85%, black);
+      }
+      box-shadow: 0 6px 12px rgba(0,0,0,0.30);
       cursor: pointer;
       transform: translateY(-2px);
     }

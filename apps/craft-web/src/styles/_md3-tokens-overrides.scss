@@ -1,0 +1,39 @@
+@use "md3-tokens" as md3;
+
+// Lightweight theme override maps — tune these values as needed.
+$md-sys-light: (
+  primary: #0b3b8c,
+  on-primary: #fff,
+  surface: #fff,
+  on-surface: #1b1b1f,
+);
+$md-sys-dark: (
+  primary: #90caf9,
+  on-primary: #002033,
+  surface: #121212,
+  on-surface: #e0e0e0,
+);
+$md-sys-vibrant: (
+  primary: #0033a0,
+  on-primary: #fff,
+  surface: #001e3a,
+  on-surface: #fff,
+);
+
+// Emit a safe default set of MD3 tokens on :root so vars exist at runtime
+:root {
+  @include md3.emit-css-vars($md-sys-light);
+}
+
+// Emit overrides under theme classes. These will override the :root vars when a theme class is applied.
+.light-theme {
+  @include md3.emit-css-vars($md-sys-light);
+}
+
+.dark-theme {
+  @include md3.emit-css-vars($md-sys-dark);
+}
+
+.vibrant-theme {
+  @include md3.emit-css-vars($md-sys-vibrant);
+}

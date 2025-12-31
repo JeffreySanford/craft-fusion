@@ -1,5 +1,7 @@
 // _themes.scss
 
+@use "sass:map";
+
 // Light Theme
 $light-theme: (
   primary: #fff,
@@ -38,11 +40,11 @@ $hoorah-theme: (
 
 // Mixin to apply theme
 @mixin apply-theme($theme) {
-  $primary: map-get($theme, primary);
-  $secondary: map-get($theme, secondary);
-  $accent: map-get($theme, accent);
-  $text: map-get($theme, text);
-  $background: map-get($theme, background);
+  $primary: map.get($theme, primary);
+  $secondary: map.get($theme, secondary);
+  $accent: map.get($theme, accent);
+  $text: map.get($theme, text);
+  $background: map.get($theme, background);
 
   body {
     background-color: $background;

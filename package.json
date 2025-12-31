@@ -15,7 +15,12 @@
     "lint:fix": "pnpm dlx nx lint craft-web --fix",
     "test": "pnpm dlx nx test craft-web",
     "e2e": "pnpm dlx nx e2e craft-web-e2e",
-    "test:gotcha": "pnpm dlx nx test gotcha-harness"
+    "test:gotcha": "pnpm dlx nx test gotcha-harness",
+    "lint:styles": "pnpm exec stylelint \"apps/craft-web/src/**/*.scss\" --config stylelint.config.js",
+    "check:sass": "pnpm exec sass --no-source-map --load-path=apps/craft-web/src/styles apps/craft-web/src/styles.scss:tmp/css/styles.css --style=compressed",
+    "check:contrast": "node tools/check-contrast.js",
+    "test:a11y": "node tools/run-axe-playwright.js",
+    "check:styles": "pnpm run lint:styles && pnpm run check:sass && pnpm run check:contrast"
   },
   "dependencies": {
     "@angular/animations": "19.2.13",
@@ -115,6 +120,7 @@
     "@angular/cli": "~19.1.0",
     "@angular/compiler-cli": "19.2.13",
     "@angular/language-service": "19.2.13",
+    "@axe-core/playwright": "^4.11.0",
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.2",
     "@jridgewell/sourcemap-codec": "^1.5.0",
@@ -162,6 +168,7 @@
     "@typescript-eslint/parser": "^8.33.0",
     "blessed": "^0.1.81",
     "blessed-contrib": "^4.11.0",
+    "color-contrast-checker": "^2.1.0",
     "concurrently": "^9.2.1",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
@@ -176,6 +183,7 @@
     "npmlog": "^7.0.1",
     "nx": "20.4.4",
     "ora": "^6.0.0",
+    "playwright": "^1.57.0",
     "prettier": "^2.8.8",
     "puppeteer": "^22.15.0",
     "puppeteer-core": "^24.9.0",
