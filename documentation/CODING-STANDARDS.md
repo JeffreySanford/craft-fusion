@@ -143,7 +143,7 @@ Socket events should use a consistent, namespaced approach with colon separators
   - `admin:logs:stream`
   - `finance:stock:priceUpdate`
 
-See [SOCKET-SERVICES.md](./services/SOCKET-SERVICES.md) for more detailed implementation guidelines and best practices related to WebSocket communication.
+See [SOCKET-SERVICES.md](./architecture/websocket/SOCKET-SERVICES.md) for more detailed implementation guidelines and best practices related to WebSocket communication.
 
 ## Large Dataset Handling
 
@@ -242,7 +242,6 @@ export class RecordListComponent implements OnInit {
 ```
 
 ## Project-wide Standards
-- All scripts use DRY system prep via `system-prep.sh`.
-- Vibrant, color-coded output is standard for all CLI tools.
+- If automation scripts are reintroduced, keep a shared prep step and consistent output conventions.
 
 Last Updated: 2025-05-25

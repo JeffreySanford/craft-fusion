@@ -1,12 +1,3 @@
-# Authentication and Authorization Architecture
+# Authentication Architecture (Deprecated)
 
-## Overview
-
-The authentication and authorization architecture in Craft Fusion provides a comprehensive security system for managing user identity, access control, and secure communication. This document outlines the architecture, components, and best practices.
-
-## Architecture Components
-
-### Authentication Layer
-
-The authentication layer handles user identity verification:
-
+This file is a placeholder and not maintained. Use `documentation/AUTHENTICATION.md` and `documentation/AUTHENTICATION-SECURITY-ASSESSMENT.md` instead.

@@ -1,130 +1,162 @@
 # Project TODOs (master list)
 
-This file collects current action items discovered across the repository and recommended follow-ups based on recent Service Monitoring and security work.
+This file is the planning source of truth. It records decisions, risks, and the next sequence of work for a solo maintainer.
 
 ## Status legend
 
 - [x] Done
 - [ ] Not started / open
 
-## High priority
+## Operating context
 
-- [x] Integrate `scripts/test-service-monitoring.js` as a Playwright e2e test in CI (run on PRs) — owner: SRE / frontend, effort: low ✅
-  - Workflow created: `.github/workflows/playwright-smoke.yml`
-    - Installs Playwright browsers and dependencies
-    - Runs `node ./scripts/test-service-monitoring.js` headless, captures output to `smoke-test-output.txt`
-    - Retries once on initial failure
-    - Uploads artifacts: `smoke-test-output.txt`, `playwright-report/**`
-    - Nightly run added to detect flakiness and stability regressions
-- [x] Add a CI secret-scan job (gitleaks or GitHub Secret Scanning) and schedule a repo-wide historical scan — owner: DevOps, effort: low ✅
-  - Workflow added: `.github/workflows/secret-scan.yml` (runs on PRs, pushes to `main`, and weekly schedule)
-  - Added TruffleHog scanning step to `.github/workflows/secret-scan.yml` and npm script `scan:secrets:trufflehog` to run locally.
-- [ ] **🚨 CRITICAL: Implement Secure Authentication System** — owner: Security / Backend / Frontend, estimate: 2-3 weeks — **BLOCKER FOR PRODUCTION**
-  - **SECURITY RATING: 2/10** - Complete authentication bypass, mock credentials accepted, no JWT tokens attached to API requests
-  - **IMMEDIATE ACTION REQUIRED** - See `documentation/AUTHENTICATION-SECURITY-ASSESSMENT.md` for full details
-  - **Phase 1 (Week 1):** JWT token handling, HTTP interceptor, real backend auth, httpOnly cookies
-  - **Phase 2 (Week 2):** Token management, password security, API security
-  - **Phase 3 (Week 3):** Monitoring, compliance, production testing
-- [ ] Design & implement refresh-token migration to HttpOnly cookies with server-side rotation and revocation store — owner: backend, effort: medium-high
+- Nx monorepo: Angular 19 (Material Design 3 Expressive) + NestJS + Go
+- Current blocker: Angular 19 test stability (Jest/Vitest) and CI fragility
+- Goal: reduce code and documentation while preserving production-grade security and correctness
 
-## Medium priority
+## Critical blockers (fix before production)
 
-- [ ] Complete rewrite of Angular (craft-web) tests to use Karma/Jasmine instead of Jest — owner: frontend/test, effort: medium (4-6 hours)
-  - **PROGRESS UPDATE (Dec 28, 2025)**: ✅ Karma properly configured for Angular module components, ✅ Jest→Jasmine syntax conversion completed across ~34 spec files, ✅ Basic import path fixes applied, ❌ Tests still failing due to SCSS import issues and complex mock setups
-  - Current tests were written for Jest/Vitest but project now uses Karma for Angular module components
-  - Need to rewrite ~34 spec files with proper Jasmine patterns and modern Angular testing practices
-  - Focus on core components first (AppComponent, services, key features) then expand to remaining tests
-- [ ] Add the Playwright smoke test to the official e2e suite and gating on merges — owner: frontend/test, effort: low
-- [ ] Add flaky-test detection and timeouts to prevent CI hangs — owner: test infra, effort: medium
-- [ ] Clean up tracked build artifacts and ensure `.gitignore` excludes `dist/`, `.angular/cache`, and other generated files — owner: repo maintainers, effort: low
-- [ ] Implement Admin Security Tab — SCA Top 10 & SBOMs (owner: Security / Backend / Frontend, estimate: 3–6 days) — **IN-PROGRESS: backend + frontend scaffolding created**, see `documentation/RFCs/rfc-admin-security-tab-sca-sboms.md` for details.
+- [ ] Remove auth bypass and enforce JWT verification end-to-end (Nest + Angular)
+- [ ] Migrate tokens to HttpOnly cookies with refresh-token rotation and server-side revocation
+- [ ] Remove committed auth artifacts and rotate secrets (`auth_resp.json`, `login_resp.json`)
+- [ ] Block absolute-path traversal in file reads (enforce storage root boundary)
+- [ ] Remove unsafe HTML rendering or sanitize aggressively (SafeHtml pipes, Markdown rendering, `innerHTML`)
+- [ ] Replace hardcoded WS JWT secret with configured secret and verify expiration/claims
+- [ ] Remove client-side OpenAI key usage and proxy all AI requests through the backend
 
-## Low priority / Nice to have
+## High priority (stability and correctness)
 
-- [ ] Add a scheduled job to run secret-scan weekly and report to SEC team — owner: DevOps, effort: low
-- [ ] Add monitoring/alerting for abnormal API call rates from UI endpoints (detect UI polling spikes) — owner: monitoring, effort: medium
+- [ ] Fix file upload pipeline end-to-end (FormData in UI, Multer/`@UploadedFile` in Nest, storage + serving)
+- [ ] Align auth token storage plan (sessionStorage now, HttpOnly next) and document it clearly
+- [ ] Use configured host/port when starting Nest (avoid hardcoded `app.listen(3000, ...)`)
+- [ ] Implement dataset-size gating + pagination in records endpoints (Nest + Go)
+- [ ] Fix Go record generation time (currently always 0 due to local variable scope)
+- [ ] Normalize socket event names to `domain:entity:action` (timeline gateway)
+- [ ] Tighten timeline gateway CORS in production (remove wildcard origin)
+- [ ] Reduce backend debug logging and replace with structured logs
 
-## TODOs discovered in source (actionable)
+## Test strategy decision (Jest vs Vitest vs both)
 
-- apps/craft-web/src/app/pages/header/header.component.ts
-  - TODO: show notification or UI feedback — Suggestion: display a toast when certain network errors or auth events occur.
+**Context:** Angular 19 upgrade is blocked by Jest instability. Vitest experiments were unstable. We previously had Jest working, then lost the config.
 
-- apps/craft-web/src/app/common/services/auth/authentication.service.ts
-  - ~~TODO: Implement token validation logic~~ — ✅ **COMPLETED**: Converted to full hot observable pattern with API-based token validation, proper error handling, and cancellable operations. Removed async/try-catch mess and implemented pure RxJS patterns.
+### Option A: Jest only (status quo)
 
-- apps/craft-web/src/app/common/services/logger.service.ts
-  - TODO: Implement actual health check logic
-  - TODO: Implement actual log fetching logic — Suggestion: complete health-check APIs and backfill logger endpoints.
+- Pros: Lowest surface area, keep existing Nest/lib tests.
+- Cons: Angular 19 + Jest remains fragile and slow.
 
-## How to proceed
+### Option B: Vitest only (modern)
 
-1. ✅ **COMPLETED**: Authentication service migration to hot observables - eliminated async/try-catch mess, improved security with API validation, and implemented cancellable operations
-2. Prioritize CI secret scanning and Playwright CI integration (blocks future regressions).
-3. Open small PRs:
-   - Add Playwright test to CI
-   - Add `.github/workflows/secret-scan.yml`
-   - Add `.gitignore` cleanup PR removing tracked dist files and ensure they are ignored going forward
-4. Plan the longer refresh-token migration as a design RFC with tests and rollback plan.
+- Pros: Fast, Vite-aligned, Angular-friendly.
+- Cons: Requires migration for Nest/libs or leaving them untested.
 
-## Final Migration Status - December 29, 2025
+### Option C: Run both (scoped, recommended)
 
-### ✅ **Phase 1 Complete: Authentication Service Modernization**
+- Pros: Pragmatic split: Vitest for Angular UI, Jest for Nest/libs.
+- Cons: Higher maintenance and higher cognitive load.
+- Guardrails to keep it sane:
+  - Scope by project: `craft-web` uses Vitest only; `craft-nest` + libs keep Jest.
+  - Do not run Jest and Vitest inside the same Angular project.
+  - Enforce naming: `*.vitest.spec.ts` vs `*.jest.spec.ts`.
+  - Separate Nx targets and CI lanes.
+  - Add a migration checklist to remove Angular/Jest once Vitest stabilizes.
 
-- **Status**: ✅ **COMPLETED** - Authentication service fully converted to hot observable pattern
-- **Security**: ❌ **CRITICAL VULNERABILITIES** - See `documentation/AUTHENTICATION-SECURITY-ASSESSMENT.md`
-- **UI Functionality**: ✅ **WORKING** - Login/logout UI and sidebar admin buttons functional
-- **Backend Security**: 🚨 **INSECURE** - Mock authentication, no JWT tokens, complete bypass possible
-- **Performance**: ✅ **IMPROVED** - Cancellable operations, shared initialization
-- **Maintainability**: ✅ **ENHANCED** - Pure RxJS patterns, eliminated async/try-catch mixing
-- **Testing**: ✅ **VERIFIED** - All tests passing (34 suites, 55 tests)
-- **Linting**: ✅ **CLEAN** - No linting errors in authentication service
-- **Build**: ✅ **SUCCESSFUL** - Application builds and runs correctly
+**Decision (current):** Option C with strict scoping and clear naming (Vitest only for Angular, Jest for Nest/libs). Revisit once Angular 19 + Vitest is stable.
 
-### 🚨 **Phase 2: Security Implementation (CRITICAL - BLOCKER FOR PRODUCTION)**
+## Test & lint status
 
-- **Current Status**: 🚨 **CRITICAL SECURITY VULNERABILITIES** - Authentication completely bypassable
-- **Immediate Actions Required**:
-  - Implement JWT token attachment to API requests
-  - Fix HTTP interceptor to add auth headers
-  - Replace mock backend auth with real authentication
-  - Move tokens from localStorage to httpOnly cookies
-  - Remove forced logout on page refresh
-- **Security Rating**: **2/10** (Production Unacceptable)
-- **Risk**: Complete authentication bypass, any user can access any endpoint
-- **Timeline**: 2-3 weeks for full security implementation
+- [x] Run Nx lint/test across workspace and capture failures (see latest run below)
+- [ ] Add Nx lint/test targets for `craft-web` if missing or misconfigured
+- [ ] Fix `craft-library` lint errors (`no-explicit-any`) and tsconfig warnings
+- [ ] Fix `craft-nest` unit test failures (controller specs, JSON module, mocks)
+- [ ] Fix `craft-go` tests (`handlers_test.go`)
+- [ ] Fix `craft-web-e2e` test runner warnings and `TransformStream` runtime issue
+- [ ] Fix Playwright storage state (`playwright/.auth/user.json`) used by e2e tests
+- [ ] Resolve Nx cache I/O errors (disable Nx Cloud or fix cache path)
 
-### 🔄 **Phase 2: Testing Infrastructure Migration (In Progress)**
+### Latest run (2025-12-30)
 
-- **Current Status**: Karma/Jasmine rewrite ~70% complete, SCSS import issues remain
-- **Test Results**: ✅ 34 test suites passing, 55 tests total
-- **Next Steps**:
-  - Fix remaining SCSS import issues in test files
-  - Complete mock setups for complex services
-  - Add unit tests for new authentication service patterns
-  - Integrate Playwright smoke tests into official e2e suite
+- `pnpm dlx nx run-many -t lint` failed: `craft-library` has 3 `no-explicit-any` errors and a tsconfig input warning; `craft-nest` reports 226 warnings (no errors).
+- `pnpm dlx nx run-many -t test` failed: `craft-go` fails `handlers_test.go`; `craft-nest` fails `UsersController` DI, `getData` assertions, and JSON module import; `craft-web-e2e` fails with Jest config warnings and `TransformStream` not defined.
+- `craft-web` has no lint/test targets in run-many output (needs confirmation or target setup).
 
-### 📋 **Phase 3**: Production Readiness (Upcoming)
+## Admin dashboard UI/UX revamp (MD3 Expressive + patriotic)
 
-- Implement refresh-token migration to HttpOnly cookies
-- Add flaky-test detection and CI timeouts
-- Complete Admin Security Tab (SCA/SBOMs)
-- Add monitoring for abnormal API call rates
+**Problem:** The admin refactor reduced a 2000-line file into smaller sections, but the UI is now visually flat and hard to scan. Tabs look white-on-white with no card separation. The dashboard needs vibrant color, strong structure, and real-time tiles.
 
-### 🎯 **Immediate Next Actions**
+### Visual direction
 
-1. **Test Authentication Flow**: Verify login/logout works correctly with new observable patterns
-2. **Complete Test Migration**: Finish Karma/Jasmine conversion and fix SCSS imports
-3. **Add Unit Tests**: Create comprehensive tests for authentication service observable patterns
-4. **CI Integration**: Add Playwright smoke tests to merge gates
+- Use high-contrast patriotic palettes (navy/red/gold/white) with MD3 expressive tokens.
+- Make every admin tab use visible cards or tiles; no white-on-white panels.
+- Emphasize motion: staggered entry, animated counters, and responsive feedback.
 
-### 📊 **Quality Metrics**
+### Work items
 
-- **Linting**: 197 total issues (106 errors, 91 warnings) - authentication service clean, accessibility issues resolved
-- **Testing**: 100% pass rate (34/34 suites, 55/55 tests)
-- **Build**: ✅ Successful compilation and bundling
-- **Security**: ✅ API-based token validation implemented
-- **Performance**: ✅ Hot observables with shareReplay(1) implemented
-- **Accessibility**: ✅ Fixed axe/forms and axe/structure issues in HTML templates
-- **Documentation**: ✅ Fixed markdownlint MD022, MD031, MD032 issues
+- [ ] Define admin card system (sizes, padding, elevation, gradients, borders)
+- [ ] Create real-time tile components (status, trend, delta, timestamp)
+- [ ] Replace flat tables with card/tile groupings where appropriate
+- [ ] Add animated KPI counters and chart reveals (prefers-reduced-motion compliant)
+- [ ] Add top-level admin hero area with summary metrics and alerts
+- [ ] Align typography with the real font stack in `apps/craft-web/src/styles/_typography.scss`
 
-**NOTE (temporary relax):** TypeScript/Angular strictness was temporarily relaxed in `apps/craft-web/tsconfig.json` and `apps/craft-web/tsconfig.app.json`. See `TODO_reenable_strict.md` for remediation steps and timeline.
+## Security tab spec (draft)
+
+**Goal:** A dedicated security surface with a horizontal top navigation that switches views. It should show evidence of continuous security testing (OSCAL scans, SCA Top 10, SBOMs, real-time checks) with clear pass/fail signals and artifacts.
+
+### Top nav views (horizontal)
+
+- Overview
+- OSCAL Scans
+- SCA Top 10
+- SBOMs
+- Real-Time Tests
+- Findings
+- Evidence
+
+### Each view should include
+
+- Status summary tiles (pass/fail, last run, duration, version)
+- Primary CTA (Run scan / Generate SBOM / Export evidence)
+- Artifacts list (downloadable reports, timestamps, hash)
+- Filters (date range, profile, severity)
+- Empty/loading/error states with guidance
+
+### Backend/API expectations (initial)
+
+- `/api/security/oscal` (list, start scan, results)
+- `/api/security/sca` (list, start scan, results)
+- `/api/security/sbom` (generate, list, download)
+- `/api/security/tests` (real-time checks, live status)
+- `/api/security/findings` (normalized findings, severity)
+
+## Documentation consolidation
+
+**Goal:** TODO.md is the main planning doc. The rest of the docs should be canonical, non-duplicative, and consistent with coding standards.
+
+- [x] Create a documentation index with canonical sources
+- [x] Fix broken docs and duplicate content (deployment, security monitoring, auth)
+- [x] Update auth documentation to reflect current implementation and risks
+- [x] Remove emoji-heavy/placeholder text from docs to keep them direct and accurate
+- [x] Align testing docs with Nx-only commands
+- [x] Add new docs for admin dashboard UI and security tab spec
+
+## Verification status (post-refactor crash)
+
+- [x] Re-verified TODO.md for accuracy and completion status
+- [x] Re-verified security docs for current-state accuracy (see `documentation/SECURITY-MONITORING.md` and `documentation/AUTHENTICATION-SECURITY-ASSESSMENT.md`)
+- [ ] Re-verify auth flow end-to-end after lint/test fixes
+
+## Remediation plan (proposed sequence)
+
+- [ ] Phase 0: Stabilize CI (restore Nx targets, fix lint/test failures, fix Playwright auth state)
+- [ ] Phase 1: Security (real auth, JWT strategy, WS auth, XSS sanitization, secret hygiene)
+- [ ] Phase 2: Data and IO (file upload/storage, path validation, pagination)
+- [ ] Phase 3: Standards and quality (remove standalone usage, event naming, logging hygiene)
+- [ ] Phase 4: Admin UI overhaul + security tab build
+
+## Completed (recent)
+
+- [x] Add Playwright smoke test workflow for service monitoring
+- [x] Add CI secret scanning workflow and local TruffleHog script
+
+## Notes
+
+- Temporary relaxations in `apps/craft-web/tsconfig.json` and `apps/craft-web/tsconfig.app.json` tracked in `TODO_reenable_strict.md`.

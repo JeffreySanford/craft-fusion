@@ -46,7 +46,7 @@ This document describes various utility services providing common functionalitie
 
 (`c:\repos\craft-fusion\apps\craft-web\src\app\common\services\theme.service.ts`)
 
-*   **Purpose:** Manages the application's visual theme (light/dark). See also [State Management](../architecture/STATE-MANAGEMENT.md).
+*   **Purpose:** Manages the application's visual theme (light/dark). See also [State Management](../architecture/state/STATE-MANAGEMENT.md).
 *   **State:** Uses a `BehaviorSubject` (`isDarkTheme$`) to track the current theme.
 *   **Persistence:** Saves the theme preference to `localStorage`. Initializes based on saved preference or system settings.
 *   **Method:** `toggleTheme()`. Applies theme classes to `document.body`.
@@ -113,16 +113,7 @@ This document describes various utility services providing common functionalitie
 *   **Filtering:** Allows retrieving logs for a specific endpoint path.
 *   **Integration with `LoggerService`:** Logs summarized API call information to the main `LoggerService`.
 
-## State Management Services
-
-### StateService
-
-(`c:\repos\craft-fusion\apps\craft-web\src\app\common\services\state.service.ts`)
-
-*   **Purpose:** Base class for implementing state management in various parts of the application.
-*   **Features:** Provides pattern for creating BehaviorSubject-based state containers with typed state management.
-*   **Methods:** `getState()`, `setState()`, `updateState()`, `resetState()`.
-*   **Integration:** Used by various specialized state services like `UserStateService`, `AdminStateService`, etc.
+## State-related services
 
 ### UserStateService
 
@@ -233,9 +224,9 @@ export class FormComponent {
 
 ## References
 
-- [State Management](../architecture/STATE-MANAGEMENT.md) - Details on state management approach
-- [Logging](../LOGGING.md) - Comprehensive logging system documentation
+- [State Management](../architecture/state/STATE-MANAGEMENT.md) - Details on state management approach
+- [Logging](../architecture/logging/logging.md) - Comprehensive logging system documentation
 - [API Services](./API-SERVICES.md) - API-related services documentation
-- [Coding Standards](../development/CODING-STANDARDS.md) - Code style and standards
+- [Coding Standards](../CODING-STANDARDS.md) - Code style and standards
 
-Last Updated: 2025-03-28
+Last Updated: 2025-12-30

@@ -1,63 +1,59 @@
 # Authentication and Authorization
 
-Authentication and authorization are primarily managed by `AuthenticationService`, `SessionService`, and `AuthorizationService`. An alternative `AuthService` also exists.
+This document describes the current auth structure and known limitations. It is a structural overview; risk details are in `documentation/AUTHENTICATION-SECURITY-ASSESSMENT.md`.
 
-## AuthenticationService
+## Frontend (Angular)
 
-(`c:\repos\craft-fusion\apps\craft-web\src\app\common\services\authentication.service.ts`)
+### AuthenticationService (canonical)
 
-This is the main service for handling user authentication state and operations.
+- File: `apps/craft-web/src/app/common/services/authentication.service.ts`
+- Responsibilities:
+  - Login/logout, token storage, and auth state (BehaviorSubject)
+  - Session storage of `auth_token`, `auth_refresh_token`, and expiry
+  - Offline/dev fallback login paths (demo-only)
+  - Token refresh scheduling
+  - Auth WebSocket channel for session events
 
-### Responsibilities
+### Auth HTTP interceptor
 
-* **Login/Logout:** Provides `login()` and `logout()` methods.
-  * * `login()`: Sends credentials (`username`, `password`) to `/api/auth/login`. On success, stores the received token, updates user state (`currentUserSubject`, `isLoggedIn`, `isAuthenticated`, `isAdminSubject`), updates `SessionService`, logs the event, and relies on the calling component for navigation. Includes basic offline/dev mode fallback for user 'test'/'test'. Uses a request timeout.
-  * * `logout()`: Clears the token, resets user/auth state subjects, clears `SessionService`, logs the event, and navigates to the login page.
-* **Token Management:** Stores the authentication token (`auth_token`) in `localStorage` (`setAuthToken`, `getAuthToken`, `TOKEN_KEY`). *Note: Security comment suggests considering HttpOnly cookies.*
-* **User State:** Maintains the current user's information (`User` interface from `SessionService`) in a `BehaviorSubject` (`currentUserSubject`, exposed as `currentUser$`). Initializes with a default anonymous user.
-* **Authentication Status:** Tracks login status (`isLoggedIn$`), authentication status (`isAuthenticated`), and admin status (`isAdmin$`) via `BehaviorSubject`s.
-* **Initialization (`initializeAuthentication`):** Checks for an existing token on startup. If found, attempts to validate it via `SessionService.validateToken` and fetch user details from `/api/auth/user`. Updates state accordingly or logs out if validation fails. *Note: Currently clears any existing token on init, effectively disabling auto-login.*
+- File: `apps/craft-web/src/app/common/interceptors/auth.interceptor.ts`
+- Adds `Authorization: Bearer <token>` to non-auth endpoints.
 
-### Dependencies
+### SessionService
 
-* `HttpClient`: For making login and user info requests.
-* `Router`: For navigation after logout.
-* `NotificationService`: (Injected but not used in the provided snippet).
-* `SessionService`: For setting/clearing user session data and validating tokens.
-* `LoggerService`: For logging authentication events.
+- File: `apps/craft-web/src/app/common/services/session.service.ts`
+- Stores the username in sessionStorage.
+- `validateToken` is a placeholder and not a real token validation strategy.
 
-## SessionService
+### AuthorizationService (two versions)
 
-(`c:\repos\craft-fusion\apps\craft-web\src\app\common\services\session.service.ts`)
+- Canonical: `apps/craft-web/src/app/common/services/authorization.service.ts`
+- Placeholder: `apps/craft-web/src/app/common/services/auth/authorization.service.ts`
 
-Provides basic interaction with `sessionStorage` for user session information and includes a placeholder token validation.
+The placeholder service returns `resource !== 'admin'` and should not be used for real access control.
 
-### Responsibilities
+### AuthService facade
 
-* **Session Storage:** Stores/retrieves the username in `sessionStorage` (`getUserSession`, `setUserSession`, `clearUserSession`). Uses the `User` interface.
-* **Token Validation (`validateToken`):** A placeholder method comparing the provided token with the username stored in `sessionStorage`. *Note: This is insecure and should involve backend validation in a real application.* Returns an `Observable<boolean>`.
-* **Status (`status`):** Placeholder method returning `false`.
+- File: `apps/craft-web/src/app/common/services/auth/auth.service.ts`
+- Facade over `AuthenticationService` and a placeholder `AuthorizationService`.
+- Uses guest access logic and does not enforce real permissions.
 
-## AuthorizationService
+## Backend (NestJS)
 
-(`c:\repos\craft-fusion\apps\craft-web\src\app\common\services\authorization.service.ts`)
+### AuthService
 
-A placeholder service for checking resource access permissions.
+- File: `apps/craft-nest/src/app/auth/auth.service.ts`
+- Uses hard-coded users (admin/user/test) with mock credentials.
+- JWTs are signed and verified but not tied to a real user store.
 
-### Responsibilities
+## Known limitations (current)
 
-* **Access Check (`canAccessResource`):** A placeholder method returning `true` only if the resource name is 'admin'. *Note: Needs implementation based on actual user roles/permissions.* Returns an `Observable<boolean>`.
+- Offline/dev login is available and bypasses real auth.
+- Tokens live in `sessionStorage` (still exposed to XSS).
+- Duplicate AuthorizationService implementations create inconsistent behavior.
 
-## AuthService (Alternative)
+## Next steps
 
-(`c:\repos\craft-fusion\apps\craft-web\src\app\common\services\auth.service.ts`)
-
-This service appears to be a simpler or alternative implementation for authentication state, potentially for components not needing full user details.
-
-### Responsibilities
-
-* **Login/Logout:** Simulates login/logout (`login`, `logout`). Updates `isLoggedIn$` and `isAdmin$` subjects. Stores/removes a token in `localStorage`.
-* **Token Management:** Stores/retrieves a token (`auth_token`) from `localStorage` (`getAuthToken`).
-* **State:** Exposes `isLoggedIn$` and `isAdmin$` observables. Checks for token on initialization.
-
-*Note: There is a significant overlap between `AuthenticationService` and `AuthService`. Clarify which one is the primary service and consider consolidating or clearly defining their distinct roles.*
+- Consolidate to one AuthorizationService and remove placeholder paths.
+- Remove offline/dev login paths from production builds.
+- Move tokens to HttpOnly cookies with refresh rotation.

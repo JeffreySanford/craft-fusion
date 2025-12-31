@@ -11,7 +11,17 @@ This document serves as the canonical index of all services within the Craft Fus
 | ApiService             | Core HTTP communication   | `/apps/craft-web/src/app/common/services/api.service.ts`        |
 | ApiDiagnosticsService  | API connectivity monitor  | `/apps/craft-web/src/app/common/services/api-diagnostics.service.ts` |
 | ApiLoggerService       | API request logging       | `/apps/craft-web/src/app/common/services/api-logger.service.ts` |
-| ApiInterceptor         | HTTP request interception | `/apps/craft-web/src/app/common/services/api-interceptor.ts`    |
+
+## HTTP Interceptors
+
+| Interceptor            | Purpose                      | Location                                                        |
+|------------------------|------------------------------|-----------------------------------------------------------------|
+| AuthHttpInterceptor    | Inject auth headers          | `/apps/craft-web/src/app/common/interceptors/auth.interceptor.ts` |
+| LoggingHttpInterceptor | Request/response logging     | `/apps/craft-web/src/app/common/interceptors/logging.interceptor.ts` |
+| BusyHttpInterceptor    | Busy state toggling          | `/apps/craft-web/src/app/common/interceptors/busy.interceptor.ts` |
+| MetricsInterceptor     | Request timing metrics       | `/apps/craft-web/src/app/common/interceptors/metrics.interceptor.ts` |
+| ReadOnlyInterceptor    | Read-only request enforcement| `/apps/craft-web/src/app/common/interceptors/readonly.interceptor.ts` |
+| UserStateInterceptor   | User state sync hooks        | `/apps/craft-web/src/app/common/interceptors/user-state.interceptor.ts` |
 
 ## Authentication Services
 
@@ -20,13 +30,14 @@ This document serves as the canonical index of all services within the Craft Fus
 | AuthenticationService  | User auth management     | `/apps/craft-web/src/app/common/services/authentication.service.ts` |
 | SessionService         | User session management  | `/apps/craft-web/src/app/common/services/session.service.ts`    |
 | AuthorizationService   | Permission management    | `/apps/craft-web/src/app/common/services/authorization.service.ts` |
-| AuthService            | Alternative auth service | `/apps/craft-web/src/app/common/services/auth.service.ts`       |
+| AuthService            | Alternative auth service | `/apps/craft-web/src/app/common/services/auth/auth.service.ts`  |
 
 ## WebSocket Services
 
 | Service                | Purpose                  | Location                                                        |
 |-----------------------|--------------------------|-----------------------------------------------------------------|
 | SocketClientService    | WebSocket client         | `/apps/craft-web/src/app/common/services/socket-client.service.ts` |
+| WebsocketService       | Legacy WebSocket client  | `/apps/craft-web/src/app/common/services/websocket.service.ts`  |
 | SocketService (backend)| WebSocket server service | `/apps/craft-nest/src/app/socket/socket.service.ts`             |
 | SocketGateway          | WebSocket entrypoint     | `/apps/craft-nest/src/app/socket/socket.gateway.ts`             |
 | YahooGateway           | Financial data WebSocket | `/apps/craft-nest/src/app/yahoo/yahoo.gateway.ts`               |
@@ -83,14 +94,14 @@ This document serves as the canonical index of all services within the Craft Fus
 
 ## See Also
 
-- [API Services](./services/API-SERVICES.md)
-- [WebSocket Services](./services/SOCKET-SERVICES.md)
-- [Utility Services](./services/UTILITY-SERVICES.md)
-- [Third-Party Services](./services/THIRD-PARTY-SERVICES.md)
+- [API Services](../API-SERVICES.md)
+- [WebSocket Services](../../architecture/websocket/SOCKET-SERVICES.md)
+- [Utility Services](../UTILITY-SERVICES.md)
+- [Third-Party Services](../third-party-services.md)
 
 For architectural information:
-- [API Architecture](./architecture/API-ARCHITECTURE.md)
-- [WebSocket Architecture](./architecture/WEBSOCKET-ARCHITECTURE.md)
-- [State Management](./architecture/STATE-MANAGEMENT.md)
+- [API Architecture](../../architecture/API-ARCHITECTURE.md)
+- [WebSocket Behavior](../../architecture/websocket/WEBSOCKET-BEHAVIOR.md)
+- [State Management](../../architecture/state/STATE-MANAGEMENT.md)
 
 > **Note:** This is the canonical service index. For details, see the linked category documentation. If you find duplicate or outdated service lists elsewhere, please update or remove them.

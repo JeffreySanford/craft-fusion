@@ -1,38 +1,41 @@
 # Testing Guide
 
-## Nx/Angular Tests
-- Run all Angular tests:
-  ```
-  nx test craft-web
-  ```
-- For a single spec, add the file path:
-  ```
-  nx test craft-web --testFile=path/to/test.spec.ts
-  ```
+This workspace uses Nx for all JavaScript/TypeScript testing. Go tests are run with `go test`.
 
-## Nx/NestJS Tests
-- Run all NestJS tests:
-  ```
-  nx test craft-nest
-  ```
-- To watch tests in real time:
-  ```
-  nx test craft-nest --watch
-  ```
+## Workspace tests (Nx)
 
-## Go Tests
-- Go to the Craft Go app folder:
-  ```
-  cd apps/craft-go
-  ```
-- Run tests:
-  ```
-  go test ./... -v
-  ```
-- Generate coverage:
-  ```
-  go test ./... -coverprofile=coverage.out
-  ```
+```bash
+# Lint all projects with a lint target
+pnpm dlx nx run-many -t lint
 
-## Including Tests in Production
-You can integrate these tests into Continuous Integration pipelines or run them manually before deploying. For container-based deployments, add a testing step in your CI/CD process prior to building production images.
+# Test all projects with a test target
+pnpm dlx nx run-many -t test
+```
+
+## Project tests (Nx)
+
+```bash
+# Angular frontend
+pnpm dlx nx test craft-web
+
+# NestJS backend
+pnpm dlx nx test craft-nest
+
+# E2E
+pnpm dlx nx e2e craft-web-e2e
+```
+
+## Go tests
+
+```bash
+cd apps/craft-go
+
+go test ./... -v
+
+go test ./... -coverprofile=coverage.out
+```
+
+## Notes
+
+- Angular 19 test runner decisions are tracked in `TODO.md`.
+- Keep Jest and Vitest strictly scoped if both are used.

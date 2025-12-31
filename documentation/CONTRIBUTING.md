@@ -34,11 +34,11 @@ Craft Fusion is a monorepo using Nx for workspace management. It contains:
 pnpm install
 ```
 
-3. Run a specific application:
+3. Run a specific application (Nx only):
 ```bash
-nx serve craft-web
+pnpm dlx nx serve craft-web
 # or
-nx serve craft-nest
+pnpm dlx nx serve craft-nest
 ```
 
 ## Adding Dependencies
@@ -58,7 +58,6 @@ pnpm add -D your-dev-package
 <!-- Added "Last Updated" -->
 
 ## Project-wide Standards
-- All scripts use DRY system prep via `system-prep.sh`.
-- Vibrant, color-coded output is standard for all CLI tools.
+- Keep CLI output consistent and readable across tools.
 
 Last Updated: 2025-05-25

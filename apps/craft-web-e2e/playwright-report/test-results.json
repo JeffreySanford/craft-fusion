@@ -34,7 +34,7 @@
     ],
     "reportSlowTests": {
       "max": 5,
-      "threshold": 15000
+      "threshold": 300000
     },
     "quiet": false,
     "projects": [
@@ -42,7 +42,9 @@
         "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 6
+        },
         "id": "setup",
         "name": "setup",
         "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
@@ -56,7 +58,9 @@
         "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 6
+        },
         "id": "chromium",
         "name": "chromium",
         "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
@@ -70,7 +74,9 @@
         "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 6
+        },
         "id": "firefox",
         "name": "firefox",
         "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
@@ -84,7 +90,9 @@
         "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 6
+        },
         "id": "webkit",
         "name": "webkit",
         "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
@@ -98,7 +106,9 @@
         "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 6
+        },
         "id": "mobile-chrome",
         "name": "mobile-chrome",
         "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
@@ -112,7 +122,9 @@
         "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 6
+        },
         "id": "mobile-safari",
         "name": "mobile-safari",
         "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
@@ -126,7 +138,9 @@
         "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 6
+        },
         "id": "tablet",
         "name": "tablet",
         "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
@@ -138,9 +152,11 @@
       }
     ],
     "shard": null,
+    "tags": [],
     "updateSnapshots": "missing",
-    "version": "1.49.1",
-    "workers": 8,
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 12,
     "webServer": {
       "command": "pnpm dlx nx run craft-web:serve",
       "url": "http://localhost:4200",
@@ -170,8 +186,9 @@
               "results": [
                 {
                   "workerIndex": 0,
+                  "parallelIndex": 0,
                   "status": "failed",
-                  "duration": 19,
+                  "duration": 4,
                   "error": {
                     "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'",
                     "stack": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
@@ -184,7 +201,8 @@
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-01-06T14:18:07.856Z",
+                  "startTime": "2025-12-30T20:55:57.091Z",
+                  "annotations": [],
                   "attachments": [
                     {
                       "name": "trace",
@@ -216,8 +234,9 @@
               "results": [
                 {
                   "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "failed",
-                  "duration": 20,
+                  "duration": 4,
                   "error": {
                     "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'",
                     "stack": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
@@ -230,7 +249,8 @@
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-01-06T14:18:07.875Z",
+                  "startTime": "2025-12-30T20:55:57.118Z",
+                  "annotations": [],
                   "attachments": [
                     {
                       "name": "trace",
@@ -262,8 +282,9 @@
               "results": [
                 {
                   "workerIndex": 2,
+                  "parallelIndex": 2,
                   "status": "failed",
-                  "duration": 15,
+                  "duration": 5,
                   "error": {
                     "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'",
                     "stack": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
@@ -276,7 +297,8 @@
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-01-06T14:18:07.857Z",
+                  "startTime": "2025-12-30T20:55:57.092Z",
+                  "annotations": [],
                   "attachments": [
                     {
                       "name": "trace",
@@ -308,8 +330,9 @@
               "results": [
                 {
                   "workerIndex": 3,
+                  "parallelIndex": 3,
                   "status": "failed",
-                  "duration": 17,
+                  "duration": 4,
                   "error": {
                     "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'",
                     "stack": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
@@ -322,7 +345,8 @@
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-01-06T14:18:07.875Z",
+                  "startTime": "2025-12-30T20:55:57.092Z",
+                  "annotations": [],
                   "attachments": [
                     {
                       "name": "trace",
@@ -354,8 +378,9 @@
               "results": [
                 {
                   "workerIndex": 4,
+                  "parallelIndex": 4,
                   "status": "failed",
-                  "duration": 18,
+                  "duration": 4,
                   "error": {
                     "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'",
                     "stack": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
@@ -368,7 +393,8 @@
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-01-06T14:18:07.876Z",
+                  "startTime": "2025-12-30T20:55:57.114Z",
+                  "annotations": [],
                   "attachments": [
                     {
                       "name": "trace",
@@ -400,8 +426,9 @@
               "results": [
                 {
                   "workerIndex": 5,
+                  "parallelIndex": 5,
                   "status": "failed",
-                  "duration": 17,
+                  "duration": 6,
                   "error": {
                     "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'",
                     "stack": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
@@ -414,7 +441,8 @@
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2025-01-06T14:18:07.875Z",
+                  "startTime": "2025-12-30T20:55:57.115Z",
+                  "annotations": [],
                   "attachments": [
                     {
                       "name": "trace",
@@ -437,8 +465,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-01-06T14:17:58.840Z",
-    "duration": 11710.542,
+    "startTime": "2025-12-30T20:55:56.148Z",
+    "duration": 1957.1000000000001,
     "expected": 0,
     "skipped": 0,
     "unexpected": 6,

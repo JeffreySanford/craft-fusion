@@ -1,111 +1,53 @@
-# Local Testing Guide for Craft Fusion
+# Local Testing Guide
 
-This guide covers how to test all aspects of Craft Fusion on your local development machine.
+This guide covers local testing for the frontend and backends.
 
-## 1. Basic Application Testing
+## Start services (Nx)
 
-### Start the applications separately
 ```bash
-# Start the Angular frontend
-nx serve craft-web
+# Angular frontend
+pnpm dlx nx serve craft-web
 
-# Start the NestJS backend
-nx serve craft-nest
+# NestJS backend
+pnpm dlx nx serve craft-nest
 
-# Start the Go backend
-nx serve craft-go
+# Go backend
+pnpm dlx nx serve craft-go
 ```
 
-### Verify services are running:
+### Local URLs
+
 - Angular: http://localhost:4200
 - NestJS: http://localhost:3000/api
 - Go: http://localhost:4000/api-go
 
-## 2. Testing AI Integration Locally
+## AI integration (optional)
 
-### Start Ollama locally
-```bash
-# Navigate to project root
-cd craft-fusion
+Local model tooling is not currently tracked in this repository. If you add an AI manager script, document it here.
 
-# Run the Ollama manager script
-chmod +x scripts/ollama-manager.sh
-./scripts/ollama-manager.sh start
+## Docker (optional)
 
-# Pull the required models
-./scripts/ollama-manager.sh pull
-```
+Docker compose files are not tracked in this repo. If you add them, document the commands here.
 
-### Test AI endpoints:
-- NestJS AI health: http://localhost:3000/api/ai/health
-- Go AI health: http://localhost:4000/ai/health
-
-## 3. Testing Docker Setup
-
-Test the full Docker configuration locally:
+## Training tools (optional)
 
 ```bash
-# Build and start all services locally
-docker-compose build
-docker-compose up -d
-
-# Check if all containers are running
-docker-compose ps
-
-# Check the logs
-docker-compose logs -f
-
-# Access the applications
-# - Frontend: http://localhost
-# - NestJS API: http://localhost/api
-# - Go API: http://localhost/api/go
-```
-
-## 4. Testing Training Environment
-
-```bash
-# Install Python dependencies
 cd apps/training
+
 pip install -r requirements.txt
 
-# Run a simple test using a small dataset
 python finetune-mistral-lora.py --data sample-data.json --output ./test-output --epochs 1
 ```
 
-## 5. End-to-End Testing
+## E2E smoke checklist
 
-Once all services are running:
-
-1. Navigate to http://localhost:4200
-2. Test authentication features
-3. Test data visualization components
-4. Test AI-powered features (chat, analysis)
-5. Test file uploads and processing
-
-## 6. Monitoring Local Resources
-
-```bash
-# Monitor Docker resources
-docker stats
-
-# Check disk space for models
-df -h
-
-# Check system resources
-htop
-```
-
-## Project-wide Standards
-- All scripts use DRY system prep via `system-prep.sh`.
-- Vibrant, color-coded output is standard for all CLI tools.
-
-Last Updated: 2025-05-25
+1. Log in and log out.
+2. Load the admin dashboard and verify tiles render.
+3. Trigger a file upload and confirm backend receipt.
+4. Validate a WebSocket view for real-time updates.
 
 ## Troubleshooting
 
-### Common Issues and Solutions
-
-- **Ports already in use**: Kill the process using `kill $(lsof -t -i:<port_number>)`
-- **Ollama not responding**: Check Ollama logs with `./scripts/ollama-manager.sh logs`
-- **Missing models**: Pull models manually with the script
-- **Angular CORS issues**: Ensure proxy configuration is properly set in your `proxy.configjson`
+- Port conflicts: stop the process holding the port.
+- Proxy config: ensure `proxy.config.json` exists and is referenced correctly.
+- Local model tooling is not tracked; use your own setup.

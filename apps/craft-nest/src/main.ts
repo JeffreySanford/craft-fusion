@@ -1,12 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
 import helmet from 'helmet';
 import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response, NextFunction } from 'express';
 import { environment } from './environments/environment';
+import * as path from 'path';
+import { firstValueFrom } from 'rxjs';
+import mongoose from 'mongoose';
+import { TimelineService } from './app/family/timeline/timeline.service';
 
 // Import shared types from craft-library
 // import { User } from '@craft-fusion/craft-library';
@@ -53,6 +57,14 @@ async function bootstrap() {
 
   // Create app with optimized settings
   const configService = app.get(ConfigService);
+
+  // Enable Nest's shutdown hooks so we can gracefully stop the in-memory DB
+  // when the process exits.
+  try {
+    app.enableShutdownHooks();
+  } catch (e) {
+    // ignore if not available
+  }
   
   const HOST = isProduction ? 'jeffreysanford.us' : '0.0.0.0';
   let PORT = configService.get<number>('NEST_PORT') || 3000;
@@ -98,6 +110,17 @@ async function bootstrap() {
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
   }));
+
+  // Enable global validation for incoming requests (whitelist/forbidNonWhitelisted)
+  // This ensures DTOs with class-validator decorators are enforced at runtime.
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
   
   // Add request logging middleware
   app.use((req: Request, res: Response, next: NextFunction) => {
@@ -212,10 +235,81 @@ async function bootstrap() {
     Logger.warn(`Failed to initialize Swagger: ${isError(e) ? e.message : String(e)}`);
   }
 
-  // Start server with error handling
+    // Wait for mongoose connection in development before seeding
+    async function waitForMongooseConnected(timeout = 10000) {
+      const start = Date.now();
+      while (Date.now() - start < timeout) {
+        if (mongoose.connection && mongoose.connection.readyState === 1) return true;
+        // 0 disconnected, 1 connected, 2 connecting, 3 disconnecting
+        await new Promise((r) => setTimeout(r, 200));
+      }
+      return false;
+    }
+
+    // Start server with error handling
   try {
+    // Seed the in-memory / development mongo server by default (skip in production)
+    if (!isProduction) {
+      // Ensure mongoose is connected (for MongooseModule.forRootAsync)
+      const ok = await waitForMongooseConnected(15000);
+      if (!ok) {
+        Logger.warn('Mongoose did not connect within timeout; continuing without seeding');
+      }
+      
+      try {
+        const seedPath = path.join(process.cwd(), 'apps', 'craft-nest', 'src', 'app', 'family', 'timeline', 'seed-events.json');
+        if (fs.existsSync(seedPath)) {
+          const raw = fs.readFileSync(seedPath, 'utf8');
+          const seeds = JSON.parse(raw) as Array<Record<string, unknown>>;
+          if (Array.isArray(seeds) && seeds.length) {
+            const timelineService = app.get(TimelineService);
+            const existing = await firstValueFrom(timelineService.findAll().pipe());
+            for (const s of seeds) {
+              try {
+                  const title = String((s as any)['title'] || '');
+                  const dateStr = String((s as any)['date'] || '');
+                const already = Array.isArray(existing) && existing.some(ev => ev.title === title && new Date(ev.date).toISOString() === new Date(dateStr).toISOString());
+                if (!already) {
+                  await firstValueFrom(timelineService.create(s as any));
+                  Logger.log(`Seeded timeline event: ${title}`);
+                } else {
+                  Logger.log(`Skipping existing seeded event: ${title}`);
+                }
+              } catch (e: unknown) {
+                Logger.warn(`Failed to seed event: ${String(e)}`);
+              }
+            }
+          }
+        }
+      } catch (e: unknown) {
+        Logger.warn(`Seed loader error: ${isError(e) ? e.message : String(e)}`);
+      }
+    }
     await app.listen(3000, '0.0.0.0');
     Logger.log(`Server running on ${protocol}://${HOST}:${PORT}`);
+
+    // If we started an in-memory MongoDB instance earlier, ensure we stop it
+    // on shutdown signals.
+    const mongoServer = (global as any).__MONGO_MEMORY_SERVER__;
+    const stopMemoryServer = async () => {
+      if (mongoServer && typeof mongoServer.stop === 'function') {
+        try {
+          await mongoServer.stop();
+          Logger.log('mongodb-memory-server stopped');
+        } catch (e: unknown) {
+          Logger.warn(`Error stopping mongodb-memory-server: ${String(e)}`);
+        }
+      }
+    };
+
+    process.on('SIGINT', async () => {
+      await stopMemoryServer();
+      process.exit(0);
+    });
+    process.on('SIGTERM', async () => {
+      await stopMemoryServer();
+      process.exit(0);
+    });
   } catch (error: unknown) {
     if (isError(error) && (error as NodeJS.ErrnoException).code === 'EADDRINUSE') {
       // If port is in use, try a different port

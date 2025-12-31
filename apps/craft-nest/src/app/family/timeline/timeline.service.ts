@@ -5,8 +5,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { TimelineEvent } from './schemas/timeline-event.schema';
 import { LoggingService } from '../../logging/logging.service';
-import { Observable, from, of } from 'rxjs';
-import { map, tap, catchError } from 'rxjs/operators';
+import { Observable, from } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class TimelineService {
@@ -20,7 +20,7 @@ export class TimelineService {
     
     const createdEvent = new this.timelineEventModel(createTimelineEventDto);
     return from(createdEvent.save()).pipe(
-      tap(result => this.logger.debug('Timeline event created', { id: result.id }))
+      tap(result => this.logger.debug('Timeline event created', { id: (result as any).id || (result as any)._id }))
     );
   }
 
