@@ -156,7 +156,33 @@ This file is the planning source of truth. It records decisions, risks, and the 
 
 - [x] Add Playwright smoke test workflow for service monitoring
 - [x] Add CI secret scanning workflow and local TruffleHog script
+- [x] Wire `mongodb-memory-server` for local development and add graceful shutdown handling
+- [x] Add `supertest` dev-dependency and fix e2e import errors
+- [x] Remove inline styles from memorial-timeline components and add component SCSS rules
+- [x] Fix markdown table spacing in websocket docs
+- [x] Implement server-side AI proxy and remove client-side API key usage (placeholder `.env.example` added)
+- [x] Commit local changes (held push per request)
 
 ## Notes
 
 - Temporary relaxations in `apps/craft-web/tsconfig.json` and `apps/craft-web/tsconfig.app.json` tracked in `TODO_reenable_strict.md`.
+
+### Recent runtime / router log excerpts (dev)
+
+- Auth guard: User is authorized to access route {url: '/family'}
+- logger.service.ts:353 [OperatorSubscriber] Admin guard: User has admin permissions {url: '/family'}
+- app.module.ts:72 Router event: ChildActivationStart {snapshot: ActivatedRouteSnapshot, type: 11}
+- app.module.ts:72 Router event: ActivationStart {snapshot: ActivatedRouteSnapshot, type: 13}
+- app.module.ts:72 Router event: GuardsCheckEnd {id: 3, url: '/family', urlAfterRedirects: '/family', state: RouterStateSnapshot, shouldActivate: true, …}
+- app.module.ts:72 Router event: ResolveStart {id: 3, url: '/family', urlAfterRedirects: '/family', state: RouterStateSnapshot, type: 5}
+- app.module.ts:72 Router event: ResolveEnd {id: 3, url: '/family', urlAfterRedirects: '/family', state: RouterStateSnapshot, type: 6}
+- app.component.ts:313 debug-router: router-outlet deactivated AdminComponent {authService: AuthService, logger: LoggerService, paginator: undefined, serviceMetricsChartRef: undefined, systemMetricsChartRef: undefined, …}
+- app.component.ts:307 debug-router: router-outlet activated TimelinePageComponent {loading: true, timelineEvents$: Observable, **ngContext**: 881}
+- app.module.ts:72 Router event: ActivationEnd {snapshot: ActivatedRouteSnapshot, type: 14}
+- app.module.ts:72 Router event: ChildActivationEnd {snapshot: ActivatedRouteSnapshot, type: 12}
+- app.module.ts:72 Router event: ActivationEnd {snapshot: ActivatedRouteSnapshot, type: 14}
+- app.module.ts:72 Router event: ChildActivationEnd {snapshot: ActivatedRouteSnapshot, type: 12}
+- app.module.ts:72 Router event: NavigationEnd {id: 3, url: '/family', urlAfterRedirects: '/family', type: 1}
+- logger.service.ts:356 [Object] Navigation ended {id: 3, url: '/family', urlAfterRedirects: '/family', type: 1}
+- logger.service.ts:356 [Object] User navigated to /family
+- app.module.ts:72 Router event: Scroll {routerEvent: Na

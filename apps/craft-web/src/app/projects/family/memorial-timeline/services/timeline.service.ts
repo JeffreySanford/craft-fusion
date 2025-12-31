@@ -12,8 +12,11 @@ import { environment } from '../../../../../environments/environment';
   providedIn: 'root'
 })
 export class TimelineService {
-  private readonly API_URL = `${environment.apiUrl}/family/timeline`;
-  private readonly WS_URL = `${environment.socket.url}/family-timeline`;
+  // Backend exposes routes under /api with a `timeline` controller.
+  // Use `/api/timeline` (not `/timeline`) so requests target the correct controller.
+  private readonly API_URL = `${environment.apiUrl}/api/timeline`;
+  // Socket namespace is `timeline` on the server (TimelineGateway.namespace = 'timeline')
+  private readonly WS_URL = `${environment.socket.url}/timeline`;
   
   private eventsSubject = new BehaviorSubject<TimelineEvent[]>([]);
   public events$ = this.eventsSubject.asObservable().pipe(shareReplay(1));
@@ -26,12 +29,19 @@ export class TimelineService {
     private authService: AuthService,
     private logger: LoggerService
   ) { }
+
+  // Log service init for tracing
+  ngOnInit?(): void {
+    // Angular services don't have ngOnInit by default; provide optional hook
+    console.log('[TimelineService] initialized', { apiUrl: this.API_URL, wsUrl: this.WS_URL });
+  }
   
   /**
    * Establishes a WebSocket connection for real-time timeline updates
    */
   connect(): void {
     if (!this.socket$ || this.socket$.closed) {
+      console.log('[TimelineService] connect() called — creating WebSocket');
       this.socket$ = this.getNewWebSocket();
       
       this.socket$.pipe(
@@ -43,6 +53,7 @@ export class TimelineService {
         // Use scan to accumulate events
         scan((acc: TimelineEvent[], event: TimelineEvent) => [...acc, event], [])
       ).subscribe(events => {
+        console.log(`[TimelineService] Received ${events.length} events from WebSocket`);
         // Update the messages subject with accumulated WebSocket events
         this.messagesSubject.next(events);
         
@@ -53,6 +64,7 @@ export class TimelineService {
         )];
         
         this.eventsSubject.next(newEvents);
+        console.log(`[TimelineService] eventsSubject updated — total events: ${newEvents.length}`);
       });
     }
   }
@@ -72,7 +84,10 @@ export class TimelineService {
    */
   loadInitialEvents(): Observable<TimelineEvent[]> {
     return this.http.get<TimelineEvent[]>(this.API_URL).pipe(
-      tap(events => this.eventsSubject.next(events)),
+      tap(events => {
+        console.log(`[TimelineService] Loaded initial events from ${this.API_URL}: ${Array.isArray(events) ? events.length : 0}`);
+        this.eventsSubject.next(events);
+      }),
       catchError(error => {
         this.logger.error('Error loading timeline events', error);
         return of([]);
@@ -87,10 +102,16 @@ export class TimelineService {
     return webSocket<TimelineEvent>({
       url: this.WS_URL,
       openObserver: {
-        next: () => this.logger.info('Timeline WebSocket connection opened')
+        next: () => {
+          this.logger.info('Timeline WebSocket connection opened');
+          console.log('[TimelineService] WebSocket opened', { url: this.WS_URL });
+        }
       },
       closeObserver: {
-        next: () => this.logger.info('Timeline WebSocket connection closed')
+        next: () => {
+          this.logger.info('Timeline WebSocket connection closed');
+          console.log('[TimelineService] WebSocket closed', { url: this.WS_URL });
+        }
       }
     });
   }

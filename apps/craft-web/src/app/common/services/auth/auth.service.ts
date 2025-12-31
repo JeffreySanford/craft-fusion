@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AuthenticationService } from './authentication.service';
 import { AuthorizationService } from './authorization.service';
-import { User } from '../user.interface';
+import { User, AuthResponse } from '../user.interface';
 import { LoggerService } from '../logger.service';
 
 /**
@@ -55,7 +55,7 @@ export class AuthService {
   }
 
   // Authentication methods
-  login(username: string, password: string): Observable<unknown> {
+  login(username: string, password: string): Observable<AuthResponse> {
     return this.authenticationService.login(username, password);
   }
 

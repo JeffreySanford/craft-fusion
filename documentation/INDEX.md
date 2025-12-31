@@ -35,10 +35,11 @@ This index lists the canonical documentation for Craft Fusion. If multiple docs 
 ## Architecture
 
 - `documentation/architecture/API-ARCHITECTURE.md` - API architecture (current + target)
+- `documentation/architecture/ENVIRONMENT-CONFIGURATION.md` - environment configuration system
+- `documentation/architecture/logging/logging.md` - logging architecture
 - `documentation/architecture/state/STATE-MANAGEMENT.md` - state management patterns
 - `documentation/architecture/websocket/WEBSOCKET-BEHAVIOR.md` - WebSocket behavior
 - `documentation/architecture/websocket/SOCKET-SERVICES.md` - WebSocket services and namespaces
-- `documentation/architecture/logging/logging.md` - logging architecture
 
 ## Services reference
 

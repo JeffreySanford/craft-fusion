@@ -41,6 +41,13 @@ func main() {
 		port = "4000"
 	}
 
+	// Resolve bind address from environment (BIND_ADDR).
+	// Default to loopback for development to avoid Windows firewall prompts.
+	bindHost := os.Getenv("BIND_ADDR")
+	if bindHost == "" {
+		bindHost = "127.0.0.1"
+	}
+
 	// Middleware: CORS
 	router.Use(func(c *gin.Context) {
 		allowedOrigins := map[string]bool{
@@ -72,7 +79,7 @@ func main() {
 
 	// Middleware: CORS with gin-contrib/cors
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://jeffreysanford.us", "http://localhost:3000"},
+		AllowOrigins:     []string{"https://jeffreysanford.us", "http://localhost:3000", "http://localhost:4200"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		AllowCredentials: true,
@@ -104,7 +111,12 @@ func main() {
 
 	// Swagger
 	// Dynamically set the host to the current port to avoid mismatches in dev
-	docs.SwaggerInfo.Host = fmt.Sprintf("localhost:%s", port)
+	// If the server is bound to 0.0.0.0 use localhost for Swagger UI links
+	swaggerHost := bindHost
+	if swaggerHost == "0.0.0.0" || swaggerHost == "" {
+		swaggerHost = "localhost"
+	}
+	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", swaggerHost, port)
 	// Reviewer-friendly UI: collapse models/docs, minimize interactivity
 	swaggerHandler := ginSwagger.WrapHandler(
 		swaggerFiles.Handler,
@@ -126,11 +138,11 @@ func main() {
 		log.Printf("Endpoint: %s %s", route.Method, fullURL)
 	}
 
-	log.Printf("Starting Go Backend on :%s", port)
+	log.Printf("Starting Go Backend on %s:%s", bindHost, port)
 
 	// Server Configuration
 	srv := &http.Server{
-		Addr:         ":" + port,
+		Addr:         bindHost + ":" + port,
 		Handler:      router,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,

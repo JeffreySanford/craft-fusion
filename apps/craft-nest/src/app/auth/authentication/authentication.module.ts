@@ -15,6 +15,6 @@ const jwtExpiry = process.env['JWT_EXPIRATION'] || '3600s';
   ],
   providers: [AuthenticationService],
   controllers: [AuthenticationController],
-  exports: [AuthenticationService],
+  exports: [AuthenticationService, JwtModule],
 })
 export class AuthenticationModule {}

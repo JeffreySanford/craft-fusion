@@ -11,6 +11,7 @@ import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
 import { User } from '../interfaces/user.interface';
 import { environment } from '../../../environments/environment';
+import { io, Socket } from 'socket.io-client';
 
 // Auth-related interfaces
 export interface AuthResponse {
@@ -56,7 +57,7 @@ export class AuthenticationService {
   private readonly MAX_RETRIES = 3; // Maximum number of retries for connection issues
   
   // WebSocket connection for real-time auth updates
-  private socket: WebSocket | null = null;
+  private socket: Socket | null = null;
   private socketDestroy$ = new Subject<void>();
   
   // SUBJECTS FOR REACTIVE STATE
@@ -283,14 +284,12 @@ export class AuthenticationService {
 
     // Development mode fallback for testing
     if (username === 'test' && password === 'test') {
-      this.logger.debug('Using development mode login for test credentials');
-      return this.handleDevLogin(username);
+      this.logger.debug('Test credentials detected - proceeding with normal API call');
     }
 
     // Development mode fallback for admin credentials
     if (username === 'admin' && password === 'admin') {
-      this.logger.debug('Using development mode login for admin credentials');
-      return this.handleDevLogin(username);
+      this.logger.debug('Admin credentials detected - proceeding with normal API call');
     }
 
     const loginRequest: LoginRequest = { username, password };
@@ -638,69 +637,6 @@ export class AuthenticationService {
   }
 
   /**
-   * Development mode login for testing
-   */
-  private handleDevLogin(username: string): Observable<AuthResponse> {
-    this.logger.debug('Using development mode login - attempting API call first');
-
-    // First try to make a real API call to get user data
-    const loginRequest: LoginRequest = { username, password: 'test' };
-
-    return this.apiService.authRequest<AuthResponse>('POST', 'auth/login', loginRequest)
-      .pipe(
-        tap((response: AuthResponse) => {
-          if (response && response.token) {
-            this.logger.info('Development mode: Real API login successful', {
-              username: response.user?.username,
-              isAdmin: this.hasAdminRole(response.user)
-            });
-          }
-        }),
-        catchError((error) => {
-          this.logger.debug('Development mode: API call failed, using mock data', {
-            username,
-            error: error.message
-          });
-
-          // Fall back to mock data if API call fails
-          const isAdmin = username === 'admin';
-          const mockUser: User = {
-            id: 1,
-            username: username,
-            name: isAdmin ? 'Admin User' : 'Test User',
-            firstName: isAdmin ? 'Admin' : 'Test',
-            lastName: 'User',
-            email: isAdmin ? 'admin@example.com' : 'test@example.com',
-            roles: isAdmin ? ['admin'] : ['user'],
-            permissions: isAdmin
-              ? ['user:read', 'user:write', 'admin:access']
-              : ['user:read'],
-            password: 'test'
-          };
-
-          // Generate a mock token that expires in 15 minutes
-          const expiresAt = Date.now() + (900 * 1000);
-          const mockResponse: AuthResponse = {
-            success: true,
-            token: 'mock-token-for-development-only-' + Date.now(),
-            refreshToken: 'mock-refresh-token-' + Date.now(),
-            user: mockUser,
-            expiresIn: 900
-          };
-
-          this.handleSuccessfulLogin(mockResponse, expiresAt);
-
-          this.notificationService.showInfo(
-            `Logged in using development mode credentials as ${isAdmin ? 'admin' : 'regular user'}`,
-            'Development Mode (Offline)'
-          );
-
-          return of(mockResponse);
-        })
-      );
-  }
-
-  /**
    * Offline mode login with mock data
    */
   private handleOfflineLogin(username: string, password: string): Observable<AuthResponse> {
@@ -910,75 +846,60 @@ export class AuthenticationService {
       return;
     }
     
-    const socketUrl = `${environment.socket.url}/auth`;
+    const socketUrl = environment.socket.url;
     this.logger.debug(`Initializing auth WebSocket connection to ${socketUrl}`);
     
     try {
-      this.socket = new WebSocket(socketUrl);
-      
-      // Add auth token to the connection
-      this.socket.onopen = () => {
-        this.logger.debug('Auth WebSocket connection established');
-        if (this.socket && this.getAuthToken()) {
-          this.socket.send(JSON.stringify({
-            type: 'authenticate',
-            token: this.getAuthToken()
-          }));
+      this.socket = io(`${socketUrl}/auth`, {
+        transports: ['websocket', 'polling'],
+        auth: {
+          token: this.getAuthToken()
         }
-      };
+      });
+      
+      // Handle connection
+      this.socket.on('connect', () => {
+        this.logger.debug('Auth WebSocket connection established');
+      });
       
       // Handle incoming messages
-      this.socket.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          this.logger.debug('Received auth WebSocket message', { type: data.type });
-          
-          switch (data.type) {
-            case 'session_expired':
-              this.notificationService.showWarning(
-                'Your session has expired. Please log in again.',
-                'Session Expired'
-              );
-              this.logout();
-              break;
-              
-            case 'permissions_updated':
-              this.logger.debug('User permissions updated, refreshing user details');
-              this.fetchUserDetails();
-              break;
-              
-            case 'force_logout':
-              this.notificationService.showWarning(
-                data.message || 'You have been logged out by an administrator.',
-                'Signed Out'
-              );
-              this.logout();
-              break;
-          }
-        } catch (error) {
-          this.logger.error('Error processing WebSocket message', { error });
+      this.socket.on('session_expired', () => {
+        this.notificationService.showWarning(
+          'Your session has expired. Please log in again.',
+          'Session Expired'
+        );
+        this.logout();
+      });
+      
+      this.socket.on('permissions_updated', () => {
+        this.logger.debug('User permissions updated, refreshing user details');
+        this.fetchUserDetails();
+      });
+      
+      this.socket.on('force_logout', (data: any) => {
+        this.notificationService.showWarning(
+          data.message || 'You have been logged out by an administrator.',
+          'Signed Out'
+        );
+        this.logout();
+      });
+      
+      // Handle disconnection
+      this.socket.on('disconnect', (reason) => {
+        this.logger.debug('Auth WebSocket disconnected', { reason });
+        if (reason === 'io server disconnect') {
+          // Server disconnected, try to reconnect
+          setTimeout(() => this.initializeAuthSocket(), 1000);
         }
-      };
+      });
       
       // Handle connection errors
-      this.socket.onerror = (error) => {
-        this.logger.warn('Auth WebSocket error', { error });
-      };
+      this.socket.on('connect_error', (error) => {
+        this.logger.warn('Auth WebSocket connection error', error);
+      });
       
-      // Handle connection close
-      this.socket.onclose = () => {
-        this.logger.debug('Auth WebSocket connection closed');
-        
-        // Try to reconnect after a delay if still authenticated
-        if (this.isAuthenticated && !this._isOfflineMode) {
-          setTimeout(() => {
-            this.logger.debug('Attempting to reconnect Auth WebSocket');
-            this.initializeAuthSocket();
-          }, 5000);
-        }
-      };
     } catch (error) {
-      this.logger.error('Failed to initialize Auth WebSocket', { error });
+      this.logger.error('Failed to initialize auth WebSocket', error);
     }
   }
 
@@ -988,7 +909,7 @@ export class AuthenticationService {
   private closeAuthSocket(): void {
     if (this.socket) {
       this.logger.debug('Closing auth WebSocket connection');
-      this.socket.close();
+      this.socket.disconnect();
       this.socket = null;
     }
     

@@ -1,0 +1,17 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "changeme",
+      "roles": ["admin"]
+    }
+  ],
+  "tokens": [
+    {
+      "username": "admin",
+      "token": "REPLACE_WITH_ADMIN_JWT",
+      "type": "admin",
+      "roles": ["admin"]
+    }
+  ]
+}
