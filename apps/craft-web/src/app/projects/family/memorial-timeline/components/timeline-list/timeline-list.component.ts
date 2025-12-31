@@ -7,7 +7,7 @@ import { TimelineEvent } from '../../models/timeline-event.model';
   templateUrl: './timeline-list.component.html',
   styleUrls: ['./timeline-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false // Ensure standalone is explicitly false
+  standalone: false, // Ensure standalone is explicitly false
 })
 export class TimelineListComponent {
   @Input() events: TimelineEvent[] | null = [];
@@ -20,7 +20,7 @@ export class TimelineListComponent {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   }
 }

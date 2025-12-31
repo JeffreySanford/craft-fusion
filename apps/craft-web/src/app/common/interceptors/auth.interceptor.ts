@@ -16,8 +16,8 @@ export class AuthHttpInterceptor implements HttpInterceptor {
     if (token && !this.isAuthEndpoint(req.url)) {
       req = req.clone({
         setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
     }
 
@@ -26,8 +26,6 @@ export class AuthHttpInterceptor implements HttpInterceptor {
 
   private isAuthEndpoint(url: string): boolean {
     // Don't add auth headers to auth endpoints to avoid circular dependencies
-    return url.includes('/auth/login') ||
-           url.includes('/auth/refresh-token') ||
-           url.includes('/auth/user');
+    return url.includes('/auth/login') || url.includes('/auth/refresh-token') || url.includes('/auth/user');
   }
 }

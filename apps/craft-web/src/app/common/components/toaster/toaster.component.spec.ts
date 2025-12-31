@@ -20,13 +20,13 @@ describe('ToasterComponent', () => {
     const mockToastrService = {
       success: jest.fn(),
       error: jest.fn(),
-      clear: jest.fn()
+      clear: jest.fn(),
     };
 
     const mockNotificationService = {
       showSuccess: jest.fn(),
       showError: jest.fn(),
-      clear: jest.fn()
+      clear: jest.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -34,7 +34,7 @@ describe('ToasterComponent', () => {
       providers: [
         { provide: TOAST_CONFIG, useValue: { duration: 5000, position: 'top-right', type: 'default' } },
         { provide: ToastrService, useValue: mockToastrService },
-        { provide: NotificationService, useValue: mockNotificationService }
+        { provide: NotificationService, useValue: mockNotificationService },
       ],
     }).compileComponents();
 

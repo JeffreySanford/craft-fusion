@@ -2,16 +2,35 @@
 
 .services-list {
   margin-top: 1.5rem;
-  background: rgba(30,41,59,0.5);
+  background: rgba(30, 41, 59, 0.5);
   border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
 
-  h3 { padding:1rem; margin:0; border-bottom:1px solid rgba(255,255,255,0.1); color:vars.$patriot-white; }
+  h3 {
+    padding: 1rem;
+    margin: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: vars.$patriot-white;
+  }
 
-  mat-list { max-height:400px; overflow-y:auto; }
+  mat-list {
+    max-height: 400px;
+    overflow-y: auto;
+  }
 }
 
-.service-monitoring-grid { display:grid; gap:1.5rem; margin:1.5rem 0; }
+.service-monitoring-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
 
-.service-monitoring-legend { display:flex; flex-wrap:wrap; gap:1rem; padding:1.5rem; background:rgba(255,255,255,0.05); border-radius:8px; }
+.service-monitoring-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}

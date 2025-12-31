@@ -8,11 +8,11 @@ import { User } from './user.interface'; // Import User directly from user.inter
 
 /**
  * API Service for interacting with backend endpoints
- * 
+ *
  * This service provides a standardized interface for making HTTP requests to the API.
  * It works with Ward Bell's state mechanism and Dan Wahlin's RXJS state methodology
  * by returning Observables that can be directly consumed by state stores.
- * 
+ *
  * See the STATE-MANAGEMENT.md documentation for details on the state architecture.
  */
 export interface Server {
@@ -34,7 +34,7 @@ export class ApiService {
   private apiPrefix = '/api'; // Base API path for NestJS
   private apiPrefixGo = '/api-go'; // Base API path for Go
   private recordSize = 100; // Default record size
-  
+
   // Connection management properties
   private readonly BASE_TIMEOUT = 10000; // 10 seconds timeout for API requests
   private readonly MAX_RETRIES = 3;
@@ -69,13 +69,13 @@ export class ApiService {
 
   constructor(
     private http: HttpClient,
-    @Inject(forwardRef(() => LoggerService)) private logger: LoggerService
+    @Inject(forwardRef(() => LoggerService)) private logger: LoggerService,
   ) {
     // Register service with logger
     this.logger.registerService('ApiService');
     this.logger.info('API Service initialized', {
       production: this.isProduction,
-      apiUrl: this.apiUrl
+      apiUrl: this.apiUrl,
     });
   }
 
@@ -95,16 +95,13 @@ export class ApiService {
   }
 
   private addSecurityHeaders(headers: HttpHeaders): HttpHeaders {
-    return headers
-      .set('X-Content-Type-Options', 'nosniff')
-      .set('X-Frame-Options', 'DENY')
-      .set('X-XSS-Protection', '1; mode=block');
+    return headers.set('X-Content-Type-Options', 'nosniff').set('X-Frame-Options', 'DENY').set('X-XSS-Protection', '1; mode=block');
   }
 
   private getTracingHeaders(): HttpHeaders {
     let headers = this.getHeaders();
     // Generate or propagate trace ID (simple UUID for demo)
-    const traceId = (window.crypto?.randomUUID?.() || Math.random().toString(36).slice(2));
+    const traceId = window.crypto?.randomUUID?.() || Math.random().toString(36).slice(2);
     headers = headers.set('X-Request-ID', traceId);
     return this.addSecurityHeaders(headers);
   }
@@ -119,7 +116,9 @@ export class ApiService {
       if (typeof (headers as any).forEach === 'function') {
         const h = headers as Headers;
         const obj: Record<string, string> = {};
-        h.forEach((value: string, key: string) => { obj[key] = value; });
+        h.forEach((value: string, key: string) => {
+          obj[key] = value;
+        });
         return new HttpHeaders(obj);
       }
     } catch (e) {
@@ -130,7 +129,11 @@ export class ApiService {
     return headers as Record<string, string | string[]>;
   }
 
-  private normalizeOptions(options?: any): { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any } {
+  private normalizeOptions(options?: any): {
+    headers?: HttpHeaders | Record<string, string | string[]>;
+    params?: HttpParams | Record<string, string | string[]>;
+    [k: string]: any;
+  } {
     const opts: any = { ...(options || {}) };
     if (opts.headers) {
       opts.headers = this.normalizeHeaders(opts.headers);
@@ -142,38 +145,41 @@ export class ApiService {
   private getFullUrl(endpoint: string): string {
     // Remove leading slashes
     endpoint = endpoint.replace(/^\/+/, '');
-    
+
     // FIXED: Always use the correct API prefix for the proxy
     // This ensures requests go through Angular DevServer proxy correctly
     const baseUrl = this.apiUrl;
-    
+
     // Log the full URL being constructed
     const fullUrl = `${baseUrl}/${endpoint}`;
     this.logger.debug(`Constructed API URL: ${fullUrl}`);
-    
+
     return fullUrl;
   }
 
   // 🛡️ API CRUD Operations
   /**
    * Creates HTTP GET request to specified endpoint
-   * 
+   *
    * @param endpoint - API endpoint to request
    * @param options - Optional HTTP request options
    * @returns Observable<T> - Observable that can be subscribed to by state stores
    */
-  get<T>(endpoint: string, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<T> {
+  get<T>(
+    endpoint: string,
+    options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any },
+  ): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'GET', url);
     const httpOptions = this.normalizeOptions(options);
     // ensure tracing headers are applied (override or set)
     httpOptions.headers = this.getTracingHeaders();
-    
+
     // Check if we should throttle this request
     if (this.shouldThrottleRequest(url)) {
       return this.delayedRequest<T>(() => this.get(endpoint, options), 300);
     }
-    
+
     // Track this request
     this.trackRequest(url);
 
@@ -182,37 +188,37 @@ export class ApiService {
       endpoint,
       fullUrl: url,
       options: JSON.stringify(httpOptions),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-    
+
     // Use explicit type casting for the HTTP call
     return this.http.get<T>(url, httpOptions).pipe(
       tap(response => {
         this.logger.endServiceCall(callId, 200);
         this.logger.debug(`GET ${endpoint} succeeded`, {
           responseReceived: true,
-          url
+          url,
         });
       }),
       catchError(error => {
         this.releaseRequest(url);
         this.logger.endServiceCall(callId, error.status || 500);
-        this.logger.error(`GET ${endpoint} failed`, { 
+        this.logger.error(`GET ${endpoint} failed`, {
           status: error.status,
           message: error.message,
           url,
           timestamp: new Date().toISOString(),
-          errorObject: JSON.stringify(error)
+          errorObject: JSON.stringify(error),
         });
-        
+
         // Enhanced error logging
         console.error(`API Error Details:`, {
           url,
           status: error.status,
           message: error.message,
-          error
+          error,
         });
-        
+
         // Implement better backoff for specific error types
         if (error.status === 504 || error.status === 0) {
           // Gateway timeout or network error - don't retry automatically
@@ -221,22 +227,26 @@ export class ApiService {
 
         // Ping server to check availability on error
         this.checkServerAvailability();
-        
+
         throw error;
       }),
       finalize(() => {
         this.releaseRequest(url);
-      })
+      }),
     ) as Observable<T>;
   }
 
-  put<T>(endpoint: string, body: T, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<T> {
+  put<T>(
+    endpoint: string,
+    body: T,
+    options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any },
+  ): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'PUT', url);
 
     const httpOptions = this.normalizeOptions(options);
     httpOptions.headers = this.getTracingHeaders();
-    
+
     return this.http.put<T>(url, body, httpOptions).pipe(
       tap(response => {
         this.logger.endServiceCall(callId, 200);
@@ -244,22 +254,25 @@ export class ApiService {
       }),
       catchError(error => {
         this.logger.endServiceCall(callId, error.status || 500);
-        this.logger.error(`PUT ${endpoint} failed`, { 
+        this.logger.error(`PUT ${endpoint} failed`, {
           status: error.status,
-          message: error.message
+          message: error.message,
         });
         throw error;
-      })
+      }),
     ) as Observable<T>;
   }
 
-  delete<T>(endpoint: string, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<T> {
+  delete<T>(
+    endpoint: string,
+    options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any },
+  ): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'DELETE', url);
 
     const httpOptions = this.normalizeOptions(options);
     httpOptions.headers = this.getTracingHeaders();
-    
+
     return this.http.delete<T>(url, httpOptions).pipe(
       tap(response => {
         this.logger.endServiceCall(callId, 200);
@@ -267,12 +280,12 @@ export class ApiService {
       }),
       catchError(error => {
         this.logger.endServiceCall(callId, error.status || 500);
-        this.logger.error(`DELETE ${endpoint} failed`, { 
+        this.logger.error(`DELETE ${endpoint} failed`, {
           status: error.status,
-          message: error.message
+          message: error.message,
         });
         throw error;
-      })
+      }),
     ) as Observable<T>;
   }
 
@@ -311,17 +324,17 @@ export class ApiService {
    */
   setApiUrl(resource: string): string {
     this.logger.debug(`Setting API URL for resource: ${resource}`);
-    
+
     // FIXED: Always use relative URLs for proxy compatibility
     if (resource === 'Go') {
-      this.apiUrl = '/api-go';  // Use relative URL for Go API
+      this.apiUrl = '/api-go'; // Use relative URL for Go API
       this.logger.debug(`Switched to Go API: ${this.apiUrl}`);
     } else {
       // Default to NestJS
-      this.apiUrl = '/api';  // Use relative URL for NestJS API
+      this.apiUrl = '/api'; // Use relative URL for NestJS API
       this.logger.debug(`Switched to NestJS API: ${this.apiUrl}`);
     }
-    
+
     return this.apiUrl;
   }
 
@@ -422,7 +435,12 @@ export class ApiService {
    * @param options Additional options
    * @returns Observable of response
    */
-  public authRequest<T>(method: string, endpoint: string, body?: unknown, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<T> {
+  public authRequest<T>(
+    method: string,
+    endpoint: string,
+    body?: unknown,
+    options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any },
+  ): Observable<T> {
     // Log detailed debugging information
     console.log('🔍 Auth request details', {
       method,
@@ -431,29 +449,29 @@ export class ApiService {
       bodyKeys: body ? Object.keys(body as Record<string, unknown>) : 'none',
       timestamp: new Date().toISOString(),
       options,
-      isProduction: this.isProduction
+      isProduction: this.isProduction,
     });
-    
+
     // Enhanced retry options for auth requests
-    const enhancedOptions: Record<string, unknown> = { 
-      ...(options as Record<string, unknown> || {}),
+    const enhancedOptions: Record<string, unknown> = {
+      ...((options as Record<string, unknown>) || {}),
       timeout: this.BASE_TIMEOUT * 2, // Double timeout for auth requests
-      retries: this.maxStartupRetries
+      retries: this.maxStartupRetries,
     };
-    
+
     // Add debugging information to request headers
     const debugHeaders = {
       headers: {
         'X-Debug-Timestamp': new Date().toISOString(),
-        'X-Client-Info': navigator.userAgent
-      }
+        'X-Client-Info': navigator.userAgent,
+      },
     };
-    
+
     const finalOptions = {
       ...enhancedOptions,
-      ...debugHeaders
+      ...debugHeaders,
     };
-    
+
     // Use regular request methods with enhanced options
     switch (method.toUpperCase()) {
       case 'GET':
@@ -475,26 +493,30 @@ export class ApiService {
 
   /**
    * Creates HTTP POST request to specified endpoint
-   * 
+   *
    * @param endpoint - API endpoint to request
    * @param body - Request body
    * @param options - Optional HTTP request options
    * @returns Observable<R> - Observable of response type R
    */
-  post<T = unknown, R = unknown>(endpoint: string, body: T, options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any }): Observable<R> {
+  post<T = unknown, R = unknown>(
+    endpoint: string,
+    body: T,
+    options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any },
+  ): Observable<R> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'POST', url);
 
     const httpOptions = this.normalizeOptions(options);
     httpOptions.headers = this.getTracingHeaders();
-    
+
     this.logger.debug(`Making POST request to ${url}`, {
       endpoint,
       baseUrl: this.apiUrl,
       fullUrl: url,
-      isProduction: this.isProduction
+      isProduction: this.isProduction,
     });
-    
+
     // Add more detailed debugging for auth endpoints
     if (endpoint.includes('auth')) {
       console.log(`🌐 Network request details:`, {
@@ -503,48 +525,48 @@ export class ApiService {
         bodyType: typeof body,
         hasCredentials: !!(body && typeof body === 'object' && 'username' in (body as any)),
         timestamp: Date.now(),
-        options: Object.keys(httpOptions || {})
+        options: Object.keys(httpOptions || {}),
       });
     }
-    
+
     return this.http.post<R>(url, body, httpOptions).pipe(
       tap(response => {
         this.logger.endServiceCall(callId, 200);
         this.logger.debug(`POST ${endpoint} succeeded`);
-        
+
         if (endpoint.includes('auth')) {
           console.log(`✅ Auth request succeeded`, {
-            endpoint, 
+            endpoint,
             responseReceived: true,
-            responseType: typeof response
+            responseType: typeof response,
           });
         }
       }),
       catchError(error => {
         this.logger.endServiceCall(callId, error.status || 500);
-        this.logger.error(`POST ${endpoint} failed`, { 
+        this.logger.error(`POST ${endpoint} failed`, {
           status: error.status,
           message: error.message,
-          url: url
+          url: url,
         });
-        
+
         if (endpoint.includes('auth')) {
           console.error(`❌ Auth request failed: ${error.status}`, {
             message: error.message || 'No message',
             statusText: error.statusText,
             url: url,
-            error: error
+            error: error,
           });
-          
+
           // Check if the server is available by pinging it
           this.checkServerAvailability();
         }
-        
+
         throw error;
-      })
+      }),
     ) as Observable<R>;
   }
-  
+
   /**
    * Enhanced server availability check
    */
@@ -554,8 +576,8 @@ export class ApiService {
     fetch('/api/health', { method: 'HEAD', signal: (AbortSignal as any).timeout ? (AbortSignal as any).timeout(3000) : null })
       .then(response => {
         this.logger.info('Server availability check: Server is responding', {
-          status: response.status, 
-          ok: response.ok
+          status: response.status,
+          ok: response.ok,
         });
         this.serverStarting = false;
       })
@@ -568,7 +590,7 @@ export class ApiService {
           .catch(() => {
             this.logger.error('Server availability check: Server is not responding', {
               error: error.message || 'Unknown error',
-              timestamp: new Date().toISOString()
+              timestamp: new Date().toISOString(),
             });
           });
         this.connectionAttempts++;
@@ -587,29 +609,27 @@ export class ApiService {
     if (this.activeRequests.size >= this.MAX_CONCURRENT_REQUESTS) {
       return true;
     }
-    
+
     const now = Date.now();
     const lastRequest = this.requestThrottler.get(endpoint) || 0;
-    
+
     if (now - lastRequest < this.THROTTLE_WINDOW_MS) {
       return true; // Should throttle
     }
-    
+
     this.requestThrottler.set(endpoint, now);
     return false;
   }
-  
+
   private trackRequest(endpoint: string): void {
     this.activeRequests.add(endpoint);
   }
-  
+
   private releaseRequest(endpoint: string): void {
     this.activeRequests.delete(endpoint);
   }
-  
+
   private delayedRequest<T>(requestFn: () => Observable<T>, delayMs: number): Observable<T> {
-    return timer(delayMs).pipe(
-      switchMap(() => requestFn())
-    );
+    return timer(delayMs).pipe(switchMap(() => requestFn()));
   }
 }

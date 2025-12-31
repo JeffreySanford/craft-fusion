@@ -7,9 +7,8 @@ describe('DataVisualizationsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DataVisualizationsComponent]
-    })
-    .compileComponents();
+      imports: [DataVisualizationsComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DataVisualizationsComponent);
     component = fixture.componentInstance;

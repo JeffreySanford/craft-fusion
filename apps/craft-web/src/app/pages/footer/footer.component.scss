@@ -1,5 +1,6 @@
 @use '../../../styles/_utilities.scss' as utilities;
 @use '../../../styles/_animations.scss'; // Import shared animations
+@use '../../../styles/md3-mapping' as md3;
 
 .footer-container {
   position: fixed;
@@ -14,24 +15,14 @@
   overflow: visible;
   transition: height 0.3s ease;
   z-index: 1000;
-  background: linear-gradient(
-    to right,
-    rgba(255, 0, 0, 0.7) 0%,
-    rgba(255, 255, 255, 0.7) 20%,
-    rgba(0, 0, 255, 0.7) 30%,
-    rgba(0, 128, 128, 0.7) 100%
-  );
-  
+  background: linear-gradient(to right, rgba(255, 0, 0, 0.7) 0%, rgba(255, 255, 255, 0.7) 20%, rgba(0, 0, 255, 0.7) 30%, rgba(0, 128, 128, 0.7) 100%);
+
   &.expanded {
     // When expanded, footer takes up more space
     height: auto;
   }
 
-  @include utilities.footer-expansion-panel(
-    linear-gradient(to right, rgba(0,0,255,0.7) 0%, rgba(0,0,0,0.7) 100%),
-    rgba(0,0,0,0.7),
-    gold
-  );
+  @include utilities.footer-expansion-panel(linear-gradient(to right, rgba(0, 0, 255, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), rgba(0, 0, 0, 0.7), gold);
 
   .top-containers {
     display: flex;
@@ -108,7 +99,9 @@
         padding: 0.25em;
         margin: 0 1.5em; /* Changed to 1.5em */
         border: 0.0625em solid blue;
-        transition: transform 0.3s, z-index 0.3s;
+        transition:
+          transform 0.3s,
+          z-index 0.3s;
         position: relative;
 
         &:hover {
@@ -204,29 +197,83 @@
           border-radius: 3px;
           background-color: rgba(0, 0, 0, 0.5);
           min-width: 120px;
-          
+
           @include utilities.data-overlay(0.5);
 
           mat-slide-toggle {
             font-size: 0.7em;
             color: white;
           }
-          
+
+          .live-toggle ::ng-deep .mat-slide-toggle-thumb {
+            background-color: md3.$md-live !important; /* Live color from MD3 mapping */
+          }
+
+          .live-toggle ::ng-deep .mat-slide-toggle-bar {
+            background-color: rgba(76, 175, 80, 0.25) !important;
+          }
+
+          .sim-toggle ::ng-deep .mat-slide-toggle-thumb {
+            background-color: md3.$md-sim !important;
+          }
+
+          /* Stronger rules to override Material theming and dark backgrounds */
+          /* Add broader selectors to target Material toggle internals regardless of DOM nesting */
+          .live-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-thumb,
+          .live-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-thumb::after,
+          .live-toggle.mat-slide-toggle.mat-checked ::ng-deep .mat-slide-toggle-thumb,
+          .live-toggle.mat-slide-toggle.mat-checked ::ng-deep .mat-slide-toggle-thumb::after {
+            background-color: md3.$md-live !important;
+            box-shadow: none !important;
+          }
+
+          .live-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-bar {
+            background-color: rgba(76, 175, 80, 0.25) !important;
+          }
+
+          .sim-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-thumb,
+          .sim-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-thumb::after,
+          .sim-toggle.mat-slide-toggle.mat-checked ::ng-deep .mat-slide-toggle-thumb,
+          .sim-toggle.mat-slide-toggle.mat-checked ::ng-deep .mat-slide-toggle-thumb::after {
+            background-color: md3.$md-sim !important;
+            box-shadow: none !important;
+          }
+
+          .sim-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-bar {
+            background-color: rgba(255, 165, 0, 0.25) !important;
+          }
+
+          .sim-toggle ::ng-deep .mat-slide-toggle-bar {
+            background-color: rgba(255, 165, 0, 0.25) !important;
+          }
+
+          .live-label {
+            color: md3.$md-live; /* Live color */
+            font-weight: 600;
+            text-transform: none;
+          }
+
+          .sim-label {
+            color: md3.$md-sim;
+            font-weight: 600;
+            text-transform: none;
+          }
+
           .advanced-link {
             font-size: 0.7em;
-            color: #33AAFF;
+            color: #33aaff;
             margin-left: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            
+
             mat-icon {
               font-size: 14px;
               height: 14px;
               width: 14px;
               margin-left: 2px;
             }
-            
+
             &:hover {
               text-decoration: underline;
             }
@@ -242,7 +289,7 @@
           padding: 5px;
           z-index: 10;
           max-width: 200px;
-          
+
           @include utilities.data-overlay(0.6);
 
           .service-metric {
@@ -251,14 +298,14 @@
             margin: 2px 0;
             font-size: 0.8em;
             color: white;
-            
+
             mat-icon {
               font-size: 14px;
               height: 14px;
               width: 14px;
               margin-right: 4px;
             }
-            
+
             .service-name {
               flex: 1;
               margin-right: 4px;
@@ -266,9 +313,9 @@
               overflow: hidden;
               text-overflow: ellipsis;
             }
-            
+
             .service-time {
-              color: #33AAFF;
+              color: #33aaff;
               font-weight: bold;
             }
           }
@@ -286,30 +333,39 @@
     position: relative;
   }
 
+  /* Class-based border styles to avoid inline styles in templates */
+  .performance-card.live-border {
+    @include md3.md3-border(md3.$md-live, 2px);
+  }
+
+  .performance-card.sim-border {
+    @include md3.md3-border(md3.$md-sim, 2px);
+  }
+
   .panel-header {
     padding: 0 16px;
-    
+
     .title-content {
       display: flex;
       align-items: center;
       width: 100%;
-      
+
       mat-icon {
         color: gold;
         margin-right: 8px;
       }
-      
+
       p {
         font-size: 1.25em;
         margin: 0 0 0 0.15em;
         color: gold;
       }
-      
+
       .quick-metrics {
         display: flex;
         gap: 8px;
         margin-left: auto;
-        
+
         @include utilities.metric-pill(gold);
       }
     }
@@ -348,30 +404,44 @@ mat-expansion-panel[expanded] {
   width: 100%;
   gap: 1.5em;
   padding: 1em;
-  
+
   .contact-block {
+    /* Make the contact block a compact column anchored to the left */
     display: flex;
-    flex-direction: row; // Make contacts inline
-    flex-wrap: wrap; // Allow wrapping on small screens
-    gap: 0.75em;
-    min-width: 200px;
-    
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0.5em;
+    width: fit-content;
+    padding: 1em;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    background-color: rgba(0, 0, 0, 0.15);
+
+    /* Ensure block sits to the far left of the footer content */
+    align-self: flex-start;
+
     button {
       min-width: auto;
-      flex: 0 0 auto;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0.5em;
     }
   }
-  
+
   .logo-performance-block {
     flex: 1;
-    
+
     .logo-container {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
       gap: 1em;
 
-      .dev-logos, .agency-logos {
+      .dev-logos,
+      .agency-logos {
         flex: 1;
         min-width: 200px;
         justify-content: center;
@@ -384,12 +454,12 @@ mat-expansion-panel[expanded] {
 @media (max-width: 768px) {
   .footer-content {
     flex-direction: column;
-    
+
     .contact-block {
       width: 100%;
       justify-content: center;
     }
-    
+
     .logo-performance-block {
       width: 100%;
     }
@@ -400,7 +470,7 @@ mat-expansion-panel[expanded] {
 @media (max-width: 480px) {
   .footer-content {
     padding: 0.5em;
-    
+
     .performance-card {
       height: 4em !important; // Override for mobile
     }
@@ -413,23 +483,22 @@ mat-expansion-panel[expanded] {
 }
 
 ::ng-deep .mat-expansion-indicator::after {
-
   color: gold !important;
   // background-color: white !important;
-  
+
   svg {
     fill: gold !important;
   }
 }
 
 // Style for admin button
-button[color="warn"] {
+button[color='warn'] {
   background-color: rgba(220, 53, 69, 0.8);
-  
+
   &:hover {
     background-color: rgba(220, 53, 69, 1);
   }
-  
+
   mat-icon {
     color: white;
   }

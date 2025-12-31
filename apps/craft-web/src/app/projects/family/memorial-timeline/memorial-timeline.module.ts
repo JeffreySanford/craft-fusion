@@ -23,7 +23,7 @@ import { JeffreyAiComponent } from './components/jeffrey-ai/jeffrey-ai.component
     TimelineListComponent,
     TimelineItemComponent,
     MemorialTimelineComponent, // Added the missing component
-    JeffreyAiComponent
+    JeffreyAiComponent,
   ],
   imports: [
     CommonModule,
@@ -42,14 +42,14 @@ import { JeffreyAiComponent } from './components/jeffrey-ai/jeffrey-ai.component
       { path: 'timeline-item', component: MemorialTimelineComponent },
       { path: 'timeline-list', component: TimelineListComponent },
       { path: 'timeline-page', component: TimelinePageComponent },
-      { path: '**', redirectTo: '' }
+      { path: '**', redirectTo: '' },
     ]),
   ],
   exports: [
     TimelinePageComponent,
     TimelineListComponent,
     TimelineItemComponent,
-    MemorialTimelineComponent // Export the component
-  ]
+    MemorialTimelineComponent, // Export the component
+  ],
 })
-export class MemorialTimelineModule { }
+export class MemorialTimelineModule {}

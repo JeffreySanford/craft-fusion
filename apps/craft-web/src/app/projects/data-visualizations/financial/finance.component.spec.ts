@@ -10,9 +10,8 @@ describe('FinanceComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       // Import the module instead of the component directly since it's no longer standalone
-      imports: [FinanceModule]
-    })
-    .compileComponents();
+      imports: [FinanceModule],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(FinanceComponent);
     component = fixture.componentInstance;
@@ -26,7 +25,7 @@ describe('FinanceComponent', () => {
   it('should render chart with data', () => {
     const testData: FinanceChartData[] = [
       { task: 'Task 1', startTime: new Date(), endTime: new Date(), group: 'normal', stockIndicator: 'AAPL', trade: 'buy', startValue: 100, endValue: 150 },
-      { task: 'Task 2', startTime: new Date(), endTime: new Date(), group: 'extreme', stockIndicator: 'GOOGL', trade: 'sell', startValue: 200, endValue: 250 }
+      { task: 'Task 2', startTime: new Date(), endTime: new Date(), group: 'extreme', stockIndicator: 'GOOGL', trade: 'sell', startValue: 200, endValue: 250 },
     ];
     component.data = testData;
     fixture.detectChanges();
@@ -36,8 +35,8 @@ describe('FinanceComponent', () => {
         currentValue: testData,
         previousValue: undefined,
         firstChange: true,
-        isFirstChange: () => true
-      }
+        isFirstChange: () => true,
+      },
     });
     expect(component.renderChart).toHaveBeenCalled();
   });
@@ -45,14 +44,10 @@ describe('FinanceComponent', () => {
   it('should render legend with correct stock symbols', () => {
     const testData: FinanceChartData[] = [
       { task: 'Task 1', startTime: new Date(), endTime: new Date(), group: 'normal', stockIndicator: 'AAPL', trade: 'buy', startValue: 100, endValue: 150 },
-      { task: 'Task 2', startTime: new Date(), endTime: new Date(), group: 'extreme', stockIndicator: 'GOOGL', trade: 'sell', startValue: 200, endValue: 250 }
+      { task: 'Task 2', startTime: new Date(), endTime: new Date(), group: 'extreme', stockIndicator: 'GOOGL', trade: 'sell', startValue: 200, endValue: 250 },
     ];
     component.data = testData;
-    component.stocks = [
-      { symbol: 'AAPL' },
-      { symbol: 'GOOGL' },
-      { symbol: 'MSFT' }
-    ];
+    component.stocks = [{ symbol: 'AAPL' }, { symbol: 'GOOGL' }, { symbol: 'MSFT' }];
     fixture.detectChanges();
     const legendItems = fixture.nativeElement.querySelectorAll('.legend-item');
     expect(legendItems.length).toBe(3);

@@ -47,13 +47,7 @@
     transform: translate(-50%, -50%);
     width: 70%;
     height: 70%;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 10%,
-      var(--md-sys-color-secondary) 10%,
-      var(--md-sys-color-secondary) 20%
-    );
+    background: repeating-linear-gradient(0deg, transparent, transparent 10%, var(--md-sys-color-secondary) 10%, var(--md-sys-color-secondary) 20%);
   }
 }
 

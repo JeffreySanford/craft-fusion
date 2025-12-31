@@ -3,26 +3,26 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root',
 })
 export class OpenSkiesService {
-    private apiUrl = 'http://localhost:3000/openskies'; // Replace with your NestJS backend URL
+  private apiUrl = 'http://localhost:3000/openskies'; // Replace with your NestJS backend URL
 
-    constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {}
 
-    fetchFlightData(): Observable<unknown> {
-        return this.http.get<unknown>(`${this.apiUrl}/fetchflightdata`);
-    }
+  fetchFlightData(): Observable<unknown> {
+    return this.http.get<unknown>(`${this.apiUrl}/fetchflightdata`);
+  }
 
-    fetchAirportData(): Observable<unknown> {
-        return this.http.get<unknown>(`${this.apiUrl}/airports`);
-    }
+  fetchAirportData(): Observable<unknown> {
+    return this.http.get<unknown>(`${this.apiUrl}/airports`);
+  }
 
-    fetchFlightDataByAirline(airline: string): Observable<unknown> {
-        return this.http.get<unknown>(`${this.apiUrl}/flights/airline/${airline}`);
-    }
+  fetchFlightDataByAirline(airline: string): Observable<unknown> {
+    return this.http.get<unknown>(`${this.apiUrl}/flights/airline/${airline}`);
+  }
 
-    fetchFlightDataByAircraft(aircraft: string): Observable<unknown> {
-        return this.http.get<unknown>(`${this.apiUrl}/flights/aircraft/${aircraft}`);
-    }
+  fetchFlightDataByAircraft(aircraft: string): Observable<unknown> {
+    return this.http.get<unknown>(`${this.apiUrl}/flights/aircraft/${aircraft}`);
+  }
 }

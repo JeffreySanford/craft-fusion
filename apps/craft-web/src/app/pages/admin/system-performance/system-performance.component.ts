@@ -7,7 +7,7 @@ import { LoggerService } from '../../../common/services/logger.service';
   selector: 'app-system-performance',
   templateUrl: './system-performance.component.html',
   styleUrls: ['./system-performance.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class SystemPerformanceComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('systemMetricsCanvas') systemMetricsCanvas!: ElementRef<HTMLCanvasElement>;
@@ -17,7 +17,7 @@ export class SystemPerformanceComponent implements OnInit, OnDestroy, AfterViewI
     cpuLoad: 'N/A',
     appUptime: 'N/A',
     networkLatency: 'N/A',
-    adminStatus: 'inactive'
+    adminStatus: 'inactive',
   } as any;
 
   private systemMetricsChart: Chart | null = null;
@@ -79,10 +79,10 @@ export class SystemPerformanceComponent implements OnInit, OnDestroy, AfterViewI
         datasets: [
           { label: 'Memory', data: [], borderColor: '#3b82f6', fill: false },
           { label: 'CPU', data: [], borderColor: '#10b981', fill: false },
-          { label: 'Network', data: [], borderColor: '#ef4444', fill: false }
-        ]
+          { label: 'Network', data: [], borderColor: '#ef4444', fill: false },
+        ],
       },
-      options: { responsive: true, maintainAspectRatio: false }
+      options: { responsive: true, maintainAspectRatio: false },
     });
   }
 

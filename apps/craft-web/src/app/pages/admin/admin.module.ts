@@ -16,7 +16,6 @@ import { RouterModule } from '@angular/router';
 import { ComponentsModule } from '../../components/components.module';
 import { AuthService } from '../../common/services/auth/auth.service';
 
-
 @NgModule({
   declarations: [
     AdminComponent,
@@ -26,7 +25,7 @@ import { AuthService } from '../../common/services/auth/auth.service';
     AdminLandingComponent,
     SecurityDashboardComponent,
     SystemPerformanceComponent,
-    PerformanceDashboardComponent
+    PerformanceDashboardComponent,
   ],
   imports: [
     CommonModule,
@@ -34,15 +33,10 @@ import { AuthService } from '../../common/services/auth/auth.service';
     ReactiveFormsModule,
     AdminMaterialModule,
     ComponentsModule, // Import ComponentsModule to access LoggerDisplayComponent
-    
-    RouterModule.forChild([
-      { path: '', component: AdminComponent }
-    ])
+
+    RouterModule.forChild([{ path: '', component: AdminComponent }]),
   ],
-  exports: [
-  ],
-  providers: [
-    { provide: 'AuthService', useExisting: AuthService }
-  ]
+  exports: [],
+  providers: [{ provide: 'AuthService', useExisting: AuthService }],
 })
-export class AdminModule { }
+export class AdminModule {}

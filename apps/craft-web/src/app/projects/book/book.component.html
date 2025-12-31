@@ -15,13 +15,20 @@
   <mat-sidenav-container #container class="sidenav-container">
     <mat-sidenav #sidenav mode="side" closed class="sidenav-custom-width">
       <mat-nav-list>
-        <mat-list-item class="document" *ngFor="let document of openedDocuments" (click)="onDocumentSelected(document.name)" [ngStyle]="{'background-color': document.color, 'color': document.contrast}">
+        <mat-list-item
+          class="document"
+          *ngFor="let document of openedDocuments"
+          (click)="onDocumentSelected(document.name)"
+          [appBgColor]="document.color"
+          [appTextColor]="document.contrast"
+        >
           <p>{{ document.name }}</p>
         </mat-list-item>
       </mat-nav-list>
       <div class="file-actions">
-        <button mat-mini-fab class="mini-mat-fab button">
-          <input type="file" (change)="onFileSelected($event)" accept=".pdf,.docx,.txt" multiple />
+        <label for="file-input" class="visually-hidden">Attach files</label>
+        <input #fileInput class="hidden-file-input" type="file" id="file-input" (change)="onFileSelected($event)" accept=".pdf,.docx,.txt" multiple title="Attach files" />
+        <button mat-mini-fab class="mini-mat-fab button" (click)="fileInput.click()" aria-label="Attach files" title="Attach files">
           <mat-icon class="tag-icon">attach_file</mat-icon>
         </button>
         <button mat-mini-fab class="mini-mat-fab button" (click)="onSave()">
@@ -29,7 +36,7 @@
         </button>
       </div>
       <div *ngIf="selectedDocument" class="outline-box">
-        <p [ngStyle]="{'color': selectedDocument.color}">Outline of {{ selectedDocument.name }}</p>
+        <p [appTextColor]="selectedDocument.color">Outline of {{ selectedDocument.name }}</p>
         <div *ngFor="let chapter of chapters; let i = index" (click)="scrollToChapter(i)" class="chapter-link">
           {{ chapter }}
         </div>
@@ -41,10 +48,10 @@
           <mat-icon class="tag-icon">menu</mat-icon>
         </button>
         <div class="font-selection">
-          <select id="font-select" (change)="changeFont($event)" matTooltip="Select Font">
+          <select id="font-select" (change)="changeFont($event)" aria-label="Select font" title="Select font" matTooltip="Select Font">
             <option *ngFor="let font of availableFonts" [value]="font" [selected]="font === selectedFont">{{ font }}</option>
           </select>
-          <select id="font-size-select" (change)="changeFontSize($event)" matTooltip="Select Font Size">
+          <select id="font-size-select" (change)="changeFontSize($event)" aria-label="Select font size" title="Select font size" matTooltip="Select Font Size">
             <option *ngFor="let fontSize of availableFontSizes" [value]="fontSize" [selected]="fontSize === selectedFontSize">{{ fontSize }}</option>
           </select>
         </div>
@@ -69,26 +76,19 @@
         </div>
         <div class="rsvp-controls">
           <button mat-mini-fab class="mini-mat-fab button" (click)="toggleRSVP()">Exit</button>
-          <input type="range" min="300" max="3000" step="250" [(ngModel)]="rsvpSpeed" list="tickmarks">
-          <label>{{ rsvpSpeed }} WPM</label>
+          <input type="range" min="300" max="3000" step="250" [(ngModel)]="rsvpSpeed" list="tickmarks" aria-label="RSVP speed" title="Reading speed (words per minute)" />
+          <label aria-live="polite">{{ rsvpSpeed }} WPM</label>
           <button mat-mini-fab class="mini-mat-fab button" (click)="togglePlayPause()">
             <mat-icon class="tag-icon">{{ isRSVPPlaying ? 'pause' : 'play_arrow' }}</mat-icon>
           </button>
         </div>
       </div>
-      <div class="tinymce-container" [ngStyle]="{'font-family': selectedFont, 'font-size': selectedFontSize}">
+      <div class="tinymce-container" [appStyle]="{ 'font-family': selectedFont, 'font-size': selectedFontSize }">
         <div *ngIf="isMarkdownPrettyView" #markdownPreview class="markdown-preview book-content" [innerHTML]="editorData | safeHtml"></div>
-        <editor *ngIf="!isMarkdownPrettyView"
-          [init]="init"
-          [(ngModel)]="editorData"
-          (onChange)="onChange($event)"
-          (onInit)="onInit($event)"
-        ></editor>
+        <editor *ngIf="!isMarkdownPrettyView" [init]="init" [(ngModel)]="editorData" (onChange)="onChange($event)" (onInit)="onInit($event)"></editor>
       </div>
       <div class="opened-documents">
-        <button *ngFor="let doc of openedDocuments"
-                (click)="onDocumentSelected(doc.name)"
-                class="document-button">
+        <button *ngFor="let doc of openedDocuments" (click)="onDocumentSelected(doc.name)" class="document-button">
           {{ doc.name }}
         </button>
       </div>

@@ -10,22 +10,15 @@ const mockNotificationService = {
   showSuccess: jest.fn(),
   showError: jest.fn(),
   success: jest.fn(),
-  error: jest.fn()
+  error: jest.fn(),
 };
 describe('RecordServiceService', () => {
   let service: RecordService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientModule
-      ],
-      providers: [
-        RecordService,
-        { provide: NotificationService, useValue: mockNotificationService },
-        ToastrService,
-        provideHttpClientTesting()
-      ],
+      imports: [HttpClientModule],
+      providers: [RecordService, { provide: NotificationService, useValue: mockNotificationService }, ToastrService, provideHttpClientTesting()],
     });
     service = TestBed.inject(RecordService);
   });

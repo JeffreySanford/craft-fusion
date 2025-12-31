@@ -5,14 +5,12 @@ import { LoggerService } from '@craft-web/services/logger.service';
   selector: 'app-landing',
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class LandingComponent implements OnInit {
   items = ['Architect', 'Developer', 'Designer'];
-  
-  constructor(private logger: LoggerService) {
 
-  }
+  constructor(private logger: LoggerService) {}
 
   ngOnInit(): void {
     this.logger.info('LandingComponent', 'LandingComponent initialized');

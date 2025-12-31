@@ -31,16 +31,16 @@ export class ServicesDashboardService {
   ];
 
   private serviceColors: { [key: string]: string } = {
-    'ApiService': '#FF6B6B',
-    'AuthenticationService': '#4ECDC4',
-    'UserStateService': '#45B7D1',
-    'SessionService': '#96CEB4',
-    'BusyService': '#FFEEAD',
-    'NotificationService': '#D4A5A5',
-    'LoggerService': '#9B59B6',
-    'ChatService': '#3498DB',
-    'SettingsService': '#FF9F4A',
-    'AdminStateService': '#2ECC71'
+    ApiService: '#FF6B6B',
+    AuthenticationService: '#4ECDC4',
+    UserStateService: '#45B7D1',
+    SessionService: '#96CEB4',
+    BusyService: '#FFEEAD',
+    NotificationService: '#D4A5A5',
+    LoggerService: '#9B59B6',
+    ChatService: '#3498DB',
+    SettingsService: '#FF9F4A',
+    AdminStateService: '#2ECC71',
   };
 
   constructor() {}
@@ -93,15 +93,18 @@ export class ServicesDashboardService {
 
   startSimulation() {
     this.stopSimulation();
-    this.simulationIntervalId = window.setInterval(() => {
-      // Create simulated stats for registered services
-      this.getRegisteredServices().forEach(s => {
-        const avg = Math.random() * 200 + 20;
-        const calls = Math.floor(Math.random() * 50);
-        const success = 75 + Math.random() * 25;
-        this.updateServiceStats(s.name, { avgResponseTime: avg, callCount: calls, successRate: success, lastUpdate: Date.now() });
-      });
-    }, 8000 + Math.random() * 4000);
+    this.simulationIntervalId = window.setInterval(
+      () => {
+        // Create simulated stats for registered services
+        this.getRegisteredServices().forEach(s => {
+          const avg = Math.random() * 200 + 20;
+          const calls = Math.floor(Math.random() * 50);
+          const success = 75 + Math.random() * 25;
+          this.updateServiceStats(s.name, { avgResponseTime: avg, callCount: calls, successRate: success, lastUpdate: Date.now() });
+        });
+      },
+      8000 + Math.random() * 4000,
+    );
   }
 
   stopSimulation() {
@@ -121,7 +124,7 @@ export class ServicesDashboardService {
       avgResponseTime: stats.avgResponseTime ?? prev.avgResponseTime ?? 0,
       callCount: stats.callCount ?? prev.callCount ?? 0,
       successRate: stats.successRate ?? prev.successRate ?? 100,
-      lastUpdate: stats.lastUpdate ?? Date.now()
+      lastUpdate: stats.lastUpdate ?? Date.now(),
     };
   }
 
@@ -138,12 +141,12 @@ export class ServicesDashboardService {
       datasets: [
         {
           label: 'Response Time (ms)',
-          data: active.map(s => (stats[s.name]?.avgResponseTime) || 0),
+          data: active.map(s => stats[s.name]?.avgResponseTime || 0),
           backgroundColor: active.map(s => this.getServiceColor(s.name)),
           borderWidth: 1,
-          yAxisID: 'y'
-        }
-      ]
+          yAxisID: 'y',
+        },
+      ],
     } as any;
   }
 
@@ -160,9 +163,9 @@ export class ServicesDashboardService {
           y: { beginAtZero: true, title: { display: true, text: 'Avg Response Time (ms)' } },
         },
         plugins: {
-          legend: { display: false }
-        }
-      }
+          legend: { display: false },
+        },
+      },
     });
   }
 }

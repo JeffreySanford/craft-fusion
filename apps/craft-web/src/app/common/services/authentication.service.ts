@@ -34,7 +34,7 @@ export interface RefreshTokenRequest {
 
 export interface TokenInfo {
   token: string;
-  refreshToken?: string | undefined; 
+  refreshToken?: string | undefined;
   expiresAt?: number | undefined; // Expiration timestamp
 }
 
@@ -55,11 +55,11 @@ export class AuthenticationService {
   private readonly AUTH_TIMEOUT = 15000; // 15 seconds timeout for auth requests
   private readonly TOKEN_REFRESH_THRESHOLD = 300; // Refresh token 5 minutes before expiry
   private readonly MAX_RETRIES = 3; // Maximum number of retries for connection issues
-  
+
   // WebSocket connection for real-time auth updates
   private socket: Socket | null = null;
   private socketDestroy$ = new Subject<void>();
-  
+
   // SUBJECTS FOR REACTIVE STATE
   private authState = new BehaviorSubject<AuthState>({
     user: {
@@ -71,29 +71,29 @@ export class AuthenticationService {
       email: '',
       password: '',
       roles: [],
-      role: '' // Add the required role property
+      role: '', // Add the required role property
     },
     isLoggedIn: false,
     isAdmin: false,
-    isOffline: false
+    isOffline: false,
   });
-  
+
   // Public observables derived from auth state
   public readonly authState$ = this.authState.asObservable();
   public readonly currentUser$ = this.authState$.pipe(
     map(state => state.user),
-    shareReplay(1)
+    shareReplay(1),
   );
   public readonly isLoggedIn$ = this.authState$.pipe(
     map(state => state.isLoggedIn),
-    shareReplay(1)
+    shareReplay(1),
   );
   public readonly isAdmin$ = this.authState$.pipe(
     map(state => state.isAdmin),
     tap(isAdmin => console.log('🔐 AuthService: isAdmin$ emitted:', isAdmin)),
-    shareReplay(1)
+    shareReplay(1),
   );
-  
+
   // Network state
   private _isOfflineMode = false;
   private connectionRetryCount = 0;
@@ -112,7 +112,7 @@ export class AuthenticationService {
         status: e.status,
         message: e.message || (e.error && e.error.message) || String(e),
         error: e.error || e,
-        name: e.name || (e.constructor && e.constructor.name) || typeof e
+        name: e.name || (e.constructor && e.constructor.name) || typeof e,
       };
     }
     return { message: String(error), name: typeof error };
@@ -126,7 +126,7 @@ export class AuthenticationService {
     private logger: LoggerService,
     private notificationService: NotificationService,
     private adminStateService: AdminStateService,
-    private userTrackingService: UserTrackingService
+    private userTrackingService: UserTrackingService,
   ) {
     this.logger.registerService('AuthService');
     console.log('🔐 AuthService: Constructor called');
@@ -195,39 +195,40 @@ export class AuthenticationService {
     console.log('🔐 AuthService: Token info found:', {
       hasToken: !!tokenInfo?.token,
       hasRefreshToken: !!tokenInfo?.refreshToken,
-      expiresAt: tokenInfo?.expiresAt
+      expiresAt: tokenInfo?.expiresAt,
     });
 
     if (tokenInfo && tokenInfo.token) {
       this.logger.debug('Found existing token, validating with API');
 
       // Validate token with API and get user details
-      this.apiService.get<User>('auth/user')
+      this.apiService
+        .get<User>('auth/user')
         .pipe(
           timeout(this.AUTH_TIMEOUT),
           catchError((error: any) => {
             console.log('initializeAuthentication: Token validation failed', error);
             this.logger.warn('Token validation failed, clearing auth state', {
               error: (error && error.message) || 'Unknown error',
-              status: (error && error.status) || 0
+              status: (error && error.status) || 0,
             });
 
             // Clear invalid tokens
             this.clearAuthState();
             return throwError(() => error);
-          })
+          }),
         )
         .subscribe({
-          next: (user) => {
+          next: user => {
             console.log('initializeAuthentication: Token validation successful', {
               username: user.username,
               roles: user.roles,
-              isAdmin: this.hasAdminRole(user)
+              isAdmin: this.hasAdminRole(user),
             });
 
             this.logger.info('Token validation successful, restoring user session', {
               username: user.username,
-              isAdmin: this.hasAdminRole(user)
+              isAdmin: this.hasAdminRole(user),
             });
 
             // Restore authentication state from API response
@@ -236,7 +237,7 @@ export class AuthenticationService {
               isLoggedIn: true,
               isAdmin: this.hasAdminRole(user),
               isOffline: false,
-              lastSyncTime: new Date()
+              lastSyncTime: new Date(),
             });
 
             this.sessionService.setUserSession(user);
@@ -251,7 +252,7 @@ export class AuthenticationService {
             // Token validation failed, user needs to login again
             this.clearAuthState();
             this.router.navigate(['/home']);
-          }
+          },
         });
     } else {
       console.log('initializeAuthentication: No existing tokens found');
@@ -268,12 +269,12 @@ export class AuthenticationService {
   public login(username: string, password: string): Observable<AuthResponse> {
     // Clear any existing token before attempting login
     this.clearAuthState();
-    
-    this.logger.info('Login attempt initiated', { 
+
+    this.logger.info('Login attempt initiated', {
       username,
       timestamp: new Date().toISOString(),
       isOffline: this._isOfflineMode,
-      serverStarting: this.apiService.isServerStarting
+      serverStarting: this.apiService.isServerStarting,
     });
 
     // Check if we appear to be offline based on previous errors
@@ -293,72 +294,66 @@ export class AuthenticationService {
     }
 
     const loginRequest: LoginRequest = { username, password };
-    
+
     this.logger.debug('Making authentication request to server', {
-      endpoint: 'auth/login'
+      endpoint: 'auth/login',
     });
 
     // Use special auth request method with enhanced retry logic
-    return this.apiService.authRequest<AuthResponse>('POST', 'auth/login', loginRequest)
-      .pipe(
-        tap((response: AuthResponse) => {
-          if (response && response.token) {
-            this._isOfflineMode = false;
-            
-            this.logger.info('Authentication successful', {
-              username: response.user?.username,
-              hasRoles: Array.isArray(response.user?.roles),
-              tokenReceived: true,
-              tokenLength: response.token.length,
-              hasRefreshToken: !!response.refreshToken
-            });
-            
-            // Store the token with expiration if provided
-            const expiresAt = response.expiresIn 
-              ? Date.now() + (response.expiresIn * 1000) 
-              : undefined;
-              
-            this.handleSuccessfulLogin(response, expiresAt);
-            
-            // Initialize WebSocket connection for real-time auth state updates
-            this.initializeAuthSocket();
-            
-            // Schedule token refresh if expiration is provided
-            if (expiresAt) {
-              this.scheduleTokenRefresh(expiresAt);
-            }
-          } else {
-            this.logger.warn('Server returned success but no token was provided');
+    return this.apiService.authRequest<AuthResponse>('POST', 'auth/login', loginRequest).pipe(
+      tap((response: AuthResponse) => {
+        if (response && response.token) {
+          this._isOfflineMode = false;
+
+          this.logger.info('Authentication successful', {
+            username: response.user?.username,
+            hasRoles: Array.isArray(response.user?.roles),
+            tokenReceived: true,
+            tokenLength: response.token.length,
+            hasRefreshToken: !!response.refreshToken,
+          });
+
+          // Store the token with expiration if provided
+          const expiresAt = response.expiresIn ? Date.now() + response.expiresIn * 1000 : undefined;
+
+          this.handleSuccessfulLogin(response, expiresAt);
+
+          // Initialize WebSocket connection for real-time auth state updates
+          this.initializeAuthSocket();
+
+          // Schedule token refresh if expiration is provided
+          if (expiresAt) {
+            this.scheduleTokenRefresh(expiresAt);
           }
-        }),
-        catchError((error: any) => {
-          const status = error?.status;
-          const message = error?.message || 'Unknown error';
+        } else {
+          this.logger.warn('Server returned success but no token was provided');
+        }
+      }),
+      catchError((error: any) => {
+        const status = error?.status;
+        const message = error?.message || 'Unknown error';
 
-          // Check if this is a connection issue
-          if (status === 0 || status === 504) {
-            this._isOfflineMode = true;
-            this.logger.warn('Network connectivity issue detected during authentication', {
-              errorStatus: status,
-              errorMessage: message,
-              errorType: error?.name,
-              timestamp: new Date().toISOString(),
-              offlineModeActivated: true
-            });
+        // Check if this is a connection issue
+        if (status === 0 || status === 504) {
+          this._isOfflineMode = true;
+          this.logger.warn('Network connectivity issue detected during authentication', {
+            errorStatus: status,
+            errorMessage: message,
+            errorType: error?.name,
+            timestamp: new Date().toISOString(),
+            offlineModeActivated: true,
+          });
 
-            // Show more helpful message
-            this.notificationService.showWarning(
-              `Server appears to be unavailable. Using offline mode for demonstration.`,
-              'Switching to Offline Mode'
-            );
+          // Show more helpful message
+          this.notificationService.showWarning(`Server appears to be unavailable. Using offline mode for demonstration.`, 'Switching to Offline Mode');
 
-            // Always allow fallback login during connection issues
-            return this.handleOfflineLogin(username, password);
-          }
+          // Always allow fallback login during connection issues
+          return this.handleOfflineLogin(username, password);
+        }
 
-          return this.handleLoginError(error, username);
-        })
-      );
+        return this.handleLoginError(error, username);
+      }),
+    );
   }
 
   /**
@@ -369,30 +364,30 @@ export class AuthenticationService {
     this.logger.info('User logout initiated', {
       username: currentUser?.username,
       wasAuthenticated: this.authState.value.isLoggedIn,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-    
+
     // Close WebSocket connection if open
     this.closeAuthSocket();
-    
+
     // Cancel any pending token refresh
     if (this.refreshTokenTimeout) {
       clearTimeout(this.refreshTokenTimeout);
       this.refreshTokenTimeout = null;
     }
-    
+
     // Clear all authentication-related state
     this.clearAuthState();
     this.sessionService.clearUserSession();
-    
+
     // Clear admin state
     this.adminStateService.setAdminStatus(false);
-    
+
     // Clear user tracking state
     this.userTrackingService.setCurrentUser(null);
-    
+
     this.router.navigate(['/home']);
-    
+
     this.logger.debug('User logout completed, all authentication and administrative state reset');
   }
 
@@ -404,70 +399,64 @@ export class AuthenticationService {
       this.logger.debug('Token refresh already in progress, skipping duplicate request');
       return throwError(() => new Error('Token refresh already in progress'));
     }
-    
+
     const tokenInfo = this.getStoredTokenInfo();
     if (!tokenInfo || !tokenInfo.refreshToken) {
       this.logger.warn('Cannot refresh token - no refresh token available');
       return throwError(() => new Error('No refresh token available'));
     }
-    
+
     this.tokenRefreshInProgress = true;
     this.logger.debug('Attempting to refresh authentication token');
-    
+
     const refreshRequest: RefreshTokenRequest = {
-      refreshToken: tokenInfo.refreshToken
+      refreshToken: tokenInfo.refreshToken,
     };
-    
-    return this.apiService.authRequest<AuthResponse>('POST', 'auth/refresh-token', refreshRequest)
-      .pipe(
-        tap((response: AuthResponse) => {
-          if (response && response.token) {
-            this.logger.info('Token refreshed successfully');
-            
-            // Update stored token with new values
-            const expiresAt = response.expiresIn 
-              ? Date.now() + (response.expiresIn * 1000) 
-              : undefined;
-              
-            this.storeTokenInfo({
-              token: response.token,
-              refreshToken: response.refreshToken || tokenInfo.refreshToken,
-              expiresAt: expiresAt
-            });
-            
-            // Schedule next token refresh
-            if (expiresAt) {
-              this.scheduleTokenRefresh(expiresAt);
-            }
-          } else {
-            this.logger.warn('Token refresh response missing token');
-          }
-          
-          this.tokenRefreshInProgress = false;
-        }),
-        catchError((error: any) => {
-          const status = error?.status;
-          const message = error?.message || 'Unknown error';
 
-          this.logger.error('Failed to refresh authentication token', {
-            error: message,
-            status
+    return this.apiService.authRequest<AuthResponse>('POST', 'auth/refresh-token', refreshRequest).pipe(
+      tap((response: AuthResponse) => {
+        if (response && response.token) {
+          this.logger.info('Token refreshed successfully');
+
+          // Update stored token with new values
+          const expiresAt = response.expiresIn ? Date.now() + response.expiresIn * 1000 : undefined;
+
+          this.storeTokenInfo({
+            token: response.token,
+            refreshToken: response.refreshToken || tokenInfo.refreshToken,
+            expiresAt: expiresAt,
           });
-          this.tokenRefreshInProgress = false;
 
-          // If refresh fails with 401/403, user needs to re-authenticate
-          if (status === 401 || status === 403) {
-            this.clearAuthState();
-            this.router.navigate(['/login']);
-            this.notificationService.showWarning(
-              'Your session has expired. Please log in again.', 
-              'Session Expired'
-            );
+          // Schedule next token refresh
+          if (expiresAt) {
+            this.scheduleTokenRefresh(expiresAt);
           }
+        } else {
+          this.logger.warn('Token refresh response missing token');
+        }
 
-          return throwError(() => error);
-        })
-      );
+        this.tokenRefreshInProgress = false;
+      }),
+      catchError((error: any) => {
+        const status = error?.status;
+        const message = error?.message || 'Unknown error';
+
+        this.logger.error('Failed to refresh authentication token', {
+          error: message,
+          status,
+        });
+        this.tokenRefreshInProgress = false;
+
+        // If refresh fails with 401/403, user needs to re-authenticate
+        if (status === 401 || status === 403) {
+          this.clearAuthState();
+          this.router.navigate(['/login']);
+          this.notificationService.showWarning('Your session has expired. Please log in again.', 'Session Expired');
+        }
+
+        return throwError(() => error);
+      }),
+    );
   }
 
   /**
@@ -475,7 +464,8 @@ export class AuthenticationService {
    */
   private fetchUserDetails(): void {
     this.logger.debug('Fetching user details from server');
-    this.apiService.get<User>('auth/user')
+    this.apiService
+      .get<User>('auth/user')
       .pipe(
         timeout(this.AUTH_TIMEOUT),
         catchError((error: any) => {
@@ -485,7 +475,7 @@ export class AuthenticationService {
           this.logger.error('Failed to fetch user details', {
             error: message,
             status,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
 
           // Only clear auth if this is an auth error
@@ -494,23 +484,23 @@ export class AuthenticationService {
           }
 
           return throwError(() => error);
-        })
+        }),
       )
       .subscribe(user => {
         this.logger.info('User details retrieved successfully', {
           username: user.username,
-          isAdmin: this.hasAdminRole(user)
+          isAdmin: this.hasAdminRole(user),
         });
-        
+
         // Update auth state with user details
         this.updateAuthState({
           user,
           isLoggedIn: true,
           isAdmin: this.hasAdminRole(user),
           isOffline: this._isOfflineMode,
-          lastSyncTime: new Date()
+          lastSyncTime: new Date(),
         });
-        
+
         this.sessionService.setUserSession(user);
       });
   }
@@ -524,9 +514,9 @@ export class AuthenticationService {
     console.log('🔐 AuthService: updateAuthState called with:', state);
     this.authState.next({
       ...this.authState.value,
-      ...state
+      ...state,
     });
-    
+
     // Log state changes
     if (state.isAdmin !== undefined && state.isAdmin !== oldAdminState) {
       console.log('🔐 AuthService: isAdmin changed from', oldAdminState, 'to', state.isAdmin);
@@ -534,7 +524,7 @@ export class AuthenticationService {
     if (state.isLoggedIn !== undefined && state.isLoggedIn !== oldLoggedInState) {
       console.log('🔐 AuthService: isLoggedIn changed from', oldLoggedInState, 'to', state.isLoggedIn);
     }
-    
+
     // Update offline mode flag
     if (state.isOffline !== undefined) {
       this._isOfflineMode = state.isOffline;
@@ -548,14 +538,14 @@ export class AuthenticationService {
     console.log('handleSuccessfulLogin: Processing login response', {
       username: response.user?.username,
       roles: response.user?.roles,
-      hasToken: !!response.token
+      hasToken: !!response.token,
     });
 
     // Store token information
     this.storeTokenInfo({
       token: response.token,
       refreshToken: response.refreshToken,
-      expiresAt: expiresAt
+      expiresAt: expiresAt,
     });
 
     // Update auth state
@@ -564,7 +554,7 @@ export class AuthenticationService {
       isLoggedIn: true,
       isAdmin: this.hasAdminRole(response.user),
       isOffline: false,
-      lastSyncTime: new Date()
+      lastSyncTime: new Date(),
     });
 
     this.sessionService.setUserSession(response.user);
@@ -590,7 +580,7 @@ export class AuthenticationService {
       username: response.user.username,
       hasRoles: Array.isArray(response.user.roles),
       permissions: response.user.permissions?.join(',') || 'none specified',
-      sessionEstablished: true
+      sessionEstablished: true,
     });
   }
 
@@ -601,18 +591,18 @@ export class AuthenticationService {
     const err = this.normalizeError(error);
     const statusCode = err.status;
     const errorMessage = err.message || 'Unknown error';
-    
-    this.logger.error('Authentication failed', { 
+
+    this.logger.error('Authentication failed', {
       username,
       errorType: err.name || 'Error',
-      status: statusCode, 
+      status: statusCode,
       message: errorMessage,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-    
+
     // Provide a user-friendly error message based on the error type
-    let userMessage = 'Login failed. Please try again.'; 
-    
+    let userMessage = 'Login failed. Please try again.';
+
     if (statusCode === 0) {
       userMessage = 'Unable to connect to the server. Please check your connection.';
     } else if (statusCode === 504) {
@@ -628,10 +618,10 @@ export class AuthenticationService {
       this.logger.error('Server error during authentication', {
         username,
         status: statusCode,
-        serverMessage: err.error?.message || 'No server message'
+        serverMessage: err.error?.message || 'No server message',
       });
     }
-    
+
     this.notificationService.showError(userMessage, 'Authentication Error');
     return throwError(() => error);
   }
@@ -642,53 +632,45 @@ export class AuthenticationService {
   private handleOfflineLogin(username: string, password: string): Observable<AuthResponse> {
     // Only allow certain usernames in offline mode
     const validOfflineUsers = ['test', 'demo', 'admin', 'guest'];
-    
+
     if (validOfflineUsers.includes(username.toLowerCase())) {
-      const mockUser: User = { 
-        id: 999, 
-        username: username, 
-        name: `${username.charAt(0).toUpperCase() + username.slice(1)} User`, 
+      const mockUser: User = {
+        id: 999,
+        username: username,
+        name: `${username.charAt(0).toUpperCase() + username.slice(1)} User`,
         firstName: username.charAt(0).toUpperCase() + username.slice(1),
         lastName: 'User',
         email: `${username}@example.com`,
         roles: username === 'admin' ? ['admin'] : ['user'],
-        permissions: username === 'admin' 
-          ? ['user:read', 'user:write', 'admin:access'] 
-          : ['user:read'],
-        password: password
+        permissions: username === 'admin' ? ['user:read', 'user:write', 'admin:access'] : ['user:read'],
+        password: password,
       };
-      
+
       const mockResponse: AuthResponse = {
         success: true,
         token: 'offline-mock-token-' + Date.now(),
-        user: mockUser
+        user: mockUser,
       };
-      
+
       this.handleSuccessfulLogin(mockResponse);
-      
+
       // Update offline flag
       this.updateAuthState({
-        isOffline: true
+        isOffline: true,
       });
-      
+
       this.logger.info('Offline mode login successful', {
         username,
         roles: mockUser.roles,
-        isAdmin: this.hasAdminRole(mockUser)
+        isAdmin: this.hasAdminRole(mockUser),
       });
-      
+
       // Notify user they are in offline mode
-      this.notificationService.showInfo(
-        'You are working in offline mode. Some features may be limited.', 
-        'Offline Mode Active'
-      );
-      
+      this.notificationService.showInfo('You are working in offline mode. Some features may be limited.', 'Offline Mode Active');
+
       return of(mockResponse).pipe(delay(500)); // Simulate network delay
     } else {
-      this.notificationService.showError(
-        'Only test, demo and admin users are available in offline mode', 
-        'Login Failed'
-      );
+      this.notificationService.showError('Only test, demo and admin users are available in offline mode', 'Login Failed');
       return throwError(() => new Error('Invalid offline user'));
     }
   }
@@ -698,12 +680,12 @@ export class AuthenticationService {
    */
   private clearAuthState(): void {
     console.log('AuthService: Clearing authentication state');
-    
+
     // Clear stored tokens from sessionStorage
     sessionStorage.removeItem(this.TOKEN_KEY);
     sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
     sessionStorage.removeItem(this.TOKEN_EXPIRES_KEY);
-    
+
     // Reset auth state to initial values
     this.authState.next({
       user: {
@@ -715,22 +697,22 @@ export class AuthenticationService {
         email: '',
         password: '',
         roles: [],
-        role: ''
+        role: '',
       },
       isLoggedIn: false,
       isAdmin: false,
-      isOffline: this._isOfflineMode
+      isOffline: this._isOfflineMode,
     });
-    
+
     // Clear any pending token refresh
     if (this.refreshTokenTimeout) {
       clearTimeout(this.refreshTokenTimeout);
       this.refreshTokenTimeout = null;
     }
-    
+
     // Close WebSocket connection
     this.closeAuthSocket();
-    
+
     this.logger.debug('Authentication state cleared');
   }
 
@@ -739,11 +721,11 @@ export class AuthenticationService {
    */
   private storeTokenInfo(tokenInfo: TokenInfo): void {
     sessionStorage.setItem(this.TOKEN_KEY, tokenInfo.token);
-    
+
     if (tokenInfo.refreshToken) {
       sessionStorage.setItem(this.REFRESH_TOKEN_KEY, tokenInfo.refreshToken);
     }
-    
+
     if (tokenInfo.expiresAt) {
       sessionStorage.setItem(this.TOKEN_EXPIRES_KEY, tokenInfo.expiresAt.toString());
     }
@@ -754,7 +736,7 @@ export class AuthenticationService {
    */
   private getStoredTokenInfo(): TokenInfo | null {
     const token = sessionStorage.getItem(this.TOKEN_KEY);
-    
+
     if (!token) {
       return null;
     }
@@ -762,18 +744,18 @@ export class AuthenticationService {
     const refreshToken = sessionStorage.getItem(this.REFRESH_TOKEN_KEY);
     const expiresAtStr = sessionStorage.getItem(this.TOKEN_EXPIRES_KEY);
     const expiresAt = expiresAtStr ? parseInt(expiresAtStr, 10) : undefined;
-    
+
     // Check if token has expired
     if (expiresAt && Date.now() > expiresAt) {
       console.log('Stored token has expired, clearing authentication state');
       this.clearAuthState();
       return null;
     }
-    
+
     return {
       token,
       refreshToken: refreshToken || undefined,
-      expiresAt
+      expiresAt,
     };
   }
 
@@ -782,21 +764,21 @@ export class AuthenticationService {
    */
   public getAuthToken(): string | null {
     const token = sessionStorage.getItem(this.TOKEN_KEY);
-    
+
     // Check if token exists and hasn't expired
     if (token) {
       const expiresAtStr = sessionStorage.getItem(this.TOKEN_EXPIRES_KEY);
       const expiresAt = expiresAtStr ? parseInt(expiresAtStr, 10) : undefined;
-      
+
       if (expiresAt && Date.now() > expiresAt) {
         console.log('Token has expired, clearing authentication state');
         this.clearAuthState();
         return null;
       }
-      
+
       return token;
     }
-    
+
     return null;
   }
 
@@ -807,27 +789,27 @@ export class AuthenticationService {
     if (!expiresAt) {
       return;
     }
-    
+
     // Clear any existing timeout
     if (this.refreshTokenTimeout) {
       clearTimeout(this.refreshTokenTimeout);
     }
-    
+
     // Calculate time until refresh (token expiry minus threshold)
     const now = Date.now();
-    const refreshTime = expiresAt - (this.TOKEN_REFRESH_THRESHOLD * 1000);
-    
+    const refreshTime = expiresAt - this.TOKEN_REFRESH_THRESHOLD * 1000;
+
     // If already past the refresh time, refresh immediately
     if (now >= refreshTime) {
       this.logger.debug('Token is near expiration, refreshing now');
       this.refreshToken().subscribe();
       return;
     }
-    
+
     // Schedule refresh
     const timeUntilRefresh = refreshTime - now;
     this.logger.debug(`Scheduling token refresh in ${Math.floor(timeUntilRefresh / 1000)} seconds`);
-    
+
     this.refreshTokenTimeout = setTimeout(() => {
       this.logger.debug('Executing scheduled token refresh');
       this.refreshToken().subscribe();
@@ -840,64 +822,57 @@ export class AuthenticationService {
   private initializeAuthSocket(): void {
     // Close any existing connection first
     this.closeAuthSocket();
-    
+
     // Skip if in offline mode or no valid token
     if (this._isOfflineMode || !this.getAuthToken()) {
       return;
     }
-    
+
     const socketUrl = environment.socket.url;
     this.logger.debug(`Initializing auth WebSocket connection to ${socketUrl}`);
-    
+
     try {
       this.socket = io(`${socketUrl}/auth`, {
         transports: ['websocket', 'polling'],
         auth: {
-          token: this.getAuthToken()
-        }
+          token: this.getAuthToken(),
+        },
       });
-      
+
       // Handle connection
       this.socket.on('connect', () => {
         this.logger.debug('Auth WebSocket connection established');
       });
-      
+
       // Handle incoming messages
       this.socket.on('session_expired', () => {
-        this.notificationService.showWarning(
-          'Your session has expired. Please log in again.',
-          'Session Expired'
-        );
+        this.notificationService.showWarning('Your session has expired. Please log in again.', 'Session Expired');
         this.logout();
       });
-      
+
       this.socket.on('permissions_updated', () => {
         this.logger.debug('User permissions updated, refreshing user details');
         this.fetchUserDetails();
       });
-      
+
       this.socket.on('force_logout', (data: any) => {
-        this.notificationService.showWarning(
-          data.message || 'You have been logged out by an administrator.',
-          'Signed Out'
-        );
+        this.notificationService.showWarning(data.message || 'You have been logged out by an administrator.', 'Signed Out');
         this.logout();
       });
-      
+
       // Handle disconnection
-      this.socket.on('disconnect', (reason) => {
+      this.socket.on('disconnect', reason => {
         this.logger.debug('Auth WebSocket disconnected', { reason });
         if (reason === 'io server disconnect') {
           // Server disconnected, try to reconnect
           setTimeout(() => this.initializeAuthSocket(), 1000);
         }
       });
-      
+
       // Handle connection errors
-      this.socket.on('connect_error', (error) => {
+      this.socket.on('connect_error', error => {
         this.logger.warn('Auth WebSocket connection error', error);
       });
-      
     } catch (error) {
       this.logger.error('Failed to initialize auth WebSocket', error);
     }
@@ -912,7 +887,7 @@ export class AuthenticationService {
       this.socket.disconnect();
       this.socket = null;
     }
-    
+
     this.socketDestroy$.next();
   }
 
@@ -921,84 +896,80 @@ export class AuthenticationService {
    */
   public checkNetworkStatus(): Observable<boolean> {
     this.logger.debug('Checking network connectivity status');
-    return this.apiService.get<unknown>('health-check', { 
-      headers: { 'Cache-Control': 'no-cache' }
-    }).pipe(
-      timeout(3000),
-      map(() => {
-        const wasOffline = this._isOfflineMode;
-        this._isOfflineMode = false;
-        this.connectionRetryCount = 0;
-        
-        this.logger.info('Network connectivity check succeeded', {
-          wasOffline,
-          isOffline: false,
-          transition: wasOffline ? 'offline->online' : 'online->online'
-        });
-        
-        // Update auth state with offline flag
-        this.updateAuthState({
-          isOffline: false
-        });
-        
-        // If we were offline but now online, notify the user
-        if (wasOffline) {
-          this.notificationService.showSuccess(
-            'Connection to server restored. Full functionality available.', 
-            'Back Online'
-          );
-          
-          // Re-establish WebSocket connection
-          if (this.isAuthenticated) {
-            this.initializeAuthSocket();
-          }
-        }
-        
-        return true;
-      }),
-      catchError((error) => {
-        const wasOffline = this._isOfflineMode;
-        this._isOfflineMode = true;
-        
-        this.logger.warn('Network connectivity check failed', {
-          wasOffline,
-          isOffline: true,
-          transition: wasOffline ? 'offline->offline' : 'online->offline',
-          error: error.message,
-          status: error.status || 'unknown'
-        });
-        
-        // Update auth state with offline flag
-        this.updateAuthState({
-          isOffline: true
-        });
-        
-        return of(false);
+    return this.apiService
+      .get<unknown>('health-check', {
+        headers: { 'Cache-Control': 'no-cache' },
       })
-    );
+      .pipe(
+        timeout(3000),
+        map(() => {
+          const wasOffline = this._isOfflineMode;
+          this._isOfflineMode = false;
+          this.connectionRetryCount = 0;
+
+          this.logger.info('Network connectivity check succeeded', {
+            wasOffline,
+            isOffline: false,
+            transition: wasOffline ? 'offline->online' : 'online->online',
+          });
+
+          // Update auth state with offline flag
+          this.updateAuthState({
+            isOffline: false,
+          });
+
+          // If we were offline but now online, notify the user
+          if (wasOffline) {
+            this.notificationService.showSuccess('Connection to server restored. Full functionality available.', 'Back Online');
+
+            // Re-establish WebSocket connection
+            if (this.isAuthenticated) {
+              this.initializeAuthSocket();
+            }
+          }
+
+          return true;
+        }),
+        catchError(error => {
+          const wasOffline = this._isOfflineMode;
+          this._isOfflineMode = true;
+
+          this.logger.warn('Network connectivity check failed', {
+            wasOffline,
+            isOffline: true,
+            transition: wasOffline ? 'offline->offline' : 'online->offline',
+            error: error.message,
+            status: error.status || 'unknown',
+          });
+
+          // Update auth state with offline flag
+          this.updateAuthState({
+            isOffline: true,
+          });
+
+          return of(false);
+        }),
+      );
   }
-  
+
   /**
    * Attempt to reconnect to the server with exponential backoff
    */
   public reconnectToServer(): Observable<boolean> {
     const maxRetries = 5;
     let attempt = 0;
-    
+
     this.logger.info('Attempting to reconnect to server');
-    
+
     const reconnect = (): Observable<boolean> => {
       attempt++;
       const backoffDelay = Math.pow(2, attempt - 1) * 1000; // 1s, 2s, 4s, 8s, 16s
-      
+
       this.logger.debug(`Reconnect attempt ${attempt} of ${maxRetries} after ${backoffDelay}ms delay`);
-      
+
       return of(null).pipe(
         // Add delay for backoff
-        tap(() => this.notificationService.showInfo(
-          `Attempting to reconnect to server (${attempt}/${maxRetries})...`,
-          'Reconnecting'
-        )),
+        tap(() => this.notificationService.showInfo(`Attempting to reconnect to server (${attempt}/${maxRetries})...`, 'Reconnecting')),
         delay(backoffDelay),
         // Check connection
         concatMap(() => this.checkNetworkStatus()),
@@ -1011,10 +982,10 @@ export class AuthenticationService {
             return reconnect();
           }
           return of(false);
-        })
+        }),
       );
     };
-    
+
     return reconnect();
   }
 }

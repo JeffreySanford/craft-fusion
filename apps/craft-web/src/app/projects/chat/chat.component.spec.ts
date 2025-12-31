@@ -11,7 +11,7 @@ describe('ChatComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ChatComponent],
       providers: [ChatService],
-      imports: [MatSnackBarModule]
+      imports: [MatSnackBarModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ChatComponent);

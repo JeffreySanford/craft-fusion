@@ -11,9 +11,7 @@
     </div>
 
     <ng-container *ngIf="!loading">
-      <app-timeline-list
-        [events]="timelineEvents$ | async"
-      ></app-timeline-list>
+      <app-timeline-list [events]="timelineEvents$ | async"></app-timeline-list>
     </ng-container>
   </div>
 </div>

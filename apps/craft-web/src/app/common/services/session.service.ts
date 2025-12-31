@@ -2,13 +2,10 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { User } from './user.interface';
 
-
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SessionService {
-  
   // Helper method to get full name from a user
   getFullName(user: User): string {
     if (user.firstName && user.lastName) {
@@ -22,17 +19,16 @@ export class SessionService {
     }
   }
 
-
   status() {
     return false;
-  }  
-  
+  }
+
   getUserSession(): string | null {
     return sessionStorage.getItem('username');
   }
 
   setUserSession(user: User) {
-    sessionStorage.setItem('username', user.username)
+    sessionStorage.setItem('username', user.username);
   }
 
   clearUserSession() {
@@ -47,4 +43,3 @@ export class SessionService {
     });
   }
 }
-

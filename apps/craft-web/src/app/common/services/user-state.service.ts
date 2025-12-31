@@ -7,7 +7,7 @@ import { SocketClientService } from './socket-client.service';
 import { ApiService } from './api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserStateService implements OnDestroy {
   private openedDocumentsSubject = new BehaviorSubject<Document[]>([]);
@@ -22,11 +22,10 @@ export class UserStateService implements OnDestroy {
   readonly visitLength$ = this.visitLengthSubject.asObservable();
   readonly visitedPages$ = this.visitedPagesSubject.asObservable();
   readonly user$: Observable<unknown>;
-  
-  
+
   constructor(
     private socketClient: SocketClientService,
-    private logger: LoggerService
+    private logger: LoggerService,
   ) {
     // Initialize user$ observable - create a default observable since user$ doesn't exist on SocketClientService
     this.user$ = of(null);
@@ -34,7 +33,7 @@ export class UserStateService implements OnDestroy {
     if (!this.loginDateTimeSubject.value) {
       this.setLoginDateTime(new Date());
     }
-    
+
     // Connect to the user-state namespace
     this.initializeSocketConnection();
   }
@@ -47,30 +46,34 @@ export class UserStateService implements OnDestroy {
   private initializeSocketConnection(): void {
     // Create a connection to the user-state namespace
     const userStateSocket = this.socketClient;
-    
+
     // Subscribe to socket events to update state
-    userStateSocket.on<{ dateTime: string }>('loginDateTimeUpdated')
+    userStateSocket
+      .on<{ dateTime: string }>('loginDateTimeUpdated')
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
         this.loginDateTimeSubject.next(new Date(data.dateTime));
         this.logger.debug('Received login time update via socket', { dateTime: data.dateTime });
       });
-    
-    userStateSocket.on<{ length: number }>('visitLengthUpdated')
+
+    userStateSocket
+      .on<{ length: number }>('visitLengthUpdated')
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
         this.visitLengthSubject.next(data.length);
         this.logger.debug('Received visit length update via socket', { length: data.length });
       });
-    
-    userStateSocket.on<{ pages: string[] }>('visitedPagesUpdated')
+
+    userStateSocket
+      .on<{ pages: string[] }>('visitedPagesUpdated')
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
         this.visitedPagesSubject.next(data.pages);
         this.logger.debug('Received visited pages update via socket', { pages: data.pages });
       });
-    
-    userStateSocket.on<{ documents: Document[] }>('openedDocumentsUpdated')
+
+    userStateSocket
+      .on<{ documents: Document[] }>('openedDocumentsUpdated')
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
         this.openedDocumentsSubject.next(data.documents);
@@ -78,7 +81,8 @@ export class UserStateService implements OnDestroy {
       });
 
     // Handle state change events
-    userStateSocket.on<unknown>('state-change')
+    userStateSocket
+      .on<unknown>('state-change')
       .pipe(takeUntil(this.destroy$))
       .subscribe(change => {
         this.processStateChange(change);
@@ -124,28 +128,27 @@ export class UserStateService implements OnDestroy {
       // Add new document with default color
       const newDoc: Document = {
         name: documentName,
-        color: 'Patriotic Red' // Default color
-        ,
-        contrast: ''
+        color: 'Patriotic Red', // Default color
+        contrast: '',
       };
       const updatedDocs = [...currentDocs, newDoc];
       this.openedDocumentsSubject.next(updatedDocs);
 
       // Emit via socket instead of HTTP call
       this.socketClient.emit('updateOpenedDocuments', { documents: updatedDocs });
-      
+
       return of(updatedDocs);
     }
-    
+
     return of(currentDocs);
   }
 
   setOpenedDocuments(documents: Document[]): Observable<Document[]> {
     this.openedDocumentsSubject.next(documents);
-    
+
     // Emit via socket instead of HTTP call
     this.socketClient.emit('updateOpenedDocuments', { documents });
-    
+
     return of(documents);
   }
 
@@ -157,13 +160,11 @@ export class UserStateService implements OnDestroy {
   setLoginDateTime(dateTime: Date): Observable<void> {
     this.loginDateTimeSubject.next(dateTime);
     // Only emit if socket is connected
-    this.socketClient.isConnected$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(connected => {
-        if (connected) {
-          this.socketClient.emit('updateLoginTime', { dateTime: dateTime.toISOString() });
-        }
-      });
+    this.socketClient.isConnected$.pipe(takeUntil(this.destroy$)).subscribe(connected => {
+      if (connected) {
+        this.socketClient.emit('updateLoginTime', { dateTime: dateTime.toISOString() });
+      }
+    });
     return of(void 0);
   }
 
@@ -174,10 +175,10 @@ export class UserStateService implements OnDestroy {
 
   setVisitLength(length: number): Observable<void> {
     this.visitLengthSubject.next(length);
-    
+
     // Emit via socket instead of HTTP call
     this.socketClient.emit('updateVisitLength', { length });
-    
+
     return of(void 0);
   }
 
@@ -191,13 +192,13 @@ export class UserStateService implements OnDestroy {
     if (!currentPages.includes(page)) {
       const updatedPages = [...currentPages, page];
       this.visitedPagesSubject.next(updatedPages);
-      
+
       // Emit via socket instead of HTTP call
       this.socketClient.emit('updateVisitedPage', { page });
-      
+
       return of(void 0);
     }
-    
+
     return of(void 0);
   }
 }

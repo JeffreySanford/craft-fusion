@@ -17,22 +17,20 @@ import { UserActivityService } from './user-activity.service';
  * Uses the singleton pattern to ensure services are only provided once.
  */
 @NgModule({
-  imports: [
-    HttpClientModule
-  ],
+  imports: [HttpClientModule],
   providers: [
     ServiceRegistryService,
     LoggerService,
     ApiService,
     NotificationService,
     BusyService,
-    SessionService, 
+    SessionService,
     UserStateService,
     ThemeService,
     ApiDiagnosticsService,
     SocketClientService,
-    UserActivityService
-  ]
+    UserActivityService,
+  ],
 })
 export class CommonServicesModule {
   /**

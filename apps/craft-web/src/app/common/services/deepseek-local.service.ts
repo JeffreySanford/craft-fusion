@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DeepSeekService {
   constructor(private http: HttpClient) {
@@ -14,8 +14,8 @@ export class DeepSeekService {
   sendMessage(prompt: string, apiUrl: string): Observable<unknown> {
     console.log('Sending message to API:', apiUrl);
     const requestPayload = {
-      model: "deepseek-r1:1.5b",
-      prompt: prompt
+      model: 'deepseek-r1:1.5b',
+      prompt: prompt,
     };
     console.log('Request payload:', requestPayload);
 
@@ -24,13 +24,15 @@ export class DeepSeekService {
         const text = String(response || '');
         console.log('Received raw response from API:', text);
         const jsonObjects = text.split('\n').filter((line: string) => line.trim() !== '');
-        const combinedResponse = jsonObjects.map((json: string) => {
-          try {
-            return JSON.parse(json).response;
-          } catch (e) {
-            return '';
-          }
-        }).join(' ');
+        const combinedResponse = jsonObjects
+          .map((json: string) => {
+            try {
+              return JSON.parse(json).response;
+            } catch (e) {
+              return '';
+            }
+          })
+          .join(' ');
         console.log('Combined response from API:', combinedResponse);
         return { response: combinedResponse };
       }),
@@ -42,7 +44,7 @@ export class DeepSeekService {
           console.error('Unknown Error:', error);
         }
         return throwError(error);
-      })
+      }),
     );
   }
 }

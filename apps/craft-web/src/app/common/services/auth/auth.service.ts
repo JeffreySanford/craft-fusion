@@ -8,12 +8,12 @@ import { LoggerService } from '../logger.service';
 
 /**
  * Auth Service Facade
- * 
+ *
  * This service acts as a facade for authentication and authorization,
  * providing a simplified API for components to use.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   // Define properties without initialization
@@ -30,23 +30,23 @@ export class AuthService {
     name: 'Guest User',
     email: '',
     roles: ['guest'],
-    password: ''
+    password: '',
   };
 
   constructor(
     private authenticationService: AuthenticationService,
     private authorizationService: AuthorizationService,
-    private logger: LoggerService
+    private logger: LoggerService,
   ) {
     // Initialize properties in the constructor after services are injected
     // authenticationService exposes `isLoggedIn$`; map facade `isAuthenticated$` to it
     this.isAuthenticated$ = this.authenticationService.isLoggedIn$;
     this.isAdmin$ = this.authenticationService.isAdmin$;
     this.isLoggedIn$ = this.authenticationService.isLoggedIn$;
-    
+
     this.logger.registerService('AuthService');
     this.logger.info('Auth Service facade initialized');
-    
+
     // Initialize properties after constructor parameters are available
     // Ensure facade observables reference the underlying authentication service
     this.isAuthenticated$ = this.authenticationService.isLoggedIn$;
@@ -75,7 +75,7 @@ export class AuthService {
       tap(user => {
         // Store guest state but don't set an auth token
         this.logger.debug('Guest user state initialized');
-      })
+      }),
     );
   }
 
@@ -97,13 +97,12 @@ export class AuthService {
 
   hasRole(role: string | string[]): boolean {
     // Return true for 'guest' role if the user is a guest
-    if ((typeof role === 'string' && role === 'guest') || 
-        (Array.isArray(role) && role.includes('guest'))) {
+    if ((typeof role === 'string' && role === 'guest') || (Array.isArray(role) && role.includes('guest'))) {
       if (this.isGuest()) {
         return true;
       }
     }
-    
+
     // Otherwise delegate to the authorization service
     return false; // This would be implemented in the authorization service
   }
@@ -111,12 +110,7 @@ export class AuthService {
   // Helper methods for guest access
   private isGuestResource(resource: string): boolean {
     // Define which resources are accessible to guests
-    const guestResources = [
-      'memorial-timeline',
-      'public-gallery',
-      'about',
-      'contact'
-    ];
+    const guestResources = ['memorial-timeline', 'public-gallery', 'about', 'contact'];
     return guestResources.some(r => resource.includes(r));
   }
 

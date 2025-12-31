@@ -46,7 +46,7 @@ $vibrant-yellow: #fc0;
   --light-myth-border: #0f0;
   --light-myth-text: #0c0;
   --light-myth-hover: #2f2;
-  
+
   // Dark theme colors
   --dark-background: #1e1e1e;
   --dark-text: #e0e0e0;
@@ -109,8 +109,8 @@ $vibrant-yellow: #fc0;
     }
 
     .book-content {
-       background-color: var(--book-light-bg);
-       color: var(--book-light-text);
+      background-color: var(--book-light-bg);
+      color: var(--book-light-text);
     }
   }
 
@@ -163,8 +163,8 @@ $vibrant-yellow: #fc0;
     }
 
     .book-content {
-       background-color: var(--book-dark-bg);
-       color: var(--book-dark-text);
+      background-color: var(--book-dark-bg);
+      color: var(--book-dark-text);
     }
   }
 
@@ -192,6 +192,11 @@ $vibrant-yellow: #fc0;
   }
 }
 
+/* Utility helper to hide native file inputs without inline styles */
+.hidden-file-input {
+  display: none !important;
+}
+
 .page-container {
   font-family: Roboto, sans-serif;
   display: block;
@@ -207,7 +212,12 @@ $vibrant-yellow: #fc0;
     animation: fade-in 1s ease-in-out;
 
     ::ng-deep {
-      h1, h2, h3, h4, h5, h6 {
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
         font-family: var(--book-font-family) !important;
         margin: 1.5em 0 0.5em;
         line-height: 1.4;
@@ -215,19 +225,19 @@ $vibrant-yellow: #fc0;
 
       h1 {
         font-size: 2.5em;
-        color: #FF4081 !important; // Pink
+        color: #ff4081 !important; // Pink
         text-shadow: 1px 1px 2px rgba(255, 64, 129, 0.3);
       }
 
       h2 {
         font-size: 2em;
-        color: #7C4DFF !important; // Deep Purple
+        color: #7c4dff !important; // Deep Purple
         text-shadow: 1px 1px 2px rgba(124, 77, 255, 0.3);
       }
 
       h3 {
         font-size: 1.75em;
-        color: #00BCD4 !important; // Cyan
+        color: #00bcd4 !important; // Cyan
         text-shadow: 1px 1px 2px rgba(0, 188, 212, 0.3);
         letter-spacing: 0.009375em;
         font-weight: 400;
@@ -241,19 +251,19 @@ $vibrant-yellow: #fc0;
 
       h4 {
         font-size: 1.5em;
-        color: #FFC107 !important; // Amber
+        color: #ffc107 !important; // Amber
         text-shadow: 1px 1px 2px rgba(255, 193, 7, 0.3);
       }
 
       h5 {
         font-size: 1em;
-        color: #64FFDA !important; // Teal Accent
+        color: #64ffda !important; // Teal Accent
         text-shadow: 1px 1px 2px rgba(100, 255, 218, 0.3);
       }
 
       h6 {
         font-size: 0.8em;
-        color: #FF5722 !important; // Deep Orange
+        color: #ff5722 !important; // Deep Orange
         text-shadow: 1px 1px 2px rgba(255, 87, 34, 0.3);
       }
 
@@ -271,7 +281,7 @@ $vibrant-yellow: #fc0;
         border-radius: 8px;
         position: relative;
         background-color: rgba(0, 255, 0, 0.05);
-        
+
         &::before {
           content: 'ETCSL Myth';
           position: absolute;
@@ -285,11 +295,11 @@ $vibrant-yellow: #fc0;
         }
 
         p {
-          color: #90EE90 !important; // Light green
+          color: #90ee90 !important; // Light green
           font-family: var(--book-font-family) !important;
           margin-left: 2em;
           position: relative;
-          
+
           // Target paragraphs that start with numbers
           &[data-myth-line]::before {
             content: attr(data-myth-line);
@@ -307,7 +317,7 @@ $vibrant-yellow: #fc0;
         padding-left: 3em;
         position: relative;
         font-style: italic;
-        
+
         &::before {
           content: attr(data-myth-line);
           position: absolute;
@@ -331,7 +341,7 @@ $vibrant-yellow: #fc0;
           color: inherit !important;
           font-style: italic;
           margin: 0;
-          
+
           &[data-myth-line]::before {
             content: attr(data-myth-line);
             position: absolute;
@@ -375,7 +385,7 @@ $vibrant-yellow: #fc0;
             color: inherit;
             text-decoration: none;
             border-bottom: 1px dashed $vibrant-green;
-            
+
             &:hover {
               border-bottom-style: solid;
             }
@@ -388,7 +398,7 @@ $vibrant-yellow: #fc0;
             padding-right: 0.5em;
             border-bottom: 1px dashed $vibrant-green;
             transition: all 0.2s ease;
-            
+
             &:hover {
               border-bottom-style: solid;
               color: color.adjust($vibrant-green, $lightness: 20%);
@@ -398,7 +408,7 @@ $vibrant-yellow: #fc0;
       }
 
       p.myth-line {
-        color: #B2FF59 !important; // Light Green Accent
+        color: #b2ff59 !important; // Light Green Accent
         font-style: italic;
         position: relative;
         padding-left: 2em;
@@ -464,7 +474,7 @@ $vibrant-yellow: #fc0;
     .mce-content-body {
       font-family: var(--book-font-family);
       font-size: var(--book-font-size);
-      
+
       .myth-section {
         margin: 1.5em 0;
         padding: 1em 2em;
@@ -500,7 +510,7 @@ $vibrant-yellow: #fc0;
             padding-right: 0.5em;
             border-bottom: 1px dashed $vibrant-green;
             transition: all 0.2s ease;
-            
+
             &:hover {
               border-bottom-style: solid;
               color: color.adjust($vibrant-green, $lightness: 20%);
@@ -598,7 +608,9 @@ $vibrant-yellow: #fc0;
   color: #fff;
   border-radius: 50%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s, box-shadow 0.3s;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
 
   &:hover {
     background-color: #333;
@@ -621,7 +633,10 @@ $vibrant-yellow: #fc0;
   overflow-y: auto;
   width: 89%;
   margin: 0 auto;
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -950,7 +965,9 @@ datalist option {
   color: #fff;
   border-radius: 50%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s, box-shadow 0.3s;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
 
   &:hover {
     background-color: #333;
@@ -997,7 +1014,7 @@ datalist option {
       color: inherit;
       text-decoration: none;
       border-bottom: 1px dashed $vibrant-green;
-      
+
       &:hover {
         border-bottom-style: solid;
       }
@@ -1010,7 +1027,7 @@ datalist option {
       padding-right: 0.5em;
       border-bottom: 1px dashed $vibrant-green;
       transition: all 0.2s ease;
-      
+
       &:hover {
         border-bottom-style: solid;
         color: color.adjust($vibrant-green, $lightness: 20%);

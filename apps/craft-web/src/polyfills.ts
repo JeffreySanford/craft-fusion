@@ -1,7 +1,7 @@
 /***************************************************************************************************
  * Zone JS is required by Angular itself.
  */
-import 'zone.js';  // Included with Angular CLI.
+import 'zone.js'; // Included with Angular CLI.
 
 /***************************************************************************************************
  * Polyfills for older browsers.
@@ -24,9 +24,9 @@ if (!('localStorage' in window)) {
       removeItem: (key: string) => storage.delete(key),
       clear: () => storage.clear(),
       key: (index: number) => Array.from(storage.keys())[index] || null,
-      length: storage.size
+      length: storage.size,
     },
-    writable: false
+    writable: false,
   });
 }
 

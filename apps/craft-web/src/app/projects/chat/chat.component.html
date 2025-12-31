@@ -6,9 +6,7 @@
     </div>
   </div>
   <div id="messages">
-    <div *ngFor="let msg of messages; let i = index"
-         class="message-container"
-         [ngClass]="msg.sender === 'user' ? 'user' : 'bot'">
+    <div *ngFor="let msg of messages; let i = index" class="message-container" [ngClass]="msg.sender === 'user' ? 'user' : 'bot'">
       <div class="message">
         <mat-icon class="message-icon">
           {{ msg.sender === 'user' ? 'person' : 'smart_toy' }}
@@ -44,12 +42,7 @@
         </div>
       </button>
     </div>
-    <textarea matInput
-              [(ngModel)]="userInput"
-              (keyup.enter)="sendMessage()"
-              placeholder="Type a message..."
-              #userInputElement
-              (input)="adjustTextareaHeight($event)"></textarea>
+    <textarea matInput [(ngModel)]="userInput" (keyup.enter)="sendMessage()" placeholder="Type a message..." #userInputElement (input)="adjustTextareaHeight($event)"></textarea>
     <button mat-raised-button color="primary" (click)="sendMessage()">Send</button>
   </div>
 </div>

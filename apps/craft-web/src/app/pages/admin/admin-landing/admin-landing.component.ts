@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-admin-landing',
   templateUrl: './admin-landing.component.html',
   styleUrls: ['./admin-landing.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class AdminLandingComponent {
   navigator = window.navigator;

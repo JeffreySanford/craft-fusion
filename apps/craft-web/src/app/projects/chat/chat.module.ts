@@ -19,16 +19,10 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 
-const routes: Routes = [
-  { path: '', component: ChatComponent }
-];
+const routes: Routes = [{ path: '', component: ChatComponent }];
 
 @NgModule({
-  declarations: [
-    ChatComponent,
-    MarkdownPipe,
-    ModelSelectorComponent
-  ],
+  declarations: [ChatComponent, MarkdownPipe, ModelSelectorComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -44,13 +38,9 @@ const routes: Routes = [
     MatProgressSpinnerModule,
     MatMenuModule,
     MatIconModule,
-    MatSelectModule
+    MatSelectModule,
   ],
   providers: [ChatService, SplitTextPipe],
-  exports: [
-    ChatComponent,
-    MarkdownPipe,
-    ModelSelectorComponent
-  ]
+  exports: [ChatComponent, MarkdownPipe, ModelSelectorComponent],
 })
 export class ChatModule {}

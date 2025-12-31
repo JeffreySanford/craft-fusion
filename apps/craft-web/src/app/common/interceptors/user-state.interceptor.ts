@@ -24,7 +24,7 @@ export class UserStateInterceptor implements HttpInterceptor {
 
   constructor(
     private userStateService: UserStateService,
-    private logger: LoggerService
+    private logger: LoggerService,
   ) {
     // Register the interceptor with the logger
     this.logger.registerService('UserStateInterceptor');
@@ -51,9 +51,9 @@ export class UserStateInterceptor implements HttpInterceptor {
     const elapsedTime = now - (this.loginTime?.getTime() || now);
     this.userStateService.setVisitLength(elapsedTime).subscribe();
 
-    this.logger.debug(`Request intercepted: ${request.url}`, { 
+    this.logger.debug(`Request intercepted: ${request.url}`, {
       pageName,
-      elapsedTime: `${Math.floor(elapsedTime / 1000)}s`
+      elapsedTime: `${Math.floor(elapsedTime / 1000)}s`,
     });
 
     return next.handle(request);

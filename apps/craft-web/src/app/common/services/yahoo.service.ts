@@ -5,8 +5,14 @@ import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
 
-export interface HistoricalPoint { date: Date; close: number }
-export interface HistoricalData { symbol: string; data: HistoricalPoint[] }
+export interface HistoricalPoint {
+  date: Date;
+  close: number;
+}
+export interface HistoricalData {
+  symbol: string;
+  data: HistoricalPoint[];
+}
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +30,7 @@ export class YahooService {
 
   constructor(
     private http: HttpClient,
-    private logger: LoggerService
+    private logger: LoggerService,
   ) {
     this.logger.registerService('YahooService');
     this.logger.info('YahooService initialized');
@@ -46,7 +52,7 @@ export class YahooService {
         this.logger.error(`Error fetching stock quote for ${symbol}:`, {
           status: error.status,
           statusText: error.statusText,
-          message: error.message
+          message: error.message,
         });
         this.logger.endServiceCall(callId, error.status || 500);
         return of(null); // Now works with proper import
@@ -56,7 +62,7 @@ export class YahooService {
 
   getHistoricalData(symbols: string[], interval: string = '1d', range: string = '1y'): Observable<HistoricalData[]> {
     const url = `${this.apiUrl}v8/finance/spark/?interval=${interval}&range=${range}&symbols=${symbols.join(',')}`;
-  
+
     this.logger.debug(`Fetching historical data for ${symbols}`, { url });
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
 
@@ -79,7 +85,7 @@ export class YahooService {
         this.logger.error(`Error fetching historical data for ${symbols}:`, {
           status: error.status,
           statusText: error.statusText,
-          message: error.message
+          message: error.message,
         });
         this.logger.endServiceCall(callId, error.status || 500);
         return of([] as HistoricalData[]); // Return an empty array as a fallback
@@ -102,7 +108,7 @@ export class YahooService {
         this.logger.error(`Error fetching market summary:`, {
           status: error.status,
           statusText: error.statusText,
-          message: error.message
+          message: error.message,
         });
         this.logger.endServiceCall(callId, error.status || 500);
         return of([]); // Return an empty array as a fallback
@@ -126,7 +132,7 @@ export class YahooService {
         this.logger.error(`Error fetching trending symbols for region ${region}:`, {
           status: error.status,
           statusText: error.statusText,
-          message: error.message
+          message: error.message,
         });
         this.logger.endServiceCall(callId, error.status || 500);
         return of([]); // Return an empty array as a fallback
@@ -150,7 +156,7 @@ export class YahooService {
         this.logger.error(`Error fetching company details for ${symbol}:`, {
           status: error.status,
           statusText: error.statusText,
-          message: error.message
+          message: error.message,
         });
         this.logger.endServiceCall(callId, error.status || 500);
         return of(null); // Now works with proper import

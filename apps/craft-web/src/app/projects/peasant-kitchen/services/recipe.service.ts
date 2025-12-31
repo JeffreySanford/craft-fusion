@@ -18,38 +18,45 @@ export class RecipeService {
     countryName: 'United States of America',
     servingSize: '4 servings',
     ingredients: [
-      '1 cup of flour', '2 eggs', '1/2 cup milk', '1 tsp salt',
-      '1 tbsp sugar', '1/2 cup butter', '1 tsp vanilla extract',
-      '1/2 cup chocolate chips', '1/4 cup cocoa powder', '1/2 tsp baking powder'
+      '1 cup of flour',
+      '2 eggs',
+      '1/2 cup milk',
+      '1 tsp salt',
+      '1 tbsp sugar',
+      '1/2 cup butter',
+      '1 tsp vanilla extract',
+      '1/2 cup chocolate chips',
+      '1/4 cup cocoa powder',
+      '1/2 tsp baking powder',
     ],
     directions: ['Mix all ingredients together', 'Cook until done', 'Enjoy!'],
-    url: 'sample-recipe'
+    url: 'sample-recipe',
   };
 
   // Fallback recipes for offline mode
   private readonly fallbackRecipes: Recipe[] = [
     {
-      id: 1, 
-      name: 'Classic Beef Stew', 
-      description: 'A hearty beef stew with root vegetables', 
-      countryCode: 'FR', 
-      countryName: 'France', 
-      servingSize: '6 servings', 
-      url: 'classic-beef-stew', 
-      ingredients: ['2 lbs beef chuck', '4 carrots', '2 onions', '3 potatoes'], 
-      directions: ['Brown the beef', 'Add vegetables and broth', 'Simmer for 2 hours']
+      id: 1,
+      name: 'Classic Beef Stew',
+      description: 'A hearty beef stew with root vegetables',
+      countryCode: 'FR',
+      countryName: 'France',
+      servingSize: '6 servings',
+      url: 'classic-beef-stew',
+      ingredients: ['2 lbs beef chuck', '4 carrots', '2 onions', '3 potatoes'],
+      directions: ['Brown the beef', 'Add vegetables and broth', 'Simmer for 2 hours'],
     },
     {
-      id: 2, 
-      name: 'Simple Pasta Carbonara', 
-      description: 'Traditional Roman pasta dish', 
-      countryCode: 'IT', 
-      countryName: 'Italy', 
-      servingSize: '4 servings', 
-      url: 'pasta-carbonara', 
-      ingredients: ['1 lb spaghetti', '8 oz pancetta', '4 egg yolks', '1 cup Pecorino Romano'], 
-      directions: ['Cook pasta', 'Fry pancetta', 'Mix eggs and cheese', 'Toss all together while hot']
-    }
+      id: 2,
+      name: 'Simple Pasta Carbonara',
+      description: 'Traditional Roman pasta dish',
+      countryCode: 'IT',
+      countryName: 'Italy',
+      servingSize: '4 servings',
+      url: 'pasta-carbonara',
+      ingredients: ['1 lb spaghetti', '8 oz pancetta', '4 egg yolks', '1 cup Pecorino Romano'],
+      directions: ['Cook pasta', 'Fry pancetta', 'Mix eggs and cheese', 'Toss all together while hot'],
+    },
   ];
 
   constructor(private apiService: ApiService) {}
@@ -74,7 +81,7 @@ export class RecipeService {
         this.isOfflineMode = true;
         console.warn('Switching to offline mode with fallback recipes');
         return of(this.fallbackRecipes);
-      })
+      }),
     );
   }
 
@@ -152,7 +159,7 @@ export class RecipeService {
         console.error('Error creating recipe:', error);
         this.isOfflineMode = true;
         throw error;
-      })
+      }),
     );
   }
 
@@ -175,7 +182,7 @@ export class RecipeService {
         console.error('Error updating recipe:', error);
         this.isOfflineMode = true;
         throw error;
-      })
+      }),
     );
   }
 
@@ -198,7 +205,7 @@ export class RecipeService {
         console.error('Error deleting recipe:', error);
         this.isOfflineMode = true;
         throw error;
-      })
+      }),
     );
   }
 }

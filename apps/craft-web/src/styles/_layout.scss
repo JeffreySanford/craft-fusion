@@ -18,7 +18,7 @@
   margin: 0 auto;
   width: 100%;
   max-width: 1200px;
-  
+
   @media (max-width: map.get(vars.$breakpoints, md)) {
     padding: 16px;
   }
@@ -125,63 +125,63 @@ app-root {
   .p-#{$key} {
     padding: $value;
   }
-  
+
   .pt-#{$key} {
     padding-top: $value;
   }
-  
+
   .pr-#{$key} {
     padding-right: $value;
   }
-  
+
   .pb-#{$key} {
     padding-bottom: $value;
   }
-  
+
   .pl-#{$key} {
     padding-left: $value;
   }
-  
+
   .px-#{$key} {
     padding-left: $value;
     padding-right: $value;
   }
-  
+
   .py-#{$key} {
     padding-top: $value;
     padding-bottom: $value;
   }
-  
+
   .m-#{$key} {
     margin: $value;
   }
-  
+
   .mt-#{$key} {
     margin-top: $value;
   }
-  
+
   .mr-#{$key} {
     margin-right: $value;
   }
-  
+
   .mb-#{$key} {
     margin-bottom: $value;
   }
-  
+
   .ml-#{$key} {
     margin-left: $value;
   }
-  
+
   .mx-#{$key} {
     margin-left: $value;
     margin-right: $value;
   }
-  
+
   .my-#{$key} {
     margin-top: $value;
     margin-bottom: $value;
   }
-  
+
   .gap-#{$key} {
     gap: $value;
   }
@@ -193,15 +193,15 @@ app-root {
     .#{$bp-name}:flex {
       display: flex;
     }
-    
+
     .#{$bp-name}:grid {
       display: grid;
     }
-    
+
     .#{$bp-name}:hidden {
       display: none;
     }
-    
+
     .#{$bp-name}:block {
       display: block;
     }
@@ -225,7 +225,7 @@ app-root {
   border-radius: 12px;
   padding: 16px;
   box-shadow: var(--md-sys-elevation-level1);
-  
+
   .widget-header {
     display: flex;
     justify-content: space-between;
@@ -240,13 +240,13 @@ app-root {
 
   &.metric {
     text-align: center;
-    
+
     .metric-value {
       font-size: 36px;
       font-weight: 500;
       color: var(--md-sys-color-primary);
     }
-    
+
     .metric-label {
       color: var(--md-sys-color-on-surface-variant);
       font-size: 14px;

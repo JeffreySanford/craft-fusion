@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-material-buttons',
   templateUrl: './material-buttons.component.html',
   styleUrls: ['./material-buttons.component.scss'],
-  standalone: false
+  standalone: false,
 })
-export class MaterialButtonsComponent {
-
-}
+export class MaterialButtonsComponent {}

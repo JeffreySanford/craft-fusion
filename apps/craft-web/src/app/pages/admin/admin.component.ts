@@ -4,6 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { LoggerService, ServiceCallMetric } from '../../common/services/logger.service';
+import { DataSimulationService } from '../../common/services/data-simulation.service';
 import { ServicesDashboardService } from './services-dashboard/services-dashboard.service';
 import { AdminHelperService } from './admin-shared/admin-helper.service';
 import { AuthenticationService } from '../../common/services/authentication.service';
@@ -19,9 +20,9 @@ import { SocketClientService } from '../../common/services/socket-client.service
     trigger('detailExpand', [
       state('collapsed', style({ height: '0px', minHeight: '0', overflow: 'hidden', opacity: 0 })),
       state('expanded', style({ height: '*', opacity: 1 })),
-      transition('expanded <=> collapsed', animate('300ms cubic-bezier(0.4, 0.0, 0.2, 1)'))
-    ])
-  ]
+      transition('expanded <=> collapsed', animate('300ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class AdminComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -31,7 +32,7 @@ export class AdminComponent implements OnInit {
 
   public autoScroll = true;
   public navigator = window.navigator;
-  
+
   // logStats moved to LogsDashboard; handled by logs component/service
   public selectedMetrics: string[] = ['memory', 'cpu', 'network'];
   public isSimulatingData = false;
@@ -61,12 +62,13 @@ export class AdminComponent implements OnInit {
   private socketClient = inject(SocketClientService);
   private router = inject(Router);
   private servicesDashboard = inject(ServicesDashboardService);
-  
+
   private adminHelper = inject(AdminHelperService);
 
   constructor(
     @Inject('AuthService') private authService: AuthenticationService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private dataSimulationService: DataSimulationService,
   ) {
     this.socketClient.on<ServiceCallMetric>('metrics:update').subscribe(metric => {
       this.logger.info('Received real-time metric', metric);
@@ -85,7 +87,6 @@ export class AdminComponent implements OnInit {
       }
     });
 
-
     // Start centralized monitoring in ServicesDashboardService
     this.servicesDashboard.startMonitoring();
     this.servicesDashboard.startStatisticsPolling(this.METRICS_UPDATE_INTERVAL);
@@ -96,9 +97,15 @@ export class AdminComponent implements OnInit {
       this.updateServiceMetricsChart();
     });
 
-    if (this.isSimulatingData) {
-      this.servicesDashboard.startSimulation();
-    }
+    // Subscribe to shared simulation state
+    this.dataSimulationService.isSimulating$.subscribe(isSim => {
+      this.isSimulatingData = isSim;
+      if (this.isSimulatingData && this.isTabActive) {
+        this.servicesDashboard.startSimulation();
+      } else {
+        this.servicesDashboard.stopSimulation();
+      }
+    });
 
     // logStats moved to LogsDashboard
 
@@ -131,7 +138,7 @@ export class AdminComponent implements OnInit {
     }
     this.pauseSimulation();
     this.servicesDashboard.stopSimulation();
-    
+
     this.servicesDashboard.stopMonitoring();
   }
   getKeys(obj: any): string[] {
@@ -147,8 +154,7 @@ export class AdminComponent implements OnInit {
         this.serviceMetricsChart.data = this.servicesDashboard.buildChartDataForServices();
         this.serviceMetricsChart.update();
         return;
-      } catch (e) {
-      }
+      } catch (e) {}
     }
     this.serviceMetricsChart = this.servicesDashboard.createServiceMetricsChart(ctx);
   }
@@ -166,13 +172,10 @@ export class AdminComponent implements OnInit {
   }
 
   toggleDataSimulation(): void {
-    this.isSimulatingData = !this.isSimulatingData;
-    this.logger.info(`Admin dashboard: ${this.isSimulatingData ? 'Enabled' : 'Disabled'} data simulation`);
-    if (this.isSimulatingData && this.isTabActive) {
-      this.servicesDashboard.startSimulation();
-    } else {
-      this.servicesDashboard.stopSimulation();
-    }
+    // Delegate to centralized DataSimulationService so footer and admin share state
+    this.dataSimulationService.toggleSimulating();
+    const next = !this.isSimulatingData;
+    this.logger.info(`Admin dashboard: ${next ? 'Enabled' : 'Disabled'} data simulation`);
   }
 
   private pauseSimulation(): void {
@@ -202,8 +205,6 @@ export class AdminComponent implements OnInit {
     return parseFloat(value) || 0;
   }
 
-  
-  
   toggleMetric(metric: string): void {
     this.servicesDashboard.toggleMetric(this.selectedMetrics, metric);
     this.logger.info(`Toggled metric ${metric}`);
@@ -211,7 +212,7 @@ export class AdminComponent implements OnInit {
   }
 
   // Chart legend handling moved to ServicesDashboardService
-  
+
   selectApiCall(call: ServiceCallMetric): void {
     this.selectedApiCall = call;
   }
@@ -229,5 +230,4 @@ export class AdminComponent implements OnInit {
   // monitoring moved to ServicesDashboardService
 
   // updateServiceStatsLite moved to ServicesDashboardService
-
 }

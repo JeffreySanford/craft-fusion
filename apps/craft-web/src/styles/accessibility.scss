@@ -7,9 +7,9 @@
     outline: 2px solid CanvasText;
     outline-offset: 2px;
   }
-  
+
   // Apply high contrast styles to buttons and interactive elements
-  button, 
+  button,
   .mat-button,
   .mat-raised-button,
   .mat-flat-button,
@@ -18,19 +18,19 @@
   .mat-fab,
   .mat-mini-fab {
     border: 1px solid transparent;
-    
+
     &:focus {
       border-color: CanvasText;
     }
   }
-  
+
   // Table specific styles that were triggering warnings
-  table, 
+  table,
   .flex-row,
   .flex-header-cell,
   .flex-cell {
     border-color: CanvasText;
-    
+
     &:focus {
       outline: 2px solid CanvasText;
       outline-offset: 1px;
@@ -45,7 +45,7 @@
     border-color: CanvasText;
     outline-color: CanvasText;
   }
-  
+
   // Icons need proper contrast
   .mat-icon {
     forced-color-adjust: auto;

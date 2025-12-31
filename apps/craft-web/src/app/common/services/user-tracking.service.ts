@@ -7,7 +7,7 @@ export interface AppUser {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserTrackingService {
   private currentUserSubject = new BehaviorSubject<AppUser | null>(null);

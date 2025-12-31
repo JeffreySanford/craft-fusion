@@ -18,7 +18,7 @@ export interface ServiceInfo {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ServiceRegistryService {
   private servicesSubject = new BehaviorSubject<ServiceInfo[]>([]);
@@ -47,7 +47,7 @@ export class ServiceRegistryService {
       usageCount: 0,
       type: 'other',
       category: 'core',
-      ...serviceInfo
+      ...serviceInfo,
     };
 
     this.servicesMap.set(info.name, info);
@@ -60,15 +60,15 @@ export class ServiceRegistryService {
    */
   updateServiceStatus(serviceName: string, updates: Partial<ServiceInfo>): void {
     const service = this.servicesMap.get(serviceName);
-    
+
     if (service) {
       // Update the service info
       const updatedService = {
         ...service,
         ...updates,
-        lastActivity: new Date()
+        lastActivity: new Date(),
       };
-      
+
       this.servicesMap.set(serviceName, updatedService);
       this.updateServices();
     } else {
@@ -81,17 +81,17 @@ export class ServiceRegistryService {
    */
   recordActivity(serviceName: string, isError: boolean = false, responseTime?: number): void {
     const service = this.servicesMap.get(serviceName);
-    
+
     if (service) {
       // Update usage and error counts
       service.usageCount++;
-      
+
       if (isError) {
         service.errorCount++;
         service.hasError = true;
         service.status = 'error';
       }
-      
+
       // Update average response time if provided
       if (responseTime !== undefined) {
         if (service.avgResponseTime === undefined) {
@@ -101,13 +101,13 @@ export class ServiceRegistryService {
           service.avgResponseTime = (service.avgResponseTime * (service.usageCount - 1) + responseTime) / service.usageCount;
         }
       }
-      
+
       // Calculate success rate
       service.successRate = ((service.usageCount - service.errorCount) / service.usageCount) * 100;
-      
+
       // Update last activity timestamp
       service.lastActivity = new Date();
-      
+
       this.updateServices();
     }
   }
@@ -116,9 +116,7 @@ export class ServiceRegistryService {
    * Get services by category
    */
   getServicesByCategory(category: string): Observable<ServiceInfo[]> {
-    return new BehaviorSubject<ServiceInfo[]>(
-      Array.from(this.servicesMap.values()).filter(service => service.category === category)
-    ).asObservable();
+    return new BehaviorSubject<ServiceInfo[]>(Array.from(this.servicesMap.values()).filter(service => service.category === category)).asObservable();
   }
 
   /**

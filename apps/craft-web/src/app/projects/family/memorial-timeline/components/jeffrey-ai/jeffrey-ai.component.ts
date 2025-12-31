@@ -7,18 +7,19 @@ import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-jeffrey-ai',
   templateUrl: './jeffrey-ai.component.html',
-  styleUrls: ['./jeffrey-ai.component.scss']
-  ,standalone: false
+  styleUrls: ['./jeffrey-ai.component.scss'],
+  standalone: false,
 })
 export class JeffreyAiComponent implements OnInit, OnDestroy {
   jeffreyEvents$: Observable<TimelineEvent[]>;
   private sub?: Subscription;
   narratives = new Map<string, string>();
 
-  constructor(private timelineService: TimelineService, private http: HttpClient) {
-    this.jeffreyEvents$ = this.timelineService.events$.pipe(
-      map(events => (events || []).filter(e => e.title && e.title.toLowerCase().includes('jeffrey')))
-    );
+  constructor(
+    private timelineService: TimelineService,
+    private http: HttpClient,
+  ) {
+    this.jeffreyEvents$ = this.timelineService.events$.pipe(map(events => (events || []).filter(e => e.title && e.title.toLowerCase().includes('jeffrey'))));
   }
 
   ngOnInit(): void {
@@ -34,12 +35,14 @@ export class JeffreyAiComponent implements OnInit, OnDestroy {
   }
 
   regenerateNarratives(): void {
-    this.jeffreyEvents$.subscribe(events => {
-      events.forEach(ev => {
-        const key = ev.id || `${ev.title}-${ev.date}`;
-        this.narratives.set(key, this.generateNarrative(ev));
-      });
-    }).unsubscribe();
+    this.jeffreyEvents$
+      .subscribe(events => {
+        events.forEach(ev => {
+          const key = ev.id || `${ev.title}-${ev.date}`;
+          this.narratives.set(key, this.generateNarrative(ev));
+        });
+      })
+      .unsubscribe();
   }
 
   async generateAiForEvent(ev: TimelineEvent) {

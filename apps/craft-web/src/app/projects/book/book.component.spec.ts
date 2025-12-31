@@ -17,12 +17,7 @@ describe('BookComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [BookComponent],
-      providers: [
-        FileUploadService,
-        PdfParseService,
-        DocParseService,
-        UserStateService
-      ]
+      providers: [FileUploadService, PdfParseService, DocParseService, UserStateService],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BookComponent);

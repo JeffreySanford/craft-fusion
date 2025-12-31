@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChildren('messageTextarea') messageTextareas!: QueryList<any>;
@@ -17,10 +17,13 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   isThinking = false;
   thinkingStartTime: number | null = null;
   resolved = false;
-  fontSize: number = 1; 
-  messages: { text: string; sender: string; timestamp?: Date; portfolioItem?: { image: string; title: string; description: string; tags: string[]; } }[] = [];
-  
-  constructor(private chatService: ChatService, private snackBar: MatSnackBar) {}
+  fontSize: number = 1;
+  messages: { text: string; sender: string; timestamp?: Date; portfolioItem?: { image: string; title: string; description: string; tags: string[] } }[] = [];
+
+  constructor(
+    private chatService: ChatService,
+    private snackBar: MatSnackBar,
+  ) {}
 
   ngOnInit() {
     const welcomeMessage = `# Welcome to CraftFusion Chat
@@ -67,10 +70,10 @@ function greet(name: string) {
 }
 \`\`\``;
 
-    this.messages.push({ 
-        text: welcomeMessage, 
-        sender: 'bot',
-        timestamp: new Date()
+    this.messages.push({
+      text: welcomeMessage,
+      sender: 'bot',
+      timestamp: new Date(),
     });
 
     this.messages.push({ text: 'Hello! How can I assist you today?', sender: 'bot' });
@@ -80,20 +83,20 @@ function greet(name: string) {
         this.isThinking = false;
         const thinkingDuration = this.thinkingStartTime ? (Date.now() - this.thinkingStartTime) / 1000 : 0;
         this.snackBar.open(`Response received in ${thinkingDuration.toFixed(2)} seconds`, 'Close', { duration: 3000 });
-   
+
         const cleanedResponse = response.replace(/<\/?think>/g, ''); // Remove <think> and </think> tags
-        this.messages.push({ text: (cleanedResponse || 'No response'), sender: 'bot' });
+        this.messages.push({ text: cleanedResponse || 'No response', sender: 'bot' });
       },
       error => {
         console.error('Error from ChatService:', error);
         this.isThinking = false;
         this.snackBar.open('Error communicating with ChatService', 'Close', { duration: 3000 });
-      }
+      },
     );
   }
 
   ngAfterViewChecked() {
-    if(!this.isThinking && !this.resolved) {
+    if (!this.isThinking && !this.resolved) {
       this.adjustAllTextareas();
       this.scrollToBottom();
       this.resolved = true;
@@ -102,7 +105,7 @@ function greet(name: string) {
 
   adjustAllTextareas() {
     this.messageTextareas.forEach((textarea: any) => {
-      const el = textarea && textarea.nativeElement as HTMLTextAreaElement | undefined;
+      const el = textarea && (textarea.nativeElement as HTMLTextAreaElement | undefined);
       if (el) {
         el.style.height = 'auto';
         el.style.height = `${el.scrollHeight}px`;
@@ -138,7 +141,7 @@ function greet(name: string) {
     textarea.style.height = 'auto'; // Reset height
     textarea.style.height = `${textarea.scrollHeight}px`; // Adjust to content
   }
-  
+
   scrollToBottom(): void {
     const messagesContainer = document.getElementById('messages');
     if (messagesContainer) {

@@ -6,10 +6,13 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ServerStatusComponent } from './server-status/server-status.component';
+import { BgColorDirective } from '../directives/bg-color.directive';
+import { TextColorDirective } from '../directives/text-color.directive';
+import { StyleDirective } from '../directives/style.directive';
 
 @NgModule({
   declarations: [
-    ServerStatusComponent // Component must be non-standalone to be declared here
+    ServerStatusComponent, // Component must be non-standalone to be declared here
   ],
   imports: [
     CommonModule,
@@ -17,10 +20,12 @@ import { ServerStatusComponent } from './server-status/server-status.component';
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    // standalone directives imported so they can be re-exported
+    BgColorDirective,
+    TextColorDirective,
+    StyleDirective,
   ],
-  exports: [
-    ServerStatusComponent
-  ]
+  exports: [ServerStatusComponent, BgColorDirective, TextColorDirective, StyleDirective],
 })
-export class ComponentsModule { }
+export class ComponentsModule {}

@@ -41,7 +41,7 @@ interface Report {
       state('void', style({ transform: 'translateX(-100%)' })),
       state('*', style({ transform: 'translateX(0)' })),
       transition(':enter', animate('300ms ease-in')),
-      transition(':leave', animate('300ms ease-out'))
+      transition(':leave', animate('300ms ease-out')),
     ]),
   ],
 })
@@ -99,7 +99,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
   creationTime = new Date().getTime();
   currentUser: unknown;
 
-
   constructor(
     private recordService: RecordService,
     private breakpointObserver: BreakpointObserver,
@@ -107,9 +106,8 @@ export class RecordListComponent implements OnInit, OnDestroy {
     private logger: LoggerService,
     private notificationService: NotificationService,
     private changeDetectorRef: ChangeDetectorRef,
-    private router: Router
-  ) {
-  }
+    private router: Router,
+  ) {}
 
   @HostListener('window:resize', ['$event'])
   onResize(_event: Event): void {
@@ -123,11 +121,11 @@ export class RecordListComponent implements OnInit, OnDestroy {
     if (this.expandedElement) {
       // Log mouse position to debug overlay following cursor
       console.log('Mouse position:', event.clientX, event.clientY);
-      
+
       // Only prevent default if we're over the overlay elements
       const target = event.target as HTMLElement;
       const isOverlay = target.closest('.modal-container') !== null;
-      
+
       if (isOverlay) {
         console.log('Mouse over overlay element');
         event.preventDefault();
@@ -183,7 +181,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('Lifecycle: ngOnDestroy called');
     this.destroy$.next();
     this.destroy$.complete();
-    
+
     // Clean up retry timeout if it exists
     if (this.retryTimeoutRef) {
       clearTimeout(this.retryTimeoutRef);
@@ -290,12 +288,11 @@ export class RecordListComponent implements OnInit, OnDestroy {
             this.totalRecords = dataset.length;
             console.log('Data: New record set generated with length:', dataset.length);
 
-
             this.resolved = true; // Ensure resolved is set to true after data loads
             this.changeDetectorRef.detectChanges();
             this.logger.info(`New record set generated with ${dataset.length} records`, {
               creationTime: this.creationTime,
-              user: this.currentUser
+              user: this.currentUser,
             });
             this.updateCreationTime();
             this.triggerFadeToRed();
@@ -321,7 +318,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
     this.startTime = new Date().getTime();
     this.spinner.show();
     this.resolvedSubject.next(false);
-    
+
     this.recordService
       .generateNewRecordSet(count)
       .pipe(
@@ -344,9 +341,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
                   const endTime = new Date().getTime();
                   const roundtrip = endTime - this.startTime;
 
-                  const generationTimeLabel = typeof generationTime === 'number'
-                    ? `${generationTime.toFixed(2)} milliseconds`
-                    : '0.00 milliseconds';
+                  const generationTimeLabel = typeof generationTime === 'number' ? `${generationTime.toFixed(2)} milliseconds` : '0.00 milliseconds';
 
                   const roundtripLabel = `${roundtrip.toFixed(2)} milliseconds`;
 
@@ -359,12 +354,12 @@ export class RecordListComponent implements OnInit, OnDestroy {
                   this.logger.info('Timing computed', {
                     generationTimeLabel: this.generationTimeLabel,
                     roundtripLabel: this.roundtripLabel,
-                    networkPerformance: this.networkPerformance
+                    networkPerformance: this.networkPerformance,
                   });
                 } catch (err) {
                   this.logger.error('Error computing timing labels', err as unknown);
                 }
-              })
+              }),
             );
           } else {
             this.dataSource.data = [];
@@ -374,23 +369,22 @@ export class RecordListComponent implements OnInit, OnDestroy {
         catchError(error => {
           this.resolved = true; // Ensure resolved is set on error
           this.logger.error('Error fetching data', { error });
-          
+
           // Update offline state based on error
           this.isOffline = true;
-          
+
           let errorMessage = 'Failed to load data. Please try again later.';
-          
+
           if (error.status === 504) {
             errorMessage = 'The server took too long to respond. Using offline data instead.';
           } else if (error.status === 0) {
             errorMessage = 'Cannot connect to the server. Using offline data instead.';
           }
-          
+
           this.notificationService.showWarning(errorMessage, 'Data Loading Issue');
 
-          
           return of(0);
-        })
+        }),
       )
       .subscribe();
   }
@@ -406,9 +400,9 @@ export class RecordListComponent implements OnInit, OnDestroy {
   expandRow(record: Record): void {
     console.log('expandRow method called with record:', record);
     console.log('Previous expandedElement state:', this.expandedElement ? this.expandedElement.UID : 'null');
-    
+
     debugger; // Debugger statement for browser inspection
-    
+
     // Toggle expandedElement
     if (this.expandedElement?.UID === record.UID) {
       console.log('Collapsing row - same record clicked');
@@ -417,13 +411,13 @@ export class RecordListComponent implements OnInit, OnDestroy {
       console.log('Expanding row with new record');
       this.expandedElement = record;
     }
-    
+
     console.log('New expandedElement state:', this.expandedElement ? this.expandedElement.UID : 'null');
-    
+
     // Force a detection cycle to ensure UI updates
     this.changeDetectorRef.markForCheck();
     this.changeDetectorRef.detectChanges();
-    
+
     console.log('Change detection completed');
   }
 
@@ -498,10 +492,10 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
   applyFlexSort(columnName: string): void {
     const newDirection = this.sort.active === columnName && this.sort.direction === 'asc' ? 'desc' : 'asc';
-    
+
     this.sortData({
       active: columnName,
-      direction: newDirection
+      direction: newDirection,
     });
   }
 
@@ -514,62 +508,53 @@ export class RecordListComponent implements OnInit, OnDestroy {
           try {
             const endTime = new Date().getTime();
             const roundtrip = endTime - this.startTime;
-            
+
             // Format the time values with proper error handling
-            const generationTimeLabel = typeof generationTime === 'number' 
-              ? `${generationTime.toFixed(2)} milliseconds` 
-              : '0.00 milliseconds';
-              
+            const generationTimeLabel = typeof generationTime === 'number' ? `${generationTime.toFixed(2)} milliseconds` : '0.00 milliseconds';
+
             const roundtripLabel = `${roundtrip.toFixed(2)} milliseconds`;
-            
+
             // Create performance report
             const report = {
               roundtripLabel,
               generationTimeLabel,
               networkPerformance: `${roundtrip.toFixed(2)} milliseconds`,
-              diskTransferTime: generationTimeLabel
+              diskTransferTime: generationTimeLabel,
             };
-            
+
             // Update component properties
             this.generationTimeLabel = generationTimeLabel;
             this.roundtripLabel = roundtripLabel;
             this.networkPerformance = report.networkPerformance;
             this.diskTransferTime = report.diskTransferTime;
-            
+
             console.log('Start Time:', this.startTime);
             console.log('End Time:', endTime);
             console.log('Roundtrip Time:', roundtrip);
             console.log('Generation Time:', generationTime);
             console.log('Report:', report);
-            
-            console.log(`Timing: Data generation time: ${generationTimeLabel} Roundtrip time: ${roundtripLabel} Network performance: ${report.networkPerformance} Disk transfer time: ${report.diskTransferTime}`);
-            
-            // Show a success toast notification
-            this.notificationService.showSuccess(
-              `Data loaded successfully in ${roundtripLabel}`,
-              'Success'
+
+            console.log(
+              `Timing: Data generation time: ${generationTimeLabel} Roundtrip time: ${roundtripLabel} Network performance: ${report.networkPerformance} Disk transfer time: ${report.diskTransferTime}`,
             );
-            
+
+            // Show a success toast notification
+            this.notificationService.showSuccess(`Data loaded successfully in ${roundtripLabel}`, 'Success');
+
             // Request change detection to update the view
             this.changeDetectorRef.detectChanges();
           } catch (error) {
             console.error('Error formatting time values:', error);
             // Show error toast if formatting fails
-            this.notificationService.showError(
-              'Error processing timing information',
-              'Error'
-            );
+            this.notificationService.showError('Error processing timing information', 'Error');
           }
         }),
         catchError(error => {
           console.error('Error:', error);
           // Show error toast if API call fails
-          this.notificationService.showError(
-            'Failed to get generation time information',
-            'Error'
-          );
+          this.notificationService.showError('Failed to get generation time information', 'Error');
           return throwError(() => error);
-        })
+        }),
       )
       .subscribe();
   }
@@ -613,49 +598,52 @@ export class RecordListComponent implements OnInit, OnDestroy {
   public retryConnection(): void {
     this.logger.info('Manual connection retry initiated', { component: 'RecordListComponent' });
     this.notificationService.showInfo('Attempting to reconnect to server...', 'Reconnecting');
-    
-    this.recordService.checkNetworkStatus().pipe(
-      tap(isOnline => {
-        if (isOnline) {
-          this.connectionAttempts = 0; // Reset connection attempts on success
-          this.notificationService.showSuccess('Connection restored! Refreshing data...', 'Online');
-          this.fetchData(this.totalRecords);
-        } else {
+
+    this.recordService
+      .checkNetworkStatus()
+      .pipe(
+        tap(isOnline => {
+          if (isOnline) {
+            this.connectionAttempts = 0; // Reset connection attempts on success
+            this.notificationService.showSuccess('Connection restored! Refreshing data...', 'Online');
+            this.fetchData(this.totalRecords);
+          } else {
+            this.connectionAttempts++;
+            this.notificationService.showWarning('Still offline. Using local data.', 'Offline Mode');
+          }
+        }),
+        catchError(error => {
+          this.logger.error('Error during connection retry', { error });
           this.connectionAttempts++;
-          this.notificationService.showWarning('Still offline. Using local data.', 'Offline Mode');
-        }
-      }),
-      catchError(error => {
-        this.logger.error('Error during connection retry', { error });
-        this.connectionAttempts++;
-        this.notificationService.showError('Connection retry failed', 'Error');
-        return of(false);
-      })
-    ).subscribe();
+          this.notificationService.showError('Connection retry failed', 'Error');
+          return of(false);
+        }),
+      )
+      .subscribe();
   }
-  
+
   // Schedule an automatic retry with exponential backoff
   private scheduleRetry(): void {
     // Clear any existing retry timeout first
     if (this.retryTimeoutRef) {
       clearTimeout(this.retryTimeoutRef);
     }
-    
+
     // Stop if we've reached maximum retries
     if (this.connectionAttempts >= this.MAX_AUTO_RETRIES) {
-      this.logger.warn(`Maximum retry attempts (${this.MAX_AUTO_RETRIES}) reached. Automatic retry stopped.`, { 
-        component: 'RecordListComponent'
+      this.logger.warn(`Maximum retry attempts (${this.MAX_AUTO_RETRIES}) reached. Automatic retry stopped.`, {
+        component: 'RecordListComponent',
       });
       return;
     }
-    
+
     const backoffTime = Math.min(2000 * Math.pow(2, this.connectionAttempts), 30000); // Max 30 seconds
-    
-    this.logger.debug(`Scheduling automatic retry in ${backoffTime}ms`, { 
+
+    this.logger.debug(`Scheduling automatic retry in ${backoffTime}ms`, {
       attempt: this.connectionAttempts + 1,
-      component: 'RecordListComponent'
+      component: 'RecordListComponent',
     });
-    
+
     this.retryTimeoutRef = setTimeout(() => {
       if (this.isOffline) {
         this.connectionAttempts++;

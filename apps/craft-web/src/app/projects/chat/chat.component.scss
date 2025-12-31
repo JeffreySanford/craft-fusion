@@ -277,12 +277,19 @@
   white-space: pre-wrap;
   animation: fadeIn 0.5s ease-in-out;
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     margin: 0.5em 0;
     font-weight: bold;
   }
 
-  p, ul, ol {
+  p,
+  ul,
+  ol {
     margin: 0.5em 0;
   }
 
@@ -291,16 +298,28 @@
     list-style-type: disc;
   }
 
-  :deep(h1), :deep(h2), :deep(h3), :deep(h4), :deep(h5), :deep(h6) {
+  :deep(h1),
+  :deep(h2),
+  :deep(h3),
+  :deep(h4),
+  :deep(h5),
+  :deep(h6) {
     margin: 0.5em 0;
     font-weight: bold;
   }
 
-  :deep(h1) { font-size: 1.5em; }
-  :deep(h2) { font-size: 1.3em; }
-  :deep(h3) { font-size: 1.1em; }
+  :deep(h1) {
+    font-size: 1.5em;
+  }
+  :deep(h2) {
+    font-size: 1.3em;
+  }
+  :deep(h3) {
+    font-size: 1.1em;
+  }
 
-  :deep(ul), :deep(ol) {
+  :deep(ul),
+  :deep(ol) {
     margin: 0.5em 0;
     padding-left: 1.5em;
   }
@@ -318,22 +337,34 @@
   }
 
   ::ng-deep {
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
       margin: 1em 0 0.5em;
       font-weight: bold;
       line-height: 1.2;
     }
 
-    h1 { font-size: 1.5em; }
-    h2 { font-size: 1.3em; }
-    h3 { font-size: 1.1em; }
+    h1 {
+      font-size: 1.5em;
+    }
+    h2 {
+      font-size: 1.3em;
+    }
+    h3 {
+      font-size: 1.1em;
+    }
 
     p {
       margin: 0.8em 0;
       line-height: 1.5;
     }
 
-    ul, ol {
+    ul,
+    ol {
       margin: 0.8em 0;
       padding-left: 2em;
     }
@@ -348,11 +379,15 @@
       margin: 0.3em 0;
     }
 
-    strong { font-weight: bold; }
-    em { font-style: italic; }
+    strong {
+      font-weight: bold;
+    }
+    em {
+      font-style: italic;
+    }
 
     code {
-      background: rgba(0,0,0,0.05);
+      background: rgba(0, 0, 0, 0.05);
       padding: 0.2em 0.4em;
       border-radius: 3px;
       font-family: monospace;
@@ -370,11 +405,18 @@
       color: var(--md-sys-color-on-surface);
     }
 
-    h1.business-heading { font-size: 1.8em; }
-    h2.business-heading { font-size: 1.5em; }
-    h3.business-heading { font-size: 1.3em; }
+    h1.business-heading {
+      font-size: 1.8em;
+    }
+    h2.business-heading {
+      font-size: 1.5em;
+    }
+    h3.business-heading {
+      font-size: 1.3em;
+    }
 
-    ul, ol {
+    ul,
+    ol {
       margin: 1em 0;
       padding-left: 2.5em;
     }
@@ -399,7 +441,8 @@
       border-collapse: collapse;
       margin: 1em 0;
 
-      th, td {
+      th,
+      td {
         padding: 0.75em;
         border: 1px solid var(--md-sys-color-outline);
         text-align: left;
@@ -419,23 +462,24 @@
   .table-wrapper {
     overflow-x: auto;
     margin: 1em 0;
-    
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin: 0.5em 0;
-      
-      th, td {
+
+      th,
+      td {
         padding: 0.5em 1em;
         border: 1px solid var(--md-sys-color-outline);
         text-align: left;
       }
-      
+
       th {
         background: var(--md-sys-color-surface-variant);
         font-weight: 600;
       }
-      
+
       tr:nth-child(even) {
         background: rgba(0, 0, 0, 0.02);
       }
@@ -458,7 +502,7 @@
       .md-list-item {
         margin: 0.5em 0;
         line-height: 1.6;
-        
+
         &::marker {
           color: var(--md-sys-color-primary);
         }
@@ -482,23 +526,35 @@
   }
 
   ::ng-deep {
-    h1, h2, h3 { 
+    h1,
+    h2,
+    h3 {
       margin: 1.5em 0 0.75em;
-      &:first-child { margin-top: 0.5em; }
+      &:first-child {
+        margin-top: 0.5em;
+      }
     }
-    
-    p { margin: 0.8em 0; }
-    
-    ul, ol {
+
+    p {
+      margin: 0.8em 0;
+    }
+
+    ul,
+    ol {
       margin: 0.5em 0;
       padding-left: 1.5em;
-      
-      li { margin: 0.3em 0; }
+
+      li {
+        margin: 0.3em 0;
+      }
     }
-    
+
     table {
       margin: 1em 0;
-      th, td { padding: 0.5em 0.75em; }
+      th,
+      td {
+        padding: 0.5em 0.75em;
+      }
     }
 
     pre {
@@ -543,23 +599,23 @@
     .formatted-list {
       margin: 0.75em 0;
       padding-left: 1.5em;
-      
+
       &.formatted-list-numbered {
         counter-reset: item;
         list-style-type: none;
-        
+
         > li {
           counter-increment: item;
-          
+
           &::before {
-            content: counter(item) ".";
+            content: counter(item) '.';
             color: var(--md-sys-color-primary);
             font-weight: 600;
             margin-right: 0.5em;
           }
         }
       }
-      
+
       .formatted-list-item {
         margin: 0.4em 0;
         padding-left: 0.25em;
@@ -590,7 +646,7 @@
       font-weight: 600;
       color: var(--md-sys-color-on-surface);
       font-size: var(--md-typescale-headline-small);
-      
+
       &:first-child {
         margin-top: 0.5em;
       }
@@ -612,17 +668,18 @@
       border-radius: 4px;
       overflow: hidden;
       border: 1px solid var(--md-sys-color-outline);
-      
+
       table {
         margin: 0;
-        
+
         th {
           background: var(--md-sys-color-surface-variant);
           font-weight: 600;
           text-align: left;
         }
-        
-        td, th {
+
+        td,
+        th {
           padding: 0.6em 0.8em;
           border: 1px solid var(--md-sys-color-outline);
         }
@@ -641,7 +698,8 @@
   }
 
   ::ng-deep {
-    ul, ol {
+    ul,
+    ol {
       margin: 0.75em 0;
       padding-left: 2em;
       list-style-position: outside;
@@ -651,7 +709,7 @@
         margin: 0.4em 0;
         line-height: 1.5;
         display: list-item;
-        
+
         &::marker {
           color: var(--md-sys-color-primary);
         }
@@ -664,17 +722,20 @@
 
     ol {
       counter-reset: item;
-      
+
       li {
         list-style-type: decimal;
-        
+
         &::marker {
           font-weight: 500;
         }
       }
     }
 
-    ul ul, ol ol, ul ol, ol ul {
+    ul ul,
+    ol ol,
+    ul ol,
+    ol ul {
       margin: 0.25em 0 0.25em 1em;
     }
 
@@ -687,23 +748,24 @@
   ::ng-deep {
     .table-wrapper {
       margin: 0.75em 0;
-      
+
       .formatted-table {
         width: 100%;
         border-collapse: collapse;
-        
-        .formatted-header, .formatted-cell {
+
+        .formatted-header,
+        .formatted-cell {
           padding: 0.5em 0.75em;
           border: 1px solid var(--md-sys-color-outline);
           text-align: left;
           vertical-align: top;
         }
-        
+
         .formatted-header {
           background: var(--md-sys-color-surface-variant);
           font-weight: 600;
         }
-        
+
         tr:nth-child(even) .formatted-cell {
           background: rgba(0, 0, 0, 0.02);
         }

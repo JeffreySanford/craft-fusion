@@ -30,7 +30,7 @@ export class SocketClientService implements OnDestroy {
       reconnectionDelay: this.backoffDelay,
       timeout: 10000,
       autoConnect: true,
-      withCredentials: true
+      withCredentials: true,
     });
     if (!this.socket) {
       this.handleSocketError(new Error('Socket initialization failed'));
@@ -42,17 +42,17 @@ export class SocketClientService implements OnDestroy {
       this.connectionStatus.next(true);
       console.info('Socket connected successfully', {
         id: this.socket?.id,
-        namespace: this.extractNamespace(socketUrl)
+        namespace: this.extractNamespace(socketUrl),
       });
     });
-    this.socket.on('connect_error', (error) => {
+    this.socket.on('connect_error', error => {
       this.connectionStatus.next(false);
       this.handleSocketError(error);
       if (!this.reconnecting && this.reconnectAttempts < this.maxReconnectAttempts) {
         this.attemptReconnection();
       }
     });
-    this.socket.on('disconnect', (reason) => {
+    this.socket.on('disconnect', reason => {
       this.connectionStatus.next(false);
       console.warn('Socket disconnected', { reason });
       if (reason === 'io server disconnect' || reason === 'transport close') {
@@ -65,7 +65,7 @@ export class SocketClientService implements OnDestroy {
 
   private handleSocketError(error: unknown): void {
     this.connectionStatus.next(false);
-    const message = (error && typeof error === 'object' && 'message' in error && typeof (error as any).message === 'string') ? (error as any).message : String(error);
+    const message = error && typeof error === 'object' && 'message' in error && typeof (error as any).message === 'string' ? (error as any).message : String(error);
     console.error('Socket error', { error: message });
   }
 
@@ -76,7 +76,7 @@ export class SocketClientService implements OnDestroy {
     console.info('Attempting socket reconnection', {
       attempt: this.reconnectAttempts,
       maxAttempts: this.maxReconnectAttempts,
-      delayMs: delay
+      delayMs: delay,
     });
     timer(delay)
       .pipe(takeUntil(this.destroy$))
@@ -123,7 +123,7 @@ export class SocketClientService implements OnDestroy {
       catchError(err => {
         this.handleSocketError(err);
         return throwError(() => err);
-      })
+      }),
     );
   }
 
@@ -133,7 +133,7 @@ export class SocketClientService implements OnDestroy {
     } else {
       console.warn('Cannot emit event, socket not connected', {
         event,
-        connected: this.connectionStatus.value
+        connected: this.connectionStatus.value,
       });
     }
   }

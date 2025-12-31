@@ -2,22 +2,25 @@ import { Directive, ElementRef, OnInit, Renderer2, OnDestroy } from '@angular/co
 
 @Directive({
   selector: '[appSparkle]',
-  standalone: false // Ensure standalone is false
+  standalone: false, // Ensure standalone is false
 })
 export class SparkleDirective implements OnInit, OnDestroy {
   private sparkles: HTMLElement[] = [];
   private intervalId: ReturnType<typeof setInterval> | null = null;
-  
-  constructor(private el: ElementRef, private renderer: Renderer2) {}
-  
+
+  constructor(
+    private el: ElementRef,
+    private renderer: Renderer2,
+  ) {}
+
   ngOnInit() {
     // Make the parent element position relative
     this.renderer.setStyle(this.el.nativeElement, 'position', 'relative');
-    
+
     // Add a subtle initial animation to draw attention
     this.renderer.setStyle(this.el.nativeElement, 'animation', 'pulse 2s infinite');
     this.renderer.setStyle(this.el.nativeElement, 'transform-origin', 'center');
-    
+
     // Add keyframe animation definition
     const style = document.createElement('style');
     style.innerHTML = `
@@ -34,17 +37,17 @@ export class SparkleDirective implements OnInit, OnDestroy {
       }
     `;
     document.head.appendChild(style);
-    
+
     // Create occasional sparkles
     this.intervalId = setInterval(() => this.createSparkle(), 2000);
   }
-  
+
   ngOnDestroy() {
     if (this.intervalId !== null) {
       clearInterval(this.intervalId as unknown as number);
       this.intervalId = null;
     }
-    
+
     // Clean up sparkle elements
     this.sparkles.forEach(sparkle => {
       if (sparkle.parentNode) {
@@ -52,22 +55,22 @@ export class SparkleDirective implements OnInit, OnDestroy {
       }
     });
   }
-  
+
   private createSparkle() {
     const element = this.el.nativeElement;
     const rect = element.getBoundingClientRect();
-    
+
     // Create a sparkle element
     const sparkle = document.createElement('div');
-    
+
     // Random position within the element
     const x = Math.random() * rect.width;
     const y = Math.random() * rect.height;
-    
+
     // Random direction for animation
     const tx = (Math.random() - 0.5) * 20;
     const ty = (Math.random() - 0.5) * 20;
-    
+
     // Style the sparkle
     sparkle.style.position = 'absolute';
     sparkle.style.left = `${x}px`;
@@ -81,11 +84,11 @@ export class SparkleDirective implements OnInit, OnDestroy {
     sparkle.style.setProperty('--tx', `${tx}px`);
     sparkle.style.setProperty('--ty', `${ty}px`);
     sparkle.style.animation = 'sparkle 1.5s forwards';
-    
+
     // Add to element
     element.appendChild(sparkle);
     this.sparkles.push(sparkle);
-    
+
     // Remove sparkle after animation
     setTimeout(() => {
       if (sparkle.parentNode) {

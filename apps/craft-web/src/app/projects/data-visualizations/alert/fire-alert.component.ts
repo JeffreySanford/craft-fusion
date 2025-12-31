@@ -8,7 +8,7 @@ interface City {
   name: string;
   state: string;
   coords: { lat: number; lng: number };
-  alerts: { id: number; name: string; time: string; level: string; }[];
+  alerts: { id: number; name: string; time: string; level: string }[];
   timezoneOffset: number;
   timezone: string;
 }
@@ -19,8 +19,8 @@ interface City {
   styleUrls: ['./fire-alert.component.scss'],
   standalone: false,
   host: {
-    class: 'grid-tile large-tile' // Add grid-specific classes
-  }
+    class: 'grid-tile large-tile', // Add grid-specific classes
+  },
 })
 export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() alerts: string[] = [];
@@ -35,7 +35,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   currentTime!: string;
   utcTime!: string;
   timeSubscription?: Subscription;
-  
+
   // Track if dimensions have changed
   private lastWidth: number = 0;
   private lastHeight: number = 0;
@@ -47,21 +47,21 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       coords: { lat: 34.0522, lng: -118.2437 },
       alerts: [
         { id: 1, name: 'Mock Alert', time: '2023-10-01T10:00:00Z', level: 'High Priority' },
-        { id: 2, name: 'Alert 2', time: '2023-10-01T12:00:00Z', level: 'Medium Priority' }
+        { id: 2, name: 'Alert 2', time: '2023-10-01T12:00:00Z', level: 'Medium Priority' },
       ],
       timezoneOffset: -8,
-      timezone: 'PDT -08:00'
+      timezone: 'PDT -08:00',
     },
     {
       name: 'New York',
       state: 'New York',
-      coords: { lat: 40.7128, lng: -74.0060 },
+      coords: { lat: 40.7128, lng: -74.006 },
       alerts: [
         { id: 3, name: 'Alert 3', time: '2023-10-02T14:00:00Z', level: this.getRandomLevel() },
-        { id: 4, name: 'Alert 4', time: '2023-10-02T16:00:00Z', level: this.getRandomLevel() }
+        { id: 4, name: 'Alert 4', time: '2023-10-02T16:00:00Z', level: this.getRandomLevel() },
       ],
       timezoneOffset: -5,
-      timezone: 'EDT -05:00'
+      timezone: 'EDT -05:00',
     },
     {
       name: 'Chicago',
@@ -69,18 +69,18 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       coords: { lat: 41.8781, lng: -87.6298 },
       alerts: [
         { id: 5, name: 'Alert 5', time: '2023-10-03T18:00:00Z', level: this.getRandomLevel() },
-        { id: 6, name: 'Alert 6', time: '2023-10-03T20:00:00Z', level: this.getRandomLevel() }
+        { id: 6, name: 'Alert 6', time: '2023-10-03T20:00:00Z', level: this.getRandomLevel() },
       ],
       timezoneOffset: -6,
-      timezone: 'CDT -06:00'
-    }
+      timezone: 'CDT -06:00',
+    },
   ];
   selectedCity!: City; // Will be set in ngOnInit
   selectedPriorityLevel: string = 'All';
 
   constructor(
     private mapboxService: MapboxService,
-    private flightRadarService: FlightRadarService
+    private flightRadarService: FlightRadarService,
   ) {
     console.log('STEP 1: FireAlertComponent initialized');
   }
@@ -98,7 +98,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.fetchFlightData();
-    
+
     // Add resize listener
     window.addEventListener('resize', this.handleResize.bind(this));
   }
@@ -106,12 +106,10 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   // Add ngOnChanges to handle dimension changes
   ngOnChanges(changes: SimpleChanges): void {
     // Check if width or height has changed
-    if ((changes['width'] && this.lastWidth !== changes['width'].currentValue) || 
-        (changes['height'] && this.lastHeight !== changes['height'].currentValue)) {
-      
+    if ((changes['width'] && this.lastWidth !== changes['width'].currentValue) || (changes['height'] && this.lastHeight !== changes['height'].currentValue)) {
       this.lastWidth = this.width;
       this.lastHeight = this.height;
-      
+
       // Re-initialize map with new dimensions if already initialized
       if (this.selectedCity && this.selectedCity.alerts && this.selectedCity.alerts.length > 0) {
         setTimeout(() => {
@@ -127,19 +125,19 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log('STEP 4: Initializing map for city', city);
     const cityObj = this.cities.find(c => c.name === city);
     const coordinates = cityObj ? cityObj.coords : { lat: 34.0522, lng: -118.2437 };
-    
+
     // Use container heights/widths from inputs if provided, otherwise let CSS handle it
     const mapContainer = document.getElementById(`map-${alertId}`);
     if (!mapContainer) {
       console.error(`Map container for alert ${alertId} not found`);
       return;
     }
-    
+
     // Calculate available height for the map based on container size
     const containerHeight = mapContainer.parentElement?.clientHeight || 400;
     const statusHeight = 180;
     const mapHeight = Math.max(200, containerHeight - statusHeight);
-    
+
     if (this.width && this.height) {
       mapContainer.style.width = `${this.width}px`;
       mapContainer.style.height = `${this.height}px`;
@@ -149,7 +147,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       // Ensure width is 100% for responsive behavior
       mapContainer.style.width = '100%';
     }
-    
+
     try {
       const map = this.mapboxService.initializeMap(`map-${alertId}`, [coordinates.lng, coordinates.lat], 12);
       this.startCurrentTimeStream(this.selectedCity);
@@ -211,36 +209,34 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     const lat2 = 34.5;
     const lon2 = -117.5;
 
-    this.flightRadarService.getFlightsByBoundingBox(lat1, lon1, lat2, lon2).subscribe(
-      data => {
-        console.log('STEP 7: Flight data fetched', data);
+    this.flightRadarService.getFlightsByBoundingBox(lat1, lon1, lat2, lon2).subscribe(data => {
+      console.log('STEP 7: Flight data fetched', data);
 
-        // Process and display flight data on the map
-        this.fr24Flights = data;
+      // Process and display flight data on the map
+      this.fr24Flights = data;
 
-        this.fr24Flights.forEach((flight: Flight) => {
-          // for each flight, look up the information for the flight and include it on the addMarker report
-          const coordinates: [number, number] = [flight.status.currentLocation.longitude, flight.status.currentLocation.latitude];
+      this.fr24Flights.forEach((flight: Flight) => {
+        // for each flight, look up the information for the flight and include it on the addMarker report
+        const coordinates: [number, number] = [flight.status.currentLocation.longitude, flight.status.currentLocation.latitude];
 
-          this.flightRadarService.getFlightById(flight.aircraft.registration).subscribe(
-            (next: { flight: Flight }) => {
-              console.log('STEP 7.1: Flight data fetched', next);
-              // Process and display flight data on the map
-              const flightInfo: Flight = next.flight;
-              this.flights.push(flightInfo);
+        this.flightRadarService.getFlightById(flight.aircraft.registration).subscribe(
+          (next: { flight: Flight }) => {
+            console.log('STEP 7.1: Flight data fetched', next);
+            // Process and display flight data on the map
+            const flightInfo: Flight = next.flight;
+            this.flights.push(flightInfo);
 
-              this.mapboxService.addMarker(coordinates, `Flight: ${flightInfo.id} - ${flightInfo.origin.name} to ${flightInfo.destination.name} - ${flightInfo.aircraft.model}`);
-            },
-            (error: any) => {
-              console.error('Error fetching flight by ID', error);
-            },
-            () => {
-              console.log('Flight data fetch completed');
-            }
-          );
-        }); 
-      },
-    );
+            this.mapboxService.addMarker(coordinates, `Flight: ${flightInfo.id} - ${flightInfo.origin.name} to ${flightInfo.destination.name} - ${flightInfo.aircraft.model}`);
+          },
+          (error: any) => {
+            console.error('Error fetching flight by ID', error);
+          },
+          () => {
+            console.log('Flight data fetch completed');
+          },
+        );
+      });
+    });
   }
 
   startCurrentTimeStream(city: City): void {
@@ -286,19 +282,19 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       if (!firstAlert) return;
       const alertId = firstAlert.id;
       const mapContainer = document.getElementById(`map-${alertId}`);
-      
+
       if (mapContainer) {
         // Adjust map size based on current container dimensions
         const containerHeight = mapContainer.parentElement?.clientHeight || 400;
         const statusHeight = 180; // Approximate height of status container
         const mapHeight = Math.max(200, containerHeight - statusHeight);
-        
+
         if (!this.width && !this.height) {
           // Only adjust height if not explicitly set by inputs
           mapContainer.style.height = `${mapHeight}px`;
         }
       }
-      
+
       // Important: Use a short delay to ensure DOM is updated before resizing map
       setTimeout(() => {
         try {
@@ -334,11 +330,11 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   // Filter alerts based on selected priority level
   filteredAlerts(city: City): { id: number; name: string; time: string; level: string }[] {
     if (!city.alerts) return [];
-    
+
     if (this.selectedPriorityLevel === 'All') {
       return city.alerts;
     }
-    
+
     return city.alerts.filter(alert => alert.level === this.selectedPriorityLevel);
   }
 }

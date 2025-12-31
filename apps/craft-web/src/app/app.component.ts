@@ -27,9 +27,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   title = 'frontend';
   private footerStateSubscription!: Subscription;
 
-  menuItems = [
-    { label: 'Home', icon: 'home', routerLink: '/home', active: false },
-  ];
+  menuItems = [{ label: 'Home', icon: 'home', routerLink: '/home', active: false }];
   polling = true;
   editorForm: FormGroup = new FormGroup({});
 
@@ -95,7 +93,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.footerStateSubscription = this.footerStateService.expanded$.subscribe(expanded => {
       this.isFooterExpanded = expanded;
       console.log('Footer expanded state changed:', expanded);
-      
+
       // Force redraw of child components after footer state changes
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'));

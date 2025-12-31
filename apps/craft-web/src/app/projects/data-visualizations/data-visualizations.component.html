@@ -9,53 +9,40 @@
     </div>
 
     <!-- Rendered Charts with proper grid sizing based on chart size -->
-    <div *ngFor="let chart of displayedCharts; let i = index"
-         class="visualization-item"
-         [ngClass]="getTileClasses(chart, i)"
-         cdkDrag [cdkDragDisabled]="fullExpandedTileIndex !== null">
+    <div
+      *ngFor="let chart of displayedCharts; let i = index"
+      class="visualization-item"
+      [ngClass]="getTileClasses(chart, i)"
+      cdkDrag
+      [cdkDragDisabled]="fullExpandedTileIndex !== null"
+    >
       <mat-card class="chart-card" [class.expanded]="expandedTileIndex === i">
-        <mat-card-header cdkDragHandle class="custom-colored" [style.color]="chart.color">
+        <mat-card-header cdkDragHandle class="custom-colored" [appTextColor]="chart.color">
           <div class="chart-title">
-            <mat-icon>{{getIconForChart(chart)}}</mat-icon>
-            {{chart.name}}
+            <mat-icon>{{ getIconForChart(chart) }}</mat-icon>
+            {{ chart.name }}
           </div>
-          <button mat-icon-button class="restore-button" *ngIf="fullExpandedTileIndex === i" 
-                  (click)="restoreTile(i, $event)" aria-label="Restore visualization">
+          <button mat-icon-button class="restore-button" *ngIf="fullExpandedTileIndex === i" (click)="restoreTile(i, $event)" aria-label="Restore visualization">
             <mat-icon>fullscreen_exit</mat-icon>
           </button>
           <button mat-icon-button class="remove-button" (click)="removeTile(chart, $event)" aria-label="Remove visualization">
             <mat-icon>close</mat-icon>
           </button>
         </mat-card-header>
-        
+
         <mat-card-content (click)="handleTileClick(i, $event)">
           <!-- Use the pre-calculated chart class -->
           <div class="chart-content" [ngClass]="chart.chartClass">
             <!-- Dynamic component rendering with size inputs -->
             <ng-container [ngSwitch]="chart.component">
               <!-- Pass width to all chart components but not explicit height -->
-              <app-line-chart 
-                *ngSwitchCase="'app-line-chart'" 
-                [data]="chart.data"
-                [width]="tileWidth">
-              </app-line-chart>
-              
-              <app-bar-chart 
-                *ngSwitchCase="'app-bar-chart'" 
-                [data]="chart.data"
-                [width]="tileWidth">
-              </app-bar-chart>
-              
-              <app-finance-chart 
-                *ngSwitchCase="'app-finance-chart'" 
-                [data]="chart.data"
-                [width]="tileWidth">
-              </app-finance-chart>
-              
-              <app-fire-alert 
-                *ngSwitchCase="'app-fire-alert'"
-                [width]="tileWidth">
-              </app-fire-alert>
+              <app-line-chart *ngSwitchCase="'app-line-chart'" [data]="chart.data" [width]="tileWidth"> </app-line-chart>
+
+              <app-bar-chart *ngSwitchCase="'app-bar-chart'" [data]="chart.data" [width]="tileWidth"> </app-bar-chart>
+
+              <app-finance-chart *ngSwitchCase="'app-finance-chart'" [data]="chart.data" [width]="tileWidth"> </app-finance-chart>
+
+              <app-fire-alert *ngSwitchCase="'app-fire-alert'" [width]="tileWidth"> </app-fire-alert>
             </ng-container>
           </div>
         </mat-card-content>
@@ -68,21 +55,21 @@
     <div class="sidebar-header">
       <h2>Available Visualizations</h2>
       <button mat-icon-button class="sidebar-toggle" (click)="toggleVisualizationSidebar()">
-        <mat-icon>{{isSidebarCollapsed ? 'chevron_right' : 'chevron_left'}}</mat-icon>
+        <mat-icon>{{ isSidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
       </button>
     </div>
     <div class="sidebar-content">
       <mat-list>
-        <mat-list-item *ngFor="let chart of availableCharts" 
-                       (click)="toggleChart(chart)" 
-                       [class.active]="isChartActive(chart)"
-                       [style.color]="isChartActive(chart) ? chart.color : 'inherit'">
-          <mat-icon matListItemIcon class="visualization-icon" [style.color]="isChartActive(chart) ? chart.color : 'inherit'">{{getIconForChart(chart)}}</mat-icon>
-          <span matListItemTitle>{{chart.name}}</span>
-          <mat-icon matListItemMeta class="selection-indicator"
-                   [class.active-icon]="isChartActive(chart)"
-                   [style.color]="isChartActive(chart) ? chart.color : 'inherit'">
-            {{isChartActive(chart) ? 'check_circle' : 'radio_button_unchecked'}}
+        <mat-list-item
+          *ngFor="let chart of availableCharts"
+          (click)="toggleChart(chart)"
+          [class.active]="isChartActive(chart)"
+          [appTextColor]="isChartActive(chart) ? chart.color : 'inherit'"
+        >
+          <mat-icon matListItemIcon class="visualization-icon" [appTextColor]="isChartActive(chart) ? chart.color : 'inherit'">{{ getIconForChart(chart) }}</mat-icon>
+          <span matListItemTitle>{{ chart.name }}</span>
+          <mat-icon matListItemMeta class="selection-indicator" [class.active-icon]="isChartActive(chart)" [appTextColor]="isChartActive(chart) ? chart.color : 'inherit'">
+            {{ isChartActive(chart) ? 'check_circle' : 'radio_button_unchecked' }}
           </mat-icon>
         </mat-list-item>
       </mat-list>
@@ -91,5 +78,4 @@
 </div>
 
 <!-- Full Screen Modal Backdrop -->
-<div class="fullscreen-backdrop" *ngIf="fullExpandedTileIndex !== null" 
-     (click)="handleBackdropClick($event)"></div>
+<div class="fullscreen-backdrop" *ngIf="fullExpandedTileIndex !== null" (click)="handleBackdropClick($event)"></div>

@@ -5,18 +5,8 @@ import { PopDirective } from './common/directives/pop.directive';
 import { SparkleDirective } from './common/directives/sparkle.directive';
 
 @NgModule({
-  declarations: [
-    HighlightDirective,
-    PopDirective,
-    SparkleDirective
-  ],
-  imports: [
-    CommonModule
-  ],
-  exports: [
-    HighlightDirective,
-    PopDirective,
-    SparkleDirective
-  ]
+  declarations: [HighlightDirective, PopDirective, SparkleDirective],
+  imports: [CommonModule],
+  exports: [HighlightDirective, PopDirective, SparkleDirective],
 })
 export class AnimatedDirectivesModule {}

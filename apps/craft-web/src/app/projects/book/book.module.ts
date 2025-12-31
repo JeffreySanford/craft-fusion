@@ -15,12 +15,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 // Editor import if you're using a third-party editor like TinyMCE
 import { EditorModule } from '@tinymce/tinymce-angular';
+import { ComponentsModule } from '../../common/components/components.module';
 
 @NgModule({
-  declarations: [
-    BookComponent,
-    SafeHtmlPipe
-  ],
+  declarations: [BookComponent, SafeHtmlPipe],
   imports: [
     CommonModule,
     FormsModule,
@@ -32,14 +30,10 @@ import { EditorModule } from '@tinymce/tinymce-angular';
     MatListModule,
     MatTooltipModule,
     // Editor module
-    EditorModule
+    EditorModule,
+    ComponentsModule,
   ],
-  exports: [
-    BookComponent,
-    SafeHtmlPipe
-  ],
-  providers: [
-    BookService
-  ]
+  exports: [BookComponent, SafeHtmlPipe],
+  providers: [BookService],
 })
-export class BookModule { }
+export class BookModule {}

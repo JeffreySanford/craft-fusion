@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer } from '@angular/material/sidenav';
-import { MenuItem, MenuGroup } from './sidebar.types'
+import { MenuItem, MenuGroup } from './sidebar.types';
 import { Router } from '@angular/router';
 import { SidebarStateService } from '../../common/services/sidebar-state.service';
 import { AdminStateService } from '../../common/services/admin-state.service';
@@ -22,12 +22,11 @@ import { AuthenticationService } from '../../common/services/authentication.serv
     ]),
   ],
   host: {
-    '[class.collapsed]': 'isCollapsed'
+    '[class.collapsed]': 'isCollapsed',
   },
   standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class SidebarComponent implements OnInit {
   @Output() sidebarToggle = new EventEmitter<boolean>();
   @Input() isSmallScreen = false;
@@ -50,18 +49,18 @@ export class SidebarComponent implements OnInit {
         { icon: 'restaurant', label: 'Peasant Kitchen', routerLink: '/peasant-kitchen', active: false },
         { icon: 'movie', label: 'HTML Video', routerLink: '/space-video', active: false },
       ],
-    }
+    },
   ];
   menuItems: MenuItem[] = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
   constructor(
-    private breakpointObserver: BreakpointObserver, 
+    private breakpointObserver: BreakpointObserver,
     private router: Router,
     private sidebarStateService: SidebarStateService,
     private _adminStateService: AdminStateService,
     private authService: AuthenticationService,
     private cdr: ChangeDetectorRef,
     private _renderer: Renderer2,
-    private _el: ElementRef
+    private _el: ElementRef,
   ) {
     console.log('🔧 Sidebar: Constructor called');
     // Initialize the admin observable in constructor
@@ -74,10 +73,9 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit() {
     console.log('🔧 Sidebar: ngOnInit called');
-    this.breakpointObserver.observe([Breakpoints.Handset])
-      .subscribe(result => {
-        this.isMobile = result.matches;
-      });
+    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
+      this.isMobile = result.matches;
+    });
 
     // Subscribe to admin state changes for menu updates
     console.log('🔧 Sidebar: Setting up admin state subscription');
@@ -94,7 +92,7 @@ export class SidebarComponent implements OnInit {
               { icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false },
               { icon: 'family_restroom', label: 'Family', routerLink: '/family', active: false },
               { icon: 'chat_bubble', label: 'Chat', routerLink: '/chat', active: false },
-              { icon: 'book', label: 'Book', routerLink: '/book', active: false }
+              { icon: 'book', label: 'Book', routerLink: '/book', active: false },
             );
           }
         }
@@ -102,9 +100,7 @@ export class SidebarComponent implements OnInit {
         // Remove all admin items if they exist
         if (this.menuGroups?.[0]?.items) {
           console.log('🔧 Sidebar: Removing admin menu items');
-          this.menuGroups[0].items = this.menuGroups[0].items.filter(item => 
-            !['Admin', 'Family', 'Chat', 'Book'].includes(item.label)
-          );
+          this.menuGroups[0].items = this.menuGroups[0].items.filter(item => !['Admin', 'Family', 'Chat', 'Book'].includes(item.label));
         }
       }
       // Create new array reference to trigger change detection
@@ -130,7 +126,7 @@ export class SidebarComponent implements OnInit {
     const width = (event.target as Window).innerWidth;
     this.isCollapsed = width < 900;
     this.isSmallScreen = width < 900;
-  
+
     this.sidebarToggle.emit(!this.isCollapsed);
     this.sidebarStateService.toggleSidebar(this.isCollapsed);
   }
@@ -142,7 +138,7 @@ export class SidebarComponent implements OnInit {
   }
 
   setActive(item: MenuItem) {
-    this.menuItems.forEach(menuItem => menuItem.active = false);
+    this.menuItems.forEach(menuItem => (menuItem.active = false));
     item.active = true;
   }
 

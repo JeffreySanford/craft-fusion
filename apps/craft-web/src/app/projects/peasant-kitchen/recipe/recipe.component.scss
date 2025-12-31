@@ -8,12 +8,12 @@
   flex: 1 1 auto; /* Use flex shorthand to ensure growth */
   box-sizing: border-box;
   margin: 0; /* Remove margins */
-  background: linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(240,240,255,0.9) 100%);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95) 0%, rgba(240, 240, 255, 0.9) 100%);
   background-image: none;
   background-size: 100px 100px;
   background-blend-mode: overlay;
   border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   font-family: var(--recipe-body-font, 'Crimson Text', 'Georgia', serif);
   animation: fadeInAndExpand 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
 
@@ -104,8 +104,8 @@ mat-card-title-group {
     flex: 1 1 250px;
     max-height: 200px; /* Reduce max-height */
     overflow-y: auto;
-    background-color: rgba(255,255,255,0.8);
-    border: 1px solid rgba(0,0,0,0.1);
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 6px;
     padding: 1em;
   }
@@ -114,8 +114,8 @@ mat-card-title-group {
     width: 50%; /* Increase width */
     max-height: 250px; /* Increase max-height */
     overflow-y: auto;
-    background-color: rgba(255,255,255,0.8);
-    border: 1px solid rgba(0,0,0,0.1);
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 6px;
     padding: 1em;
     margin-top: 1em; /* Align with ingredients container */
@@ -149,7 +149,7 @@ mat-card-title {
   color: #3c3b6e; /* Blue */
   font-size: 2em !important;
   font-weight: 600;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
   font-family: var(--recipe-heading-font, 'Playfair Display', 'Georgia', serif);
   letter-spacing: 0.5px;
   background: linear-gradient(45deg, #3c3b6e, #7a7ab8);
@@ -179,7 +179,7 @@ mat-card-title {
   margin-top: 15px;
   margin-bottom: 15px;
   font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
   position: relative;
   overflow: hidden;
@@ -196,7 +196,7 @@ mat-card-title {
     right: 0;
     width: 30px;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     transform: skewX(-30deg);
     animation: shimmer 3s infinite;
   }
@@ -214,7 +214,7 @@ mat-card-title {
   padding: 12px;
   margin-top: 12px;
   border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   animation: fadeSlideRight 0.8s ease-out 0.6s both;
 
@@ -229,7 +229,7 @@ mat-card-title {
   padding: 12px;
   margin-top: 12px;
   border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   animation: fadeSlideRight 0.8s ease-out 0.8s both;
 
   ul {
@@ -262,12 +262,12 @@ mat-card-title {
 .directions {
   border: 2px solid #3c3b6e; /* Blue */
   position: relative;
-  background: linear-gradient(to right, rgba(255,255,255,0.9), rgba(240,248,255,0.8));
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(240, 248, 255, 0.8));
   background-image: none;
   padding: 12px;
   margin-top: 12px;
   border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   animation: fadeSlideRight 0.8s ease-out 1s both;
 
   &:before {
@@ -359,7 +359,7 @@ mat-card-title {
   padding: 2em;
   border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   text-align: center;
   animation: fadeIn 0.5s ease-out;
 
@@ -405,13 +405,13 @@ mat-card-actions button {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
     transition: all 0.6s ease;
   }
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 
     &:after {
       left: 100%;
@@ -605,7 +605,7 @@ strong {
   background-color: #b22234 !important; /* Red background */
   color: #fff !important;
   z-index: 60;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 
   &:hover {
     background-color: #a11f2f !important;

@@ -6,7 +6,7 @@ import { ExtendedChartData } from '../data-visualizations.component';
   selector: 'app-tile-limit-dialog',
   templateUrl: './tile-limit-dialog.component.html',
   styleUrls: ['./tile-limit-dialog.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class TileLimitDialogComponent implements OnInit {
   selectedTilesToRemove: Set<string> = new Set();
@@ -14,10 +14,11 @@ export class TileLimitDialogComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<TileLimitDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: {
-      currentTiles: ExtendedChartData[],
-      newTile: ExtendedChartData
-    }
+    @Inject(MAT_DIALOG_DATA)
+    public data: {
+      currentTiles: ExtendedChartData[];
+      newTile: ExtendedChartData;
+    },
   ) {
     this.newTile = data.newTile;
   }
@@ -50,11 +51,16 @@ export class TileLimitDialogComponent implements OnInit {
    */
   getIconForChart(chart: ExtendedChartData): string {
     switch (chart.component) {
-      case 'app-line-chart': return 'show_chart';
-      case 'app-bar-chart': return 'bar_chart';
-      case 'app-finance-chart': return 'trending_up';
-      case 'app-fire-alert': return 'warning';
-      default: return 'widgets';
+      case 'app-line-chart':
+        return 'show_chart';
+      case 'app-bar-chart':
+        return 'bar_chart';
+      case 'app-finance-chart':
+        return 'trending_up';
+      case 'app-fire-alert':
+        return 'warning';
+      default:
+        return 'widgets';
     }
   }
 
@@ -62,9 +68,7 @@ export class TileLimitDialogComponent implements OnInit {
    * Confirm selection and close dialog
    */
   confirmSelection(): void {
-    const tilesToRemove = this.data.currentTiles.filter(tile => 
-      this.selectedTilesToRemove.has(`${tile.component}_${tile.name}`)
-    );
+    const tilesToRemove = this.data.currentTiles.filter(tile => this.selectedTilesToRemove.has(`${tile.component}_${tile.name}`));
     this.dialogRef.close({ action: 'remove', tiles: tilesToRemove });
   }
 
@@ -79,11 +83,15 @@ export class TileLimitDialogComponent implements OnInit {
    * Get size label
    */
   getTileSizeLabel(size: string): string {
-    switch(size) {
-      case 'small': return 'Small';
-      case 'medium': return 'Medium';
-      case 'large': return 'Large';
-      default: return 'Standard';
+    switch (size) {
+      case 'small':
+        return 'Small';
+      case 'medium':
+        return 'Medium';
+      case 'large':
+        return 'Large';
+      default:
+        return 'Standard';
     }
   }
 

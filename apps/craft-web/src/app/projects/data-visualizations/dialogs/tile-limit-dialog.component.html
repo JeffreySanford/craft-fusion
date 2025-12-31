@@ -8,45 +8,38 @@
     <div class="new-tile-info">
       <div class="wave-pattern"></div>
       <div class="alert-content">
-        <div class="new-tile-badge" [style.backgroundColor]="newTile.color">
-          <mat-icon>{{getIconForChart(newTile)}}</mat-icon>
+        <div class="new-tile-badge" [appBgColor]="newTile.color">
+          <mat-icon>{{ getIconForChart(newTile) }}</mat-icon>
         </div>
         <div class="new-tile-details">
-          <h3>Adding: {{newTile.name}}</h3>
-          <p>{{getSpaceNeededText()}}</p>
+          <h3>Adding: {{ newTile.name }}</h3>
+          <p>{{ getSpaceNeededText() }}</p>
         </div>
       </div>
     </div>
-    
+
     <div class="existing-tiles">
       <mat-list>
-        <mat-list-item *ngFor="let tile of data.currentTiles" 
-                      [class.selected]="isTileSelected(tile)"
-                      (click)="toggleTileSelection(tile)">
+        <mat-list-item *ngFor="let tile of data.currentTiles" [class.selected]="isTileSelected(tile)" (click)="toggleTileSelection(tile)">
           <div class="tile-list-item">
             <div class="tile-info">
-              <mat-icon [style.color]="tile.color">{{getIconForChart(tile)}}</mat-icon>
-              <span class="tile-name">{{tile.name}}</span>
+              <mat-icon [appTextColor]="tile.color">{{ getIconForChart(tile) }}</mat-icon>
+              <span class="tile-name">{{ tile.name }}</span>
               <span class="tile-size-badge" [class]="tile.size">
-                {{getTileSizeLabel(tile.size || 'standard')}}
+                {{ getTileSizeLabel(tile.size || 'standard') }}
               </span>
             </div>
             <mat-icon class="selection-icon">
-              {{isTileSelected(tile) ? 'check_circle' : 'radio_button_unchecked'}}
+              {{ isTileSelected(tile) ? 'check_circle' : 'radio_button_unchecked' }}
             </mat-icon>
           </div>
         </mat-list-item>
       </mat-list>
     </div>
   </mat-dialog-content>
-  
+
   <mat-dialog-actions align="end">
     <button mat-button color="warn" (click)="cancelDialog()">Cancel</button>
-    <button mat-raised-button 
-            color="primary" 
-            [disabled]="selectedTilesToRemove.size === 0"
-            (click)="confirmSelection()">
-      Remove & Add New Tile
-    </button>
+    <button mat-raised-button color="primary" [disabled]="selectedTilesToRemove.size === 0" (click)="confirmSelection()">Remove & Add New Tile</button>
   </mat-dialog-actions>
 </div>

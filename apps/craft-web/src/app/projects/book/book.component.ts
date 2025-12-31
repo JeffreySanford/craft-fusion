@@ -25,7 +25,7 @@ export interface Document {
   selector: 'app-book',
   templateUrl: './book.component.html',
   styleUrls: ['./book.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class BookComponent implements OnInit, AfterViewInit {
   @ViewChild('sidebar', { static: true }) sidebar!: ElementRef;
@@ -36,9 +36,11 @@ export class BookComponent implements OnInit, AfterViewInit {
   isDarkTheme = false; // Set light theme as default
   selectedDocument: Document | undefined = undefined;
   @HostBinding('class.light-theme') isLightTheme: boolean = !this.isDarkTheme;
-  @HostBinding('class.dark-theme') get isDarkThemeClass() { return this.isDarkTheme; }
+  @HostBinding('class.dark-theme') get isDarkThemeClass() {
+    return this.isDarkTheme;
+  }
   @HostBinding('style.--book-font-family') fontFamily: string = "'IBM Plex Serif', serif";
-  @HostBinding('style.--book-font-size') fontSize: string = "1.25em";
+  @HostBinding('style.--book-font-size') fontSize: string = '1.25em';
 
   editorData = '<p>Initial content</p>';
 
@@ -50,21 +52,9 @@ export class BookComponent implements OnInit, AfterViewInit {
   selectedFont = 'IBM Plex Serif';
   selectedFontSize = '1.25em';
 
-  availableFonts = [
-    'Lora',
-    'IBM Plex Serif',
-    'Libre Baskerville',
-    'EB Garamond',
-    'Crimson Pro'
-  ];
+  availableFonts = ['Lora', 'IBM Plex Serif', 'Libre Baskerville', 'EB Garamond', 'Crimson Pro'];
 
-  availableFontSizes = [
-    '1em',
-    '1.25em',
-    '1.5em',
-    '1.75em',
-    '2em'
-  ];
+  availableFontSizes = ['1em', '1.25em', '1.5em', '1.75em', '2em'];
 
   init: Partial<EditorOptions> = {
     license_key: 'gpl',
@@ -73,7 +63,8 @@ export class BookComponent implements OnInit, AfterViewInit {
     selector: 'textarea',
     height: 636,
     menubar: false,
-    toolbar: 'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor | removeformat | link image media | table | code | toggleMarkdown | aiAssistant',
+    toolbar:
+      'undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor | removeformat | link image media | table | code | toggleMarkdown | aiAssistant',
     content_style: `
       :root {
         color-scheme: light dark;
@@ -104,14 +95,14 @@ export class BookComponent implements OnInit, AfterViewInit {
         tooltip: 'Toggle Markdown',
         onAction: () => {
           this.toggleMarkdownView();
-        }
+        },
       });
       editor.ui.registry.addButton('aiAssistant', {
         icon: 'robot',
         tooltip: 'AI Assistant',
         onAction: () => {
           this.invokeAIAssistant();
-        }
+        },
       });
       editor.ui.registry.addSidebar('mysidebar', {
         tooltip: 'My sidebar',
@@ -124,13 +115,13 @@ export class BookComponent implements OnInit, AfterViewInit {
             api.element().appendChild(this.sidebar.nativeElement);
           }
         },
-        onHide: (_api: any) => {}
+        onHide: (_api: any) => {},
       });
       editor.on('init', () => {
         // Apply font family to editor body
         editor.getBody().style.fontFamily = this.fontFamily;
       });
-    }
+    },
   };
   openedDocuments: Document[] = [];
   documentColors = [
@@ -141,7 +132,7 @@ export class BookComponent implements OnInit, AfterViewInit {
     { name: 'Lilac Love', color: '#D1C4E9', contrast: '#000000' },
     { name: 'Peach Punch', color: '#FFECB3', contrast: '#000000' },
     { name: 'Sky Wave', color: '#B2EBF2', contrast: '#000000' },
-    { name: 'Orange Zest', color: '#FFCCBC', contrast: '#000000' }
+    { name: 'Orange Zest', color: '#FFCCBC', contrast: '#000000' },
   ];
   isWinking: boolean = false;
   currentTitle: string = '';
@@ -164,7 +155,7 @@ export class BookComponent implements OnInit, AfterViewInit {
     private fileUploadService: FileUploadService,
     private cdr: ChangeDetectorRef,
     private http: HttpClient,
-    private logger: LoggerService
+    private logger: LoggerService,
   ) {
     console.log('BookComponent instantiated');
   }
@@ -182,42 +173,41 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.addHeaderIds();
-    this.updateImageVisibility(false)
+    this.updateImageVisibility(false);
   }
 
   loadFilesFromAssets(): void {
     this.logger.info('Loading document from API storage...');
-    const files = [
-      '/api/files/document/book/Chapter 1 - Enki.docx',
-      '/api/files/document/book/Chapter 2 - Enlil.docx',
-      '/api/files/document/book/Chapter 3 - The Cities.docx'
-    ];
+    const files = ['/api/files/document/book/Chapter 1 - Enki.docx', '/api/files/document/book/Chapter 2 - Enlil.docx', '/api/files/document/book/Chapter 3 - The Cities.docx'];
 
     files.forEach(fileUrl => {
-      this.http.get(fileUrl, {
-      responseType: 'arraybuffer',
-      headers: {
-        'Accept': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'Cache-Control': 'no-cache'
-      }
-      }).pipe(
-      catchError(error => {
-        this.logger.error(`Error loading document ${fileUrl}:`, error);
-        return throwError(() => error);
-      })
-      ).subscribe({
-      next: (data: ArrayBuffer) => {
-        if (!data || data.byteLength === 0) {
-        this.logger.error(`Received empty document data for ${fileUrl}`);
-        return;
-        }
-        this.logger.info(`Document ${fileUrl} loaded successfully, size:`, data.byteLength);
-        this.processDocument(data, fileUrl); // Pass the fileUrl
-      },
-      error: (error) => {
-        this.logger.error(`Failed to load document ${fileUrl}:`, error);
-      }
-      });
+      this.http
+        .get(fileUrl, {
+          responseType: 'arraybuffer',
+          headers: {
+            Accept: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'Cache-Control': 'no-cache',
+          },
+        })
+        .pipe(
+          catchError(error => {
+            this.logger.error(`Error loading document ${fileUrl}:`, error);
+            return throwError(() => error);
+          }),
+        )
+        .subscribe({
+          next: (data: ArrayBuffer) => {
+            if (!data || data.byteLength === 0) {
+              this.logger.error(`Received empty document data for ${fileUrl}`);
+              return;
+            }
+            this.logger.info(`Document ${fileUrl} loaded successfully, size:`, data.byteLength);
+            this.processDocument(data, fileUrl); // Pass the fileUrl
+          },
+          error: error => {
+            this.logger.error(`Failed to load document ${fileUrl}:`, error);
+          },
+        });
     });
   }
 
@@ -234,11 +224,12 @@ export class BookComponent implements OnInit, AfterViewInit {
     tinymce.init({
       selector: 'textarea',
       plugins: 'code lists advlist link image imagetools media table',
-      toolbar: 'code | undo redo | formatselect | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor | removeformat | link image media | table',
+      toolbar:
+        'code | undo redo | formatselect | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor | removeformat | link image media | table',
       height: this.getFullHeight(),
       setup: (editor: Editor) => {
-        editor.on('Change', (e) => this.onChange(e));
-      }
+        editor.on('Change', e => this.onChange(e));
+      },
     });
 
     window.setInterval(() => {
@@ -247,7 +238,7 @@ export class BookComponent implements OnInit, AfterViewInit {
 
     this.openedDocuments = this.userStateService.getOpenedDocuments().map(doc => ({
       ...doc,
-      contrast: this.documentColors.find(color => color.name === doc.color)?.contrast || '#000000'
+      contrast: this.documentColors.find(color => color.name === doc.color)?.contrast || '#000000',
     }));
     this.userStateService.getLoginDateTime();
     this.addHeaderIds();
@@ -269,7 +260,7 @@ export class BookComponent implements OnInit, AfterViewInit {
       this.chapters = this.updateChapters(this.editorData);
       this.openedDocuments = openedDocuments.map(doc => ({
         ...doc,
-        contrast: this.documentColors.find(color => color.name === doc.color)?.contrast || '#000000'
+        contrast: this.documentColors.find(color => color.name === doc.color)?.contrast || '#000000',
       }));
       this.addHeaderIds();
       this.assignDocumentColor(documentName);
@@ -359,13 +350,12 @@ export class BookComponent implements OnInit, AfterViewInit {
         content$ = this.pdfParseService.parsePdf(file);
       } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
         content$ = from(this.docParseService.parseDoc(file));
-
       } else if (file.type === 'text/plain') {
         content$ = from(file.text()).pipe(
           map(text => {
             const turndown = new TurndownService();
             return turndown.turndown(text);
-          })
+          }),
         );
       }
 
@@ -374,38 +364,44 @@ export class BookComponent implements OnInit, AfterViewInit {
           content$.then(content => {
             this.renderMarkdown(content);
 
-            this.fileUploadService.uploadFile(file).pipe(
-              catchError(err => {
-                this.logger.error('Failed to upload file', err);
-                return of(null);
-              })
-            ).subscribe(() => {
-              this.userStateService.setOpenedDocument(file.name);
-              this.openedDocuments = this.userStateService.getOpenedDocuments().map(doc => ({
-                ...doc,
-                contrast: this.documentColors.find(color => color.name === doc.color)?.contrast || '#000000'
-              }));
-              const last = this.openedDocuments[this.openedDocuments.length - 1];
-              if (last) {
-                this.onDocumentSelected(last.name);
-              }
-            });
+            this.fileUploadService
+              .uploadFile(file)
+              .pipe(
+                catchError(err => {
+                  this.logger.error('Failed to upload file', err);
+                  return of(null);
+                }),
+              )
+              .subscribe(() => {
+                this.userStateService.setOpenedDocument(file.name);
+                this.openedDocuments = this.userStateService.getOpenedDocuments().map(doc => ({
+                  ...doc,
+                  contrast: this.documentColors.find(color => color.name === doc.color)?.contrast || '#000000',
+                }));
+                const last = this.openedDocuments[this.openedDocuments.length - 1];
+                if (last) {
+                  this.onDocumentSelected(last.name);
+                }
+              });
           });
         } else {
           content$.subscribe(content => {
             this.renderMarkdown(content);
-            this.fileUploadService.uploadFile(file).pipe(
-              catchError(err => {
-                this.logger.error('Failed to upload file', err);
-                return of(null);
-              })
-            ).subscribe(() => {
-              this.userStateService.setOpenedDocument(file.name);
-              this.openedDocuments = this.userStateService.getOpenedDocuments().map(doc => ({
-                ...doc,
-                contrast: this.documentColors.find(color => color.name === doc.color)?.contrast || '#000000'
-              }));
-            });
+            this.fileUploadService
+              .uploadFile(file)
+              .pipe(
+                catchError(err => {
+                  this.logger.error('Failed to upload file', err);
+                  return of(null);
+                }),
+              )
+              .subscribe(() => {
+                this.userStateService.setOpenedDocument(file.name);
+                this.openedDocuments = this.userStateService.getOpenedDocuments().map(doc => ({
+                  ...doc,
+                  contrast: this.documentColors.find(color => color.name === doc.color)?.contrast || '#000000',
+                }));
+              });
           });
         }
       }
@@ -423,7 +419,7 @@ export class BookComponent implements OnInit, AfterViewInit {
       sanitize: true,
       smartLists: true,
       smartypants: true,
-      xhtml: false
+      xhtml: false,
     } as marked.MarkedOptions);
     const parsedMarkdown = marked.parse(markdown);
     if (parsedMarkdown instanceof Promise) {
@@ -443,7 +439,7 @@ export class BookComponent implements OnInit, AfterViewInit {
 
       // Re-apply styles to editor content
       const myths = this.editorComponent.editor.getBody().querySelectorAll('.myth-line');
-      myths.forEach((myth) => {
+      myths.forEach(myth => {
         const mythElement = myth as HTMLElement;
         mythElement.style.color = '#0f0';
         mythElement.style.fontStyle = 'italic';
@@ -604,28 +600,33 @@ export class BookComponent implements OnInit, AfterViewInit {
     const fileName = this.extractFileNameFromUrl(fileUrl);
 
     const file = new File([data], fileName, {
-      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     });
 
     // Use the existing docParseService to parse the DOCX file
-    this.docParseService.parseDoc(file).then(content => {
-      // Process myths before rendering
-      const processedContent = this.processMythContent(content);
-      this.renderMarkdown(processedContent);
-      const colorObj = this.documentColors.length ? (this.documentColors[this.openedDocuments.length % this.documentColors.length] || { color: '#000000', contrast: '#000000' }) : { color: '#000000', contrast: '#000000' };
-      const newDocument = {
-        name: file.name,
-        color: colorObj.color,
-        contrast: colorObj.contrast || '#000000'
-      };
+    this.docParseService
+      .parseDoc(file)
+      .then(content => {
+        // Process myths before rendering
+        const processedContent = this.processMythContent(content);
+        this.renderMarkdown(processedContent);
+        const colorObj = this.documentColors.length
+          ? this.documentColors[this.openedDocuments.length % this.documentColors.length] || { color: '#000000', contrast: '#000000' }
+          : { color: '#000000', contrast: '#000000' };
+        const newDocument = {
+          name: file.name,
+          color: colorObj.color,
+          contrast: colorObj.contrast || '#000000',
+        };
 
-      // Check if the document already exists in openedDocuments
-      if (!this.openedDocuments.some(doc => doc.name === file.name)) {
-        this.openedDocuments.push(newDocument);
-      }
-    }).catch(error => {
-      this.logger.error('Error processing document:', error);
-    });
+        // Check if the document already exists in openedDocuments
+        if (!this.openedDocuments.some(doc => doc.name === file.name)) {
+          this.openedDocuments.push(newDocument);
+        }
+      })
+      .catch(error => {
+        this.logger.error('Error processing document:', error);
+      });
 
     this.cdr.detectChanges();
   }
@@ -684,7 +685,7 @@ export class BookComponent implements OnInit, AfterViewInit {
       myths.forEach((myth: HTMLElement, index: number) => {
         this.logger.info(`Myth ${index + 1}:`, {
           verse: myth.getAttribute('data-verse'),
-          content: myth.textContent?.trim()
+          content: myth.textContent?.trim(),
         });
       });
     }
@@ -718,34 +719,39 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   loadDocumentContent(documentName: string): void {
     const fileUrl = `/api/files/document/book/${documentName}.docx`;
-    this.http.get(fileUrl, {
-      responseType: 'arraybuffer',
-      headers: {
-        'Accept': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'Cache-Control': 'no-cache'
-      }
-    }).pipe(
-      catchError(error => {
-        this.logger.error(`Error loading document ${fileUrl}:`, error);
-        return throwError(() => error);
+    this.http
+      .get(fileUrl, {
+        responseType: 'arraybuffer',
+        headers: {
+          Accept: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'Cache-Control': 'no-cache',
+        },
       })
-    ).subscribe({
-      next: (data: ArrayBuffer) => {
-        if (!data || data.byteLength === 0) {
-          this.logger.error(`Received empty document data for ${fileUrl}`);
-          return;
-        }
-        this.logger.info(`Document ${fileUrl} loaded successfully, size:`, data.byteLength);
-        this.docParseService.parseDoc(new File([data], documentName + '.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })).then(content => {
-          this.editorData = content;
-          this.renderMarkdown(content);
-          this.updateChapters(content);
-          this.cdr.detectChanges();
-        });
-      },
-      error: (error) => {
-        this.logger.error(`Failed to load document ${fileUrl}:`, error);
-      }
-    });
+      .pipe(
+        catchError(error => {
+          this.logger.error(`Error loading document ${fileUrl}:`, error);
+          return throwError(() => error);
+        }),
+      )
+      .subscribe({
+        next: (data: ArrayBuffer) => {
+          if (!data || data.byteLength === 0) {
+            this.logger.error(`Received empty document data for ${fileUrl}`);
+            return;
+          }
+          this.logger.info(`Document ${fileUrl} loaded successfully, size:`, data.byteLength);
+          this.docParseService
+            .parseDoc(new File([data], documentName + '.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }))
+            .then(content => {
+              this.editorData = content;
+              this.renderMarkdown(content);
+              this.updateChapters(content);
+              this.cdr.detectChanges();
+            });
+        },
+        error: error => {
+          this.logger.error(`Failed to load document ${fileUrl}:`, error);
+        },
+      });
   }
 }

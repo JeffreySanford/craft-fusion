@@ -37,10 +37,7 @@ import { RecordDetailComponent } from './record-detail/record-detail.component';
 import { tableRoutes } from './table.routes';
 
 @NgModule({
-  declarations: [
-    RecordListComponent,
-    RecordDetailComponent
-  ],
+  declarations: [RecordListComponent, RecordDetailComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -79,10 +76,10 @@ import { tableRoutes } from './table.routes';
     // SharedPipesModule // Commented out due to import error
   ],
   exports: [
-    RecordListComponent // Export if needed elsewhere
+    RecordListComponent, // Export if needed elsewhere
   ],
   providers: [
-    CurrencyPipe // Provides CurrencyPipe for use in the components
-  ]
+    CurrencyPipe, // Provides CurrencyPipe for use in the components
+  ],
 })
-export class TableModule { }
+export class TableModule {}

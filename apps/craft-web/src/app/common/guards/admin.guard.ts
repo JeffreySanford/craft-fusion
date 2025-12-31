@@ -6,36 +6,32 @@ import { AuthenticationService } from '../services/authentication.service';
 import { LoggerService } from '../services/logger.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AdminGuard implements CanActivate {
-
   constructor(
     private authService: AuthenticationService,
     private router: Router,
-    private logger: LoggerService
+    private logger: LoggerService,
   ) {}
 
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> {
+  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.authService.isAdmin$.pipe(
       take(1),
       map(isAdmin => {
         if (isAdmin) {
           this.logger.debug('Admin guard: User has admin permissions', {
-            url: state.url
+            url: state.url,
           });
           return true;
         } else {
           this.logger.warn('Admin guard: User does not have admin permissions', {
-            url: state.url
+            url: state.url,
           });
           this.router.navigate(['/home']);
           return false;
         }
-      })
+      }),
     );
   }
 }

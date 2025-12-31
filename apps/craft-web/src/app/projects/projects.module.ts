@@ -26,17 +26,9 @@ import { SpaceVideoModule } from './space-video/space-video.module';
     ChatModule,
     PeasantKitchenModule,
     TableModule,
-    SpaceVideoModule
+    SpaceVideoModule,
   ],
   declarations: [],
-  exports: [
-    MemorialTimelineModule,
-    DataVisualizationsModule,
-    BookModule,
-    ChatModule,
-    PeasantKitchenModule,
-    TableModule,
-    SpaceVideoModule
-  ]
+  exports: [MemorialTimelineModule, DataVisualizationsModule, BookModule, ChatModule, PeasantKitchenModule, TableModule, SpaceVideoModule],
 })
-export class ProjectsModule { }
+export class ProjectsModule {}

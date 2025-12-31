@@ -1,18 +1,50 @@
 .chart-container {
-  background: linear-gradient(135deg, rgba(23,33,43,0.8) 0%, rgba(18,26,46,0.95) 100%);
+  background: linear-gradient(135deg, rgba(23, 33, 43, 0.8) 0%, rgba(18, 26, 46, 0.95) 100%);
   border-radius: 12px;
   padding: 15px;
   margin-bottom: 15px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
   animation: slide-up 0.6s ease-out forwards;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
 
-  &::before { content:""; position:absolute; top:0; left:0; right:0; bottom:0; background: linear-gradient(45deg, rgba(255,255,255,0) 25%, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0) 50%); background-size:8px 8px; animation: moveGradient 30s linear infinite; opacity:0.5; pointer-events:none; }
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0) 25%, rgba(255, 255, 255, 0.02) 25%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 50%);
+    background-size: 8px 8px;
+    animation: moveGradient 30s linear infinite;
+    opacity: 0.5;
+    pointer-events: none;
+  }
 
-  canvas { width:100% !important; height:300px !important; max-height:300px; }
+  canvas {
+    width: 100% !important;
+    height: 300px !important;
+    max-height: 300px;
+  }
 }
 
-@keyframes slide-up { 0%{opacity:0;transform:translateY(20px);}100%{opacity:1;transform:translateY(0);} }
-@keyframes moveGradient { 0%{background-position:0 0;}100%{background-position:100% 100%;} }
+@keyframes slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes moveGradient {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}

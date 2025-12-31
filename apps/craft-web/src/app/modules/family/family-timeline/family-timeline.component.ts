@@ -4,11 +4,10 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-family-timeline',
   templateUrl: './family-timeline.component.html',
   styleUrls: ['./family-timeline.component.scss'],
-  standalone: false // Important: Following coding standards
+  standalone: false, // Important: Following coding standards
 })
 export class FamilyTimelineComponent implements OnInit {
-
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
     // Initialize family timeline data

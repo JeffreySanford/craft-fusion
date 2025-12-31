@@ -35,17 +35,15 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
         memory: { total: 0, free: 0, used: 0, usage: 0 },
         cpu: { loadAvg: [0, 0, 0], usage: 0 },
         process: { pid: 0, memoryUsage: {}, uptime: 0 },
-        timestamp: Date.now()
-      }
+        timestamp: Date.now(),
+      },
     };
     socketClient.emit('health', healthMetric);
   };
 }
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -55,14 +53,14 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
     RouterModule.forRoot(appRoutes, {
       scrollPositionRestoration: 'enabled', // Restore scroll position on navigation
       anchorScrolling: 'enabled', // Enable anchor scrolling
-      onSameUrlNavigation: 'reload' // Reload the component on same URL navigation
+      onSameUrlNavigation: 'reload', // Reload the component on same URL navigation
     }),
     MaterialModule,
     ComponentsModule, // Import ComponentsModule which exports ServerStatusComponent
     HeaderModule,
     SidebarModule,
     FooterModule,
-    NgxSpinnerModule // Add NgxSpinnerModule
+    NgxSpinnerModule, // Add NgxSpinnerModule
   ],
   providers: [
     AuthenticationService,
@@ -72,7 +70,7 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
         console.log('Router event:', event);
       });
       const logger = inject(LoggerService);
-      
+
       // Register the Router with the logger, return a hot observable that emits the router instance
       // This is a workaround to ensure the logger has access to the router instance
       // and can log navigation events
@@ -95,8 +93,8 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
     provideAppInitializer(() => {
       const socketClient = inject(SocketClientService);
       socketClientFactory(socketClient)();
-    })
+    }),
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

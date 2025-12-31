@@ -14,7 +14,9 @@ $primary-color-dark: #66b3ff; // Lighter vibrant blue
   color: $icon-color;
   position: relative;
   overflow: hidden;
-  transition: box-shadow 0.3s ease, color 0.3s ease;
+  transition:
+    box-shadow 0.3s ease,
+    color 0.3s ease;
 
   &::before {
     content: '';
@@ -43,15 +45,17 @@ $primary-color-dark: #66b3ff; // Lighter vibrant blue
 
 @keyframes sparkle {
   0% {
-    box-shadow: 0 0 5px rgba(0, 123, 255, 60%),
-    0 0 10px rgba(0, 123, 255, 40%),
-    0 0 15px rgba(0, 123, 255, 20%);
+    box-shadow:
+      0 0 5px rgba(0, 123, 255, 60%),
+      0 0 10px rgba(0, 123, 255, 40%),
+      0 0 15px rgba(0, 123, 255, 20%);
   }
   100% {
-    box-shadow: 0 0 10px rgba(0, 123, 255, 80%),
-    0 0 20px rgba(0, 123, 255, 60%),
-    0 0 30px rgba(0, 123, 255, 40%),
-    0 0 40px rgba(0, 123, 255, 20%);
+    box-shadow:
+      0 0 10px rgba(0, 123, 255, 80%),
+      0 0 20px rgba(0, 123, 255, 60%),
+      0 0 30px rgba(0, 123, 255, 40%),
+      0 0 40px rgba(0, 123, 255, 20%);
   }
 }
 

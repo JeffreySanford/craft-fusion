@@ -5,7 +5,7 @@ import { SettingsService } from '../settings.service';
   selector: 'app-model-selector',
   templateUrl: './model-selector.component.html',
   styleUrls: ['./model-selector.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class ModelSelectorComponent implements OnInit {
   models: { name: string; apiUrl: string }[] = [
@@ -13,7 +13,7 @@ export class ModelSelectorComponent implements OnInit {
     { name: 'Mistral', apiUrl: 'http://127.0.0.1:11435/api/generate' },
     { name: 'ChatGPT', apiUrl: 'http://127.0.0.1:11436/api/generate' },
     { name: 'Model 4', apiUrl: 'http://127.0.0.1:11437/api/generate' },
-    { name: 'Model 5', apiUrl: 'http://127.0.0.1:11438/api/generate' }
+    { name: 'Model 5', apiUrl: 'http://127.0.0.1:11438/api/generate' },
   ];
   selectedModel: string = '';
 

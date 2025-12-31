@@ -21,6 +21,7 @@
 @use 'md3-components' as *;
 @use 'material-overrides' as *;
 @use 'patriotic-overrides' as *;
+@use 'md3-mapping' as md3;
 
 // Import animations last
 @use 'animations' as *;
@@ -33,7 +34,31 @@ body {
   box-sizing: border-box;
 }
 
-html, body {
+/* SVG sparkline stop colors moved from inline styles to CSS classes */
+.sparkline .spark-stop-a {
+  stop-color: #3b82f6;
+  stop-opacity: 0.8;
+}
+.sparkline .spark-stop-b {
+  stop-color: #10b981;
+  stop-opacity: 0.8;
+}
+.sparkline .spark-stop-c {
+  stop-color: #ef4444;
+  stop-opacity: 0.8;
+}
+
+.sparkline-detailed .spark-stop-a {
+  stop-color: #3b82f6;
+  stop-opacity: 0.5;
+}
+.sparkline-detailed .spark-stop-b {
+  stop-color: rgba(59, 130, 246, 0.25);
+  stop-opacity: 0.25;
+}
+
+html,
+body {
   width: 100%;
   height: 98vh;
   min-height: 98vh;

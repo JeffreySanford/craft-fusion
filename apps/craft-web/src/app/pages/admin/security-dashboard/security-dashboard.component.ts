@@ -21,7 +21,7 @@ interface ApiEndpointLog {
   selector: 'app-security-dashboard',
   templateUrl: './security-dashboard.component.html',
   styleUrls: ['./security-dashboard.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class SecurityDashboardComponent implements OnInit, OnDestroy {
   endpointLogs: { [key: string]: ApiEndpointLog } = {};
@@ -29,7 +29,10 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   expandedEndpoint: string | null = null;
   timestampFormat = 'shortTime';
 
-  constructor(private apiLogger: ApiLoggerService, private logger: LoggerService) {}
+  constructor(
+    private apiLogger: ApiLoggerService,
+    private logger: LoggerService,
+  ) {}
 
   ngOnInit(): void {
     this.monitorApiEndpoints();
@@ -65,7 +68,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
             errorCount: 0,
             avgResponseTime: 0,
             firstSeen: new Date(),
-            timelineData: []
+            timelineData: [],
           };
         }
 
@@ -90,7 +93,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
           status: statusCode,
           requestBody: logEntry.request.body,
           responseBody: logEntry.response?.body,
-          headers: logEntry.request.headers
+          headers: logEntry.request.headers,
         });
 
         if (endpointLog.timelineData.length > 50) {
@@ -137,23 +140,35 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
 
   getEndpointMethodColor(method: string): string {
     switch ((method || '').toUpperCase()) {
-      case 'GET': return '#10b981';
-      case 'POST': return '#3b82f6';
-      case 'PUT': return '#f59e0b';
-      case 'DELETE': return '#ef4444';
-      case 'PATCH': return '#8b5cf6';
-      default: return '#6b7280';
+      case 'GET':
+        return '#10b981';
+      case 'POST':
+        return '#3b82f6';
+      case 'PUT':
+        return '#f59e0b';
+      case 'DELETE':
+        return '#ef4444';
+      case 'PATCH':
+        return '#8b5cf6';
+      default:
+        return '#6b7280';
     }
   }
 
   getEndpointMethodIcon(method: string): string {
     switch ((method || '').toUpperCase()) {
-      case 'GET': return 'download';
-      case 'POST': return 'add_circle';
-      case 'PUT': return 'update';
-      case 'DELETE': return 'delete';
-      case 'PATCH': return 'edit';
-      default: return 'api';
+      case 'GET':
+        return 'download';
+      case 'POST':
+        return 'add_circle';
+      case 'PUT':
+        return 'update';
+      case 'DELETE':
+        return 'delete';
+      case 'PATCH':
+        return 'edit';
+      default:
+        return 'api';
     }
   }
 
@@ -187,63 +202,104 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
     const entry = this.endpointLogs[endpointKey];
     if (!entry) return { status: 0, requestBody: null, responseBody: null, headers: null, timelineData: [] };
     const timelineData = entry.timelineData || [];
-    const last = timelineData.length > 0 ? timelineData[timelineData.length - 1] : {} as any;
+    const last = timelineData.length > 0 ? timelineData[timelineData.length - 1] : ({} as any);
     return {
       status: last?.status ?? 0,
       requestBody: last?.requestBody ?? null,
       responseBody: last?.responseBody ?? null,
       headers: last?.headers ?? null,
-      timelineData
+      timelineData,
     };
   }
 
   getEndpointLog(endpointKey: string): ApiEndpointLog {
-    return this.endpointLogs[endpointKey] || {
-      path: '', method: '', lastContacted: new Date(0), lastPing: new Date(0), status: 'inactive', hitCount: 0, successCount: 0, errorCount: 0, avgResponseTime: 0, firstSeen: new Date(0), timelineData: []
-    };
+    return (
+      this.endpointLogs[endpointKey] || {
+        path: '',
+        method: '',
+        lastContacted: new Date(0),
+        lastPing: new Date(0),
+        status: 'inactive',
+        hitCount: 0,
+        successCount: 0,
+        errorCount: 0,
+        avgResponseTime: 0,
+        firstSeen: new Date(0),
+        timelineData: [],
+      }
+    );
   }
 
   getFormattedHeaders(headers: unknown): string {
     if (!headers) return 'No headers available';
-    try { return JSON.stringify(headers, null, 2); } catch { return 'Unable to format headers'; }
+    try {
+      return JSON.stringify(headers, null, 2);
+    } catch {
+      return 'Unable to format headers';
+    }
   }
 
   getFormattedJson(data: unknown): string {
     if (!data) return 'No data available';
-    try { return JSON.stringify(data, null, 2); } catch { return 'Unable to format data'; }
+    try {
+      return JSON.stringify(data, null, 2);
+    } catch {
+      return 'Unable to format data';
+    }
   }
 
   generateSparklineSVG(timelineData: { timestamp: Date; responseTime: number; status?: number }[]): string {
     if (!timelineData || timelineData.length < 2) return '';
-    const width = 100; const height = 30; const padding = 2; const availableWidth = width - (padding * 2); const availableHeight = height - (padding * 2);
-    const timeValues = timelineData.map(d => d.timestamp.getTime()); const responseValues = timelineData.map(d => d.responseTime);
-    const minTime = Math.min(...timeValues); const maxTime = Math.max(...timeValues); const minResponse = Math.min(...responseValues); const maxResponse = Math.max(...responseValues);
-    const points = timelineData.map(d => {
-      const x = padding + (availableWidth * (d.timestamp.getTime() - minTime) / (maxTime - minTime));
-      const y = height - padding - (availableHeight * (d.responseTime - minResponse) / (maxResponse - minResponse));
-      return `${x},${y}`;
-    }).join(' ');
+    const width = 100;
+    const height = 30;
+    const padding = 2;
+    const availableWidth = width - padding * 2;
+    const availableHeight = height - padding * 2;
+    const timeValues = timelineData.map(d => d.timestamp.getTime());
+    const responseValues = timelineData.map(d => d.responseTime);
+    const minTime = Math.min(...timeValues);
+    const maxTime = Math.max(...timeValues);
+    const minResponse = Math.min(...responseValues);
+    const maxResponse = Math.max(...responseValues);
+    const points = timelineData
+      .map(d => {
+        const x = padding + (availableWidth * (d.timestamp.getTime() - minTime)) / (maxTime - minTime);
+        const y = height - padding - (availableHeight * (d.responseTime - minResponse)) / (maxResponse - minResponse);
+        return `${x},${y}`;
+      })
+      .join(' ');
     return `\n      <svg width="${width}" height="${height}" class="sparkline">\n        <polyline fill="none" stroke="url(#sparklineGradient)" stroke-width="1.5" points="${points}" />\n      </svg>\n    `;
   }
 
   generateDetailedSparklineSVG(timelineData: { timestamp: Date; responseTime: number; status: number }[]): string {
     if (!timelineData || timelineData.length < 2) return this.generateEmptySparkline();
-    const width = 250; const height = 80; const padding = 5; const innerWidth = width - 2 * padding; const innerHeight = height - 2 * padding;
+    const width = 250;
+    const height = 80;
+    const padding = 5;
+    const innerWidth = width - 2 * padding;
+    const innerHeight = height - 2 * padding;
     const responseTimes = timelineData.map(data => data.responseTime);
-    const timeValues = timelineData.map(d => d.timestamp.getTime()); const minTime = Math.min(...timeValues); const maxTime = Math.max(...timeValues);
-    const minResponse = 0; const maxResponse = Math.max(...responseTimes) * 1.1;
-    const pathData = timelineData.map(d => {
-      const ts = d.timestamp instanceof Date ? d.timestamp : new Date(d.timestamp as any);
-      const x = padding + (innerWidth * (ts.getTime() - minTime) / (maxTime - minTime));
-      const y = height - padding - (innerHeight * (d.responseTime - minResponse) / (maxResponse - minResponse));
-      return `${x},${y}`;
-    }).join(' ');
+    const timeValues = timelineData.map(d => d.timestamp.getTime());
+    const minTime = Math.min(...timeValues);
+    const maxTime = Math.max(...timeValues);
+    const minResponse = 0;
+    const maxResponse = Math.max(...responseTimes) * 1.1;
+    const pathData = timelineData
+      .map(d => {
+        const ts = d.timestamp instanceof Date ? d.timestamp : new Date(d.timestamp as any);
+        const x = padding + (innerWidth * (ts.getTime() - minTime)) / (maxTime - minTime);
+        const y = height - padding - (innerHeight * (d.responseTime - minResponse)) / (maxResponse - minResponse);
+        return `${x},${y}`;
+      })
+      .join(' ');
     let dotsHtml = '';
     timelineData.forEach((d, _index) => {
-      const x = padding + (innerWidth * (d.timestamp.getTime() - minTime) / (maxTime - minTime));
-      const y = height - padding - (innerHeight * (d.responseTime - minResponse) / (maxResponse - minResponse));
+      const x = padding + (innerWidth * (d.timestamp.getTime() - minTime)) / (maxTime - minTime);
+      const y = height - padding - (innerHeight * (d.responseTime - minResponse)) / (maxResponse - minResponse);
       const statusNum = typeof d.status === 'number' ? d.status : Number(d.status);
-      let dotColor = '#10B981'; if (statusNum >= 400) dotColor = '#EF4444'; else if (statusNum >= 300) dotColor = '#F59E0B';
+      let dotColor = '#10B981';
+      if (statusNum >= 400) dotColor = '#EF4444';
+      else if (statusNum >= 300) dotColor = '#F59E0B';
       dotsHtml += `<circle cx="${x}" cy="${y}" r="3" fill="${dotColor}" stroke="rgba(255,255,255,0.3)" stroke-width="1"></circle>`;
     });
     const areaData = pathData + ` L ${padding + innerWidth},${height - padding} L ${padding},${height - padding} Z`;
@@ -252,7 +308,8 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   }
 
   private generateEmptySparkline(): string {
-    const width = 250; const height = 80;
-    return `\n      <svg width="${width}" height="${height}" class="sparkline-detailed empty" xmlns="http://www.w3.org/2000/svg">\n        <text x="${width/2}" y="${height/2}" text-anchor="middle" fill="#9CA3AF" font-size="12">No data available</text>\n      </svg>\n    `;
+    const width = 250;
+    const height = 80;
+    return `\n      <svg width="${width}" height="${height}" class="sparkline-detailed empty" xmlns="http://www.w3.org/2000/svg">\n        <text x="${width / 2}" y="${height / 2}" text-anchor="middle" fill="#9CA3AF" font-size="12">No data available</text>\n      </svg>\n    `;
   }
 }

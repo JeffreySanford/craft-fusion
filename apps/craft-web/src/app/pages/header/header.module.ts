@@ -13,8 +13,8 @@ import { MatButtonModule } from '@angular/material/button'; // Import MatButtonM
     MatCardModule,
     MatIconModule,
     MatMenuModule, // Add MatMenuModule here
-    MatButtonModule // Add MatButtonModule for mat-icon-button
+    MatButtonModule, // Add MatButtonModule for mat-icon-button
   ],
-  exports: [HeaderComponent]
+  exports: [HeaderComponent],
 })
 export class HeaderModule {}

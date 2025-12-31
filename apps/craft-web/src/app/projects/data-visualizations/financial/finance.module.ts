@@ -5,16 +5,8 @@ import { FinanceComponent } from './finance.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
-  declarations: [
-    FinanceComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatSlideToggleModule
-  ],
-  exports: [
-    FinanceComponent
-  ]
+  declarations: [FinanceComponent],
+  imports: [CommonModule, FormsModule, MatSlideToggleModule],
+  exports: [FinanceComponent],
 })
-export class FinanceModule { }
+export class FinanceModule {}

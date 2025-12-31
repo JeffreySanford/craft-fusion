@@ -1,5 +1,6 @@
 /* Prevent horizontal overflow on html and body */
-html, body {
+html,
+body {
   width: 100%;
   height: 100vh;
   overflow-x: hidden;
@@ -47,7 +48,9 @@ app-header {
   height: 75% !important;
   max-height: 75vh !important;
   box-sizing: border-box;
-  transition: flex-basis 0.3s, width 0.3s;
+  transition:
+    flex-basis 0.3s,
+    width 0.3s;
 }
 
 .sidebar.collapsed {
@@ -61,7 +64,8 @@ app-header {
 }
 
 /* Main-stage: fills remaining space, full height of layout-container */
-.main-stage, .router-content-wrapper {
+.main-stage,
+.router-content-wrapper {
   flex: 1 1 0;
   min-width: 0;
   height: 100%;
@@ -71,7 +75,9 @@ app-header {
   overflow-y: auto;
   background: transparent;
   box-sizing: border-box;
-  transition: flex-basis 0.3s, width 0.3s;
+  transition:
+    flex-basis 0.3s,
+    width 0.3s;
 }
 
 .main-stage.sidebar-collapsed {
