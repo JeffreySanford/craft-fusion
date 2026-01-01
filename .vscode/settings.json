@@ -13,6 +13,12 @@
     "apps/craft-web/src/assets/shapefiles": true, // Optionally exclude large assets if not actively editing them
     "apps/training/models": true, // Optionally exclude generated models
     "apps/training/training_data": true // Optionally exclude large training data
+    ,
+    // Ignore temporary and playwright report folders in Explorer
+    "**/tmp": true,
+    "**/tmp/**": true,
+    "**/playwright-report": true,
+    "**/playwright-report/**": true
   },
   // Exclude files/folders from search results
   "search.exclude": {
@@ -23,7 +29,10 @@
     "**/.nx/cache": true,
     "apps/craft-web/src/assets/shapefiles": true,
     "apps/training/models": true,
-    "apps/training/training_data": true
+    "apps/training/training_data": true,
+    // Exclude tmp and playwright report from search
+    "**/tmp/**": true,
+    "**/playwright-report/**": true
   },
   // Exclude files/folders from the file watcher (reduces CPU/memory usage)
   "files.watcherExclude": {
@@ -34,7 +43,15 @@
     "**/dist/**": true,
     "apps/craft-web/src/assets/shapefiles/**": true,
     "apps/training/models/**": true,
-    "apps/training/training_data/**": true
+    "apps/training/training_data/**": true,
+    // Reduce watcher noise for tmp and playwright output
+    "**/tmp/**": true,
+    "**/playwright-report/**": true
+  },
+  // Hide diagnostics from Problems for these generated folders
+  "problems.exclude": {
+    "**/tmp/**": true,
+    "**/playwright-report/**": true
   },
   "nxConsole.generateAiAgentRules": true,
   "angular.enable-strict-mode-prompt": false,
