@@ -14,11 +14,7 @@
     "apps/training/models": true, // Optionally exclude generated models
     "apps/training/training_data": true // Optionally exclude large training data
     ,
-    // Ignore temporary and playwright report folders in Explorer
-    "**/tmp": true,
-    "**/tmp/**": true,
-    "**/playwright-report": true,
-    "**/playwright-report/**": true
+    // Note: keep tmp and playwright-report visible/searchable; do not hide here
   },
   // Exclude files/folders from search results
   "search.exclude": {
@@ -30,9 +26,7 @@
     "apps/craft-web/src/assets/shapefiles": true,
     "apps/training/models": true,
     "apps/training/training_data": true,
-    // Exclude tmp and playwright report from search
-    "**/tmp/**": true,
-    "**/playwright-report/**": true
+    // Note: keep tmp and playwright-report searchable; do not exclude here
   },
   // Exclude files/folders from the file watcher (reduces CPU/memory usage)
   "files.watcherExclude": {
