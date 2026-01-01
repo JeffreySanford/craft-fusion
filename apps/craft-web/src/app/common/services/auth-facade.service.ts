@@ -14,7 +14,6 @@ export class AuthFacadeService {
     private authzService: AuthorizationService,
   ) {}
 
-  // Pass through core authentication observables
   public get isLoggedIn$(): Observable<boolean> {
     return this.authService.isLoggedIn$;
   }
@@ -27,7 +26,6 @@ export class AuthFacadeService {
     return this.authService.currentUser$;
   }
 
-  // Combined permissions and authentication methods
   public hasPermission(permission: string): Observable<boolean> {
     return this.authzService.hasPermission(permission);
   }
@@ -41,12 +39,11 @@ export class AuthFacadeService {
   }
 
   public logout(): void {
-    // Clear auth permissions cache when logging out
+
     this.authzService.clearPermissionsCache();
     this.authService.logout();
   }
 
-  // Combined permission + authentication check
   public canAccessWithPermission(permission: string): Observable<boolean> {
     return combineLatest([this.authService.isLoggedIn$, this.authzService.hasPermission(permission)]).pipe(map(([isLoggedIn, hasPermission]) => isLoggedIn && hasPermission));
   }

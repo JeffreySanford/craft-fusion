@@ -1,14 +1,10 @@
-// Modern accessibility styles to replace deprecated -ms-high-contrast
-
-// Use only forced-colors media queries for high contrast mode
 @media (forced-colors: active) {
-  // Enhanced focus indicators for better visibility
+
   :focus {
     outline: 2px solid canvastext;
-    outline-offset: 2px;
+    outline-offset: 0.125em;
   }
 
-  // Apply high contrast styles to buttons and interactive elements
   button,
   .mat-button,
   .mat-raised-button,
@@ -24,7 +20,6 @@
     }
   }
 
-  // Table specific styles that were triggering warnings
   table,
   .flex-row,
   .flex-header-cell,
@@ -33,11 +28,10 @@
 
     &:focus {
       outline: 2px solid canvastext;
-      outline-offset: 1px;
+      outline-offset: 0.0625em;
     }
   }
 
-  // Form controls
   input,
   textarea,
   select,
@@ -46,7 +40,6 @@
     outline-color: canvastext;
   }
 
-  // Icons need proper contrast
   .mat-icon {
     forced-color-adjust: auto;
   }

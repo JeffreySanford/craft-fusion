@@ -24,9 +24,6 @@ export class GatewayService {
     this.logger.registerService('GatewayService');
   }
 
-  /**
-   * Makes an HTTP request with standardized error handling, retries and timeouts
-   */
   public request<T>(
     method: string,
     endpoint: string,
@@ -40,16 +37,14 @@ export class GatewayService {
       isAuthRequest?: boolean;
     } = {},
   ): Observable<T> {
-    // Configure request options
+
     const reqTimeout = options.timeout || this.BASE_TIMEOUT;
     const maxRetries = options.retries || this.MAX_RETRIES;
     const isAuthRequest = options.isAuthRequest || false;
 
-    // Prepare URL and tracking ID
     const url = this.getFullApiUrl(endpoint);
     const trackingId = this.generateRequestId();
 
-    // Log request start
     this.logger.debug(`${method} request initiated`, {
       endpoint,
       timeout: reqTimeout,
@@ -58,7 +53,6 @@ export class GatewayService {
       isAuthRequest,
     });
 
-    // Make the request with the appropriate method
     let request: Observable<T>;
 
     switch (method.toUpperCase()) {
@@ -79,7 +73,6 @@ export class GatewayService {
         return throwError(() => new Error(`Unsupported HTTP method: ${method}`));
     }
 
-    // Apply standard behaviors to all requests
     return request.pipe(
       timeout(reqTimeout),
       retryWhen(errors =>
@@ -87,12 +80,10 @@ export class GatewayService {
           concatMap((error: HttpErrorResponse, index) => {
             const retryAttempt = index + 1;
 
-            // Check for ECONNREFUSED or specific conditions indicating server startup
             const isServerStarting = error.status === 0 || (error.error && typeof error.error.message === 'string' && error.error.message.includes('ECONNREFUSED'));
 
-            // Enhanced retry logic for authentication requests during server startup
             if (isAuthRequest && isServerStarting && this.connectionAttempts < this.maxStartupRetries) {
-              // Track that we're in server startup mode
+
               if (!this.serverStarting) {
                 this.serverStarting = true;
                 this.notificationService.showInfo('Server appears to be starting up. Will retry connecting automatically.', 'Server Starting');
@@ -100,8 +91,7 @@ export class GatewayService {
 
               this.connectionAttempts++;
 
-              // Use exponential backoff with longer delays for server startup
-              const startupDelay = Math.min(Math.pow(2, this.connectionAttempts) * 1000, 30000); // Max 30 seconds
+              const startupDelay = Math.min(Math.pow(2, this.connectionAttempts) * 1000, 30000);                  
 
               this.logger.info(`Server seems to be starting up, retry in ${startupDelay / 1000}s...`, {
                 endpoint,
@@ -114,9 +104,8 @@ export class GatewayService {
               return timer(startupDelay);
             }
 
-            // Standard retry logic for normal connection issues
             if (retryAttempt <= maxRetries && (error.status === 0 || error.status === 504 || error.status === 502)) {
-              // Normal exponential backoff for regular retries
+
               const retryDelay = Math.pow(2, retryAttempt - 1) * 1000;
 
               this.logger.warn(`Connection issue, retrying in ${retryDelay}ms...`, {
@@ -127,7 +116,6 @@ export class GatewayService {
                 trackingId,
               });
 
-              // Show user notification on first retry
               if (retryAttempt === 1) {
                 this.notificationService.showWarning(`Server connection issue. Retrying... (${retryAttempt}/${maxRetries})`, 'Connection Issue');
               }
@@ -140,7 +128,7 @@ export class GatewayService {
         ),
       ),
       tap(response => {
-        // Reset connection tracking on success
+
         if (this.serverStarting) {
           this.serverStarting = false;
           this.connectionAttempts = 0;
@@ -156,11 +144,10 @@ export class GatewayService {
         return response;
       }),
       catchError(error => {
-        // Handle offline mode detection
+
         if (error.status === 0 || error.status === 504) {
           this.isOfflineMode = true;
 
-          // Check if we exceeded max startup retries
           if (this.serverStarting && this.connectionAttempts >= this.maxStartupRetries) {
             this.notificationService.showWarning(`Server appears to be unavailable after ${this.maxStartupRetries} attempts. Switching to offline mode.`, 'Offline Mode');
             this.serverStarting = false;
@@ -188,9 +175,6 @@ export class GatewayService {
     );
   }
 
-  /**
-   * Convenience methods for different HTTP verbs
-   */
   public get<T>(endpoint: string, options = {}): Observable<T> {
     return this.request<T>('GET', endpoint, options);
   }
@@ -199,44 +183,29 @@ export class GatewayService {
     return this.request<T>('POST', endpoint, { ...options, body });
   }
 
-  /**
-   * Special method for authentication requests with enhanced retry logic
-   */
   public authRequest<T>(method: string, endpoint: string, body?: unknown, options = {}): Observable<T> {
     return this.request<T>(method, endpoint, {
       ...options,
       body,
       isAuthRequest: true,
       retries: this.maxStartupRetries,
-      timeout: this.BASE_TIMEOUT * 2, // Double timeout for auth requests
+      timeout: this.BASE_TIMEOUT * 2,                                    
     });
   }
 
-  /**
-   * Get offline mode status
-   */
   public get isOffline(): boolean {
     return this.isOfflineMode;
   }
 
-  /**
-   * Check if server appears to be in startup process
-   */
   public get isServerStarting(): boolean {
     return this.serverStarting;
   }
 
-  /**
-   * Reset connection attempt tracking
-   */
   public resetConnectionTracking(): void {
     this.connectionAttempts = 0;
     this.serverStarting = false;
   }
 
-  /**
-   * Check if the backend is available
-   */
   public checkBackendHealth(): Observable<boolean> {
     return this.get<unknown>('health-check', { timeout: 3000 }).pipe(
       map(() => {
@@ -250,17 +219,11 @@ export class GatewayService {
     );
   }
 
-  /**
-   * Helper for full URL construction
-   */
   private getFullApiUrl(endpoint: string): string {
     endpoint = endpoint.replace(/^\/+/, '');
     return `/api/${endpoint}`;
   }
 
-  /**
-   * Generate a unique tracking ID for requests
-   */
   private generateRequestId(): string {
     return window.crypto?.randomUUID?.() || Math.random().toString(36).slice(2);
   }

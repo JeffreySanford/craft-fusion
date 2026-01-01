@@ -1,61 +1,70 @@
 .sidebar-container {
-  background-color: var(--md-sys-primary-container);
+  background: var(--sidebar-gradient, var(--md-sys-primary-container, #00152b));
+  border: 1px solid var(--md-sys-color-outline, #2f3f63);
   border-radius: 0.25em;
-  height: 60vh;
-  margin: 0 0 0 0.125em;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+  color: var(--md-sys-color-on-primary, var(--md-sys-on-primary, #fff));
+  height: auto;
+  margin: 0 auto;
+  max-width: 15.5em;
   padding: 1em;
-  position: relative; // Ensure relative positioning for absolute children
+  position: relative;                                                     
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
 
   &.collapsed {
     width: 7em;
   }
 
   .toggle {
-    align-items: center; // Vertically center
-    border: 1px solid var(--md-sys-secondary);
-    bottom: 1em; // Position at the bottom
-    color: var(--md-sys-secondary);
+    align-items: center;                     
+    background-color: rgba(0,0,0,0.25);
+    border: 1px solid var(--md-sys-color-tertiary, #ffcc01);
+    color: var(--md-sys-color-tertiary, #ffcc01);
     cursor: pointer;
-    display: flex; // Use flexbox to center the icon
-    font-size: 0.85em; // Increased font size
-    height: 2.25em; // Increased height
-    justify-content: center; // Horizontally center
-    left: 1em; // Position at the left
+    display: flex;                                  
+    font-size: 0.85em;                       
+    height: 2.25em;                    
+    justify-content: center;                       
     line-height: 1em;
-    min-width: unset; // Override default button styles
-    padding: 0.35em; // Increased padding
-    position: absolute;
+    min-width: unset;                                  
+    padding: 0.35em;
+    align-self: flex-start;
+    margin-top: 0.5em;
     transition: color 300ms ease;
-    width: 2.25em; // Increased width
+    width: 2.25em;                   
 
       .mat-icon {
-      align-items: center; // Vertically center the icon content
-      color: var(--md-sys-secondary); // Accent color
-      display: flex; // Use flexbox on the icon itself
-      font-size: 1.1em; // Reduced icon size
-      justify-content: center; // Horizontally center the icon content
-      margin: 0 0 0 -0.05em; // Remove any default margins on the icon and nudge left
+      align-items: center;                                      
+      color: var(--md-sys-color-tertiary, #ffcc01);                
+      display: flex;                                  
+      font-size: 1.1em;                     
+      justify-content: center;                                        
+      margin: 0 0 0 -0.05em;                                                         
     }
 
     &:hover {
-      color: var(--md-sys-tertiary);
+      background-color: rgba(255,255,255,0.12);
+      color: var(--md-sys-color-on-primary, #fff);
     }
   }
 }
 
   .menu-item {
   align-items: center;
-  background-color: var(--md-sys-color-primary) !important;
-  border: 1px solid var(--md-sys-color-primary);
+  background-color: var(--md-sys-color-primary, var(--md-sys-primary, #0033a0)) !important;
+  border: 1px solid var(--md-sys-color-primary, var(--md-sys-primary, #0033a0));
   border-radius: 0.25em;
-  color: var(--md-sys-on-primary);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+  color: var(--md-sys-color-on-primary, var(--md-sys-on-primary, #fff));
   display: flex;
   height: 3em;
   justify-content: space-between;
   line-height: 1.25em;
   margin: 0 0.25em;
-  outline: 0.1em solid var(--md-sys-color-primary);
+  outline: 0.1em solid var(--md-sys-color-primary, var(--md-sys-primary, #0033a0));
   text-align: right;
   width: 13em;
 
@@ -66,27 +75,28 @@
 
     &:hover {
     box-shadow:
-      0 0.375em 1.25em rgba(0,0,0,0.15),
-      0 0 0.9375em rgba(33,150,243,0.30);
-    outline-color: var(--md-sys-color-primary);
+      0 0.375em 1.25em rgba(0,0,0,0.2),
+      0 0 0.9375em rgba(255,204,1,0.25);
+    outline-color: var(--md-sys-color-tertiary, #ffcc01);
     transform: scale(1.1);
   }
 
     &.active {
     box-shadow:
-      0 0.375em 1.25em rgba(0,0,0,0.15),
-      0 0 0.9375em rgba(33,194,243,0.30);
-    color: var(--md-sys-secondary);
-    outline-color: rgba(33,236,243,0.8);
+      0 0.375em 1.25em rgba(0,0,0,0.25),
+      0 0 0.9375em rgba(255,204,1,0.35);
+    border-color: var(--md-sys-color-tertiary, #ffcc01);
+    color: var(--md-sys-color-on-primary, var(--md-sys-on-primary, #fff));
+    outline-color: var(--md-sys-color-tertiary, #ffcc01);
 
     .mat-icon,
     .menu-text {
-      color: var(--md-sys-secondary);
+      color: var(--md-sys-color-tertiary, #ffcc01);
     }
   }
 
     .mat-icon {
-    color: var(--md-sys-on-primary);
+    color: var(--md-sys-color-on-primary, var(--md-sys-on-primary, #fff));
     font-size: 2.25em;
     height: 1em;
     margin: 0.25em 0.25em 0.25em 0;
@@ -96,7 +106,7 @@
   }
 
     .menu-text {
-    color: var(--md-sys-on-primary);
+    color: var(--md-sys-color-on-primary, var(--md-sys-on-primary, #fff));
     flex-grow: 1;
     opacity: 1;
     text-align: right;
@@ -105,9 +115,9 @@
   }
 
   &[routerLink="/admin"] {
-    background-color: var(--md-sys-error) !important;
-    border: 1px solid var(--md-sys-error);
-    color: var(--md-sys-on-error, white);
+    background-color: var(--md-sys-color-error, #b3261e) !important;
+    border: 1px solid var(--md-sys-color-error, #b3261e);
+    color: var(--md-sys-color-on-error, #fff);
     outline: 0.1em solid rgba(var(--md-sys-error-rgb, 252,4,0), 0.3);
 
     &:hover {
@@ -119,25 +129,25 @@
     }
 
     &.active {
-      background-color: var(--md-sys-error) !important;
+      background-color: var(--md-sys-color-error, #b3261e) !important;
       box-shadow:
-        0 0.375em 1.25em rgba(0,0,0,0.15),
-        0 0 0.9375em rgba(33,194,243,0.30);
-      color: var(--md-sys-secondary);
-      outline-color: rgba(33,236,243,0.8);
+        0 0.375em 1.25em rgba(0,0,0,0.2),
+        0 0 0.9375em rgba(255,204,1,0.35);
+      color: var(--md-sys-color-on-error, #fff);
+      outline-color: var(--md-sys-color-tertiary, #ffcc01);
 
       .mat-icon,
       .menu-text {
-        color: var(--md-sys-secondary);
+        color: var(--md-sys-color-on-error, #fff);
       }
     }
   }
 }
 
   .admin-link {
-  background-color: var(--md-sys-error) !important;
-  border: 1px solid var(--md-sys-error);
-  color: var(--md-sys-on-error, white);
+  background-color: var(--md-sys-color-error, #b3261e) !important;
+  border: 1px solid var(--md-sys-color-error, #b3261e);
+  color: var(--md-sys-color-on-error, #fff);
   outline: 0.1em solid rgba(var(--md-sys-error-rgb,252,0,0), 0.3);
 
   &:hover {
@@ -149,16 +159,16 @@
   }
 
   &.active {
-    background-color: var(--md-sys-error) !important;
+    background-color: var(--md-sys-color-error, #b3261e) !important;
     box-shadow:
-      0 0.375em 1.25em rgba(0,0,0,0.15),
-      0 0 0.9375em rgba(33,194,243,0.30);
-    color: var(--md-sys-secondary);
-    outline-color: rgba(33,236,243,0.8);
+      0 0.375em 1.25em rgba(0,0,0,0.2),
+      0 0 0.9375em rgba(255,204,1,0.35);
+    color: var(--md-sys-color-on-error, #fff);
+    outline-color: var(--md-sys-color-tertiary, #ffcc01);
 
     .mat-icon,
     .menu-text {
-      color: var(--md-sys-secondary);
+      color: var(--md-sys-color-on-error, #fff);
     }
   }
 }
@@ -167,22 +177,22 @@
   background-color: var(--md-sys-surface);
   border-right: 1px solid var(--md-sys-surface-variant);
   color: var(--md-sys-on-surface);
-  padding: 15px;
-  width: 250px;
+  padding: 0.9375em;
+  width: 15.625em;
 
   .sidebar-header {
-    font-size: 18px;
+    font-size: 1.125em;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 0.625em;
   }
 
   .sidebar-content {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0.625em;
 
     .sidebar-item {
-      padding: 10px;
+      padding: 0.625em;
       transition: background-color 0.3s;
 
       &:hover {
@@ -198,12 +208,11 @@
 
     .sidebar-footer {
     color: var(--md-sys-on-surface-variant, #6c757d);
-    font-size: 14px;
+    font-size: 0.875em;
     margin-top: auto;
   }
 }
 
-// Add collapsed class styles
 :host ::ng-deep .collapsed {
   .menu-item.mdc-button {
     max-width: 7em;

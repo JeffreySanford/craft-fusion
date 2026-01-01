@@ -10,14 +10,13 @@
 
 .memorial-timeline-header {
   background-color: var(--md-sys-color-surface);
-  border-radius: 8px;
+  border-radius: 0.5em;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   margin-bottom: 1.5rem;
   overflow: hidden;
   padding: 1.5rem;
   position: relative;
 
-  /* Flag-inspired accent border */
   &::before {
     background:
       linear-gradient(
@@ -34,7 +33,7 @@
     left: 0;
     position: absolute;
     top: 0;
-    width: 4px;
+    width: 0.25em;
   }
 
   h1 {
@@ -52,6 +51,6 @@
   color: var(--md-sys-color-primary);
   display: flex;
   font-size: 1.2em;
-  height: 200px;
+  height: 12.5em;
   justify-content: center;
 }

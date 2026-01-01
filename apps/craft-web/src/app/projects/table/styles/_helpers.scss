@@ -25,23 +25,19 @@
   gap: 0.5em;
   justify-content: space-evenly;
 
-  /* ensure a visible left inset so controls don't sit flush to the card edge */
   padding: 0 0.5em 0 1rem;
 
-  // Reduce vertical spacing inside Material form fields so the control strip is shorter
   mat-form-field {
     height: auto;
     margin: 0;
   }
 
-  // Target common Material internals to remove top/bottom padding
   .mat-form-field-infix,
   .mat-form-field-wrapper {
     padding-bottom: 0;
     padding-top: 0;
   }
 
-  // Shrink inputs/select triggers slightly
   .selector,
   input.mat-input-element,
   .mat-select-trigger {

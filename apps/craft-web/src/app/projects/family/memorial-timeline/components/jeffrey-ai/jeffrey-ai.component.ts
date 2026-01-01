@@ -23,9 +23,9 @@ export class JeffreyAiComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Ensure initial load
+
     this.sub = this.timelineService.loadInitialEvents().subscribe(() => {
-      // generate narratives after initial load
+
       this.regenerateNarratives();
     });
   }

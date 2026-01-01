@@ -1,10 +1,6 @@
 @use "variables" as vars;
 @use "sass:map";
 
-/* stylelint-disable scss/at-else-empty-line-before, scss/at-if-closing-brace-space-after, scss/at-if-closing-brace-newline-after */
-
-// Breakpoint mixins for consistent responsive behavior
-// Usage: @include respond-to(md) { ... }
 @mixin respond-to($breakpoint) {
   $value: map.get(vars.$breakpoints, $breakpoint);
 
@@ -19,8 +15,6 @@
   }
 }
 
-// Mobile-first approach with max-width queries
-// Usage: @include respond-below(md) { ... }
 @mixin respond-below($breakpoint) {
   $value: map.get(vars.$breakpoints, $breakpoint);
 
@@ -35,8 +29,6 @@
   }
 }
 
-// Between two breakpoints
-// Usage: @include respond-between(sm, md) { ... }
 @mixin respond-between($min-breakpoint, $max-breakpoint) {
   $min-value: map.get(vars.$breakpoints, $min-breakpoint);
   $max-value: map.get(vars.$breakpoints, $max-breakpoint);
@@ -52,14 +44,12 @@
   }
 }
 
-// Orientation-based queries
 @mixin respond-to-orientation($orientation) {
   @media (orientation: $orientation) {
     @content;
   }
 }
 
-// Common responsive patterns
 @mixin responsive-container {
   margin-left: auto;
   margin-right: auto;
@@ -90,7 +80,6 @@
   }
 }
 
-// Responsive flexbox grid
 @mixin responsive-grid($columns: 12, $gap: 1em) {
   display: grid;
   gap: $gap;
@@ -105,39 +94,36 @@
   }
 }
 
-// Responsive typography scaling
 @mixin responsive-typography {
-  // Title scaling
+
   h1,
   .h1 {
-    font-size: 2em; // 32px at base 16px
+    font-size: 2em;                     
 
     @include respond-to(md) {
-      font-size: 2.5em; // 40px
+      font-size: 2.5em;        
     }
 
     @include respond-to(lg) {
-      font-size: 3em; // 48px
+      font-size: 3em;        
     }
   }
 
   h2,
   .h2 {
-    font-size: 1.5em; // 24px
+    font-size: 1.5em;        
 
     @include respond-to(md) {
-      font-size: 1.75em; // 28px
+      font-size: 1.75em;        
     }
 
     @include respond-to(lg) {
-      font-size: 2em; // 32px
+      font-size: 2em;        
     }
   }
 
-  // Continue for other headings...
 }
 
-// Responsive spacing
 @mixin responsive-spacing($property, $size-name) {
   $size: map.get(vars.$spacing, $size-name);
 
@@ -158,16 +144,15 @@
   }
 }
 
-// Responsive logo containers - Extracted from footer component
 @mixin responsive-logo-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 0.75em;
 
   img {
     flex: 0 0 auto;
-    height: 24px;
-    margin: 4px;
+    height: 1.5em;
+    margin: 0.25em;
     opacity: 0.7;
     transition: all 0.3s ease;
     width: auto;
@@ -182,28 +167,27 @@
     justify-content: center;
 
     img {
-      height: 20px;
-      margin: 3px;
+      height: 1.25em;
+      margin: 0.1875em;
     }
   }
 
   @include respond-below(sm) {
     img {
-      height: 18px;
-      margin: 2px;
+      height: 1.125em;
+      margin: 0.125em;
     }
   }
 }
 
-// Responsive cards layout
 @mixin responsive-card-layout {
   display: grid;
   gap: 1.5em;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(18.75em, 1fr));
 
   @include respond-below(md) {
     gap: 1em;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(15.625em, 1fr));
   }
 
   @include respond-below(sm) {
@@ -212,7 +196,6 @@
   }
 }
 
-// Responsive two-column layout
 @mixin responsive-two-column {
   display: grid;
   gap: 2em;
@@ -224,9 +207,8 @@
   }
 }
 
-// Responsive header/footer/sidebar alignment
 @mixin responsive-app-shell {
-  // Header positioning
+
   .header-card {
     left: 0.5em;
     position: fixed;
@@ -241,7 +223,6 @@
     }
   }
 
-  // Footer positioning
   .footer-container {
     bottom: 0.5em;
     left: 0.5em;
@@ -256,14 +237,13 @@
     }
   }
 
-  // Sidebar and main container positioning
   .layout-container {
     box-sizing: border-box;
     padding: 0 0.5em;
 
     .sidebar,
     .main-stage {
-      margin-bottom: 0.5em; /* Space above footer */
+      margin-bottom: 0.5em;                         
     }
 
     @include respond-below(sm) {

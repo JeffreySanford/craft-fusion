@@ -107,7 +107,7 @@ export class MaterialIconsComponent {
     'local_wildlife',
     'local_park',
     'local_travel',
-    // add more icons if needed
+
   ];
 
   getTileClass(index: number): string {

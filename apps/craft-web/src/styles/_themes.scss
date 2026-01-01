@@ -1,8 +1,5 @@
-// _themes.scss
-
 @use "sass:map";
 
-// Light Theme
 $light-theme: (
   primary: #fff,
   secondary: #f0f0f0,
@@ -11,7 +8,6 @@ $light-theme: (
   background: #fff,
 );
 
-// Dark Theme
 $dark-theme: (
   primary: #000,
   secondary: #333,
@@ -20,7 +16,6 @@ $dark-theme: (
   background: #000,
 );
 
-// Patriotic Theme
 $patriotic-theme: (
   primary: #fff,
   secondary: #f00,
@@ -29,7 +24,6 @@ $patriotic-theme: (
   background: #fff,
 );
 
-// Hoorah Levels Theme
 $hoorah-theme: (
   primary: #fc0,
   secondary: #f60,
@@ -38,7 +32,6 @@ $hoorah-theme: (
   background: #fff,
 );
 
-// Mixin to apply theme
 @mixin apply-theme($theme) {
   $primary: map.get($theme, primary);
   $secondary: map.get($theme, secondary);
@@ -64,7 +57,6 @@ $hoorah-theme: (
   }
 }
 
-// Usage example
 body.light-theme {
   @include apply-theme($light-theme);
 }

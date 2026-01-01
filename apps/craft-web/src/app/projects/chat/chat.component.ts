@@ -84,7 +84,7 @@ function greet(name: string) {
         const thinkingDuration = this.thinkingStartTime ? (Date.now() - this.thinkingStartTime) / 1000 : 0;
         this.snackBar.open(`Response received in ${thinkingDuration.toFixed(2)} seconds`, 'Close', { duration: 3000 });
 
-        const cleanedResponse = response.replace(/<\/?think>/g, ''); // Remove <think> and </think> tags
+        const cleanedResponse = response.replace(/<\/?think>/g, '');                                    
         this.messages.push({ text: cleanedResponse || 'No response', sender: 'bot' });
       },
       error => {
@@ -118,7 +118,7 @@ function greet(name: string) {
 
     let messageText = this.userInput;
     if (this.userInput.toLowerCase().includes('cite')) {
-      // Example citation data (replace with actual data from the AI)
+
       const author = 'Smith, J.';
       const year = 2023;
       const title = 'The Impact of AI on Society';
@@ -130,7 +130,7 @@ function greet(name: string) {
     const input = this.userInput;
     this.userInput = '';
     this.isThinking = true;
-    this.thinkingStartTime = Date.now(); // Record the start time
+    this.thinkingStartTime = Date.now();                         
 
     this.chatService.sendMessage(input);
     this.resolved = false;
@@ -138,8 +138,8 @@ function greet(name: string) {
 
   adjustTextareaHeight(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
-    textarea.style.height = 'auto'; // Reset height
-    textarea.style.height = `${textarea.scrollHeight}px`; // Adjust to content
+    textarea.style.height = 'auto';                
+    textarea.style.height = `${textarea.scrollHeight}px`;                     
   }
 
   scrollToBottom(): void {
@@ -156,7 +156,7 @@ function greet(name: string) {
   }
 
   editMessage(msg: any) {
-    // Implement edit functionality here
+
     this.snackBar.open('Edit functionality is not implemented yet', 'Close', { duration: 2000 });
   }
 

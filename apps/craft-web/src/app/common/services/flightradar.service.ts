@@ -36,8 +36,8 @@ export interface Flight {
   providedIn: 'root',
 })
 export class FlightRadarService {
-  private readonly baseUrl = environment.flightRadar24.endpoint; // FlightRadar24 API base URL
-  private readonly apiKey = environment.flightRadar24.apiKey; // FlightRadar24 API key
+  private readonly baseUrl = environment.flightRadar24.endpoint;                              
+  private readonly apiKey = environment.flightRadar24.apiKey;                         
 
   constructor(private http: HttpClient) {
     console.log('STEP 1: FlightRadarService initialized');
@@ -47,13 +47,6 @@ export class FlightRadarService {
     return new HttpHeaders().set('Accept', 'application/json').set('Accept-Version', 'v1').set('Authorization', `Bearer ${this.apiKey}`);
   }
 
-  /**
-   * Fetch flights in a geographic bounding box
-   * @param lat1 - Latitude of bottom-left corner
-   * @param lon1 - Longitude of bottom-left corner
-   * @param lat2 - Latitude of top-right corner
-   * @param lon2 - Longitude of top-right corner
-   */
   getFlightsByBoundingBox(lat1: number, lon1: number, lat2: number, lon2: number): Observable<Array<Flight>> {
     console.log('STEP 2: Fetching flights by bounding box', { lat1, lon1, lat2, lon2 });
     const coordinates: [number, number] = [lon1, lat1];
@@ -61,26 +54,12 @@ export class FlightRadarService {
     const headers = this.getHeaders();
     console.log('Firing flightradar24 with url: ', url);
 
-    // return this.http.get(url, { headers }).pipe(
-    //     catchError((error: HttpErrorResponse) => {
-    //         if (error.error instanceof ErrorEvent) {
-    //             // Client-side or network error
-    //             console.error('STEP 3: Client-side error:', error.error.message);
-    //         } else {
-    //             // Backend error
-    //             console.error(`STEP 3: Backend returned code ${error.status}, body was: ${error.error}`);
-    //         }
-    //         return throwError(() => new Error('Failed to fetch flights.'));
-    //     })
-    // );
-
-    // Mock data for 100 flights
     const mockFlights: Flight[] = Array.from({ length: 100 }, (_, index) => {
       const originLat = lat1 + (lat2 - lat1) * Math.random();
       const originLon = lon1 + (lon2 - lon1) * Math.random();
       const destLat = lat1 + (lat2 - lat1) * Math.random();
       const destLon = lon1 + (lon2 - lon1) * Math.random();
-      const progress = Math.random(); // Random progress between origin and destination
+      const progress = Math.random();                                                  
 
       return {
         id: `flight${index + 1}`,
@@ -113,7 +92,6 @@ export class FlightRadarService {
       };
     });
 
-    // Return a properly structured response with flights property
     return new Observable(observer => {
       observer.next(mockFlights);
       observer.complete();
@@ -126,7 +104,6 @@ export class FlightRadarService {
 
     const headers = this.getHeaders();
 
-    // Mock Flight object matching the Flight interface
     const mockFlight: Flight = {
       id: `flight-${flightId}`,
       aircraft: {

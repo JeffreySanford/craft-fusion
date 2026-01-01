@@ -29,7 +29,6 @@ import { ComponentsModule } from '../../common/components/components.module';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { RouterModule, Routes } from '@angular/router';
 
-// Define routes for the data visualizations module
 const dataVisualizationsRoutes: Routes = [
   {
     path: '',

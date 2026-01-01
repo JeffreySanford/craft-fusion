@@ -1,7 +1,6 @@
 @use "variables" as vars;
 @use "sass:map";
 
-// Text utilities
 .text-center {
   text-align: center;
 }
@@ -26,7 +25,6 @@
   text-transform: capitalize;
 }
 
-// Text colors
 .text-primary {
   color: var(--md-sys-color-primary);
 }
@@ -51,18 +49,16 @@
   color: var(--md-sys-color-error);
 }
 
-// Text styles
 .text-glow {
   text-shadow: 0 0 10px rgb(0 40 104 / 30%);
 }
 
 .text-patriotic {
   background: linear-gradient(90deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
-  background-clip: text; // Added standard property
+  background-clip: text;                           
   color: transparent;
 }
 
-// Background colors
 .bg-primary {
   background-color: var(--md-sys-color-primary);
 }
@@ -87,12 +83,10 @@
   background-color: var(--md-sys-color-error);
 }
 
-// Background styles
 .bg-patriotic-gradient {
   background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
 }
 
-// Border utilities
 .border {
   border: 1px solid var(--md-sys-color-outline-variant);
 }
@@ -110,26 +104,25 @@
 }
 
 .rounded-sm {
-  border-radius: 4px;
+  border-radius: 0.25em;
 }
 
 .rounded {
-  border-radius: 8px;
+  border-radius: 0.5em;
 }
 
 .rounded-md {
-  border-radius: 12px;
+  border-radius: 0.75em;
 }
 
 .rounded-lg {
-  border-radius: 16px;
+  border-radius: 1em;
 }
 
 .rounded-full {
-  border-radius: 9999px;
+  border-radius: 624.9375em;
 }
 
-// Shadow utilities
 .shadow-sm {
   box-shadow: var(--md-sys-elevation-level1);
 }
@@ -150,7 +143,6 @@
   box-shadow: var(--md-sys-elevation-level5);
 }
 
-// Display utilities
 .block {
   display: block;
 }
@@ -167,7 +159,6 @@
   display: none;
 }
 
-// Visibility utilities
 .visible {
   visibility: visible;
 }
@@ -176,7 +167,6 @@
   visibility: hidden;
 }
 
-// Opacity utilities
 .opacity-0 {
   opacity: 0;
 }
@@ -197,7 +187,6 @@
   opacity: 1;
 }
 
-// Overflow utilities
 .overflow-auto {
   overflow: auto;
 }
@@ -220,7 +209,6 @@
   white-space: nowrap;
 }
 
-// Cursor utilities
 .cursor-pointer {
   cursor: pointer;
 }
@@ -233,7 +221,6 @@
   cursor: not-allowed;
 }
 
-// Loading states
 .loading-overlay {
   align-items: center;
   background: rgb(255 255 255 / 80%);
@@ -249,7 +236,7 @@
 
 .patriotic-loading {
   background: var(--md-sys-color-surface-variant);
-  height: 4px;
+  height: 0.25em;
   overflow: hidden;
   width: 100%;
 
@@ -263,19 +250,18 @@
   }
 }
 
-// Special patriotic styles
 .patriotic-button {
   background: var(--md-sys-color-primary);
   border: none;
-  border-radius: 4px;
+  border-radius: 0.25em;
   color: var(--md-sys-color-on-primary);
   overflow: hidden;
-  padding: 12px 24px;
+  padding: 0.75em 1.5em;
   position: relative;
   transition: all 0.3s ease;
 
   &:hover {
-    /* Fallback for browsers that don't support color-mix */
+
     background: var(--md-sys-color-primary);
     box-shadow: var(--md-sys-elevation-level2);
     transform: translateY(-2px);
@@ -292,7 +278,7 @@
     background: var(--md-sys-color-secondary);
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
+
       background: var(--md-sys-color-secondary);
       @supports (background: color-mix(in srgb, var(--md-sys-color-secondary) 90%, white)) {
         background: color-mix(in srgb, var(--md-sys-color-secondary) 90%, white);
@@ -309,7 +295,7 @@
     &::before {
       background: var(--md-sys-color-on-primary);
       content: "";
-      height: 4px;
+      height: 0.25em;
       left: 0;
       position: absolute;
       right: 0;
@@ -336,7 +322,6 @@
   }
 }
 
-// Print styles
 @media print {
   .patriotic-gradient,
   .text-glow,
@@ -354,14 +339,13 @@
   }
 }
 
-// Toast notification styles
 .toast-container {
   .ngx-toastr {
     background-color: var(--md-sys-color-surface);
-    border-radius: 8px;
+    border-radius: 0.5em;
     box-shadow: var(--md-sys-elevation-level3);
     color: var(--md-sys-color-on-surface);
-    padding: 16px;
+    padding: 1em;
 
     &.toast-success {
       border-left: 4px solid #10b981;
@@ -384,22 +368,20 @@
 @mixin performance-chart($chartHeight: 5em, $borderRadius: 4px) {
   .performance-card {
     background-color: rgb(0 0 0 / 40%);
-    border: none !important; // Remove red border
+    border: none !important;                     
     border-radius: $borderRadius;
     height: $chartHeight;
     margin-top: 1em;
     position: relative;
     transition: all 0.3s ease;
-    width: 100%; // Make it full width
+    width: 100%;                      
 
     canvas {
       height: 100% !important;
       width: 100% !important;
 
-      // smoother line rendering, etc.
     }
 
-    // ...other optional shared styling...
   }
 }
 
@@ -436,7 +418,7 @@
     .agency-logos {
       align-items: center;
       background: rgb(0 0 0 / 20%);
-      border-radius: 8px;
+      border-radius: 0.5em;
       display: flex;
       flex-wrap: wrap;
       gap: 1.5em;
@@ -462,21 +444,21 @@
     align-items: center;
     background: rgb(0 0 0 / 40%);
     border: 1px solid rgba($base-color, 0.3);
-    border-radius: 12px;
+    border-radius: 0.75em;
     color: $base-color;
     display: flex;
     font-size: 0.85rem;
     overflow: hidden;
-    padding: 2px 8px;
+    padding: 0.125em 0.5em;
     position: relative;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     mat-icon {
       color: inherit;
-      font-size: 14px;
-      height: 14px;
-      margin-right: 4px;
-      width: 14px;
+      font-size: 0.875em;
+      height: 0.875em;
+      margin-right: 0.25em;
+      width: 0.875em;
     }
 
     &.green-text {
@@ -504,7 +486,7 @@
 
     .nav-item {
       color: $text-color;
-      padding: 8px 16px;
+      padding: 0.5em 1em;
       position: relative;
       text-decoration: none;
       transition: color 0.2s ease;
@@ -513,7 +495,7 @@
         background-color: currentcolor;
         bottom: 0;
         content: "";
-        height: 2px;
+        height: 0.125em;
         left: 0;
         position: absolute;
         transform: scaleX(0);
@@ -535,36 +517,36 @@
 
 @mixin data-overlay($bg-opacity: 0.6) {
   background-color: rgba(0, 0, 0, $bg-opacity);
-  border-radius: 4px;
-  padding: 5px;
+  border-radius: 0.25em;
+  padding: 0.3125em;
   position: absolute;
   z-index: 10;
 
   &.top-left {
-    left: 5px;
-    top: 5px;
+    left: 0.3125em;
+    top: 0.3125em;
   }
 
   &.top-right {
-    right: 5px;
-    top: 5px;
+    right: 0.3125em;
+    top: 0.3125em;
   }
 
   &.bottom-left {
-    bottom: 5px;
-    left: 5px;
+    bottom: 0.3125em;
+    left: 0.3125em;
   }
 
   &.bottom-right {
-    bottom: 5px;
-    right: 5px;
+    bottom: 0.3125em;
+    right: 0.3125em;
   }
 }
 
 @mixin header-container($height: 4em, $bottom-margin: 0.5em) {
   .header-card {
     align-items: center;
-    background: linear-gradient(to right, #002868 0%, /* Darker navy blue */ #2c4f9e 40%, /* Medium blue */ #bf0a30 80%, /* Brighter red */ #8c0624 100% /* Darker red */);
+    background: linear-gradient(to right, #002868 0%,                        #2c4f9e 40%,                   #bf0a30 80%,                    #8c0624 100%                 );
     border-radius: 0.25em;
     box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
     display: flex;
@@ -623,7 +605,6 @@
     animation: slideIn 0.2s ease-out;
     transform-origin: top right;
 
-    // Enforce styling on menu panel
     &.mat-mdc-menu-panel,
     .mat-mdc-menu-panel {
       background: linear-gradient(135deg, rgb(0 0 102 / 95%) 0%, rgb(139 0 0 / 95%) 50%, rgb(0 0 102 / 95%) 100%) !important;
@@ -637,19 +618,19 @@
 
     .mat-mdc-menu-content {
       background: transparent !important;
-      border-radius: calc($border-radius - 2px);
+      border-radius: calc($border-radius - 0.125em);
       box-shadow: inset 0 0 20px rgb(255 0 255 / 10%);
-      padding: 6px !important;
+      padding: 0.375em !important;
     }
 
     .mat-mdc-menu-item {
       background: rgb(0 0 153 / 30%) !important;
       border: 1px solid rgb(255 255 255 / 20%);
-      border-radius: 8px;
+      border-radius: 0.5em;
       color: white !important;
-      height: 40px !important;
-      line-height: 40px !important;
-      margin: 4px !important;
+      height: 2.5em !important;
+      line-height: 2.5em !important;
+      margin: 0.25em !important;
       overflow: hidden;
       position: relative;
       transition: all 0.3s ease;
@@ -679,17 +660,17 @@
 
       .mat-icon {
         color: #ffd700 !important;
-        margin-right: 12px;
+        margin-right: 0.75em;
         text-shadow: 0 0 10px rgb(255 0 0 / 80%);
         transition: all 0.3s ease;
       }
 
       span {
         background: linear-gradient(90deg, white, gold);
-        background-clip: text; // Added standard property
+        background-clip: text;                           
         color: white !important;
         font-weight: 500;
-        letter-spacing: 1px;
+        letter-spacing: 0.0625em;
         text-shadow: 0 0 8px rgb(255 0 0 / 60%);
       }
     }
@@ -720,7 +701,7 @@
       align-items: center;
       display: flex;
       height: calc($height - 0.5em);
-      justify-content: space-between; // Important: Space between left and right content
+      justify-content: space-between;                                                   
       padding: 0 1.5em;
       position: relative;
       width: 100%;
@@ -733,7 +714,7 @@
     }
 
     .header-right {
-      margin-left: auto; // Push to the right side
+      margin-left: auto;                          
     }
 
     .app-title {
@@ -743,7 +724,7 @@
       font-size: 1.6em;
       font-weight: bold;
       letter-spacing: 0.05em;
-      margin-left: 3em; // Space for star field
+      margin-left: 3em;                        
       text-shadow: 0 0 10px rgb(255 215 0 / 50%);
     }
 
@@ -789,7 +770,7 @@
 
     .star-field {
       background-color: #002868;
-      border-radius: 4px;
+      border-radius: 0.25em;
       box-shadow: 0 0 10px rgb(0 40 104 / 50%);
       height: 2em;
       left: 0.75em;
@@ -863,7 +844,6 @@
         color: #10b981;
       }
 
-      // Fix for mat-icon centering within circular border
       ::ng-deep .mat-icon {
         align-items: center;
         display: flex;
@@ -883,12 +863,12 @@
       color: white;
       display: flex;
       font-size: 0.65em;
-      height: 16px;
+      height: 1em;
       justify-content: center;
-      min-width: 16px;
+      min-width: 1em;
       position: absolute;
-      right: -3px;
-      top: -3px;
+      right: -0.1875em;
+      top: -0.1875em;
     }
   }
 }
@@ -896,7 +876,7 @@
 @mixin patriotic-banner($height: 0.3em, $animation-duration: 20s) {
   .patriotic-banner {
     animation: patrioticShimmer $animation-duration linear infinite;
-    background: repeating-linear-gradient(90deg, #bf0a30 0%, #bf0a30 10%, /* Red */ #fff 10%, #fff 20%, /* White */ #002868 20%, #002868 30% /* Blue */);
+    background: repeating-linear-gradient(90deg, #bf0a30 0%, #bf0a30 10%,           #fff 10%, #fff 20%,             #002868 20%, #002868 30%           );
     background-size: 300% 100%;
     box-shadow: 0 0 10px rgb(0 0 0 / 30%);
     height: $height;

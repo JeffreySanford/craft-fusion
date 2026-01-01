@@ -7,7 +7,7 @@ import { Company } from '@craft-fusion/craft-library';
 })
 export class EmploymentIncomePipe implements PipeTransform {
   transform(companies: Company[]): number {
-    // Ensure companies is an array before reducing
+
     if (!Array.isArray(companies)) {
       return 0;
     }

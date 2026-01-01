@@ -51,7 +51,7 @@ describe('FireAlertComponent', () => {
   ];
 
   beforeEach(async () => {
-    // Create proper mocks for the services using Jest
+
     mapboxService = {
       initializeMap: jest.fn().mockReturnValue(mockMap as unknown as mapboxgl.Map),
       addMarker: jest.fn(),
@@ -90,7 +90,6 @@ describe('FireAlertComponent', () => {
     component = fixture.componentInstance;
     component.cities = mockCities;
 
-    // Create mock DOM element for map container
     const mapContainer = document.createElement('div');
     mapContainer.id = 'map-1';
     document.body.appendChild(mapContainer);
@@ -119,13 +118,11 @@ describe('FireAlertComponent', () => {
   });
 
   it('should handle tab change correctly', () => {
-    // Setup
+
     mapboxService.initializeMap.mockClear();
 
-    // Execute
     component.onTabChange({ index: 1 });
 
-    // Verify
     expect(component.selectedCity).toBe(mockCities[1]);
     expect(mapboxService.initializeMap).toHaveBeenCalled();
   });

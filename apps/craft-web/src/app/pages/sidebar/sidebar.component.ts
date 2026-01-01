@@ -4,10 +4,11 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer } from '@angular/material/sidenav';
 import { MenuItem, MenuGroup } from './sidebar.types';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { SidebarStateService } from '../../common/services/sidebar-state.service';
 import { AdminStateService } from '../../common/services/admin-state.service';
 import { AuthenticationService } from '../../common/services/authentication.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sidebar',
@@ -33,9 +34,8 @@ export class SidebarComponent implements OnInit {
   @Input() isCollapsed = false;
   @ViewChild('drawer') drawer!: MatDrawer;
   isMobile = false;
-  isAdmin = false; // For demonstration, set or derive from user state
+  isAdmin = false;                                                    
 
-  // Observable for admin state - initialized in constructor
   isAdmin$!: Observable<boolean>;
 
   menuGroups: MenuGroup[] = [
@@ -63,9 +63,9 @@ export class SidebarComponent implements OnInit {
     private _el: ElementRef,
   ) {
     console.log('🔧 Sidebar: Constructor called');
-    // Initialize the admin observable in constructor
+
     this.isAdmin$ = this.authService.isAdmin$;
-    // Reference unused injected services to avoid 'declared but never read' TS errors
+
     void this._adminStateService;
     void this._renderer;
     void this._el;
@@ -77,13 +77,12 @@ export class SidebarComponent implements OnInit {
       this.isMobile = result.matches;
     });
 
-    // Subscribe to admin state changes for menu updates
     console.log('🔧 Sidebar: Setting up admin state subscription');
     this.isAdmin$.subscribe(isAdmin => {
       console.log('🔧 Sidebar: Admin state changed to:', isAdmin);
       this.isAdmin = isAdmin;
       if (isAdmin) {
-        // Check if the admin item already exists to avoid duplicates
+
         if (this.menuGroups?.[0]?.items) {
           const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
           if (adminItemIndex === -1) {
@@ -97,28 +96,27 @@ export class SidebarComponent implements OnInit {
           }
         }
       } else {
-        // Remove all admin items if they exist
+
         if (this.menuGroups?.[0]?.items) {
           console.log('🔧 Sidebar: Removing admin menu items');
           this.menuGroups[0].items = this.menuGroups[0].items.filter(item => !['Admin', 'Family', 'Chat', 'Book'].includes(item.label));
         }
       }
-      // Create new array reference to trigger change detection
+
       this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
       console.log('🔧 Sidebar: Menu items updated, length:', this.menuItems.length);
-      // Log specifically which admin-protected buttons are present for debugging
+
       const adminDebugLabels = ['Admin', 'Family', 'Chat'];
       const present = adminDebugLabels.filter(l => this.menuItems.some(m => m.label === l));
       console.log('🔧 Sidebar: Admin-protected buttons present:', present);
+      this.updateActiveState();
       this.cdr.detectChanges();
     });
 
-    this.router.events.subscribe(() => {
-      const activeRoute = this.router.url;
-      this.menuItems.forEach(item => {
-        item.active = item.routerLink === activeRoute;
-      });
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
+      this.updateActiveState();
     });
+    this.updateActiveState();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -143,9 +141,9 @@ export class SidebarComponent implements OnInit {
   }
 
   onMenuItemClick(item: MenuItem) {
-    // preserve existing behavior
+
     this.setActive(item);
-    // log clicks for admin-protected buttons
+
     if (['Admin', 'Family', 'Chat'].includes(item.label)) {
       console.log('🔧 Sidebar: Admin button clicked:', item.label);
     }
@@ -166,5 +164,19 @@ export class SidebarComponent implements OnInit {
 
   get toggleIcon(): string {
     return this.isCollapsed ? 'arrow_forward_ios' : 'menu_open';
+  }
+
+  private updateActiveState(): void {
+    const activeRoute = this.normalizeRoute(this.router.url);
+    this.menuItems.forEach(item => {
+      const itemRoute = this.normalizeRoute(item.routerLink);
+      item.active = activeRoute === itemRoute || (itemRoute !== '/' && activeRoute.startsWith(`${itemRoute}/`));
+    });
+    this.cdr.markForCheck();
+  }
+
+  private normalizeRoute(route: string): string {
+    const base = route.split(/[?#]/)[0] || '/';
+    return base.length > 1 && base.endsWith('/') ? base.slice(0, -1) : base;
   }
 }

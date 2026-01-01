@@ -2,7 +2,7 @@ import { Directive, ElementRef, OnInit, Renderer2 } from '@angular/core';
 
 @Directive({
   selector: '[appPop]',
-  standalone: false, // Ensure standalone is false
+  standalone: false,                              
 })
 export class PopDirective implements OnInit {
   constructor(

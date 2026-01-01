@@ -33,7 +33,7 @@ export class BookComponent implements OnInit, AfterViewInit {
   @ViewChild(EditorComponent) editorComponent!: EditorComponent;
   @ViewChild('markdownPreview', { static: false }) markdownPreview!: ElementRef;
 
-  isDarkTheme = false; // Set light theme as default
+  isDarkTheme = false;                              
   selectedDocument: Document | undefined = undefined;
   @HostBinding('class.light-theme') isLightTheme: boolean = !this.isDarkTheme;
   @HostBinding('class.dark-theme') get isDarkThemeClass() {
@@ -118,7 +118,7 @@ export class BookComponent implements OnInit, AfterViewInit {
         onHide: (_api: any) => {},
       });
       editor.on('init', () => {
-        // Apply font family to editor body
+
         editor.getBody().style.fontFamily = this.fontFamily;
       });
     },
@@ -140,7 +140,7 @@ export class BookComponent implements OnInit, AfterViewInit {
   isRSVPMode = false;
   isRSVPPlaying = false;
   rsvpWord = '';
-  rsvpSpeed = 300; // Default 300ms per word
+  rsvpSpeed = 300;                          
   words: string[] = [];
   wordIndex = 0;
   rsvpInterval: number | undefined;
@@ -164,8 +164,8 @@ export class BookComponent implements OnInit, AfterViewInit {
     debugger;
     this.init.readonly = this.isReadOnly;
     this.loadFilesFromAssets();
-    this.applyTheme(); // Apply the default theme
-    // Open sidebar by default
+    this.applyTheme();                           
+
     setTimeout(() => {
       this.sidenav?.open();
     }, 0);
@@ -202,7 +202,7 @@ export class BookComponent implements OnInit, AfterViewInit {
               return;
             }
             this.logger.info(`Document ${fileUrl} loaded successfully, size:`, data.byteLength);
-            this.processDocument(data, fileUrl); // Pass the fileUrl
+            this.processDocument(data, fileUrl);                    
           },
           error: error => {
             this.logger.error(`Failed to load document ${fileUrl}:`, error);
@@ -437,7 +437,6 @@ export class BookComponent implements OnInit, AfterViewInit {
       this.logger.info('Updating TinyMCE editor');
       this.editorComponent.editor.setContent(content);
 
-      // Re-apply styles to editor content
       const myths = this.editorComponent.editor.getBody().querySelectorAll('.myth-line');
       myths.forEach(myth => {
         const mythElement = myth as HTMLElement;
@@ -445,7 +444,7 @@ export class BookComponent implements OnInit, AfterViewInit {
         mythElement.style.fontStyle = 'italic';
         const verse = mythElement.getAttribute('data-verse');
         if (verse) {
-          mythElement.dataset['verse'] = verse; // Use bracket notation
+          mythElement.dataset['verse'] = verse;                        
         }
       });
     }
@@ -538,7 +537,7 @@ export class BookComponent implements OnInit, AfterViewInit {
 
   startRSVP() {
     const textContent = this.markdownPreview?.nativeElement?.innerText || '';
-    this.words = textContent.split(/\s+/); // Splitting into words
+    this.words = textContent.split(/\s+/);                        
     this.wordIndex = 0;
     this.isRSVPPlaying = true;
     this.runRSVP();
@@ -549,15 +548,15 @@ export class BookComponent implements OnInit, AfterViewInit {
       clearInterval(this.rsvpInterval);
       this.rsvpInterval = undefined;
     }
-    this.logger.info(`RSVP Speed: ${this.rsvpSpeed} WPM`); // Log the current speed
-    const interval = 600000 / Math.pow(this.rsvpSpeed, 1.5); // Exponential function for interval calculation
+    this.logger.info(`RSVP Speed: ${this.rsvpSpeed} WPM`);                         
+    const interval = 600000 / Math.pow(this.rsvpSpeed, 1.5);                                                 
     this.rsvpInterval = window.setInterval(() => {
       if (this.wordIndex < this.words.length) {
         this.rsvpWord = this.words[this.wordIndex++] || '';
       } else {
-        this.toggleRSVP(); // Auto-exit on completion
+        this.toggleRSVP();                           
       }
-    }, interval); // Use the calculated interval
+    }, interval);                               
   }
 
   togglePlayPause() {
@@ -596,18 +595,17 @@ export class BookComponent implements OnInit, AfterViewInit {
   }
 
   processDocument(data: ArrayBuffer, fileUrl: string): void {
-    // Extract file name from the URL
+
     const fileName = this.extractFileNameFromUrl(fileUrl);
 
     const file = new File([data], fileName, {
       type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     });
 
-    // Use the existing docParseService to parse the DOCX file
     this.docParseService
       .parseDoc(file)
       .then(content => {
-        // Process myths before rendering
+
         const processedContent = this.processMythContent(content);
         this.renderMarkdown(processedContent);
         const colorObj = this.documentColors.length
@@ -619,7 +617,6 @@ export class BookComponent implements OnInit, AfterViewInit {
           contrast: colorObj.contrast || '#000000',
         };
 
-        // Check if the document already exists in openedDocuments
         if (!this.openedDocuments.some(doc => doc.name === file.name)) {
           this.openedDocuments.push(newDocument);
         }
@@ -635,7 +632,7 @@ export class BookComponent implements OnInit, AfterViewInit {
     const parts = url.split('/');
     let filename = parts[parts.length - 1] || '';
     if (!filename) return '';
-    // Remove file extension
+
     if (filename.includes('.')) {
       filename = filename.split('.').slice(0, -1).join('.');
     }
@@ -649,14 +646,14 @@ export class BookComponent implements OnInit, AfterViewInit {
     let mythCount = 0;
 
     const processedLines = lines.map((line, index) => {
-      // Match both markdown-style and standard verse formats
+
       const mythRegex = /^\[(\d+(?:-\d+)?)\](?:\(([^\)]+)\))(.*)$|^(\d+(?:-\d+)?)\.\s*(.+)$/;
       const mythMatch = line.match(mythRegex);
 
       if (mythMatch) {
         mythCount++;
 
-        const verse = mythMatch[1] || mythMatch[4]; // Bracketed or standard verse
+        const verse = mythMatch[1] || mythMatch[4];                               
         const link = mythMatch[2];
         const content = (mythMatch[3] || mythMatch[5] || '').trim();
 
@@ -678,7 +675,6 @@ export class BookComponent implements OnInit, AfterViewInit {
     const result = processedLines.join('\n');
     this.logger.info(`\nProcessed ${mythCount} myths`);
 
-    // Update display
     if (this.markdownPreview) {
       const myths = this.markdownPreview.nativeElement.querySelectorAll('.myth-line');
       this.logger.info('Found myth sections:', myths.length);

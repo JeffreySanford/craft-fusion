@@ -34,9 +34,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   userDisplayName = '🔒 Guest';
   isLoggedIn = false;
 
-  // Reduce network polling
   private videoCheckInterval: number = 10000;
-  // Use ReturnType<typeof setTimeout> for cross-platform timer type
+
   private inactivityTimeout: ReturnType<typeof setTimeout> | null = null;
   private videoCheckSubscription: Subscription | null = null;
   private destroy$ = new Subject<void>();
@@ -51,15 +50,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private footerStateService: FooterStateService,
     private userStateService: UserStateService,
   ) {
-    // Replace direct console logs with logger calls
+
     this.logger.info('App component initialized', { appVersion: '1.0.0' });
     console.log('debug-router: AppComponent instantiated');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Handle changes to inputs if any
+
     if (changes['user']) {
-      // Replace any existing console.log with logger calls
+
       this.logger.debug('Application started', { timestamp: new Date().toISOString() });
 
       this.userTrackingService.getCurrentUser().subscribe(
@@ -89,24 +88,19 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.logger.info('App component initialized');
 
-    // Subscribe to footer state changes
     this.footerStateSubscription = this.footerStateService.expanded$.subscribe(expanded => {
       this.isFooterExpanded = expanded;
       console.log('Footer expanded state changed:', expanded);
 
-      // Force redraw of child components after footer state changes
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'));
       }, 100);
     });
 
-    // Subscribe to admin state changes
     this.authService.isAdmin$.subscribe(isAdmin => {
       this.adminStateService.setAdminStatus(isAdmin);
     });
 
-    // Console log for user interaction - debugging purposes
-    // Log only every 10 seconds at most to reduce spam
     let lastInteractionLog = 0;
     document.addEventListener('click', () => {
       const now = Date.now();
@@ -132,12 +126,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('debug-router: AppComponent ngAfterViewInit');
     this.logger.info('App component view initialized');
 
-    // Set a small timeout before handling video to prevent blocking the main thread
     setTimeout(() => {
       this.ensureVideoIsPlaying();
     }, 100);
 
-    // Set a maximum timeout for API connections with proper error handling
     this.setupConnectionTimeouts();
 
     this.addUserInteractionListener();
@@ -147,12 +139,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.logger.info('App component destroyed');
 
-    // Clean up all resources
     this.removeUserInteractionListener();
     this.stopVideoCheckPolling();
     this.cancelAllTimeouts();
 
-    // Log user activity summary on exit (guard unknown shape)
     const activitySummaryRaw = this.userActivityService.getActivitySummary();
     const activitySummary = (activitySummaryRaw as any) || { pageViews: 0, clicks: 0, sessionDuration: 0 };
     this.logger.info(
@@ -163,42 +153,36 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.footerStateSubscription.unsubscribe();
     }
 
-    // Clear any pending timeouts
     if (this.inactivityTimeout) {
       clearTimeout(this.inactivityTimeout);
       this.inactivityTimeout = null;
     }
 
-    // Complete the destroy$ subject to clean up subscriptions
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   setActive(item: any) {
     this.menuItems.forEach(menuItem => (menuItem.active = false));
-    // Guard before assigning
+
     if (item && typeof item === 'object') {
       (item as any).active = true;
     }
   }
 
-  // New helper method to handle connection timeouts
   private setupConnectionTimeouts(): void {
-    // Set global timeout for XHR requests
+
     this.destroy$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      // This will be called when component is destroyed
-      // Any active XHR should be canceled here
+
     });
   }
 
-  // New helper method to cancel all pending timeouts
   private cancelAllTimeouts(): void {
     if (this.inactivityTimeout) {
       clearTimeout(this.inactivityTimeout);
       this.inactivityTimeout = null;
     }
 
-    // Any other timeouts should be cleared here
     const pendingTimeouts = window.setTimeout(() => {}, 0);
     for (let i = 0; i < pendingTimeouts; i++) {
       window.clearTimeout(i);
@@ -208,15 +192,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private ensureVideoIsPlaying() {
     const video = document.getElementById('background-video') as HTMLVideoElement;
     if (!video) {
-      // If video element doesn't exist, stop polling and exit
+
       this.stopVideoCheckPolling();
       return;
     }
 
-    video.playbackRate = 0.5; // Slow down the video
+    video.playbackRate = 0.5;                       
 
     if (video.paused || video.ended) {
-      // Add a timeout to the play attempt to prevent blocking render
+
       setTimeout(() => {
         video
           .play()
@@ -225,12 +209,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             this.polling = false;
           })
           .catch(() => {
-            // Silent catch - errors are expected on some browsers/devices
-            // No need to log this error
+
           });
       }, 20);
     } else {
-      // Video is already playing
+
       if (this.polling) {
         this.stopVideoCheckPolling();
         this.polling = false;
@@ -258,15 +241,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   };
 
   private startVideoCheckPolling(): void {
-    // Clear any existing polling first
+
     this.stopVideoCheckPolling();
 
-    // Only set up polling if we're not already polling
     if (!this.videoCheckSubscription) {
       this.videoCheckSubscription = timer(0, this.videoCheckInterval)
         .pipe(
           takeUntil(this.destroy$),
-          // Add take(5) to ensure polling stops after 5 attempts if video still doesn't play
+
           take(5),
         )
         .subscribe(() => {
@@ -282,22 +264,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadInitialData(): void {
-    // Example of properly typed service call
-    // If you have an actual service that needs to be used, uncomment and modify:
-    /*
-    this.apiService.getData().subscribe({
-      next: (data: YourDataType) => {
-        // Process data
-        this.logger.info('Data loaded successfully', { count: data.length });
-      },
-      error: (error: Error) => {
-        // Handle error properly
-        this.logger.error('Failed to load data', { error: error.message });
-      }
-    });
-    */
 
-    // For now, just log a message to avoid the error
     this.logger.info('App component initialized');
   }
 

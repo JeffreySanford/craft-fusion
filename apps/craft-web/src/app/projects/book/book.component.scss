@@ -39,7 +39,7 @@ $vibrant-yellow: #fc0;
 }
 
 :root {
-  // Light theme colors
+
   --light-background: #f5f5f5;
   --light-text: #1e1e1e;
   --light-myth-bg: rgb(0 255 0 / 2%);
@@ -47,7 +47,6 @@ $vibrant-yellow: #fc0;
   --light-myth-text: #0c0;
   --light-myth-hover: #2f2;
 
-  // Dark theme colors
   --dark-background: #1e1e1e;
   --dark-text: #e0e0e0;
   --dark-myth-bg: rgb(0 255 0 / 5%);
@@ -71,7 +70,7 @@ $vibrant-yellow: #fc0;
     .toolbar {
       background: var(--book-light-toolbar);
       border-bottom: 1px solid var(--book-light-border);
-      color: var(--book-light-text); /* Add text color */
+      color: var(--book-light-text);                     
     }
 
     .markdown-preview {
@@ -125,7 +124,7 @@ $vibrant-yellow: #fc0;
     .toolbar {
       background: var(--book-dark-toolbar);
       border-bottom: 1px solid var(--book-dark-border);
-      color: var(--book-dark-text); /* Add text color */
+      color: var(--book-dark-text);                     
     }
 
     .markdown-preview {
@@ -192,7 +191,6 @@ $vibrant-yellow: #fc0;
   }
 }
 
-/* Utility helper to hide native file inputs without inline styles */
 .hidden-file-input {
   display: none !important;
 }
@@ -224,19 +222,19 @@ $vibrant-yellow: #fc0;
       }
 
       h1 {
-        color: #ff4081 !important; // Pink
+        color: #ff4081 !important;        
         font-size: 2.5em;
         text-shadow: 1px 1px 2px rgb(255 64 129 / 30%);
       }
 
       h2 {
-        color: #7c4dff !important; // Deep Purple
+        color: #7c4dff !important;               
         font-size: 2em;
         text-shadow: 1px 1px 2px rgb(124 77 255 / 30%);
       }
 
       h3 {
-        color: #00bcd4 !important; // Cyan
+        color: #00bcd4 !important;        
         font-size: 1.75em;
         font-weight: 400;
         letter-spacing: 0.0094em;
@@ -250,19 +248,19 @@ $vibrant-yellow: #fc0;
       }
 
       h4 {
-        color: #ffc107 !important; // Amber
+        color: #ffc107 !important;         
         font-size: 1.5em;
         text-shadow: 1px 1px 2px rgb(255 193 7 / 30%);
       }
 
       h5 {
-        color: #64ffda !important; // Teal Accent
+        color: #64ffda !important;               
         font-size: 1em;
         text-shadow: 1px 1px 2px rgb(100 255 218 / 30%);
       }
 
       h6 {
-        color: #ff5722 !important; // Deep Orange
+        color: #ff5722 !important;               
         font-size: 0.8em;
         text-shadow: 1px 1px 2px rgb(255 87 34 / 30%);
       }
@@ -277,7 +275,7 @@ $vibrant-yellow: #fc0;
       .etcsl-myth {
         background-color: rgb(0 255 0 / 5%);
         border: 1px solid $vibrant-green;
-        border-radius: 8px;
+        border-radius: 0.5em;
         margin: 2em 4em;
         padding: 2em;
         position: relative;
@@ -295,12 +293,11 @@ $vibrant-yellow: #fc0;
         }
 
         p {
-          color: #90ee90 !important; // Light green
+          color: #90ee90 !important;               
           font-family: var(--book-font-family) !important;
           margin-left: 2em;
           position: relative;
 
-          // Target paragraphs that start with numbers
           &[data-myth-line]::before {
             color: $vibrant-green;
             content: attr(data-myth-line);
@@ -311,7 +308,6 @@ $vibrant-yellow: #fc0;
         }
       }
 
-      // Simple myth styling
       [data-myth-line] {
         color: $vibrant-green !important;
         font-style: italic;
@@ -319,7 +315,7 @@ $vibrant-yellow: #fc0;
         position: relative;
 
         &::before {
-          color: color.adjust($vibrant-green, $lightness: -20%); // Line 191: Fixed
+          color: color.adjust($vibrant-green, $lightness: -20%);                   
           content: attr(data-myth-line);
           font-style: normal;
           font-weight: bold;
@@ -343,7 +339,7 @@ $vibrant-yellow: #fc0;
           margin: 0;
 
           &[data-myth-line]::before {
-            color: color.adjust($vibrant-green, $lightness: -20%); // Line 216: Fixed - removed extra parameters
+            color: color.adjust($vibrant-green, $lightness: -20%);                                              
             content: attr(data-myth-line);
             font-style: normal;
             font-weight: bold;
@@ -371,7 +367,7 @@ $vibrant-yellow: #fc0;
           position: relative;
 
           &[data-verse]::before {
-            color: color.adjust($vibrant-green, $lightness: -20%); // Line 237: Fixed - removed extra parameters
+            color: color.adjust($vibrant-green, $lightness: -20%);                                              
             content: attr(data-verse);
             font-style: normal;
             font-weight: bold;
@@ -408,7 +404,7 @@ $vibrant-yellow: #fc0;
       }
 
       p.myth-line {
-        color: #b2ff59 !important; // Light Green Accent
+        color: #b2ff59 !important;                      
         font-style: italic;
         line-height: 1.6;
         margin: 1em 0;
@@ -416,7 +412,7 @@ $vibrant-yellow: #fc0;
         position: relative;
 
         .myth-number {
-          color: color.adjust($vibrant-green, $lightness: -20%); // Line 257: Fixed - removed extra parameters
+          color: color.adjust($vibrant-green, $lightness: -20%);                                              
           font-style: normal;
           font-weight: bold;
           left: 0;
@@ -529,9 +525,9 @@ $vibrant-yellow: #fc0;
 
     code {
       background-color: rgb(0 0 0 / 80%);
-      border-radius: 5px;
+      border-radius: 0.3125em;
       color: #fff;
-      padding: 2px 5px;
+      padding: 0.125em 0.3125em;
     }
 
     blockquote {
@@ -627,7 +623,7 @@ $vibrant-yellow: #fc0;
 
 .outline-box {
   background-color: rgb(255 255 255 / 10%);
-  border-radius: 4px;
+  border-radius: 0.25em;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   height: 60vh;
   margin: 0 auto;
@@ -681,7 +677,7 @@ $vibrant-yellow: #fc0;
 
 .outline-box p {
   color: #fff;
-  padding: 10px;
+  padding: 0.625em;
   text-align: center;
 }
 
@@ -696,7 +692,7 @@ $vibrant-yellow: #fc0;
   background-color: rgb(255 255 255 / 10%);
   color: #fff;
   overflow-x: auto;
-  padding: 10px;
+  padding: 0.625em;
 }
 
 .sidenav-custom-width {
@@ -791,7 +787,7 @@ p {
 
 .font-selection select {
   background-color: white;
-  border-radius: 4px;
+  border-radius: 0.25em;
   color: black;
   padding: 0.5em;
 }
@@ -827,7 +823,7 @@ p {
 .readonly-banner {
   align-items: center;
   background-color: #fc0;
-  border-radius: 4px;
+  border-radius: 0.25em;
   color: #333;
   display: flex;
   font-weight: bold;
@@ -856,7 +852,7 @@ p {
 .rsvp-overlay {
   align-items: center;
   background: rgb(0 0 0 / 80%);
-  border-radius: 10px;
+  border-radius: 0.625em;
   color: white;
   display: flex;
   flex-direction: column;
@@ -872,28 +868,28 @@ p {
   border-bottom: 2px solid white;
   font-size: 2em;
   font-weight: bold;
-  min-width: 200px;
-  padding: 10px;
+  min-width: 12.5em;
+  padding: 0.625em;
   text-align: center;
 }
 
 .rsvp-controls {
   display: flex;
-  gap: 10px;
-  margin-top: 15px;
+  gap: 0.625em;
+  margin-top: 0.9375em;
   width: 100%;
 }
 
 input[type="range"] {
-  margin: 10px 0;
+  margin: 0.625em 0;
   width: 100%;
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
   background: #ddd;
   border: none;
-  border-radius: 3px;
-  height: 8px;
+  border-radius: 0.1875em;
+  height: 0.5em;
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -901,55 +897,55 @@ input[type="range"]::-webkit-slider-thumb {
   background: #333;
   border-radius: 50%;
   cursor: pointer;
-  height: 16px;
-  margin-top: -4px;
-  width: 16px;
+  height: 1em;
+  margin-top: -0.25em;
+  width: 1em;
 }
 
 input[type="range"]::-moz-range-track {
   background: #ddd;
   border: none;
-  border-radius: 3px;
-  height: 8px;
+  border-radius: 0.1875em;
+  height: 0.5em;
 }
 
 input[type="range"]::-moz-range-thumb {
   background: #333;
   border-radius: 50%;
   cursor: pointer;
-  height: 16px;
-  width: 16px;
+  height: 1em;
+  width: 1em;
 }
 
 input[type="range"]::-ms-track {
   background: #ddd;
   border: none;
-  border-radius: 3px;
-  height: 8px;
+  border-radius: 0.1875em;
+  height: 0.5em;
 }
 
 input[type="range"]::-ms-thumb {
   background: #333;
   border-radius: 50%;
   cursor: pointer;
-  height: 16px;
-  width: 16px;
+  height: 1em;
+  width: 1em;
 }
 
 input[type="range"]::-ms-fill-lower {
   background: #ddd;
-  border-radius: 3px;
+  border-radius: 0.1875em;
 }
 
 input[type="range"]::-ms-fill-upper {
   background: #ddd;
-  border-radius: 3px;
+  border-radius: 0.1875em;
 }
 
 datalist {
   display: flex;
   justify-content: space-between;
-  padding: 0 10px;
+  padding: 0 0.625em;
   width: 100%;
 }
 

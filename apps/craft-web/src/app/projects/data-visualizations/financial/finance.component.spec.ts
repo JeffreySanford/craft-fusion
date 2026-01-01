@@ -9,7 +9,7 @@ describe('FinanceComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      // Import the module instead of the component directly since it's no longer standalone
+
       imports: [FinanceModule],
     }).compileComponents();
 

@@ -1,14 +1,12 @@
 :host {
   display: block;
 
-  /* Ensure the tile maintains its size */
   flex: 0 0 auto;
-  grid-column: 1; /* Position in first column by default */
-  grid-row: span 2; /* Make this component span 2 rows in a grid */
+  grid-column: 1;                                          
+  grid-row: span 2;                                                
   height: 100%;
 
-  /* Set minimum width to ensure small tiles wrap instead of shrinking this tile */
-  min-width: 600px;
+  min-width: 37.5em;
   overflow: hidden;
   width: 100%;
 }
@@ -41,10 +39,10 @@
 .map-container {
   flex: 1 1 auto;
   margin-bottom: 0.75em;
-  max-height: calc(100% - 180px); /* Adjusted for better grid fit */
-  min-height: 200px; /* Slightly reduced for grid layout */
-  overflow: hidden; /* Prevent overflow issues */
-  position: relative; /* Ensure proper positioning */
+  max-height: calc(100% - 11.25em);                                   
+  min-height: 12.5em;                                       
+  overflow: hidden;                              
+  position: relative;                                
   width: 100%;
 }
 
@@ -141,8 +139,8 @@
     border-radius: 0.5em;
     bottom: 1em;
     box-shadow: 0 2px 5px rgb(0 0 0 / 20%);
-    max-height: 180px;
-    max-width: 250px;
+    max-height: 11.25em;
+    max-width: 15.625em;
     overflow: auto;
     position: absolute;
     right: 1em;
@@ -150,8 +148,8 @@
 
     @media (max-width: 768px) {
       bottom: 0.5em;
-      max-height: 150px;
-      max-width: 180px;
+      max-height: 9.375em;
+      max-width: 11.25em;
       right: 0.5em;
     }
 
@@ -171,13 +169,13 @@
     box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
     flex: 1 1 48%;
     margin: 0.5em;
-    max-height: 160px; /* Slightly reduced for grid layout */
+    max-height: 10em;                                       
     overflow: auto;
     padding: 0.5em;
 
     @media (max-width: 768px) {
       flex: 1 1 100%;
-      max-height: 80px; /* Smaller on mobile within grid */
+      max-height: 5em;                                    
     }
 
     h3 {
@@ -209,8 +207,8 @@
     flex-wrap: wrap;
     justify-content: space-between;
     margin-top: auto;
-    max-height: 180px; /* Reduced for better grid fit */
-    min-height: 100px; /* Smaller minimum height for grid */
+    max-height: 11.25em;                                  
+    min-height: 6.25em;                                      
     width: 100%;
 
     &.two-columns {
@@ -236,7 +234,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    overflow: hidden; /* Prevent overflow issues */
+    overflow: hidden;                              
     position: relative;
   }
 
@@ -265,7 +263,7 @@
   .header-content {
     display: flex;
     flex-direction: column;
-    margin-right: 15px;
+    margin-right: 0.9375em;
   }
 
   .alert-filter {
@@ -275,24 +273,24 @@
     .filter-label {
       font-size: 0.9rem;
       font-weight: 500;
-      margin-right: 8px;
+      margin-right: 0.5em;
       white-space: nowrap;
     }
   }
 
   .priority-selector {
-    background-color: #e0f2f1; // Light teal background
-    border-radius: 4px;
+    background-color: #e0f2f1;                         
+    border-radius: 0.25em;
     box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 
     .mat-button-toggle {
-      color: #00796b; // Teal text
+      color: #00796b;             
       font-size: 0.8rem;
-      min-width: 40px;
-      padding: 0 12px;
+      min-width: 2.5em;
+      padding: 0 0.75em;
 
       &.mat-button-toggle-checked {
-        background-color: #009688; // Teal background when selected
+        background-color: #009688;                                 
         color: white;
       }
     }
@@ -303,7 +301,7 @@
     flex-direction: column;
 
     .header-content {
-      margin-bottom: 10px;
+      margin-bottom: 0.625em;
     }
 
     span {
@@ -314,91 +312,87 @@
 
 ::ng-deep .mat-tab-label {
   @media (max-width: 768px) {
-    min-width: 100px !important;
-    padding: 0 12px !important;
+    min-width: 6.25em !important;
+    padding: 0 0.75em !important;
   }
 }
 
 .high {
-  border-radius: 3px;
+  border-radius: 0.1875em;
   padding: 0.1em 0.3em;
 }
 
 .medium {
-  border-radius: 3px;
+  border-radius: 0.1875em;
   padding: 0.1em 0.3em;
 }
 
 .low {
-  border-radius: 3px;
+  border-radius: 0.1875em;
   padding: 0.1em 0.3em;
 }
 
-/* Style alert items based on priority */
 .high {
   background-color: rgb(217 83 79 / 5%);
-  border-left: 3px solid #d9534f; /* Red border */
-  padding-left: 8px;
+  border-left: 3px solid #d9534f;                 
+  padding-left: 0.5em;
 }
 
 .medium {
   background-color: rgb(240 173 78 / 5%);
-  border-left: 3px solid #f0ad4e; /* Orange border */
-  padding-left: 8px;
+  border-left: 3px solid #f0ad4e;                    
+  padding-left: 0.5em;
 }
 
 .low {
   background-color: rgb(91 192 222 / 5%);
-  border-left: 3px solid #5bc0de; /* Blue border */
-  padding-left: 8px;
+  border-left: 3px solid #5bc0de;                  
+  padding-left: 0.5em;
 }
 
-/* Grid-specific responsive adjustments */
 @media (max-width: 992px) {
   :host {
-    grid-column: span 2; /* Take full width on medium screens */
+    grid-column: span 2;                                        
   }
 }
 
 @media (max-width: 768px) {
   :host {
-    grid-row: span 1; /* Reduce height span on small screens */
+    grid-row: span 1;                                          
   }
 
   .map-container {
-    min-height: 180px !important; /* Force smaller maps on mobile */
+    min-height: 11.25em !important;                                   
   }
 }
 
-/* Add custom grid area name for easier grid template positioning */
 :host.fire-alert-area {
   grid-area: fire-alert;
 }
 
-/* Add additional class for when this needs to be a main feature */
 :host.main-feature {
-  grid-column: 1 / 3; /* Span first two columns */
-  grid-row: 1 / 3; /* Span first two rows */
-  z-index: 1; /* Ensure it's above other elements if needed */
+  grid-column: 1 / 3;                             
+  grid-row: 1 / 3;                          
+  z-index: 1;                                                 
 }
 
 .status-container {
   display: flex;
   justify-content: space-between;
   margin-top: auto;
-  max-height: 180px;
-  min-height: 100px;
+  max-height: 11.25em;
+  min-height: 6.25em;
   width: 100%;
 
   &.two-columns {
-    flex-flow: row nowrap; // two columns layout
-    gap: 15px; // Add gap between columns
+    flex-flow: row nowrap;                      
+    gap: 0.9375em;                           
 
     .status-column {
       display: flex;
       flex: 1;
       flex-flow: column nowrap;
-      min-width: 0; // Allow columns to shrink if needed
+      min-width: 0;                                     
     }
   }
 
@@ -409,7 +403,7 @@
       flex-direction: column;
 
       .status-column {
-        margin-bottom: 10px;
+        margin-bottom: 0.625em;
         width: 100%;
       }
     }
@@ -423,12 +417,12 @@
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   flex: 1;
   margin: 0;
-  max-height: 160px;
+  max-height: 10em;
   overflow: auto;
   padding: 0.5em;
 
   @media (max-width: 768px) {
-    max-height: 120px;
+    max-height: 7.5em;
   }
 
   h3 {

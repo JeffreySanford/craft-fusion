@@ -1,14 +1,13 @@
 <div class="dashboard-layout">
-  <!-- Visualization Container -->
+
   <div class="visualization-container" cdkDropList (cdkDropListDropped)="drop($event)">
-    <!-- Empty state when no charts are displayed -->
+
     <div class="empty-state" *ngIf="displayedCharts.length === 0">
       <mat-icon>view_quilt</mat-icon>
       <h3>No Visualizations Selected</h3>
       <p>Select visualizations from the sidebar to get started</p>
     </div>
 
-    <!-- Rendered Charts with proper grid sizing based on chart size -->
     <div
       *ngFor="let chart of displayedCharts; let i = index"
       class="visualization-item"
@@ -31,11 +30,11 @@
         </mat-card-header>
 
         <mat-card-content (click)="handleTileClick(i, $event)">
-          <!-- Use the pre-calculated chart class -->
+
           <div class="chart-content" [ngClass]="chart.chartClass">
-            <!-- Dynamic component rendering with size inputs -->
+
             <ng-container [ngSwitch]="chart.component">
-              <!-- Pass width to all chart components but not explicit height -->
+
               <app-line-chart *ngSwitchCase="'app-line-chart'" [data]="chart.data" [width]="tileWidth"> </app-line-chart>
 
               <app-bar-chart *ngSwitchCase="'app-bar-chart'" [data]="chart.data" [width]="tileWidth"> </app-bar-chart>
@@ -50,7 +49,6 @@
     </div>
   </div>
 
-  <!-- Visualization Sidebar -->
   <div class="visualization-sidebar" [class.collapsed]="isSidebarCollapsed">
     <div class="sidebar-header">
       <h2>Available Visualizations</h2>
@@ -77,5 +75,4 @@
   </div>
 </div>
 
-<!-- Full Screen Modal Backdrop -->
 <div class="fullscreen-backdrop" *ngIf="fullExpandedTileIndex !== null" (click)="handleBackdropClick($event)"></div>

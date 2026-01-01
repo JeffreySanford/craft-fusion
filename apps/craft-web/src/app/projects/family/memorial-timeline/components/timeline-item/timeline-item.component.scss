@@ -4,42 +4,40 @@
 :host {
   display: flex;
   margin-bottom: 2rem;
-  padding-left: 30px; // Space for the node and line
+  padding-left: 1.875em;                               
   position: relative;
 
-  /* Timeline node */
   &::before {
     background-color: var(--md-sys-color-primary);
     border: 2px solid var(--md-sys-color-surface);
     border-radius: 50%;
     content: "";
-    height: 12px;
-    left: 4px; // Adjust to center on the line
+    height: 0.75em;
+    left: 0.25em;                                
     position: absolute;
     top: 0;
-    width: 12px;
+    width: 0.75em;
     z-index: 2;
   }
 }
 
 .timeline-item-content {
   background-color: var(--md-sys-color-surface-container-highest);
-  border-radius: 8px;
+  border-radius: 0.5em;
   box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   flex-grow: 1;
   padding: 1rem;
   position: relative;
 
-  /* Arrow pointing to the timeline */
   &::before {
     border-bottom: 10px solid transparent;
     border-right: 10px solid var(--md-sys-color-surface-container-highest);
     border-top: 10px solid transparent;
     content: "";
     height: 0;
-    left: -10px;
+    left: -0.625em;
     position: absolute;
-    top: 10px;
+    top: 0.625em;
     width: 0;
   }
 }
@@ -64,7 +62,7 @@
 }
 
 .timeline-item-image {
-  border-radius: 4px;
+  border-radius: 0.25em;
   margin-top: 1rem;
   max-width: 100%;
 }

@@ -5,7 +5,7 @@
 }
 
 #chatbox {
-  background-color: var(--md-sys-color-background); /* Light background */
+  background-color: var(--md-sys-color-background);                       
   display: flex;
   flex-direction: column;
   font-family: Poppins, sans-serif;
@@ -25,17 +25,17 @@
     padding: 1em;
 
     .message-container {
-      align-items: flex-start; /* Align items to the start */
+      align-items: flex-start;                               
       display: flex;
       margin-bottom: 0.5em;
       width: 100%;
 
       &.user {
-        justify-content: flex-end; /* Align user messages to the right */
+        justify-content: flex-end;                                       
 
         .message {
           animation: scaleIn 0.3s ease-out;
-          background-color: rgb(255 0 0 / 10%); /* Translucent red for user messages */
+          background-color: rgb(255 0 0 / 10%);                                        
           color: var(--md-sys-color-on-primary-container);
         }
 
@@ -51,14 +51,14 @@
 
         .message {
           animation: scaleIn 0.3s ease-out;
-          background-color: rgb(0 0 255 / 10%); /* Translucent blue for bot messages */
+          background-color: rgb(0 0 255 / 10%);                                        
           color: var(--md-sys-color-on-surface);
         }
 
         .message-icon {
           color: var(--md-sys-color-secondary);
           margin-left: 0;
-          margin-right: 0.5em; /* 1em buffer on the right */
+          margin-right: 0.5em;                              
         }
       }
     }
@@ -97,7 +97,7 @@
     }
 
     .message-content {
-      display: block; // Changed to block
+      display: block;                    
       overflow-wrap: break-word;
       white-space: pre-wrap;
       width: 100%;
@@ -154,7 +154,7 @@
 
   #input {
     align-items: center;
-    background-color: var(--md-sys-color-background); /* Light grey input background */
+    background-color: var(--md-sys-color-background);                                  
     border-top: 1px solid var(--md-sys-color-outline-variant);
     display: flex;
     gap: 0.5em;
@@ -173,10 +173,10 @@
       .font-icon-container {
         align-items: center;
         display: inline-flex;
-        height: 24px;
+        height: 1.5em;
         justify-content: center;
         margin: 0 0 0 -0.5em;
-        width: 24px;
+        width: 1.5em;
       }
     }
 
@@ -196,7 +196,7 @@
     }
 
     button {
-      background-color: var(--md-sys-color-primary); /* Blue send button */
+      background-color: var(--md-sys-color-primary);                       
       border: none;
       border-radius: 0.25em;
       color: var(--md-sys-color-on-primary);
@@ -205,7 +205,7 @@
       transition: background-color 0.3s ease;
 
       &:hover {
-        /* Fallback for browsers without color-mix support */
+
         background-color: var(--md-sys-color-primary, #0d47a1);
         @supports (color: color-mix(in srgb, red 0%, black 0%)) {
           background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
@@ -397,7 +397,7 @@
 
     code {
       background: rgb(0 0 0 / 5%);
-      border-radius: 3px;
+      border-radius: 0.1875em;
       font-family: monospace;
       padding: 0.2em 0.4em;
     }
@@ -639,7 +639,7 @@
 
         &:hover {
           background-color: var(--md-sys-color-surface-variant);
-          border-radius: 4px;
+          border-radius: 0.25em;
         }
 
         &::marker {
@@ -678,7 +678,7 @@
 
     .table-wrapper {
       border: 1px solid var(--md-sys-color-outline);
-      border-radius: 4px;
+      border-radius: 0.25em;
       margin: 0.75em 0;
       overflow: hidden;
 

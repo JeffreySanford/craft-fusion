@@ -1,13 +1,9 @@
-/* Modern CSS Reset */
-
-/* Box sizing rules */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-/* Remove default margin */
 body,
 h1,
 h2,
@@ -23,7 +19,6 @@ dd {
   margin: 0;
 }
 
-/* Set core body defaults */
 body {
   font-family: Roboto, sans-serif;
   line-height: 1.5;
@@ -32,15 +27,12 @@ body {
   text-rendering: optimizespeed;
 }
 
-/* Create a root stacking context */
-/* stylelint-disable-next-line selector-id-pattern */
 #root,
-/* stylelint-disable-next-line selector-id-pattern */
+
 #__next {
   isolation: isolate;
 }
 
-/* Remove list styles on ul, ol elements */
 ul,
 ol {
   list-style: none;
@@ -48,14 +40,12 @@ ol {
   padding: 0;
 }
 
-/* Make images easier to work with */
 img,
 picture {
   display: block;
   max-width: 100%;
 }
 
-/* Inherit fonts for inputs and buttons */
 input,
 button,
 textarea,
@@ -63,17 +53,6 @@ select {
   font: inherit;
 }
 
-/* Remove all animations and transitions for people that prefer not to see them */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Remove default button styles */
 button {
   background: none;
   border: none;
@@ -81,7 +60,6 @@ button {
   padding: 0;
 }
 
-/* Remove default anchor styles */
 a {
   color: inherit;
   text-decoration: none;

@@ -37,8 +37,8 @@ export class ChatService {
 
   private cleanUpResponse(response: string): string {
     return response
-      .replace(/\\n/g, '\n') // Fix escaped newlines
-      .replace(/&lt;/g, '<') // Fix escaped HTML
+      .replace(/\\n/g, '\n')                        
+      .replace(/&lt;/g, '<')                    
       .replace(/&gt;/g, '>')
       .trim();
   }

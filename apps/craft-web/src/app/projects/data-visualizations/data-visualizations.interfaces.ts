@@ -3,8 +3,8 @@ export interface ChartData {
   component: string;
   color: string;
   data: any[];
-  size?: string; // Make size optional with '?' to accommodate undefined values
-  active?: boolean; // Track if chart is active
+  size?: string;                                                               
+  active?: boolean;                            
 }
 
 export interface BarChartData {
@@ -24,13 +24,13 @@ export interface LineChartData {
 
 export interface FinanceChartData {
   stockIndicator: string;
-  trade: 'buy' | 'sell'; // Ensure trade is either 'buy' or 'sell'
+  trade: 'buy' | 'sell';                                          
   task: string;
   startTime: Date;
   endTime: Date;
   startValue: number;
   endValue: number;
-  group: 'normal' | 'extreme'; // Ensure group is either 'normal' or 'extreme'
+  group: 'normal' | 'extreme';                                                
 }
 
 export interface MapChartData {

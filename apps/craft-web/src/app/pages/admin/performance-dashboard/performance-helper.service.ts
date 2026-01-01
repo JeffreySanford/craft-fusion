@@ -38,7 +38,7 @@ export class PerformanceHelperService {
     try {
       chart.update();
     } catch (e) {
-      // no-op in case chart isn't ready
+
     }
   }
 
@@ -46,7 +46,7 @@ export class PerformanceHelperService {
     const width = 250;
     const height = 80;
     return `
-      <svg width="${width}" height="${height}" class="sparkline-detailed empty" xmlns="http://www.w3.org/2000/svg">
+      <svg width="${width}" height="${height}" class="sparkline-detailed empty" xmlns="http:                       
         <text x="${width / 2}" y="${height / 2}" text-anchor="middle" fill="var(--md-sys-color-on-surface, #9CA3AF)" font-size="12">No data available</text>
       </svg>
     `;

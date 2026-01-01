@@ -1,32 +1,25 @@
-// Core variables for Craft Fusion styling
-
-// Patriotic color palette
 $usa-blue: #002868;
 $usa-red: #bf0a30;
 $usa-white: #fff;
 $usa-gold: #ffd700;
-$patriot-white: #e6e0e9; // Light gray for dark mode, from DESIGN.md
+$patriot-white: #e6e0e9;                                            
 
-// Optionally, add navy and gold for more flexibility
 $patriotic-navy: #001f54;
 $patriotic-gold: #ffd700;
 
-// State colors
 $success: #386a20;
 $warning: #f9aa33;
 $error: #ba1b1b;
 $info: #0061a4;
 
-// Spacing
 $spacing-base: 0.5rem;
-$spacing-xs: $spacing-base * 0.5; // 0.25rem - 4px
-$spacing-sm: $spacing-base; // 0.5rem - 8px
-$spacing-md: $spacing-base * 2; // 1rem - 16px
-$spacing-lg: $spacing-base * 3; // 1.5rem - 24px
-$spacing-xl: $spacing-base * 4; // 2rem - 32px
-$spacing-xxl: $spacing-base * 6; // 3rem - 48px
+$spacing-xs: $spacing-base * 0.5;                 
+$spacing-sm: $spacing-base;                
+$spacing-md: $spacing-base * 2;               
+$spacing-lg: $spacing-base * 3;                 
+$spacing-xl: $spacing-base * 4;               
+$spacing-xxl: $spacing-base * 6;               
 
-// Spacing map for utilities
 $spacing: (
   xs: $spacing-xs,
   sm: $spacing-sm,
@@ -36,15 +29,13 @@ $spacing: (
   xxl: $spacing-xxl,
 );
 
-// Breakpoints
 $breakpoint-xs: 0;
-$breakpoint-sm: 36em; // 576px
-$breakpoint-md: 48em; // 768px
-$breakpoint-lg: 62em; // 992px
-$breakpoint-xl: 75em; // 1200px
-$breakpoint-xxl: 87.5em; // 1400px
+$breakpoint-sm: 36em;         
+$breakpoint-md: 48em;         
+$breakpoint-lg: 62em;         
+$breakpoint-xl: 75em;          
+$breakpoint-xxl: 87.5em;          
 
-// Responsive breakpoints for use in SCSS
 $breakpoints: (
   xs: 0,
   sm: 600px,
@@ -53,7 +44,6 @@ $breakpoints: (
   xl: 1920px,
 );
 
-// Z-index layers
 $z-index-base: 1;
 $z-index-dropdown: 1000;
 $z-index-sticky: 1020;
@@ -63,13 +53,11 @@ $z-index-modal: 1050;
 $z-index-popover: 1060;
 $z-index-tooltip: 1070;
 
-// Border radius
 $border-radius-sm: 0.25rem;
 $border-radius-md: 0.5rem;
 $border-radius-lg: 1rem;
 $border-radius-pill: 50rem;
 
-// Shadows
 $shadow-sm: 0 1px 2px rgb(0 0 0 / 5%);
 $shadow-md: 0 4px 6px rgb(0 0 0 / 10%);
 $shadow-lg: 0 10px 15px rgb(0 0 0 / 10%);

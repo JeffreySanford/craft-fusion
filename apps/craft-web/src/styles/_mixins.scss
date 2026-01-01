@@ -1,10 +1,8 @@
-/* stylelint-disable at-rule-empty-line-before, block-closing-brace-newline-after */
 @use "variables" as vars;
 @use "sass:map";
 @use "sass:math";
 @use "sass:color";
 
-// Responsive mixins
 @mixin mobile {
   @media (max-width: 576px) {
     @content;
@@ -23,16 +21,12 @@
   }
 }
 
-// Flexbox mixins
-// (kept a single `flex` mixin later in the file)
-
 @mixin flex-center {
   align-items: center;
   display: flex;
   justify-content: center;
 }
 
-// Animation mixins
 @mixin fade-in($duration: 0.3s) {
   animation: fadeIn $duration ease-in-out;
 
@@ -66,7 +60,6 @@
   }
 }
 
-// Layout and positioning mixins
 @mixin page-layer {
   position: relative;
   z-index: 1;
@@ -75,7 +68,7 @@
 @mixin animation-background {
   height: 100%;
   left: 0;
-  pointer-events: none; // Allows clicking through to elements behind
+  pointer-events: none;                                              
   position: absolute;
   top: 0;
   width: 100%;
@@ -88,15 +81,6 @@
   position: relative;
 }
 
-// Card mixin
-// (card mixin defined later with parameters)
-
-// Patriotic theme mixins
-// (patriotic variants defined later)
-
-// Core mixins for the application
-
-// Display mixins
 @mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
   align-items: $align;
   display: flex;
@@ -104,7 +88,6 @@
   justify-content: $justify;
 }
 
-// Spacing mixins
 @mixin padding($space) {
   padding: map.get(vars.$spacing, $space);
 }
@@ -133,7 +116,6 @@
   margin-top: map.get(vars.$spacing, $space);
 }
 
-// Responsive mixins
 @mixin respond-to($breakpoint) {
   $value: map.get(vars.$breakpoints, $breakpoint);
 
@@ -146,7 +128,6 @@
   }
 }
 
-// Typography mixins
 @mixin font-size($size) {
   font-size: map.get(vars.$font-sizes, $size);
 }
@@ -169,10 +150,8 @@
     line-height: 1.5;
   }
 
-  // Add more styles as needed
 }
 
-// Card mixins
 @mixin card($elevation: 1, $radius: "md") {
   background-color: var(--md-sys-color-surface);
   border-radius: map.get(vars.$border-radius, $radius);
@@ -180,7 +159,6 @@
   overflow: hidden;
 }
 
-// Patriotic styling mixins
 @mixin patriotic-gradient($angle: 135deg) {
   background: linear-gradient($angle, var(--md-sys-color-primary) 0%, var(--md-sys-color-secondary) 100%);
   color: var(--md-sys-color-on-primary);
@@ -202,13 +180,12 @@
   }
 }
 
-// Animation mixins
 @mixin animate($property, $duration: 0.3s, $timing: ease) {
   transition: $property $duration $timing;
 }
 
 @mixin hover-effect($scale: 1.05, $shadow-level: 2, $duration: 0.3s, $timing: ease) {
-  /* Explicit transitions for transform and box-shadow to avoid malformed animate calls */
+
   transition: transform $duration $timing, box-shadow $duration $timing;
 
   &:hover {
@@ -217,7 +194,6 @@
   }
 }
 
-// Layout mixins
 @mixin container($max-width: "xl") {
   margin-left: auto;
   margin-right: auto;
@@ -238,33 +214,31 @@
   grid-template-columns: repeat($columns, 1fr);
 }
 
-// Truncate text with ellipsis
 @mixin truncate($lines: 1) {
   @if $lines == 1 {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   } @else {
-    /* Use -webkit-box for multiline truncation (modern browsers) */
+
     -webkit-box-orient: vertical;
-    /* stylelint-disable-next-line value-no-vendor-prefix */
+
     display: -webkit-box;
     -webkit-line-clamp: $lines;
     overflow: hidden;
   }
 }
 
-// Accessibility mixins
 @mixin visually-hidden {
   border: 0;
   clip: rect(0, 0, 0, 0);
-  height: 1px;
-  margin: -1px;
+  height: 0.0625em;
+  margin: -0.0625em;
   overflow: hidden;
   padding: 0;
   position: absolute;
   white-space: nowrap;
-  width: 1px;
+  width: 0.0625em;
 }
 
 @mixin focus-outline($color: "primary", $width: 2px, $offset: 2px) {
@@ -272,7 +246,6 @@
   outline-offset: $offset;
 }
 
-// Create focus styles that only appear for keyboard navigation
 @mixin focus-visible {
   &:focus-visible {
     @content;

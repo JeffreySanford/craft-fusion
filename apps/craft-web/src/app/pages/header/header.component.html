@@ -1,8 +1,8 @@
 <mat-card class="header-card">
   <div class="header-content">
-    <!-- Other header content can go here -->
+
     <button mat-icon-button class="user-profile-button" [matMenuTriggerFor]="userMenu" #menuTrigger="matMenuTrigger">
-      <mat-icon class="profile-icon" [class.logged-in]="isLoggedIn$ | async">person</mat-icon>
+      <mat-icon class="profile-icon" [class.logged-in]="isLoggedIn$ | async" [class.admin]="isAdmin$ | async">person</mat-icon>
     </button>
     <mat-menu #userMenu="matMenu" class="user-menu" [overlapTrigger]="false" panelClass="user-menu" [yPosition]="'below'" [hasBackdrop]="true">
       <ng-container *ngFor="let item of userMenuItems">

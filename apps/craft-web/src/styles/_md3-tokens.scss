@@ -1,7 +1,3 @@
-// MD3 Design tokens based on https://m3.material.io/
-// This file should contain all foundational design tokens
-
-// Color tokens
 $md-sys-color: (
   primary: #002868,
   on-primary: #fff,
@@ -20,10 +16,10 @@ $md-sys-color: (
   typography: (
     display-large: (
       font-family: "Roboto Flex, sans-serif",
-      font-size: 57px,
-      line-height: 64px,
+      font-size: 3.5625em,
+      line-height: 4em,
       font-weight: 400,
-      letter-spacing: -0.25px,
+      letter-spacing: -0.0156em,
     ),
   )
 );
@@ -31,7 +27,6 @@ $md-sys-color: (
 @use "sass:map";
 @use "sass:meta";
 
-// Recursively emit CSS custom properties from a Sass map.
 @mixin emit-css-vars($map, $prefix: "") {
   @each $k, $v in $map {
     $name: null;
@@ -49,13 +44,10 @@ $md-sys-color: (
   }
 }
 
-/* Export MD3 tokens as CSS custom properties on :root for runtime theming support */
 :root {
   @include emit-css-vars($md-sys-color);
 }
 
-/* Example: consumers can override by applying theme class to body */
-
 body.dark-theme {
-  /* future: generate dark overrides here when dark map exists */
+
 }

@@ -9,7 +9,7 @@ export class RecipeService {
   private recipe!: Recipe;
   private readonly endpoint = 'recipes';
   private isOfflineMode = false;
-  private readonly REQUEST_TIMEOUT = 5000; // 5 seconds timeout
+  private readonly REQUEST_TIMEOUT = 5000;                     
   private readonly defaultRecipe: Recipe = {
     id: 0,
     name: 'Sample Recipe',
@@ -33,7 +33,6 @@ export class RecipeService {
     url: 'sample-recipe',
   };
 
-  // Fallback recipes for offline mode
   private readonly fallbackRecipes: Recipe[] = [
     {
       id: 1,
@@ -61,10 +60,6 @@ export class RecipeService {
 
   constructor(private apiService: ApiService) {}
 
-  /**
-   * Retrieves all recipes from the system
-   * @returns Observable<Recipe[]> - Array of all recipes
-   */
   getRecipes(): Observable<Recipe[]> {
     if (this.isOfflineMode) {
       console.log('In offline mode - returning fallback recipes');
@@ -85,20 +80,11 @@ export class RecipeService {
     );
   }
 
-  /**
-   * Sets the currently selected recipe
-   * @param recipe - Recipe to be set as current
-   */
   setRecipe(recipe: Recipe): void {
     console.log('Setting current recipe:', recipe.id);
     this.recipe = recipe;
   }
 
-  /**
-   * Gets the currently selected recipe
-   * @returns Observable<Recipe> - Currently selected recipe
-   * @throws Error if no recipe is selected
-   */
   getRecipe(): Observable<Recipe> {
     if (!this.recipe) {
       console.warn('No recipe currently selected - returning default recipe');
@@ -112,11 +98,6 @@ export class RecipeService {
     return of(this.recipe);
   }
 
-  /**
-   * Gets the full country name based on the two-letter code
-   * @param countryCode - Two-letter country code
-   * @returns string - Full country name
-   */
   getCountryName(countryCode: string | undefined): string {
     switch (countryCode) {
       case 'US':
@@ -132,19 +113,10 @@ export class RecipeService {
     }
   }
 
-  /**
-   * Checks if a recipe is currently selected
-   * @returns boolean
-   */
   hasRecipe(): boolean {
     return !!this.recipe;
   }
 
-  /**
-   * Creates a new recipe
-   * @param recipe - Recipe data to create
-   * @returns Observable<Recipe>
-   */
   addRecipe(recipe: Recipe): Observable<Recipe> {
     if (this.isOfflineMode) {
       console.warn('Cannot add recipe in offline mode');
@@ -163,11 +135,6 @@ export class RecipeService {
     );
   }
 
-  /**
-   * Updates an existing recipe
-   * @param recipe - Recipe data to update
-   * @returns Observable<Recipe>
-   */
   updateRecipe(recipe: Recipe): Observable<Recipe> {
     if (this.isOfflineMode) {
       console.warn('Cannot update recipe in offline mode');
@@ -186,11 +153,6 @@ export class RecipeService {
     );
   }
 
-  /**
-   * Deletes a recipe
-   * @param id - Recipe ID to delete
-   * @returns Observable<void>
-   */
   deleteRecipe(id: string): Observable<void> {
     if (this.isOfflineMode) {
       console.warn('Cannot delete recipe in offline mode');

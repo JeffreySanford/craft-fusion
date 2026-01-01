@@ -10,39 +10,36 @@
   min-width: 30em;
 }
 
-// Dashboard layout with sidebar - remove border, add gradient background
 .dashboard-layout {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); // Rich dark gradient background
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);                                 
   display: flex;
-  height: calc(100vh - 3em); // Adjust based on your header height
+  height: calc(100vh - 3em);                                      
   overflow: hidden;
 }
 
-// Main visualization container with enhanced grid - remove border
 .visualization-container {
-  background-color: rgb(0 0 0 / 20%); // Darker transparent background
+  background-color: rgb(0 0 0 / 20%);                                 
   display: grid;
   flex: 1;
-  gap: 20px; // Consistent gap in both directions
-  grid-auto-rows: min-content; // Use min-content to size rows based on their content
-  grid-template-columns: repeat(12, 1fr); // 12-column layout
+  gap: 1.25em;                                     
+  grid-auto-rows: min-content;                                                       
+  grid-template-columns: repeat(12, 1fr);                    
   overflow-y: auto;
-  padding: 20px;
-  position: relative; // For positioning the grape vine
+  padding: 1.25em;
+  position: relative;                                  
 }
 
-// Empty state styling - more vibrant
 .empty-state {
   align-items: center;
-  color: rgb(255 255 255 / 70%); // Brighter text
+  color: rgb(255 255 255 / 70%);                 
   display: flex;
   flex-direction: column;
-  grid-column: 1 / -1; // Span all columns
+  grid-column: 1 / -1;                    
   justify-content: center;
-  min-height: 300px;
+  min-height: 18.75em;
 
   mat-icon {
-    color: #ff9e00; // Vibrant orange for icon
+    color: #ff9e00;                           
     font-size: 5rem;
     height: 5rem;
     margin-bottom: 1rem;
@@ -50,32 +47,31 @@
   }
 
   h3 {
-    color: #00d9ff; // Vibrant cyan for heading
+    color: #00d9ff;                            
     font-size: 2rem;
     margin-bottom: 0.5rem;
-    text-shadow: 0 0 10px rgb(0 217 255 / 50%); // Glow effect
+    text-shadow: 0 0 10px rgb(0 217 255 / 50%);               
   }
 
   p {
-    color: #ff61d8; // Vibrant pink for subheading
+    color: #ff61d8;                               
     font-size: 1.2rem;
   }
 }
 
-// Sidebar styling with vibrant material elevation
 .visualization-sidebar {
-  background-color: rgb(22 33 62 / 80%); // Darker rich blue
-  border-left: none; // Remove border
-  box-shadow: 0 0 20px rgb(0 217 255 / 30%); // Cyan glow
+  background-color: rgb(22 33 62 / 80%);                    
+  border-left: none;                 
+  box-shadow: 0 0 20px rgb(0 217 255 / 30%);             
   display: flex;
   flex-direction: column;
   position: relative;
   transition: width 0.3s ease;
-  width: 280px;
-  z-index: 2; // Ensure sidebar appears above content
+  width: 17.5em;
+  z-index: 2;                                        
 
   &.collapsed {
-    width: 60px;
+    width: 3.75em;
 
     .sidebar-header h2 {
       display: none;
@@ -83,7 +79,7 @@
 
     .sidebar-content {
       mat-list-item {
-        padding: 4px;
+        padding: 0.25em;
 
         [matListItemTitle] {
           display: none;
@@ -99,30 +95,30 @@
 
   .sidebar-header {
     align-items: center;
-    background-color: rgb(0 0 0 / 40%); // Darker background
-    border-bottom: 1px solid rgb(0 217 255 / 30%); // Cyan border
-    box-shadow: 0 4px 8px rgb(0 0 0 / 30%); // Enhanced shadow
+    background-color: rgb(0 0 0 / 40%);                     
+    border-bottom: 1px solid rgb(0 217 255 / 30%);               
+    box-shadow: 0 4px 8px rgb(0 0 0 / 30%);                   
     display: flex;
     justify-content: space-between;
-    padding: 16px;
+    padding: 1em;
 
     h2 {
-      color: #00d9ff; // Vibrant cyan
+      color: #00d9ff;                
       font-size: 1.3rem;
       font-weight: 600;
-      letter-spacing: 1px;
+      letter-spacing: 0.0625em;
       margin: 0;
-      text-shadow: 0 0 10px rgb(0 217 255 / 50%); // Glow effect
+      text-shadow: 0 0 10px rgb(0 217 255 / 50%);               
       text-transform: uppercase;
     }
 
     .sidebar-toggle {
-      color: #00d9ff; // Vibrant cyan
+      color: #00d9ff;                
       transition: all 0.3s ease;
 
       &:hover {
         background-color: rgb(0 217 255 / 20%);
-        transform: scale(1.1); // Slight grow effect on hover
+        transform: scale(1.1);                               
       }
     }
   }
@@ -130,18 +126,18 @@
   .sidebar-content {
     flex: 1;
     overflow-y: auto;
-    padding: 0.25em 0; // Add vertical padding
+    padding: 0.25em 0;                        
 
     mat-list {
-      padding: 0; // Remove default padding
+      padding: 0;                          
 
       mat-list-item {
-        border-left: 3px solid transparent; // Transparent border by default
-        border-radius: 4px; // Rounded corners for items
+        border-left: 3px solid transparent;                                 
+        border-radius: 0.25em;                             
         cursor: pointer;
-        margin: 0.25em 0; // Add vertical separation between items
-        margin-left: 0.25em; // Add horizontal separation
-        margin-right: 0.25em; // Add horizontal separation
+        margin: 0.25em 0;                                         
+        margin-left: 0.25em;                             
+        margin-right: 0.25em;                             
         transition: all 0.2s ease;
 
         &:hover {
@@ -153,45 +149,38 @@
           border-left-style: solid;
           border-left-width: 3px;
 
-          // Border color dynamically set based on chart color
         }
 
-        // Make icons more visible
         mat-icon {
-          font-size: 20px;
-          height: 20px;
-          width: 20px;
+          font-size: 1.25em;
+          height: 1.25em;
+          width: 1.25em;
 
-          // Add specific styling for selection indicator icons
           &.selection-indicator {
             color: rgb(255 255 255 / 60%);
-            margin-right: 12px; // Add padding from the right edge
+            margin-right: 0.75em;                                   
 
-            // When active, use the chart's color
             &.active-icon {
-              color: inherit; // Will inherit from the parent
+              color: inherit;                                
             }
           }
 
-          // Add specific styling for action icons
           &[matListItemMeta] {
             color: rgb(255 255 255 / 60%);
-            margin-right: 12px; // Add padding from the right edge
+            margin-right: 0.75em;                                   
 
-            // When active, use the chart's color
             &.active-icon {
-              color: inherit; // Will inherit from the parent
+              color: inherit;                                
             }
           }
         }
 
-        // Style for active items
         &.active {
           mat-icon[matListItemIcon],
           [matListItemTitle],
           mat-icon[matListItemMeta] {
-            color: inherit; // Will inherit from the parent (set via the style.color attribute)
-            font-weight: 500; // Slightly bolder text for selected items
+            color: inherit;                                                                    
+            font-weight: 500;                                           
           }
         }
 
@@ -203,111 +192,103 @@
   }
 }
 
-// Individual visualization item styling
 .visualization-item {
-  display: block; // Changed from flex
-  height: auto; // Let content determine height instead of 100%
-  margin: 0; // Remove any margin
+  display: block;                     
+  height: auto;                                                
+  margin: 0;                     
   position: relative;
   transition: all 0.3s ease;
 
-  // Standard sizes
   &.size-small {
-    grid-column: span 4; // 3 per row (4+4+4=12)
+    grid-column: span 4;                        
     grid-row: span 1;
-    margin-bottom: 0; // Remove extra margin to let grid gap control spacing
-    min-height: 250px; // Reduce minimum height
+    margin-bottom: 0;                                                       
+    min-height: 15.625em;                         
   }
 
   &.size-medium {
-    grid-column: span 6; // 2 per row (6+6=12)
+    grid-column: span 6;                      
     grid-row: span 1;
-    margin-bottom: 0; // Remove extra margin
-    min-height: 280px; // Adjust for consistency
+    margin-bottom: 0;                       
+    min-height: 17.5em;                          
   }
 
   &.size-large {
-    grid-column: span 8; // Large standard size
+    grid-column: span 8;                       
     grid-row: span 2;
-    margin-bottom: 0; // Remove extra margin
-    min-height: 380px; // Adjust for consistency
+    margin-bottom: 0;                       
+    min-height: 23.75em;                          
   }
 
-  // Adaptive small tile layouts based on count
   &.small-tile-full {
-    grid-column: span 12 !important; // Full width
-    min-height: 300px;
+    grid-column: span 12 !important;              
+    min-height: 18.75em;
   }
 
   &.small-tile-half {
-    grid-column: span 6 !important; // Half width (2 per row)
-    min-height: 280px;
+    grid-column: span 6 !important;                          
+    min-height: 17.5em;
   }
 
   &.small-tile-third {
-    grid-column: span 4 !important; // Third width (3 per row)
-    min-height: 260px;
+    grid-column: span 4 !important;                           
+    min-height: 16.25em;
   }
 
   &.small-tile-fourth {
-    grid-column: span 3 !important; // Quarter width (4 per row)
-    min-height: 240px;
+    grid-column: span 3 !important;                             
+    min-height: 15em;
   }
 
-  // Medium tile variations
   &.medium-tile-full {
-    grid-column: span 12 !important; // Full width
-    min-height: 350px;
+    grid-column: span 12 !important;              
+    min-height: 21.875em;
   }
 
   &.medium-tile-standard {
-    grid-column: span 6 !important; // Standard width
-    min-height: 320px;
+    grid-column: span 6 !important;                  
+    min-height: 20em;
   }
 
-  // Large tile variations
   &.size-large-single {
-    grid-column: span 12 !important; // Full width when alone
+    grid-column: span 12 !important;                         
     grid-row: span 2;
-    min-height: 450px;
+    min-height: 28.125em;
   }
 
   &.size-large-half {
-    grid-column: span 6 !important; // Half width when paired
+    grid-column: span 6 !important;                          
     grid-row: span 2;
-    margin-bottom: 16px;
-    min-height: 500px; // Increased height for better visualization
+    margin-bottom: 1em;
+    min-height: 31.25em;                                             
 
     .chart-card {
       height: 100%;
     }
 
-    // Ensure consistent height when paired
     &:nth-child(2) {
       height: 100%;
     }
   }
 
   &.size-large-standard {
-    grid-column: span 8 !important; // Standard width for 3+ large tiles
+    grid-column: span 8 !important;                                     
     grid-row: span 2;
-    min-height: 380px;
+    min-height: 23.75em;
   }
 
-  // Medium + Small combination
   &.medium-with-small {
-    grid-column: span 8 !important; // Take larger portion
+    grid-column: span 8 !important;                       
     grid-row: span 1;
-    min-height: 280px;
+    min-height: 17.5em;
   }
 
   &.small-with-medium {
-    grid-column: span 4 !important; // Take smaller portion
+    grid-column: span 4 !important;                        
     grid-row: span 1;
-    min-height: 280px;
+    min-height: 17.5em;
   }
 
-  // Make drag handle visible
   &.cdk-drag-preview {
     box-shadow: 0 5px 15px rgb(0 0 0 / 30%);
   }
@@ -320,7 +301,6 @@
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
   }
 
-  // New styles for full-size expanded view
   &.full-expanded {
     align-items: center;
     background-color: rgb(0 0 0 / 85%);
@@ -341,28 +321,27 @@
 
     .chart-card {
       height: 95%;
-      max-height: 900px;
-      max-width: 1600px;
+      max-height: 56.25em;
+      max-width: 100em;
       transform: none;
       width: 95%;
 
       mat-card-content {
-        height: calc(100% - 60px); // Adjust based on header height
+        height: calc(100% - 3.75em);                                 
 
         .chart-content {
           height: 100%;
-          padding: 24px; // Increase padding for better spacing in fullscreen
+          padding: 1.5em;                                                     
 
           &.line-chart-content,
           &.bar-chart-content,
           &.finance-chart-content,
           &.scrollable-chart-content {
-            height: 100%; // Use full height in fullscreen
-            max-height: none; // No max height in fullscreen
-            overflow: visible; // Keep overflow visible for chart elements
+            height: 100%;                                 
+            max-height: none;                               
+            overflow: visible;                                            
           }
 
-          // Add special handling for charts that need scrolling
           &.scrollable-chart-content {
             overflow-y: auto;
           }
@@ -370,7 +349,6 @@
       }
     }
 
-    // Hide drag handle cursor in full-screen mode
     mat-card-header {
       cursor: default;
     }
@@ -387,23 +365,20 @@
     }
   }
 
-  // Special layout handling for small items when preceded by larger ones
   .visualization-item.size-small:nth-child(3):not(:first-child) {
-    grid-column-start: 1; // Force third small item to start at first column of next row
+    grid-column-start: 1;                                                               
   }
 }
 
-// Adaptive small tile sizing based on quantity
 .small-tile-full {
-  grid-column: span 12 !important; // Full width (all 12 columns)
-  min-height: 300px;
+  grid-column: span 12 !important;                               
+  min-height: 18.75em;
 }
 
 .small-tile-half {
-  grid-column: span 6 !important; // Half width (6 columns)
-  min-height: 280px;
+  grid-column: span 6 !important;                          
+  min-height: 17.5em;
 
-  // When 2 or 4 small tiles are present, ensure they form proper rows
   &.first-row {
     grid-row: 1;
   }
@@ -414,48 +389,45 @@
 }
 
 .small-tile-third {
-  grid-column: span 4 !important; // One-third width (4 columns)
-  min-height: 260px;
+  grid-column: span 4 !important;                               
+  min-height: 16.25em;
 }
 
 .small-tile-fourth {
-  grid-column: span 3 !important; // One-fourth width (3 columns)
-  min-height: 240px;
+  grid-column: span 3 !important;                                
+  min-height: 15em;
 }
 
-// Ensure the base .size-small class doesn't override our special layouts
 .visualization-item.size-small {
   &[class*="small-tile-"] {
-    grid-column: auto; // Let the special classes handle the width
+    grid-column: auto;                                            
   }
 }
 
-// Medium + Small combination classes
 .medium-with-small {
-  grid-column: span 8; // Take up 8 columns (instead of 6)
+  grid-column: span 8;                                    
   grid-row: span 1;
-  height: 280px;
+  height: 17.5em;
 }
 
 .small-with-medium {
-  grid-column: span 4; // Take up 4 columns
+  grid-column: span 4;                     
   grid-row: span 1;
-  height: 280px; // Match height with the medium tile
+  height: 17.5em;                                     
 }
 
-// Card styling for each visualization - more vibrant
 .chart-card {
-  background-color: rgb(0 0 0 / 50%); // Darker background for contrast
-  border: none; // Remove border
-  border-radius: 12px; // More rounded corners
+  background-color: rgb(0 0 0 / 50%);                                  
+  border: none;                 
+  border-radius: 0.75em;                        
   box-shadow:
     0 8px 16px rgb(0 0 0 / 40%),
-    0 0 0 1px rgb(255 255 255 / 5%); // Subtle glow
+    0 0 0 1px rgb(255 255 255 / 5%);               
 
   color: white;
   display: flex;
   flex-direction: column;
-  height: 100%; // Fill the entire grid cell
+  height: 100%;                             
   margin: 0;
   overflow: hidden;
   padding: 0;
@@ -466,7 +438,7 @@
     box-shadow:
       0 12px 24px rgb(0 0 0 / 60%),
       0 0 0 1px rgb(255 255 255 / 10%);
-    transform: translateY(-5px); // Lift effect on hover
+    transform: translateY(-5px);                        
   }
 
   &.expanded {
@@ -478,13 +450,12 @@
     z-index: 10;
   }
 
-  // Card header styling - more vibrant
   mat-card-header {
     align-items: center;
     background: linear-gradient(90deg, rgb(0 0 0 / 70%) 0%, rgb(20 20 20 / 70%) 100%);
     cursor: move;
     display: flex;
-    padding: 12px 16px;
+    padding: 0.75em 1em;
     position: relative;
 
     .chart-title {
@@ -495,30 +466,29 @@
       font-size: 1.2rem;
       font-weight: 600;
       margin: 0;
-      padding-right: 40px;
+      padding-right: 2.5em;
 
       mat-icon {
-        font-size: 24px;
-        height: 24px;
-        margin-right: 12px;
-        width: 24px;
+        font-size: 1.5em;
+        height: 1.5em;
+        margin-right: 0.75em;
+        width: 1.5em;
 
-        // Vibrant icon styling added below
       }
     }
 
     .remove-button {
       color: rgb(255 255 255 / 70%);
-      height: 36px;
-      line-height: 36px;
+      height: 2.25em;
+      line-height: 2.25em;
       margin-left: auto;
-      min-height: 36px;
-      min-width: 36px;
+      min-height: 2.25em;
+      min-width: 2.25em;
       position: absolute;
-      right: 8px;
+      right: 0.5em;
       top: 50%;
       transform: translateY(-50%);
-      width: 36px;
+      width: 2.25em;
 
       &:hover {
         background-color: rgb(255 0 0 / 30%);
@@ -526,9 +496,9 @@
       }
 
       mat-icon {
-        font-size: 18px;
-        height: 18px;
-        width: 18px;
+        font-size: 1.125em;
+        height: 1.125em;
+        width: 1.125em;
       }
 
       &:hover mat-icon {
@@ -536,20 +506,19 @@
       }
     }
 
-    // Add restore button styling
     .restore-button {
       color: inherit;
-      height: 36px;
-      line-height: 36px;
+      height: 2.25em;
+      line-height: 2.25em;
       margin-left: auto;
-      min-height: 36px;
-      min-width: 36px;
+      min-height: 2.25em;
+      min-width: 2.25em;
       opacity: 0.8;
       position: absolute;
-      right: 48px; // Position next to close button
+      right: 3em;                                 
       top: 50%;
       transform: translateY(-50%);
-      width: 36px;
+      width: 2.25em;
 
       &:hover {
         background-color: rgb(255 255 255 / 20%);
@@ -557,20 +526,17 @@
       }
 
       mat-icon {
-        font-size: 18px;
-        height: 18px;
-        width: 18px;
+        font-size: 1.125em;
+        height: 1.125em;
+        width: 1.125em;
       }
     }
 
-    // Use chart color for header background with gradient
     &.custom-colored {
       background: linear-gradient(90deg, rgb(0 0 0 / 60%) 0%, rgb(0 0 0 / 40%) 100%);
 
-      // Add bottom border with chart color
-      border-bottom: 3px solid; // Color will be inherited
+      border-bottom: 3px solid;                           
 
-      // Title text and icon color inherit from chart color with glow
       .chart-title {
         color: inherit;
         text-shadow: 0 0 8px rgb(255 255 255 / 50%);
@@ -581,7 +547,6 @@
         }
       }
 
-      // Close button matches title color
       .remove-button {
         color: inherit;
         opacity: 0.8;
@@ -594,35 +559,31 @@
     }
   }
 
-  // Card content styling
   mat-card-content {
-    display: flex; // Ensure content fills space
-    flex: 1; // Use all available space
+    display: flex;                              
+    flex: 1;                           
     flex-direction: column;
-    overflow: visible; // Changed from auto to visible
-    padding: 0; // Remove default padding
-    position: relative; // For proper sizing of charts
+    overflow: visible;                                
+    padding: 0;                          
+    position: relative;                               
 
     .chart-content {
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      height: 100%; // Use full available height
-      padding: 8px; // Reduce padding to maximize chart area
+      height: 100%;                             
+      padding: 0.5em;                                         
     }
   }
 }
 
-// Vibrant chart tile styling by type
 .visualization-item {
-  // ...existing code...
 
-  // Special styling for different chart types
   &.chart-type-line .chart-card mat-card-header {
     background: linear-gradient(90deg, rgb(0 0 0 / 70%) 0%, rgb(30 100 200 / 20%) 100%);
 
     .chart-title mat-icon {
-      color: #00d9ff; // Vibrant cyan for line charts
+      color: #00d9ff;                                
       filter: drop-shadow(0 0 5px rgb(0 217 255 / 80%));
     }
   }
@@ -631,7 +592,7 @@
     background: linear-gradient(90deg, rgb(0 0 0 / 70%) 0%, rgb(50 200 100 / 20%) 100%);
 
     .chart-title mat-icon {
-      color: #5cff5c; // Vibrant green for bar charts
+      color: #5cff5c;                                
       filter: drop-shadow(0 0 5px rgb(92 255 92 / 80%));
     }
   }
@@ -640,13 +601,12 @@
     background: linear-gradient(90deg, rgb(0 0 0 / 70%) 0%, rgb(200 50 50 / 20%) 100%);
 
     .chart-title mat-icon {
-      color: #ff5c5c; // Vibrant red for finance charts
+      color: #ff5c5c;                                  
       filter: drop-shadow(0 0 5px rgb(255 92 92 / 80%));
     }
   }
 }
 
-// Enhance fullscreen view with vibrant colors
 .visualization-item.full-expanded {
   align-items: center;
   background-color: rgb(0 0 0 / 85%);
@@ -667,35 +627,33 @@
 
   .chart-card {
     height: 95%;
-    max-height: 900px;
-    max-width: 1600px;
+    max-height: 56.25em;
+    max-width: 100em;
     transform: none;
     width: 95%;
 
     mat-card-content {
-      height: calc(100% - 60px); // Adjust based on header height
+      height: calc(100% - 3.75em);                                 
 
       .chart-content {
         height: 100%;
-        padding: 24px; // Increase padding for better spacing in fullscreen
+        padding: 1.5em;                                                     
 
         &.line-chart-content,
         &.bar-chart-content,
         &.finance-chart-content,
         &.scrollable-chart-content {
-          height: 100%; // Use full height in fullscreen
-          max-height: none; // No max height in fullscreen
-          overflow: visible; // Keep overflow visible for chart elements
+          height: 100%;                                 
+          max-height: none;                               
+          overflow: visible;                                            
         }
 
-        // Add special handling for charts that need scrolling
         &.scrollable-chart-content {
           overflow-y: auto;
         }
       }
     }
 
-    // Hide drag handle cursor in full-screen mode
     mat-card-header {
       cursor: default;
     }
@@ -713,19 +671,16 @@
   }
 }
 
-// Add specific sizing for each chart type using class-based approach
 .visualization-item.chart-type-line .chart-card,
 .visualization-item.chart-type-bar .chart-card,
 .visualization-item.chart-type-finance .chart-card {
-  max-height: none; // Remove height restrictions to use full available space
+  max-height: none;                                                          
 }
 
-// Force proper Angular Material styling
 ::ng-deep .mat-card-content {
   display: block !important;
 }
 
-// Full screen backdrop
 .fullscreen-backdrop {
   background-color: transparent;
   bottom: 0;
@@ -736,18 +691,17 @@
   z-index: 999;
 }
 
-// Responsive styling for different screen sizes
 @media (max-width: 1200px) {
   .visualization-container {
-    gap: 16px;
-    grid-template-columns: repeat(6, 1fr); // 6-column grid on medium screens
+    gap: 1em;
+    grid-template-columns: repeat(6, 1fr);                                   
   }
 
   .visualization-item {
     &.size-small,
     &.small-tile-third,
     &.small-tile-fourth {
-      grid-column: span 3 !important; // 2 per row on medium screens
+      grid-column: span 3 !important;                               
     }
 
     &.size-medium,
@@ -755,7 +709,7 @@
     &.size-large,
     &.size-large-half,
     &.size-large-standard {
-      grid-column: span 6 !important; // Full width on medium screens
+      grid-column: span 6 !important;                                
     }
 
     &.medium-with-small {
@@ -775,15 +729,15 @@
   }
 
   .visualization-container {
-    gap: 12px;
-    grid-template-columns: repeat(4, 1fr); // 4-column grid on small screens
+    gap: 0.75em;
+    grid-template-columns: repeat(4, 1fr);                                  
     order: 2;
-    padding: 12px;
+    padding: 0.75em;
   }
 
   .visualization-item {
-    grid-column: span 4 !important; // All tiles full width on mobile
-    min-height: 300px;
+    grid-column: span 4 !important;                                  
+    min-height: 18.75em;
   }
 
   .visualization-sidebar {
@@ -793,13 +747,13 @@
     width: 100%;
 
     &.collapsed {
-      height: 60px;
+      height: 3.75em;
       width: 100%;
     }
   }
 
   .visualization-item {
-    min-height: 300px;
+    min-height: 18.75em;
   }
 }
 
@@ -819,53 +773,48 @@
   border-color: gold;
 }
 
-// Fix any stray Material icon issues
 ::ng-deep {
   .mat-icon {
     display: inline-block;
     font-family: "Material Icons", sans-serif;
   }
 
-  // Ensure Material Design Icons are properly sized in lists
   .mat-list-item-content {
     .mat-list-icon {
-      font-size: 24px;
-      height: 24px;
-      width: 24px;
+      font-size: 1.5em;
+      height: 1.5em;
+      width: 1.5em;
     }
   }
 
-  // Add right padding to the selection indicator icons
   .selection-indicator,
   [matListItemMeta] {
-    margin-right: 12px !important; // Force right margin for selection icons
+    margin-right: 0.75em !important;                                          
   }
 }
 
-// Add specific chart sizing for better visibility when multiple charts are displayed
 .visualization-container:not(.single-chart) {
   .visualization-item .chart-content {
-    min-height: 250px; // Ensure minimum height in grid layout
+    min-height: 15.625em;                                        
   }
 }
 
-// Ensure proper sizing in fullscreen mode
 .visualization-item.full-expanded {
   .chart-card {
-    height: 98%; // Increase from 95% to 98%
-    max-height: 950px; // Increase from 900px
-    max-width: 1800px; // Increase from 1600px
+    height: 98%;                            
+    max-height: 59.375em;                       
+    max-width: 112.5em;                        
     transform: none;
-    width: 98%; // Increase from 95% to 98%
+    width: 98%;                            
 
     mat-card-content {
-      height: calc(100% - 50px); // Adjust for reduced header height
+      height: calc(100% - 3.125em);                                    
       overflow: visible;
 
       .chart-content {
       height: 100%;
-      min-height: 0; // Reset min-height in fullscreen (avoid `min-height: auto` compatibility issues)
-        padding: 12px; // Reduce padding in fullscreen mode
+      min-height: 0;                                                                                  
+        padding: 0.75em;                                     
 
         &.bar-chart-content,
         &.line-chart-content,
@@ -884,12 +833,11 @@
   grid-row: span 2;
 }
 
-// Enhanced large tile variations
 .size-large-single {
-  grid-column: span 12 !important; // Full width when alone
+  grid-column: span 12 !important;                         
   grid-row: span 2;
-  margin-bottom: 0; // Remove extra margin
-  min-height: 500px;
+  margin-bottom: 0;                       
+  min-height: 31.25em;
 
   .chart-card {
     height: 100%;
@@ -897,11 +845,11 @@
 }
 
 .size-large-half {
-  grid-column: span 6 !important; // Half width when paired
+  grid-column: span 6 !important;                          
   grid-row: span 2;
   height: 100%;
-  margin-bottom: 0; // Remove extra margin
-  min-height: 500px;
+  margin-bottom: 0;                       
+  min-height: 31.25em;
 
   .chart-card {
     height: 100%;
@@ -909,31 +857,29 @@
 }
 
 .size-large-half {
-  grid-column: span 6; // Exactly half of the 12-column grid
-  grid-row: span 2; // Same height as single large tile
-  height: 100%; // Ensure full height utilization
+  grid-column: span 6;                                      
+  grid-row: span 2;                                    
+  height: 100%;                                  
 }
 
-// Add specific rule to ensure proper wrapping for small tiles
 @media (min-width: 1201px) {
-  // Force small tiles to wrap after every 3 tiles
+
   .visualization-item.size-small:nth-child(3n + 1) {
     grid-column-start: auto;
   }
 }
 
-// Add global styles for patriotic dialog
 ::ng-deep .patriotic-dialog {
   .mat-mdc-dialog-container {
     --mdc-dialog-container-color: white;
 
-    border-radius: 8px;
+    border-radius: 0.5em;
     box-shadow: 0 8px 24px rgb(0 0 0 / 25%);
     overflow: hidden;
   }
 
   .mat-mdc-dialog-surface {
-    border-radius: 8px;
+    border-radius: 0.5em;
     overflow: hidden;
   }
 }
@@ -959,7 +905,6 @@
   margin-bottom: 0 !important;
 }
 
-// Zero out all margin-bottom to avoid any spacing issues
 .size-large-single,
 .size-large-half,
 .size-large-standard,
@@ -969,12 +914,11 @@
 .small-tile-half,
 .small-tile-third,
 .small-tile-fourth {
-  margin: 0 !important; // Remove all margins, not just bottom
+  margin: 0 !important;                                       
 }
 
-// Override any Angular Material default spacing that might be interfering
 ::ng-deep {
-  // Override Material Card padding
+
   .mat-mdc-card {
     padding: 0 !important;
 
@@ -984,21 +928,19 @@
     }
   }
 
-  // Remove default padding in list items
   .mat-mdc-list-item {
     padding: 0 !important;
   }
 }
 
-// Fix Material icon issues
 ::ng-deep {
-  // Fix icon display
+
   .mat-icon {
     direction: ltr;
     display: inline-block;
     font-family: "Material Icons", sans-serif !important;
     font-feature-settings: "liga";
-    font-size: 24px;
+    font-size: 1.5em;
     -webkit-font-smoothing: antialiased;
     font-style: normal;
     font-weight: normal;
@@ -1011,64 +953,58 @@
   }
 
   .visualization-icon {
-    font-size: 24px !important;
-    height: 24px !important;
-    line-height: 24px !important;
-    width: 24px !important;
+    font-size: 1.5em !important;
+    height: 1.5em !important;
+    line-height: 1.5em !important;
+    width: 1.5em !important;
   }
 
   .visualization-sidebar {
     mat-icon {
-      font-size: 24px;
-      height: 24px;
+      font-size: 1.5em;
+      height: 1.5em;
       overflow: hidden;
       text-rendering: optimizelegibility;
-      width: 24px;
+      width: 1.5em;
     }
 
     .selection-indicator {
-      margin-right: 12px !important;
+      margin-right: 0.75em !important;
     }
   }
 
-  // Ensure Material Design Icons are properly sized and positioned in lists
   .mat-list-item-content {
     .mat-list-icon {
-      font-size: 24px;
-      height: 24px;
-      width: 24px;
+      font-size: 1.5em;
+      height: 1.5em;
+      width: 1.5em;
     }
   }
 
-  // Add right padding to the selection indicator icons
   .selection-indicator,
   [matListItemMeta] {
-    font-size: 24px !important;
-    height: 24px !important;
-    margin-right: 12px !important; // Force right margin for selection icons
-    width: 24px !important;
+    font-size: 1.5em !important;
+    height: 1.5em !important;
+    margin-right: 0.75em !important;                                          
+    width: 1.5em !important;
   }
 }
 
-// Enhance list item styling and Material Design
 ::ng-deep {
-  // Enhance list item styling
-  .mat-mdc-list-item {
-    height: auto !important; // Override fixed height
-    min-height: 48px; // Minimum height
-    padding: 0.5em 0 !important; // Add vertical padding
 
-    // Add subtle hover effect
+  .mat-mdc-list-item {
+    height: auto !important;                         
+    min-height: 3em;                  
+    padding: 0.5em 0 !important;                        
+
     &:hover {
       background-color: rgb(255 255 255 / 5%) !important;
     }
 
-    // Enhance active state
     &.active {
-      box-shadow: 0 2px 4px rgb(0 0 0 / 20%); // Add subtle elevation for active items
+      box-shadow: 0 2px 4px rgb(0 0 0 / 20%);                                         
       position: relative;
 
-      // Add subtle highlight effect
       &::after {
         background-color: rgb(255 255 255 / 5%);
         bottom: 0;
@@ -1081,66 +1017,60 @@
       }
     }
 
-    // Style for the list item text
     .mdc-list-item__primary-text {
       font-weight: normal;
       transition: font-weight 0.2s ease;
     }
   }
 
-  // Proper spacing for list item content
   .mat-mdc-list-base .mat-mdc-list-item .mat-mdc-list-item-content {
-    padding: 0 16px;
+    padding: 0 1em;
   }
 
   .visualization-sidebar {
     .mat-mdc-list-item {
-      border-radius: 4px;
+      border-radius: 0.25em;
       margin-left: 0.25em;
       margin-right: 0.25em;
     }
   }
 }
 
-// Add vibrant styling to Mat-Icon in sidebar
 .visualization-sidebar .sidebar-content mat-list-item {
   mat-icon[matListItemIcon] {
     transition: all 0.3s ease;
 
-    // Default vibrant colors for each icon type
     &[ng-reflect-font-icon="show_chart"],
     &[textContent="show_chart"] {
-      color: #00d9ff; // Vibrant cyan
+      color: #00d9ff;                
     }
 
     &[ng-reflect-font-icon="bar_chart"],
     &[textContent="bar_chart"] {
-      color: #5cff5c; // Vibrant green
+      color: #5cff5c;                 
     }
 
     &[ng-reflect-font-icon="trending_up"],
     &[textContent="trending_up"] {
-      color: #ff5c5c; // Vibrant red
+      color: #ff5c5c;               
     }
 
     &[ng-reflect-font-icon="warning"],
     &[textContent="warning"] {
-      color: #fb0; // Vibrant amber
+      color: #fb0;                 
     }
 
     &[ng-reflect-font-icon="science"],
     &[textContent="science"] {
-      color: #c17aff; // Vibrant purple
+      color: #c17aff;                  
     }
   }
 
-  // Add pulsing animation for active icons
   &.active mat-icon[matListItemIcon] {
     animation: pulse 2s infinite;
   }
 }
 
-// Add pulsing animation
 @keyframes pulse {
   0% {
     filter: drop-shadow(0 0 2px currentcolor);

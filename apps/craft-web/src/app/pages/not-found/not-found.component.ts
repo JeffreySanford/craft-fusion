@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
   standalone: false,
 })
 export class NotFoundComponent {
-  // Simple component for the 404 Not Found page
+
 }

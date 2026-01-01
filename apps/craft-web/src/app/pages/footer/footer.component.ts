@@ -26,8 +26,8 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   private chart: Chart | null = null;
   private chartInitialized = false;
   private metricsBuffer: Array<{ time: string; memory: number; cpu: number; latency: number }> = [];
-  isSimulatingData = false; // Try to use actual data by default
-  chartBorderColor = 'green'; // Default to green for real data
+  isSimulatingData = false;                                     
+  chartBorderColor = 'green';                                  
   frameRateSamples: number[] = [];
   lastFrameTime = 0;
   frameRateUpdateInterval: number | null = null;
@@ -38,7 +38,7 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
 
   logoLinks = [
     { src: 'assets/images/compressed/nodejs-new-pantone-white.png', alt: 'Node.js' },
-    { src: 'assets/images/mongo.svg', alt: 'MongoDB' }, // Ensure the correct file extension
+    { src: 'assets/images/mongo.svg', alt: 'MongoDB' },                                     
     { src: 'assets/images/compressed/angular.png', alt: 'Angular' },
     { src: 'assets/images/compressed/us-army-logo.png', alt: 'United States Army (DOD)', class: 'army' },
     { src: 'assets/images/compressed/US-GOVT-DLA.png', alt: 'Defense Logistics Agency', class: 'DLA' },
@@ -46,7 +46,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     { src: 'assets/images/compressed/US-GOVT-DTIC.png', alt: 'Defense Technical Information Center', class: 'DTIC' },
   ];
 
-  // Registry of all available services for monitoring
   registeredServices = [
     { name: 'ApiService', description: 'Core API communication' },
     { name: 'AuthenticationService', description: 'User authentication' },
@@ -73,12 +72,11 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     settings: 'settings',
   };
 
-  // Add connection state tracking properties
   private networkConnectionFailed = false;
   private consecutiveFailures = 0;
-  private normalPingInterval = 10000; // Changed from 3000 to 10000ms
-  private currentPingInterval = 10000; // Changed from 3000 to 10000ms
-  private maxConsecutiveFailures = 3; // Reduced from 5 to 3 to fail faster
+  private normalPingInterval = 10000;                                
+  private currentPingInterval = 10000;                                
+  private maxConsecutiveFailures = 3;                                      
 
   constructor(
     private router: Router,
@@ -97,10 +95,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     this.startFrameRateMonitoring();
     this.startServiceMetricsMonitoring();
 
-    // Subscribe to admin state
-    // (admin status still provided by AdminStateService via authentication elsewhere)
-
-    // Subscribe to shared simulation state so footer reflects admin toggle
     this.dataSimulationService.isSimulating$.subscribe(isSim => {
       this.isSimulatingData = isSim;
       this.updateChartBorderColor();
@@ -110,7 +104,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
       this.currentTheme = t;
     });
 
-    // Explicitly provide component name for important logs
     this.logger.info('Footer component initialized', {}, 'FooterComponent');
   }
 
@@ -119,12 +112,11 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // Delay chart initialization to ensure DOM is ready
+
     setTimeout(() => {
       this.initializeChart();
     }, 500);
 
-    // Increase update frequency
     interval(500).subscribe(() => {
       this.updateChartData();
     });
@@ -145,24 +137,21 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     this.logger.info('Footer component destroyed');
   }
 
-  private lastUsedPingInterval: number = 3000; // Track the last used interval
+  private lastUsedPingInterval: number = 3000;                                
 
   private startPerformanceMonitoring() {
     this.logger.info('Starting performance monitoring');
 
-    // Use the currentPingInterval property instead of a fixed value
     const performanceInterval = interval(this.currentPingInterval);
     this.lastUsedPingInterval = this.currentPingInterval;
 
     this.performanceSubscription = performanceInterval.subscribe(() => {
       this.updatePerformanceMetrics();
 
-      // Dynamically adjust the interval if needed
       if (this.performanceSubscription && this.currentPingInterval !== this.lastUsedPingInterval) {
-        // Unsubscribe from current interval
+
         this.performanceSubscription.unsubscribe();
 
-        // Create new subscription with updated interval
         const newInterval = interval(this.currentPingInterval);
         this.lastUsedPingInterval = this.currentPingInterval;
         this.performanceSubscription = newInterval.subscribe(() => {
@@ -193,7 +182,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
       this.performanceMetrics.memoryUsage = 'N/A';
     }
 
-    // Get actual CPU load
     this.getCPUload().subscribe(
       cpuLoad => {
         if (cpuLoad !== undefined && !isNaN(cpuLoad)) {
@@ -228,12 +216,11 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.measureNetworkLatency();
 
-    // Update chart border color based on metrics
     this.updateChartBorderColor();
   }
 
   private measureNetworkLatency() {
-    // Skip network tests if we've had consecutive failures
+
     if (this.consecutiveFailures >= this.maxConsecutiveFailures) {
       this.performanceMetrics.networkLatency = 'N/A';
       return;
@@ -242,12 +229,11 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     const startTime = performance.now();
     const pingUrl = `/api/health?cache=${Date.now()}`;
 
-    // Use HEAD request for health check, fallback to static asset if fails
     fetch(pingUrl, {
       method: 'HEAD',
       cache: 'no-store',
       headers: { pragma: 'no-cache' },
-      signal: AbortSignal.timeout(3000), // 3 second timeout
+      signal: AbortSignal.timeout(3000),                    
     })
       .then(() => {
         const latency = performance.now() - startTime;
@@ -261,7 +247,7 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
         this.updateChart();
       })
       .catch(() => {
-        // Fallback: try to fetch a static asset to check if frontend is responsive
+
         const assetStart = performance.now();
         fetch(`/assets/ping.txt?cache=${Date.now()}`, { method: 'HEAD', cache: 'no-store', signal: AbortSignal.timeout(2000) })
           .then(() => {
@@ -313,20 +299,20 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private getSimulatedCPULoad(): Observable<number> {
-    // Return a static value instead of calculating to reduce load
-    return of(15); // just return a reasonable fixed value
+
+    return of(15);                                        
   }
 
   private measureCPU() {
     const cpus = navigator.hardwareConcurrency || 4;
-    const idle = cpus * 100; // Simulate idle time
-    const total = cpus * 100; // Simulate total time
+    const idle = cpus * 100;                      
+    const total = cpus * 100;                       
     return { idle, total };
   }
 
   private getRealCPULoad(): Observable<number> {
-    // Return a static value instead of calculating to reduce load
-    return of(20); // just return a reasonable fixed value
+
+    return of(20);                                        
   }
 
   getCpuLoadClass() {
@@ -458,7 +444,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
       this.chartInitialized = true;
       this.logger.info('Chart initialized successfully');
 
-      // Process any buffered metrics
       if (this.metricsBuffer.length > 0) {
         const data = this.chart!.data as any;
         data.labels = data.labels || [];
@@ -479,14 +464,14 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private updateChart() {
-    // Clean up and improve chart update logic
+
     const currentTime = new Date().toLocaleTimeString();
     const memoryValue = parseFloat(this.performanceMetrics.memoryUsage) || 0;
     const cpuValue = parseFloat(this.performanceMetrics.cpuLoad) || 0;
     const latencyValue = parseFloat(this.performanceMetrics.networkLatency) || 0;
 
     if (!this.chartInitialized) {
-      // Buffer metrics until chart is ready
+
       this.metricsBuffer.push({
         time: currentTime,
         memory: memoryValue,
@@ -501,19 +486,17 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     try {
-      // Add new data (cast to any for Chart.js internals)
+
       (this.chart.data.labels as any).push(currentTime);
       (this.chart.data.datasets as any)[0].data.push(memoryValue);
       (this.chart.data.datasets as any)[1].data.push(cpuValue);
       (this.chart.data.datasets as any)[2].data.push(latencyValue);
 
-      // Keep chart readable with limited points
       if ((this.chart.data.labels as any).length > 10) {
         (this.chart.data.labels as any).shift();
         (this.chart.data.datasets as any).forEach((dataset: any) => dataset.data.shift());
       }
 
-      // Use default update to avoid invalid animation mode
       this.chart.update();
     } catch (error) {
       this.logger.error(`Error updating chart: ${error}`);
@@ -521,18 +504,16 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private updateChartBorderColor() {
-    // Default to blue if we're simulating data
+
     if (this.isSimulatingData) {
       this.chartBorderColor = 'blue';
       return;
     }
 
-    // Check for "hot" metrics
     const memoryUsage = parseFloat(this.performanceMetrics.memoryUsage);
     const cpuLoad = parseFloat(this.performanceMetrics.cpuLoad);
     const networkLatency = parseFloat(this.performanceMetrics.networkLatency);
 
-    // Determine color based on highest threshold exceeded
     if (memoryUsage > 90 || cpuLoad > 90 || networkLatency > 300) {
       this.chartBorderColor = 'red';
     } else if (memoryUsage > 75 || cpuLoad > 75 || networkLatency > 200) {
@@ -560,27 +541,24 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     const delta = now - this.lastFrameTime;
     this.lastFrameTime = now;
 
-    // Calculate FPS (1000ms / delta between frames)
     const fps = 1000 / delta;
     this.frameRateSamples.push(fps);
 
-    // Keep only the most recent 10 samples (reduced from 30)
     if (this.frameRateSamples.length > 10) {
       this.frameRateSamples.shift();
     }
 
-    // Continue monitoring
     this.frameRateUpdateInterval = requestAnimationFrame(this.updateFrameRate.bind(this));
   }
 
   toggleDataSimulation() {
-    // Delegate to centralized DataSimulationService so admin and footer remain in sync
+
     this.dataSimulationService.toggleSimulating();
   }
 
   private startServiceMetricsMonitoring() {
     this.metricUpdateSubscription = this.logger.serviceCalls$.subscribe(metrics => {
-      this.serviceMetrics = metrics.slice(-20); // Keep last 20 calls
+      this.serviceMetrics = metrics.slice(-20);                      
 
       if (this.chartInitialized) {
         this.updateServiceMetricsChart();
@@ -591,7 +569,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   private updateServiceMetricsChart() {
     if (!this.chart || this.isSimulatingData) return;
 
-    // Get average response times by service
     const serviceResponseTimes: { [key: string]: { total: number; count: number } } = {};
 
     this.serviceMetrics.forEach(metric => {
@@ -605,7 +582,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
 
-    // Update the third dataset with service response times
     const serviceData = Object.keys(serviceResponseTimes).map(service => {
       const entry = serviceResponseTimes[service]!;
       const avg = entry.total / entry.count;
@@ -615,23 +591,20 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
       };
     });
 
-    // If we have service data, update the network latency dataset
     if (serviceData.length > 0) {
       const avgServiceResponseTime = serviceData.reduce((sum, item) => sum + item.avgTime, 0) / serviceData.length;
-      // Scale to a percentage value (assuming 500ms is 100%)
+
       const scaledValue = Math.min(100, (avgServiceResponseTime / 500) * 100);
 
-      // Update the latency value
       this.performanceMetrics.networkLatency = `${avgServiceResponseTime.toFixed(2)} ms`;
 
-      // This will trigger chart update via existing mechanism
       this.updateChart();
     }
   }
 
   private updateChartData(): void {
     if (this.isSimulatingData) {
-      // Force near-zero response times and quicker intervals
+
       this.performanceMetrics.networkLatency = '1 ms';
       if (this.chart) this.chart.update();
     }

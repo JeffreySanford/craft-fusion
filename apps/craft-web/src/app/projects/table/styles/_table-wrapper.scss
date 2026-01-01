@@ -3,7 +3,7 @@
 @use "./variables" as vars;
 
 .table-wrapper {
-  /* Space control for paginator offset (increased by 1em) */
+
   --paginator-offset: 3.5em;
 
   display: flex !important;
@@ -15,8 +15,8 @@
   position: relative !important;
 
   &::-webkit-scrollbar {
-    height: 12px;
-    width: 12px;
+    height: 0.75em;
+    width: 0.75em;
   }
 
   &::-webkit-scrollbar-thumb {
@@ -29,7 +29,7 @@
       );
     background-clip: content-box;
     border: 3px solid rgb(0 40 104 / 50%);
-    border-radius: 16px;
+    border-radius: 1em;
   }
 
   &::-webkit-scrollbar-track {
@@ -44,7 +44,7 @@
 
   &::-webkit-scrollbar-button:vertical:start:decrement {
     background-color: transparent;
-    height: 24px;
+    height: 1.5em;
     position: relative;
     width: 100%;
 
@@ -61,7 +61,7 @@
 
   &::-webkit-scrollbar-button:vertical:end:increment {
     background-color: transparent;
-    height: 24px;
+    height: 1.5em;
     position: relative;
     width: 100%;
 

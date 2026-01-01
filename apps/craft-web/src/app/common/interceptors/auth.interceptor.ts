@@ -8,11 +8,9 @@ export class AuthHttpInterceptor implements HttpInterceptor {
   constructor(private authService: AuthenticationService) {}
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // Get the current token
+
     const token = this.authService.getAuthToken();
 
-    // Clone the request and add authorization header if token exists
-    // Skip adding token to auth endpoints to avoid circular dependencies
     if (token && !this.isAuthEndpoint(req.url)) {
       req = req.clone({
         setHeaders: {
@@ -25,7 +23,7 @@ export class AuthHttpInterceptor implements HttpInterceptor {
   }
 
   private isAuthEndpoint(url: string): boolean {
-    // Don't add auth headers to auth endpoints to avoid circular dependencies
+
     return url.includes('/auth/login') || url.includes('/auth/refresh-token') || url.includes('/auth/user');
   }
 }

@@ -43,12 +43,6 @@ export interface ProxyRouteStatus {
   statusCode?: number;
 }
 
-/**
- * API Diagnostics Service
- *
- * Monitors API connectivity and provides diagnostics for troubleshooting
- * connection issues between the frontend and backend services.
- */
 @Injectable({
   providedIn: 'root',
 })
@@ -63,13 +57,11 @@ export class ApiDiagnosticsService {
     reconnectAttempts: 0,
   });
 
-  // Track namespace-specific socket statuses
   private namespaceSocketsSubject = new BehaviorSubject<NamespacedSocketStatus[]>([]);
 
-  // Track known namespaces with their connection status
   private knownNamespaces = new Map<string, NamespacedSocketStatus>();
 
-  private checkInterval = 30000; // 30 seconds
+  private checkInterval = 30000;              
   private retryCount = 3;
   private retryDelay = 1000;
   private consecutiveFailures = 0;
@@ -78,20 +70,16 @@ export class ApiDiagnosticsService {
   private socketReconnectAttempts = 0;
   private maxSocketReconnectAttempts = 10;
 
-  // Namespace-specific socket instances - add definite assignment assertion
   private namespaceSocketInstances = new Map<string, Socket>();
 
-  // Expose as observable for components to consume
   readonly diagnostics$ = this.diagnosticsSubject.asObservable();
   readonly isConnected$ = this.diagnostics$.pipe(map(d => d.isConnected));
   readonly socketDiagnostics$ = this.socketDiagnosticsSubject.asObservable();
   readonly isSocketConnected$ = this.socketDiagnostics$.pipe(map(d => d.isConnected));
   readonly namespaceStatuses$ = this.namespaceSocketsSubject.asObservable();
 
-  // Get count of working socket namespaces
   readonly workingSocketsCount$ = this.namespaceSocketsSubject.pipe(map(namespaces => namespaces.filter(ns => ns.isConnected).length));
 
-  // Check if at least one socket is working
   readonly hasAnyWorkingSocket$ = this.workingSocketsCount$.pipe(map(count => count > 0));
 
   constructor(
@@ -103,9 +91,6 @@ export class ApiDiagnosticsService {
     this.startHealthCheck();
   }
 
-  /**
-   * Perform an immediate health check
-   */
   checkConnectionNow(): Observable<ConnectionDiagnostics> {
     const startTime = Date.now();
 
@@ -119,7 +104,7 @@ export class ApiDiagnosticsService {
           const currentDiagnostics = this.diagnosticsSubject.value;
           const responseTimes = [...(currentDiagnostics.responseTimes || []), responseTime].slice(-5);
 
-          this.consecutiveFailures = 0; // Reset failure counter on success
+          this.consecutiveFailures = 0;                                    
 
           const diagnostics: ConnectionDiagnostics = {
             isConnected: true,
@@ -145,7 +130,6 @@ export class ApiDiagnosticsService {
 
           this.diagnosticsSubject.next(diagnostics);
 
-          // Only log failures until we reach the threshold to avoid flooding logs
           if (this.consecutiveFailures <= this.maxConsecutiveFailures) {
             this.logger.warn('API connection failed', {
               error: diagnostics.error,
@@ -153,7 +137,7 @@ export class ApiDiagnosticsService {
               consecutiveFailures: this.consecutiveFailures,
             });
           } else if (this.consecutiveFailures === this.maxConsecutiveFailures + 1) {
-            // Log one more time when we cross the threshold
+
             this.logger.warn(`API connection failures threshold reached (${this.maxConsecutiveFailures}). Suppressing further logs until connection restored.`, {
               error: diagnostics.error,
             });
@@ -165,9 +149,6 @@ export class ApiDiagnosticsService {
       );
   }
 
-  /**
-   * Start automated health checks
-   */
   startHealthCheck(): void {
     timer(1000, this.checkInterval)
       .pipe(
@@ -192,9 +173,6 @@ export class ApiDiagnosticsService {
       .subscribe();
   }
 
-  /**
-   * Run network diagnostics to determine the cause of connectivity issues
-   */
   runNetworkDiagnostics(): Observable<string> {
     this.logger.info('Running network diagnostics');
 
@@ -260,11 +238,8 @@ export class ApiDiagnosticsService {
       );
   }
 
-  /**
-   * Perform port availability check
-   */
   checkPortAvailability(): Observable<string> {
-    // No change needed here, as /api/health/ports returns JSON
+
     return this.http
       .get<unknown>(`${environment.apiUrl}/api/health/ports`, {
         headers: { 'X-Diagnostics': 'true' },
@@ -289,9 +264,6 @@ export class ApiDiagnosticsService {
       );
   }
 
-  /**
-   * Suggest fixes for common connection issues
-   */
   getSuggestedFixes(): string[] {
     const currentDiagnostics = this.diagnosticsSubject.value;
     const suggestions: string[] = [];
@@ -309,7 +281,6 @@ export class ApiDiagnosticsService {
         suggestions.push('Try manually accessing the API endpoint: curl http://localhost:3000/api');
       }
 
-      // Add specific suggestions for Gateway Timeout errors
       if (currentDiagnostics.error?.includes('504') || currentDiagnostics.error?.includes('Gateway Timeout')) {
         suggestions.push('Gateway Timeout detected - the server took too long to respond');
         suggestions.push('Check if the server is overloaded or processing long-running operations');
@@ -326,9 +297,6 @@ export class ApiDiagnosticsService {
     return suggestions;
   }
 
-  /**
-   * Get WebSocket connection status
-   */
   checkSocketConnection(): Observable<boolean> {
     return this.http.get<unknown>(`${environment.apiUrl}/api/socket-status`).pipe(
       map(response => response.connected === true),
@@ -336,19 +304,16 @@ export class ApiDiagnosticsService {
     );
   }
 
-  /**
-   * Initialize and monitor socket connection
-   */
   initializeSocketMonitoring(socketUrl?: string): void {
     if (!socketUrl) {
-      // Use relative URL in dev mode for proper proxy handling
+
       socketUrl = environment.production ? environment.apiUrl : '';
     }
 
     this.logger.info('Initializing socket monitoring', { socketUrl });
 
     try {
-      // Close existing socket if any
+
       if (this.socketInstance) {
         this.socketInstance.disconnect();
       }
@@ -359,17 +324,16 @@ export class ApiDiagnosticsService {
         this.socketReconnectAttempts = 0;
         const socketDiagnostics: SocketDiagnostics = {
           isConnected: true,
-          connectionId: this.socketInstance?.id, // Use optional chaining
+          connectionId: this.socketInstance?.id,                         
           reconnectAttempts: this.socketReconnectAttempts,
           socketUrl,
         };
         this.socketDiagnosticsSubject.next(socketDiagnostics);
         this.logger.info('Socket connected successfully', {
-          socketId: this.socketInstance?.id, // Use optional chaining
+          socketId: this.socketInstance?.id,                         
           url: socketUrl,
         });
 
-        // Measure ping time
         this.measureSocketLatency();
       });
 
@@ -423,9 +387,6 @@ export class ApiDiagnosticsService {
     }
   }
 
-  /**
-   * Measure socket latency using ping-pong
-   */
   measureSocketLatency(): void {
     if (!this.socketInstance || !this.socketInstance.connected) {
       return;
@@ -433,7 +394,6 @@ export class ApiDiagnosticsService {
 
     const start = Date.now();
 
-    // Using a custom ping event - the server needs to respond with a 'pong' event
     this.socketInstance.emit('ping', {}, () => {
       const latency = Date.now() - start;
       const currentDiagnostics = this.socketDiagnosticsSubject.value;
@@ -446,13 +406,9 @@ export class ApiDiagnosticsService {
       this.logger.debug('Socket latency', { latency: `${latency}ms` });
     });
 
-    // Schedule next measurement
     setTimeout(() => this.measureSocketLatency(), 30000);
   }
 
-  /**
-   * Manually attempt to reconnect socket
-   */
   reconnectSocket(): Observable<boolean> {
     if (!this.socketInstance) {
       return throwError(() => new Error('Socket not initialized'));
@@ -464,11 +420,9 @@ export class ApiDiagnosticsService {
       try {
         this.socketInstance?.disconnect();
 
-        // Allow some time for disconnection to complete
         setTimeout(() => {
           this.socketInstance?.connect();
 
-          // Subscribe to connection event only once for this reconnection attempt
           const onConnect = () => {
             this.socketInstance?.off('connect', onConnect);
             this.socketInstance?.off('connect_error', onError);
@@ -477,7 +431,7 @@ export class ApiDiagnosticsService {
           };
 
           const onError = (error: unknown) => {
-            // Add type annotation
+
             this.socketInstance?.off('connect', onConnect);
             this.socketInstance?.off('connect_error', onError);
             observer.error(error);
@@ -486,7 +440,6 @@ export class ApiDiagnosticsService {
           this.socketInstance?.once('connect', onConnect);
           this.socketInstance?.once('connect_error', onError);
 
-          // Set timeout for reconnection attempt
           setTimeout(() => {
             this.socketInstance?.off('connect', onConnect);
             this.socketInstance?.off('connect_error', onError);
@@ -501,7 +454,7 @@ export class ApiDiagnosticsService {
         errors.pipe(
           delay(1000),
           tap(error => this.logger.warn('Retrying socket reconnection after error', { error })),
-          // Limit retries
+
           tap(() => {
             this.socketReconnectAttempts++;
             if (this.socketReconnectAttempts >= this.maxSocketReconnectAttempts) {
@@ -513,19 +466,14 @@ export class ApiDiagnosticsService {
     );
   }
 
-  /**
-   * Initialize monitoring for a specific socket namespace
-   * @param namespace The Socket.IO namespace to monitor (e.g., 'health', 'yahoo', 'user-state')
-   * @param socketUrl Base socket URL (defaults to environment.apiUrl)
-   */
   monitorNamespaceSocket(namespace: string, socketUrl?: string): void {
     if (!socketUrl) {
-      // Use relative URL in dev mode for proper proxy handling
+
       socketUrl = environment.production ? environment.apiUrl : '';
     }
 
     try {
-      // Create a socket for this specific namespace
+
       const nsPath = namespace ? `/${namespace}` : '';
       const nsSocket = io(`${socketUrl}${nsPath}`);
 
@@ -544,7 +492,6 @@ export class ApiDiagnosticsService {
         });
       }
 
-      // Setup event listeners for this namespace
       nsSocket.on('connect', () => {
         const status: NamespacedSocketStatus = {
           namespace,
@@ -602,7 +549,6 @@ export class ApiDiagnosticsService {
     } catch (error) {
       this.logger.error(`Error initializing ${namespace} namespace socket`, { error });
 
-      // Update status to reflect initialization error
       const status: NamespacedSocketStatus = {
         namespace,
         isConnected: false,
@@ -615,26 +561,17 @@ export class ApiDiagnosticsService {
     }
   }
 
-  /**
-   * Initialize monitoring for all known socket namespaces
-   */
   monitorAllNamespaces(socketUrl?: string): void {
-    // Common namespaces used in the application
+
     const commonNamespaces = ['health', 'yahoo', 'user-state'];
 
     commonNamespaces.forEach(namespace => {
       this.monitorNamespaceSocket(namespace, socketUrl);
     });
 
-    // Also monitor the default namespace
     this.monitorNamespaceSocket('', socketUrl);
   }
 
-  /**
-   * Reconnect a specific namespace socket
-   * @param namespace The namespace to reconnect
-   * @returns Observable indicating success or failure
-   */
   reconnectNamespaceSocket(namespace: string): Observable<boolean> {
     const nsSocket = this.namespaceSocketInstances.get(namespace);
     if (!nsSocket) {
@@ -647,11 +584,9 @@ export class ApiDiagnosticsService {
       try {
         nsSocket.disconnect();
 
-        // Allow some time for disconnection to complete
         setTimeout(() => {
           nsSocket.connect();
 
-          // Subscribe to connection event only once for this reconnection attempt
           const onConnect = () => {
             nsSocket.off('connect', onConnect);
             nsSocket.off('connect_error', onError);
@@ -660,7 +595,7 @@ export class ApiDiagnosticsService {
           };
 
           const onError = (error: unknown) => {
-            // Add type annotation
+
             nsSocket.off('connect', onConnect);
             nsSocket.off('connect_error', onError);
             observer.error(error);
@@ -669,7 +604,6 @@ export class ApiDiagnosticsService {
           nsSocket.once('connect', onConnect);
           nsSocket.once('connect_error', onError);
 
-          // Set timeout for reconnection attempt
           setTimeout(() => {
             nsSocket.off('connect', onConnect);
             nsSocket.off('connect_error', onError);
@@ -684,7 +618,7 @@ export class ApiDiagnosticsService {
         errors.pipe(
           delay(1000),
           tap(error => this.logger.warn(`Retrying ${namespace} socket reconnection after error`, { error })),
-          // Limit retries
+
           tap(count => {
             if (count >= 3) {
               throw new Error(`Maximum reconnection attempts reached for namespace ${namespace}`);
@@ -696,9 +630,6 @@ export class ApiDiagnosticsService {
     );
   }
 
-  /**
-   * Run diagnostics for specific socket namespace
-   */
   runNamespaceDiagnostics(namespace: string): Observable<string> {
     this.logger.info(`Running diagnostics for socket namespace: ${namespace}`);
 
@@ -726,7 +657,6 @@ export class ApiDiagnosticsService {
       diagnosticMessage += `- Last error: ${namespaceStatus.lastError}\n`;
     }
 
-    // Add namespace-specific recommendations
     diagnosticMessage += '\n- Recommendations:\n';
 
     if (!namespaceStatus.isConnected) {
@@ -742,9 +672,6 @@ export class ApiDiagnosticsService {
     return of(diagnosticMessage);
   }
 
-  /**
-   * Get enhanced diagnostic data including namespace statuses
-   */
   getEnhancedDiagnosticData(): Observable<unknown> {
     return this.getDiagnosticDashboardData().pipe(
       map(dashboardData => ({
@@ -761,9 +688,6 @@ export class ApiDiagnosticsService {
     );
   }
 
-  /**
-   * Get specific recommendations for partial socket connectivity
-   */
   getPartialConnectivitySuggestions(): string[] {
     const suggestions: string[] = [];
     const workingSockets = Array.from(this.knownNamespaces.values()).filter(ns => ns.isConnected);
@@ -788,9 +712,6 @@ export class ApiDiagnosticsService {
     return suggestions;
   }
 
-  /**
-   * Get diagnostic data formatted for dashboard display
-   */
   getDiagnosticDashboardData(): Observable<unknown> {
     const connectionDiagnostics = this.diagnosticsSubject.value;
     const socketDiagnostics = this.socketDiagnosticsSubject.value;
@@ -814,18 +735,13 @@ export class ApiDiagnosticsService {
     });
   }
 
-  /**
-   * Update the namespace statuses observable
-   */
   private updateNamespaceStatuses(): void {
     const statuses = Array.from(this.knownNamespaces.values());
     this.namespaceSocketsSubject.next(statuses);
 
-    // Update the main socket status based on aggregate namespace status
     const anyConnected = statuses.some(s => s.isConnected);
     const anyFailing = statuses.some(s => !s.isConnected);
 
-    // If we have both working and failing connections, update the main status
     if (anyConnected) {
       const socketDiagnostics: SocketDiagnostics = {
         ...this.socketDiagnosticsSubject.value,
@@ -836,9 +752,6 @@ export class ApiDiagnosticsService {
     }
   }
 
-  /**
-   * Get the count of working socket namespaces
-   */
   private getWorkingSocketsCount(): number {
     return Array.from(this.knownNamespaces.values()).filter(ns => ns.isConnected).length;
   }
@@ -855,12 +768,11 @@ export class ApiDiagnosticsService {
   }
 
   private extractServerBinding(response: unknown): string {
-    // Try to extract server binding info if available in response
+
     if (response?.serverInfo?.binding) {
       return response.serverInfo.binding;
     }
 
-    // Make an educated guess based on the environment
     if (environment.production) {
       return 'Production server';
     } else {

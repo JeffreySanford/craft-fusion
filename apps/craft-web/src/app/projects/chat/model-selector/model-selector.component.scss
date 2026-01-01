@@ -1,11 +1,11 @@
 mat-form-field {
-  padding: 0 0.75rem; // Add left/right padding for better spacing
-  width: 200px;
+  padding: 0 0.75rem;                                             
+  width: 12.5em;
 
   ::ng-deep {
     .mat-mdc-text-field-wrapper {
       background: rgb(255 255 255 / 92%) !important;
-      border: 1px solid rgb(0 40 104 / 30%); // Light patriotic blue border
+      border: 1px solid rgb(0 40 104 / 30%);                               
       border-radius: 0.25rem;
       transition: all 0.3s ease;
 
@@ -16,39 +16,38 @@ mat-form-field {
     }
 
     .mdc-floating-label {
-      color: #002868; // Patriotic blue label
+      color: #002868;                        
       font-weight: 500;
     }
 
     .mat-mdc-select-arrow {
-      color: #bf0a30; // Patriotic red arrow
+      color: #bf0a30;                       
     }
 
     .mat-mdc-select-value-text {
-      color: #002868; // Patriotic blue text
+      color: #002868;                       
       font-weight: 500;
     }
   }
 }
 
-// Global styling for select panel overlays
 :host ::ng-deep .mat-mdc-select-panel {
   .mat-mdc-option {
     &.mdc-list-item--selected {
-      background-color: #e3f2fd !important; // Light blue for selected items
-      color: #002868 !important; // Patriotic blue text
+      background-color: #e3f2fd !important;                                 
+      color: #002868 !important;                       
 
       &:not(.mdc-list-item--disabled) {
         background-color: #e3f2fd !important;
       }
 
       &:hover {
-        background-color: #bbdefb !important; // Slightly darker blue on hover when selected
+        background-color: #bbdefb !important;                                               
       }
     }
 
     &:hover:not(.mdc-list-item--selected) {
-      background-color: #f3f8ff !important; // Very light blue on hover for unselected
+      background-color: #f3f8ff !important;                                           
     }
   }
 }

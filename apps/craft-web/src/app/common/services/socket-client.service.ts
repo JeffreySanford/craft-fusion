@@ -10,7 +10,7 @@ export class SocketClientService implements OnDestroy {
   private connectionStatus = new BehaviorSubject<boolean>(false);
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 3;
-  private backoffDelay = 2000; // Start with 2 seconds
+  private backoffDelay = 2000;                        
   private reconnecting = false;
   private destroy$ = new Subject<void>();
   user$ = new BehaviorSubject<unknown>(null);
@@ -112,7 +112,7 @@ export class SocketClientService implements OnDestroy {
       const errorHandler = (error: unknown) => observer.error(error);
       this.socket.on(event, handler);
       this.socket.on('connect_error', errorHandler);
-      // Teardown logic
+
       return () => {
         if (this.socket) {
           this.socket.off(event, handler);

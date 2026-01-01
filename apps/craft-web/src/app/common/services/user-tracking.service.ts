@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface AppUser {
   username: string;
-  // ...other user-related fields...
+
 }
 
 @Injectable({

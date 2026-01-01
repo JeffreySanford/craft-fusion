@@ -6,7 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 const mockNotificationService = {
-  // Add mock methods and properties as needed
+
   showSuccess: jest.fn(),
   showError: jest.fn(),
   success: jest.fn(),

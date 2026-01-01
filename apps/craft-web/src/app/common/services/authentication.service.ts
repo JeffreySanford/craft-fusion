@@ -13,13 +13,12 @@ import { User } from '../interfaces/user.interface';
 import { environment } from '../../../environments/environment';
 import { io, Socket } from 'socket.io-client';
 
-// Auth-related interfaces
 export interface AuthResponse {
   success: boolean;
   token: string;
   refreshToken?: string;
   user: User;
-  expiresIn?: number; // Token expiration time in seconds
+  expiresIn?: number;                                    
   message?: string;
 }
 
@@ -35,7 +34,7 @@ export interface RefreshTokenRequest {
 export interface TokenInfo {
   token: string;
   refreshToken?: string | undefined;
-  expiresAt?: number | undefined; // Expiration timestamp
+  expiresAt?: number | undefined;                        
 }
 
 export interface AuthState {
@@ -48,19 +47,17 @@ export interface AuthState {
 
 @Injectable()
 export class AuthenticationService {
-  // CONSTANTS
+
   private readonly TOKEN_KEY = 'auth_token';
   private readonly REFRESH_TOKEN_KEY = 'auth_refresh_token';
   private readonly TOKEN_EXPIRES_KEY = 'auth_token_expires';
-  private readonly AUTH_TIMEOUT = 15000; // 15 seconds timeout for auth requests
-  private readonly TOKEN_REFRESH_THRESHOLD = 300; // Refresh token 5 minutes before expiry
-  private readonly MAX_RETRIES = 3; // Maximum number of retries for connection issues
+  private readonly AUTH_TIMEOUT = 15000;                                        
+  private readonly TOKEN_REFRESH_THRESHOLD = 300;                                         
+  private readonly MAX_RETRIES = 3;                                                   
 
-  // WebSocket connection for real-time auth updates
   private socket: Socket | null = null;
   private socketDestroy$ = new Subject<void>();
 
-  // SUBJECTS FOR REACTIVE STATE
   private authState = new BehaviorSubject<AuthState>({
     user: {
       id: 0,
@@ -71,14 +68,13 @@ export class AuthenticationService {
       email: '',
       password: '',
       roles: [],
-      role: '', // Add the required role property
+      role: '',                                  
     },
     isLoggedIn: false,
     isAdmin: false,
     isOffline: false,
   });
 
-  // Public observables derived from auth state
   public readonly authState$ = this.authState.asObservable();
   public readonly currentUser$ = this.authState$.pipe(
     map(state => state.user),
@@ -94,16 +90,12 @@ export class AuthenticationService {
     shareReplay(1),
   );
 
-  // Network state
   private _isOfflineMode = false;
   private connectionRetryCount = 0;
   private tokenRefreshInProgress = false;
-  // Use ReturnType<typeof setTimeout> to be compatible with browser and Node typings
+
   private refreshTokenTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  /**
-   * Normalize unknown errors into a predictable shape for logging and handling
-   */
   private normalizeError(error: unknown): { status?: number; message?: string; error?: any; name?: string } {
     if (!error) return { message: String(error) };
     if (typeof error === 'object' && error !== null) {
@@ -132,24 +124,14 @@ export class AuthenticationService {
     console.log('🔐 AuthService: Constructor called');
     this.logger.info('Authentication Service initialized');
 
-    // For development, don't auto-restore admin sessions on app restart
-    // This prevents users from being automatically logged in as admin
     this.clearAuthState();
 
-    // Comment out automatic authentication initialization
-    // this.initializeAuthentication();
   }
 
-  /**
-   * Manually initialize authentication (for development/testing)
-   */
   public manualInitialize(): void {
     this.initializeAuthentication();
   }
 
-  /**
-   * Helper method to determine if a user has admin role based on roles array
-   */
   private hasAdminRole(user: User | null): boolean {
     if (!user) {
       console.log('hasAdminRole: No user provided');
@@ -162,35 +144,22 @@ export class AuthenticationService {
     return isAdmin;
   }
 
-  /**
-   * Returns the current user data
-   */
   public get currentUser(): User | null {
     return this.authState.value.user;
   }
 
-  /**
-   * Returns current authentication state
-   */
   public get isAuthenticated(): boolean {
     return this.authState.value.isLoggedIn;
   }
 
-  /**
-   * Check if the app is currently in offline mode
-   */
   public get isOffline(): boolean {
     return this._isOfflineMode;
   }
 
-  /**
-   * Initialize authentication state - check for existing valid tokens
-   */
   public initializeAuthentication(): void {
     console.log('🔐 AuthService: initializeAuthentication called');
     this.logger.debug('Initializing authentication - checking for existing tokens');
 
-    // Check for existing tokens
     const tokenInfo = this.getStoredTokenInfo();
     console.log('🔐 AuthService: Token info found:', {
       hasToken: !!tokenInfo?.token,
@@ -201,7 +170,6 @@ export class AuthenticationService {
     if (tokenInfo && tokenInfo.token) {
       this.logger.debug('Found existing token, validating with API');
 
-      // Validate token with API and get user details
       this.apiService
         .get<User>('auth/user')
         .pipe(
@@ -213,7 +181,6 @@ export class AuthenticationService {
               status: (error && error.status) || 0,
             });
 
-            // Clear invalid tokens
             this.clearAuthState();
             return throwError(() => error);
           }),
@@ -231,7 +198,6 @@ export class AuthenticationService {
               isAdmin: this.hasAdminRole(user),
             });
 
-            // Restore authentication state from API response
             this.updateAuthState({
               user,
               isLoggedIn: true,
@@ -242,14 +208,13 @@ export class AuthenticationService {
 
             this.sessionService.setUserSession(user);
 
-            // Schedule token refresh if expiration exists
             if (tokenInfo.expiresAt) {
               this.scheduleTokenRefresh(tokenInfo.expiresAt);
             }
           },
           error: () => {
             console.log('initializeAuthentication: Token validation failed, clearing state');
-            // Token validation failed, user needs to login again
+
             this.clearAuthState();
             this.router.navigate(['/home']);
           },
@@ -257,17 +222,14 @@ export class AuthenticationService {
     } else {
       console.log('initializeAuthentication: No existing tokens found');
       this.logger.debug('No existing tokens found, user not authenticated');
-      // No tokens, ensure clean state
+
       this.clearAuthState();
       this.router.navigate(['/home']);
     }
   }
 
-  /**
-   * Log in a user with username and password
-   */
   public login(username: string, password: string): Observable<AuthResponse> {
-    // Clear any existing token before attempting login
+
     this.clearAuthState();
 
     this.logger.info('Login attempt initiated', {
@@ -277,18 +239,15 @@ export class AuthenticationService {
       serverStarting: this.apiService.isServerStarting,
     });
 
-    // Check if we appear to be offline based on previous errors
     if (this._isOfflineMode) {
       this.logger.warn('Operating in offline mode, using fallback login mechanism');
       return this.handleOfflineLogin(username, password);
     }
 
-    // Development mode fallback for testing
     if (username === 'test' && password === 'test') {
       this.logger.debug('Test credentials detected - proceeding with normal API call');
     }
 
-    // Development mode fallback for admin credentials
     if (username === 'admin' && password === 'admin') {
       this.logger.debug('Admin credentials detected - proceeding with normal API call');
     }
@@ -299,7 +258,6 @@ export class AuthenticationService {
       endpoint: 'auth/login',
     });
 
-    // Use special auth request method with enhanced retry logic
     return this.apiService.authRequest<AuthResponse>('POST', 'auth/login', loginRequest).pipe(
       tap((response: AuthResponse) => {
         if (response && response.token) {
@@ -313,15 +271,12 @@ export class AuthenticationService {
             hasRefreshToken: !!response.refreshToken,
           });
 
-          // Store the token with expiration if provided
           const expiresAt = response.expiresIn ? Date.now() + response.expiresIn * 1000 : undefined;
 
           this.handleSuccessfulLogin(response, expiresAt);
 
-          // Initialize WebSocket connection for real-time auth state updates
           this.initializeAuthSocket();
 
-          // Schedule token refresh if expiration is provided
           if (expiresAt) {
             this.scheduleTokenRefresh(expiresAt);
           }
@@ -333,7 +288,6 @@ export class AuthenticationService {
         const status = error?.status;
         const message = error?.message || 'Unknown error';
 
-        // Check if this is a connection issue
         if (status === 0 || status === 504) {
           this._isOfflineMode = true;
           this.logger.warn('Network connectivity issue detected during authentication', {
@@ -344,10 +298,8 @@ export class AuthenticationService {
             offlineModeActivated: true,
           });
 
-          // Show more helpful message
           this.notificationService.showWarning(`Server appears to be unavailable. Using offline mode for demonstration.`, 'Switching to Offline Mode');
 
-          // Always allow fallback login during connection issues
           return this.handleOfflineLogin(username, password);
         }
 
@@ -356,9 +308,6 @@ export class AuthenticationService {
     );
   }
 
-  /**
-   * Log out the current user
-   */
   public logout(): void {
     const currentUser = this.authState.value.user;
     this.logger.info('User logout initiated', {
@@ -367,23 +316,18 @@ export class AuthenticationService {
       timestamp: new Date().toISOString(),
     });
 
-    // Close WebSocket connection if open
     this.closeAuthSocket();
 
-    // Cancel any pending token refresh
     if (this.refreshTokenTimeout) {
       clearTimeout(this.refreshTokenTimeout);
       this.refreshTokenTimeout = null;
     }
 
-    // Clear all authentication-related state
     this.clearAuthState();
     this.sessionService.clearUserSession();
 
-    // Clear admin state
     this.adminStateService.setAdminStatus(false);
 
-    // Clear user tracking state
     this.userTrackingService.setCurrentUser(null);
 
     this.router.navigate(['/home']);
@@ -391,9 +335,6 @@ export class AuthenticationService {
     this.logger.debug('User logout completed, all authentication and administrative state reset');
   }
 
-  /**
-   * Attempt to refresh the authentication token
-   */
   public refreshToken(): Observable<AuthResponse> {
     if (this.tokenRefreshInProgress) {
       this.logger.debug('Token refresh already in progress, skipping duplicate request');
@@ -418,7 +359,6 @@ export class AuthenticationService {
         if (response && response.token) {
           this.logger.info('Token refreshed successfully');
 
-          // Update stored token with new values
           const expiresAt = response.expiresIn ? Date.now() + response.expiresIn * 1000 : undefined;
 
           this.storeTokenInfo({
@@ -427,7 +367,6 @@ export class AuthenticationService {
             expiresAt: expiresAt,
           });
 
-          // Schedule next token refresh
           if (expiresAt) {
             this.scheduleTokenRefresh(expiresAt);
           }
@@ -447,7 +386,6 @@ export class AuthenticationService {
         });
         this.tokenRefreshInProgress = false;
 
-        // If refresh fails with 401/403, user needs to re-authenticate
         if (status === 401 || status === 403) {
           this.clearAuthState();
           this.router.navigate(['/login']);
@@ -459,9 +397,6 @@ export class AuthenticationService {
     );
   }
 
-  /**
-   * Fetch current user details from the server
-   */
   private fetchUserDetails(): void {
     this.logger.debug('Fetching user details from server');
     this.apiService
@@ -478,7 +413,6 @@ export class AuthenticationService {
             timestamp: new Date().toISOString(),
           });
 
-          // Only clear auth if this is an auth error
           if (status === 401 || status === 403) {
             this.clearAuthState();
           }
@@ -492,7 +426,6 @@ export class AuthenticationService {
           isAdmin: this.hasAdminRole(user),
         });
 
-        // Update auth state with user details
         this.updateAuthState({
           user,
           isLoggedIn: true,
@@ -505,9 +438,6 @@ export class AuthenticationService {
       });
   }
 
-  /**
-   * Update the authentication state
-   */
   private updateAuthState(state: Partial<AuthState>): void {
     const oldAdminState = this.authState.value.isAdmin;
     const oldLoggedInState = this.authState.value.isLoggedIn;
@@ -517,7 +447,6 @@ export class AuthenticationService {
       ...state,
     });
 
-    // Log state changes
     if (state.isAdmin !== undefined && state.isAdmin !== oldAdminState) {
       console.log('🔐 AuthService: isAdmin changed from', oldAdminState, 'to', state.isAdmin);
     }
@@ -525,15 +454,11 @@ export class AuthenticationService {
       console.log('🔐 AuthService: isLoggedIn changed from', oldLoggedInState, 'to', state.isLoggedIn);
     }
 
-    // Update offline mode flag
     if (state.isOffline !== undefined) {
       this._isOfflineMode = state.isOffline;
     }
   }
 
-  /**
-   * Handle successful login
-   */
   private handleSuccessfulLogin(response: AuthResponse, expiresAt?: number): void {
     console.log('handleSuccessfulLogin: Processing login response', {
       username: response.user?.username,
@@ -541,14 +466,12 @@ export class AuthenticationService {
       hasToken: !!response.token,
     });
 
-    // Store token information
     this.storeTokenInfo({
       token: response.token,
       refreshToken: response.refreshToken,
       expiresAt: expiresAt,
     });
 
-    // Update auth state
     this.updateAuthState({
       user: response.user,
       isLoggedIn: true,
@@ -559,7 +482,6 @@ export class AuthenticationService {
 
     this.sessionService.setUserSession(response.user);
 
-    // Update admin state service so other parts of the app can react
     const isAdmin = this.hasAdminRole(response.user);
     try {
       this.adminStateService.setAdminStatus(isAdmin);
@@ -567,7 +489,6 @@ export class AuthenticationService {
       this.logger.warn('Failed to update AdminStateService', { error: err });
     }
 
-    // Show a visible toast when an admin logs in
     if (isAdmin) {
       try {
         this.notificationService.showSuccess('Signed in with administrator privileges', 'Admin Login');
@@ -584,9 +505,6 @@ export class AuthenticationService {
     });
   }
 
-  /**
-   * Handle login error with appropriate messaging
-   */
   private handleLoginError(error: unknown, username: string): Observable<never> {
     const err = this.normalizeError(error);
     const statusCode = err.status;
@@ -600,7 +518,6 @@ export class AuthenticationService {
       timestamp: new Date().toISOString(),
     });
 
-    // Provide a user-friendly error message based on the error type
     let userMessage = 'Login failed. Please try again.';
 
     if (statusCode === 0) {
@@ -626,11 +543,8 @@ export class AuthenticationService {
     return throwError(() => error);
   }
 
-  /**
-   * Offline mode login with mock data
-   */
   private handleOfflineLogin(username: string, password: string): Observable<AuthResponse> {
-    // Only allow certain usernames in offline mode
+
     const validOfflineUsers = ['test', 'demo', 'admin', 'guest'];
 
     if (validOfflineUsers.includes(username.toLowerCase())) {
@@ -654,7 +568,6 @@ export class AuthenticationService {
 
       this.handleSuccessfulLogin(mockResponse);
 
-      // Update offline flag
       this.updateAuthState({
         isOffline: true,
       });
@@ -665,28 +578,22 @@ export class AuthenticationService {
         isAdmin: this.hasAdminRole(mockUser),
       });
 
-      // Notify user they are in offline mode
       this.notificationService.showInfo('You are working in offline mode. Some features may be limited.', 'Offline Mode Active');
 
-      return of(mockResponse).pipe(delay(500)); // Simulate network delay
+      return of(mockResponse).pipe(delay(500));                          
     } else {
       this.notificationService.showError('Only test, demo and admin users are available in offline mode', 'Login Failed');
       return throwError(() => new Error('Invalid offline user'));
     }
   }
 
-  /**
-   * Reset authentication state to default values
-   */
   private clearAuthState(): void {
     console.log('AuthService: Clearing authentication state');
 
-    // Clear stored tokens from sessionStorage
     sessionStorage.removeItem(this.TOKEN_KEY);
     sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
     sessionStorage.removeItem(this.TOKEN_EXPIRES_KEY);
 
-    // Reset auth state to initial values
     this.authState.next({
       user: {
         id: 0,
@@ -704,21 +611,16 @@ export class AuthenticationService {
       isOffline: this._isOfflineMode,
     });
 
-    // Clear any pending token refresh
     if (this.refreshTokenTimeout) {
       clearTimeout(this.refreshTokenTimeout);
       this.refreshTokenTimeout = null;
     }
 
-    // Close WebSocket connection
     this.closeAuthSocket();
 
     this.logger.debug('Authentication state cleared');
   }
 
-  /**
-   * Store token information in sessionStorage (more secure than localStorage)
-   */
   private storeTokenInfo(tokenInfo: TokenInfo): void {
     sessionStorage.setItem(this.TOKEN_KEY, tokenInfo.token);
 
@@ -731,9 +633,6 @@ export class AuthenticationService {
     }
   }
 
-  /**
-   * Retrieve stored token information from sessionStorage
-   */
   private getStoredTokenInfo(): TokenInfo | null {
     const token = sessionStorage.getItem(this.TOKEN_KEY);
 
@@ -745,7 +644,6 @@ export class AuthenticationService {
     const expiresAtStr = sessionStorage.getItem(this.TOKEN_EXPIRES_KEY);
     const expiresAt = expiresAtStr ? parseInt(expiresAtStr, 10) : undefined;
 
-    // Check if token has expired
     if (expiresAt && Date.now() > expiresAt) {
       console.log('Stored token has expired, clearing authentication state');
       this.clearAuthState();
@@ -759,13 +657,9 @@ export class AuthenticationService {
     };
   }
 
-  /**
-   * Get the authentication token from sessionStorage
-   */
   public getAuthToken(): string | null {
     const token = sessionStorage.getItem(this.TOKEN_KEY);
 
-    // Check if token exists and hasn't expired
     if (token) {
       const expiresAtStr = sessionStorage.getItem(this.TOKEN_EXPIRES_KEY);
       const expiresAt = expiresAtStr ? parseInt(expiresAtStr, 10) : undefined;
@@ -782,31 +676,24 @@ export class AuthenticationService {
     return null;
   }
 
-  /**
-   * Schedule token refresh before expiration
-   */
   private scheduleTokenRefresh(expiresAt?: number): void {
     if (!expiresAt) {
       return;
     }
 
-    // Clear any existing timeout
     if (this.refreshTokenTimeout) {
       clearTimeout(this.refreshTokenTimeout);
     }
 
-    // Calculate time until refresh (token expiry minus threshold)
     const now = Date.now();
     const refreshTime = expiresAt - this.TOKEN_REFRESH_THRESHOLD * 1000;
 
-    // If already past the refresh time, refresh immediately
     if (now >= refreshTime) {
       this.logger.debug('Token is near expiration, refreshing now');
       this.refreshToken().subscribe();
       return;
     }
 
-    // Schedule refresh
     const timeUntilRefresh = refreshTime - now;
     this.logger.debug(`Scheduling token refresh in ${Math.floor(timeUntilRefresh / 1000)} seconds`);
 
@@ -816,14 +703,10 @@ export class AuthenticationService {
     }, timeUntilRefresh);
   }
 
-  /**
-   * Initialize WebSocket connection for real-time auth events
-   */
   private initializeAuthSocket(): void {
-    // Close any existing connection first
+
     this.closeAuthSocket();
 
-    // Skip if in offline mode or no valid token
     if (this._isOfflineMode || !this.getAuthToken()) {
       return;
     }
@@ -839,12 +722,10 @@ export class AuthenticationService {
         },
       });
 
-      // Handle connection
       this.socket.on('connect', () => {
         this.logger.debug('Auth WebSocket connection established');
       });
 
-      // Handle incoming messages
       this.socket.on('session_expired', () => {
         this.notificationService.showWarning('Your session has expired. Please log in again.', 'Session Expired');
         this.logout();
@@ -860,16 +741,14 @@ export class AuthenticationService {
         this.logout();
       });
 
-      // Handle disconnection
       this.socket.on('disconnect', reason => {
         this.logger.debug('Auth WebSocket disconnected', { reason });
         if (reason === 'io server disconnect') {
-          // Server disconnected, try to reconnect
+
           setTimeout(() => this.initializeAuthSocket(), 1000);
         }
       });
 
-      // Handle connection errors
       this.socket.on('connect_error', error => {
         this.logger.warn('Auth WebSocket connection error', error);
       });
@@ -878,9 +757,6 @@ export class AuthenticationService {
     }
   }
 
-  /**
-   * Close the WebSocket connection
-   */
   private closeAuthSocket(): void {
     if (this.socket) {
       this.logger.debug('Closing auth WebSocket connection');
@@ -891,9 +767,6 @@ export class AuthenticationService {
     this.socketDestroy$.next();
   }
 
-  /**
-   * Check network connectivity status
-   */
   public checkNetworkStatus(): Observable<boolean> {
     this.logger.debug('Checking network connectivity status');
     return this.apiService
@@ -913,16 +786,13 @@ export class AuthenticationService {
             transition: wasOffline ? 'offline->online' : 'online->online',
           });
 
-          // Update auth state with offline flag
           this.updateAuthState({
             isOffline: false,
           });
 
-          // If we were offline but now online, notify the user
           if (wasOffline) {
             this.notificationService.showSuccess('Connection to server restored. Full functionality available.', 'Back Online');
 
-            // Re-establish WebSocket connection
             if (this.isAuthenticated) {
               this.initializeAuthSocket();
             }
@@ -942,7 +812,6 @@ export class AuthenticationService {
             status: error.status || 'unknown',
           });
 
-          // Update auth state with offline flag
           this.updateAuthState({
             isOffline: true,
           });
@@ -952,9 +821,6 @@ export class AuthenticationService {
       );
   }
 
-  /**
-   * Attempt to reconnect to the server with exponential backoff
-   */
   public reconnectToServer(): Observable<boolean> {
     const maxRetries = 5;
     let attempt = 0;
@@ -963,17 +829,17 @@ export class AuthenticationService {
 
     const reconnect = (): Observable<boolean> => {
       attempt++;
-      const backoffDelay = Math.pow(2, attempt - 1) * 1000; // 1s, 2s, 4s, 8s, 16s
+      const backoffDelay = Math.pow(2, attempt - 1) * 1000;                       
 
       this.logger.debug(`Reconnect attempt ${attempt} of ${maxRetries} after ${backoffDelay}ms delay`);
 
       return of(null).pipe(
-        // Add delay for backoff
+
         tap(() => this.notificationService.showInfo(`Attempting to reconnect to server (${attempt}/${maxRetries})...`, 'Reconnecting')),
         delay(backoffDelay),
-        // Check connection
+
         concatMap(() => this.checkNetworkStatus()),
-        // Try again if failed
+
         concatMap(isConnected => {
           if (isConnected) {
             return of(true);

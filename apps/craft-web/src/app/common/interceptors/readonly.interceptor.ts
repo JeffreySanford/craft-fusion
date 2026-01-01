@@ -18,22 +18,19 @@ export class ReadOnlyInterceptor implements HttpInterceptor {
     const readOnly = this.sessionService.status();
 
     if (!readOnly) {
-      //|| okIfReadOnly(request)
+
       const callId = this.logger.startServiceCall('ReadOnlyInterceptor', request.method, request.url);
 
-      // Let the request pass through
       this.logger.debug(`Allowing ${request.method} request to ${request.url}`);
 
-      // For brevity, we're not handling the completion here, that's done in the metrics interceptor
       return next.handle(request);
     } else {
-      // Block the request because we're in read-only mode
+
       const errorMsg = `Error: cannot ${request.method} ${request.url} when read-only`;
       this.logger.error(errorMsg);
 
-      // Track as a failed API call
       const callId = this.logger.startServiceCall('ReadOnlyInterceptor', request.method, request.url);
-      this.logger.endServiceCall(callId, 403); // Use 403 Forbidden for read-only mode
+      this.logger.endServiceCall(callId, 403);                                        
 
       return throwError(() => new Error(errorMsg));
     }

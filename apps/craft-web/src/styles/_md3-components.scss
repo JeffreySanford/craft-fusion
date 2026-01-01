@@ -1,16 +1,15 @@
 @use "variables" as vars;
 @use "sass:map";
 
-// MD3 Button styles
 .md3-button {
-  border-radius: 20px;
+  border-radius: 1.25em;
   cursor: pointer;
   font-family: "Roboto Flex", sans-serif;
-  font-size: 14px;
+  font-size: 0.875em;
   font-weight: 500;
-  height: 40px;
-  letter-spacing: 0.1px;
-  padding: 0 24px;
+  height: 2.5em;
+  letter-spacing: 0.0063em;
+  padding: 0 1.5em;
   text-transform: capitalize;
   transition: all 0.2s ease;
 
@@ -21,7 +20,7 @@
     color: var(--md-sys-color-on-primary);
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
+
       background-color: var(--md-sys-color-primary);
       @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black)) {
         background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
@@ -30,7 +29,7 @@
     }
 
     &:active {
-      /* Fallback for browsers that don't support color-mix */
+
       background-color: var(--md-sys-color-primary);
       @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, black)) {
         background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, black);
@@ -44,7 +43,7 @@
     color: var(--md-sys-color-on-secondary-container);
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
+
       background-color: var(--md-sys-color-secondary-container);
       @supports (background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 92%, black)) {
         background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 92%, black);
@@ -52,7 +51,7 @@
     }
 
     &:active {
-      /* Fallback for browsers that don't support color-mix */
+
       background-color: var(--md-sys-color-secondary-container);
       @supports (background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 88%, black)) {
         background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 88%, black);
@@ -66,7 +65,7 @@
     color: var(--md-sys-color-primary);
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
+
       background-color: transparent;
       @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent)) {
         background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
@@ -74,7 +73,7 @@
     }
 
     &:active {
-      /* Fallback for browsers that don't support color-mix */
+
       background-color: transparent;
       @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent)) {
         background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
@@ -86,10 +85,10 @@
     background-color: transparent;
     border: none;
     color: var(--md-sys-color-primary);
-    padding: 0 12px;
+    padding: 0 0.75em;
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
+
       background-color: transparent;
       @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent)) {
         background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
@@ -97,7 +96,7 @@
     }
 
     &:active {
-      /* Fallback for browsers that don't support color-mix */
+
       background-color: transparent;
       @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent)) {
         background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
@@ -108,10 +107,10 @@
   &.icon {
     align-items: center;
     display: inline-flex;
-    height: 40px;
+    height: 2.5em;
     justify-content: center;
     padding: 0;
-    width: 40px;
+    width: 2.5em;
   }
 
   &:disabled {
@@ -120,13 +119,12 @@
   }
 }
 
-// MD3 Card styles
 .md3-card {
   background-color: var(--md-sys-color-surface);
-  border-radius: 12px;
+  border-radius: 0.75em;
   box-shadow: var(--md-sys-elevation-level1);
   overflow: hidden;
-  padding: 16px;
+  padding: 1em;
   transition: box-shadow 0.2s ease;
 
   &:hover {
@@ -134,11 +132,11 @@
   }
 
   .md3-card-header {
-    padding-bottom: 16px;
+    padding-bottom: 1em;
 
     .md3-card-title {
       color: var(--md-sys-color-on-surface);
-      margin: 0 0 4px;
+      margin: 0 0 0.25em;
     }
 
     .md3-card-subtitle {
@@ -153,9 +151,9 @@
 
   .md3-card-actions {
     display: flex;
-    gap: 8px;
+    gap: 0.5em;
     justify-content: flex-end;
-    padding-top: 16px;
+    padding-top: 1em;
   }
 
   &.elevated {
@@ -174,24 +172,23 @@
   }
 }
 
-// MD3 Chip styles
 .md3-chip {
   align-items: center;
-  border-radius: 8px;
+  border-radius: 0.5em;
   cursor: pointer;
   display: inline-flex;
-  font-size: 14px;
+  font-size: 0.875em;
   font-weight: 500;
-  gap: 8px;
-  height: 32px;
-  padding: 0 12px;
+  gap: 0.5em;
+  height: 2em;
+  padding: 0 0.75em;
 
   &.assist {
     background-color: var(--md-sys-color-surface-variant);
     color: var(--md-sys-color-on-surface-variant);
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
+
       background-color: var(--md-sys-color-surface-variant);
       @supports (background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 92%, black)) {
         background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 92%, black);
@@ -199,7 +196,7 @@
     }
 
     &:active {
-      /* Fallback for browsers that don't support color-mix */
+
       background-color: var(--md-sys-color-surface-variant);
       @supports (background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 88%, black)) {
         background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 88%, black);
@@ -237,7 +234,7 @@
     color: var(--md-sys-color-on-surface-variant);
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
+
       background-color: var(--md-sys-color-surface-variant);
       @supports (background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 92%, black)) {
         background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 92%, black);
@@ -246,12 +243,11 @@
   }
 }
 
-// MD3 Navigation Rail
 .md3-nav-rail {
   background-color: var(--md-sys-color-surface);
   box-shadow: var(--md-sys-elevation-level1);
-  padding: 12px 0;
-  width: 80px;
+  padding: 0.75em 0;
+  width: 5em;
 
   .md3-nav-item {
     align-items: center;
@@ -259,7 +255,7 @@
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    padding: 12px 0;
+    padding: 0.75em 0;
     transition: all 0.2s ease;
 
     &.active {
@@ -267,7 +263,7 @@
     }
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
+
       background-color: transparent;
       @supports (background-color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent)) {
         background-color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent);
@@ -275,60 +271,58 @@
     }
 
     .material-icons {
-      font-size: 24px;
-      margin-bottom: 4px;
+      font-size: 1.5em;
+      margin-bottom: 0.25em;
     }
 
     span {
-      font-size: 12px;
+      font-size: 0.75em;
       text-align: center;
     }
   }
 }
 
-// MD3 Top App Bar
 .md3-top-app-bar {
   align-items: center;
   background-color: var(--md-sys-color-surface);
   box-shadow: var(--md-sys-elevation-level2);
   color: var(--md-sys-color-on-surface);
   display: flex;
-  height: 64px;
-  padding: 0 16px;
+  height: 4em;
+  padding: 0 1em;
 
   .md3-top-app-bar-title {
-    font-size: 22px;
+    font-size: 1.375em;
     font-weight: 400;
-    margin-left: 16px;
+    margin-left: 1em;
   }
 
   &.small {
-    height: 56px;
+    height: 3.5em;
   }
 
   &.medium {
-    height: 112px;
+    height: 7em;
   }
 
   &.large {
-    height: 152px;
+    height: 9.5em;
   }
 }
 
-// MD3 Lists
 .md3-list {
-  padding: 8px 0;
+  padding: 0.5em 0;
 
   .md3-list-item {
     align-items: center;
     color: var(--md-sys-color-on-surface);
     cursor: pointer;
     display: flex;
-    height: 56px;
-    padding: 0 16px;
+    height: 3.5em;
+    padding: 0 1em;
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
+
       background-color: transparent;
       @supports (background-color: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent)) {
         background-color: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
@@ -341,7 +335,7 @@
     }
 
     .md3-list-item-leading {
-      margin-right: 16px;
+      margin-right: 1em;
     }
 
     .md3-list-item-trailing {
@@ -351,17 +345,16 @@
 
   .md3-list-divider {
     background-color: var(--md-sys-color-outline-variant);
-    height: 1px;
-    margin: 8px 0;
+    height: 0.0625em;
+    margin: 0.5em 0;
   }
 }
 
-// MD3 Switch
 .md3-switch {
   display: inline-block;
-  height: 32px;
+  height: 2em;
   position: relative;
-  width: 52px;
+  width: 3.25em;
 
   input {
     height: 0;
@@ -391,7 +384,7 @@
 
   .md3-switch-track {
     background-color: var(--md-sys-color-surface-variant);
-    border-radius: 16px;
+    border-radius: 1em;
     bottom: 0;
     cursor: pointer;
     left: 0;
@@ -403,33 +396,32 @@
     .md3-switch-thumb {
       background-color: var(--md-sys-color-outline);
       border-radius: 50%;
-      bottom: 8px;
-      height: 16px;
-      left: 8px;
+      bottom: 0.5em;
+      height: 1em;
+      left: 0.5em;
       position: absolute;
       transition: 0.2s;
-      width: 16px;
+      width: 1em;
     }
   }
 }
 
-// MD3 FAB (Floating Action Button)
 .md3-fab {
   align-items: center;
   background-color: var(--md-sys-color-primary);
   border: none;
-  border-radius: 16px;
+  border-radius: 1em;
   box-shadow: var(--md-sys-elevation-level3);
   color: var(--md-sys-color-on-primary);
   cursor: pointer;
   display: flex;
-  height: 56px;
+  height: 3.5em;
   justify-content: center;
   transition: all 0.2s ease;
-  width: 56px;
+  width: 3.5em;
 
   &:hover {
-    /* Fallback for browsers that don't support color-mix */
+
     background-color: var(--md-sys-color-primary);
     @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black)) {
       background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
@@ -438,7 +430,7 @@
   }
 
   &:active {
-    /* Fallback for browsers that don't support color-mix */
+
     background-color: var(--md-sys-color-primary);
     @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, black)) {
       background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, black);
@@ -447,27 +439,26 @@
   }
 
   &.small {
-    border-radius: 12px;
-    height: 40px;
-    width: 40px;
+    border-radius: 0.75em;
+    height: 2.5em;
+    width: 2.5em;
   }
 
   &.large {
-    border-radius: 28px;
-    height: 96px;
-    width: 96px;
+    border-radius: 1.75em;
+    height: 6em;
+    width: 6em;
   }
 
   .material-icons {
-    font-size: 24px;
+    font-size: 1.5em;
   }
 }
 
-// MD3 Tabs
 .md3-tabs {
   background-color: var(--md-sys-color-surface);
   display: flex;
-  height: 48px;
+  height: 3em;
   width: 100%;
 
   .md3-tab {
@@ -486,18 +477,18 @@
 
       &::after {
         background-color: var(--md-sys-color-primary);
-        border-radius: 3px 3px 0 0;
+        border-radius: 0.1875em 0.1875em 0 0;
         bottom: 0;
         content: "";
-        height: 3px;
-        left: 16px;
+        height: 0.1875em;
+        left: 1em;
         position: absolute;
-        right: 16px;
+        right: 1em;
       }
     }
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
+
       background-color: transparent;
       @supports (background-color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent)) {
         background-color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent);

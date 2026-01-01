@@ -25,27 +25,21 @@ export interface ApiLogEntry {
 export class ApiLoggerService {
   private logSubject = new Subject<ApiLogEntry>();
   private logs: ApiLogEntry[] = [];
-  private maxLogs = 1000; // Store up to 1000 logs
+  private maxLogs = 1000;                         
 
   constructor(private logger: LoggerService) {
     this.logger.debug('ApiLoggerService initialized');
   }
 
-  /**
-   * Log an API request/response
-   */
   logApiCall(entry: ApiLogEntry): void {
     this.logs.push(entry);
 
-    // Trim logs if they exceed the maximum
     if (this.logs.length > this.maxLogs) {
       this.logs.shift();
     }
 
-    // Emit the log entry to subscribers
     this.logSubject.next(entry);
 
-    // Also log to the general logger for debug purposes
     const status = entry.response?.status;
     const method = entry.request.method;
     const url = entry.request.url;
@@ -58,24 +52,15 @@ export class ApiLoggerService {
     }
   }
 
-  /**
-   * Clear all logs
-   */
   clearLogs(): void {
     this.logs = [];
     this.logger.info('API logs cleared');
   }
 
-  /**
-   * Get all stored logs
-   */
   getLogs(): ApiLogEntry[] {
     return [...this.logs];
   }
 
-  /**
-   * Get logs for a specific endpoint
-   */
   getLogsForEndpoint(endpoint: string): ApiLogEntry[] {
     return this.logs.filter(log => {
       try {
@@ -87,20 +72,14 @@ export class ApiLoggerService {
     });
   }
 
-  /**
-   * Subscribe to the log stream
-   */
   getLogStream(): Observable<ApiLogEntry> {
     return this.logSubject.asObservable();
   }
 
-  /**
-   * Generate a simulated log entry for testing
-   */
   generateMockLog(path: string = '/api/data', method: string = 'GET'): ApiLogEntry {
     const timestamp = Date.now();
-    const responseTime = Math.floor(Math.random() * 500) + 5; // 5-505ms
-    const statusOptions = [200, 200, 200, 200, 201, 204, 400, 404, 500]; // Weighted to favor success
+    const responseTime = Math.floor(Math.random() * 500) + 5;           
+    const statusOptions = [200, 200, 200, 200, 201, 204, 400, 404, 500];                             
     const status = statusOptions[Math.floor(Math.random() * statusOptions.length)] ?? 500;
 
     return {

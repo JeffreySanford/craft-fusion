@@ -149,13 +149,41 @@ module.exports = [
             'eqeqeq': ['error', 'always'],
             'curly': 'error',
             'max-len': ['warn', { code: 120 }],
+            'local-rules/no-multiple-blank-lines': ['error', { max: 1, maxBOF: 0, maxEOF: 0 }],
             // TypeScript rules
             '@typescript-eslint/no-explicit-any': 'warn',
             '@typescript-eslint/explicit-function-return-type': 'off',
             '@typescript-eslint/explicit-module-boundary-types': 'off',
             '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-            // Prohibit constructing service classes with `new` — require DI
+            // Prohibit constructing service classes with `new` - require DI
             'local-rules/no-new-service': 'error',
+        },
+    },
+    {
+        files: ['**/*.html', '**/*.scss'],
+        ignores: [
+            '**/node_modules/**',
+            '**/dist/**',
+            '.nx/**',
+            '.angular/**',
+            'playwright-report/**',
+            'test-results/**',
+            'coverage/**',
+            'tmp/**',
+            'scripts/**',
+            'tools/**',
+            '**/build/**',
+            '**/out/**',
+            '**/assets/**'
+        ],
+        languageOptions: {
+            parser: require('./tools/eslint-rules/plain-text-parser'),
+        },
+        plugins: {
+            'local-rules': require('./tools/eslint-rules'),
+        },
+        rules: {
+            'local-rules/no-multiple-blank-lines': ['error', { max: 1, maxBOF: 0, maxEOF: 0 }],
         },
     },
     // E2E specific files configuration

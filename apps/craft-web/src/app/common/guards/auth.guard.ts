@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    // Use the observable auth state so we wait for the latest value
+
     return this.authService.isLoggedIn$.pipe(
       take(1),
       map(isLoggedIn => {
@@ -31,7 +31,6 @@ export class AuthGuard implements CanActivate {
           url: state.url,
         });
 
-        // Redirect to landing page
         this.router.navigate(['/home']);
         return false;
       }),

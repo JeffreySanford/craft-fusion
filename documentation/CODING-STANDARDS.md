@@ -244,4 +244,10 @@ export class RecordListComponent implements OnInit {
 ## Project-wide Standards
 - If automation scripts are reintroduced, keep a shared prep step and consistent output conventions.
 
+## Design Standards
+
+- Use `em` for sizing and spacing by default (padding, margin, gaps, widths, heights, font sizes).
+- Keep `px` for hairline details and optical effects (borders, outlines, shadows, and similar 1–2px treatments).
+- Keep layout breakpoints in `px` to preserve responsive behavior.
+
 Last Updated: 2025-05-25

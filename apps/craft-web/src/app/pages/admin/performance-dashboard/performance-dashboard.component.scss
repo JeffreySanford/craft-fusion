@@ -4,25 +4,25 @@
 
 .metrics-summary {
   display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 0.75em;
+  margin-bottom: 0.75em;
 }
 
 .metric-card {
   align-items: center;
   background: #0f172a;
-  border-radius: 6px;
+  border-radius: 0.375em;
   color: #fff;
   display: flex;
-  padding: 8px;
+  padding: 0.5em;
 }
 
 .metric-icon {
-  margin-right: 8px;
+  margin-right: 0.5em;
 }
 
 .chart-area {
-  height: 320px;
+  height: 20em;
 }
 
 canvas {

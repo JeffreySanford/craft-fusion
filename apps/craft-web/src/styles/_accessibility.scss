@@ -1,15 +1,10 @@
-// Accessibility enhancements for the application
-// This file contains accessibility-related styles and overrides
-
-// Replace deprecated -ms-high-contrast with standard forced-colors
 @media (forced-colors: active) {
-  // Enhanced focus indicators for better visibility
+
   *:focus {
     outline: 2px solid canvastext;
-    outline-offset: 2px;
+    outline-offset: 0.125em;
   }
 
-  // Ensure proper contrast for interactive elements
   button,
   a[role="button"],
   .mat-button,
@@ -29,30 +24,25 @@
     }
   }
 
-  // Ensure proper contrast for tables
   table,
   th,
   td {
     border-color: canvastext;
   }
 
-  // Make sure cards have visible borders
   .mat-card {
     border: 1px solid canvastext;
   }
 
-  // Ensure icons are visible
   mat-icon {
     color: canvastext;
   }
 
-  // Ensure spinner is visible
   mat-progress-spinner::ng-deep circle {
     stroke: canvastext !important;
   }
 }
 
-// Respect user's preference for reduced motion
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

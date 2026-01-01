@@ -9,7 +9,7 @@
 
 .bar-chart-legend-item {
   align-items: center;
-  border-radius: 3px;
+  border-radius: 0.1875em;
   box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
   color: white;
   display: flex;
@@ -38,17 +38,17 @@
   align-items: center;
   background: #121212;
   border: none;
-  border-radius: 10px;
+  border-radius: 0.625em;
   box-sizing: border-box;
   color: #fff;
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Allow container to grow and fill available space */
+  flex-grow: 1;                                                       
   height: 100%;
   justify-content: center;
-  min-height: 250px; /* Increased minimum height for the chart */
-  overflow: visible; /* Allow chart to overflow if needed */
-  padding: 15px;
+  min-height: 15.625em;                                             
+  overflow: visible;                                        
+  padding: 0.9375em;
   position: relative;
   text-align: center;
   width: 100%;
@@ -57,17 +57,14 @@
 .status-message {
   margin-bottom: 1rem;
 
-  // ...any additional styling...
 }
 
-/* Make sure SVG fills the container properly */
 :host ::ng-deep svg {
   height: 100%;
   overflow: visible;
   width: 100%;
 }
 
-/* Style the axis */
 :host ::ng-deep {
   .domain,
   .tick line {
@@ -87,19 +84,17 @@
     }
   }
 
-  // Add grid lines for better readability
   .grid line {
     stroke: rgb(255 255 255 / 10%);
     stroke-dasharray: 2, 2;
   }
 
-  // Improve text labels
   .chart-title {
     color: #fff;
     font-family: Arial, sans-serif;
-    font-size: 24px;
+    font-size: 1.5em;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 0.625em;
   }
 
   .chart-subtitle {
@@ -113,12 +108,10 @@
     font-weight: 500;
   }
 
-  // Add hover effect for chart elements
   .bar-group:hover {
     opacity: 1;
   }
 
-  // Add animation classes
   .bar-animated {
     transition:
       height 0.5s ease-out,
@@ -126,25 +119,24 @@
   }
 }
 
-// Enhanced tooltip styling
 .bar-tooltip {
   background-color: rgb(0 0 0 / 80%) !important;
-  border-radius: 4px;
+  border-radius: 0.25em;
   box-shadow: 0 2px 12px rgb(0 0 0 / 30%);
   box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
   color: white;
   font-family: Arial, sans-serif;
-  font-size: 14px;
-  letter-spacing: 0.2px;
+  font-size: 0.875em;
+  letter-spacing: 0.0125em;
   line-height: 1.4;
-  padding: 10px;
-  padding: 8px 12px;
+  padding: 0.625em;
+  padding: 0.5em 0.75em;
   pointer-events: none;
 }
 
 .bar-chart {
   flex: 1;
-  min-height: 200px;
+  min-height: 12.5em;
   position: relative;
   width: 100%;
 
@@ -172,14 +164,13 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-  margin-top: 20px;
-  padding-bottom: 10px; // Add some padding at bottom now that legend is gone
+  margin-top: 1.25em;
+  padding-bottom: 0.625em;                                                      
 }
 
-// Responsive adjustments
 @media (max-width: 768px) {
   .infographic {
-    margin-bottom: 10px;
+    margin-bottom: 0.625em;
     width: 100%;
   }
 
@@ -188,23 +179,21 @@
   }
 
   .chart-title {
-    font-size: 18px;
+    font-size: 1.125em;
   }
 }
 
-// Make the chart area fill available space
 :host {
   display: block;
   height: 100%;
   width: 100%;
 }
 
-/* Force the chart to be visible even when container is tiny */
 :host {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 300px; /* Increased minimum height */
+  min-height: 18.75em;                               
 }
 
 text {
@@ -218,26 +207,26 @@ text {
 
 .metric-toggle {
   display: flex;
-  gap: 8px;
+  gap: 0.5em;
   justify-content: center;
-  margin-bottom: 15px;
+  margin-bottom: 0.9375em;
 }
 
 .toggle-btn {
   align-items: center;
   background: rgb(255 255 255 / 8%);
   border: none;
-  border-radius: 4px;
+  border-radius: 0.25em;
   color: #fff;
   cursor: pointer;
   display: flex;
   font-weight: 500;
-  padding: 8px 15px;
+  padding: 0.5em 0.9375em;
   transition: all 0.2s ease;
 
   .toggle-icon {
     font-size: 1.1em;
-    margin-right: 6px;
+    margin-right: 0.375em;
   }
 
   &:hover {
@@ -253,7 +242,7 @@ text {
     &::before {
       background: linear-gradient(90deg, #b22234, #fff, #3c3b6e);
       content: "";
-      height: 2px;
+      height: 0.125em;
       left: 0;
       position: absolute;
       right: 0;
@@ -264,7 +253,7 @@ text {
       background: linear-gradient(90deg, #3c3b6e, #fff, #b22234);
       bottom: 0;
       content: "";
-      height: 2px;
+      height: 0.125em;
       left: 0;
       position: absolute;
       right: 0;
@@ -272,19 +261,17 @@ text {
   }
 }
 
-/* Patriotic themed infographic section */
 .patriotic-container {
   background: #0a1329;
   border-bottom: 2px solid #b22234;
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 0.5em 0.5em;
   border-top: 2px solid #3c3b6e;
-  margin-top: 20px;
+  margin-top: 1.25em;
   overflow: hidden;
-  padding: 5px 0;
+  padding: 0.3125em 0;
   position: relative;
   width: 100%;
 
-  // Create a subtle stars background
   .star-bg {
     background-image: radial-gradient(white 1px, transparent 1px), radial-gradient(white 1px, transparent 1px);
     background-position:
@@ -305,7 +292,7 @@ text {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-  padding: 10px;
+  padding: 0.625em;
   position: relative;
   width: 100%;
   z-index: 1;
@@ -315,35 +302,33 @@ text {
   align-items: center;
   background: rgb(0 0 20 / 60%);
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 6px;
+  border-radius: 0.375em;
   box-shadow: 0 3px 8px rgb(0 0 0 / 20%);
   display: flex;
-  margin-bottom: 8px;
-  min-width: 200px;
+  margin-bottom: 0.5em;
+  min-width: 12.5em;
   overflow: hidden;
-  padding: 10px;
+  padding: 0.625em;
   position: relative;
   width: 30%;
 
-  // Red, white and blue gradient accent on top
   &::before {
     background: linear-gradient(90deg, #b22234, #fff, #3c3b6e);
     content: "";
-    height: 2px;
+    height: 0.125em;
     left: 0;
     position: absolute;
     right: 0;
     top: 0;
   }
 
-  // Star icon at bottom right
   &::after {
-    bottom: 3px;
+    bottom: 0.1875em;
     color: rgb(255 255 255 / 10%);
     content: "★";
-    font-size: 16px;
+    font-size: 1em;
     position: absolute;
-    right: 5px;
+    right: 0.3125em;
   }
 
   .info-icon {
@@ -355,11 +340,11 @@ text {
     color: white;
     display: flex;
     flex-shrink: 0;
-    font-size: 18px;
-    height: 36px;
+    font-size: 1.125em;
+    height: 2.25em;
     justify-content: center;
-    margin-right: 12px;
-    width: 36px;
+    margin-right: 0.75em;
+    width: 2.25em;
   }
 
   .info-content {
@@ -369,7 +354,7 @@ text {
       color: #fff;
       font-size: 0.9em;
       font-weight: 600;
-      margin: 0 0 4px;
+      margin: 0 0 0.25em;
     }
 
     p {
@@ -389,10 +374,9 @@ text {
   }
 }
 
-// Responsive adjustments
 @media (max-width: 768px) {
   .info-card {
-    margin-bottom: 10px;
+    margin-bottom: 0.625em;
     min-width: 0;
     width: 100%;
   }
@@ -404,7 +388,7 @@ text {
 
 .bar-chart {
   flex: 1;
-  min-height: 200px;
+  min-height: 12.5em;
   position: relative;
   width: 100%;
 

@@ -24,13 +24,13 @@
         <mat-tab *ngFor="let city of cities" label="{{ city.name }}">
           <ng-template matTabContent>
             <div class="tab-content-wrapper">
-              <!-- Mapbox Map -->
+
               <div *ngIf="city.alerts && city.alerts.length > 0" id="map-{{ city.alerts?.[0]?.id }}" class="map-container"></div>
 
               <div class="status-container two-columns">
-                <!-- Left Column -->
+
                 <div class="status-column">
-                  <!-- Flights List -->
+
                   <div class="flights-list">
                     <h3>Nearby Flights</h3>
                     <ul>
@@ -40,9 +40,8 @@
                   </div>
                 </div>
 
-                <!-- Right Column -->
                 <div class="status-column">
-                  <!-- Alerts List -->
+
                   <div class="alerts-list">
                     <h3>
                       Active Alerts <span class="alert-count">({{ filteredAlerts(city).length }})</span>

@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-// Import Angular Material modules
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,7 +9,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 
-// Import components
 import { TimelinePageComponent } from './components/timeline-page/timeline-page.component';
 import { TimelineListComponent } from './components/timeline-list/timeline-list.component';
 import { TimelineItemComponent } from './components/timeline-item/timeline-item.component';
@@ -22,7 +20,7 @@ import { JeffreyAiComponent } from './components/jeffrey-ai/jeffrey-ai.component
     TimelinePageComponent,
     TimelineListComponent,
     TimelineItemComponent,
-    MemorialTimelineComponent, // Added the missing component
+    MemorialTimelineComponent,                               
     JeffreyAiComponent,
   ],
   imports: [
@@ -49,7 +47,7 @@ import { JeffreyAiComponent } from './components/jeffrey-ai/jeffrey-ai.component
     TimelinePageComponent,
     TimelineListComponent,
     TimelineItemComponent,
-    MemorialTimelineComponent, // Export the component
+    MemorialTimelineComponent,                        
   ],
 })
 export class MemorialTimelineModule {}

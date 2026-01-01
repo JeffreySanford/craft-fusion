@@ -12,7 +12,7 @@
   min-height: 0 !important;
   overflow-x: hidden !important;
   overflow-y: auto !important;
-  padding-bottom: calc(var(--paginator-offset, 2.5em) + 0.75rem) !important; /* reserve space so last rows aren't hidden under paginator/footer */
+  padding-bottom: calc(var(--paginator-offset, 2.5em) + 0.75rem) !important;                                                                      
   position: relative !important;
   width: 100% !important;
 
@@ -30,7 +30,7 @@
     background: rgba(map.get(vars.$table-theme, patriotic-blue), 0.85) !important;
     border-bottom: 2px solid map.get(vars.$table-theme, patriotic-red) !important;
     box-shadow: 0 0.1875em 0.375em rgb(0 0 0 / 20%) !important;
-    min-height: 40px !important;
+    min-height: 2.5em !important;
     position: sticky !important;
     top: 0 !important;
     z-index: 10 !important;
@@ -59,8 +59,8 @@
 
   .flex-row {
     height: auto !important;
-    margin: 1px 0 !important;
-    min-height: 28px !important;
+    margin: 0.0625em 0 !important;
+    min-height: 1.75em !important;
   }
 
   @supports (scrollbar-width: thin) {
@@ -132,35 +132,35 @@
   .flex-cell {
     &:nth-child(1) {
       flex: 1 !important;
-      min-width: 80px !important;
+      min-width: 5em !important;
     }
 
     &:nth-child(2) {
       flex: 2 !important;
-      min-width: 120px !important;
+      min-width: 7.5em !important;
     }
 
     &:nth-child(3) {
       flex: 3 !important;
-      min-width: 180px !important;
+      min-width: 11.25em !important;
     }
 
     &:nth-child(4),
     &:nth-child(5) {
       flex: 1.5 !important;
-      min-width: 100px !important;
+      min-width: 6.25em !important;
     }
 
     &:nth-child(6),
     &:nth-child(7) {
       flex: 1.2 !important;
-      min-width: 90px !important;
+      min-width: 5.625em !important;
     }
 
     &:last-child {
       flex: 0.8 !important;
       justify-content: center !important;
-      min-width: 60px !important;
+      min-width: 3.75em !important;
     }
   }
 }

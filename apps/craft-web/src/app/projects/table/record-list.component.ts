@@ -14,7 +14,7 @@ import { throwError } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { LoggerService } from '../../common/services/logger.service';
-import { NgxSpinnerService } from 'ngx-spinner'; // May need to install this package
+import { NgxSpinnerService } from 'ngx-spinner';                                    
 
 export interface Server {
   name: string;
@@ -91,10 +91,10 @@ export class RecordListComponent implements OnInit, OnDestroy {
   data$ = this.dataSubject.asObservable();
   private reportSubject = new BehaviorSubject<Report | null>(null);
   report$ = this.reportSubject.asObservable();
-  // Add connectionAttempts counter for exponential backoff
+
   private connectionAttempts = 0;
-  // Maximum number of automatic retry attempts
-  private readonly MAX_AUTO_RETRIES = 2; // Reduced from 3
+
+  private readonly MAX_AUTO_RETRIES = 2;                  
   private retryTimeoutRef: ReturnType<typeof setTimeout> | null = null;
   creationTime = new Date().getTime();
   currentUser: unknown;
@@ -117,12 +117,11 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
   @HostListener('document:mousemove', ['$event'])
   onDocumentMouseMove(event: MouseEvent): void {
-    // If an element is expanded, track mouse position
+
     if (this.expandedElement) {
-      // Log mouse position to debug overlay following cursor
+
       console.log('Mouse position:', event.clientX, event.clientY);
 
-      // Only prevent default if we're over the overlay elements
       const target = event.target as HTMLElement;
       const isOverlay = target.closest('.modal-container') !== null;
 
@@ -145,27 +144,22 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('totalRecords before fetchData:', this.totalRecords);
     this.fetchData(100);
 
-    // Set up paginator and sort
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
 
-    // Set focus on the filter input field
     this.filterInput.nativeElement.focus();
 
-    // Update displayed columns based on current window width
     this.updateDisplayedColumns();
 
-    // Subscribe to the data$ observable to update the dataSource
     this.data$.pipe(takeUntil(this.destroy$)).subscribe(data => {
       this.dataSource.data = data;
       this.changeDetectorRef.detectChanges();
     });
 
-    // Subscribe to the report$ observable to get the report object
     this.report$.pipe(takeUntil(this.destroy$)).subscribe(report => {
       if (report) {
         console.log('Report:', report);
-        // You can use the report object here
+
         this.roundtripLabel = report.roundtripLabel;
         this.generationTimeLabel = report.generationTimeLabel;
         this.networkPerformance = report.networkPerformance;
@@ -173,7 +167,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Check if we're in offline mode - fixed method call
     this.isOffline = this.recordService.isOfflineMode();
   }
 
@@ -182,13 +175,11 @@ export class RecordListComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
 
-    // Clean up retry timeout if it exists
     if (this.retryTimeoutRef) {
       clearTimeout(this.retryTimeoutRef);
     }
   }
 
-  // tABLE PAGEsIZE HAS BEEN CHANGED
   onTableChange(event: PageEvent): void {
     console.log('Event: Display row change with event:', event);
     this.paginator.pageSize = event.pageSize;
@@ -216,37 +207,36 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('Method: updateDisplayedColumns called');
     const width = window.innerWidth;
 
-    // Recalculate column sets based on screen width with adjusted breakpoints
     if (width < 480) {
-      // Very small screens - only ID and actions
+
       this.displayedColumns = ['userID', 'icons'];
       this.showMinimalColumns = true;
       this.showMediumColumns = false;
       this.showAddressColumns = false;
       console.log('Displayed Columns: Width < 480, updated to:', this.displayedColumns);
     } else if (width < 768) {
-      // Small screens - ID, name and actions
+
       this.displayedColumns = ['userID', 'name', 'icons'];
       this.showMinimalColumns = false;
       this.showMediumColumns = false;
       this.showAddressColumns = false;
       console.log('Displayed Columns: Width < 768, updated to:', this.displayedColumns);
     } else if (width < 992) {
-      // Medium screens - add city, state instead of full address
+
       this.displayedColumns = ['userID', 'name', 'city', 'state', 'icons'];
       this.showMinimalColumns = false;
       this.showMediumColumns = true;
       this.showAddressColumns = false;
       console.log('Displayed Columns: Width < 992, updated to:', this.displayedColumns);
     } else if (width < 1200) {
-      // Medium-large screens - add zip
+
       this.displayedColumns = ['userID', 'name', 'city', 'state', 'zip', 'icons'];
       this.showMinimalColumns = false;
       this.showMediumColumns = true;
       this.showAddressColumns = false;
       console.log('Displayed Columns: Width < 1200, updated to:', this.displayedColumns);
     } else {
-      // Large screens - show full address column as well
+
       this.displayedColumns = ['userID', 'name', 'address', 'city', 'state', 'zip', 'phone', 'icons'];
       this.showMinimalColumns = false;
       this.showMediumColumns = false;
@@ -254,7 +244,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
       console.log('Displayed Columns: Width >= 1200, updated to:', this.displayedColumns);
     }
 
-    // Notify Angular that the display has changed
     this.changeDetectorRef.detectChanges();
   }
 
@@ -288,7 +277,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
             this.totalRecords = dataset.length;
             console.log('Data: New record set generated with length:', dataset.length);
 
-            this.resolved = true; // Ensure resolved is set to true after data loads
+            this.resolved = true;                                                   
             this.changeDetectorRef.detectChanges();
             this.logger.info(`New record set generated with ${dataset.length} records`, {
               creationTime: this.creationTime,
@@ -297,13 +286,13 @@ export class RecordListComponent implements OnInit, OnDestroy {
             this.updateCreationTime();
             this.triggerFadeToRed();
           } else {
-            this.resolved = true; // Also set resolved to true if no data
+            this.resolved = true;                                        
             this.changeDetectorRef.detectChanges();
           }
           return of([]);
         }),
         catchError((error: unknown) => {
-          this.resolved = true; // Ensure resolved is set on error
+          this.resolved = true;                                   
           this.changeDetectorRef.detectChanges();
           console.error('Error: generateNewRecordSet failed:', error);
           return of([]);
@@ -313,8 +302,8 @@ export class RecordListComponent implements OnInit, OnDestroy {
   }
 
   public fetchData(count: number): void {
-    this.resolved = false; // Ensure resolved is reset before fetching
-    // Start timing for roundtrip calculation
+    this.resolved = false;                                            
+
     this.startTime = new Date().getTime();
     this.spinner.show();
     this.resolvedSubject.next(false);
@@ -323,10 +312,10 @@ export class RecordListComponent implements OnInit, OnDestroy {
       .generateNewRecordSet(count)
       .pipe(
         takeUntil(this.destroy$),
-        // Add finalize to hide spinner regardless of success/failure
+
         finalize(() => {
           this.spinner.hide();
-          this.resolved = true; // Set resolved to true after spinner hides
+          this.resolved = true;                                            
           this.resolvedSubject.next(true);
           this.changeDetectorRef.detectChanges();
         }),
@@ -334,7 +323,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
           if (dataset && dataset.length > 0) {
             this.dataSource.data = dataset;
             this.isOffline = this.recordService.isOfflineMode();
-            // Get server-side generation time and compute labels here
+
             return this.recordService.getCreationTime().pipe(
               tap((generationTime: number) => {
                 try {
@@ -345,7 +334,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
                   const roundtripLabel = `${roundtrip.toFixed(2)} milliseconds`;
 
-                  // Update component properties
                   this.generationTimeLabel = generationTimeLabel;
                   this.roundtripLabel = roundtripLabel;
                   this.networkPerformance = `${roundtrip.toFixed(2)} milliseconds`;
@@ -367,10 +355,9 @@ export class RecordListComponent implements OnInit, OnDestroy {
           }
         }),
         catchError(error => {
-          this.resolved = true; // Ensure resolved is set on error
+          this.resolved = true;                                   
           this.logger.error('Error fetching data', { error });
 
-          // Update offline state based on error
           this.isOffline = true;
 
           let errorMessage = 'Failed to load data. Please try again later.';
@@ -401,9 +388,8 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('expandRow method called with record:', record);
     console.log('Previous expandedElement state:', this.expandedElement ? this.expandedElement.UID : 'null');
 
-    debugger; // Debugger statement for browser inspection
+    debugger;                                             
 
-    // Toggle expandedElement
     if (this.expandedElement?.UID === record.UID) {
       console.log('Collapsing row - same record clicked');
       this.expandedElement = null;
@@ -414,7 +400,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
     console.log('New expandedElement state:', this.expandedElement ? this.expandedElement.UID : 'null');
 
-    // Force a detection cycle to ensure UI updates
     this.changeDetectorRef.markForCheck();
     this.changeDetectorRef.detectChanges();
 
@@ -425,8 +410,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('Event: Show detail view requested for record:', record);
     this.recordService.setSelectedUID(record.UID);
 
-    // Fix: Update navigation route to match defined routes in app.routes.ts
-    // The route is defined as 'table/:id' so we should use the proper format
     this.router.navigate([`table/${record.UID}`]);
 
     console.log('Navigation: Navigated to record detail view');
@@ -436,7 +419,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('Sort: Sorting data with event:', event);
 
     const { active, direction } = event;
-    if (!direction) return; // No sorting direction means no sorting
+    if (!direction) return;                                         
 
     const isAsc = direction === 'asc';
 
@@ -462,10 +445,8 @@ export class RecordListComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Update the dataSource with new sorted data
     this.dataSource.data = sortedData;
 
-    // Refresh the paginator
     if (this.paginator) {
       if (this.dataSource.paginator) {
         this.dataSource.paginator.firstPage();
@@ -475,7 +456,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('Sort: Data sorted successfully');
   }
 
-  // Strongly typed comparison function
   compare<T>(a: T, b: T, isAsc: boolean): number {
     if (a == null || b == null) return 0;
     return (a < b ? -1 : a > b ? 1 : 0) * (isAsc ? 1 : -1);
@@ -509,12 +489,10 @@ export class RecordListComponent implements OnInit, OnDestroy {
             const endTime = new Date().getTime();
             const roundtrip = endTime - this.startTime;
 
-            // Format the time values with proper error handling
             const generationTimeLabel = typeof generationTime === 'number' ? `${generationTime.toFixed(2)} milliseconds` : '0.00 milliseconds';
 
             const roundtripLabel = `${roundtrip.toFixed(2)} milliseconds`;
 
-            // Create performance report
             const report = {
               roundtripLabel,
               generationTimeLabel,
@@ -522,7 +500,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
               diskTransferTime: generationTimeLabel,
             };
 
-            // Update component properties
             this.generationTimeLabel = generationTimeLabel;
             this.roundtripLabel = roundtripLabel;
             this.networkPerformance = report.networkPerformance;
@@ -538,20 +515,18 @@ export class RecordListComponent implements OnInit, OnDestroy {
               `Timing: Data generation time: ${generationTimeLabel} Roundtrip time: ${roundtripLabel} Network performance: ${report.networkPerformance} Disk transfer time: ${report.diskTransferTime}`,
             );
 
-            // Show a success toast notification
             this.notificationService.showSuccess(`Data loaded successfully in ${roundtripLabel}`, 'Success');
 
-            // Request change detection to update the view
             this.changeDetectorRef.detectChanges();
           } catch (error) {
             console.error('Error formatting time values:', error);
-            // Show error toast if formatting fails
+
             this.notificationService.showError('Error processing timing information', 'Error');
           }
         }),
         catchError(error => {
           console.error('Error:', error);
-          // Show error toast if API call fails
+
           this.notificationService.showError('Failed to get generation time information', 'Error');
           return throwError(() => error);
         }),
@@ -559,7 +534,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  // Calculate total salary directly without using the employmentIncome pipe
   getTotalSalary(companies: any[]): number {
     if (!companies || !Array.isArray(companies)) {
       return 0;
@@ -594,7 +568,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('Navigation: Opened Swagger UI');
   }
 
-  // Add a method to retry connection when offline
   public retryConnection(): void {
     this.logger.info('Manual connection retry initiated', { component: 'RecordListComponent' });
     this.notificationService.showInfo('Attempting to reconnect to server...', 'Reconnecting');
@@ -604,7 +577,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
       .pipe(
         tap(isOnline => {
           if (isOnline) {
-            this.connectionAttempts = 0; // Reset connection attempts on success
+            this.connectionAttempts = 0;                                        
             this.notificationService.showSuccess('Connection restored! Refreshing data...', 'Online');
             this.fetchData(this.totalRecords);
           } else {
@@ -622,14 +595,12 @@ export class RecordListComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  // Schedule an automatic retry with exponential backoff
   private scheduleRetry(): void {
-    // Clear any existing retry timeout first
+
     if (this.retryTimeoutRef) {
       clearTimeout(this.retryTimeoutRef);
     }
 
-    // Stop if we've reached maximum retries
     if (this.connectionAttempts >= this.MAX_AUTO_RETRIES) {
       this.logger.warn(`Maximum retry attempts (${this.MAX_AUTO_RETRIES}) reached. Automatic retry stopped.`, {
         component: 'RecordListComponent',
@@ -637,7 +608,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const backoffTime = Math.min(2000 * Math.pow(2, this.connectionAttempts), 30000); // Max 30 seconds
+    const backoffTime = Math.min(2000 * Math.pow(2, this.connectionAttempts), 30000);                  
 
     this.logger.debug(`Scheduling automatic retry in ${backoffTime}ms`, {
       attempt: this.connectionAttempts + 1,

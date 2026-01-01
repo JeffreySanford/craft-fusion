@@ -1,23 +1,21 @@
 @use "sass:map";
 @use "sass:meta";
 
-// @use '@angular/material/theming' as mat;
 @use "./variables" as vars;
 
-// Light theme color scheme
 $light-theme-colors: (
   primary: #002868,
-  // Navy blue
+
   on-primary: #fff,
   primary-container: #d6e2ff,
   on-primary-container: #001849,
   secondary: #bf0a30,
-  // USA Red
+
   on-secondary: #fff,
   secondary-container: #ffd9d9,
   on-secondary-container: #400012,
   tertiary: #ffd700,
-  // USA Gold
+
   on-tertiary: #000,
   tertiary-container: #fff8dc,
   on-tertiary-container: #493900,
@@ -33,20 +31,19 @@ $light-theme-colors: (
   shadow: #000,
 );
 
-// Dark theme color scheme
 $dark-theme-colors: (
   primary: #b6c5ff,
-  // Lighter blue for dark theme
+
   on-primary: #002e6a,
   primary-container: #004395,
   on-primary-container: #d6e2ff,
   secondary: #ffb4ab,
-  // Lighter red for dark theme
+
   on-secondary: #690020,
   secondary-container: #93000a,
   on-secondary-container: #ffd9d9,
   tertiary: #ffd700,
-  // Gold remains the same
+
   on-tertiary: #1c1500,
   tertiary-container: #302a00,
   on-tertiary-container: #ffe979,
@@ -62,7 +59,6 @@ $dark-theme-colors: (
   shadow: #000,
 );
 
-// Generate CSS variables for both themes
 @mixin generate-theme-variables($colors, $prefix: "") {
   @each $name, $value in $colors {
     #{$prefix}--md-sys-color-#{$name}: #{$value};
@@ -70,75 +66,41 @@ $dark-theme-colors: (
 }
 
 @mixin apply-theme-variables() {
-  // Light theme variables
+
   :root,
   .light-theme,
   [data-theme="light"] {
-    // Generate light theme variables
+
     @include generate-theme-variables($light-theme-colors);
 
-    // Material-specific tokens
     --md-sys-elevation-level1: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
     --md-sys-elevation-level2: 0 3px 6px rgb(0 0 0 / 15%), 0 2px 4px rgb(0 0 0 / 12%);
     --md-sys-elevation-level3: 0 10px 20px rgb(0 0 0 / 15%), 0 3px 6px rgb(0 0 0 / 10%);
     --md-sys-elevation-level4: 0 14px 28px rgb(0 0 0 / 20%), 0 10px 10px rgb(0 0 0 / 15%);
     --md-sys-elevation-level5: 0 19px 38px rgb(0 0 0 / 25%), 0 15px 12px rgb(0 0 0 / 18%);
 
-    // Header gradients
     --header-gradient: linear-gradient(135deg, #001f54 0%, #033277 30%, #792433 70%, #a01c33 100%);
 
-    // Menu gradients
     --menu-gradient: linear-gradient(135deg, rgb(0 0 102 / 95%) 0%, rgb(139 0 0 / 95%) 50%, rgb(0 0 102 / 95%) 100%);
   }
 
-  // Dark theme variables
   .dark-theme,
   [data-theme="dark"] {
-    // Generate dark theme variables
+
     @include generate-theme-variables($dark-theme-colors);
 
-    // Material-specific tokens
     --md-sys-elevation-level1: 0 1px 3px rgb(0 0 0 / 24%), 0 1px 2px rgb(0 0 0 / 36%);
     --md-sys-elevation-level2: 0 3px 6px rgb(0 0 0 / 26%), 0 2px 4px rgb(0 0 0 / 34%);
     --md-sys-elevation-level3: 0 10px 20px rgb(0 0 0 / 29%), 0 3px 6px rgb(0 0 0 / 23%);
     --md-sys-elevation-level4: 0 14px 28px rgb(0 0 0 / 35%), 0 10px 10px rgb(0 0 0 / 28%);
     --md-sys-elevation-level5: 0 19px 38px rgb(0 0 0 / 40%), 0 15px 12px rgb(0 0 0 / 32%);
 
-    // Header gradients - darker for dark theme
     --header-gradient: linear-gradient(135deg, #000d24 0%, #001f54 30%, #4a0f1d 70%, #6a0f21 100%);
 
-    // Menu gradients - darker for dark theme
     --menu-gradient: linear-gradient(135deg, rgb(0 0 60 / 95%) 0%, rgb(90 0 0 / 95%) 50%, rgb(0 0 60 / 95%) 100%);
   }
 }
 
-// Angular Material theme configuration
 @mixin configure-material-themes() {
-  // @include mat.core();
 
-  // Use Angular Material's built-in palettes:
-  // Replace define-light-theme and define-dark-theme with define-theme
-  // $light-theme: mat.define-theme((
-  //   color: (
-  //     primary: mat.define-palette(mat.$blue-palette),
-  //     accent: mat.define-palette(mat.$red-palette),
-  //     warn: mat.define-palette(mat.$amber-palette)
-  //   )
-  // ));
-
-  // $dark-theme: mat.define-theme((
-  //   color: (
-  //     primary: mat.define-palette(mat.$blue-palette, 200),
-  //     accent: mat.define-palette(mat.$red-palette, 200),
-  //     warn: mat.define-palette(mat.$amber-palette)
-  //   )
-  // ));
-
-  // Apply the light theme by default
-  // @include mat.all-component-themes($light-theme);
-
-  // Apply the dark theme only when the .dark-theme class is applied to the body
-  // .dark-theme {
-  //   @include mat.all-component-colors($dark-theme);
-  // }
 }

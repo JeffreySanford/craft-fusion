@@ -1,7 +1,5 @@
-// animations.ts
 import { trigger, state, style, transition, animate, keyframes } from '@angular/animations';
 
-// Fix detailExpand animation to ensure proper display
 export const detailExpand = trigger('detailExpand', [
   state(
     'collapsed',
@@ -40,7 +38,6 @@ export const flyIn = trigger('flyIn', [
   ]),
 ]);
 
-// New patriotic flag wave animation for selected elements
 export const flagWave = trigger('flagWave', [
   transition(':enter', [
     animate(

@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
-import { Observable, of, Subject } from 'rxjs'; // Import Observable and 'of'
+import { Observable, of, Subject } from 'rxjs';                              
 import { takeUntil } from 'rxjs/operators';
-import { TimelineEvent } from '../../models/timeline-event.model'; // Assuming model exists
+import { TimelineEvent } from '../../models/timeline-event.model';                         
 import { TimelineService } from '../../services/timeline.service';
 
 @Component({
@@ -9,19 +9,19 @@ import { TimelineService } from '../../services/timeline.service';
   templateUrl: './timeline-page.component.html',
   styleUrls: ['./timeline-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false, // Ensure standalone is explicitly false
+  standalone: false,                                         
 })
 export class TimelinePageComponent implements OnInit, OnDestroy {
-  // Add missing properties
-  loading: boolean = true; // Initialize loading state
-  timelineEvents$: Observable<TimelineEvent[]> = of([]); // Initialize with an empty observable or fetch data
+
+  loading: boolean = true;                            
+  timelineEvents$: Observable<TimelineEvent[]> = of([]);                                                     
 
   private destroy$ = new Subject<void>();
 
   constructor(private timelineService: TimelineService) {}
 
   ngOnInit(): void {
-    // Load initial timeline events
+
     this.timelineService
       .loadInitialEvents()
       .pipe(takeUntil(this.destroy$))
@@ -37,7 +37,6 @@ export class TimelinePageComponent implements OnInit, OnDestroy {
         },
       });
 
-    // Connect to WebSocket for real-time updates
     this.timelineService.connect();
   }
 

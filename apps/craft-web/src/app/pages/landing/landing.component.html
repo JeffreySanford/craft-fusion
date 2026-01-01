@@ -4,24 +4,16 @@
           <h1 class="title" aria-label="Jeffrey Sanford" #titleRef>
         <span class="word">
           <span class="word-text">Jeffrey</span>
-          <span class="sparkle">✨</span>
-          <span class="sparkle-1">✨</span>
-          <span class="sparkle-2">✨</span>
-          <span class="sparkle-3">✨</span>
         </span>
         <span class="word">
           <span class="word-text">Sanford</span>
-          <span class="sparkle">✨</span>
-          <span class="sparkle-1">✨</span>
-          <span class="sparkle-2">✨</span>
-          <span class="sparkle-3">✨</span>
         </span>
       </h1>
     </div>
   </mat-card-header>
   <mat-card-content>
-    <div class="animated-section">
-      <div class="animated-item" *ngFor="let item of items; let i = index" [appStyle]="{ 'animation-delay': i * 0.5 + 's' }">
+    <div class="animated-section" [appStyle]="{ '--section-delay': sectionDelay + 's' }">
+      <div class="animated-item" *ngFor="let item of items; let i = index" [appStyle]="{ '--item-delay': itemDelayBase + i * itemStagger + 's' }">
         {{ item }}
       </div>
     </div>

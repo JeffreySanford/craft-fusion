@@ -4,7 +4,7 @@ import { AuthGuard } from './common/guards/auth.guard';
 import { RoleGuard } from './common/guards/role.guard';
 
 const routes: Routes = [
-  // ... existing routes
+
   {
     path: 'family',
     canActivate: [AuthGuard, RoleGuard],
@@ -16,7 +16,7 @@ const routes: Routes = [
       },
     ],
   },
-  // ... other routes
+
 ];
 
 @NgModule({

@@ -1,7 +1,7 @@
 $light-bg: #fff;
 $dark-bg: #1e1e1e;
-$primary-color-light: #007bff; // Vibrant blue
-$primary-color-dark: #66b3ff; // Lighter vibrant blue
+$primary-color-light: #007bff;                
+$primary-color-dark: #66b3ff;                        
 
 @mixin themed-button($icon-color) {
   align-items: center;
@@ -9,14 +9,14 @@ $primary-color-dark: #66b3ff; // Lighter vibrant blue
   border-radius: 50%;
   color: $icon-color;
   display: inline-flex;
-  height: 50px;
+  height: 3.125em;
   justify-content: center;
   overflow: hidden;
   position: relative;
   transition:
     box-shadow 0.3s ease,
     color 0.3s ease;
-  width: 50px;
+  width: 3.125em;
 
   &::before {
     background: linear-gradient(45deg, transparent 45%, $icon-color 55%);
@@ -61,7 +61,6 @@ $primary-color-dark: #66b3ff; // Lighter vibrant blue
   }
 }
 
-// Usage in button class
 .button {
   @include themed-button($primary-color-light);
 }

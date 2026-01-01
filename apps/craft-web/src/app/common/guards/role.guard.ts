@@ -16,7 +16,7 @@ export class RoleGuard implements CanActivate {
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    // Get required roles from route data
+
     const requiredRoles = route.data['roles'] as Array<string>;
 
     if (!requiredRoles || requiredRoles.length === 0) {
@@ -29,7 +29,7 @@ export class RoleGuard implements CanActivate {
     return this.authService.currentUser$.pipe(
       take(1),
       map(user => {
-        // If no user or user has no roles array
+
         if (!user || !Array.isArray(user.roles)) {
           this.logger.warn('Role guard: User has no roles', {
             url: state.url,
@@ -40,7 +40,6 @@ export class RoleGuard implements CanActivate {
           return false;
         }
 
-        // Check if user has one of the required roles
         const hasRole = requiredRoles.some(role => user.roles.includes(role));
 
         if (hasRole) {

@@ -45,9 +45,9 @@
 
 .status-message {
   background-color: rgb(0 0 0 / 80%);
-  border-radius: 4px;
+  border-radius: 0.25em;
   color: white;
-  font-size: 14px;
+  font-size: 0.875em;
   left: 50%;
   margin-bottom: 1rem;
   max-width: 80%;
@@ -63,18 +63,18 @@
 :host ::ng-deep .line-tooltip {
   background-color: rgb(28 40 65 / 90%) !important;
   border: 1px solid #b22234;
-  border-radius: 4px;
+  border-radius: 0.25em;
   font-family: Arial, sans-serif;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.0125em;
   line-height: 1.4;
-  max-width: 250px;
-  padding: 10px;
+  max-width: 15.625em;
+  padding: 0.625em;
   z-index: 100;
 }
 
 :host ::ng-deep .line-tooltip .tooltip-title {
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 0.3125em;
 }
 
 :host ::ng-deep .line-tooltip .series-0 {
@@ -116,7 +116,7 @@
   .chart-title {
     font-family: Arial, sans-serif;
     font-weight: bold;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.0313em;
   }
 
   .chart-subtitle {
@@ -128,7 +128,7 @@
   .y-axis-label {
     font-family: Arial, sans-serif;
     font-weight: 500;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.0188em;
   }
 
   .legend-container {
@@ -156,6 +156,6 @@
   box-sizing: border-box;
   display: block;
   height: 100%;
-  min-height: 300px;
+  min-height: 18.75em;
   width: 100%;
 }

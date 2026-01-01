@@ -17,12 +17,11 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { SocketClientService } from './common/services/socket-client.service';
 import { AuthenticationService } from './common/services/authentication.service';
 
-// Import shared types from craft-library
 import { HealthData } from '@craft-fusion/craft-library';
 
 export function socketClientFactory(socketClient: SocketClientService): () => void {
   return () => {
-    // Initialize the socket client and emit health metric
+
     socketClient.connect();
     console.info('[AppModule] SocketClientService initialized and connected');
     const healthMetric: HealthData = {
@@ -51,16 +50,16 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
     FormsModule,
     HttpClientModule,
     RouterModule.forRoot(appRoutes, {
-      scrollPositionRestoration: 'enabled', // Restore scroll position on navigation
-      anchorScrolling: 'enabled', // Enable anchor scrolling
-      onSameUrlNavigation: 'reload', // Reload the component on same URL navigation
+      scrollPositionRestoration: 'enabled',                                         
+      anchorScrolling: 'enabled',                           
+      onSameUrlNavigation: 'reload',                                               
     }),
     MaterialModule,
-    ComponentsModule, // Import ComponentsModule which exports ServerStatusComponent
+    ComponentsModule,                                                               
     HeaderModule,
     SidebarModule,
     FooterModule,
-    NgxSpinnerModule, // Add NgxSpinnerModule
+    NgxSpinnerModule,                        
   ],
   providers: [
     AuthenticationService,
@@ -71,9 +70,6 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
       });
       const logger = inject(LoggerService);
 
-      // Register the Router with the logger, return a hot observable that emits the router instance
-      // This is a workaround to ensure the logger has access to the router instance
-      // and can log navigation events
       router.events.subscribe(event => {
         if (event instanceof NavigationStart) {
           logger.info('Navigation started', event);

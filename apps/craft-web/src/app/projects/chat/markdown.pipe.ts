@@ -12,11 +12,10 @@ export class MarkdownPipe implements PipeTransform {
   constructor(private sanitizer: DomSanitizer) {
     this.md = new MarkdownIt({
       html: true,
-      breaks: true, // Set back to true
+      breaks: true,                    
       typographer: false,
     });
 
-    // Configure list and paragraph rendering
     this.md.renderer.rules = {
       ...this.md.renderer.rules,
       list_item_open: () => '<li class="formatted-list-item">',
@@ -29,13 +28,12 @@ export class MarkdownPipe implements PipeTransform {
   transform(value: string): SafeHtml {
     if (!value) return '';
 
-    // Clean up text formatting
     const cleanText = value
-      // Fix list formatting
-      .replace(/^(\d+\.)\s*\n+/gm, '$1 ') // Fix numbered lists
-      .replace(/^\*\s*\n+/gm, '* ') // Fix bullet lists
-      .replace(/\n\s*\n/g, '\n\n') // Reduce multiple newlines
-      .replace(/(\n\s*[-*]\s*|\n\s*\d+\.\s*)/g, '$1') // Remove extra spaces after list markers
+
+      .replace(/^(\d+\.)\s*\n+/gm, '$1 ')                      
+      .replace(/^\*\s*\n+/gm, '* ')                    
+      .replace(/\n\s*\n/g, '\n\n')                            
+      .replace(/(\n\s*[-*]\s*|\n\s*\d+\.\s*)/g, '$1')                                          
       .trim();
 
     const html = this.md.render(cleanText);

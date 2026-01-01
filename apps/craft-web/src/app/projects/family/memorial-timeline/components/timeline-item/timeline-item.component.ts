@@ -6,7 +6,7 @@ import { TimelineEvent } from '../../models/timeline-event.model';
   templateUrl: './timeline-item.component.html',
   styleUrls: ['./timeline-item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false, // Ensure standalone is explicitly false
+  standalone: false,                                         
 })
 export class TimelineItemComponent {
   @Input() event!: TimelineEvent;

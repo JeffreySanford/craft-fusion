@@ -8,7 +8,7 @@
     </aside>
     <main class="main-stage flex-1" [class.footer-expanded]="isFooterExpanded" [class.sidebar-collapsed]="isCollapsed">
       <div class="router-content-wrapper flex-col flex-1">
-        <!-- Main router outlet -->
+
         <router-outlet (activate)="onRouterActivate($event)" (deactivate)="onRouterDeactivate($event)"></router-outlet>
       </div>
     </main>

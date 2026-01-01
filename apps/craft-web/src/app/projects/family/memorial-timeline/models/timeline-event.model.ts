@@ -6,5 +6,5 @@ export interface TimelineEvent {
   imageUrl: string;
   actionLink?: string;
   type?: string;
-  // Add any other existing properties
+
 }

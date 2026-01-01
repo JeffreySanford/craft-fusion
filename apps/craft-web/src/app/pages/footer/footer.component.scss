@@ -1,24 +1,24 @@
 @use "../../../styles/_utilities.scss" as utilities;
-@use "../../../styles/_animations.scss"; // Import shared animations
+@use "../../../styles/_animations.scss";                            
 @use "../../../styles/md3-mapping" as md3;
 
 .footer-container {
   align-items: center;
   background: linear-gradient(to right, rgb(255 0 0 / 70%) 0%, rgb(255 255 255 / 70%) 20%, rgb(0 0 255 / 70%) 30%, rgb(0 128 128 / 70%) 100%);
-  bottom: 0.5em; // Changed from 1em to 0.5em for consistency
+  bottom: 0.5em;                                             
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  left: 0.5em; // Added to ensure consistent spacing
+  left: 0.5em;                                      
   overflow: visible;
   position: fixed;
-  right: 0.5em; // Added to ensure consistent spacing
+  right: 0.5em;                                      
   transition: height 0.3s ease;
-  width: calc(100% - 1em); // Changed from 99% to ensure exact 0.5em margins on both sides
+  width: calc(100% - 1em);                                                                
   z-index: 1000;
 
   &.expanded {
-    // When expanded, footer takes up more space
+
     height: auto;
   }
 
@@ -75,12 +75,12 @@
   }
 
   .logo-performance-block {
-    align-items: flex-end; /* Changed to flex-end */
+    align-items: flex-end;                          
     display: flex;
     flex-direction: column;
     overflow: visible;
     position: relative;
-    width: 100%; // Make it full width
+    width: 100%;                      
     z-index: 10;
 
     @include utilities.logo-containers;
@@ -88,15 +88,15 @@
     .logo-row {
       align-items: center;
       display: flex !important;
-      flex-wrap: wrap; /* Allow wrapping to multiple rows */
-      justify-content: flex-end; /* Changed to flex-end */
+      flex-wrap: wrap;                                      
+      justify-content: flex-end;                          
       margin: 0.5em 0 1em;
       overflow: visible;
 
       img {
         border: 0.0625em solid blue;
         height: 3.5em;
-        margin: 0 1.5em; /* Changed to 1.5em */
+        margin: 0 1.5em;                       
         padding: 0.25em;
         position: relative;
         transition:
@@ -113,7 +113,7 @@
     }
 
     mat-card {
-      @include utilities.performance-chart(5em); // Increased height
+      @include utilities.performance-chart(5em);                    
       .performance-metrics {
         align-items: center;
         display: flex;
@@ -125,13 +125,13 @@
 
         .metric {
           align-items: center;
-          color: white; /* Default color */
+          color: white;                    
           display: flex;
           margin: 0.5em;
           padding: 0.5em;
 
           label {
-            margin-right: 0.5em; /* Slight indent before the metric */
+            margin-right: 0.5em;                                      
           }
 
           .cpu-load-visualization {
@@ -175,27 +175,27 @@
 
         .simulation-badge {
           background-color: rgb(0 0 255 / 70%);
-          border-radius: 3px;
+          border-radius: 0.1875em;
           color: white;
           font-size: 0.7em;
-          left: 5px;
-          padding: 2px 5px;
+          left: 0.3125em;
+          padding: 0.125em 0.3125em;
           position: absolute;
-          top: 5px;
+          top: 0.3125em;
           z-index: 10;
         }
 
         .data-mode-toggle {
           align-items: center;
           background-color: rgb(0 0 0 / 50%);
-          border-radius: 3px;
+          border-radius: 0.1875em;
           display: flex;
           justify-content: space-between;
-          left: 5px;
-          min-width: 120px;
-          padding: 2px 5px;
+          left: 0.3125em;
+          min-width: 7.5em;
+          padding: 0.125em 0.3125em;
           position: absolute;
-          top: 5px;
+          top: 0.3125em;
           z-index: 10;
 
           @include utilities.data-overlay(0.5);
@@ -206,7 +206,7 @@
           }
 
           .live-toggle ::ng-deep .mat-slide-toggle-thumb {
-            background-color: md3.$md-live !important; /* Live color from MD3 mapping */
+            background-color: md3.$md-live !important;                                  
           }
 
           .live-toggle ::ng-deep .mat-slide-toggle-bar {
@@ -217,9 +217,6 @@
             background-color: md3.$md-sim !important;
           }
 
-          /* Stronger rules to override Material theming and dark backgrounds */
-
-          /* Add broader selectors to target Material toggle internals regardless of DOM nesting */
           .live-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-thumb,
           .live-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-thumb::after,
           .live-toggle.mat-slide-toggle.mat-checked ::ng-deep .mat-slide-toggle-thumb,
@@ -249,7 +246,7 @@
           }
 
           .live-label {
-            color: md3.$md-live; /* Live color */
+            color: md3.$md-live;                 
             font-weight: 600;
             text-transform: none;
           }
@@ -266,13 +263,13 @@
             cursor: pointer;
             display: flex;
             font-size: 0.7em;
-            margin-left: 10px;
+            margin-left: 0.625em;
 
             mat-icon {
-              font-size: 14px;
-              height: 14px;
-              margin-left: 2px;
-              width: 14px;
+              font-size: 0.875em;
+              height: 0.875em;
+              margin-left: 0.125em;
+              width: 0.875em;
             }
 
             &:hover {
@@ -283,12 +280,12 @@
 
         .service-metrics-overlay {
           background-color: rgb(0 0 0 / 60%);
-          border-radius: 4px;
-          bottom: 5px;
-          max-width: 200px;
-          padding: 5px;
+          border-radius: 0.25em;
+          bottom: 0.3125em;
+          max-width: 12.5em;
+          padding: 0.3125em;
           position: absolute;
-          right: 5px;
+          right: 0.3125em;
           z-index: 10;
 
           @include utilities.data-overlay(0.6);
@@ -298,18 +295,18 @@
             color: white;
             display: flex;
             font-size: 0.8em;
-            margin: 2px 0;
+            margin: 0.125em 0;
 
             mat-icon {
-              font-size: 14px;
-              height: 14px;
-              margin-right: 4px;
-              width: 14px;
+              font-size: 0.875em;
+              height: 0.875em;
+              margin-right: 0.25em;
+              width: 0.875em;
             }
 
             .service-name {
               flex: 1;
-              margin-right: 4px;
+              margin-right: 0.25em;
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
@@ -334,7 +331,6 @@
     width: 80%;
   }
 
-  /* Class-based border styles to avoid inline styles in templates */
   .performance-card.live-border {
     @include md3.md3-border(md3.$md-live, 2px);
   }
@@ -344,7 +340,7 @@
   }
 
   .panel-header {
-    padding: 0 16px;
+    padding: 0 1em;
 
     .title-content {
       align-items: center;
@@ -353,7 +349,7 @@
 
       mat-icon {
         color: gold;
-        margin-right: 8px;
+        margin-right: 0.5em;
       }
 
       p {
@@ -364,7 +360,7 @@
 
       .quick-metrics {
         display: flex;
-        gap: 8px;
+        gap: 0.5em;
         margin-left: auto;
 
         @include utilities.metric-pill(gold);
@@ -398,9 +394,9 @@ mat-expansion-panel[expanded] {
 }
 
 .footer-content {
-  align-items: flex-start; // Align items to the top
+  align-items: flex-start;                          
   display: flex;
-  flex-direction: row; // Ensure elements are inline
+  flex-direction: row;                              
   gap: 1.5em;
   justify-content: space-between;
   padding: 1em;
@@ -409,13 +405,11 @@ mat-expansion-panel[expanded] {
   .contact-block {
     align-items: flex-start;
 
-    /* Ensure block sits to the far left of the footer content */
     align-self: flex-start;
     background-color: rgb(0 0 0 / 15%);
     border: 1px solid rgb(255 255 255 / 8%);
-    border-radius: 6px;
+    border-radius: 0.375em;
 
-    /* Make the contact block a compact column anchored to the left */
     display: flex;
     flex-direction: column;
     gap: 0.5em;
@@ -445,13 +439,12 @@ mat-expansion-panel[expanded] {
       .agency-logos {
         flex: 1;
         justify-content: center;
-        min-width: 200px;
+        min-width: 12.5em;
       }
     }
   }
 }
 
-// Responsive behavior
 @media (max-width: 768px) {
   .footer-content {
     flex-direction: column;
@@ -467,13 +460,12 @@ mat-expansion-panel[expanded] {
   }
 }
 
-// Responsive enhancements
 @media (max-width: 480px) {
   .footer-content {
     padding: 0.5em;
 
     .performance-card {
-      height: 4em !important; // Override for mobile
+      height: 4em !important;                       
     }
   }
 }
@@ -486,14 +478,11 @@ mat-expansion-panel[expanded] {
 ::ng-deep .mat-expansion-indicator::after {
   color: gold !important;
 
-  // background-color: white !important;
-
   svg {
     fill: gold !important;
   }
 }
 
-// Style for admin button
 button[color="warn"] {
   background-color: rgb(220 53 69 / 80%);
 

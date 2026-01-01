@@ -24,12 +24,9 @@ export class TileLimitDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Initialize component
+
   }
 
-  /**
-   * Toggle selection of a tile for removal
-   */
   toggleTileSelection(tile: ExtendedChartData): void {
     const id = `${tile.component}_${tile.name}`;
     if (this.selectedTilesToRemove.has(id)) {
@@ -39,16 +36,10 @@ export class TileLimitDialogComponent implements OnInit {
     }
   }
 
-  /**
-   * Check if a tile is selected for removal
-   */
   isTileSelected(tile: ExtendedChartData): boolean {
     return this.selectedTilesToRemove.has(`${tile.component}_${tile.name}`);
   }
 
-  /**
-   * Get icon for a chart
-   */
   getIconForChart(chart: ExtendedChartData): string {
     switch (chart.component) {
       case 'app-line-chart':
@@ -64,24 +55,15 @@ export class TileLimitDialogComponent implements OnInit {
     }
   }
 
-  /**
-   * Confirm selection and close dialog
-   */
   confirmSelection(): void {
     const tilesToRemove = this.data.currentTiles.filter(tile => this.selectedTilesToRemove.has(`${tile.component}_${tile.name}`));
     this.dialogRef.close({ action: 'remove', tiles: tilesToRemove });
   }
 
-  /**
-   * Cancel and close dialog
-   */
   cancelDialog(): void {
     this.dialogRef.close({ action: 'cancel' });
   }
 
-  /**
-   * Get size label
-   */
   getTileSizeLabel(size: string): string {
     switch (size) {
       case 'small':
@@ -95,9 +77,6 @@ export class TileLimitDialogComponent implements OnInit {
     }
   }
 
-  /**
-   * Get space needed text
-   */
   getSpaceNeededText(): string {
     let text = 'You need to free up space to add this ';
     text += this.getTileSizeLabel(this.newTile.size || 'standard').toLowerCase();

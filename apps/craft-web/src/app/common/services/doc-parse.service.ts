@@ -8,31 +8,24 @@ import { TurndownWrapperService } from './turndown-wrapper.service';
 export class DocParseService {
   private debugMode = true;
 
-  // Enhanced myth patterns with named capturing groups
   private mythPatterns = {
-    // Match bracketed verse ranges with optional hyperlinks
+
     bracketedRange: /^\[(?<start>\w+)-(?<end>\w+)\](?:\((?<link>[^\)]+)\))?(?<content>.*)$/,
 
-    // Match markdown-style links with verse ranges
     bracketedRangeLink: /^\[(?<verse>\w+(?:-\w+)?)\](?:\((?<link>[^\)]+)\))(?<content>.*)$/,
 
-    // Match standard verse ranges 123-456.
     verseRange: /^(?<start>\w+)-(?<end>\w+)\.\s*(?<content>.+)$/,
 
-    // Match single verse with brackets and optional hyperlink
     bracketedVerse: /^\[(?<verse>\w+)\](?:\((?<link>[^\)]+)\))?(?<content>.*)$/,
 
-    // Match standard verse format "123. Text"
     singleVerse: /^(?<verse>\w+)\.\s*(?<content>.+)$/,
 
-    // Match ETCSL reference
     etcslRef: /^ETCSL\s+(?<ref>\d+\.\d+)\s*(?:\((?<link>[^\)]+)\))?\s*(?<content>.+)?$/,
 
-    // Match continuation lines
     continuation: /^\s{2,}(?<content>.+)$/,
-    // Updated mythSection pattern to handle A-Z ranges
+
     mythSection: /^(?<verse>\d{1,3}[A-Za-z]+)-(?<endVerse>\d{1,3}[A-Za-z]+)\s*(?<content>[\s\S]*)$/gm,
-    // New mythKeywordSection pattern to detect myths based on keywords
+
     mythKeywordSection: /^(?<content>.*(?:Enki|Enlil|Anu|Ninhursag|netherworld|shrines|Land|heavens|earth).*)$/ims,
   };
 
@@ -60,16 +53,14 @@ export class DocParseService {
         return input;
       },
       transformDocument: (element: unknown) => {
-        // Only process paragraphs
+
         if (!this.isElement(element) || element['type'] !== 'paragraph') {
           return element;
         }
 
-        // Extract text and log structure
         const text = this.extractText(element);
         this.log('Paragraph:', { text, type: element['type'] });
 
-        // Check for myth section start
         const mythMatch = this.detectMythSection(text);
         if (mythMatch) {
           const { verse, content } = mythMatch;
@@ -130,7 +121,7 @@ export class DocParseService {
   }
 
   private isMythLine(text: string): boolean {
-    // Check basic patterns first
+
     const simplePattern = /^\d+\./;
     const rangePattern = /^\d+-\d+\./;
 
@@ -138,21 +129,19 @@ export class DocParseService {
   }
 
   private parseMythLine(text: string): [string, string] {
-    // Try matching verse range first
+
     const rangeMatch = text.match(this.mythPatterns.verseRange);
     if (rangeMatch) {
       const [_, start, end, content] = rangeMatch;
       return [`${start || ''}-${end || ''}`, content || ''];
     }
 
-    // Try matching single verse
     const singleMatch = text.match(this.mythPatterns.singleVerse);
     if (singleMatch) {
       const [_, verse, content] = singleMatch;
       return [verse || '', content || ''];
     }
 
-    // Try matching ETCSL reference
     const etcslMatch = text.match(this.mythPatterns.etcslRef);
     if (etcslMatch) {
       const [_, ref, content] = etcslMatch;
@@ -193,7 +182,6 @@ export class DocParseService {
   private transformMythSection(element: unknown) {
     const text = this.extractText(element);
 
-    // Try matching different myth patterns
     const rangeMatch = text.match(this.mythPatterns.verseRange);
     const singleMatch = text.match(this.mythPatterns.singleVerse);
     const etcslMatch = text.match(this.mythPatterns.etcslRef);
@@ -214,10 +202,10 @@ export class DocParseService {
   }
 
   private detectMythSection(text: string) {
-    // Remove extra whitespace and normalize quotes
+
     const normalizedText = text.trim().replace(/[""]/g, '"');
 
-    this.log('detectMythSection - text:', normalizedText); // Log the normalized text
+    this.log('detectMythSection - text:', normalizedText);                           
 
     for (const [patternName, pattern] of Object.entries(this.mythPatterns)) {
       if (patternName === 'mythSection' || patternName === 'mythKeywordSection') {
@@ -254,7 +242,6 @@ export class DocParseService {
     console.log('Length:', text.length);
     console.log('First 50 chars:', text.substring(0, 50));
 
-    // Try each pattern in sequence
     for (const [patternName, pattern] of Object.entries(this.mythPatterns)) {
       const match = text.match(pattern);
       if (match) {
@@ -273,7 +260,7 @@ export class DocParseService {
     const link = match.groups?.['link'];
 
     if (verse) {
-      // Move URL link to verse label only
+
       const labelPart = link ? `<span class="verse-label darkgreen-label">${verse}<a href="${link}" title="View source">†</a></span>` : `<span class="verse-label">${verse}</span>`;
 
       return {
@@ -293,7 +280,7 @@ export class DocParseService {
 
     return verses
       .map(verse => {
-        // Match verse numbers and content
+
         const verseMatch = verse.match(/(?:\[(\d+(?:-\d+)?)\]|\b(\d+(?:-\d+)?)\.)(?:\((.*?)\))?\s*(.+)/s);
 
         if (verseMatch) {

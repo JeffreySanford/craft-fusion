@@ -12,7 +12,7 @@
 
 .filter-panel {
   background-color: var(--md-sys-color-surface-variant);
-  border-radius: 8px;
+  border-radius: 0.5em;
   margin-bottom: 1em;
   padding: 1em;
 }
@@ -20,12 +20,11 @@
 .filter-form {
   .filter-grid {
     display: grid;
-    gap: 1.5em; // Increased gap for better spacing
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    padding: 0 0.75rem; // Add left/right padding
+    gap: 1.5em;                                    
+    grid-template-columns: repeat(auto-fill, minmax(12.5em, 1fr));
+    padding: 0 0.75rem;                          
   }
 
-  // Enhanced styling for form fields
   mat-form-field {
     ::ng-deep {
       .mat-mdc-text-field-wrapper {
@@ -72,7 +71,7 @@
 
 .table-container {
   background-color: var(--md-sys-color-surface);
-  border-radius: 8px;
+  border-radius: 0.5em;
   flex: 1;
   overflow: auto;
   position: relative;
@@ -83,20 +82,20 @@
 
   .mat-column-timestamp {
     white-space: nowrap;
-    width: 180px;
+    width: 11.25em;
   }
 
   .mat-column-level {
     text-align: center;
-    width: 100px;
+    width: 6.25em;
   }
 
   .mat-column-component {
-    width: 150px;
+    width: 9.375em;
   }
 
   .mat-column-message {
-    max-width: 400px;
+    max-width: 25em;
   }
 
   .message-cell {
@@ -105,13 +104,13 @@
   }
 
   .details-cell {
-    max-width: 300px;
+    max-width: 18.75em;
     overflow: hidden;
 
     pre {
       font-size: 0.85em;
       margin: 0;
-      max-height: 100px;
+      max-height: 6.25em;
       overflow: auto;
       white-space: pre-wrap;
       word-break: break-word;
@@ -119,7 +118,6 @@
   }
 }
 
-// Log level styling
 .log-level-debug {
   color: var(--md-sys-color-primary);
 }
@@ -147,24 +145,23 @@
   transform: translate(-50%, -50%);
 }
 
-// Global styling for select panel overlays
 :host ::ng-deep .mat-mdc-select-panel {
   .mat-mdc-option {
     &.mdc-list-item--selected {
-      background-color: #e3f2fd !important; // Light blue for selected items
-      color: #002868 !important; // Patriotic blue text
+      background-color: #e3f2fd !important;                                 
+      color: #002868 !important;                       
 
       &:not(.mdc-list-item--disabled) {
         background-color: #e3f2fd !important;
       }
 
       &:hover {
-        background-color: #bbdefb !important; // Slightly darker blue on hover when selected
+        background-color: #bbdefb !important;                                               
       }
     }
 
     &:hover:not(.mdc-list-item--selected) {
-      background-color: #f3f8ff !important; // Very light blue on hover for unselected
+      background-color: #f3f8ff !important;                                           
     }
   }
 }
