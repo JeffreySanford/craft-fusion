@@ -4,14 +4,5 @@ export const environment = {
   socket: {
     url: 'ws://localhost:3000'
   },
-  yahooFinance: {
-    url: 'https://yfapi.net/',
-    apiKey: 'demo_key'
-  },
-  alphaVantageApiKey: 'demo',
-  flightRadar24: {
-    endpoint: 'https://fr24api.flightradar24.com/api/sandbox',
-    apiKey: 'demo_key'
-  },
-  mapboxToken: 'pk.demo.mapbox_token'
+  mapboxToken: 'pk.eyJ1IjoiamVmZnJleXNhbmZvcmQiLCJhIjoiY201c2prNDByMGtzdDJqcTV1eWZ1Zzc4ayJ9.6caUZUu49UlVJN1aotIwvg'
 };

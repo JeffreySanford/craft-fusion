@@ -1,11 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { LoggingService } from '../logging/logging.service';
+import { summarizeForLog } from '../logging/logging.utils';
 
 @Injectable()
 export class AiService {
-  private readonly logger = new Logger(AiService.name);
-
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly logger: LoggingService
+  ) {}
 
   private get apiKey(): string | undefined {
     return this.configService.get<string>('OPENAI_API_KEY');
@@ -16,6 +19,14 @@ export class AiService {
     if (!key) {
       throw new Error('OPENAI_API_KEY not configured');
     }
+
+    const payload = {
+      promptPreview: this.buildPromptPreview(prompt),
+      promptLength: prompt.length,
+      maxTokens,
+      model: 'gpt-4o-mini',
+    };
+    const startTime = Date.now();
 
     try {
       const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -33,10 +44,48 @@ export class AiService {
 
       const json = await res.json();
       const content = json?.choices?.[0]?.message?.content ?? json?.choices?.[0]?.text;
+      this.logSuccess('generateFromPrompt', payload, { content, response: json, status: res.status, ok: res.ok }, startTime);
       return String(content ?? '');
     } catch (e: unknown) {
-      this.logger.warn('AI generation error: ' + String(e));
+      this.logError('generateFromPrompt', payload, e, startTime);
       throw e;
     }
+  }
+
+  private logSuccess(
+    operation: string,
+    payload: Record<string, unknown>,
+    result: unknown,
+    startTime: number
+  ): void {
+    this.logger.info('External API request success', {
+      service: 'openai',
+      operation,
+      payload,
+      result: summarizeForLog(result),
+      durationMs: Date.now() - startTime,
+    });
+  }
+
+  private logError(
+    operation: string,
+    payload: Record<string, unknown>,
+    error: unknown,
+    startTime: number
+  ): void {
+    this.logger.error('External API request error', {
+      service: 'openai',
+      operation,
+      payload,
+      error,
+      durationMs: Date.now() - startTime,
+    });
+  }
+
+  private buildPromptPreview(prompt: string, maxLength = 200): string {
+    if (prompt.length <= maxLength) {
+      return prompt;
+    }
+    return `${prompt.slice(0, maxLength)}...`;
   }
 }

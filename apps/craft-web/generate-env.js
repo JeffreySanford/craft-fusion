@@ -20,16 +20,7 @@ const envContent = `export const environment = {
   socket: {
     url: 'ws://localhost:3000'
   },
-  yahooFinance: {
-    url: 'https://yfapi.net/',
-    apiKey: '${envConfig.parsed.NX_YAHOO_FINANCE_API_KEY || ''}'
-  },
-  alphaVantageApiKey: '${envConfig.parsed.NX_ALPHA_VANTAGE_API_KEY || ''}',
-  flightRadar24: {
-    endpoint: 'https://fr24api.flightradar24.com/api/sandbox',
-    apiKey: '${envConfig.parsed.NX_FLIGHTRADAR24_API_KEY || ''}'
-  },
-  mapboxToken: '${envConfig.parsed.NX_MAPBOX_ACCESS_TOKEN || 'pk.demo.mapbox_token'}'
+  mapboxToken: '${envConfig.parsed.MAPBOX_ACCESS_TOKEN || 'pk.demo.mapbox_token'}'
 };
 `;
 
@@ -45,16 +36,7 @@ const prodEnvContent = `export const environment = {
   socket: {
     url: 'wss://jeffreysanford.us'
   },
-  yahooFinance: {
-    url: 'https://yfapi.net/',
-    apiKey: '${envConfig.parsed.NX_YAHOO_FINANCE_API_KEY || ''}'
-  },
-  alphaVantageApiKey: '${envConfig.parsed.NX_ALPHA_VANTAGE_API_KEY || ''}',
-  flightRadar24: {
-    endpoint: 'https://fr24api.flightradar24.com/api/sandbox',
-    apiKey: '${envConfig.parsed.NX_FLIGHTRADAR24_API_KEY || ''}'
-  },
-  mapboxToken: '${envConfig.parsed.NX_MAPBOX_ACCESS_TOKEN || 'pk.demo.mapbox_token'}'
+  mapboxToken: '${envConfig.parsed.MAPBOX_ACCESS_TOKEN || 'pk.demo.mapbox_token'}'
 };
 `;
 

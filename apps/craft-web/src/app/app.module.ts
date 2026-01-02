@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Router, NavigationStart, NavigationCancel, NavigationEnd, NavigationError } from '@angular/router';
+import { filter, take } from 'rxjs/operators';
 import { AppComponent } from './app.component';
 import { appRoutes } from './app.routes';
 import { MaterialModule } from './material.module';
@@ -21,9 +22,7 @@ import { HealthData } from '@craft-fusion/craft-library';
 
 export function socketClientFactory(socketClient: SocketClientService): () => void {
   return () => {
-
     socketClient.connect();
-    console.info('[AppModule] SocketClientService initialized and connected');
     const healthMetric: HealthData = {
       status: 'healthy',
       services: { api: true },
@@ -37,7 +36,13 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
         timestamp: Date.now(),
       },
     };
-    socketClient.emit('health', healthMetric);
+
+    socketClient.isConnected$
+      .pipe(filter(Boolean), take(1))
+      .subscribe(() => {
+        console.info('[AppModule] SocketClientService connected');
+        socketClient.emit('health', healthMetric);
+      });
   };
 }
 

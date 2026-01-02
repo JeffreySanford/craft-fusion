@@ -32,6 +32,7 @@ export class FinanceComponent implements OnInit, OnChanges {
   @Input() data: Stock[] = [];
   @Input() width: number = 0;
   @Input() height: number = 0;
+  @Input() compact: boolean = false;
   @Input() inOverlay: boolean = false;                                    
   @Input() showMarketPhases: boolean = false;                                                 
   @Input() showMarketPhasesControl: boolean = true;                                   
@@ -65,6 +66,13 @@ export class FinanceComponent implements OnInit, OnChanges {
       if (this.stocks.length > 0) {
 
         this.sortStocksByCurrentPrice();
+        this.renderChart(this.data);
+      }
+    }
+
+    if (changes['compact'] && this.compact && this.showMarketPhases) {
+      this.showMarketPhases = false;
+      if (this.data && this.data.length > 0) {
         this.renderChart(this.data);
       }
     }

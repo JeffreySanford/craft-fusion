@@ -24,15 +24,6 @@ export const environment = {
   socket: {
     url: 'ws://localhost:3000'
   },
-  yahooFinance: {
-    url: 'https://yfapi.net/',
-    apiKey: 'demo_key'
-  },
-  alphaVantageApiKey: 'demo',
-  flightRadar24: {
-    endpoint: 'https://fr24api.flightradar24.com/api/sandbox',
-    apiKey: 'demo_key'
-  },
   mapboxToken: 'pk.demo.mapbox_token'
 };
 ```
@@ -44,15 +35,6 @@ export const environment = {
   apiUrl: 'https://jeffreysanford.us',
   socket: {
     url: 'wss://jeffreysanford.us'
-  },
-  yahooFinance: {
-    url: 'https://yfapi.net/',
-    apiKey: 'demo_key'
-  },
-  alphaVantageApiKey: 'demo',
-  flightRadar24: {
-    endpoint: 'https://fr24api.flightradar24.com/api/sandbox',
-    apiKey: 'demo_key'
   },
   mapboxToken: 'pk.demo.mapbox_token'
 };
@@ -96,11 +78,6 @@ export const environment = {
 | `production` | `api.service.ts`, `websocket.service.ts`, `server-status.component.ts`, `api-diagnostics.service.ts` | Conditional logic for dev/prod behavior |
 | `apiUrl` | `api-diagnostics.service.ts`, `timeline.service.ts` | Backend API endpoint |
 | `socket.url` | `socket-client.service.ts`, `authentication.service.ts`, `timeline.service.ts` | WebSocket connection URL |
-| `yahooFinance.url` | `yahoo.service.ts` | Yahoo Finance API base URL |
-| `yahooFinance.apiKey` | `yahoo.service.ts` | Yahoo Finance API authentication |
-| `alphaVantageApiKey` | `alpha-vantage.service.ts` | Alpha Vantage API authentication |
-| `flightRadar24.endpoint` | `flightradar.service.ts` | FlightRadar24 API base URL |
-| `flightRadar24.apiKey` | `flightradar.service.ts` | FlightRadar24 API authentication |
 | `mapboxToken` | `mapbox.service.ts` | Mapbox API authentication |
 
 ### Backend Properties
@@ -137,10 +114,8 @@ pnpm dlx nx run craft-web:generate-env
 
 | .env Variable | Environment Property | Default Value |
 |---------------|---------------------|---------------|
-| `NX_YAHOO_FINANCE_API_KEY` | `yahooFinance.apiKey` | `''` (empty) |
-| `NX_ALPHA_VANTAGE_API_KEY` | `alphaVantageApiKey` | `''` (empty) |
-| `NX_FLIGHTRADAR24_API_KEY` | `flightRadar24.apiKey` | `''` (empty) |
-| `NX_MAPBOX_ACCESS_TOKEN` | `mapboxToken` | `'pk.demo.mapbox_token'` |
+| `MAPBOX_ACCESS_TOKEN` | `mapboxToken` | `'pk.demo.mapbox_token'` |
+| `NASA_FIRMS_API_KEY` | `firms.service.ts` | `''` (empty) |
 
 ## Build Integration
 
@@ -197,7 +172,6 @@ As of December 31, 2025, the environment files were cleaned up to remove unused 
 - `finnhubApi` (unused)
 - `nasaFirmsEndpoint` (unused)
 - `calfireEndpoint` (unused)
-- `flightradar24Endpoint` (duplicate of `flightRadar24.endpoint`)
 - `yahooFinanceUrl` (duplicate of `yahooFinance.url`)
 - `sentryDsn` (unused)
 - `logLevel` (unused)
@@ -205,7 +179,6 @@ As of December 31, 2025, the environment files were cleaned up to remove unused 
 #### Removed from Backend:
 - `socketUrl` (unused by backend)
 - `yahooFinanceUrl` (unused by backend)
-- `alphaVantageApiKey` (unused by backend)
 
 ### Benefits of Cleanup
 

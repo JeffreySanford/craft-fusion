@@ -18,15 +18,7 @@ export interface HistoricalData {
   providedIn: 'root',
 })
 export class YahooService {
-  private apiUrl = environment.yahooFinance.url;
-
-  private options = {
-    headers: {
-      'x-api-key': environment.yahooFinance.apiKey,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-  };
+  private apiUrl = `${environment.apiUrl}/api/financial/yahoo`;
 
   constructor(
     private http: HttpClient,
@@ -37,16 +29,15 @@ export class YahooService {
   }
 
   getStockQuote(symbol: string): Observable<unknown> {
-    const url = `${this.apiUrl}/quoteSummary/${symbol}`;
-    const params = { modules: 'defaultKeyStatistics,assetProfile' };
+    const url = `${this.apiUrl}/quote/${symbol}`;
 
     this.logger.debug(`Fetching stock quote for ${symbol}`, { url });
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
 
-    return this.http.get(url, { ...this.options, params }).pipe(
+    return this.http.get(url).pipe(
       map((response: any) => {
         this.logger.endServiceCall(callId, 200);
-        return response.quoteSummary.result[0];
+        return response;
       }),
       catchError(error => {
         this.logger.error(`Error fetching stock quote for ${symbol}:`, {
@@ -60,17 +51,24 @@ export class YahooService {
     );
   }
 
-  getHistoricalData(symbols: string[], interval: string = '1d', range: string = '1y'): Observable<HistoricalData[]> {
-    const url = `${this.apiUrl}v8/finance/spark/?interval=${interval}&range=${range}&symbols=${symbols.join(',')}`;
+  getHistoricalData(symbols: string[], interval: string = '1d', range: string = '1y', limit: number = 1000): Observable<HistoricalData[]> {
+    const url = `${this.apiUrl}/historical`;
+    const params = { interval, range, symbols: symbols.join(','), limit: `${limit}` };
 
     this.logger.debug(`Fetching historical data for ${symbols}`, { url });
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
 
-    return this.http.get(url, this.options).pipe(
+    return this.http.get(url, { params }).pipe(
       map((response: any) => {
         this.logger.endServiceCall(callId, 200);
         const parsedData: HistoricalData[] = symbols.map(symbol => {
-          const data = response[symbol];
+          const data = response?.[symbol];
+          if (!data || !Array.isArray(data.timestamp) || !Array.isArray(data.close)) {
+            return {
+              symbol,
+              data: [],
+            };
+          }
           return {
             symbol,
             data: data.timestamp.map((timestamp: number, index: number) => ({
@@ -94,15 +92,15 @@ export class YahooService {
   }
 
   getMarketSummary(): Observable<unknown> {
-    const url = `${this.apiUrl}/market/get-summary`;
+    const url = `${this.apiUrl}/market-summary`;
 
     this.logger.debug(`Fetching market summary`, { url });
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
 
-    return this.http.get(url, this.options).pipe(
+    return this.http.get(url).pipe(
       map((response: any) => {
         this.logger.endServiceCall(callId, 200);
-        return response?.marketSummaryResponse?.result;
+        return response;
       }),
       catchError(error => {
         this.logger.error(`Error fetching market summary:`, {
@@ -123,10 +121,10 @@ export class YahooService {
     this.logger.debug(`Fetching trending symbols for region ${region}`, { url });
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
 
-    return this.http.get(url, { ...this.options, params }).pipe(
+    return this.http.get(url, { params }).pipe(
       map((response: any) => {
         this.logger.endServiceCall(callId, 200);
-        return response?.finance?.result?.[0]?.quotes || [];
+        return response;
       }),
       catchError(error => {
         this.logger.error(`Error fetching trending symbols for region ${region}:`, {
@@ -141,16 +139,15 @@ export class YahooService {
   }
 
   getCompanyDetails(symbol: string): Observable<unknown> {
-    const url = `${this.apiUrl}/quoteSummary/${symbol}`;
-    const params = { modules: 'assetProfile,defaultKeyStatistics' };
+    const url = `${this.apiUrl}/company/${symbol}`;
 
     this.logger.debug(`Fetching company details for ${symbol}`, { url });
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
 
-    return this.http.get(url, { ...this.options, params }).pipe(
+    return this.http.get(url).pipe(
       map((response: any) => {
         this.logger.endServiceCall(callId, 200);
-        return response.quoteSummary.result[0];
+        return response;
       }),
       catchError(error => {
         this.logger.error(`Error fetching company details for ${symbol}:`, {

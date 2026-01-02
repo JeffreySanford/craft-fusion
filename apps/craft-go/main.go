@@ -2,6 +2,7 @@ package main
 
 import (
 	"craft-fusion/craft-go/handlers"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -33,7 +34,13 @@ import (
 // @host localhost:4000
 // @BasePath /
 func main() {
-	router := gin.Default()
+	if os.Getenv("GIN_MODE") == "" && os.Getenv("NODE_ENV") == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	router := gin.New()
+	router.Use(requestLogger())
+	router.Use(gin.Recovery())
 
 	// Resolve server port from environment (default 4000)
 	port := os.Getenv("PORT")
@@ -168,5 +175,54 @@ func main() {
 	// Start the Server
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("listen: %s\n", err)
+	}
+}
+
+func requestLogger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		startTime := time.Now()
+		path := c.Request.URL.Path
+		rawQuery := c.Request.URL.RawQuery
+
+		params := map[string]string{}
+		for _, param := range c.Params {
+			params[param.Key] = param.Value
+		}
+
+		c.Next()
+
+		entry := map[string]interface{}{
+			"method":     c.Request.Method,
+			"path":       path,
+			"statusCode": c.Writer.Status(),
+			"durationMs": time.Since(startTime).Milliseconds(),
+			"size":       c.Writer.Size(),
+		}
+
+		if rawQuery != "" {
+			entry["query"] = rawQuery
+		}
+		if len(params) > 0 {
+			entry["params"] = params
+		}
+		if route := c.FullPath(); route != "" {
+			entry["route"] = route
+		}
+		if len(c.Errors) > 0 {
+			entry["errors"] = c.Errors.String()
+		}
+
+		payload, err := json.Marshal(entry)
+		if err != nil {
+			log.Printf("[ERROR] HTTP request log marshal error: %v", err)
+			return
+		}
+
+		if c.Writer.Status() >= 400 {
+			log.Printf("[ERROR] HTTP request failed %s", string(payload))
+			return
+		}
+
+		log.Printf("[INFO] HTTP request completed %s", string(payload))
 	}
 }

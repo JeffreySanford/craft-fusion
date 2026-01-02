@@ -150,6 +150,13 @@ export class SocketClientService implements OnDestroy {
   }
 
   connect(): void {
+    if (this.socket) {
+      if (!this.socket.connected && !this.reconnecting) {
+        this.socket.connect();
+      }
+      return;
+    }
+
     this.initializeSocket();
   }
 

@@ -247,6 +247,15 @@
   }
 }
 
+.fire-alert-container.compact {
+  padding: 0.5em;
+
+  .map-container {
+    margin-bottom: 0;
+    max-height: none;
+  }
+}
+
 .alert-count {
   color: #777;
   font-size: 0.8rem;

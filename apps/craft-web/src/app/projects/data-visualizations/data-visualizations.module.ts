@@ -7,9 +7,6 @@ import { FinanceComponent } from './financial/finance.component';
 import { MaterialModule } from '../../material.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { FireAlertComponent } from './alert/fire-alert.component';
-import { MatDialogModule } from '@angular/material/dialog';
-import { FlightRadarService } from '../../common/services/flightradar.service';
-import { AlphaVantageService } from '../../common/services/alpha-vantage.service';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -23,7 +20,6 @@ import { AnimatedDirectivesModule } from '../../animated-directives.module';
 import { MapboxService } from '../../common/services/mapbox.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChartLayoutService } from './services/chart-layout.service';
-import { TileLimitDialogComponent } from './dialogs/tile-limit-dialog.component';
 import { FinanceModule } from './financial/finance.module';
 import { ComponentsModule } from '../../common/components/components.module';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -49,13 +45,12 @@ const dataVisualizationsRoutes: Routes = [
 ];
 
 @NgModule({
-  declarations: [DataVisualizationsComponent, BarComponent, LineComponent, FireAlertComponent, TileLimitDialogComponent],
+  declarations: [DataVisualizationsComponent, BarComponent, LineComponent, FireAlertComponent],
   imports: [
     CommonModule,
     RouterModule.forChild(dataVisualizationsRoutes),
     MaterialModule,
     DragDropModule,
-    MatDialogModule,
     MatChipsModule,
     MatButtonModule,
     MatButtonToggleModule,
@@ -72,6 +67,6 @@ const dataVisualizationsRoutes: Routes = [
     ComponentsModule,
   ],
   exports: [DataVisualizationsComponent, RouterModule],
-  providers: [AlphaVantageService, FlightRadarService, MapboxService, ChartLayoutService],
+  providers: [MapboxService, ChartLayoutService],
 })
 export class DataVisualizationsModule {}

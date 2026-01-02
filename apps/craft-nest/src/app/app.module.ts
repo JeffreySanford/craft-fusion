@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
@@ -12,6 +13,10 @@ import { RecordsModule } from './records/records.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { AiModule } from './ai/ai.module';
 import { TimelineModule } from './family/timeline/timeline.module';
+import { YahooModule as FinancialYahooModule } from './financial/yahoo/yahoo.module';
+import { FirmsModule } from './firms/firms.module';
+import { OpenSkyModule } from './openskies/opensky.module';
+import { HttpLoggingInterceptor } from './logging/http-logging.interceptor';
 
 @Module({
   imports: [
@@ -92,8 +97,17 @@ import { TimelineModule } from './family/timeline/timeline.module';
     RecipesModule, // <-- Register RecipesModule
     AiModule,
     TimelineModule,
+    FinancialYahooModule,
+    FirmsModule,
+    OpenSkyModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: HttpLoggingInterceptor,
+    },
+  ],
 })
 export class AppModule {}

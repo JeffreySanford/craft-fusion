@@ -26,6 +26,11 @@ This index lists the canonical documentation for Craft Fusion. If multiple docs 
 - `documentation/design/admin-dashboard.md` - admin dashboard UI spec
 - `documentation/design/security-tab.md` - security tab UI spec
 
+## Projects
+
+- `documentation/projects/memorial-timeline.md` - memorial timeline visualization
+- `documentation/projects/data-visualizations.md` - data visualizations overview and roadmap
+
 ## Security
 
 - `documentation/AUTHENTICATION.md` - current auth architecture overview

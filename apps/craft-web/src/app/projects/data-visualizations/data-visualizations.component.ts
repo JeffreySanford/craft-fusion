@@ -8,8 +8,6 @@ import { catchError } from 'rxjs/operators';
 import { MatIconRegistry } from '@angular/material/icon';
 import { SidebarStateService } from '../../common/services/sidebar-state.service';
 import { ChartLayoutService } from './services/chart-layout.service';
-import { MatDialog } from '@angular/material/dialog';
-import { TileLimitDialogComponent } from './dialogs/tile-limit-dialog.component';
 import { SocketClientService } from '../../common/services/socket-client.service';
 
 @Component({
@@ -21,6 +19,7 @@ import { SocketClientService } from '../../common/services/socket-client.service
 export class DataVisualizationsComponent implements OnInit, OnDestroy {
   isMobile = false;
   isSidebarCollapsed = false;
+  availableChartsView: 'list' | 'tiles' = 'list';
   expandedTileIndex: number | null = null;
   fullExpandedTileIndex: number | null = null;                                          
 
@@ -71,10 +70,10 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   ];
 
   public allCharts: ExtendedChartData[] = [
-    { name: 'Line Chart', component: 'app-line-chart', color: 'dodgerblue', data: this.lineChartData, size: 'medium', active: true },
-    { name: 'Bar Chart', component: 'app-bar-chart', color: 'limegreen', data: this.barChartData, size: 'medium', active: true },
-    { name: 'FinTech Chart', component: 'app-finance-chart', color: 'tomato', data: [], size: 'medium', active: false },
-    { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [], size: 'large', active: false },
+    { name: 'Line Chart', component: 'app-line-chart', color: 'dodgerblue', data: this.lineChartData, size: 'medium', active: true, displayMode: 'tile' },
+    { name: 'Bar Chart', component: 'app-bar-chart', color: 'limegreen', data: this.barChartData, size: 'medium', active: true, displayMode: 'tile' },
+    { name: 'Financial Technologies', component: 'app-finance-chart', color: 'tomato', data: [], size: 'medium', active: false, displayMode: 'tile' },
+    { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [], size: 'large', active: false, displayMode: 'fullscreen' },
   ];
 
   public fintechChartData: HistoricalData[] = [];
@@ -84,8 +83,6 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   tileHeight: number = 0;
   resizeObserver: ResizeObserver | null = null;
 
-  readonly MAX_TILES = 5;
-
   constructor(
     private breakpointObserver: BreakpointObserver,
     private cdr: ChangeDetectorRef,
@@ -93,7 +90,6 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     private iconRegistry: MatIconRegistry,
     private sidebarStateService: SidebarStateService,
     private chartLayoutService: ChartLayoutService,
-    private dialog: MatDialog,
     private socketClient: SocketClientService,
   ) {
     console.log('DataVisualizationsComponent instantiated');
@@ -156,6 +152,10 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
 
       if (!chart.size) {
         chart.size = 'medium';
+      }
+
+      if (!chart.displayMode) {
+        chart.displayMode = 'tile';
       }
 
       if (!chart.position) {
@@ -313,98 +313,55 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   addTile(chart: ChartData): void {
     console.log('Adding tile:', chart.name, chart.size);
 
-    if (!this.hasRoomForMoreTiles(chart)) {
+    this.ensureRoomForTile(chart);
 
-      this.showNoSpaceNotification(chart as ExtendedChartData);
+    const chartCopy = { ...chart } as ExtendedChartData;
+
+    chartCopy.chartClass = this.chartLayoutService.calculateChartClass(chartCopy.component);
+
+    if (chartCopy.size === 'large') {
+      this.displayedCharts.unshift(chartCopy);
+    } else {
+      this.displayedCharts.push(chartCopy);
+    }
+
+    this.optimizeChartLayout();
+
+    if ((chartCopy as ExtendedChartData).displayMode === 'fullscreen') {
+      setTimeout(() => {
+        const index = this.displayedCharts.findIndex(c => c.component === chartCopy.component);
+        if (index !== -1) {
+          this.expandedTileIndex = null;
+          this.fullExpandedTile(index);
+        }
+      }, 200);
       return;
     }
 
-    const chartCopy = { ...chart } as ExtendedChartData;
-
-    chartCopy.chartClass = this.chartLayoutService.calculateChartClass(chartCopy.component);
-
-    if (chartCopy.size === 'large') {
-      this.displayedCharts.unshift(chartCopy);
-    } else {
-      this.displayedCharts.push(chartCopy);
-    }
-
-    this.optimizeChartLayout();
-
     setTimeout(() => {
       this.resizeCharts();
     }, 150);
   }
 
-  private showNoSpaceNotification(newTile: ExtendedChartData): void {
-    const dialogRef = this.dialog.open(TileLimitDialogComponent, {
-      width: '500px',
-      panelClass: 'patriotic-dialog',
-      disableClose: true,
-      data: {
-        currentTiles: this.displayedCharts,
-        newTile: newTile,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result && result.action === 'remove' && result.tiles && result.tiles.length > 0) {
-
-        const removedTileNames = result.tiles.map((t: ExtendedChartData) => t.name);
-        console.log(`Removing tiles: ${removedTileNames.join(', ')}`);
-
-        result.tiles.forEach((tile: ExtendedChartData) => {
-          this.removeTile(tile, undefined, false);                            
-        });
-
-        this.optimizeChartLayout();
-        setTimeout(() => this.cdr.detectChanges());
-
-        console.log('After removal - checking space again');
-
-        const currentState = {
-          largeCount: this.displayedCharts.filter(c => c.size === 'large').length,
-          mediumCount: this.displayedCharts.filter(c => c.size === 'medium').length,
-          smallCount: this.displayedCharts.filter(c => c.size === 'small').length,
-        };
-        console.log(`Current state: ${JSON.stringify(currentState)}`);
-
-        setTimeout(() => {
-
-          const hasRoom = this.hasRoomForMoreTiles(newTile);
-          console.log(`Has room for new tile? ${hasRoom}`);
-
-          if (hasRoom) {
-            this.addTile(newTile);
-          } else {
-            console.warn('Still not enough space after removals. Adding anyway as user explicitly made space.');
-
-            this.forceAddTile(newTile);
-          }
-        }, 150);                                          
-      }
-    });
-  }
-
-  private forceAddTile(chart: ExtendedChartData): void {
-    console.log('Force adding tile:', chart.name);
-
-    const chartCopy = { ...chart } as ExtendedChartData;
-
-    chartCopy.chartClass = this.chartLayoutService.calculateChartClass(chartCopy.component);
-
-    if (chartCopy.size === 'large') {
-      this.displayedCharts.unshift(chartCopy);
-      console.log('Added large tile to the beginning of the array');
-    } else {
-      this.displayedCharts.push(chartCopy);
-      console.log('Added non-large tile to the end of the array');
+  private ensureRoomForTile(newTile: ChartData): void {
+    if (this.hasRoomForMoreTiles(newTile)) {
+      return;
     }
 
-    this.optimizeChartLayout();
-    setTimeout(() => {
-      this.resizeCharts();
-    }, 150);
+    while (this.displayedCharts.length > 0 && !this.hasRoomForMoreTiles(newTile)) {
+      const removed = this.displayedCharts[this.displayedCharts.length - 1];
+      if (!removed) break;
+      console.log(`Auto-removed tile to make space: ${removed.name}`);
+      this.removeTile(removed, undefined, false);
+    }
+
+    if (!this.hasRoomForMoreTiles(newTile)) {
+      console.warn('No room after trimming tiles; clearing layout to add the requested tile.');
+      this.displayedCharts = [];
+      this.expandedTileIndex = null;
+      this.fullExpandedTileIndex = null;
+      document.body.style.overflow = '';
+    }
   }
 
   private optimizeChartLayout(): void {
@@ -420,6 +377,22 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     if (index !== -1) {
       console.log(`Removing tile: ${chart.name}, index: ${index}`);
       this.displayedCharts.splice(index, 1);
+      if (this.expandedTileIndex !== null) {
+        if (index === this.expandedTileIndex) {
+          this.expandedTileIndex = null;
+        } else if (index < this.expandedTileIndex) {
+          this.expandedTileIndex -= 1;
+        }
+      }
+
+      if (this.fullExpandedTileIndex !== null) {
+        if (index === this.fullExpandedTileIndex) {
+          this.fullExpandedTileIndex = null;
+          document.body.style.overflow = '';
+        } else if (index < this.fullExpandedTileIndex) {
+          this.fullExpandedTileIndex -= 1;
+        }
+      }
       setTimeout(() => this.cdr.detectChanges());
 
       if (triggerResize) {
@@ -587,6 +560,15 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
+  toggleAvailableChartsView(): void {
+    this.availableChartsView = this.availableChartsView === 'list' ? 'tiles' : 'list';
+    setTimeout(() => this.cdr.detectChanges());
+
+    if (this.availableChartsView === 'list') {
+      this.updateListItemStyles();
+    }
+  }
+
   resizeCharts(): void {
 
     this.cdr.detectChanges();
@@ -635,6 +617,14 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
 
       this.openTile(index);
     }
+  }
+
+  openFullScreen(index: number, event: MouseEvent): void {
+    event.stopPropagation();
+    if (this.fullExpandedTileIndex === index) {
+      return;
+    }
+    this.fullExpandedTile(index);
   }
 
   fullExpandedTile(index: number): void {
