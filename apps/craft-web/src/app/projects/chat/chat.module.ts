@@ -17,6 +17,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { SplitTextPipe } from './split-text.pipe';
 
 const routes: Routes = [{ path: '', component: ChatComponent }];
 
@@ -38,7 +39,7 @@ const routes: Routes = [{ path: '', component: ChatComponent }];
     MatIconModule,
     MatSelectModule,
   ],
-  providers: [ChatService, SplitTextPipe],
+  providers: [ChatService],
   exports: [ChatComponent, MarkdownPipe, ModelSelectorComponent],
 })
 export class ChatModule {}
