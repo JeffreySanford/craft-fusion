@@ -60,7 +60,7 @@ export class AuthService {
     this.logger.info('User logging in as guest');
 
     return of(this.guestUser).pipe(
-      tap(user => {
+      tap(() => {
 
         this.logger.debug('Guest user state initialized');
       }),

@@ -46,11 +46,19 @@
   }
 }
 
-.loading-indicator {
+.loading-container {
   align-items: center;
   color: var(--md-sys-color-primary);
   display: flex;
   font-size: 1.2em;
   height: 12.5em;
   justify-content: center;
+}
+
+.memorial-timeline-controls {
+  .filter-field {
+    display: block;
+    margin-bottom: 0.75em;
+    width: 17.5em;
+  }
 }

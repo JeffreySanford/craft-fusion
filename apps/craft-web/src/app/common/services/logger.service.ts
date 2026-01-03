@@ -1,7 +1,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, ReplaySubject, of, timer } from 'rxjs';
 import { map, switchMap, takeUntil, catchError, tap, filter } from 'rxjs/operators';
-import { HttpContext, HttpContextToken } from '@angular/common/http';
+import { HttpContextToken } from '@angular/common/http';
 
 export const TIMEOUT = new HttpContextToken<number>(() => 30000);
 
@@ -207,14 +207,12 @@ export class LoggerService {
   }
 
   private outputToConsole(level: LogLevel, message: string, details?: unknown, component: string = '') {
-    const componentPrefix = component ? `[${component}] ` : '';
-
     const css = (name: string, fallback: string) => {
       try {
         if (typeof window === 'undefined' || !window.getComputedStyle) return fallback;
         const v = getComputedStyle(document.documentElement).getPropertyValue(name);
         return v ? v.trim() : fallback;
-      } catch (e) {
+      } catch {
         return fallback;
       }
     };
@@ -255,7 +253,7 @@ export class LoggerService {
       messageStyle = styles.highlight;
     }
 
-    else if (this.isSecurityRelated(message, component, details)) {
+    else if (this.isSecurityRelated(message, component)) {
       messageStyle = styles.security;
     }
 
@@ -341,7 +339,7 @@ export class LoggerService {
     }
   }
 
-  private isSecurityRelated(message: string, component: string = '', details?: unknown): boolean {
+  private isSecurityRelated(message: string, component: string = ''): boolean {
     const securityTerms = [
       'security',
       'permission',
@@ -478,7 +476,7 @@ export class LoggerService {
 
       for (let i = 3; i < Math.min(10, stackLines.length); i++) {
 
-        const line = stackLines[i];
+        const line = stackLines.at(i);
         if (!line) continue;
 
         const componentMatch = line.match(/at\s+(\w+(?:Component|Service|Guard|Directive|Pipe|Resolver))\./);
@@ -531,22 +529,28 @@ export class LoggerService {
       const sanitizeObject = (obj: Record<string, any>) => {
         if (!obj || typeof obj !== 'object') return;
 
-        for (const key of Object.keys(obj)) {
+        for (const [key, value] of Object.entries(obj)) {
           const lowerKey = String(key).toLowerCase();
 
           if (sensitiveFields.some(field => lowerKey.includes(field))) {
-            obj[key] = '[REDACTED]';
+            Object.defineProperty(obj, key, {
+              value: '[REDACTED]',
+              writable: true,
+              enumerable: true,
+              configurable: true,
+            });
+            continue;
           }
 
-          else if (obj[key] && typeof obj[key] === 'object') {
-            sanitizeObject(obj[key] as Record<string, any>);
+          if (value && typeof value === 'object') {
+            sanitizeObject(value as Record<string, any>);
           }
         }
       };
 
       sanitizeObject(sanitized);
       return sanitized;
-    } catch (error) {
+    } catch {
 
       return { original: details, warning: 'Could not sanitize log details' };
     }

@@ -1,1 +1,1 @@
-import { Record, Phone, Company } from '@craft-fusion/craft-library';
+export type { Record, Phone, Company } from '@craft-fusion/craft-library';

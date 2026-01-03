@@ -6,7 +6,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-non-d3-chart',
   template: `<canvas #chartCanvas></canvas>`,
-  standalone: true,
+  standalone: false,
 })
 export class NonD3ChartComponent implements AfterViewInit {
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;

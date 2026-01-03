@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { AppComponent } from './app.component';
@@ -16,6 +17,8 @@ describe('AppComponent', () => {
   beforeEach(async () => {
     mockRouter = {
       navigate: jest.fn(),
+      events: of(),
+      url: '/',
     } as unknown as jest.Mocked<Router>;
 
     mockActivatedRoute = {
@@ -68,7 +71,7 @@ describe('AppComponent', () => {
   });
 
   it('should handle user interaction', () => {
-    const ensureVideoIsPlayingSpy = jest.spyOn(component as unknown, 'ensureVideoIsPlaying');
+    const ensureVideoIsPlayingSpy = jest.spyOn(component as any, 'ensureVideoIsPlaying');
     component['handleUserInteraction'].call(component);
     expect(ensureVideoIsPlayingSpy).toHaveBeenCalled();
   });

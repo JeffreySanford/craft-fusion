@@ -62,6 +62,6 @@ export class PerformanceDashboardComponent implements AfterViewInit, OnDestroy {
     }
     try {
       this.chart?.destroy();
-    } catch (e) {}
+    } catch {}
   }
 }

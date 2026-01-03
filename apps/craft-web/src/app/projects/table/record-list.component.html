@@ -106,21 +106,15 @@
           <div class="flex-header-cell flex-right">Actions</div>
         </div>
 
-        <ng-container *ngFor="let record of dataSource.filteredData | slice: paginator.pageIndex * paginator.pageSize : (paginator.pageIndex + 1) * paginator.pageSize">
+        <ng-container *ngFor="let record of pagedRecords">
           <div class="flex-row" [class.selected]="expandedElement === record" (click)="expandRow(record)">
-
             <div class="flex-cell">{{ record.UID }}</div>
-
             <div class="flex-cell" *ngIf="!showMinimalColumns">{{ record.firstName }}&nbsp;{{ record.lastName }}</div>
-
             <div class="flex-cell address-column" *ngIf="showAddressColumns" title="{{ record.address.street }}">{{ record.address.street }}</div>
-
             <div class="flex-cell" *ngIf="showMediumColumns || showAddressColumns">{{ record.address.city }}</div>
             <div class="flex-cell" *ngIf="showMediumColumns || showAddressColumns">{{ record.address.state }}</div>
             <div class="flex-cell" *ngIf="showMediumColumns || showAddressColumns">{{ record.address.zipcode }}</div>
-
             <div class="flex-cell" *ngIf="showAddressColumns">{{ record.phone.number }}</div>
-
             <div class="flex-cell flex-right">
               <button mat-icon-button (click)="showDetailView(record); $event.stopPropagation()" title="view record">
                 <mat-icon>person</mat-icon>

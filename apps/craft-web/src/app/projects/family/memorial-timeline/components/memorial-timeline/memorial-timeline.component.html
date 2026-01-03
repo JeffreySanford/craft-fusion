@@ -8,11 +8,13 @@
     <div class="memorial-timeline-controls">
       <mat-form-field appearance="fill" class="filter-field">
         <mat-label>Filter events</mat-label>
-        <mat-select (selectionChange)="onFilterChange($event.value)" [value]="'all'">
+        <mat-select (selectionChange)="onFilterChange($event.value)" [value]="selectedFilter">
           <mat-option value="all">All</mat-option>
+          <mat-option value="historical">Historical</mat-option>
           <mat-option value="personal">Personal</mat-option>
           <mat-option value="family">Family</mat-option>
-          <mat-option value="historical">Historical</mat-option>
+          <mat-option value="project">Project</mat-option>
+          <mat-option value="anniversary">Anniversary</mat-option>
           <mat-option value="jeffrey-ai">Jeffrey Sanford (AI)</mat-option>
         </mat-select>
       </mat-form-field>

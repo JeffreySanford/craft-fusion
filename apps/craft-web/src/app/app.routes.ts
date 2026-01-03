@@ -4,7 +4,6 @@ import { MaterialButtonsComponent } from './pages/landing/material-buttons/mater
 import { ResumeComponent } from './pages/resume/resume.component';
 import { AdminGuard } from './common/guards/admin.guard';
 import { AuthGuard } from './common/guards/auth.guard';
-import { RoleGuard } from './common/guards/role.guard';
 
 export const appRoutes: Routes = [
   { path: 'home', loadChildren: () => import('./pages/landing/landing.module').then(m => m.LandingModule) },

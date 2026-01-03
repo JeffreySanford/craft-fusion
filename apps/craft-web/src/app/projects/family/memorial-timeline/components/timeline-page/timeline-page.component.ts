@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
-import { Observable, of, Subject } from 'rxjs';                              
-import { takeUntil } from 'rxjs/operators';
-import { TimelineEvent } from '../../models/timeline-event.model';                         
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
+import { TimelineEvent, TimelineEventType } from '../../models/timeline-event.model';
 import { TimelineService } from '../../services/timeline.service';
 
 @Component({
@@ -14,11 +14,25 @@ import { TimelineService } from '../../services/timeline.service';
 export class TimelinePageComponent implements OnInit, OnDestroy {
 
   loading: boolean = true;                            
-  timelineEvents$: Observable<TimelineEvent[]> = of([]);                                                     
+  timelineEvents$: Observable<TimelineEvent[]>;
+  filteredEvents$: Observable<TimelineEvent[]>;
+  private filter$ = new BehaviorSubject<'all' | TimelineEventType>('all');
+  selectedFilter: 'all' | TimelineEventType = 'all';
 
   private destroy$ = new Subject<void>();
 
-  constructor(private timelineService: TimelineService) {}
+  constructor(private timelineService: TimelineService) {
+    this.timelineEvents$ = this.timelineService.events$;
+    this.filteredEvents$ = combineLatest([this.timelineEvents$, this.filter$]).pipe(
+      map(([events, filter]) => {
+        if (filter === 'all') {
+          return events;
+        }
+
+        return events.filter(event => event.type === filter);
+      }),
+    );
+  }
 
   ngOnInit(): void {
 
@@ -26,13 +40,11 @@ export class TimelinePageComponent implements OnInit, OnDestroy {
       .loadInitialEvents()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: events => {
-          this.timelineEvents$ = of(events);
+        next: () => {
           this.loading = false;
         },
         error: error => {
           console.error('Error loading timeline events:', error);
-          this.timelineEvents$ = of([]);
           this.loading = false;
         },
       });
@@ -44,5 +56,10 @@ export class TimelinePageComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
     this.timelineService.disconnect();
+  }
+
+  onFilterChange(value: 'all' | TimelineEventType): void {
+    this.selectedFilter = value;
+    this.filter$.next(value);
   }
 }

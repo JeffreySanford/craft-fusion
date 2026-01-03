@@ -250,8 +250,8 @@ export class ApiDiagnosticsService {
             const ports = response.ports;
             let message = 'Port status:\n';
 
-            Object.keys(ports).forEach(port => {
-              message += `- Port ${port}: ${ports[port] ? 'In use' : 'Available'}\n`;
+            Object.entries(ports).forEach(([port, inUse]) => {
+              message += `- Port ${port}: ${inUse ? 'In use' : 'Available'}\n`;
             });
 
             return message;

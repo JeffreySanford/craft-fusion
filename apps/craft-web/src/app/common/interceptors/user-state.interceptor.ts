@@ -1,26 +1,26 @@
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { UserStateService } from '../services/user-state.service';
 import { LoggerService } from '../services/logger.service';
 
 @Injectable()
 export class UserStateInterceptor implements HttpInterceptor {
   private loginTime: Date | null = null;
-  private pageNameMapping: { [key: string]: string } = {
-    '/home': 'Home',
-    '/table': 'Table',
-    '/table/:id': 'Table Detail',
-    '/data-visualizations': 'Data Visualizations',
-    '/book': 'Book',
-    '/peasant-kitchen': 'Peasant Kitchen',
-    '/peasant-kitchen/recipe/:id': 'Recipe Detail',
-    '/space-video': 'Space Video',
-    '/material-icons': 'Material Icons',
-    '/material-buttons': 'Material Buttons',
-    '/resume': 'Resume',
-    '/404': 'Not Found',
-  };
+  private pageNameMapping = new Map<string, string>([
+    ['/home', 'Home'],
+    ['/table', 'Table'],
+    ['/table/:id', 'Table Detail'],
+    ['/data-visualizations', 'Data Visualizations'],
+    ['/book', 'Book'],
+    ['/peasant-kitchen', 'Peasant Kitchen'],
+    ['/peasant-kitchen/recipe/:id', 'Recipe Detail'],
+    ['/space-video', 'Space Video'],
+    ['/material-icons', 'Material Icons'],
+    ['/material-buttons', 'Material Buttons'],
+    ['/resume', 'Resume'],
+    ['/404', 'Not Found'],
+  ]);
 
   constructor(
     private userStateService: UserStateService,
@@ -59,6 +59,6 @@ export class UserStateInterceptor implements HttpInterceptor {
 
   private getPageNameFromUrl(url: string): string | null {
     const path = url.split('?')[0];
-    return this.pageNameMapping[path] || null;
+    return this.pageNameMapping.get(path) || null;
   }
 }

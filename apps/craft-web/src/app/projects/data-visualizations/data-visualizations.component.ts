@@ -105,13 +105,13 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
 
         const financeChartIndex = this.availableCharts.findIndex(c => c.component === 'app-finance-chart');
         if (financeChartIndex !== -1) {
-          const chart = this.availableCharts[financeChartIndex];
+          const chart = this.availableCharts.at(financeChartIndex);
           if (chart) chart.data = this.fintechChartData as any[];
         }
 
         const displayedFinanceIndex = this.displayedCharts.findIndex(c => c.component === 'app-finance-chart');
         if (displayedFinanceIndex !== -1) {
-          const chart = this.displayedCharts[displayedFinanceIndex];
+          const chart = this.displayedCharts.at(displayedFinanceIndex);
           if (chart) chart.data = this.fintechChartData as any[];
         }
 
@@ -473,7 +473,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       const listItems = document.querySelectorAll('.visualization-sidebar mat-list-item');
 
       listItems.forEach((item, index) => {
-        const chart = this.availableCharts[index];
+        const chart = this.availableCharts.at(index);
         if (!chart) return;                                                
         if (this.isChartActive(chart)) {
           const c = chart as ExtendedChartData;

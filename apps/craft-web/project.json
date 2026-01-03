@@ -128,6 +128,20 @@
       },
       "defaultConfiguration": "development"
     },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/craft-web/**/*.ts", "apps/craft-web/**/*.html"]
+      }
+    },
+    "stylelint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec stylelint \"apps/**/*.{scss,css}\" \"libs/**/*.{scss,css}\" --config stylelint.config.js",
+        "forwardAllArgs": true
+      }
+    },
     "extract-i18n": {
       "executor": "@nx/angular:extract-i18n",
       "options": {
@@ -144,6 +158,14 @@
           { "command": "pnpm run check:contrast" }
         ],
         "parallel": false
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/craft-web/jest.config.ts",
+        "passWithNoTests": true
       }
     }
   }

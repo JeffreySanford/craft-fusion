@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, timer } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { LoggerService } from './logger.service';
 import { environment } from '../../../environments/environment';
 

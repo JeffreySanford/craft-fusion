@@ -17,5 +17,6 @@ export default {
   resolver: '@nx/jest/plugins/resolver',
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
   testEnvironment: 'jsdom', // Changed default to jsdom for Angular, NestJS will override
-  setupFilesAfterEnv: ['<rootDir>/test-setup.ts'], // Corrected path from test-setup.ts to jest.setup.ts if that's the intended file
+  setupFiles: ['<rootDir>/test-global-setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/test-setup.ts'],
 };

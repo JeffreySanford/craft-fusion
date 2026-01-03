@@ -7,8 +7,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class NotificationService {
   constructor(private snackBar: MatSnackBar) {}
 
-  showSuccess(message: string, title: string = 'Success') {
-    this.snackBar.open(message, 'Close', {
+  showSuccess(message: string, action: string = 'Close') {
+    this.snackBar.open(message, action, {
       duration: 3000,
       horizontalPosition: 'right',
       verticalPosition: 'bottom',
@@ -16,8 +16,14 @@ export class NotificationService {
     });
   }
 
-  showError(message: string, title: string = 'Error') {
-    this.snackBar.open(message, 'Close', {
+  showError(message: string, action: string = 'Close', error?: any) {
+    if (error) {
+      // Keep a lightweight console log for developers; avoid leaking secrets in production
+      // The NotificationService is intentionally lightweight to avoid introducing heavy deps
+      // eslint-disable-next-line no-console
+      console.error(error);
+    }
+    this.snackBar.open(message, action, {
       duration: 5000,
       horizontalPosition: 'right',
       verticalPosition: 'bottom',
@@ -25,8 +31,8 @@ export class NotificationService {
     });
   }
 
-  showWarning(message: string, title: string = 'Warning') {
-    this.snackBar.open(message, 'Close', {
+  showWarning(message: string, action: string = 'Close') {
+    this.snackBar.open(message, action, {
       duration: 4000,
       horizontalPosition: 'right',
       verticalPosition: 'bottom',
@@ -34,8 +40,8 @@ export class NotificationService {
     });
   }
 
-  showInfo(message: string, title: string = 'Info') {
-    this.snackBar.open(message, 'Close', {
+  showInfo(message: string, action: string = 'Close') {
+    this.snackBar.open(message, action, {
       duration: 3000,
       horizontalPosition: 'right',
       verticalPosition: 'bottom',

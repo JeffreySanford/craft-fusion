@@ -4,7 +4,6 @@ import { takeUntil } from 'rxjs/operators';
 import { LoggerService } from './logger.service';
 import { Document } from '../../projects/book/book.component';
 import { SocketClientService } from './socket-client.service';
-import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root',

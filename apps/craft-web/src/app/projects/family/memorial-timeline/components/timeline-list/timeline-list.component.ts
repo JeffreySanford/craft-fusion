@@ -1,5 +1,4 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { TimelineEvent } from '../../models/timeline-event.model';
 
 @Component({

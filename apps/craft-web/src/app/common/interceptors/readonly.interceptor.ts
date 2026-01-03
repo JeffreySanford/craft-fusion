@@ -19,7 +19,7 @@ export class ReadOnlyInterceptor implements HttpInterceptor {
 
     if (!readOnly) {
 
-      const callId = this.logger.startServiceCall('ReadOnlyInterceptor', request.method, request.url);
+      this.logger.startServiceCall('ReadOnlyInterceptor', request.method, request.url);
 
       this.logger.debug(`Allowing ${request.method} request to ${request.url}`);
 

@@ -39,6 +39,7 @@
     "esModuleInterop": true,
     "allowJs": false,
     "checkJs": false,
+    "resolveJsonModule": true,
     "paths": {
       "@craft-fusion/craft-library": ["libs/craft-library/src/index.ts"],
       "@craft-fusion/shared/data": ["libs/shared/data/src/index.ts"],
@@ -55,5 +56,5 @@
     },
     "allowSyntheticDefaultImports": true
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": ["node_modules", "tmp", ".nx"]
 }

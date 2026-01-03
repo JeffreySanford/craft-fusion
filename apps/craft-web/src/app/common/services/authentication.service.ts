@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, throwError, timer, Subject } from 'rxjs';
-import { catchError, map, tap, timeout, delay, concatMap, switchMap, takeUntil, shareReplay, filter } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, throwError, Subject } from 'rxjs';
+import { catchError, map, tap, timeout, delay, concatMap, shareReplay } from 'rxjs/operators';
 import { AdminStateService } from './admin-state.service';
 import { UserTrackingService } from './user-tracking.service';
 import { ApiService } from './api.service';

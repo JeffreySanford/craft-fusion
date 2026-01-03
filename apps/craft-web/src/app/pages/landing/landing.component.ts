@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, Renderer2, ElementRef, ViewChild } from '@angular/core';
-import { LoggerService } from '@craft-web/services/logger.service';
+import { LoggerService } from '../../common/services/logger.service';
 
 @Component({
   selector: 'app-landing',
@@ -45,7 +45,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
       const stagger = letters > 1 ? (wordTotal - letterDuration) / (letters - 1) : 0;
 
       for (let i = 0; i < text.length; i++) {
-        const ch = text[i];
+        const ch = text.charAt(i);
         const span = this.renderer.createElement('span');
         this.renderer.addClass(span, 'char');
         this.renderer.setProperty(span, 'textContent', ch);
@@ -53,7 +53,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
         try {
           (span as HTMLElement).style.setProperty('--delay', `${delay}s`);
           (span as HTMLElement).style.setProperty('--duration', `${letterDuration}s`);
-        } catch (e) {
+        } catch {
           try { this.renderer.setStyle(span, '--delay', `${delay}s`); } catch {}
           try { this.renderer.setStyle(span, '--duration', `${letterDuration}s`); } catch {}
         }

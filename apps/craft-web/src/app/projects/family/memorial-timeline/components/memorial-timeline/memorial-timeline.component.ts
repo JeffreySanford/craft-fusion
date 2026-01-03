@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TimelineService } from '../../services/timeline.service';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { TimelineEvent } from '../../models/timeline-event.model';
+import { TimelineEvent, TimelineEventType } from '../../models/timeline-event.model';
 import { Router } from '@angular/router';
 
 @Component({
@@ -14,7 +14,8 @@ import { Router } from '@angular/router';
 export class MemorialTimelineComponent implements OnInit {
   timelineEvents$: Observable<TimelineEvent[]>;
   filteredEvents$: Observable<TimelineEvent[]>;
-  private filter$ = new BehaviorSubject<string>('all');
+  private filter$ = new BehaviorSubject<'all' | 'jeffrey-ai' | TimelineEventType>('all');
+  selectedFilter: 'all' | 'jeffrey-ai' | TimelineEventType = 'all';
   loading = true;
 
   constructor(
@@ -40,10 +41,11 @@ export class MemorialTimelineComponent implements OnInit {
     });
   }
 
-  onFilterChange(value: string) {
+  onFilterChange(value: 'all' | 'jeffrey-ai' | TimelineEventType) {
+    this.selectedFilter = value;
     if (value === 'jeffrey-ai') {
 
-      this.router.navigate(['projects', 'family', 'memorial-timeline', 'jeffrey-ai']);
+      this.router.navigate(['/family', 'memorial-timeline', 'jeffrey-ai']);
     } else {
       this.filter$.next(value);
     }

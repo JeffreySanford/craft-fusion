@@ -15,7 +15,7 @@ export class ThemeService {
       const prefersDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       const initial: ThemeName = (stored as ThemeName) ?? (prefersDark ? 'dark-theme' : 'vibrant-theme');
       this.setTheme(initial);
-    } catch (e) {
+    } catch {
       this.setTheme('vibrant-theme');
     }
   }
@@ -25,7 +25,7 @@ export class ThemeService {
     this.applyBodyClass(theme);
     try {
       localStorage.setItem('app-theme', theme);
-    } catch (e) {
+    } catch {
 
     }
   }

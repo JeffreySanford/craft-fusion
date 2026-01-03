@@ -35,11 +35,21 @@ export class SessionService {
     sessionStorage.removeItem('username');
   }
 
+  private constantTimeEquals(a: string | null, b: string): boolean {
+    if (a === null) return false;
+    if (a.length !== b.length) return false;
+    let result = 0;
+    for (let i = 0; i < a.length; i++) {
+      result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    }
+    return result === 0;
+  }
+
   validateToken(token: string): Observable<boolean> {
     return new Observable<boolean>(observer => {
-      if (this.getUserSession() === token) {
-        observer.next(true);
-      }
+      const stored = this.getUserSession();
+      observer.next(this.constantTimeEquals(stored, token));
+      observer.complete();
     });
   }
 }

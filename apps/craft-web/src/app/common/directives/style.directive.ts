@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, OnChanges, Renderer2, RendererStyleFlags2, SimpleChanges } from '@angular/core';
+import { Directive, ElementRef, Input, OnChanges, Renderer2, RendererStyleFlags2 } from '@angular/core';
 
 @Directive({ selector: '[appStyle]', standalone: true })
 export class StyleDirective implements OnChanges {
@@ -9,7 +9,7 @@ export class StyleDirective implements OnChanges {
     private renderer: Renderer2,
   ) {}
 
-  ngOnChanges(_: SimpleChanges) {
+  ngOnChanges(): void {
 
     const native = this.el.nativeElement as HTMLElement;
     const prev = native.getAttribute('data-applied-styles');
@@ -34,8 +34,7 @@ export class StyleDirective implements OnChanges {
     }
 
     if (this.styles) {
-      Object.keys(this.styles).forEach(key => {
-        const value = this.styles![key];
+      Object.entries(this.styles).forEach(([key, value]) => {
         if (value == null) {
           return;
         }

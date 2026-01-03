@@ -21,12 +21,11 @@
   }
 }
 
-.timeline-item-content {
+.timeline-item-card {
   background-color: var(--md-sys-color-surface-container-highest);
   border-radius: 0.5em;
   box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
   flex-grow: 1;
-  padding: 1rem;
   position: relative;
 
   &::before {
@@ -37,22 +36,9 @@
     height: 0;
     left: -0.625em;
     position: absolute;
-    top: 0.625em;
+    top: 1.25em;
     width: 0;
   }
-}
-
-.timeline-item-date {
-  color: var(--md-sys-color-primary);
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
-.timeline-item-title {
-  color: var(--md-sys-color-on-surface);
-  font-size: 1.1em;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
 }
 
 .timeline-item-description {
@@ -61,8 +47,63 @@
   margin-bottom: 1rem;
 }
 
+.timeline-item-title {
+  align-items: center;
+  column-gap: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  font-weight: 600;
+}
+
+.timeline-item-subtitle {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.timeline-type {
+  background-color: var(--md-sys-color-secondary-container);
+  border-radius: 999px;
+  color: var(--md-sys-color-on-secondary-container);
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  padding: 0.15rem 0.5rem;
+  text-transform: uppercase;
+
+  &--historical {
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+  }
+
+  &--personal {
+    background-color: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+  }
+
+  &--family {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+  }
+
+  &--project {
+    background-color: var(--md-sys-color-surface-variant);
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  &--anniversary {
+    background-color: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-on-error-container);
+  }
+}
+
 .timeline-item-image {
   border-radius: 0.25em;
   margin-top: 1rem;
   max-width: 100%;
+}
+
+.timeline-actions {
+  align-items: center;
+  column-gap: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 0;
 }

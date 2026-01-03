@@ -75,7 +75,7 @@ export class SparkleDirective implements OnInit, OnDestroy {
         if (typeof window === 'undefined' || !window.getComputedStyle) return fallback;
         const v = getComputedStyle(document.documentElement).getPropertyValue(name);
         return v ? v.trim() : fallback;
-      } catch (e) {
+    } catch {
         return fallback;
       }
     };

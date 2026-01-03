@@ -155,7 +155,7 @@ function greet(name: string) {
     });
   }
 
-  editMessage(msg: any) {
+  editMessage() {
 
     this.snackBar.open('Edit functionality is not implemented yet', 'Close', { duration: 2000 });
   }

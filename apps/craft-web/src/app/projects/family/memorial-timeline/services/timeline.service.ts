@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { BehaviorSubject, Observable, of, EMPTY } from 'rxjs';
-import { catchError, tap, switchMap, scan, shareReplay } from 'rxjs/operators';
+import { catchError, tap, scan, shareReplay } from 'rxjs/operators';
 import { TimelineEvent } from '../models/timeline-event.model';
 import { AuthService } from '../../../../common/services/auth/auth.service';
 import { LoggerService } from '../../../../common/services/logger.service';
@@ -42,7 +42,7 @@ export class TimelineService {
       this.socket$
         .pipe(
           tap(message => this.logger.info('Received timeline event', message)),
-          catchError((error, _caught): Observable<TimelineEvent> => {
+          catchError((error): Observable<TimelineEvent> => {
             this.logger.error('Socket error:', error);
             return EMPTY as unknown as Observable<TimelineEvent>;
           }),

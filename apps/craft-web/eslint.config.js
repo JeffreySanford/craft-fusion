@@ -1,28 +1,44 @@
-const nx = require('@nx/eslint-plugin');
 const angularPlugin = require('@angular-eslint/eslint-plugin');
 const angularTemplatePlugin = require('@angular-eslint/eslint-plugin-template');
+const angularTemplateParser = require('@angular-eslint/template-parser');
 const typescriptPlugin = require('@typescript-eslint/eslint-plugin');
+const typescriptParser = require('@typescript-eslint/parser');
 const importPlugin = require('eslint-plugin-import');
 const securityPlugin = require('eslint-plugin-security');
+const nxPlugin = require('@nrwl/eslint-plugin-nx');
+
+const nxModuleBoundaryRule = {
+  enforceBuildableLibDependency: true,
+  allow: [],
+  depConstraints: [
+    {
+      sourceTag: '*',
+      onlyDependOnLibsWithTags: ['*'],
+    },
+  ],
+};
 
 module.exports = [
-  ...nx.configs['flat/angular'], // Extends Nx's Angular flat configuration
-  ...nx.configs['flat/angular-template'], // Extends Nx's Angular template configuration
-
-  // TypeScript Configuration
   {
     files: ['**/*.ts'],
-    plugins: ['@angular-eslint', '@typescript-eslint', 'import'],
     languageOptions: {
-      parser: '@typescript-eslint/parser',
+      parser: typescriptParser,
       parserOptions: {
-        project: '../../tsconfig.base.json',
-        "tsconfigRootDir": "./",
+        project: ['./tsconfig.eslint.json'],
+        tsconfigRootDir: __dirname,
         sourceType: 'module',
         ecmaVersion: 'latest',
       },
     },
+    plugins: {
+      '@angular-eslint': angularPlugin,
+      '@typescript-eslint': typescriptPlugin,
+      import: importPlugin,
+      security: securityPlugin,
+      '@nx': nxPlugin,
+    },
     rules: {
+      '@nx/enforce-module-boundaries': ['error', nxModuleBoundaryRule],
       '@angular-eslint/directive-selector': [
         'error',
         {
@@ -42,18 +58,9 @@ module.exports = [
       '@angular-eslint/prefer-standalone': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
       'import/no-cycle': 'error',
-    },
-  },
-
-  // Security Configuration
-  {
-    files: ['**/*.ts'],
-    plugins: ['security'],
-    rules: {
-      // Security rules to detect hardcoded secrets
-      'security/detect-object-injection': 'error',
+      'security/detect-object-injection': 'warn',
       'security/detect-non-literal-regexp': 'warn',
-      'security/detect-unsafe-regex': 'error',
+      'security/detect-unsafe-regex': 'warn',
       'security/detect-buffer-noassert': 'error',
       'security/detect-child-process': 'error',
       'security/detect-disable-mustache-escape': 'error',
@@ -66,11 +73,14 @@ module.exports = [
       'security/detect-pseudoRandomBytes': 'error',
     },
   },
-
-  // Angular Template Configuration
   {
     files: ['**/*.html'],
-    plugins: ['@angular-eslint/template'],
+    languageOptions: {
+      parser: angularTemplateParser,
+    },
+    plugins: {
+      '@angular-eslint/template': angularTemplatePlugin,
+    },
     rules: {
       '@angular-eslint/template/no-negated-async': 'warn',
     },

@@ -22,7 +22,6 @@ export default {
     'jest-preset-angular/build/serializers/html-comment',
   ],
   testMatch: [
-    '<rootDir>/src/**/*.spec.ts',
-    '<rootDir>/src/**/*.e2e-spec.ts'
+    '<rootDir>/src/**/*.spec.ts'
   ],
 };

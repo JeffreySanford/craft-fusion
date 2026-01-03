@@ -172,7 +172,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     if (!details) return '';
     try {
       return JSON.stringify(details, null, 2);
-    } catch (error) {
+    } catch {
       return String(details);
     }
   }

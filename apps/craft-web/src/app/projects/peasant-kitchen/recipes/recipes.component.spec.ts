@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RecipesComponent } from './recipes.component';
-import { PeasantKitchenService } from '../recipe.service';
+import { RecipeService } from '../services/recipe.service';
 
 describe('RecipesComponent', () => {
   let component: RecipesComponent;
@@ -11,7 +11,7 @@ describe('RecipesComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [RecipesComponent],
       imports: [HttpClientTestingModule],
-      providers: [PeasantKitchenService],
+      providers: [RecipeService],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RecipesComponent);

@@ -107,7 +107,7 @@ export class BookComponent implements OnInit, AfterViewInit {
       editor.ui.registry.addSidebar('mysidebar', {
         tooltip: 'My sidebar',
         icon: 'comment',
-        onSetup: (api: any) => {
+        onSetup: () => {
           return () => {};
         },
         onShow: (api: any) => {
@@ -115,7 +115,7 @@ export class BookComponent implements OnInit, AfterViewInit {
             api.element().appendChild(this.sidebar.nativeElement);
           }
         },
-        onHide: (_api: any) => {},
+        onHide: () => {},
       });
       editor.on('init', () => {
 
@@ -219,7 +219,7 @@ export class BookComponent implements OnInit, AfterViewInit {
     return 500;
   }
 
-  onInit(_event: any): void {
+  onInit(): void {
     this.logger.info('EditorComponent initialized');
     tinymce.init({
       selector: 'textarea',
@@ -319,14 +319,14 @@ export class BookComponent implements OnInit, AfterViewInit {
   scrollToChapter(index: number): void {
     if (this.isMarkdownPrettyView && this.markdownPreview) {
       const headers = this.markdownPreview.nativeElement.querySelectorAll('h3');
-      const header = headers[index];
+      const header = headers.item(index);
       if (header) {
         header.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     } else if (this.editorComponent && this.editorComponent.editor) {
       const editor = this.editorComponent.editor;
       const headers = editor.getDoc().querySelectorAll('h3');
-      const header = headers[index];
+      const header = headers.item(index);
       if (header) {
         header.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
@@ -574,6 +574,7 @@ export class BookComponent implements OnInit, AfterViewInit {
   }
 
   updateImageVisibility(visible: boolean): void {
+    this.areImagesVisible = visible;
     if (this.editorComponent && this.editorComponent.editor) {
       const editor = this.editorComponent.editor;
       const content = editor.getContent();
@@ -581,7 +582,7 @@ export class BookComponent implements OnInit, AfterViewInit {
       const doc = parser.parseFromString(content, 'text/html');
       const images = doc.querySelectorAll('img');
       images.forEach((img: HTMLImageElement) => {
-        img.style.display = this.areImagesVisible ? 'inline' : 'none';
+        img.style.display = visible ? 'inline' : 'none';
       });
       editor.setContent(doc.body.innerHTML);
     }
@@ -589,7 +590,7 @@ export class BookComponent implements OnInit, AfterViewInit {
     if (this.markdownPreview) {
       const images = this.markdownPreview.nativeElement.querySelectorAll('img');
       images.forEach((img: HTMLElement) => {
-        img.style.display = this.areImagesVisible ? 'inline' : 'none';
+        img.style.display = visible ? 'inline' : 'none';
       });
     }
   }
@@ -639,6 +640,61 @@ export class BookComponent implements OnInit, AfterViewInit {
     return filename;
   }
 
+  private parseMythLine(line: string): { verse: string; link?: string; content: string } | null {
+    const trimmed = line.trim();
+    if (!trimmed) return null;
+
+    if (trimmed.startsWith('[')) {
+      const closingBracket = trimmed.indexOf(']');
+      if (closingBracket > 1) {
+        const verse = trimmed.slice(1, closingBracket).trim();
+        if (this.isVerseRange(verse)) {
+          let rest = trimmed.slice(closingBracket + 1).trimStart();
+          let link: string | undefined;
+          if (rest.startsWith('(')) {
+            const closingParen = rest.indexOf(')');
+            if (closingParen > 1) {
+              link = rest.slice(1, closingParen).trim();
+              rest = rest.slice(closingParen + 1);
+            }
+          }
+          const result: { verse: string; link?: string; content: string } = { verse, content: rest.trim() };
+          if (link) result.link = link;
+          return result;
+        }
+      }
+    }
+
+    const dotIndex = trimmed.indexOf('.');
+    if (dotIndex > 0) {
+      const verse = trimmed.slice(0, dotIndex).trim();
+      if (this.isVerseRange(verse)) {
+        const content = trimmed.slice(dotIndex + 1).trim();
+        return { verse, content };
+      }
+    }
+
+    return null;
+  }
+
+  private isVerseRange(value: string): boolean {
+    if (!value) return false;
+    const parts = value.split('-');
+    if (parts.length > 2) return false;
+    return parts.every(part => this.isNumeric(part));
+  }
+
+  private isNumeric(value: string): boolean {
+    if (!value) return false;
+    for (let i = 0; i < value.length; i++) {
+      const code = value.charCodeAt(i);
+      if (code < 48 || code > 57) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   private processMythContent(content: string): string {
     this.logger.info('\n=== Processing Content for Myths ===');
 
@@ -646,26 +702,21 @@ export class BookComponent implements OnInit, AfterViewInit {
     let mythCount = 0;
 
     const processedLines = lines.map((line, index) => {
+      const parsed = this.parseMythLine(line);
 
-      const mythRegex = /^\[(\d+(?:-\d+)?)\](?:\(([^\)]+)\))(.*)$|^(\d+(?:-\d+)?)\.\s*(.+)$/;
-      const mythMatch = line.match(mythRegex);
-
-      if (mythMatch) {
+      if (parsed) {
         mythCount++;
+        const { verse, link, content: mythContent } = parsed;
 
-        const verse = mythMatch[1] || mythMatch[4];                               
-        const link = mythMatch[2];
-        const content = (mythMatch[3] || mythMatch[5] || '').trim();
-
-        this.logger.info(`Line ${index + 1}: Found myth #${verse} (Length: ${content.length} chars, Link: ${link || 'N/A'})`);
+        this.logger.info(`Line ${index + 1}: Found myth #${verse} (Length: ${mythContent.length} chars, Link: ${link || 'N/A'})`);
 
         if (link) {
           return `<div class="myth-section">
-            <p class="myth-line" data-verse="${verse}"><a href="${link}">${verse}</a> ${content}</p>
+            <p class="myth-line" data-verse="${verse}"><a href="${link}">${verse}</a> ${mythContent}</p>
           </div>`;
         } else {
           return `<div class="myth-section">
-            <p class="myth-line" data-verse="${verse}">${content}</p>
+            <p class="myth-line" data-verse="${verse}">${mythContent}</p>
           </div>`;
         }
       }

@@ -66,7 +66,7 @@ export class ApiLoggerService {
       try {
         const url = new URL(log.request.url, window.location.origin);
         return url.pathname === endpoint;
-      } catch (e) {
+      } catch {
         return false;
       }
     });

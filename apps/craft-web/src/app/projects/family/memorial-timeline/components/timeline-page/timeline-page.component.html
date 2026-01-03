@@ -5,13 +5,27 @@
   </header>
 
   <div class="memorial-timeline-content">
+    <div class="memorial-timeline-controls">
+      <mat-form-field appearance="fill" class="filter-field">
+        <mat-label>Filter events</mat-label>
+        <mat-select (selectionChange)="onFilterChange($event.value)" [value]="selectedFilter">
+          <mat-option value="all">All</mat-option>
+          <mat-option value="historical">Historical</mat-option>
+          <mat-option value="personal">Personal</mat-option>
+          <mat-option value="family">Family</mat-option>
+          <mat-option value="project">Project</mat-option>
+          <mat-option value="anniversary">Anniversary</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
     <div *ngIf="loading" class="loading-container">
       <mat-spinner diameter="40"></mat-spinner>
       <span>Loading timeline events...</span>
     </div>
 
     <ng-container *ngIf="!loading">
-      <app-timeline-list [events]="timelineEvents$ | async"></app-timeline-list>
+      <app-timeline-list [events]="filteredEvents$ | async"></app-timeline-list>
     </ng-container>
   </div>
 </div>

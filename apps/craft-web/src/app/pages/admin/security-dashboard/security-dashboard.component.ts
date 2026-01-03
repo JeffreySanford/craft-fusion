@@ -24,7 +24,7 @@ interface ApiEndpointLog {
   standalone: false,
 })
 export class SecurityDashboardComponent implements OnInit, OnDestroy {
-  endpointLogs: { [key: string]: ApiEndpointLog } = {};
+  endpointLogs = new Map<string, ApiEndpointLog>();
   apiLogsSubscription!: Subscription;
   expandedEndpoint: string | null = null;
   timestampFormat = 'shortTime';
@@ -56,8 +56,8 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
         const statusCode = logEntry.response?.status || 0;
         const timestamp = Date.now();
 
-        if (!this.endpointLogs[endpoint]) {
-          this.endpointLogs[endpoint] = {
+        if (!this.endpointLogs.has(endpoint)) {
+          this.endpointLogs.set(endpoint, {
             path: endpoint,
             method,
             lastContacted: new Date(),
@@ -69,10 +69,13 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
             avgResponseTime: 0,
             firstSeen: new Date(),
             timelineData: [],
-          };
+          });
         }
 
-        const endpointLog = this.endpointLogs[endpoint];
+        const endpointLog = this.endpointLogs.get(endpoint);
+        if (!endpointLog) {
+          return;
+        }
         endpointLog.hitCount++;
         endpointLog.lastContacted = new Date();
         endpointLog.method = method;
@@ -111,27 +114,29 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   }
 
   getMinResponseTime(endpointKey: string): number {
-    if (!this.endpointLogs[endpointKey] || !this.endpointLogs[endpointKey].timelineData || this.endpointLogs[endpointKey].timelineData.length === 0) return 0;
-    const timeline = this.endpointLogs[endpointKey].timelineData;
+    const endpointLog = this.endpointLogs.get(endpointKey);
+    if (!endpointLog || !endpointLog.timelineData || endpointLog.timelineData.length === 0) return 0;
+    const timeline = endpointLog.timelineData;
     return Math.min(...timeline.map(item => item.responseTime));
   }
 
   getMaxResponseTime(endpointKey: string): number {
-    if (!this.endpointLogs[endpointKey] || !this.endpointLogs[endpointKey].timelineData || this.endpointLogs[endpointKey].timelineData.length === 0) return 0;
-    const timeline = this.endpointLogs[endpointKey].timelineData;
+    const endpointLog = this.endpointLogs.get(endpointKey);
+    if (!endpointLog || !endpointLog.timelineData || endpointLog.timelineData.length === 0) return 0;
+    const timeline = endpointLog.timelineData;
     return Math.max(...timeline.map(item => item.responseTime));
   }
 
   getTotalSuccessCount(): number {
-    return Object.values(this.endpointLogs).reduce((total, endpoint) => total + (endpoint.successCount || 0), 0);
+    return Array.from(this.endpointLogs.values()).reduce((total, endpoint) => total + (endpoint.successCount || 0), 0);
   }
 
   getTotalHitCount(): number {
-    return Object.values(this.endpointLogs).reduce((total, endpoint) => total + (endpoint.hitCount || 0), 0);
+    return Array.from(this.endpointLogs.values()).reduce((total, endpoint) => total + (endpoint.hitCount || 0), 0);
   }
 
   getTotalErrorCount(): number {
-    return Object.values(this.endpointLogs).reduce((total, endpoint) => total + (endpoint.errorCount || 0), 0);
+    return Array.from(this.endpointLogs.values()).reduce((total, endpoint) => total + (endpoint.errorCount || 0), 0);
   }
 
   toggleEndpointDetails(endpointKey: string): void {
@@ -179,16 +184,18 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   }
 
   getServiceStatusClass(endpointKey: string): string {
-    if (!this.endpointLogs[endpointKey]) return 'status-unknown';
-    const successRate = this.getSuccessRate(this.endpointLogs[endpointKey]);
+    const endpointLog = this.endpointLogs.get(endpointKey);
+    if (!endpointLog) return 'status-unknown';
+    const successRate = this.getSuccessRate(endpointLog);
     if (successRate >= 95) return 'status-healthy';
     if (successRate >= 80) return 'status-warning';
     return 'status-error';
   }
 
   getServiceStatusText(endpointKey: string): string {
-    if (!this.endpointLogs[endpointKey]) return 'Unknown';
-    const successRate = this.getSuccessRate(this.endpointLogs[endpointKey]);
+    const endpointLog = this.endpointLogs.get(endpointKey);
+    if (!endpointLog) return 'Unknown';
+    const successRate = this.getSuccessRate(endpointLog);
     if (successRate >= 95) return 'Healthy';
     if (successRate >= 80) return 'Warning';
     return 'Error';
@@ -199,7 +206,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   }
 
   getEndpointDetails(endpointKey: string): any {
-    const entry = this.endpointLogs[endpointKey];
+    const entry = this.endpointLogs.get(endpointKey);
     if (!entry) return { status: 0, requestBody: null, responseBody: null, headers: null, timelineData: [] };
     const timelineData = entry.timelineData || [];
     const last = timelineData.length > 0 ? timelineData[timelineData.length - 1] : ({} as any);
@@ -214,7 +221,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
 
   getEndpointLog(endpointKey: string): ApiEndpointLog {
     return (
-      this.endpointLogs[endpointKey] || {
+      this.endpointLogs.get(endpointKey) || {
         path: '',
         method: '',
         lastContacted: new Date(0),
@@ -293,7 +300,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
       })
       .join(' ');
     let dotsHtml = '';
-    timelineData.forEach((d, _index) => {
+    timelineData.forEach(d => {
       const x = padding + (innerWidth * (d.timestamp.getTime() - minTime)) / (maxTime - minTime);
       const y = height - padding - (innerHeight * (d.responseTime - minResponse)) / (maxResponse - minResponse);
       const statusNum = typeof d.status === 'number' ? d.status : Number(d.status);

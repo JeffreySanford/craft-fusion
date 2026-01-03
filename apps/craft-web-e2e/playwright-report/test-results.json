@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 6
+      "actualWorkers": 0
     },
     "preserveOutput": "always",
     "reporter": [
@@ -43,23 +43,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 6
-        },
-        "id": "setup",
-        "name": "setup",
-        "testDir": "C:/repos/craft-fusion/apps/craft-web-e2e/src",
-        "testIgnore": [],
-        "testMatch": [
-          "/.*\\.setup\\.ts/"
-        ],
-        "timeout": 30000
-      },
-      {
-        "outputDir": "C:/repos/craft-fusion/apps/craft-web-e2e/playwright/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {
-          "actualWorkers": 6
+          "actualWorkers": 0
         },
         "id": "chromium",
         "name": "chromium",
@@ -75,7 +59,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 6
+          "actualWorkers": 0
         },
         "id": "firefox",
         "name": "firefox",
@@ -91,7 +75,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 6
+          "actualWorkers": 0
         },
         "id": "webkit",
         "name": "webkit",
@@ -107,7 +91,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 6
+          "actualWorkers": 0
         },
         "id": "mobile-chrome",
         "name": "mobile-chrome",
@@ -123,7 +107,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 6
+          "actualWorkers": 0
         },
         "id": "mobile-safari",
         "name": "mobile-safari",
@@ -139,7 +123,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 6
+          "actualWorkers": 0
         },
         "id": "tablet",
         "name": "tablet",
@@ -165,311 +149,14 @@
       "cwd": "C:\\repos\\craft-fusion"
     }
   },
-  "suites": [
-    {
-      "title": "example.spec.ts",
-      "file": "example.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "has title",
-          "ok": false,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "failed",
-                  "duration": 4,
-                  "error": {
-                    "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'",
-                    "stack": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
-                  },
-                  "errors": [
-                    {
-                      "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
-                    }
-                  ],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2025-12-30T20:55:57.091Z",
-                  "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "trace",
-                      "contentType": "application/zip",
-                      "path": "C:\\repos\\craft-fusion\\apps\\craft-web-e2e\\playwright\\test-results\\example-has-title-chromium\\trace.zip"
-                    }
-                  ]
-                }
-              ],
-              "status": "unexpected"
-            }
-          ],
-          "id": "a30a6eba6312f6b87ea5-b06063a3e613764d08f8",
-          "file": "example.spec.ts",
-          "line": 3,
-          "column": 5
-        },
-        {
-          "title": "has title",
-          "ok": false,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "firefox",
-              "projectName": "firefox",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "failed",
-                  "duration": 4,
-                  "error": {
-                    "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'",
-                    "stack": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
-                  },
-                  "errors": [
-                    {
-                      "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
-                    }
-                  ],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2025-12-30T20:55:57.118Z",
-                  "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "trace",
-                      "contentType": "application/zip",
-                      "path": "C:\\repos\\craft-fusion\\apps\\craft-web-e2e\\playwright\\test-results\\example-has-title-firefox\\trace.zip"
-                    }
-                  ]
-                }
-              ],
-              "status": "unexpected"
-            }
-          ],
-          "id": "a30a6eba6312f6b87ea5-f53a5ad453cd33dc57d5",
-          "file": "example.spec.ts",
-          "line": 3,
-          "column": 5
-        },
-        {
-          "title": "has title",
-          "ok": false,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "webkit",
-              "projectName": "webkit",
-              "results": [
-                {
-                  "workerIndex": 2,
-                  "parallelIndex": 2,
-                  "status": "failed",
-                  "duration": 5,
-                  "error": {
-                    "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'",
-                    "stack": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
-                  },
-                  "errors": [
-                    {
-                      "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
-                    }
-                  ],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2025-12-30T20:55:57.092Z",
-                  "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "trace",
-                      "contentType": "application/zip",
-                      "path": "C:\\repos\\craft-fusion\\apps\\craft-web-e2e\\playwright\\test-results\\example-has-title-webkit\\trace.zip"
-                    }
-                  ]
-                }
-              ],
-              "status": "unexpected"
-            }
-          ],
-          "id": "a30a6eba6312f6b87ea5-4a26ebd06a6b810edcc2",
-          "file": "example.spec.ts",
-          "line": 3,
-          "column": 5
-        },
-        {
-          "title": "has title",
-          "ok": false,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "mobile-chrome",
-              "projectName": "mobile-chrome",
-              "results": [
-                {
-                  "workerIndex": 3,
-                  "parallelIndex": 3,
-                  "status": "failed",
-                  "duration": 4,
-                  "error": {
-                    "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'",
-                    "stack": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
-                  },
-                  "errors": [
-                    {
-                      "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
-                    }
-                  ],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2025-12-30T20:55:57.092Z",
-                  "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "trace",
-                      "contentType": "application/zip",
-                      "path": "C:\\repos\\craft-fusion\\apps\\craft-web-e2e\\playwright\\test-results\\example-has-title-mobile-chrome\\trace.zip"
-                    }
-                  ]
-                }
-              ],
-              "status": "unexpected"
-            }
-          ],
-          "id": "a30a6eba6312f6b87ea5-3b8928610eb2537eb03c",
-          "file": "example.spec.ts",
-          "line": 3,
-          "column": 5
-        },
-        {
-          "title": "has title",
-          "ok": false,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "mobile-safari",
-              "projectName": "mobile-safari",
-              "results": [
-                {
-                  "workerIndex": 4,
-                  "parallelIndex": 4,
-                  "status": "failed",
-                  "duration": 4,
-                  "error": {
-                    "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'",
-                    "stack": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
-                  },
-                  "errors": [
-                    {
-                      "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
-                    }
-                  ],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2025-12-30T20:55:57.114Z",
-                  "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "trace",
-                      "contentType": "application/zip",
-                      "path": "C:\\repos\\craft-fusion\\apps\\craft-web-e2e\\playwright\\test-results\\example-has-title-mobile-safari\\trace.zip"
-                    }
-                  ]
-                }
-              ],
-              "status": "unexpected"
-            }
-          ],
-          "id": "a30a6eba6312f6b87ea5-0bea26efdbcb23efd579",
-          "file": "example.spec.ts",
-          "line": 3,
-          "column": 5
-        },
-        {
-          "title": "has title",
-          "ok": false,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "tablet",
-              "projectName": "tablet",
-              "results": [
-                {
-                  "workerIndex": 5,
-                  "parallelIndex": 5,
-                  "status": "failed",
-                  "duration": 6,
-                  "error": {
-                    "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'",
-                    "stack": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
-                  },
-                  "errors": [
-                    {
-                      "message": "Error: Error reading storage state from playwright/.auth/user.json:\nENOENT: no such file or directory, open 'C:\\repos\\craft-fusion\\playwright\\.auth\\user.json'"
-                    }
-                  ],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2025-12-30T20:55:57.115Z",
-                  "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "trace",
-                      "contentType": "application/zip",
-                      "path": "C:\\repos\\craft-fusion\\apps\\craft-web-e2e\\playwright\\test-results\\example-has-title-tablet\\trace.zip"
-                    }
-                  ]
-                }
-              ],
-              "status": "unexpected"
-            }
-          ],
-          "id": "a30a6eba6312f6b87ea5-7a86ca262aba7633b93c",
-          "file": "example.spec.ts",
-          "line": 3,
-          "column": 5
-        }
-      ]
-    }
-  ],
+  "suites": [],
   "errors": [],
   "stats": {
-    "startTime": "2025-12-30T20:55:56.148Z",
-    "duration": 1957.1000000000001,
+    "startTime": "2026-01-03T00:20:08.058Z",
+    "duration": 10455.2,
     "expected": 0,
     "skipped": 0,
-    "unexpected": 6,
+    "unexpected": 0,
     "flaky": 0
   }
 }

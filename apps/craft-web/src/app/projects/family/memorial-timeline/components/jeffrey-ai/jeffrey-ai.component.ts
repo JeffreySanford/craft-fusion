@@ -53,7 +53,7 @@ export class JeffreyAiComponent implements OnInit, OnDestroy {
       if (res?.result) {
         this.narratives.set(key, res.result);
       }
-    } catch (e) {
+    } catch {
       this.narratives.set(key, 'AI generation failed.');
     }
   }

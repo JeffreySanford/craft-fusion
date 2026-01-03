@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, BehaviorSubject, combineLatest } from 'rxjs';
-import { map, catchError, tap, shareReplay, switchMap, distinctUntilChanged } from 'rxjs/operators';
+import { map, catchError, tap, shareReplay, distinctUntilChanged } from 'rxjs/operators';
 import { AuthenticationService } from './authentication.service';
 import { LoggerService } from './logger.service';
 import { User } from '../interfaces/user.interface';
@@ -64,41 +64,56 @@ export class AuthorizationService {
     shareReplay(1),
   );
 
-  private readonly roleDefinitions: Record<string, RoleDefinition> = {
-    admin: {
-      name: 'Administrator',
-      description: 'Full system access',
-      permissions: Object.values(Permission),                   
-    },
-    manager: {
-      name: 'Manager',
-      description: 'Department or team manager',
-      permissions: [
-        Permission.VIEW_USERS,
-        Permission.VIEW_CONTENT,
-        Permission.CREATE_CONTENT,
-        Permission.EDIT_CONTENT,
-        Permission.VIEW_REPORTS,
-        Permission.EXPORT_REPORTS,
-        Permission.VIEW_SETTINGS,
-      ],
-    },
-    editor: {
-      name: 'Content Editor',
-      description: 'Can create and edit content',
-      permissions: [Permission.VIEW_CONTENT, Permission.CREATE_CONTENT, Permission.EDIT_CONTENT, Permission.VIEW_REPORTS],
-    },
-    user: {
-      name: 'Standard User',
-      description: 'Basic system access',
-      permissions: [Permission.VIEW_CONTENT, Permission.VIEW_REPORTS],
-    },
-    guest: {
-      name: 'Guest',
-      description: 'Limited read-only access',
-      permissions: [Permission.VIEW_CONTENT],
-    },
-  };
+  private readonly roleDefinitions = new Map<string, RoleDefinition>([
+    [
+      'admin',
+      {
+        name: 'Administrator',
+        description: 'Full system access',
+        permissions: Object.values(Permission),                   
+      },
+    ],
+    [
+      'manager',
+      {
+        name: 'Manager',
+        description: 'Department or team manager',
+        permissions: [
+          Permission.VIEW_USERS,
+          Permission.VIEW_CONTENT,
+          Permission.CREATE_CONTENT,
+          Permission.EDIT_CONTENT,
+          Permission.VIEW_REPORTS,
+          Permission.EXPORT_REPORTS,
+          Permission.VIEW_SETTINGS,
+        ],
+      },
+    ],
+    [
+      'editor',
+      {
+        name: 'Content Editor',
+        description: 'Can create and edit content',
+        permissions: [Permission.VIEW_CONTENT, Permission.CREATE_CONTENT, Permission.EDIT_CONTENT, Permission.VIEW_REPORTS],
+      },
+    ],
+    [
+      'user',
+      {
+        name: 'Standard User',
+        description: 'Basic system access',
+        permissions: [Permission.VIEW_CONTENT, Permission.VIEW_REPORTS],
+      },
+    ],
+    [
+      'guest',
+      {
+        name: 'Guest',
+        description: 'Limited read-only access',
+        permissions: [Permission.VIEW_CONTENT],
+      },
+    ],
+  ]);
 
   constructor(
     private authService: AuthenticationService,
@@ -108,7 +123,7 @@ export class AuthorizationService {
     this.logger.registerService('AuthzService');
     this.logger.info('Authorization Service initialized', {
       cacheSize: 0,
-      availableRoles: Object.keys(this.roleDefinitions).join(', '),
+      availableRoles: Array.from(this.roleDefinitions.keys()).join(', '),
       isAuthUserAvailable: !!this.authService.currentUser,
     });
 
@@ -129,15 +144,15 @@ export class AuthorizationService {
   }
 
   public getRoleName(role: string): string {
-    return this.roleDefinitions[role]?.name || role;
+    return this.roleDefinitions.get(role)?.name || role;
   }
 
   public getRoleDescription(role: string): string {
-    return this.roleDefinitions[role]?.description || '';
+    return this.roleDefinitions.get(role)?.description || '';
   }
 
   public getAvailableRoles(): RoleDefinition[] {
-    return Object.values(this.roleDefinitions);
+    return Array.from(this.roleDefinitions.values());
   }
 
   public hasRole(requiredRole: string): boolean {
@@ -236,7 +251,7 @@ export class AuthorizationService {
           const userPermissions = new Set<string>();
 
           for (const role of user.roles) {
-            const rolePerms = this.roleDefinitions[role]?.permissions || [];
+            const rolePerms = this.roleDefinitions.get(role)?.permissions || [];
             rolePerms.forEach(p => userPermissions.add(p));
           }
 
@@ -370,7 +385,7 @@ export class AuthorizationService {
 
       if (user.roles) {
         user.roles.forEach(role => {
-          const rolePerms = this.roleDefinitions[role]?.permissions || [];
+          const rolePerms = this.roleDefinitions.get(role)?.permissions || [];
           rolePerms.forEach(permission => {
             permissions.set(permission, true);
           });
@@ -408,7 +423,7 @@ export class AuthorizationService {
     const permissions = new Map<string, boolean>();
 
     user.roles.forEach(role => {
-      const rolePerms = this.roleDefinitions[role]?.permissions || [];
+      const rolePerms = this.roleDefinitions.get(role)?.permissions || [];
       rolePerms.forEach(permission => {
         permissions.set(permission, true);
       });
@@ -497,21 +512,21 @@ export class AuthorizationService {
     permissions.forEach(permission => {
 
       if (userRoles.includes('admin')) {
-        response.permissions[permission] = true;
+        Object.assign(response.permissions, { [permission]: true });
         return;
       }
 
       let isGranted = false;
 
       for (const role of userRoles) {
-        const roleDefinition = this.roleDefinitions[role];
+        const roleDefinition = this.roleDefinitions.get(role);
         if (roleDefinition && roleDefinition.permissions.includes(permission as Permission)) {
           isGranted = true;
           break;
         }
       }
 
-      response.permissions[permission] = isGranted;
+      Object.assign(response.permissions, { [permission]: isGranted });
     });
 
     return of(response).pipe(

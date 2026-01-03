@@ -5,7 +5,8 @@ export enum TimelineEventType {
   PERSONAL = 'personal',
   FAMILY = 'family',
   HISTORICAL = 'historical',
-  ANNIVERSARY = 'anniversary'
+  ANNIVERSARY = 'anniversary',
+  PROJECT = 'project'
 }
 
 @Schema({ timestamps: true })

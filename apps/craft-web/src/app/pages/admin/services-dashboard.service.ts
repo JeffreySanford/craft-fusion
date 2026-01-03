@@ -13,7 +13,7 @@ export interface ServiceMetricsSummary {
 export class ServicesDashboardService {
   private serviceMetricsMap = new Map<string, any>();
   private metricsByService = new Map<string, ServiceCallMetric[]>();
-  private serviceStatistics: { [key: string]: ServiceMetricsSummary } = {};
+  private serviceStatistics = new Map<string, ServiceMetricsSummary>();
   private pollingIntervalId: number | undefined;
   private simulationIntervalId: number | undefined;
 
@@ -30,18 +30,18 @@ export class ServicesDashboardService {
     { name: 'AdminStateService', description: 'Admin state management', active: true },
   ];
 
-  private serviceColors: { [key: string]: string } = {
-    ApiService: '#FF6B6B',
-    AuthenticationService: '#4ECDC4',
-    UserStateService: '#45B7D1',
-    SessionService: '#96CEB4',
-    BusyService: '#FFEEAD',
-    NotificationService: '#D4A5A5',
-    LoggerService: '#9B59B6',
-    ChatService: '#3498DB',
-    SettingsService: '#FF9F4A',
-    AdminStateService: '#2ECC71',
-  };
+  private serviceColors = new Map<string, string>([
+    ['ApiService', '#FF6B6B'],
+    ['AuthenticationService', '#4ECDC4'],
+    ['UserStateService', '#45B7D1'],
+    ['SessionService', '#96CEB4'],
+    ['BusyService', '#FFEEAD'],
+    ['NotificationService', '#D4A5A5'],
+    ['LoggerService', '#9B59B6'],
+    ['ChatService', '#3498DB'],
+    ['SettingsService', '#FF9F4A'],
+    ['AdminStateService', '#2ECC71'],
+  ]);
 
   constructor() {}
 
@@ -114,21 +114,21 @@ export class ServicesDashboardService {
   }
 
   getServiceStatistics(serviceName: string) {
-    return this.serviceStatistics[serviceName];
+    return this.serviceStatistics.get(serviceName);
   }
 
   updateServiceStats(serviceName: string, stats: Partial<ServiceMetricsSummary> & { lastUpdate?: number }) {
-    const prev = this.serviceStatistics[serviceName] || ({} as ServiceMetricsSummary);
-    this.serviceStatistics[serviceName] = {
+    const prev = this.serviceStatistics.get(serviceName) || ({} as ServiceMetricsSummary);
+    this.serviceStatistics.set(serviceName, {
       avgResponseTime: stats.avgResponseTime ?? prev.avgResponseTime ?? 0,
       callCount: stats.callCount ?? prev.callCount ?? 0,
       successRate: stats.successRate ?? prev.successRate ?? 100,
       lastUpdate: stats.lastUpdate ?? Date.now(),
-    };
+    });
   }
 
   getServiceColor(serviceName: string): string {
-    return this.serviceColors[serviceName] || '#808080';
+    return this.serviceColors.get(serviceName) || '#808080';
   }
 
   buildChartDataForServices(limit = 6) {
@@ -139,7 +139,7 @@ export class ServicesDashboardService {
       datasets: [
         {
           label: 'Response Time (ms)',
-          data: active.map(s => stats[s.name]?.avgResponseTime || 0),
+          data: active.map(s => stats.get(s.name)?.avgResponseTime || 0),
           backgroundColor: active.map(s => this.getServiceColor(s.name)),
           borderWidth: 1,
           yAxisID: 'y',

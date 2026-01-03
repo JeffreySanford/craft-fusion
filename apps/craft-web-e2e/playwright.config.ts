@@ -17,7 +17,7 @@ export default defineConfig({
   fullyParallel: !process.env['CI'],
 
   use: {
-    baseURL: 'localhost:4200',
+    baseURL: 'http://localhost:4200',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
@@ -28,7 +28,7 @@ export default defineConfig({
     actionTimeout: 10000,
 
     // Authentication state
-    storageState: 'playwright/.auth/user.json',
+    // storageState: 'playwright/.auth/user.json',
   },
 
   webServer: {
@@ -41,16 +41,11 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'setup',
-      testMatch: /.*\.setup\.ts/,
-    },
-    {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1280, height: 720 },
       },
-      dependencies: ['setup'],
     },
     {
       name: 'firefox',
@@ -58,7 +53,6 @@ export default defineConfig({
         ...devices['Desktop Firefox'],
         viewport: { width: 1280, height: 720 },
       },
-      dependencies: ['setup'],
     },
     {
       name: 'webkit',
@@ -66,28 +60,24 @@ export default defineConfig({
         ...devices['Desktop Safari'],
         viewport: { width: 1280, height: 720 },
       },
-      dependencies: ['setup'],
     },
     {
       name: 'mobile-chrome',
       use: {
         ...devices['Pixel 5'],
       },
-      dependencies: ['setup'],
     },
     {
       name: 'mobile-safari',
       use: {
         ...devices['iPhone 12'],
       },
-      dependencies: ['setup'],
     },
     {
       name: 'tablet',
       use: {
         ...devices['iPad Pro 11'],
       },
-      dependencies: ['setup'],
     },
   ],
 

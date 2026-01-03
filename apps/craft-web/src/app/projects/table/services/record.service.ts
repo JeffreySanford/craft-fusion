@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
-import { map, catchError, timeout, retry, delay, tap } from 'rxjs/operators';
+import { map, catchError, timeout, retry, tap } from 'rxjs/operators';
 import { ApiService } from '../../../common/services/api.service';
 import { Record } from '@craft-fusion/craft-library';
 import { NotificationService } from '../../../common/services/notification.service';
 import { LoggerService } from '../../../common/services/logger.service';
-import { AuthService } from '@craft-web/services/auth';
+import { AuthService } from '../../../common/services/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -206,8 +206,8 @@ export class RecordService {
       const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
       const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
       const stateIndex = Math.floor(Math.random() * states.length);
-      const state = states[stateIndex];
-      const city = cities[stateIndex];
+      const state = states.at(stateIndex) ?? states[0];
+      const city = cities.at(stateIndex) ?? cities[0];
       const zipcode = `${10000 + Math.floor(Math.random() * 89999)}`;
 
       const salary = [];

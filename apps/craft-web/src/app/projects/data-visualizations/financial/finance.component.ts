@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, ViewChild, Renderer2, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import * as d3 from 'd3';
 
-interface Stock {
+export interface Stock {
   symbol: string;
   data: { date: Date; close: number }[];
 }
@@ -359,7 +359,7 @@ export class FinanceComponent implements OnInit, OnChanges {
           .attr('class', `phase-group phase-${type}`)
           .attr('transform', `translate(${x(phase.start)}, 0)`);
 
-        const phaseRect = phaseGroup
+        phaseGroup
           .append('rect')
           .attr('class', `market-phase phase-${type}`)
           .attr('width', phaseWidth)
@@ -482,7 +482,7 @@ export class FinanceComponent implements OnInit, OnChanges {
       .y(d => y(d.close))
       .curve(d3.curveCatmullRom.alpha(0.5));                  
 
-    this.sortedStocks.forEach((stock, index) => {
+    this.sortedStocks.forEach(stock => {
       const stockData = allStockData.filter(d => d.symbol === stock.symbol).sort((a, b) => a.date.getTime() - b.date.getTime());
 
       if (stockData.length > 1) {
@@ -527,16 +527,16 @@ export class FinanceComponent implements OnInit, OnChanges {
       return data;
     }
 
-    const points: { date: Date; close: number }[] = [data[0]!, data[data.length - 1]!];
+    const points: { date: Date; close: number }[] = [data.at(0)!, data.at(-1)!];
 
     if (maxPoints > 2 && data.length > 2) {
       let maxChange = 0;
       let maxChangePoint = data[0];
 
       for (let i = 1; i < data.length - 1; i++) {
-        const prevPoint = data[i - 1]!;
-        const currPoint = data[i]!;
-        const nextPoint = data[i + 1]!;
+        const prevPoint = data.at(i - 1)!;
+        const currPoint = data.at(i)!;
+        const nextPoint = data.at(i + 1)!;
 
         const changeBeforeCurr = Math.abs(currPoint.close - prevPoint.close);
         const changeAfterCurr = Math.abs(nextPoint.close - currPoint.close);
@@ -602,7 +602,6 @@ export class FinanceComponent implements OnInit, OnChanges {
     tooltip.html(tooltipContent);
 
     const tooltipWidth = 280;
-    const tooltipNode = tooltip.node() as HTMLElement;
     const xPos = Math.min(event.pageX + 10, window.innerWidth - tooltipWidth - 20);
 
     tooltip
@@ -729,7 +728,7 @@ export class FinanceComponent implements OnInit, OnChanges {
         close: +d.close,
       }));
 
-      const drawLine = (data: { date: Date; close: number }[], stockSymbol: string, _lineIndex: number) => {
+      const drawLine = (data: { date: Date; close: number }[], stockSymbol: string) => {
         const lineGen = d3
           .line<{ date: Date; close: number }>()
           .x(d => x(d.date))
@@ -760,13 +759,13 @@ export class FinanceComponent implements OnInit, OnChanges {
 
             path.attr('stroke-dasharray', null);
 
-            addStockLabels(data, stockSymbol, _lineIndex);
+            addStockLabels(data, stockSymbol);
           });
 
         return path;
       };
 
-      const addStockLabels = (data: unknown[], stockSymbol: string, lineIndex: number) => {
+      const addStockLabels = (data: unknown[], stockSymbol: string) => {
 
         const lastPoint = data[data.length - 1] as { date: Date; close: number };
 
@@ -824,7 +823,7 @@ export class FinanceComponent implements OnInit, OnChanges {
           });
       };
 
-      drawLine(formattedData, stock.symbol, index);
+      drawLine(formattedData, stock.symbol);
 
       let dataPointsToShow: { date: Date; close: number }[] = [];
       if (formattedData.length > 0) {
@@ -835,7 +834,7 @@ export class FinanceComponent implements OnInit, OnChanges {
           indices[indices.length - 1] = dataLength - 1;
         }
 
-        dataPointsToShow = indices.map(i => formattedData[i]).filter((x): x is { date: Date; close: number } => !!x);
+        dataPointsToShow = indices.map(i => formattedData.at(i)).filter((x): x is { date: Date; close: number } => !!x);
       }
 
       svg
@@ -1003,18 +1002,19 @@ export class FinanceComponent implements OnInit, OnChanges {
     return `${type.charAt(0).toUpperCase() + type.slice(1)} Market`;
   }
 
-  updateStatusPosition(event: MouseEvent): void {
+  updateStatusPosition(event?: MouseEvent): void {
     const statusBox = document.querySelector('.stock-status-box') as HTMLElement;
     if (statusBox && this.showStatusBox) {
-
-      const rect = this.chartContainer.nativeElement.getBoundingClientRect();
-
-      const statusWidth = 140;                          
-      const statusHeight = 60;                         
-
-      statusBox.style.left = '20px';
-      statusBox.style.bottom = '20px';
-      statusBox.style.top = 'auto';
+      if (event) {
+        // Position near the mouse cursor when event is provided
+        statusBox.style.left = `${event.pageX + 12}px`;
+        statusBox.style.top = `${event.pageY - 40}px`;
+        statusBox.style.bottom = 'auto';
+      } else {
+        statusBox.style.left = '20px';
+        statusBox.style.bottom = '20px';
+        statusBox.style.top = 'auto';
+      }
 
       statusBox.style.zIndex = '2000';
     }

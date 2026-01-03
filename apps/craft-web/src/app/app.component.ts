@@ -1,8 +1,7 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, SimpleChanges } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Subscription, Subject, interval, take, takeUntil, timer } from 'rxjs';
+import { Component, OnInit, AfterViewInit, OnDestroy, SimpleChanges } from '@angular/core';
+import { Subscription, Subject, take, takeUntil, timer } from 'rxjs';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { UserStateService } from './common/services/user-state.service';
 import { User } from './common/services/user.interface';
 import { UserActivityService } from './common/services/user-activity.service';

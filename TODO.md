@@ -127,6 +127,44 @@ This file is the planning source of truth. It records decisions, risks, and the 
 - `/api/security/tests` (real-time checks, live status)
 - `/api/security/findings` (normalized findings, severity)
 
+## Memorial timeline implementation checklist
+
+### Phase 0: Seed and view (MVP)
+
+- [x] Ensure timeline schema includes `project` type (`apps/craft-nest/src/app/family/timeline/schemas/timeline-event.schema.ts`)
+- [x] Seed three curated events (`apps/craft-nest/src/app/family/timeline/seed-events.json`)
+- [x] Wire `TimelineService.events$` to the timeline page and keep loading state (`apps/craft-web/src/app/projects/family/memorial-timeline/components/timeline-page/timeline-page.component.ts`)
+- [x] Add type filters and consistent options (`apps/craft-web/src/app/projects/family/memorial-timeline/components/timeline-page/timeline-page.component.html`)
+- [x] Add type icon + badge and read-more toggle (`apps/craft-web/src/app/projects/family/memorial-timeline/components/timeline-item/*`)
+- [ ] Add empty-state copy that guides filter changes and access requests
+- [ ] Add unit tests for filtering and read-more behavior
+
+### Phase 1: Detail view (modal or route)
+
+- [ ] Add `TimelineDetail` component (dialog or routed page)
+- [ ] Define detail view layout (header, metadata, body, media, provenance, actions)
+- [ ] Wire "Read more" / card click to open the detail view
+- [ ] Add loading, error, and not-found states for detail fetch
+- [ ] Ensure keyboard focus trap and escape-to-close for modal
+- [ ] Add unit tests for detail open/close and data rendering
+
+### Phase 2: Curation workflow
+
+- [ ] Extend schema + DTOs for `createdBy`, `visibility`, `source`, `tags`
+- [ ] Add moderation endpoints (list pending, approve, reject)
+- [ ] Add audit logs for create/approve/reject actions
+- [ ] Add moderator UI for review queue and visibility toggles
+- [ ] Enforce sanitization of description, links, and media metadata
+- [ ] Add tests for moderation flows and visibility handling
+
+### Phase 3: Media and storytelling polish
+
+- [ ] Add media upload + storage with file type constraints and size limits
+- [ ] Add gallery UI with captions and alt text in detail view
+- [ ] Add decade groupings and optional featured events
+- [ ] Add pagination or virtual scroll for long timelines
+- [ ] Add motion polish with reduced-motion support
+
 ## Documentation consolidation
 
 **Goal:** TODO.md is the main planning doc. The rest of the docs should be canonical, non-duplicative, and consistent with coding standards.
