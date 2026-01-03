@@ -5,6 +5,10 @@ import { RecipeComponent } from './recipe.component';
 import { RecipeService } from '../services/recipe.service';
 import { Recipe } from '../services/recipe.interface';
 import { of, throwError } from 'rxjs';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 const baseRecipe: Recipe = {
   id: 1,
@@ -23,6 +27,7 @@ describe('RecipeComponent', () => {
   let fixture: ComponentFixture<RecipeComponent>;
   let mockRecipeService: jest.Mocked<RecipeService>;
   let mockRouter: jest.Mocked<Router>;
+  let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(async () => {
     mockRecipeService = {
@@ -33,15 +38,20 @@ describe('RecipeComponent', () => {
     mockRouter = {
       navigate: jest.fn(),
     } as unknown as jest.Mocked<Router>;
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     await TestBed.configureTestingModule({
       declarations: [RecipeComponent],
-      imports: [RouterTestingModule],                                   
+      imports: [RouterTestingModule, MatCardModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
       providers: [
         { provide: RecipeService, useValue: mockRecipeService },
         { provide: Router, useValue: mockRouter },
       ],
     }).compileComponents();
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
   });
 
   beforeEach(() => {
