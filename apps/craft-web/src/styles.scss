@@ -11,3 +11,19 @@
 @use "utilities" as util;
 
 @use "md3-tokens-overrides" as md3Overrides;
+
+.user-menu.mat-mdc-menu-panel,
+.cdk-overlay-pane .user-menu.mat-mdc-menu-panel {
+  width: max-content;
+  transform: translateX(-2em) !important;
+  padding: 0.5em !important;
+  border: none !important;
+  background-clip: padding-box;
+}
+
+.appearance-menu.mat-mdc-menu-panel,
+.cdk-overlay-pane .appearance-menu.mat-mdc-menu-panel {
+  transform: translate(-2em, 1.5em) !important;
+  padding: 0.5em !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}

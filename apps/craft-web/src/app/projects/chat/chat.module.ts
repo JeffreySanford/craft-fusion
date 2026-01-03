@@ -22,7 +22,7 @@ import { SplitTextPipe } from './split-text.pipe';
 const routes: Routes = [{ path: '', component: ChatComponent }];
 
 @NgModule({
-  declarations: [ChatComponent, MarkdownPipe, ModelSelectorComponent, SplitTextPipe],
+  declarations: [ChatComponent, MarkdownPipe, ModelSelectorComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -38,6 +38,7 @@ const routes: Routes = [{ path: '', component: ChatComponent }];
     MatMenuModule,
     MatIconModule,
     MatSelectModule,
+    SplitTextPipe,
   ],
   providers: [ChatService],
   exports: [ChatComponent, MarkdownPipe, ModelSelectorComponent],
