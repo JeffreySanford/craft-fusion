@@ -5,6 +5,16 @@ import { PdfParseService } from '../../common/services/pdf-parse.service';
 import { DocParseService } from '../../common/services/doc-parse.service';
 import { UserStateService } from '../../common/services/user-state.service';
 import { of } from 'rxjs';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { EditorModule } from '@tinymce/tinymce-angular';
+import { SafeHtmlPipe } from './pipes/safe-html.pipe';
+import { ComponentsModule } from '../../common/components/components.module';
 
 describe('BookComponent', () => {
   let component: BookComponent;
@@ -31,7 +41,18 @@ describe('BookComponent', () => {
     } as unknown as jest.Mocked<UserStateService>;
 
     await TestBed.configureTestingModule({
-      declarations: [BookComponent],
+      declarations: [BookComponent, SafeHtmlPipe],
+      imports: [
+        BrowserAnimationsModule,
+        FormsModule,
+        MatButtonModule,
+        MatIconModule,
+        MatListModule,
+        MatSidenavModule,
+        MatTooltipModule,
+        EditorModule,
+        ComponentsModule,
+      ],
       providers: [
         { provide: FileUploadService, useValue: mockFileUploadService },
         { provide: PdfParseService, useValue: mockPdfParseService },

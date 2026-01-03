@@ -13,6 +13,9 @@ import { StyleDirective } from '../directives/style.directive';
 @NgModule({
   declarations: [
     ServerStatusComponent,                                                        
+    BgColorDirective,
+    TextColorDirective,
+    StyleDirective,
   ],
   imports: [
     CommonModule,
@@ -21,10 +24,6 @@ import { StyleDirective } from '../directives/style.directive';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-
-    BgColorDirective,
-    TextColorDirective,
-    StyleDirective,
   ],
   exports: [ServerStatusComponent, BgColorDirective, TextColorDirective, StyleDirective],
 })

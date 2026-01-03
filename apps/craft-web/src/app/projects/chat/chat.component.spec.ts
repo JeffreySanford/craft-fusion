@@ -1,9 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ChatComponent } from './chat.component';
 import { MarkdownPipe } from './markdown.pipe';
 import { ChatService } from './chat.service';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { of } from 'rxjs';
+
+@Component({ selector: 'app-model-selector', template: '', standalone: false })
+class ModelSelectorStubComponent {}
 
 describe('ChatComponent', () => {
   let component: ChatComponent;
@@ -13,12 +19,18 @@ describe('ChatComponent', () => {
     sendMessage: () => of(null),
     getResponseStream: () => of(''),
   };
+  const matSnackBarMock = {
+    open: jest.fn(),
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ChatComponent, MarkdownPipe],
-      providers: [{ provide: ChatService, useValue: chatServiceMock }],
-      imports: [MatSnackBarModule],
+      declarations: [ChatComponent, MarkdownPipe, ModelSelectorStubComponent],
+      providers: [
+        { provide: ChatService, useValue: chatServiceMock },
+        { provide: MatSnackBar, useValue: matSnackBarMock },
+      ],
+      imports: [MatIconModule, FormsModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ChatComponent);

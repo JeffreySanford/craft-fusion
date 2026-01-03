@@ -1,6 +1,6 @@
 import { Directive, ElementRef, Input, OnChanges, Renderer2 } from '@angular/core';
 
-@Directive({ selector: '[appBgColor]', standalone: true })
+@Directive({ selector: '[appBgColor]', standalone: false })
 export class BgColorDirective implements OnChanges {
   @Input('appBgColor') color: string | undefined;
 

@@ -5,7 +5,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { MaterialModule } from '../../material.module';
 import { ChatComponent } from './chat.component';
 import { ChatService } from './chat.service';
-import { SplitTextPipe } from './split-text.pipe';
 import { MarkdownPipe } from './markdown.pipe';
 import { ModelSelectorComponent } from './model-selector/model-selector.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -22,13 +21,12 @@ import { MatSelectModule } from '@angular/material/select';
 const routes: Routes = [{ path: '', component: ChatComponent }];
 
 @NgModule({
-  declarations: [ChatComponent, MarkdownPipe, ModelSelectorComponent],
+  declarations: [ChatComponent, MarkdownPipe, ModelSelectorComponent, SplitTextPipe],
   imports: [
     CommonModule,
     FormsModule,
     RouterModule.forChild(routes),
     MaterialModule,
-    SplitTextPipe,
     MatSnackBarModule,
     MatCardModule,
     MatListModule,

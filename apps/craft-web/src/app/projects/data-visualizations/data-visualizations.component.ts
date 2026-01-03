@@ -9,6 +9,7 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { SidebarStateService } from '../../common/services/sidebar-state.service';
 import { ChartLayoutService } from './services/chart-layout.service';
 import { SocketClientService } from '../../common/services/socket-client.service';
+import { LoggerService } from '../../common/services/logger.service';
 
 @Component({
   selector: 'app-data-visualizations',
@@ -91,8 +92,9 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     private sidebarStateService: SidebarStateService,
     private chartLayoutService: ChartLayoutService,
     private socketClient: SocketClientService,
+    private logger: LoggerService,
   ) {
-    console.log('DataVisualizationsComponent instantiated');
+    this.logger.info('DataVisualizationsComponent instantiated', { suppressConsole: true });
 
     this.registerIcons();
 

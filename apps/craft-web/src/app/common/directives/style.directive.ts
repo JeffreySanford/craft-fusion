@@ -1,6 +1,6 @@
 import { Directive, ElementRef, Input, OnChanges, Renderer2, RendererStyleFlags2 } from '@angular/core';
 
-@Directive({ selector: '[appStyle]', standalone: true })
+@Directive({ selector: '[appStyle]', standalone: false })
 export class StyleDirective implements OnChanges {
   @Input('appStyle') styles: { [key: string]: string } | undefined;
 

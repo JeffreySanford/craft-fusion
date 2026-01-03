@@ -178,7 +178,18 @@ export class LoggerService {
         component = this.getCallerComponent();
       }
 
-      const sanitizedDetails = this.sanitizeLogDetails(details);
+      let suppressConsole = false;
+      let detailsForSanitization: Record<string, unknown> | undefined;
+
+      if (details && typeof details === 'object' && !Array.isArray(details)) {
+        detailsForSanitization = { ...(details as Record<string, unknown>) };
+        if ('suppressConsole' in detailsForSanitization) {
+          suppressConsole = Boolean((detailsForSanitization as Record<string, unknown>)['suppressConsole']);
+          delete (detailsForSanitization as Record<string, unknown>)['suppressConsole'];
+        }
+      }
+
+      const sanitizedDetails = this.sanitizeLogDetails(detailsForSanitization);
 
       const entry: LogEntry = {
         timestamp: new Date(),
@@ -202,11 +213,15 @@ export class LoggerService {
         this.infoSubject.next(entry);
       }
 
-      this.outputToConsole(level, message, sanitizedDetails, component);
+      if (this.isTestEnvironment()) {
+        suppressConsole = true;
+      }
+      this.outputToConsole(level, message, sanitizedDetails, component, suppressConsole);
     }
   }
 
-  private outputToConsole(level: LogLevel, message: string, details?: unknown, component: string = '') {
+  private outputToConsole(level: LogLevel, message: string, details?: unknown, component: string = '', suppressConsole = false) {
+    if (suppressConsole) return;
     const css = (name: string, fallback: string) => {
       try {
         if (typeof window === 'undefined' || !window.getComputedStyle) return fallback;
@@ -694,6 +709,11 @@ export class LoggerService {
   private fetchBackendLogs(): Observable<LogEntry[]> {
 
     return of([]);                   
+  }
+
+  private isTestEnvironment(): boolean {
+    const env = typeof (globalThis as any).process !== 'undefined' ? (globalThis as any).process.env : undefined;
+    return Boolean(env && env.NODE_ENV === 'test');
   }
 
   emitConnectEvent(data: unknown) {
