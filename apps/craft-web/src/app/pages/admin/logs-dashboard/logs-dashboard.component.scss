@@ -1,7 +1,7 @@
-.security-dashboard {
+.logs-dashboard {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.2rem;
 }
 
 .section-header {
@@ -24,30 +24,30 @@
 .eyebrow {
   color: rgba(255, 255, 255, 0.65);
   font-size: 0.75rem;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   margin: 0;
   text-transform: uppercase;
 }
 
-.pill.secure {
-  background: linear-gradient(135deg, #22c55e, #0ea5e9);
+.pill.live {
+  background: linear-gradient(135deg, #0ea5e9, #22c55e);
   border-radius: 999px;
   color: #0b1220;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   padding: 0.35rem 0.9rem;
   text-transform: uppercase;
-  box-shadow: 0 10px 30px rgba(34, 197, 94, 0.35);
+  box-shadow: 0 10px 30px rgba(14, 165, 233, 0.35);
 }
 
-.shield-grid {
+.stat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
 }
 
-.shield-card {
-  background: linear-gradient(140deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+.stat-card {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 1rem;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
@@ -67,37 +67,40 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.08), transparent 45%),
+    background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08), transparent 45%),
       radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.05), transparent 40%);
     pointer-events: none;
   }
 
-  &.stable {
-    background: linear-gradient(135deg, #0ea5e9, #22c55e);
-    color: #0b1220;
+  &.error {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
   }
 
-  &.neutral {
-    background: linear-gradient(135deg, #1f2937, #334155);
+  &.warn {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
   }
 
-  &.warning {
-    background: linear-gradient(135deg, #f97316, #ef4444);
+  &.info {
+    background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  }
+
+  &.total {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
   }
 }
 
-.shield-icon {
+.stat-icon {
   align-items: center;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 0.8rem;
   display: flex;
   height: 3rem;
   justify-content: center;
   width: 3rem;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
 }
 
-.shield-body {
+.stat-body {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -112,18 +115,18 @@
 }
 
 .value {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
 }
 
 .hint {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.85);
   margin: 0;
   font-size: 0.9rem;
 }
 
-.feature-panel {
+.logs-panel {
   background: linear-gradient(145deg, rgba(2, 6, 23, 0.9), rgba(15, 23, 42, 0.92));
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 1.1rem;
@@ -156,50 +159,38 @@
   }
 }
 
-.feature-grid {
-  display: grid;
-  gap: 0.9rem;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+.legend {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chip {
+  border-radius: 999px;
+  color: #0b1220;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.9rem;
+  text-transform: uppercase;
+
+  &.error {
+    background: #f87171;
+  }
+
+  &.warn {
+    background: #fbbf24;
+  }
+
+  &.info {
+    background: #60a5fa;
+  }
+}
+
+.logs-shell {
   margin-top: 0.9rem;
   position: relative;
   z-index: 1;
-}
-
-.feature-card {
-  align-items: center;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 0.9rem;
-  display: flex;
-  gap: 0.75rem;
-  padding: 0.9rem;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.12);
-  }
-
-  &.active {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(14, 165, 233, 0.25));
-  }
-
-  &.inactive {
-    background: linear-gradient(135deg, rgba(248, 180, 0, 0.15), rgba(248, 113, 113, 0.2));
-  }
-
-  mat-icon {
-    font-size: 1.4rem;
-    height: 1.4rem;
-    width: 1.4rem;
-  }
-}
-
-.badge {
-  border-radius: 999px;
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  padding: 0.3rem 0.75rem;
-  text-transform: uppercase;
-  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }

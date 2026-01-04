@@ -1,6 +1,9 @@
 import { Component, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { PerformanceHelperService } from './performance-helper.service';
 import { ServicesDashboardService } from '../services-dashboard/services-dashboard.service';
+import { PerformanceMetricsBridgeService } from './performance-metrics-bridge.service';
+import { ServiceCallMetric } from '../../../common/services/logger.service';
 
 @Component({
   selector: 'app-performance-dashboard',
@@ -11,6 +14,10 @@ import { ServicesDashboardService } from '../services-dashboard/services-dashboa
 export class PerformanceDashboardComponent implements AfterViewInit, OnDestroy {
   @ViewChild('systemCanvas') systemCanvas!: ElementRef<HTMLCanvasElement>;
   private chart: any;
+  private metricsSubscription?: Subscription;
+  private animationFrameId: number | undefined;
+  private latestMetrics: ServiceCallMetric[] = [];
+  private readonly startedAt = Date.now();
 
   performanceMetrics = {
     memoryUsage: '0%',
@@ -20,11 +27,10 @@ export class PerformanceDashboardComponent implements AfterViewInit, OnDestroy {
     adminStatus: 'unknown',
   };
 
-  private intervalId: number | undefined;
-
   constructor(
     private helper: PerformanceHelperService,
     private servicesDashboard: ServicesDashboardService,
+    private metricsBridge: PerformanceMetricsBridgeService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -36,32 +42,71 @@ export class PerformanceDashboardComponent implements AfterViewInit, OnDestroy {
     const colors = labels.map(s => this.servicesDashboard.getServiceColor(s));
 
     this.chart = this.helper.createBarChart(ctx, labels, data, colors);
-
-    this.intervalId = window.setInterval(() => {
-      this.refreshMetrics();
-    }, 5000);
+    this.metricsBridge.startMonitoring();
+    this.metricsSubscription = this.metricsBridge.metrics$.subscribe(metrics => {
+      this.latestMetrics = metrics;
+      this.scheduleChartRefresh();
+    });
   }
 
-  refreshMetrics() {
+  ngOnDestroy(): void {
+    if (this.animationFrameId !== undefined) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = undefined;
+    }
+    this.metricsSubscription?.unsubscribe();
+    this.metricsBridge.stopMonitoring();
+    try {
+      this.chart?.destroy();
+    } catch {}
+  }
+
+  private scheduleChartRefresh(): void {
+    if (this.animationFrameId !== undefined) {
+      return;
+    }
+    this.animationFrameId = window.requestAnimationFrame(() => {
+      this.renderLatestMetrics();
+      this.animationFrameId = undefined;
+    });
+  }
+
+  private renderLatestMetrics(): void {
+    if (!this.chart) {
+      return;
+    }
+
     const labels = this.servicesDashboard.getRegisteredServices().map(s => s.name);
     const stats = labels.map(name => this.servicesDashboard.getServiceStatistics(name)?.avgResponseTime || 0);
     const colors = labels.map(s => this.servicesDashboard.getServiceColor(s));
     this.helper.updateChartData(this.chart, labels, stats, colors);
 
-    const mem = Math.round((stats[0] || 0) % 100);
-    this.performanceMetrics.memoryUsage = `${mem}%`;
-    const cpu = Math.round((stats[1] || 0) % 100);
-    this.performanceMetrics.cpuLoad = `${cpu}%`;
-    this.performanceMetrics.networkLatency = `${Math.round(stats.reduce((a, b) => a + b, 0) / Math.max(1, stats.length))}ms`;
-    this.performanceMetrics.appUptime = `${Math.floor(Date.now() / 1000)}s`;
+    this.updatePerformanceMetrics(stats, this.latestMetrics);
   }
 
-  ngOnDestroy(): void {
-    if (this.intervalId !== undefined) {
-      clearInterval(this.intervalId);
-    }
-    try {
-      this.chart?.destroy();
-    } catch {}
+  private updatePerformanceMetrics(stats: number[], metrics: ServiceCallMetric[]): void {
+    const average = stats.length ? stats.reduce((sum, value) => sum + value, 0) / stats.length : 0;
+    this.performanceMetrics.memoryUsage = `${Math.min(100, Math.round(average))}%`;
+    this.performanceMetrics.cpuLoad = `${Math.min(100, Math.round(average * 0.9))}%`;
+    const latency = metrics.length
+      ? Math.round(metrics.reduce((sum, metric) => sum + (metric.duration || 0), 0) / metrics.length)
+      : 0;
+    this.performanceMetrics.networkLatency = `${latency}ms`;
+    const uptimeSeconds = Math.max(0, Math.floor((Date.now() - this.startedAt) / 1000));
+    this.performanceMetrics.appUptime = this.formatDuration(uptimeSeconds);
+    this.performanceMetrics.adminStatus = metrics.some(metric => (metric.status ?? 0) >= 400) ? 'attention' : 'stable';
+  }
+
+  private formatDuration(totalSeconds: number): string {
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const parts: string[] = [];
+    if (days) parts.push(`${days}d`);
+    if (hours) parts.push(`${hours}h`);
+    if (minutes) parts.push(`${minutes}m`);
+    parts.push(`${seconds}s`);
+    return parts.join(' ');
   }
 }

@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
-import { ServiceCallMetric, LoggerService } from '../../../common/services/logger.service';
+import { Injectable, NgZone } from '@angular/core';
 import Chart from 'chart.js/auto';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { ApiEndpointLog } from '../admin-types';
+import { ServiceCallMetric } from '../../../common/services/logger.service';
+import { ServiceMetricsBridgeService } from './service-metrics-bridge.service';
 
 export interface ServiceMetricsSummary {
   avgResponseTime: number;
@@ -29,12 +30,13 @@ export class ServicesDashboardService {
     ['SettingsService', 'settings'],
     ['AdminStateService', 'admin_panel_settings'],
   ]);
-  private loggerSubscription: Subscription | undefined;
 
   private metricsSubject = new BehaviorSubject<ServiceCallMetric[]>([]);
   public metrics$ = this.metricsSubject.asObservable();
   private pollingIntervalId: number | undefined;
   private simulationIntervalId: number | undefined;
+  private metricsBridgeSubscription: Subscription | undefined;
+  private processedMetricIds = new Map<string, number>();
 
   private readonly DEFAULT_SERVICES = [
     { name: 'ApiService', description: 'Core API communication', active: true },
@@ -62,27 +64,38 @@ export class ServicesDashboardService {
     ['AdminStateService', '#2ECC71'],
   ]);
 
-  constructor(private logger: LoggerService) {}
+  constructor(private metricsBridge: ServiceMetricsBridgeService, private ngZone: NgZone) {}
 
   getRegisteredServices() {
     return this.DEFAULT_SERVICES;
   }
 
-  setServiceMetrics(metrics: ServiceCallMetric[]) {
+  setServiceMetrics(metrics: ServiceCallMetric[]): ServiceCallMetric[] {
+    const added: ServiceCallMetric[] = [];
     metrics.forEach(m => {
+      if (!this.registerMetric(m)) {
+        return;
+      }
+
       const arr = this.metricsByService.get(m.serviceName) || [];
       arr.push(m);
       this.metricsByService.set(m.serviceName, arr.slice(-200));
       this.serviceMetricsMap.set(m.serviceName, m);
+      added.push(m);
     });
-    this.emitFlattenedMetrics();
+
+    if (added.length > 0) {
+      this.emitFlattenedMetrics();
+    }
+
+    return added;
   }
 
   private emitFlattenedMetrics() {
     const all: ServiceCallMetric[] = [];
     Array.from(this.metricsByService.values()).forEach(arr => all.push(...arr));
     all.sort((a, b) => (a.timestamp as any).getTime() - (b.timestamp as any).getTime());
-    this.metricsSubject.next(all.slice(-200));
+    this.publishMetrics(all.slice(-200));
   }
 
   getEndpointLogs() {
@@ -93,60 +106,116 @@ export class ServicesDashboardService {
     return this.serviceIconMap.get(serviceName) || 'device_hub';
   }
 
-  startMonitoring() {
-    this.stopMonitoring();
-    this.loggerSubscription = this.logger.serviceCalls$.subscribe((metrics: ServiceCallMetric[]) => {
-      if (!metrics || metrics.length === 0) {
-        return;
+  private processMetricsForLogs(metrics: ServiceCallMetric[]): void {
+    if (!metrics || metrics.length === 0) {
+      return;
+    }
+    for (const metric of metrics) {
+      if (!metric) {
+        continue;
       }
-      this.setServiceMetrics(metrics);
 
-      metrics.forEach(metric => {
-        if (!this.endpointLogs.has(metric.serviceName)) {
-          this.endpointLogs.set(metric.serviceName, {
-            path: metric.url,
-            method: metric.method,
-            lastContacted: null,
-            lastPing: null,
-            status: 'active',
-            hitCount: 0,
-            successCount: 0,
-            errorCount: 0,
-            avgResponseTime: 0,
-            firstSeen: new Date(),
-            timelineData: [],
-          });
-        }
+      const timestamp =
+        metric.timestamp instanceof Date ? metric.timestamp : new Date(metric.timestamp ?? Date.now());
 
-        const info = this.endpointLogs.get(metric.serviceName);
-        if (!info) {
-          return;
-        }
-        info.lastContacted = new Date(metric.timestamp);
-        info.lastPing = new Date();
-        info.hitCount++;
+      if (!this.endpointLogs.has(metric.serviceName)) {
+        this.endpointLogs.set(metric.serviceName, {
+          path: metric.url,
+          method: metric.method,
+          lastContacted: null,
+          lastPing: null,
+          status: 'active',
+          hitCount: 0,
+          successCount: 0,
+          errorCount: 0,
+          avgResponseTime: 0,
+          firstSeen: new Date(),
+          timelineData: [],
+        });
+      }
 
-        const st = metric.status ?? 0;
-        if (st >= 200 && st < 400) info.successCount++;
-        else if (st >= 400) info.errorCount++;
-        if (st >= 500) info.status = 'error';
-        else if (st === 0) info.status = 'inactive';
-        else info.status = 'active';
+      const info = this.endpointLogs.get(metric.serviceName);
+      if (!info) {
+        continue;
+      }
 
-        info.avgResponseTime = (info.avgResponseTime * (info.hitCount - 1) + (metric.duration || 0)) / info.hitCount;
-        info.timelineData.push({ timestamp: new Date(metric.timestamp), responseTime: metric.duration || 0, status: st });
-        if (info.timelineData.length > 50) info.timelineData = info.timelineData.slice(-50);
+      info.lastContacted = timestamp;
+      info.lastPing = new Date();
+      info.hitCount++;
+
+      const statusCode = metric.status ?? 0;
+
+      if (statusCode >= 200 && statusCode < 400) {
+        info.successCount++;
+      } else if (statusCode >= 400) {
+        info.errorCount++;
+      }
+
+      if (statusCode >= 500) {
+        info.status = 'error';
+      } else if (statusCode === 0) {
+        info.status = 'inactive';
+      } else {
+        info.status = 'active';
+      }
+
+      info.avgResponseTime =
+        (info.avgResponseTime * (info.hitCount - 1) + (metric.duration || 0)) / info.hitCount;
+
+      info.timelineData.push({
+        timestamp,
+        responseTime: metric.duration || 0,
+        status: statusCode,
       });
 
-      this.updateLiteStats();
+      if (info.timelineData.length > 50) {
+        info.timelineData = info.timelineData.slice(-50);
+      }
+    }
+  }
+
+  private registerMetric(metric: ServiceCallMetric): boolean {
+    const timestamp =
+      metric.timestamp instanceof Date ? metric.timestamp.getTime() : new Date(metric.timestamp ?? Date.now()).getTime();
+    const metricId = metric.id || `${metric.serviceName}_${timestamp}_${metric.method}`;
+    if (this.processedMetricIds.has(metricId)) {
+      return false;
+    }
+    this.processedMetricIds.set(metricId, Date.now());
+    if (this.processedMetricIds.size > 500) {
+      const oldestId = this.processedMetricIds.keys().next().value;
+      if (oldestId) {
+        this.processedMetricIds.delete(oldestId);
+      }
+    }
+    return true;
+  }
+
+  startMonitoring(): void {
+    this.stopMonitoring();
+    this.metricsBridge.startMonitoring();
+    this.ngZone.runOutsideAngular(() => {
+      this.metricsBridgeSubscription = this.metricsBridge.metrics$.subscribe(metrics => {
+        if (!metrics || metrics.length === 0) {
+          return;
+        }
+        const newMetrics = this.setServiceMetrics(metrics);
+        if (!newMetrics.length) {
+          return;
+        }
+        this.processMetricsForLogs(newMetrics);
+        this.updateLiteStats();
+      });
     });
   }
 
-  stopMonitoring() {
-    if (this.loggerSubscription) {
-      this.loggerSubscription.unsubscribe();
-      this.loggerSubscription = undefined;
+  stopMonitoring(): void {
+    if (this.metricsBridgeSubscription) {
+      this.metricsBridgeSubscription.unsubscribe();
+      this.metricsBridgeSubscription = undefined;
     }
+    this.metricsBridge.stopMonitoring();
+    this.processedMetricIds.clear();
   }
 
   getLatestServiceMetrics(limit = 50): ServiceCallMetric[] {
@@ -232,30 +301,14 @@ export class ServicesDashboardService {
     this.serviceMetricsMap.clear();
     this.serviceStatistics.clear();
     this.endpointLogs.clear();
-
-    try {
-
-      if (this.logger && typeof (this.logger as any).clearMetrics === 'function') {
-
-        (this.logger as any).clearMetrics();
-      }
-    } catch (error) {
-      console.warn('Failed to clear logger metrics', error);
-    }
-
-    this.metricsSubject.next([]);
+    this.metricsBridge.clear();
+    this.publishMetrics([]);
+    this.processedMetricIds.clear();
   }
 
   clearLogs() {
-    try {
-
-      if (this.logger && typeof (this.logger as any).clearLogs === 'function') {
-
-        (this.logger as any).clearLogs();
-      }
-    } catch (error) {
-      console.warn('Failed to clear logs via LoggerService', error);
-    }
+    this.endpointLogs.clear();
+    this.processedMetricIds.clear();
   }
 
   updateServiceStats(serviceName: string, stats: Partial<ServiceMetricsSummary> & { lastUpdate?: number }) {
@@ -277,6 +330,12 @@ export class ServicesDashboardService {
     if (svc) {
       svc.active = !svc.active;
     }
+  }
+
+  private publishMetrics(metrics: ServiceCallMetric[]): void {
+    this.ngZone.run(() => {
+      this.metricsSubject.next(metrics);
+    });
   }
 
   getAxesConfig(metrics: string[]): { y: any; y1: any; datasetAxisIds: string[] } {

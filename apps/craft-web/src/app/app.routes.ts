@@ -36,7 +36,10 @@ export const appRoutes: Routes = [
   },
   {
     path: 'admin',
-    loadChildren: () => import('./pages/admin/admin.module').then(m => m.AdminModule),
+    loadChildren: () =>
+      import(/* webpackChunkName: "admin-module" */ './pages/admin/admin.module').then(
+        m => m.AdminModule,
+      ),
     canActivate: [AuthGuard, AdminGuard],
   },
   {

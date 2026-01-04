@@ -792,11 +792,19 @@ table thead tr {
 }
 
 .tab-content {
-  height: calc(100vh - 17.5em);                                         
-  margin: 0;                     
+  height: calc(100vh - 17.5em);
+  margin: 0;
   overflow-y: auto;
-  padding: 0.5rem 0.75rem;                   
-  width: 100%;                     
+  padding: 1.25rem 1.5rem;
+  width: 100%;
+  background: linear-gradient(135deg, rgba(2, 6, 23, 0.92), rgba(15, 23, 42, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+  box-shadow: 0 20px 40px rgba(2, 12, 28, 0.65);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 
   @supports (scrollbar-color: auto) {
     scrollbar-color: rgb(255 255 255 / 20%) transparent;
@@ -1378,7 +1386,7 @@ table thead tr {
   position: relative;
 
   &::before {
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, #0f172a 0%, #1d4ed8 50%, #60a5fa 100%);
     content: "";
     height: 0.1875em;
     left: 0;

@@ -1,6 +1,7 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@angular/core';
 import Chart from 'chart.js/auto';
 import { ServicesDashboardService } from './services-dashboard.service';
+import { Subscription } from 'rxjs';
 export interface ServiceInfo {
   id: string;
   name: string;
@@ -42,8 +43,9 @@ export class ServicesDashboardComponent implements OnInit, AfterViewInit, OnDest
   @ViewChild('serviceMetricsCanvas') serviceMetricsCanvas!: ElementRef<HTMLCanvasElement>;
   private serviceChart: Chart | null = null;
   private refreshIntervalId: number | undefined;
+  private metricsSubscription: Subscription | undefined;
 
-  constructor(private servicesDashboard: ServicesDashboardService) {}
+  constructor(private servicesDashboard: ServicesDashboardService, private ngZone: NgZone) {}
 
   ngOnInit(): void {
     this.loadServices();
@@ -51,13 +53,21 @@ export class ServicesDashboardComponent implements OnInit, AfterViewInit, OnDest
 
   ngAfterViewInit(): void {
     this.createChart();
-    this.refreshIntervalId = window.setInterval(() => this.refreshChartData(), 2000);
+    this.ngZone.runOutsideAngular(() => {
+      this.metricsSubscription = this.servicesDashboard.metrics$.subscribe(() => {
+        this.scheduleChartRefresh();
+      });
+    });
   }
 
   ngOnDestroy(): void {
     if (this.refreshIntervalId !== undefined) {
-      clearInterval(this.refreshIntervalId);
+      window.cancelAnimationFrame(this.refreshIntervalId);
       this.refreshIntervalId = undefined;
+    }
+    if (this.metricsSubscription) {
+      this.metricsSubscription.unsubscribe();
+      this.metricsSubscription = undefined;
     }
     if (this.serviceChart) {
       this.serviceChart.destroy();
@@ -129,10 +139,46 @@ export class ServicesDashboardComponent implements OnInit, AfterViewInit, OnDest
     }
   }
 
+  private scheduleChartRefresh(): void {
+    if (this.refreshIntervalId !== undefined) {
+      return;
+    }
+    this.refreshIntervalId = window.requestAnimationFrame(() => {
+      this.refreshChartData();
+      this.refreshIntervalId = undefined;
+    });
+  }
+
   private refreshChartData(): void {
     if (!this.serviceChart) return;
     const data = this.servicesDashboard.buildChartDataForServices(6) as any;
     this.serviceChart.data = data;
     this.serviceChart.update('none' as any);
+  }
+
+  get groupedServices() {
+    return [
+      {
+        title: 'Core Services',
+        description: 'Mission-critical components driving auth, API, and data pipelines.',
+        services: this.coreServices,
+        pillText: `${this.coreServices.length} monitored`,
+        pillClass: 'primary',
+      },
+      {
+        title: 'Feature Services',
+        description: 'Independent feature backends that enhance the experience.',
+        services: this.featureServices,
+        pillText: `${this.featureServices.length} active features`,
+        pillClass: 'accent',
+      },
+      {
+        title: 'Third Party Services',
+        description: 'External partners that we observe for side-effects.',
+        services: this.thirdPartyServices,
+        pillText: `${this.thirdPartyServices.length} partners`,
+        pillClass: 'neutral',
+      },
+    ];
   }
 }

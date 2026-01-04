@@ -1,4 +1,4 @@
-<div class="dashboard-layout">
+<div class="dashboard-layout" [class.sidebar-collapsed]="isSidebarCollapsed">
 
   <div class="visualization-container" cdkDropList (cdkDropListDropped)="drop($event)">
 
@@ -75,9 +75,11 @@
           mat-icon-button
           class="sidebar-toggle"
           (click)="toggleVisualizationSidebar()"
-          [attr.aria-label]="isSidebarCollapsed ? 'Open visualization controls' : 'Close visualization controls'"
+          [attr.aria-label]="isSidebarCollapsed ? 'Expand visualization controls' : 'Close visualization controls'"
         >
-          <mat-icon>{{ isSidebarCollapsed ? 'tune' : 'close' }}</mat-icon>
+          <mat-icon>
+            {{ isSidebarCollapsed ? 'expand_less' : 'close' }}
+          </mat-icon>
         </button>
       </div>
     </div>

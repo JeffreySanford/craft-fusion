@@ -160,6 +160,25 @@ export class AuthenticationService {
     console.log('🔐 AuthService: initializeAuthentication called');
     this.logger.debug('Initializing authentication - checking for existing tokens');
 
+    const overrideUser = (globalThis as any).__PLAYWRIGHT_ADMIN_USER;
+    if (overrideUser) {
+      const overrideToken = (globalThis as any).__PLAYWRIGHT_AUTH_TOKEN ?? 'playwright-admin-token';
+      const overrideRefresh = (globalThis as any).__PLAYWRIGHT_AUTH_REFRESH ?? 'playwright-admin-refresh';
+      const overrideExpiresIn = (globalThis as any).__PLAYWRIGHT_AUTH_EXPIRES_IN ?? 3600;
+      const overrideExpiresAt = Date.now() + overrideExpiresIn * 1000;
+      const mockResponse: AuthResponse = {
+        success: true,
+        token: overrideToken,
+        refreshToken: overrideRefresh,
+        expiresIn: overrideExpiresIn,
+        user: overrideUser,
+      };
+      this.handleSuccessfulLogin(mockResponse, overrideExpiresAt);
+      this.initializeAuthSocket();
+      this.scheduleTokenRefresh(overrideExpiresAt);
+      return;
+    }
+
     const tokenInfo = this.getStoredTokenInfo();
     console.log('🔐 AuthService: Token info found:', {
       hasToken: !!tokenInfo?.token,

@@ -1,11 +1,29 @@
 <div class="admin-landing">
-  <h2>System Performance</h2>
-  <div class="metrics-summary">
-    <div class="metric-card">Platform: {{ navigator.platform }}</div>
-    <div class="metric-card">Browser: {{ navigator.userAgent }}</div>
-    <div class="metric-card">CPU Cores: {{ navigator.hardwareConcurrency }}</div>
-    <div class="metric-card">Language: {{ navigator.language }}</div>
-    <div class="metric-card">Online: {{ navigator.onLine ? 'Yes' : 'No' }}</div>
+  <header class="hero-header">
+    <div>
+      <p class="hero-eyebrow">Admin dashboard</p>
+      <h2>System overview</h2>
+      <p class="hero-subtitle">Live health tiles summarize service status, success rates, and alert counts.</p>
+    </div>
+    <span class="hero-badge">{{ navigator.onLine ? 'Live stream' : 'Offline preview' }}</span>
+  </header>
+
+  <div class="hero-grid">
+    <article
+      class="hero-card"
+      *ngFor="let tile of tiles"
+      [ngClass]="tile.status">
+      <div class="hero-content">
+        <div class="hero-label">{{ tile.label }}</div>
+        <div class="hero-value">{{ tile.value }}</div>
+        <div class="hero-meta">
+          <span *ngIf="tile.detail" class="hero-detail">{{ tile.detail }}</span>
+          <span class="hero-sub">{{ tile.subLabel }}</span>
+        </div>
+      </div>
+      <mat-icon>{{ tile.icon }}</mat-icon>
+    </article>
   </div>
-  <p class="note">This landing component will display aggregated system metrics. Detailed charts moved to their own components.</p>
+
+  <p class="note">Tiles refresh automatically as service metrics and logs stream in.</p>
 </div>

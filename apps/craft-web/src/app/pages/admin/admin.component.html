@@ -27,7 +27,7 @@
     </div>
   </div>
 
-  <mat-tab-group #tabGroup [(selectedIndex)]="selectedTab" animationDuration="500ms" class="admin-tabs">
+  <mat-tab-group #tabGroup [(selectedIndex)]="selectedTab" animationDuration="500ms" class="admin-tabs" (selectedTabChange)="onTabChange($event)">
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon class="tab-icon">home</mat-icon>
@@ -40,23 +40,11 @@
 
     <mat-tab>
       <ng-template mat-tab-label>
-        <mat-icon class="tab-icon">dashboard</mat-icon>
+        <mat-icon class="tab-icon">bar_chart</mat-icon>
         Performance
       </ng-template>
-
-      <div class="tab-content">
+      <div class="tab-content performance-tab">
         <app-performance-dashboard></app-performance-dashboard>
-      </div>
-    </mat-tab>
-
-    <mat-tab>
-      <ng-template mat-tab-label>
-        <mat-icon class="tab-icon">settings_applications</mat-icon>
-        Service Monitoring
-      </ng-template>
-
-      <div class="tab-content">
-        <app-services-dashboard></app-services-dashboard>
       </div>
     </mat-tab>
 

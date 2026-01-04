@@ -1,31 +1,200 @@
 .performance-dashboard {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-.metrics-summary {
+.section-header {
+  align-items: flex-end;
   display: flex;
-  gap: 0.75em;
-  margin-bottom: 0.75em;
+  justify-content: space-between;
+  gap: 1rem;
+
+  h3 {
+    font-size: 1.6rem;
+    margin: 0;
+  }
+
+  .subtitle {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0.15rem 0 0;
+  }
+}
+
+.eyebrow {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.pill {
+  border-radius: 999px;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.9rem;
+  text-transform: uppercase;
+
+  &.live {
+    background: linear-gradient(135deg, #0ea5e9, #22c55e);
+    color: #0b1220;
+    box-shadow: 0 10px 30px rgba(14, 165, 233, 0.35);
+  }
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
 }
 
 .metric-card {
-  align-items: center;
-  background: #0f172a;
-  border-radius: 0.375em;
-  color: #fff;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+  color: #f8fafc;
   display: flex;
-  padding: 0.5em;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08), transparent 45%),
+      radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.05), transparent 40%);
+    pointer-events: none;
+  }
+
+  &.memory {
+    background: linear-gradient(135deg, #0b2f7c, #2563eb);
+  }
+
+  &.cpu {
+    background: linear-gradient(135deg, #0f766e, #22c55e);
+  }
+
+  &.uptime {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+  }
+
+  &.network {
+    background: linear-gradient(135deg, #f97316, #ef4444);
+  }
+
+  mat-icon {
+    font-size: 1.5rem;
+    height: 1.5rem;
+    width: 1.5rem;
+  }
 }
 
-.metric-icon {
-  margin-right: 0.5em;
+.metric-top {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
 }
 
-.chart-area {
+.metric-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0.15rem 0;
+}
+
+.metric-sub {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.chart-panel {
+  background: linear-gradient(145deg, rgba(2, 6, 23, 0.9), rgba(15, 23, 42, 0.92));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.1rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  padding: 1.15rem 1.25rem 1.35rem;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(56, 189, 248, 0.08), rgba(167, 139, 250, 0.08));
+    opacity: 0.9;
+    filter: blur(45px);
+    pointer-events: none;
+  }
+}
+
+.panel-head {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+
+  h4 {
+    margin: 0.1rem 0 0;
+  }
+}
+
+.legend {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chip {
+  border-radius: 999px;
+  color: #0b1220;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.9rem;
+  text-transform: uppercase;
+
+  &.good {
+    background: #4ade80;
+  }
+
+  &.watch {
+    background: #facc15;
+  }
+}
+
+.chart-shell {
   height: 20em;
+  margin-top: 0.75rem;
+  position: relative;
+  z-index: 1;
+
+  canvas {
+    height: 100%;
+    width: 100%;
+    animation: fadeIn 0.8s ease;
+  }
 }
 
-canvas {
-  height: 100%;
-  width: 100%;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -2,7 +2,7 @@
   <header>
     <app-header></app-header>
   </header>
-  <div class="layout-container flex-row flex-1 gap-1em">
+  <div class="layout-container flex-row flex-1 gap-1em" [class.sidebar-collapsed]="isCollapsed">
     <aside class="sidebar">
       <app-sidebar [isSmallScreen]="isSmallScreen" [isCollapsed]="isCollapsed"></app-sidebar>
     </aside>

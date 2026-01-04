@@ -1,2 +1,188 @@
-<testsuites id="" name="" tests="0" failures="0" skipped="0" errors="0" time="10.455200000000001">
+<testsuites id="" name="" tests="36" failures="0" skipped="15" errors="0" time="18.545173">
+<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-04T22:52:45.933Z" hostname="chromium" tests="5" failures="0" skipped="0" time="31.883" errors="0">
+<testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="6.094">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Performance tab" classname="admin-dashboard.spec.ts" time="5.837">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Security &amp; Access tab" classname="admin-dashboard.spec.ts" time="6.065">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Logs tab" classname="admin-dashboard.spec.ts" time="6.277">
+</testcase>
+<testcase name="Admin dashboard tabs › cycles through tabs in sequence" classname="admin-dashboard.spec.ts" time="7.61">
+</testcase>
+</testsuite>
+<testsuite name="portfolio.spec.ts" timestamp="2026-01-04T22:52:45.933Z" hostname="chromium" tests="1" failures="0" skipped="0" time="5.093" errors="0">
+<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="5.093">
+</testcase>
+</testsuite>
+<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-04T22:52:45.933Z" hostname="firefox" tests="5" failures="0" skipped="0" time="40.342" errors="0">
+<testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="8.023">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Performance tab" classname="admin-dashboard.spec.ts" time="7.134">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Security &amp; Access tab" classname="admin-dashboard.spec.ts" time="7.012">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Logs tab" classname="admin-dashboard.spec.ts" time="7.914">
+</testcase>
+<testcase name="Admin dashboard tabs › cycles through tabs in sequence" classname="admin-dashboard.spec.ts" time="10.259">
+</testcase>
+</testsuite>
+<testsuite name="portfolio.spec.ts" timestamp="2026-01-04T22:52:45.933Z" hostname="firefox" tests="1" failures="0" skipped="0" time="5.682" errors="0">
+<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="5.682">
+</testcase>
+</testsuite>
+<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-04T22:52:45.933Z" hostname="webkit" tests="5" failures="0" skipped="0" time="29.492" errors="0">
+<testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="5.488">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Performance tab" classname="admin-dashboard.spec.ts" time="5.887">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Security &amp; Access tab" classname="admin-dashboard.spec.ts" time="5.694">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Logs tab" classname="admin-dashboard.spec.ts" time="5.403">
+</testcase>
+<testcase name="Admin dashboard tabs › cycles through tabs in sequence" classname="admin-dashboard.spec.ts" time="7.02">
+</testcase>
+</testsuite>
+<testsuite name="portfolio.spec.ts" timestamp="2026-01-04T22:52:45.933Z" hostname="webkit" tests="1" failures="0" skipped="0" time="3.096" errors="0">
+<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="3.096">
+</testcase>
+</testsuite>
+<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-04T22:52:45.933Z" hostname="mobile-chrome" tests="5" failures="0" skipped="5" time="0" errors="0">
+<testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Admin dashboard tabs › renders Performance tab" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Admin dashboard tabs › renders Security &amp; Access tab" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Admin dashboard tabs › renders Logs tab" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Admin dashboard tabs › cycles through tabs in sequence" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="portfolio.spec.ts" timestamp="2026-01-04T22:52:45.933Z" hostname="mobile-chrome" tests="1" failures="0" skipped="0" time="1.584" errors="0">
+<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="1.584">
+</testcase>
+</testsuite>
+<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-04T22:52:45.933Z" hostname="mobile-safari" tests="5" failures="0" skipped="5" time="0" errors="0">
+<testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Admin dashboard tabs › renders Performance tab" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Admin dashboard tabs › renders Security &amp; Access tab" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Admin dashboard tabs › renders Logs tab" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Admin dashboard tabs › cycles through tabs in sequence" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="portfolio.spec.ts" timestamp="2026-01-04T22:52:45.933Z" hostname="mobile-safari" tests="1" failures="0" skipped="0" time="1.913" errors="0">
+<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="1.913">
+</testcase>
+</testsuite>
+<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-04T22:52:45.933Z" hostname="tablet" tests="5" failures="0" skipped="5" time="0" errors="0">
+<testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Admin dashboard tabs › renders Performance tab" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Admin dashboard tabs › renders Security &amp; Access tab" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Admin dashboard tabs › renders Logs tab" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Admin dashboard tabs › cycles through tabs in sequence" classname="admin-dashboard.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="portfolio.spec.ts" timestamp="2026-01-04T22:52:45.933Z" hostname="tablet" tests="1" failures="0" skipped="0" time="1.525" errors="0">
+<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="1.525">
+</testcase>
+</testsuite>
 </testsuites>

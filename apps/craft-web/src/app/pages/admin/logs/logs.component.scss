@@ -2,71 +2,134 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 1em;
+  padding: 1.25rem;
+  gap: 1.25rem;
 }
 
 .logs-title {
   color: var(--md-sys-color-on-surface);
-  margin: 0 0 1em;
+  margin: 0;
 }
 
+.log-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem;
+}
+
+.log-card {
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  position: relative;
+  min-height: 110px;
+  box-shadow: 0 18px 30px rgba(2, 6, 23, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: #fff;
+
+  &.error {
+    background: linear-gradient(135deg, #7b1fa2, #bf1b31);
+  }
+
+  &.warn {
+    background: linear-gradient(135deg, #f59e0b, #eab308);
+    color: #0f172a;
+  }
+
+  &.info {
+    background: linear-gradient(135deg, #1d4ed8, #60a5fa);
+  }
+
+  &.debug {
+    background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  }
+}
+
+.card-label {
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+.card-value {
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+
+.card-meta {
+  opacity: 0.75;
+  font-size: 0.8rem;
+}
+
+
 .filter-panel {
-  background-color: var(--md-sys-color-surface-variant);
-  border-radius: 0.5em;
-  margin-bottom: 1em;
-  padding: 1em;
+  background: linear-gradient(145deg, rgba(12, 20, 46, 0.95), rgba(23, 34, 64, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 18px 40px rgba(5, 10, 25, 0.55);
 }
 
 .filter-form {
-  .filter-grid {
-    display: grid;
-    gap: 1.5em;                                    
-    grid-template-columns: repeat(auto-fill, minmax(12.5em, 1fr));
-    padding: 0 0.75rem;                          
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
 
-  mat-form-field {
-    ::ng-deep {
-      .mat-mdc-text-field-wrapper {
-        background: rgb(255 255 255 / 92%) !important;
-        border: 1px solid rgb(0 40 104 / 30%);
-        border-radius: 0.25rem;
-        transition: all 0.3s ease;
+.filter-line {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.9rem;
+  align-items: end;
+}
 
-        &:hover {
-          border-color: rgb(0 40 104 / 60%);
-          box-shadow: 0 0 0.5rem rgb(0 40 104 / 20%);
-        }
-      }
+.filter-line .wide {
+  grid-column: span 2;
+}
 
-      .mdc-floating-label {
-        color: #002868;
-        font-weight: 500;
-      }
+mat-form-field {
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border: 1px solid rgba(99, 102, 241, 0.55);
+      border-radius: 0.7rem;
+      transition: all 0.25s ease;
 
-      .mat-mdc-select-arrow {
-        color: #bf0a30;
-      }
-
-      .mat-mdc-select-value-text {
-        color: #002868;
-        font-weight: 500;
-      }
-
-      .mat-mdc-input-element {
-        color: #002868;
+      &:hover {
+        border-color: rgba(244, 114, 182, 0.9);
+        box-shadow: 0 0 0.65rem rgba(99, 102, 241, 0.35);
       }
     }
-  }
 
-  .filter-actions {
-    align-items: center;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1em;
-    justify-content: flex-end;
-    margin-top: 0.5em;
+    .mdc-floating-label {
+      color: #1f2937;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .mat-mdc-select-arrow,
+    .mat-mdc-select-value-text,
+    .mat-mdc-input-element {
+      color: #0f172a;
+      font-weight: 600;
+    }
   }
+}
+
+.filter-actions {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .table-container {
@@ -148,20 +211,20 @@
 :host ::ng-deep .mat-mdc-select-panel {
   .mat-mdc-option {
     &.mdc-list-item--selected {
-      background-color: #e3f2fd !important;                                 
-      color: #002868 !important;                       
+      background-color: #e3f2fd !important;
+      color: #002868 !important;
 
       &:not(.mdc-list-item--disabled) {
         background-color: #e3f2fd !important;
       }
 
       &:hover {
-        background-color: #bbdefb !important;                                               
+        background-color: #bbdefb !important;
       }
     }
 
     &:hover:not(.mdc-list-item--selected) {
-      background-color: #f3f8ff !important;                                           
+      background-color: #f3f8ff !important;
     }
   }
 }
