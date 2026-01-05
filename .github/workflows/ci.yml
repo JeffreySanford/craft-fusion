@@ -33,6 +33,15 @@ jobs:
           node --version
           pnpm --version
 
+      - name: Prepare .env
+        run: |
+          set -eux
+          if [ -f .env.example ]; then
+            cp .env.example .env
+          else
+            echo "NODE_ENV=production" > .env
+          fi
+
       - name: Install dependencies
         run: |
           mkdir -p ci-logs
@@ -48,10 +57,35 @@ jobs:
           mkdir -p ci-logs
           pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov > test-results.json 2>&1 | tee ci-logs/tests.log || true
 
-      - name: Build & E2E
+      - name: Build affected projects
         run: |
           mkdir -p ci-logs
-          pnpm dlx nx affected -t build e2e 2>&1 | tee ci-logs/build-e2e.log || true
+          pnpm dlx nx affected -t build 2>&1 | tee ci-logs/build.log || true
+
+      - name: Start craft-nest server and wait for readiness
+        run: |
+          mkdir -p ci-logs
+          # Start the built NestJS server in background. Assumes build output at dist/apps/craft-nest/main.js
+          if [ -f dist/apps/craft-nest/main.js ]; then
+            node dist/apps/craft-nest/main.js > ci-logs/craft-nest.log 2>&1 &
+          else
+            echo "craft-nest build output not found; skipping background start" > ci-logs/craft-nest.log
+          fi
+          # Wait for /api to respond (30s timeout)
+          for i in $(seq 1 30); do
+            if curl -sS http://localhost:3000/api >/dev/null 2>&1; then
+              echo "craft-nest up"
+              break
+            fi
+            sleep 1
+          done
+
+      - name: Run E2E
+        env:
+          API_URL: http://localhost:3000
+        run: |
+          mkdir -p ci-logs
+          pnpm dlx nx affected -t e2e 2>&1 | tee ci-logs/e2e.log || true
 
       - name: Upload CI logs
         uses: actions/upload-artifact@v4
@@ -62,14 +96,16 @@ jobs:
             ci-logs
             test-results.json
 
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: Test Results
-          path: test-results.json
-          reporter: jest
-          fail-on-error: false
+      - name: Test Report (skipped)
+        if: always()
+        run: |
+          echo "Skipping dorny/test-reporter due to reporter input validation issues"
+          if [ -f test-results.json ]; then
+            echo "test-results.json contents:"
+            head -n 200 test-results.json || true
+          else
+            echo "test-results.json not found"
+          fi
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
