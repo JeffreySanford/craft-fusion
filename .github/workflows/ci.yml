@@ -32,16 +32,33 @@ jobs:
           corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile=false
+        run: |
+          mkdir -p ci-logs
+          pnpm install --frozen-lockfile=false 2>&1 | tee ci-logs/install.log
 
       - name: Format check (nx)
-        run: pnpm dlx nx-cloud record -- nx format:check
+        run: |
+          mkdir -p ci-logs
+          pnpm dlx nx-cloud record -- nx format:check 2>&1 | tee ci-logs/format.log
 
       - name: Run tests
-        run: pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov > test-results.json || true
+        run: |
+          mkdir -p ci-logs
+          pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov > test-results.json 2>&1 | tee ci-logs/tests.log || true
 
       - name: Build & E2E
-        run: pnpm dlx nx affected -t build e2e || true
+        run: |
+          mkdir -p ci-logs
+          pnpm dlx nx affected -t build e2e 2>&1 | tee ci-logs/build-e2e.log || true
+
+      - name: Upload CI logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-logs
+          path: |
+            ci-logs
+            test-results.json
 
       - name: Test Report
         uses: dorny/test-reporter@v1
