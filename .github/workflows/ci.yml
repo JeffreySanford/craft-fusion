@@ -48,7 +48,7 @@ jobs:
       - name: Format check (nx)
         run: |
           mkdir -p ci-logs
-          pnpm dlx nx-cloud record -- nx format:check 2>&1 | tee ci-logs/format.log
+          pnpm dlx nx format:check 2>&1 | tee ci-logs/format.log
 
       - name: Run tests
         run: |
