@@ -64,9 +64,9 @@ jobs:
         run: |
           set -euxo pipefail
           mkdir -p ci-logs
-          # Start the built NestJS server in background. Assumes build output at dist/apps/craft-nest/main.js
-          if [ -f dist/apps/craft-nest/main.js ]; then
-            node dist/apps/craft-nest/main.js > ci-logs/craft-nest.log 2>&1 &
+          # Start the built NestJS server in background. Assumes build output at dist/apps/craft-nest/src/main.js
+          if [ -f dist/apps/craft-nest/src/main.js ]; then
+            cd dist/apps/craft-nest && node src/main.js > ../../ci-logs/craft-nest.log 2>&1 &
           else
             echo "craft-nest build output not found; skipping background start" > ci-logs/craft-nest.log
           fi
