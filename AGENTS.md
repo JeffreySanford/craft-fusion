@@ -7,9 +7,9 @@ Use it to understand the repo shape, expected workflows, and conventions.
 
 - Install: `pnpm install`
 - Run (dev):
-  - Web: `pnpm dlx nx serve craft-web` (http://localhost:4200)
-  - API: `pnpm dlx nx serve craft-nest` (http://localhost:3000)
-  - Go: `pnpm dlx nx serve craft-go` (http://localhost:4000)
+  - Web: `pnpm dlx nx serve craft-web` (<http://localhost:4200>)
+  - API: `pnpm dlx nx serve craft-nest` (<http://localhost:3000>)
+  - Go: `pnpm dlx nx serve craft-go` (<http://localhost:4000>)
 - One-shot convenience: `pnpm run start:all`
 
 Use Nx for all workspace commands; avoid running Angular/Nest CLI directly.
