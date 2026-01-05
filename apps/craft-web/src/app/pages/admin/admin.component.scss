@@ -913,7 +913,9 @@ table thead tr {
     display: flex;
     justify-content: space-between;
     margin-bottom: 0.625em;                       
-    padding: 0.5rem;                   
+    padding: 0.5rem;
+    /* allow inner filter floating labels to render above controls */
+    overflow: visible; /* previously was hidden and clipped floating labels */
   }
 
   .log-statistics {
