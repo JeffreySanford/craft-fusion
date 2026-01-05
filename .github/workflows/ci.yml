@@ -21,31 +21,20 @@ jobs:
 
       - uses: nrwl/nx-set-shas@v4
 
-      - name: Run CI commands inside Fedora container
-        uses: addnab/docker-run-action@v3
-        with:
-          image: fedora:latest
-          options: --workdir /github/workspace
-          run: |
+      - name: Build Fedora CI image
+        run: |
+          docker build -t craft-fusion-fedora-ci -f .github/ci-images/Dockerfile.fedora-node .
+
+      - name: Run CI inside Fedora image
+        run: |
+          set -eux
+          docker run --rm -v "$GITHUB_WORKSPACE":/workspace -w /workspace craft-fusion-fedora-ci bash -lc '
             set -eux
-            # Install git, curl and build tools
-            dnf install -y git curl gcc-c++ make python3
-
-            # Install Node 20 from NodeSource and pnpm via corepack
-            curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
-            dnf install -y nodejs
-            corepack enable
-            corepack prepare pnpm@latest --activate
-
-            # Install dependencies and run checks
             pnpm install --frozen-lockfile=false
             pnpm dlx nx-cloud record -- nx format:check
-
-            # Run tests and capture results
             pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov > test-results.json || true
-
-            # Run build and e2e targets
             pnpm dlx nx affected -t build e2e || true
+          '
 
       - name: Test Report
         uses: dorny/test-reporter@v1
