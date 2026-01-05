@@ -55,10 +55,13 @@ jobs:
           pnpm dlx nx-cloud record -- nx format:check 2>&1 | tee ci-logs/format.log
 
       - name: Run tests
+        env:
+          JEST_JUNIT_OUTPUT: junit.xml
         run: |
           set -euxo pipefail
           mkdir -p ci-logs
-          pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov > test-results.json 2>&1 | tee ci-logs/tests.log || true
+          # Run affected tests and produce JUnit XML via jest-junit reporter
+          pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov -- --reporters=default --reporters=jest-junit > test-results.json 2>&1 | tee ci-logs/tests.log || true
 
       - name: Build affected projects
         run: |
@@ -102,16 +105,14 @@ jobs:
             ci-logs
             test-results.json
 
-      - name: Test Report (skipped)
+      - name: Test Report
+        uses: dorny/test-reporter@v1
         if: always()
-        run: |
-          echo "Skipping dorny/test-reporter due to reporter input validation issues"
-          if [ -f test-results.json ]; then
-            echo "test-results.json contents:"
-            head -n 200 test-results.json || true
-          else
-            echo "test-results.json not found"
-          fi
+        with:
+          name: Test Results
+          path: junit.xml
+          reporter: junit
+          fail-on-error: false
 
       - name: Job diagnostics (on failure)
         if: failure()
