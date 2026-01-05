@@ -122,16 +122,18 @@ jobs:
           echo "--- Versions ---"
           node --version || true
           npm --version || true
-          pnpm --version || true
+              junit.xml
           echo "--- Environment ---"
           env | sort
-          echo "--- Workspace listing (top) ---"
-          ls -la | sed -n '1,200p' || true
-          echo "--- ci-logs listing ---"
-          ls -la ci-logs || true
-          for f in ci-logs/*; do
-            echo "---- $f (last 200 lines) ----";
-            tail -n 200 "$f" || true;
+        - name: Print JUnit summary
+          if: always()
+          run: |
+            echo "JUnit summary (first 200 lines):"
+            if [ -f junit.xml ]; then
+              xmllint --format junit.xml 2>/dev/null | sed -n '1,200p' || head -n 200 junit.xml || true
+            else
+              echo "junit.xml not found"
+            fi
           done
           echo "=== End Diagnostics ==="
 
