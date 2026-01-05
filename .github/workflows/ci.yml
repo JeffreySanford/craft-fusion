@@ -104,15 +104,17 @@ jobs:
           path: |
             ci-logs
             test-results.json
+            junit.xml
 
-      - name: Test Report
-        uses: dorny/test-reporter@v1
+      - name: Print JUnit summary
         if: always()
-        with:
-          name: Test Results
-          path: junit.xml
-          reporter: junit
-          fail-on-error: false
+        run: |
+          echo "JUnit summary (first 200 lines):"
+          if [ -f junit.xml ]; then
+            xmllint --format junit.xml 2>/dev/null | sed -n '1,200p' || head -n 200 junit.xml || true
+          else
+            echo "junit.xml not found"
+          fi
 
       - name: Job diagnostics (on failure)
         if: failure()
@@ -122,18 +124,16 @@ jobs:
           echo "--- Versions ---"
           node --version || true
           npm --version || true
-              junit.xml
+          pnpm --version || true
           echo "--- Environment ---"
           env | sort
-        - name: Print JUnit summary
-          if: always()
-          run: |
-            echo "JUnit summary (first 200 lines):"
-            if [ -f junit.xml ]; then
-              xmllint --format junit.xml 2>/dev/null | sed -n '1,200p' || head -n 200 junit.xml || true
-            else
-              echo "junit.xml not found"
-            fi
+          echo "--- Workspace listing (top) ---"
+          ls -la | sed -n '1,200p' || true
+          echo "--- ci-logs listing ---"
+          ls -la ci-logs || true
+          for f in ci-logs/*; do
+            echo "---- $f (last 200 lines) ----";
+            tail -n 200 "$f" || true;
           done
           echo "=== End Diagnostics ==="
 
