@@ -57,7 +57,25 @@ pnpm add -D your-dev-package
 <!-- Ensure blank lines around headings/lists -->
 <!-- Added "Last Updated" -->
 
+## CI/CD
+
+The project uses GitHub Actions for CI. The workflow (`.github/workflows/ci.yml`) runs on pushes to `main` and pull requests.
+
+It performs:
+- Dependency installation
+- Format checking
+- Testing (unit and E2E)
+- Building affected projects
+- Starting the Nest backend for E2E tests
+
+Ensure your changes pass locally before pushing:
+```bash
+pnpm dlx nx format:check
+pnpm dlx nx affected -t test
+pnpm dlx nx affected -t build
+```
+
 ## Project-wide Standards
 - Keep CLI output consistent and readable across tools.
 
-Last Updated: 2025-05-25
+Last Updated: 2026-01-05

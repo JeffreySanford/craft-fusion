@@ -2,6 +2,8 @@
 
 ## Angular Guidelines
 
+These standards apply to Angular 19 with Nx 20 workspace management.
+
 - **NEVER use standalone components** - They introduce many errors and compatibility issues. All components must be part of an NgModule.
 - Always use NgModule-based architecture for all components.
 - Always maintain `standalone: false` for all components. This is the required configuration.
@@ -250,4 +252,4 @@ export class RecordListComponent implements OnInit {
 - Keep `px` for hairline details and optical effects (borders, outlines, shadows, and similar 1–2px treatments).
 - Keep layout breakpoints in `px` to preserve responsive behavior.
 
-Last Updated: 2025-05-25
+Last Updated: 2026-01-05

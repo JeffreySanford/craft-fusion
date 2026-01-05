@@ -1,6 +1,6 @@
 # Craft Fusion Design System
 
-This document defines the MD3-based design system with a bold patriotic visual language. It is the canonical UI reference for Craft Fusion.
+This document defines the Angular Material Design 3 (MD3) based design system with a bold patriotic visual language. It is the canonical UI reference for Craft Fusion.
 
 ## Design principles
 

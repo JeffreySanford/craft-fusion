@@ -6,7 +6,7 @@ This guide covers local setup for the Nx monorepo.
 
 - Node.js 20.x
 - pnpm 9.x (via Corepack)
-- Go 1.21+ (for `craft-go`)
+- Go 1.23+ (for `craft-go`)
 - Git
 
 Optional:
@@ -17,7 +17,7 @@ Optional:
 
 ```bash
 corepack enable
-corepack prepare pnpm@9.12.3 --activate
+corepack prepare pnpm@latest --activate
 ```
 
 ## Clone and install

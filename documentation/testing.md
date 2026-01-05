@@ -37,5 +37,6 @@ go test ./... -coverprofile=coverage.out
 
 ## Notes
 
+- Current test strategy: Vitest for Angular UI (`craft-web`), Jest for NestJS/libs (`craft-nest`, `craft-library`).
 - Angular 19 test runner decisions are tracked in `TODO.md`.
-- Keep Jest and Vitest strictly scoped if both are used.
+- Keep Jest and Vitest strictly scoped by project type.
