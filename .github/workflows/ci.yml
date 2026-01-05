@@ -13,7 +13,11 @@ permissions:
 
 jobs:
   main:
-    runs-on: fedora-latest
+    # Use a GitHub-hosted runner but execute the job steps inside a Fedora container
+    # This provides a reproducible Fedora environment while avoiding a queued self-hosted runner
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
     steps:
       - uses: actions/checkout@v4
         with:
