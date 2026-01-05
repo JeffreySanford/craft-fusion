@@ -30,9 +30,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-    // Prevent accidental property access from index signatures (stricter checks)
     "noPropertyAccessFromIndexSignature": true,
-    // Require `unknown` for catch variables instead of `any`
     "useUnknownInCatchVariables": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
@@ -45,16 +43,15 @@
       "@craft-fusion/shared/data": ["libs/shared/data/src/index.ts"],
       "@craft-fusion/shared/ui": ["libs/shared/ui/src/index.ts"],
       "@craft-fusion/utils": ["libs/utils/src/index.ts"],
-      
-      // App-specific path aliases to avoid deep imports
       "@craft-web/auth/*": ["apps/craft-web/src/app/common/auth/*"],
+      "@craft-web/components/*": ["apps/craft-web/src/app/common/components/*"],
       "@craft-web/guards/*": ["apps/craft-web/src/app/common/guards/*"],
-      "@craft-web/services/*": ["apps/craft-web/src/app/common/services/*"],
-      "@craft-web/interceptors/*": ["apps/craft-web/src/app/common/interceptors/*"],
+      "@craft-web/interceptors/*": [
+        "apps/craft-web/src/app/common/interceptors/*"
+      ],
       "@craft-web/models/*": ["apps/craft-web/src/app/common/models/*"],
-      "@craft-web/components/*": ["apps/craft-web/src/app/common/components/*"]
-    },
-    "allowSyntheticDefaultImports": true
+      "@craft-web/services/*": ["apps/craft-web/src/app/common/services/*"]
+    }
   },
   "exclude": ["node_modules", "tmp", ".nx"]
 }
