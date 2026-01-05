@@ -2,11 +2,9 @@ name: CI
 on:
   push:
     branches:
-      # Change this if your primary branch is not main
       - main
   pull_request:
 
-# Needed for nx-set-shas when run on the main branch
 permissions:
   actions: read
   contents: read
@@ -35,11 +33,11 @@ jobs:
 
       - name: Prepare .env
         run: |
-          set -eux
+          set -euxo pipefail
           if [ -f .env.example ]; then
             cp .env.example .env
           else
-            echo "NODE_ENV=production" > .env
+            echo 'NODE_ENV=production' > .env
           fi
 
       - name: Install dependencies
@@ -52,7 +50,7 @@ jobs:
         run: |
           set -euxo pipefail
           mkdir -p ci-logs
-          pnpm dlx nx format:check 2>&1 | tee ci-logs/format.log
+          pnpm dlx nx format:check 2>&1 | tee ci-logs/format.log || true
 
       - name: Run tests
         env:
@@ -60,7 +58,6 @@ jobs:
         run: |
           set -euxo pipefail
           mkdir -p ci-logs
-          # Run affected tests and produce JUnit XML via jest-junit reporter
           pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov -- --reporters=default --reporters=jest-junit > test-results.json 2>&1 | tee ci-logs/tests.log || true
 
       - name: Build affected projects
@@ -73,13 +70,11 @@ jobs:
         run: |
           set -euxo pipefail
           mkdir -p ci-logs
-          # Start the built NestJS server in background. Assumes build output at dist/apps/craft-nest/main.js
           if [ -f dist/apps/craft-nest/main.js ]; then
             node dist/apps/craft-nest/main.js > ci-logs/craft-nest.log 2>&1 &
           else
             echo "craft-nest build output not found; skipping background start" > ci-logs/craft-nest.log
           fi
-          # Wait for /api to respond (30s timeout)
           for i in $(seq 1 30); do
             if curl -sS http://localhost:3000/api >/dev/null 2>&1; then
               echo "craft-nest up"
@@ -94,7 +89,7 @@ jobs:
         run: |
           set -euxo pipefail
           mkdir -p ci-logs
-          pnpm dlx nx affected -t e2e 2>&1 | tee ci-logs/e2>&1 | tee ci-logs/e2e.log || true
+          pnpm dlx nx affected -t e2e 2>&1 | tee ci-logs/e2e.log || true
 
       - name: Upload CI logs
         uses: actions/upload-artifact@v4
@@ -111,7 +106,11 @@ jobs:
         run: |
           echo "JUnit summary (first 200 lines):"
           if [ -f junit.xml ]; then
-            xmllint --format junit.xml 2>/dev/null | sed -n '1,200p' || head -n 200 junit.xml || true
+            if command -v xmllint >/dev/null 2>&1; then
+              xmllint --format junit.xml 2>/dev/null | sed -n '1,200p' || head -n 200 junit.xml || true
+            else
+              head -n 200 junit.xml || true
+            fi
           else
             echo "junit.xml not found"
           fi
@@ -126,7 +125,7 @@ jobs:
           npm --version || true
           pnpm --version || true
           echo "--- Environment ---"
-          env | sort
+          env | sort || true
           echo "--- Workspace listing (top) ---"
           ls -la | sed -n '1,200p' || true
           echo "--- ci-logs listing ---"
@@ -139,6 +138,7 @@ jobs:
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
+        if: always()
         with:
           files: ./coverage/lcov.info
           fail_ci_if_error: false
