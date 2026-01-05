@@ -1,0 +1,153 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "id": 59438694860,
+      "run_id": 20706734358,
+      "workflow_name": "CI",
+      "head_branch": "master",
+      "run_url": "https://api.github.com/repos/JeffreySanford/craft-fusion/actions/runs/20706734358",
+      "run_attempt": 1,
+      "node_id": "CR_kwDONY5zfM8AAAAN1tKBzA",
+      "head_sha": "8bfcac809d6be6f547313979151238f44629d168",
+      "url": "https://api.github.com/repos/JeffreySanford/craft-fusion/actions/jobs/59438694860",
+      "html_url": "https://github.com/JeffreySanford/craft-fusion/actions/runs/20706734358/job/59438694860",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-01-05T06:09:15Z",
+      "started_at": "2026-01-05T06:09:17Z",
+      "completed_at": "2026-01-05T06:09:38Z",
+      "name": "main",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-01-05T06:09:18Z",
+          "completed_at": "2026-01-05T06:09:19Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-01-05T06:09:19Z",
+          "completed_at": "2026-01-05T06:09:34Z"
+        },
+        {
+          "name": "Run nrwl/nx-set-shas@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-01-05T06:09:34Z",
+          "completed_at": "2026-01-05T06:09:34Z"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 4,
+          "started_at": "2026-01-05T06:09:34Z",
+          "completed_at": "2026-01-05T06:09:37Z"
+        },
+        {
+          "name": "Enable corepack and pnpm",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5,
+          "started_at": "2026-01-05T06:09:37Z",
+          "completed_at": "2026-01-05T06:09:37Z"
+        },
+        {
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-01-05T06:09:37Z",
+          "completed_at": "2026-01-05T06:09:37Z"
+        },
+        {
+          "name": "Format check (nx)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-01-05T06:09:37Z",
+          "completed_at": "2026-01-05T06:09:37Z"
+        },
+        {
+          "name": "Run tests",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-01-05T06:09:37Z",
+          "completed_at": "2026-01-05T06:09:37Z"
+        },
+        {
+          "name": "Build & E2E",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-01-05T06:09:37Z",
+          "completed_at": "2026-01-05T06:09:37Z"
+        },
+        {
+          "name": "Upload CI logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-01-05T06:09:37Z",
+          "completed_at": "2026-01-05T06:09:37Z"
+        },
+        {
+          "name": "Test Report",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 11,
+          "started_at": "2026-01-05T06:09:37Z",
+          "completed_at": "2026-01-05T06:09:37Z"
+        },
+        {
+          "name": "Upload coverage reports",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12,
+          "started_at": "2026-01-05T06:09:37Z",
+          "completed_at": "2026-01-05T06:09:37Z"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 23,
+          "started_at": "2026-01-05T06:09:37Z",
+          "completed_at": "2026-01-05T06:09:37Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-01-05T06:09:37Z",
+          "completed_at": "2026-01-05T06:09:38Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-01-05T06:09:38Z",
+          "completed_at": "2026-01-05T06:09:38Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/JeffreySanford/craft-fusion/check-runs/59438694860",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000001045,
+      "runner_name": "GitHub Actions 1000001045",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}
