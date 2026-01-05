@@ -27,7 +27,7 @@ jobs:
 
       - name: Enable corepack and pnpm
         run: |
-          set -eux
+          set -euxo pipefail
           corepack enable
           corepack prepare pnpm@latest --activate
           node --version
@@ -44,26 +44,31 @@ jobs:
 
       - name: Install dependencies
         run: |
+          set -euxo pipefail
           mkdir -p ci-logs
           pnpm install --frozen-lockfile=false 2>&1 | tee ci-logs/install.log
 
       - name: Format check (nx)
         run: |
+          set -euxo pipefail
           mkdir -p ci-logs
           pnpm dlx nx-cloud record -- nx format:check 2>&1 | tee ci-logs/format.log
 
       - name: Run tests
         run: |
+          set -euxo pipefail
           mkdir -p ci-logs
           pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov > test-results.json 2>&1 | tee ci-logs/tests.log || true
 
       - name: Build affected projects
         run: |
+          set -euxo pipefail
           mkdir -p ci-logs
           pnpm dlx nx affected -t build 2>&1 | tee ci-logs/build.log || true
 
       - name: Start craft-nest server and wait for readiness
         run: |
+          set -euxo pipefail
           mkdir -p ci-logs
           # Start the built NestJS server in background. Assumes build output at dist/apps/craft-nest/main.js
           if [ -f dist/apps/craft-nest/main.js ]; then
@@ -84,8 +89,9 @@ jobs:
         env:
           API_URL: http://localhost:3000
         run: |
+          set -euxo pipefail
           mkdir -p ci-logs
-          pnpm dlx nx affected -t e2e 2>&1 | tee ci-logs/e2e.log || true
+          pnpm dlx nx affected -t e2e 2>&1 | tee ci-logs/e2>&1 | tee ci-logs/e2e.log || true
 
       - name: Upload CI logs
         uses: actions/upload-artifact@v4
@@ -106,6 +112,27 @@ jobs:
           else
             echo "test-results.json not found"
           fi
+
+      - name: Job diagnostics (on failure)
+        if: failure()
+        run: |
+          echo "=== CI Failure Diagnostics ==="
+          date
+          echo "--- Versions ---"
+          node --version || true
+          npm --version || true
+          pnpm --version || true
+          echo "--- Environment ---"
+          env | sort
+          echo "--- Workspace listing (top) ---"
+          ls -la | sed -n '1,200p' || true
+          echo "--- ci-logs listing ---"
+          ls -la ci-logs || true
+          for f in ci-logs/*; do
+            echo "---- $f (last 200 lines) ----";
+            tail -n 200 "$f" || true;
+          done
+          echo "=== End Diagnostics ==="
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
