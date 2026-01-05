@@ -21,15 +21,17 @@ jobs:
 
       - uses: nrwl/nx-set-shas@v4
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Ensure pnpm
+      - name: Install Node 20 and pnpm
         run: |
+          set -eux
+          apt-get update
+          apt-get install -y curl ca-certificates build-essential
+          curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+          apt-get install -y nodejs
           corepack enable
           corepack prepare pnpm@latest --activate
+          node --version
+          pnpm --version
 
       - name: Install dependencies
         run: |
