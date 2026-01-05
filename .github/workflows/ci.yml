@@ -21,20 +21,27 @@ jobs:
 
       - uses: nrwl/nx-set-shas@v4
 
-      - name: Build Fedora CI image
-        run: |
-          docker build -t craft-fusion-fedora-ci -f .github/ci-images/Dockerfile.fedora-node .
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'pnpm'
 
-      - name: Run CI inside Fedora image
+      - name: Ensure pnpm
         run: |
-          set -eux
-          docker run --rm -v "$GITHUB_WORKSPACE":/workspace -w /workspace craft-fusion-fedora-ci bash -lc '
-            set -eux
-            pnpm install --frozen-lockfile=false
-            pnpm dlx nx-cloud record -- nx format:check
-            pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov > test-results.json || true
-            pnpm dlx nx affected -t build e2e || true
-          '
+          corepack enable
+          corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Format check (nx)
+        run: pnpm dlx nx-cloud record -- nx format:check
+
+      - name: Run tests
+        run: pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov > test-results.json || true
+
+      - name: Build & E2E
+        run: pnpm dlx nx affected -t build e2e || true
 
       - name: Test Report
         uses: dorny/test-reporter@v1
