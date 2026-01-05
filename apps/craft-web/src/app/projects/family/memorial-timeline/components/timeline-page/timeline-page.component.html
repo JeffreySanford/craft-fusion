@@ -1,7 +1,7 @@
 <div class="memorial-timeline-container">
   <header class="memorial-timeline-header">
-    <h1 class="memorial-timeline-title">Family Memorial Timeline</h1>
-    <p class="memorial-timeline-subtitle">A living record of our family history</p>
+    <h1 class="memorial-timeline-title">Interactive Timeline</h1>
+    <p class="memorial-timeline-subtitle">Explore historical events and personal milestones in an immersive, animated experience</p>
   </header>
 
   <div class="memorial-timeline-content">
@@ -10,6 +10,7 @@
         <mat-label>Filter events</mat-label>
         <mat-select (selectionChange)="onFilterChange($event.value)" [value]="selectedFilter">
           <mat-option value="all">All</mat-option>
+          <mat-option value="jeffrey-historical">Jeffrey Historical</mat-option>
           <mat-option value="historical">Historical</mat-option>
           <mat-option value="personal">Personal</mat-option>
           <mat-option value="family">Family</mat-option>

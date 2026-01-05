@@ -48,6 +48,10 @@
     "**/tmp/**": true,
     "**/playwright-report/**": true
   },
+  // TypeScript configuration for different file types
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.suggest.autoImports": true
   "nxConsole.generateAiAgentRules": true,
   "angular.enable-strict-mode-prompt": false,
   "typescript.tsdk": "node_modules\\typescript\\lib"

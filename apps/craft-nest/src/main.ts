@@ -11,7 +11,7 @@ import { Request, Response, NextFunction } from 'express';
 import { environment } from './environments/environment';
 import * as path from 'path';
 import { firstValueFrom } from 'rxjs';
-import { TimelineService } from './app/family/timeline/timeline.service';
+import { TimelineService } from './app/timeline/timeline/timeline.service';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 
@@ -352,7 +352,7 @@ async function bootstrap() {
       }
       
       try {
-        const seedPath = path.join(process.cwd(), 'apps', 'craft-nest', 'src', 'app', 'family', 'timeline', 'seed-events.json');
+        const seedPath = path.join(process.cwd(), 'apps', 'craft-nest', 'src', 'app', 'timeline', 'timeline', 'seed-events.json');
         if (fs.existsSync(seedPath)) {
           const raw = fs.readFileSync(seedPath, 'utf8');
           const seeds = JSON.parse(raw) as Array<Record<string, unknown>>;

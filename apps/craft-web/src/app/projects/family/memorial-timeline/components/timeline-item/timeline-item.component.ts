@@ -48,8 +48,8 @@ export class TimelineItemComponent {
         return 'history';
       case 'personal':
         return 'person';
-      case 'family':
-        return 'family_restroom';
+      case 'timeline':
+        return 'schedule';
       case 'project':
         return 'code';
       case 'anniversary':

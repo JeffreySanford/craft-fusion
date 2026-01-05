@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export enum TimelineEventType {
   PERSONAL = 'personal',
-  FAMILY = 'family',
+  TIMELINE = 'timeline',
   HISTORICAL = 'historical',
   ANNIVERSARY = 'anniversary',
   PROJECT = 'project'

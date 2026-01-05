@@ -16,8 +16,8 @@ export class TimelinePageComponent implements OnInit, OnDestroy {
   loading: boolean = true;                            
   timelineEvents$: Observable<TimelineEvent[]>;
   filteredEvents$: Observable<TimelineEvent[]>;
-  private filter$ = new BehaviorSubject<'all' | TimelineEventType>('all');
-  selectedFilter: 'all' | TimelineEventType = 'all';
+  private filter$ = new BehaviorSubject<'all' | TimelineEventType | 'jeffrey-historical'>('all');
+  selectedFilter: 'all' | TimelineEventType | 'jeffrey-historical' = 'all';
 
   private destroy$ = new Subject<void>();
 
@@ -28,7 +28,13 @@ export class TimelinePageComponent implements OnInit, OnDestroy {
         if (filter === 'all') {
           return events;
         }
-
+        if (filter === 'jeffrey-historical') {
+          return events.filter(event =>
+            event.type === 'historical' &&
+            (event.title.toLowerCase().includes('jeffrey') ||
+             event.description.toLowerCase().includes('jeffrey'))
+          );
+        }
         return events.filter(event => event.type === filter);
       }),
     );
@@ -58,8 +64,8 @@ export class TimelinePageComponent implements OnInit, OnDestroy {
     this.timelineService.disconnect();
   }
 
-  onFilterChange(value: 'all' | TimelineEventType): void {
-    this.selectedFilter = value;
-    this.filter$.next(value);
+  onFilterChange(filter: 'all' | TimelineEventType | 'jeffrey-historical'): void {
+    this.selectedFilter = filter;
+    this.filter$.next(filter);
   }
 }

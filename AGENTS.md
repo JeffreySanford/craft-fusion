@@ -59,9 +59,9 @@ The Angular dev server uses `apps/craft-web/src/proxy.config.json` to route `/ap
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->
 
-#─────────────────────────────────┴──────────┴────────────────────┤
+├────────┼────────────────────────────────────────┼────────┼───────────────────────────────────────┤
 │   ✖      craft-web:build                                            1m 18s        Cache Miss     │
-│           > Logs: https://cloud.nx.app/runs/EqLAtqW8n7/task/craft-web%3Abuild                    │
+│           > Logs: <https://cloud.nx.app/runs/EqLAtqW8n7/task/craft-web%3Abuild>                    │
 └──────────────────────────────────────────────────────────────────────────────────────────────────┘
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                   Nx Cloud Task Runner Report                                    │
@@ -73,7 +73,7 @@ The Angular dev server uses `apps/craft-web/src/proxy.config.json` to route `/ap
 │ 0      │ Cached Tasks                           │ 0%     │ Cache Hit Percentage                  │
 │ 5      │ Total Executed Tasks                   │ 1m 18s │ Run Duration                          │
 └────────┴────────────────────────────────────────┴────────┴───────────────────────────────────────┘
- See more details at: https://cloud.nx.app/cipes/695b74262068eb0a49037553  General Guidelines for working with Nx
+ See more details at: <https://cloud.nx.app/cipes/695b74262068eb0a49037553>  General Guidelines for working with Nx
 
 - When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
 - You have access to the Nx MCP server and its tools, use them to help the user

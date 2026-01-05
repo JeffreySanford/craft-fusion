@@ -2,12 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
+import { MaterialModule } from '../../../material.module';
+import { AnimatedDirectivesModule } from '../../../animated-directives.module';
 
 import { TimelinePageComponent } from './components/timeline-page/timeline-page.component';
 import { TimelineListComponent } from './components/timeline-list/timeline-list.component';
@@ -26,12 +22,8 @@ import { JeffreyAiComponent } from './components/jeffrey-ai/jeffrey-ai.component
   imports: [
     CommonModule,
     RouterModule,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    MatFormFieldModule,
-    MatSelectModule,
+    MaterialModule,
+    AnimatedDirectivesModule,
     RouterModule.forChild([
       { path: '', component: TimelinePageComponent },
       { path: 'memorial-timeline', component: MemorialTimelineComponent },

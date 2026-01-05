@@ -12,7 +12,7 @@ NestJS provides Socket.IO gateways for real-time features. Angular connects thro
 | UserStateGateway | `user-state` | User state updates | `apps/craft-nest/src/app/socket/user-state.gateway.ts` |
 | HealthGateway | `health` | Health metrics streaming | `apps/craft-nest/src/app/health/health.gateway.ts` |
 | YahooGateway | `yahoo` | Financial data updates | `apps/craft-nest/src/app/yahoo/yahoo.gateway.ts` |
-| TimelineGateway | `timeline` | Timeline event broadcasts | `apps/craft-nest/src/app/family/timeline/timeline.gateway.ts` |
+| TimelineGateway | `timeline` | Timeline event broadcasts | `apps/craft-nest/src/app/timeline/timeline/timeline.gateway.ts` |
 
 ## Backend helpers
 

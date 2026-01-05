@@ -1,4 +1,4 @@
-export type TimelineEventType = 'personal' | 'family' | 'historical' | 'anniversary' | 'project';
+export type TimelineEventType = 'personal' | 'timeline' | 'historical' | 'anniversary' | 'project';
 
 export interface TimelineEvent {
   id: string;

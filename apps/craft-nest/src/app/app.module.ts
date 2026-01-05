@@ -12,7 +12,7 @@ import { UserStateModule } from './user-state/user-state.module';
 import { RecordsModule } from './records/records.module';
 import { RecipesModule } from './recipes/recipes.module';
 import { AiModule } from './ai/ai.module';
-import { TimelineModule } from './family/timeline/timeline.module';
+import { TimelineModule } from './timeline/timeline/timeline.module';
 import { YahooModule as FinancialYahooModule } from './financial/yahoo/yahoo.module';
 import { FirmsModule } from './firms/firms.module';
 import { OpenSkyModule } from './openskies/opensky.module';

@@ -5,7 +5,7 @@ Last updated: 2025-12-30
 ## Current implementation (2025-12-30)
 
 - Backend: `apps/craft-nest` exposes a timeline API using Mongoose schemas. In development the app will start an in-memory MongoDB (mongodb-memory-server) when no `MONGODB_URI` is configured so seeded events are available locally.
-- Seed file: `apps/craft-nest/src/app/family/timeline/seed-events.json` contains the three curated events (Ray Sanford, Jeffrey Sanford, Gotcha Harness). A dev-only idempotent seeder runs at bootstrap and skips already-present events.
+- Seed file: `apps/craft-nest/src/app/timeline/timeline/seed-events.json` contains the three curated events (Ray Sanford, Jeffrey Sanford, Gotcha Harness). A dev-only idempotent seeder runs at bootstrap and skips already-present events.
 - Server-side AI proxy: AI generation is proxied through `apps/craft-nest/src/app/ai` endpoints and reads `OPENAI_API_KEY` from server-side `ConfigService` (see `.env.example`). Client no longer holds the API key.
 - UI: `apps/craft-web` uses `TimelineService` (REST + WS) and `memorial-timeline` components were wired to load initial events on startup. Inline styles were moved into component SCSS for linting and consistency.
 - Testing: an e2e spec was added at `apps/craft-nest/test/timeline.e2e-spec.ts` that validates request validation (400 on malformed payloads) and a happy-path create (201). `supertest` is used for HTTP assertions and has been added to devDependencies.
@@ -133,7 +133,7 @@ Where to look in the code
 - Client model: `apps/craft-web/src/app/projects/family/memorial-timeline/models/timeline-event.model.ts`
 - Page component: `apps/craft-web/src/app/projects/family/memorial-timeline/components/timeline-page/timeline-page.component.ts`
 - Presentation components: `components/timeline-list` and `components/timeline-item`
-- Backend timeline schema/controller: `apps/craft-nest/src/app/family/timeline/*` (see `schemas/timeline-event.schema.ts`)
+- Backend timeline schema/controller: `apps/craft-nest/src/app/timeline/timeline/*` (see `schemas/timeline-event.schema.ts`)
 
 Canonical event fields (required for good UX and moderation)
 

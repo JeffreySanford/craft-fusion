@@ -561,7 +561,7 @@ export class TimelineItemComponent implements OnInit {
 // In auth service or constants file
 export enum UserRole {
   USER = 'user',
-  FAMILY = 'family',
+  TIMELINE = 'timeline',
   ADMIN = 'admin'
 }
 
@@ -573,9 +573,9 @@ export interface UserRoles {
 ### Guard Implementation
 
 ```typescript
-// family-role.guard.ts
+// timeline-role.guard.ts
 @Injectable()
-export class FamilyRoleGuard implements CanActivate {
+export class TimelineRoleGuard implements CanActivate {
   constructor(
     private authService: AuthenticationService,
     private router: Router
@@ -584,10 +584,10 @@ export class FamilyRoleGuard implements CanActivate {
   canActivate(): Observable<boolean> {
     return this.authService.currentUser$.pipe(
       map(user => {
-        // Check if user has family role
-        const hasFamilyRole = user?.roles?.groups?.includes(UserRole.FAMILY);
+        // Check if user has timeline role
+        const hasTimelineRole = user?.roles?.groups?.includes(UserRole.TIMELINE);
         
-        if (!hasFamilyRole) {
+        if (!hasTimelineRole) {
           this.router.navigate(['/unauthorized']);
           return false;
         }
@@ -611,12 +611,12 @@ const routes: Routes = [
   // Public routes
   { path: '', component: HomeComponent },
   
-  // Family-only routes
+  // Timeline-only routes
   { 
-    path: 'family-portal', 
-    canActivate: [AuthGuard, FamilyRoleGuard],
-    loadChildren: () => import('./modules/family-portal/family-portal.module')
-      .then(m => m.FamilyPortalModule)
+    path: 'timeline-portal', 
+    canActivate: [AuthGuard, TimelineRoleGuard],
+      loadChildren: () => import('./modules/timeline-portal/timeline-portal.module')
+      .then(m => m.TimelinePortalModule)
   },
   
   // Timeline routes with conditional editing
@@ -625,11 +625,11 @@ const routes: Routes = [
     component: TimelinePageComponent
   },
   
-  // Adding new timeline events requires family role
+  // Adding new timeline events requires timeline role
   {
     path: 'timeline/:personId/add',
     component: TimelineEventFormComponent,
-    canActivate: [AuthGuard, FamilyRoleGuard]
+    canActivate: [AuthGuard, TimelineRoleGuard]
   }
 ];
 ```
@@ -644,11 +644,11 @@ const routes: Routes = [
     <header class="app-header">
       <!-- Regular navigation items -->
       
-      <!-- Only show Family Portal button to users with family role -->
-      <a *ngIf="hasFamilyRole$ | async" 
-         routerLink="/family-portal"
+      <!-- Only show Timeline Portal button to users with timeline role -->
+      <a *ngIf="hasTimelineRole$ | async" 
+         routerLink="/timeline-portal"
          class="family-portal-btn">
-        Family Portal
+        Timeline Portal
       </a>
     </header>
   `
@@ -658,7 +658,7 @@ export class HeaderComponent {
   
   constructor(private authService: AuthenticationService) {
     this.hasFamilyRole$ = this.authService.currentUser$.pipe(
-      map(user => Boolean(user?.roles?.groups?.includes(UserRole.FAMILY)))
+      map(user => Boolean(user?.roles?.groups?.includes(UserRole.TIMELINE)))
     );
   }
 }
@@ -679,7 +679,7 @@ export class TimelineController {
   // Protected endpoint - only family members can add events
   @Post('events')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.FAMILY)
+  @Roles(UserRole.TIMELINE)
   createEvent(
     @Body() createEventDto: CreateTimelineEventDto,
     @Request() req

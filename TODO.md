@@ -131,11 +131,11 @@ This file is the planning source of truth. It records decisions, risks, and the 
 
 ### Phase 0: Seed and view (MVP)
 
-- [x] Ensure timeline schema includes `project` type (`apps/craft-nest/src/app/family/timeline/schemas/timeline-event.schema.ts`)
-- [x] Seed three curated events (`apps/craft-nest/src/app/family/timeline/seed-events.json`)
-- [x] Wire `TimelineService.events$` to the timeline page and keep loading state (`apps/craft-web/src/app/projects/family/memorial-timeline/components/timeline-page/timeline-page.component.ts`)
-- [x] Add type filters and consistent options (`apps/craft-web/src/app/projects/family/memorial-timeline/components/timeline-page/timeline-page.component.html`)
-- [x] Add type icon + badge and read-more toggle (`apps/craft-web/src/app/projects/family/memorial-timeline/components/timeline-item/*`)
+- [x] Ensure timeline schema includes `project` type (`apps/craft-nest/src/app/timeline/timeline/schemas/timeline-event.schema.ts`)
+- [x] Seed three curated events (`apps/craft-nest/src/app/timeline/timeline/seed-events.json`)
+- [x] Wire `TimelineService.events$` to the timeline page and keep loading state (`apps/craft-web/src/app/projects/timeline/memorial-timeline/components/timeline-page/timeline-page.component.ts`)
+- [x] Add type filters and consistent options (`apps/craft-web/src/app/projects/timeline/memorial-timeline/components/timeline-page/timeline-page.component.html`)
+- [x] Add type icon + badge and read-more toggle (`apps/craft-web/src/app/projects/timeline/memorial-timeline/components/timeline-item/*`)
 - [ ] Add empty-state copy that guides filter changes and access requests
 - [ ] Add unit tests for filtering and read-more behavior
 
@@ -207,22 +207,22 @@ This file is the planning source of truth. It records decisions, risks, and the 
 
 ### Recent runtime / router log excerpts (dev)
 
-- Auth guard: User is authorized to access route {url: '/family'}
-- logger.service.ts:353 [OperatorSubscriber] Admin guard: User has admin permissions {url: '/family'}
+- Auth guard: User is authorized to access route {url: '/timeline'}
+- logger.service.ts:353 [OperatorSubscriber] Admin guard: User has admin permissions {url: '/timeline'}
 - app.module.ts:72 Router event: ChildActivationStart {snapshot: ActivatedRouteSnapshot, type: 11}
 - app.module.ts:72 Router event: ActivationStart {snapshot: ActivatedRouteSnapshot, type: 13}
-- app.module.ts:72 Router event: GuardsCheckEnd {id: 3, url: '/family', urlAfterRedirects: '/family', state: RouterStateSnapshot, shouldActivate: true, …}
-- app.module.ts:72 Router event: ResolveStart {id: 3, url: '/family', urlAfterRedirects: '/family', state: RouterStateSnapshot, type: 5}
-- app.module.ts:72 Router event: ResolveEnd {id: 3, url: '/family', urlAfterRedirects: '/family', state: RouterStateSnapshot, type: 6}
+- app.module.ts:72 Router event: GuardsCheckEnd {id: 3, url: '/timeline', urlAfterRedirects: '/timeline', state: RouterStateSnapshot, shouldActivate: true, …}
+- app.module.ts:72 Router event: ResolveStart {id: 3, url: '/timeline', urlAfterRedirects: '/timeline', state: RouterStateSnapshot, type: 5}
+- app.module.ts:72 Router event: ResolveEnd {id: 3, url: '/timeline', urlAfterRedirects: '/timeline', state: RouterStateSnapshot, type: 6}
 - app.component.ts:313 debug-router: router-outlet deactivated AdminComponent {authService: AuthService, logger: LoggerService, paginator: undefined, serviceMetricsChartRef: undefined, systemMetricsChartRef: undefined, …}
 - app.component.ts:307 debug-router: router-outlet activated TimelinePageComponent {loading: true, timelineEvents$: Observable, **ngContext**: 881}
 - app.module.ts:72 Router event: ActivationEnd {snapshot: ActivatedRouteSnapshot, type: 14}
 - app.module.ts:72 Router event: ChildActivationEnd {snapshot: ActivatedRouteSnapshot, type: 12}
 - app.module.ts:72 Router event: ActivationEnd {snapshot: ActivatedRouteSnapshot, type: 14}
 - app.module.ts:72 Router event: ChildActivationEnd {snapshot: ActivatedRouteSnapshot, type: 12}
-- app.module.ts:72 Router event: NavigationEnd {id: 3, url: '/family', urlAfterRedirects: '/family', type: 1}
-- logger.service.ts:356 [Object] Navigation ended {id: 3, url: '/family', urlAfterRedirects: '/family', type: 1}
-- logger.service.ts:356 [Object] User navigated to /family
+- app.module.ts:72 Router event: NavigationEnd {id: 3, url: '/timeline', urlAfterRedirects: '/timeline', type: 1}
+- logger.service.ts:356 [Object] Navigation ended {id: 3, url: '/timeline', urlAfterRedirects: '/timeline', type: 1}
+- logger.service.ts:356 [Object] User navigated to /timeline
 - app.module.ts:72 Router event: Scroll {routerEvent: Na
 
 ## Recent audit: Prioritized Color Audit (2025-12-31)

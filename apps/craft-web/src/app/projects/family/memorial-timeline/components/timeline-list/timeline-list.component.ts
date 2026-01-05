@@ -15,6 +15,12 @@ export class TimelineListComponent {
     return event.id;
   }
 
+  isJeffreyHistoricalEvent(event: TimelineEvent): boolean {
+    return event.type === 'historical' &&
+           (event.title.toLowerCase().includes('jeffrey') ||
+            event.description.toLowerCase().includes('jeffrey'));
+  }
+
   getFormattedDate(date: string | Date): string {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',

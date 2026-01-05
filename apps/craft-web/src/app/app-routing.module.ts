@@ -6,13 +6,13 @@ import { RoleGuard } from './common/guards/role.guard';
 const routes: Routes = [
 
   {
-    path: 'family',
+    path: 'timeline',
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['family'] },
+    data: { roles: ['timeline'] },
     children: [
       {
         path: 'timeline',
-        loadChildren: () => import('./projects/family/memorial-timeline/memorial-timeline.module').then(m => m.MemorialTimelineModule),
+        loadChildren: () => import('./projects/timeline/memorial-timeline/memorial-timeline.module').then(m => m.MemorialTimelineModule),
       },
     ],
   },

@@ -31,7 +31,7 @@ export class WsJwtGuard implements CanActivate {
       const payload = this.jwtService.verify(token);
       
       // Check if user has family role
-      if (!payload.roles || !payload.roles.includes('family')) {
+      if (!payload.roles || !payload.roles.includes('timeline')) {
         throw new WsException('Forbidden: Missing required role');
       }
       
