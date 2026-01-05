@@ -42,25 +42,21 @@ jobs:
 
       - name: Install dependencies
         run: |
-          set -euxo pipefail
           mkdir -p ci-logs
           pnpm install --frozen-lockfile=false 2>&1 | tee ci-logs/install.log
 
       - name: Format check (nx)
         run: |
-          set -euxo pipefail
           mkdir -p ci-logs
-          pnpm dlx nx format:check 2>&1 | tee ci-logs/format.log || true
+          pnpm dlx nx-cloud record -- nx format:check 2>&1 | tee ci-logs/format.log
 
       - name: Run tests
         run: |
-          set -euxo pipefail
           mkdir -p ci-logs
           pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov > test-results.json 2>&1 | tee ci-logs/tests.log || true
 
       - name: Build affected projects
         run: |
-          set -euxo pipefail
           mkdir -p ci-logs
           pnpm dlx nx affected -t build 2>&1 | tee ci-logs/build.log || true
 
@@ -87,7 +83,6 @@ jobs:
         env:
           API_URL: http://localhost:3000
         run: |
-          set -euxo pipefail
           mkdir -p ci-logs
           pnpm dlx nx affected -t e2e 2>&1 | tee ci-logs/e2e.log || true
 
@@ -111,7 +106,6 @@ jobs:
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
-        if: always()
         with:
           files: ./coverage/lcov.info
           fail_ci_if_error: false
