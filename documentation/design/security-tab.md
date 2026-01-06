@@ -9,6 +9,13 @@ This document defines the admin Security tab experience. It is a top-level admin
 - Support manual and scheduled scans with clear status.
 - Keep the UI transparent about what is real vs mocked.
 
+## Current implementation status (2026-01-06)
+
+- Overview + OSCAL Scans + SCA Top 10 + SBOMs + Real-Time Tests tabs are scaffolded in the admin Security dashboard (mock data only).
+- Findings and Evidence views are not built yet.
+- Backend/API wiring is pending for all tabs; actions are UI-only.
+- Loading/error/empty states are not implemented.
+
 ## Navigation
 
 Horizontal top navigation (within the Security tab):
@@ -110,3 +117,10 @@ export interface SecurityFinding {
 - `GET /api/security/tests` / `POST /api/security/tests:run`
 - `GET /api/security/findings`
 - `GET /api/security/evidence`
+
+## Next steps
+
+- Implement Findings and Evidence views (table + artifact list with hashes and retention).
+- Add loading/error/empty states and connect to the `/api/security/*` endpoints.
+- Wire primary CTAs to actions (run scan, generate SBOM, export findings) with backend hooks.
+- Add evidence metadata (hash, size, retention) to artifact cards.

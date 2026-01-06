@@ -30,6 +30,7 @@ This index lists the canonical documentation for Craft Fusion. If multiple docs 
 
 - `documentation/projects/memorial-timeline.md` - memorial timeline visualization
 - `documentation/projects/data-visualizations.md` - data visualizations overview and roadmap
+- `documentation/projects/portfolio-environment.md` - portfolio environment plan and runbook
 
 ## Security
 

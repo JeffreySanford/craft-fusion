@@ -8,105 +8,192 @@
     <span class="pill secure">Shielded</span>
   </header>
 
-  <div class="shield-grid">
-    <article class="shield-card stable">
-      <div class="shield-icon"><mat-icon>verified_user</mat-icon></div>
-      <div class="shield-body">
-        <p class="label">Session security</p>
-        <div class="value">Protected</div>
-        <p class="hint">Rotating tokens enabled</p>
+  <mat-tab-group class="security-tabs" disableRipple>
+    <mat-tab label="Overview">
+      <div class="tab-pane">
+        <div class="shield-grid">
+          <article class="shield-card stable">
+            <div class="shield-icon"><mat-icon>verified_user</mat-icon></div>
+            <div class="shield-body">
+              <p class="label">Session security</p>
+              <div class="value">Protected</div>
+              <p class="hint">Rotating tokens enabled</p>
+            </div>
+          </article>
+
+          <article class="shield-card neutral">
+            <div class="shield-icon"><mat-icon>people</mat-icon></div>
+            <div class="shield-body">
+              <p class="label">Active users</p>
+              <div class="value">1</div>
+              <p class="hint">Admin channel only</p>
+            </div>
+          </article>
+
+          <article class="shield-card stable">
+            <div class="shield-icon"><mat-icon>https</mat-icon></div>
+            <div class="shield-body">
+              <p class="label">Connection</p>
+              <div class="value">TLS 1.3</div>
+              <p class="hint">Perfect forward secrecy</p>
+            </div>
+          </article>
+
+          <article class="shield-card warning">
+            <div class="shield-icon"><mat-icon>gpp_maybe</mat-icon></div>
+            <div class="shield-body">
+              <p class="label">Permission requests</p>
+              <div class="value">3 pending</div>
+              <p class="hint">Awaiting approval</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="feature-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Controls</p>
+              <h4>Hardening checklist</h4>
+            </div>
+          </div>
+          <div class="feature-grid">
+            <article class="feature-card active">
+              <mat-icon>filter_list</mat-icon>
+              <div>
+                <p class="label">Request filtering</p>
+                <p class="hint">WAF signatures enabled</p>
+              </div>
+              <span class="badge">Active</span>
+            </article>
+
+            <article class="feature-card active">
+              <mat-icon>lock_clock</mat-icon>
+              <div>
+                <p class="label">Session timeout</p>
+                <p class="hint">30 min idle</p>
+              </div>
+              <span class="badge">Enforced</span>
+            </article>
+
+            <article class="feature-card active">
+              <mat-icon>security</mat-icon>
+              <div>
+                <p class="label">Transport security</p>
+                <p class="hint">HSTS + TLS 1.3</p>
+              </div>
+              <span class="badge">Locked</span>
+            </article>
+
+            <article class="feature-card inactive">
+              <mat-icon>fingerprint</mat-icon>
+              <div>
+                <p class="label">MFA coverage</p>
+                <p class="hint">Enable for operators</p>
+              </div>
+              <span class="badge">TODO</span>
+            </article>
+
+            <article class="feature-card inactive">
+              <mat-icon>vpn_lock</mat-icon>
+              <div>
+                <p class="label">IP allowlist</p>
+                <p class="hint">Lock to trusted CIDRs</p>
+              </div>
+              <span class="badge">Off</span>
+            </article>
+
+            <article class="feature-card active">
+              <mat-icon>privacy_tip</mat-icon>
+              <div>
+                <p class="label">Data encryption</p>
+                <p class="hint">AES-256 at rest</p>
+              </div>
+              <span class="badge">On</span>
+            </article>
+          </div>
+        </div>
       </div>
-    </article>
+    </mat-tab>
 
-    <article class="shield-card neutral">
-      <div class="shield-icon"><mat-icon>people</mat-icon></div>
-      <div class="shield-body">
-        <p class="label">Active users</p>
-        <div class="value">1</div>
-        <p class="hint">Admin channel only</p>
+    <mat-tab label="OSCAL Scans">
+      <div class="tab-pane">
+        <div class="oscal-grid">
+          <article class="oscal-card" *ngFor="let profile of oscalProfiles">
+            <div class="oscal-head">
+              <h4>{{ profile.name }}</h4>
+              <span class="status" [ngClass]="profile.status">{{ profile.status | titlecase }}</span>
+            </div>
+            <div class="oscal-meta">
+              <div>
+                <p class="label">Last run</p>
+                <p class="value">{{ profile.lastRun }}</p>
+              </div>
+              <div>
+                <p class="label">Pass / Fail</p>
+                <p class="value">{{ profile.pass }} / {{ profile.fail }}</p>
+              </div>
+              <div>
+                <p class="label">Duration</p>
+                <p class="value">{{ profile.duration }}</p>
+              </div>
+            </div>
+            <div class="oscal-actions">
+              <button mat-stroked-button color="primary">Run scan</button>
+              <button mat-button color="accent">View report</button>
+            </div>
+          </article>
+        </div>
       </div>
-    </article>
+    </mat-tab>
 
-    <article class="shield-card stable">
-      <div class="shield-icon"><mat-icon>https</mat-icon></div>
-      <div class="shield-body">
-        <p class="label">Connection</p>
-        <div class="value">TLS 1.3</div>
-        <p class="hint">Perfect forward secrecy</p>
+    <mat-tab label="SCA Top 10">
+      <div class="tab-pane">
+        <div class="sca-grid">
+          <article class="sca-item" *ngFor="let item of scaTop10">
+            <mat-icon class="sca-icon" [ngClass]="item.status">
+              {{ item.status === 'pass' ? 'check_circle' : item.status === 'warn' ? 'error_outline' : 'schedule' }}
+            </mat-icon>
+            <div class="sca-body">
+              <p class="label">{{ item.label }}</p>
+              <span class="badge" [ngClass]="item.status">{{ item.status | titlecase }}</span>
+            </div>
+          </article>
+        </div>
       </div>
-    </article>
+    </mat-tab>
 
-    <article class="shield-card warning">
-      <div class="shield-icon"><mat-icon>gpp_maybe</mat-icon></div>
-      <div class="shield-body">
-        <p class="label">Permission requests</p>
-        <div class="value">3 pending</div>
-        <p class="hint">Awaiting approval</p>
+    <mat-tab label="SBOMs">
+      <div class="tab-pane">
+        <div class="sbom-grid">
+          <article class="sbom-card" *ngFor="let sbom of sboms">
+            <div class="sbom-head">
+              <h4>{{ sbom.name }}</h4>
+              <span class="badge ready">{{ sbom.status }}</span>
+            </div>
+            <p class="hint">Format: {{ sbom.format }}</p>
+            <p class="hint">Created: {{ sbom.created }}</p>
+            <p class="hint">Delta: {{ sbom.delta }}</p>
+            <div class="sbom-actions">
+              <button mat-stroked-button color="primary">Download</button>
+              <button mat-button color="accent">Compare</button>
+            </div>
+          </article>
+        </div>
       </div>
-    </article>
-  </div>
+    </mat-tab>
 
-  <div class="feature-panel">
-    <div class="panel-head">
-      <div>
-        <p class="eyebrow">Controls</p>
-        <h4>Hardening checklist</h4>
+    <mat-tab label="Real-Time Tests">
+      <div class="tab-pane">
+        <div class="realtime-grid">
+          <article class="realtime-card" *ngFor="let check of realtimeChecks">
+            <div>
+              <p class="label">{{ check.name }}</p>
+              <p class="hint">Duration: {{ check.duration }}</p>
+            </div>
+            <span class="badge" [ngClass]="check.status">{{ check.status | titlecase }}</span>
+          </article>
+        </div>
       </div>
-    </div>
-    <div class="feature-grid">
-      <article class="feature-card active">
-        <mat-icon>filter_list</mat-icon>
-        <div>
-          <p class="label">Request filtering</p>
-          <p class="hint">WAF signatures enabled</p>
-        </div>
-        <span class="badge">Active</span>
-      </article>
-
-      <article class="feature-card active">
-        <mat-icon>lock_clock</mat-icon>
-        <div>
-          <p class="label">Session timeout</p>
-          <p class="hint">30 min idle</p>
-        </div>
-        <span class="badge">Enforced</span>
-      </article>
-
-      <article class="feature-card active">
-        <mat-icon>security</mat-icon>
-        <div>
-          <p class="label">Transport security</p>
-          <p class="hint">HSTS + TLS 1.3</p>
-        </div>
-        <span class="badge">Locked</span>
-      </article>
-
-      <article class="feature-card inactive">
-        <mat-icon>fingerprint</mat-icon>
-        <div>
-          <p class="label">MFA coverage</p>
-          <p class="hint">Enable for operators</p>
-        </div>
-        <span class="badge">TODO</span>
-      </article>
-
-      <article class="feature-card inactive">
-        <mat-icon>vpn_lock</mat-icon>
-        <div>
-          <p class="label">IP allowlist</p>
-          <p class="hint">Lock to trusted CIDRs</p>
-        </div>
-        <span class="badge">Off</span>
-      </article>
-
-      <article class="feature-card active">
-        <mat-icon>privacy_tip</mat-icon>
-        <div>
-          <p class="label">Data encryption</p>
-          <p class="hint">AES-256 at rest</p>
-        </div>
-        <span class="badge">On</span>
-      </article>
-    </div>
-  </div>
+    </mat-tab>
+  </mat-tab-group>
 </div>

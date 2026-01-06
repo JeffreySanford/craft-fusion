@@ -29,6 +29,37 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   expandedEndpoint: string | null = null;
   timestampFormat = 'shortTime';
 
+  oscalProfiles = [
+    { name: 'OSCAL Standard', status: 'pass', lastRun: 'Today 10:15', pass: 122, fail: 0, duration: '2m 13s' },
+    { name: 'OSCAL PCI-DSS', status: 'warn', lastRun: 'Yesterday 16:05', pass: 117, fail: 3, duration: '2m 45s' },
+    { name: 'OSCAL OSPP', status: 'pending', lastRun: 'Not run', pass: 0, fail: 0, duration: '-' },
+  ];
+
+  scaTop10 = [
+    { label: 'A01: Deprecated packages removed', status: 'pass' },
+    { label: 'A02: Known CVEs triaged', status: 'warn' },
+    { label: 'A03: License policy enforced', status: 'pass' },
+    { label: 'A04: Outdated majors pinned', status: 'warn' },
+    { label: 'A05: Dev-time vs prod deps separated', status: 'pass' },
+    { label: 'A06: Integrity (SRI hashes) tracked', status: 'todo' },
+    { label: 'A07: Transitives audited', status: 'todo' },
+    { label: 'A08: SBOM emitted per build', status: 'pass' },
+    { label: 'A09: Supply-chain alerts wired', status: 'warn' },
+    { label: 'A10: Artifact signing planned', status: 'todo' },
+  ];
+
+  sboms = [
+    { name: 'Frontend SBOM', format: 'CycloneDX', created: 'Today 09:50', delta: '+2 / -1', status: 'ready' },
+    { name: 'Backend SBOM', format: 'SPDX', created: 'Yesterday 18:22', delta: '+0 / -0', status: 'ready' },
+  ];
+
+  realtimeChecks = [
+    { name: 'CSP/XSS smoke', status: 'pass', duration: '2.1s' },
+    { name: 'Rate-limit probe', status: 'pass', duration: '1.4s' },
+    { name: 'Auth freshness', status: 'warn', duration: '1.1s' },
+    { name: 'Headers (HSTS/CORS)', status: 'pass', duration: '0.9s' },
+  ];
+
   constructor(
     private apiLogger: ApiLoggerService,
     private logger: LoggerService,

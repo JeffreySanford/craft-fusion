@@ -63,20 +63,24 @@ This file is the planning source of truth. It records decisions, risks, and the 
 
 ## Test & lint status
 
-- [x] Run Nx lint/test across workspace and capture failures (see latest run below)
-- [ ] Add Nx lint/test targets for `craft-web` if missing or misconfigured
-- [ ] Fix `craft-library` lint errors (`no-explicit-any`) and tsconfig warnings
-- [ ] Fix `craft-nest` unit test failures (controller specs, JSON module, mocks)
-- [ ] Fix `craft-go` tests (`handlers_test.go`)
-- [ ] Fix `craft-web-e2e` test runner warnings and `TransformStream` runtime issue
-- [ ] Fix Playwright storage state (`playwright/.auth/user.json`) used by e2e tests
-- [ ] Resolve Nx cache I/O errors (disable Nx Cloud or fix cache path)
+- [x] Run Nx lint/test across workspace and capture failures (latest: all lint, unit tests, Playwright, and CI are passing)
+- [x] Add Nx lint/test targets for `craft-web` if missing or misconfigured
+- [x] Fix `craft-library` lint errors (`no-explicit-any`) and tsconfig warnings
+- [x] Fix `craft-nest` unit test failures (controller specs, JSON module, mocks)
+- [x] Fix `craft-go` tests (`handlers_test.go`)
+- [x] Fix `craft-web-e2e` test runner warnings and `TransformStream` runtime issue
+- [x] Fix Playwright storage state (`playwright/.auth/user.json`) used by e2e tests
+- [x] Resolve Nx cache I/O errors (disable Nx Cloud or fix cache path)
 
 ### Latest run (2025-12-30)
 
 - `pnpm dlx nx run-many -t lint` failed: `craft-library` has 3 `no-explicit-any` errors and a tsconfig input warning; `craft-nest` reports 226 warnings (no errors).
 - `pnpm dlx nx run-many -t test` failed: `craft-go` fails `handlers_test.go`; `craft-nest` fails `UsersController` DI, `getData` assertions, and JSON module import; `craft-web-e2e` fails with Jest config warnings and `TransformStream` not defined.
 - `craft-web` has no lint/test targets in run-many output (needs confirmation or target setup).
+
+### Current run (2026-01-06)
+
+- All lint, unit tests, Playwright, and GitHub CI passing.
 
 ## Admin dashboard UI/UX revamp (MD3 Expressive + patriotic)
 
@@ -100,6 +104,13 @@ This file is the planning source of truth. It records decisions, risks, and the 
 ## Security tab spec (draft)
 
 **Goal:** A dedicated security surface with a horizontal top navigation that switches views. It should show evidence of continuous security testing (OSCAL scans, SCA Top 10, SBOMs, real-time checks) with clear pass/fail signals and artifacts.
+
+**Status (2026-01-06):**
+
+- [x] Overview + OSCAL + SCA + SBOM + Real-Time + Findings + Evidence tabs scaffolded (mock data only)
+- [ ] Wire tabs to backend endpoints (`/api/security/*`) and add loading/error states
+- [ ] Add primary CTAs (run scan, generate SBOM, export findings) with stub handlers
+- [ ] Replace mock data with live data sources and evidence metadata (hash, retention)
 
 ### Top nav views (horizontal)
 
@@ -136,6 +147,7 @@ This file is the planning source of truth. It records decisions, risks, and the 
 - [x] Wire `TimelineService.events$` to the timeline page and keep loading state (`apps/craft-web/src/app/projects/timeline/memorial-timeline/components/timeline-page/timeline-page.component.ts`)
 - [x] Add type filters and consistent options (`apps/craft-web/src/app/projects/timeline/memorial-timeline/components/timeline-page/timeline-page.component.html`)
 - [x] Add type icon + badge and read-more toggle (`apps/craft-web/src/app/projects/timeline/memorial-timeline/components/timeline-item/*`)
+- [ ] Investigate missing rendered events in Timeline UI (API/stream appears reachable)
 - [ ] Add empty-state copy that guides filter changes and access requests
 - [ ] Add unit tests for filtering and read-more behavior
 
@@ -184,11 +196,20 @@ This file is the planning source of truth. It records decisions, risks, and the 
 
 ## Remediation plan (proposed sequence)
 
-- [ ] Phase 0: Stabilize CI (restore Nx targets, fix lint/test failures, fix Playwright auth state)
+- [x] Phase 0: Stabilize CI (restore Nx targets, fix lint/test failures, fix Playwright auth state)
 - [ ] Phase 1: Security (real auth, JWT strategy, WS auth, XSS sanitization, secret hygiene)
 - [ ] Phase 2: Data and IO (file upload/storage, path validation, pagination)
 - [ ] Phase 3: Standards and quality (remove standalone usage, event naming, logging hygiene)
 - [ ] Phase 4: Admin UI overhaul + security tab build
+
+## Portfolio environment next steps
+
+- [ ] Define portfolio env configuration (secrets, endpoints, storage) based on `documentation/architecture/ENVIRONMENT-CONFIGURATION.md`
+- [ ] Stand up portfolio data pipeline (run `nx run training:prepare-portfolio-data` for refresh, validate outputs)
+- [ ] Train and package portfolio model (`nx run training:finetune-portfolio`), store artifact and checksum
+- [ ] Publish portfolio environment deployment doc (infra + runtime checklist)
+- [ ] Add monitoring hooks for portfolio endpoints (health, latency, error budget) and document alerting
+- [ ] Confirm current status of portfolio work (data refresh, training runs, deployment targets)
 
 ## Completed (recent)
 
