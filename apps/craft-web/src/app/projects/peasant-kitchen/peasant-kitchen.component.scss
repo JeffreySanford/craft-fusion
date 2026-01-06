@@ -12,7 +12,7 @@
   font-family: var(--recipe-body-font, "Crimson Text", "Georgia", serif);
   height: auto;                                        
   overflow: visible;                                
-  padding: 1em;
+  padding: 0.5em;
   position: relative;
   width: 100%;
 
@@ -109,11 +109,13 @@
       transform: rotate(-5deg);
       width: 40em;                     
       z-index: 50;                                    
+      pointer-events: none;
     }
 
     .grape-masthead {
       height: auto;
       width: 100%;
+      pointer-events: none;
     }
 
     .top-back-button {
@@ -174,7 +176,7 @@
     height: auto;                                   
     margin-bottom: 1em;                                    
     overflow: visible;                                  
-    padding: 1em;                               
+    padding: 0.5em;                               
     position: relative;
     transition: all 0.5s ease;
     z-index: 10;                                                  

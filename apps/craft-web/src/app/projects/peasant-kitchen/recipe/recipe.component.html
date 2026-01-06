@@ -3,10 +3,10 @@
   <p class="loading-text">Loading recipe...</p>
 </div>
 
-<div *ngIf="!this.recipe.name" class="error-container">
+<div *ngIf="!recipe && !loading" class="error-container">
   <mat-icon color="warn" class="error-icon">error</mat-icon>
   <p class="error-text">{{ error }}</p>
-  <button mat-raised-button color="primary"><mat-icon>arrow_back</mat-icon> Return to Recipes</button>
+  <button mat-raised-button color="primary" (click)="goBack()"><mat-icon>arrow_back</mat-icon> Return to Recipes</button>
 </div>
 
 <div class="recipe-content-wrapper" *ngIf="recipe && !error && !loading">
@@ -17,7 +17,7 @@
     <mat-card-header>
       <mat-card-title>
         <mat-icon class="recipe-icon">local_restaurant</mat-icon>
-        <span class="recipe-name">{{ recipe.name }}</span>
+        <span class="recipe-name">{{ recipe?.name }}</span>
       </mat-card-title>
     </mat-card-header>
 
@@ -25,33 +25,33 @@
       <div class="card-description">
         <div class="details-box">
           <div class="description">
-            {{ recipe.description }}
+            {{ recipe?.description }}
           </div>
 
           <div class="recipe-detail">
             <label>Country of Origin:</label>
             <div class="recipe-value">
-              <span *ngIf="recipe.countryCode" class="flag-icon flag-icon-{{ recipe.countryCode | lowercase }}"></span>&nbsp;
-              {{ service.getCountryName(recipe.countryCode) }}
+              <span *ngIf="recipe?.countryCode" class="flag-icon flag-icon-{{ recipe.countryCode | lowercase }}"></span>&nbsp;
+              {{ service.getCountryName(recipe?.countryCode) }}
             </div>
           </div>
 
           <div class="recipe-detail">
             <label>Serving Size:</label>
             <div class="recipe-value">
-              {{ recipe.servingSize }}
+              {{ recipe?.servingSize }}
             </div>
           </div>
         </div>
         <div class="ingredients">
           <strong>Ingredients:</strong>
           <ul class="ingredients-list">
-            <li *ngFor="let ingredient of recipe.ingredients" class="ingredient-item">{{ ingredient }}</li>
+            <li *ngFor="let ingredient of recipe?.ingredients" class="ingredient-item">{{ ingredient }}</li>
           </ul>
         </div>
         <div class="directions">
           <strong>Directions:</strong>
-          <div *ngFor="let step of recipe.directions; let i = index">
+          <div *ngFor="let step of recipe?.directions; let i = index">
             <p class="step">
               <span class="step-number">{{ i + 1 }}</span
               >{{ step }}
@@ -62,7 +62,7 @@
     </mat-card-content>
 
     <mat-card-actions align="end">
-      <button mat-button color="primary"><mat-icon>arrow_back</mat-icon> Back to Recipes</button>
+      <button mat-button color="primary" (click)="goBack()"><mat-icon>arrow_back</mat-icon> Back to Recipes</button>
     </mat-card-actions>
   </mat-card>
 </div>

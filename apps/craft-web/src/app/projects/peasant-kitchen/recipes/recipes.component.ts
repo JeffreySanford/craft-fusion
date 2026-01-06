@@ -84,6 +84,7 @@ export class RecipesComponent implements OnInit, OnDestroy {
         ];
         this.loaded = true;
         this.updatePaginatedRecipes();
+        this.totalPages = Math.ceil(this.recipes.length / this.pageSize);
       }
     }, 2000);
 
@@ -145,6 +146,8 @@ export class RecipesComponent implements OnInit, OnDestroy {
   selectRecipe(recipe: Recipe): void {
     console.log('Navigating to recipe:', recipe);
     this.RecipeService.setRecipe(recipe);
-    this.router.navigate([`/peasant-kitchen/recipe/:${recipe.url}`]);
+    this.router.navigate(['/peasant-kitchen/recipe', recipe.url], {
+      state: { recipe },
+    });
   }
 }

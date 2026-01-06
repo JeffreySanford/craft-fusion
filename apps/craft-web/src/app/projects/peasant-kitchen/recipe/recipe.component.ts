@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, Inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Recipe } from '../services/recipe.interface';
 import { RecipeService } from '../services/recipe.service';
 import { catchError } from 'rxjs/operators';
@@ -13,18 +13,29 @@ import { of } from 'rxjs';
   standalone: false,                                                                       
 })
 export class RecipeComponent implements OnInit {
-  recipe!: Recipe;
-  error: string = '';
-  loading: boolean = true;
+  recipe: Recipe | null = null;
+  error = '';
+  loading = true;
 
   constructor(
     @Inject(RecipeService) private recipeService: RecipeService,
     private router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
-    this.recipeService
-      .getRecipe()
+    const navigationRecipe = history.state?.['recipe'] as Recipe | undefined;
+    if (navigationRecipe) {
+      this.recipe = navigationRecipe;
+      this.loading = false;
+      console.log('Using recipe from navigation state:', this.recipe);
+      return;
+    }
+
+    const recipeUrl = this.route.snapshot.paramMap.get('id');
+    const recipeLoader$ = recipeUrl ? this.recipeService.getRecipeByUrl(recipeUrl) : this.recipeService.getRecipe();
+
+    recipeLoader$
       .pipe(
         catchError(err => {
           console.error('Error loading recipe:', err);
@@ -56,5 +67,9 @@ export class RecipeComponent implements OnInit {
 
   public get service(): RecipeService {
     return this.recipeService;
+  }
+
+  goBack(): void {
+    this.router.navigate(['/peasant-kitchen']);
   }
 }

@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Router } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,8 +32,12 @@ describe('RecipesComponent', () => {
   const recipeServiceStub = {
     getRecipes: () => of(mockRecipes),
     getRecipe: () => of(mockCurrentRecipe),
-    setRecipe: () => {},
+    setRecipe: jest.fn(),
   };
+
+  const routerStub = {
+    navigate: jest.fn(),
+  } as unknown as Router;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -45,7 +50,10 @@ describe('RecipesComponent', () => {
         MatIconModule,
         MatProgressSpinnerModule,
       ],
-      providers: [{ provide: RecipeService, useValue: recipeServiceStub }],
+      providers: [
+        { provide: RecipeService, useValue: recipeServiceStub },
+        { provide: Router, useValue: routerStub },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RecipesComponent);
@@ -55,5 +63,21 @@ describe('RecipesComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should navigate to recipe with state when selecting a recipe', () => {
+    const recipe = mockRecipes[0]!;
+
+    component.selectRecipe(recipe);
+
+    expect(recipeServiceStub.setRecipe).toHaveBeenCalledWith(recipe);
+    expect(routerStub.navigate).toHaveBeenCalledWith(['/peasant-kitchen/recipe', recipe.url], {
+      state: { recipe },
+    });
+  });
+
+  it('should paginate recipes on init', () => {
+    expect(component.paginatedRecipes.length).toBeGreaterThan(0);
+    expect(component.totalPages).toBe(1);
   });
 });

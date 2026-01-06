@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, catchError, tap, of, throwError, timer } from 'rxjs';
-import { retry, timeout } from 'rxjs/operators';
+import { retry, timeout, map } from 'rxjs/operators';
 import { Recipe } from './recipe.interface';
 import { ApiService } from '../../../common/services/api.service';
 
@@ -96,6 +96,44 @@ export class RecipeService {
     }
     console.log('Getting current recipe:', this.recipe.id);
     return of(this.recipe);
+  }
+
+  getRecipeByUrl(url: string): Observable<Recipe> {
+    console.log('Fetching recipe by url:', url);
+
+    if (this.isOfflineMode) {
+      const offlineRecipe = this.fallbackRecipes.find(r => r.url === url);
+      if (offlineRecipe) {
+        return of(offlineRecipe);
+      }
+      console.warn('Offline mode enabled and recipe not found, returning default recipe');
+      return of(this.defaultRecipe);
+    }
+
+    return this.apiService.get<Recipe>(`${this.endpoint}/${url}`).pipe(
+      timeout(this.REQUEST_TIMEOUT),
+      tap(recipe => console.log('Retrieved recipe by url:', recipe?.name)),
+      map(recipe => {
+        if (!recipe) {
+          console.warn('API returned no recipe, falling back to default');
+          return this.defaultRecipe;
+        }
+        return recipe;
+      }),
+      catchError((error: unknown) => {
+        console.error('Error fetching recipe by url:', error);
+        this.isOfflineMode = true;
+
+        const fallbackRecipe = this.fallbackRecipes.find(r => r.url === url);
+        if (fallbackRecipe) {
+          console.warn('Switching to offline mode and returning fallback recipe');
+          return of(fallbackRecipe);
+        }
+
+        console.warn('No fallback recipe found; returning default recipe');
+        return of(this.defaultRecipe);
+      }),
+    );
   }
 
   getCountryName(countryCode: string | undefined): string {

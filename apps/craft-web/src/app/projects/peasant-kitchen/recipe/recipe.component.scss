@@ -81,7 +81,7 @@ mat-card-title-group {
 .card-description {
   display: flex;
   flex: 1 1 auto;                                           
-  flex-flow: column wrap;
+  flex-flow: row wrap;
   gap: 0.5em;                                    
   line-height: 1.6;
   max-height: none;                                   
@@ -98,8 +98,8 @@ mat-card-title-group {
     border: 1px solid rgb(0 0 0 / 10%);
     border-radius: 0.375em;
     flex: 1 1 250px;
-    max-height: 12.5em;                        
-    overflow-y: auto;
+    max-height: none;                        
+    overflow-y: visible;
     padding: 1em;
   }
 
@@ -108,26 +108,26 @@ mat-card-title-group {
     border: 1px solid rgb(0 0 0 / 10%);
     border-radius: 0.375em;
     margin-top: 1em;                                       
-    max-height: 15.625em;                          
-    overflow-y: auto;
+    max-height: none;                          
+    overflow-y: visible;
     padding: 1em;
-    width: 50%;                     
+    width: 60%;                     
   }
 
   .ingredients {
     margin-top: 1em;                                   
-    max-height: 15.625em;                                              
-    overflow-y: auto;
-    position: absolute;
-    right: 1em;
-    top: 1em;
-    width: 40%;
+    max-height: none;                                              
+    overflow-y: visible;
+    position: static;
+    width: 38%;
   }
 
   .directions {
     flex: 1 1 100%;
     margin-top: 1em;
-    max-height: 9.375em;                        
+    max-height: none;                        
+    margin-bottom: 1em;
+    width: 100%;
   }
 }
 
@@ -158,9 +158,9 @@ mat-card-title {
   border-left: 3px solid #b22234;
   color: #444;
   font-family: var(--recipe-body-font, "Crimson Text", "Georgia", serif);
-  font-size: 1.2em;
+  font-size: 1.05em;
   font-style: italic;
-  line-height: 1.5;
+  line-height: 1.4;
   margin-bottom: 1.5em;
   padding: 0.5em 0 0.5em 1em;
 }
@@ -230,8 +230,9 @@ mat-card-title {
     li {
       animation: fadeIn 0.5s ease-out forwards;
       list-style-type: none;
-      margin: 0.5em 0;
+      margin: 0.25em 0;
       opacity: 0;
+      line-height: 1.2;
       position: relative;
 
       &::before {
@@ -454,6 +455,18 @@ mat-card-content {
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
