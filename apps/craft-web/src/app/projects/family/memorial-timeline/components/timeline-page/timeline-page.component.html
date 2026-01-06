@@ -5,17 +5,42 @@
   </header>
 
   <div class="memorial-timeline-content">
-    <div class="memorial-timeline-controls">
-      <mat-form-field appearance="fill" class="filter-field">
-        <mat-label>Filter events</mat-label>
-        <mat-select (selectionChange)="onFilterChange($event.value)" [value]="selectedFilter">
-          <mat-option value="all">All</mat-option>
-          <mat-option value="jeffrey-historical">Jeffrey Historical</mat-option>
-          <mat-option value="historical">Historical</mat-option>
-          <mat-option value="personal">Personal</mat-option>
-          <mat-option value="family">Family</mat-option>
-          <mat-option value="project">Project</mat-option>
-          <mat-option value="anniversary">Anniversary</mat-option>
+    <div class="timeline-category-selectors">
+      <mat-form-field appearance="fill" class="entity-selector">
+        <mat-label>Select Person</mat-label>
+        <mat-select (selectionChange)="onPersonFilterChange($event.value)" [value]="selectedPerson">
+          <mat-option value="all">All People</mat-option>
+          <mat-option value="raymond-sanford">
+            <mat-icon>family_restroom</mat-icon>
+            Ray Sanford
+          </mat-option>
+          <mat-option value="jeffrey">
+            <mat-icon>person</mat-icon>
+            Jeffrey
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="type-selector">
+        <mat-label>Select Type</mat-label>
+        <mat-select (selectionChange)="onTypeFilterChange($event.value)" [value]="selectedType">
+          <mat-option value="all">All Types</mat-option>
+          <mat-option value="professional">
+            <mat-icon>work</mat-icon>
+            Professional
+          </mat-option>
+          <mat-option value="technical">
+            <mat-icon>code</mat-icon>
+            Technical
+          </mat-option>
+          <mat-option value="personal">
+            <mat-icon>person_outline</mat-icon>
+            Personal
+          </mat-option>
+          <mat-option value="historical">
+            <mat-icon>history</mat-icon>
+            Historical
+          </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
@@ -25,8 +50,22 @@
       <span>Loading timeline events...</span>
     </div>
 
-    <ng-container *ngIf="!loading">
-      <app-timeline-list [events]="filteredEvents$ | async"></app-timeline-list>
+    <div *ngIf="!loading && (selectedPerson === 'all' || selectedType === 'all')" class="selection-prompt">
+      <mat-icon class="prompt-icon">timeline</mat-icon>
+      <h3>Please select filters to view timeline events</h3>
+      <p>Choose a person and event type above to explore the interactive timeline</p>
+    </div>
+
+    <ng-container *ngIf="!loading && selectedPerson !== 'all' && selectedType !== 'all'">
+      <ng-container *ngIf="filteredEvents$ | async as events">
+        <div *ngIf="events.length === 0" class="selection-prompt">
+          <mat-icon class="prompt-icon">info</mat-icon>
+          <h3>No timeline events found</h3>
+          <p>Try adjusting the filters or refresh the page.</p>
+        </div>
+
+        <app-timeline-list *ngIf="events.length > 0" [events]="events"></app-timeline-list>
+      </ng-container>
     </ng-container>
   </div>
 </div>

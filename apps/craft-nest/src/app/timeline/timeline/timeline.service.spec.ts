@@ -32,7 +32,7 @@ describe('TimelineService', () => {
   };
 
   beforeEach(async () => {
-    mockTimelineEventModel = jest.fn().mockImplementation((data) => ({
+    mockTimelineEventModel = jest.fn().mockImplementation(data => ({
       ...data,
       save: jest.fn().mockResolvedValue(mockTimelineEvent),
     }));
@@ -103,7 +103,7 @@ describe('TimelineService', () => {
 
       const result = await lastValueFrom(service.findAll());
 
-      expect(mockTimelineEventModel.find).toHaveBeenCalledWith();
+      expect(mockTimelineEventModel.find).toHaveBeenCalledWith({});
       expect(result).toEqual([mockTimelineEvent]);
     });
 
@@ -162,11 +162,7 @@ describe('TimelineService', () => {
 
       const result = await lastValueFrom(service.update('507f1f77bcf86cd799439011', updateDto));
 
-      expect(mockTimelineEventModel.findByIdAndUpdate).toHaveBeenCalledWith(
-        '507f1f77bcf86cd799439011',
-        updateDto,
-        { new: true }
-      );
+      expect(mockTimelineEventModel.findByIdAndUpdate).toHaveBeenCalledWith('507f1f77bcf86cd799439011', updateDto, { new: true });
       expect(result).toEqual(updatedEvent);
     });
 

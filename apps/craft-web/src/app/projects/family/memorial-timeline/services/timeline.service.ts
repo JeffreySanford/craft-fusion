@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { BehaviorSubject, Observable, of, EMPTY } from 'rxjs';
-import { catchError, tap, scan, shareReplay } from 'rxjs/operators';
+import { catchError, tap, map, shareReplay } from 'rxjs/operators';
+import { io, Socket } from 'socket.io-client';
 import { TimelineEvent } from '../models/timeline-event.model';
 import { AuthService } from '../../../../common/services/auth/auth.service';
 import { LoggerService } from '../../../../common/services/logger.service';
@@ -12,7 +12,6 @@ import { environment } from '../../../../../environments/environment';
   providedIn: 'root',
 })
 export class TimelineService {
-
   private readonly API_URL = `${environment.apiUrl}/api/timeline`;
 
   private readonly WS_URL = `${environment.socket.url}/timeline`;
@@ -20,59 +19,78 @@ export class TimelineService {
   private eventsSubject = new BehaviorSubject<TimelineEvent[]>([]);
   public events$ = this.eventsSubject.asObservable().pipe(shareReplay(1));
 
-  private socket$?: WebSocketSubject<TimelineEvent>;
+  private socket?: Socket;
   private messagesSubject = new BehaviorSubject<TimelineEvent[]>([]);
 
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService,
-    private logger: LoggerService,
-  ) {}
+  constructor(private http: HttpClient, private authService: AuthService, private logger: LoggerService) {}
 
   ngOnInit?(): void {
-
     console.log('[TimelineService] initialized', { apiUrl: this.API_URL, wsUrl: this.WS_URL });
   }
 
   connect(): void {
-    if (!this.socket$ || this.socket$.closed) {
+    if (!this.socket || !this.socket.connected) {
       console.log('[TimelineService] connect() called — creating WebSocket');
-      this.socket$ = this.getNewWebSocket();
+      this.socket = this.getNewWebSocket();
 
-      this.socket$
-        .pipe(
-          tap(message => this.logger.info('Received timeline event', message)),
-          catchError((error): Observable<TimelineEvent> => {
-            this.logger.error('Socket error:', error);
-            return EMPTY as unknown as Observable<TimelineEvent>;
-          }),
+      this.socket.on('newEvent', (event: any) => {
+        this.logger.info('Received new timeline event', event);
+        console.log(`[TimelineService] Received new event from WebSocket: ${event.title}`);
 
-          scan((acc: TimelineEvent[], event: TimelineEvent) => [...acc, event], []),
-        )
-        .subscribe(events => {
-          console.log(`[TimelineService] Received ${events.length} events from WebSocket`);
+        const mappedEvent = this.mapApiEventToTimelineEvent(event);
+        const currentEvents = this.eventsSubject.value;
+        const newEvents = [...currentEvents, mappedEvent];
 
-          this.messagesSubject.next(events);
+        this.eventsSubject.next(newEvents);
+        console.log(`[TimelineService] eventsSubject updated — total events: ${newEvents.length}`);
+      });
 
-          const currentEvents = this.eventsSubject.value;
-          const newEvents = [...currentEvents, ...events.filter(event => !currentEvents.some(e => e.id === event.id))];
+      this.socket.on('updatedEvent', (event: any) => {
+        this.logger.info('Received updated timeline event', event);
+        console.log(`[TimelineService] Received updated event from WebSocket: ${event.title}`);
 
-          this.eventsSubject.next(newEvents);
-          console.log(`[TimelineService] eventsSubject updated — total events: ${newEvents.length}`);
-        });
+        const mappedEvent = this.mapApiEventToTimelineEvent(event);
+        const currentEvents = this.eventsSubject.value;
+        const updatedEvents = currentEvents.map(e => (e.id === mappedEvent.id ? mappedEvent : e));
+
+        this.eventsSubject.next(updatedEvents);
+      });
+
+      this.socket.on('deletedEvent', (eventId: string) => {
+        this.logger.info('Received deleted timeline event', eventId);
+        console.log(`[TimelineService] Received deleted event from WebSocket: ${eventId}`);
+
+        const currentEvents = this.eventsSubject.value;
+        const filteredEvents = currentEvents.filter(e => e.id !== eventId);
+
+        this.eventsSubject.next(filteredEvents);
+      });
     }
   }
 
   disconnect(): void {
-    if (this.socket$) {
-      this.socket$.complete();
+    if (this.socket) {
+      this.socket.disconnect();
     }
   }
 
-  loadInitialEvents(): Observable<TimelineEvent[]> {
-    return this.http.get<TimelineEvent[]>(this.API_URL).pipe(
-      tap(events => {
-        console.log(`[TimelineService] Loaded initial events from ${this.API_URL}: ${Array.isArray(events) ? events.length : 0}`);
+  loadInitialEvents(person?: string, type?: string): Observable<TimelineEvent[]> {
+    let url = this.API_URL;
+    const params: string[] = [];
+    if (person && person !== 'all') {
+      params.push(`person=${encodeURIComponent(person)}`);
+    }
+    if (type && type !== 'all') {
+      params.push(`type=${encodeURIComponent(type)}`);
+    }
+    if (params.length) {
+      url = `${url}?${params.join('&')}`;
+    }
+
+    return this.http.get<any[]>(url).pipe(
+      map((events: any[]) => events.map((event: any) => this.mapApiEventToTimelineEvent(event))),
+      tap((events: TimelineEvent[]) => {
+        console.log(`[TimelineService] Loaded initial events from ${url}: ${Array.isArray(events) ? events.length : 0}`);
         this.eventsSubject.next(events);
       }),
       catchError(error => {
@@ -82,21 +100,22 @@ export class TimelineService {
     );
   }
 
-  private getNewWebSocket(): WebSocketSubject<TimelineEvent> {
-    return webSocket<TimelineEvent>({
-      url: this.WS_URL,
-      openObserver: {
-        next: () => {
-          this.logger.info('Timeline WebSocket connection opened');
-          console.log('[TimelineService] WebSocket opened', { url: this.WS_URL });
-        },
-      },
-      closeObserver: {
-        next: () => {
-          this.logger.info('Timeline WebSocket connection closed');
-          console.log('[TimelineService] WebSocket closed', { url: this.WS_URL });
-        },
-      },
+  private mapApiEventToTimelineEvent(apiEvent: any): TimelineEvent {
+    return {
+      id: apiEvent._id || apiEvent.id,
+      title: apiEvent.title,
+      date: new Date(apiEvent.date),
+      description: apiEvent.description,
+      imageUrl: apiEvent.imageUrl,
+      actionLink: apiEvent.actionLink,
+      type: apiEvent.type,
+    };
+  }
+
+  private getNewWebSocket(): Socket {
+    return io(this.WS_URL, {
+      transports: ['websocket', 'polling'],
+      withCredentials: true,
     });
   }
 }

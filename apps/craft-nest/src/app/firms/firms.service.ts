@@ -23,24 +23,13 @@ export class FirmsService {
   private readonly apiKey: string;
   private readonly defaultSource: string;
 
-  constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
-    private readonly logger: LoggingService,
-  ) {
+  constructor(private readonly httpService: HttpService, private readonly configService: ConfigService, private readonly logger: LoggingService) {
     this.baseUrl = this.configService.get<string>('NASA_FIRMS_BASE_URL') || 'https://firms.modaps.eosdis.nasa.gov/api/area';
     this.apiKey = this.configService.get<string>('NASA_FIRMS_API_KEY') || '';
     this.defaultSource = this.configService.get<string>('NASA_FIRMS_SOURCE') || 'VIIRS_SNPP_NRT';
   }
 
-  async getActiveFires(params: {
-    lat: number;
-    lng: number;
-    radiusKm: number;
-    days: number;
-    source?: string;
-    limit?: number;
-  }): Promise<FirmsAlert[]> {
+  async getActiveFires(params: { lat: number; lng: number; radiusKm: number; days: number; source?: string; limit?: number }): Promise<FirmsAlert[]> {
     if (!this.apiKey) {
       this.logger.warn('NASA FIRMS API key not configured', { service: 'nasa-firms' });
       return [];
@@ -61,9 +50,7 @@ export class FirmsService {
       const source = params.source || this.defaultSource;
       const url = `${this.baseUrl}/csv/${this.apiKey}/${source}/${bbox}/${params.days}`;
 
-      const response = await firstValueFrom(
-        this.httpService.get<string>(url, { responseType: 'text' }),
-      );
+      const response = await firstValueFrom(this.httpService.get<string>(url, { responseType: 'text' }));
 
       const alerts = this.parseCsv(response.data || '', source);
       const limited = typeof params.limit === 'number' ? alerts.slice(0, params.limit) : alerts;
@@ -74,6 +61,7 @@ export class FirmsService {
         payload,
         result: summarizeForLog(limited),
         durationMs: Date.now() - startTime,
+        suppressConsole: true,
       });
 
       return limited;
@@ -84,6 +72,7 @@ export class FirmsService {
         payload,
         error,
         durationMs: Date.now() - startTime,
+        suppressConsole: true,
       });
       return [];
     }

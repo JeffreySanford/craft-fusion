@@ -30,7 +30,7 @@
         "outputPath": "dist/apps/craft-nest",
         "main": "apps/craft-nest/src/main.ts",
         "tsConfig": "apps/craft-nest/tsconfig.app.json",
-        "assets": ["apps/craft-nest/src/assets"],
+        "assets": ["apps/craft-nest/src/assets", { "input": "apps/craft-nest/src/app/seed", "glob": "**/*", "output": "src/seed" }],
         "generatePackageJson": true,
         "clean": false
       },

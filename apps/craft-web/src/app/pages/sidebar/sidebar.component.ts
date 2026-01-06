@@ -34,7 +34,7 @@ export class SidebarComponent implements OnInit {
   @Input() isCollapsed = false;
   @ViewChild('drawer') drawer!: MatDrawer;
   isMobile = false;
-  isAdmin = false;                                                    
+  isAdmin = false;
 
   isAdmin$!: Observable<boolean>;
 
@@ -82,12 +82,12 @@ export class SidebarComponent implements OnInit {
       console.log('🔧 Sidebar: Admin state changed to:', isAdmin);
       this.isAdmin = isAdmin;
       if (isAdmin) {
-
         if (this.menuGroups?.[0]?.items) {
           const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
           if (adminItemIndex === -1) {
             console.log('🔧 Sidebar: Adding admin menu items');
             this.menuGroups[0].items.push(
+              { icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false },
               { icon: 'schedule', label: 'Timeline', routerLink: '/timeline', active: false },
               { icon: 'chat_bubble', label: 'Chat', routerLink: '/chat', active: false },
               { icon: 'book', label: 'Book', routerLink: '/book', active: false },
@@ -95,7 +95,6 @@ export class SidebarComponent implements OnInit {
           }
         }
       } else {
-
         if (this.menuGroups?.[0]?.items) {
           console.log('🔧 Sidebar: Removing admin menu items');
           this.menuGroups[0].items = this.menuGroups[0].items.filter(item => !['Admin', 'Timeline', 'Chat', 'Book'].includes(item.label));
@@ -105,7 +104,7 @@ export class SidebarComponent implements OnInit {
       this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
       console.log('🔧 Sidebar: Menu items updated, length:', this.menuItems.length);
 
-      const adminDebugLabels = ['Admin', 'Timeline', 'Chat'];
+      const adminDebugLabels = ['Admin', 'Timeline', 'Chat', 'Book'];
       const present = adminDebugLabels.filter(l => this.menuItems.some(m => m.label === l));
       console.log('🔧 Sidebar: Admin-protected buttons present:', present);
       this.updateActiveState();
@@ -140,10 +139,9 @@ export class SidebarComponent implements OnInit {
   }
 
   onMenuItemClick(item: MenuItem) {
-
     this.setActive(item);
 
-    if (['Admin', 'Timeline', 'Chat'].includes(item.label)) {
+    if (['Admin', 'Timeline', 'Chat', 'Book'].includes(item.label)) {
       console.log('🔧 Sidebar: Admin button clicked:', item.label);
     }
   }

@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   selector: 'app-memorial-timeline',
   templateUrl: './memorial-timeline.component.html',
   styleUrls: ['./memorial-timeline.component.scss'],
-  standalone: false,                                      
+  standalone: false,
 })
 export class MemorialTimelineComponent implements OnInit {
   timelineEvents$: Observable<TimelineEvent[]>;
@@ -18,11 +18,8 @@ export class MemorialTimelineComponent implements OnInit {
   selectedFilter: 'all' | 'jeffrey-ai' | TimelineEventType = 'all';
   loading = true;
 
-  constructor(
-    private timelineService: TimelineService,
-    private router: Router,
-  ) {
-    this.timelineEvents$ = this.timelineService.events$;
+  constructor(private timelineService: TimelineService, private router: Router) {
+    this.timelineEvents$ = this.timelineService.events$ as Observable<TimelineEvent[]>;
     this.filteredEvents$ = combineLatest([this.timelineEvents$, this.filter$]).pipe(
       map(([events, filter]) => {
         if (!events) return [];
@@ -34,7 +31,6 @@ export class MemorialTimelineComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.timelineService.loadInitialEvents().subscribe(() => {
       this.timelineService.connect();
       this.loading = false;
@@ -44,7 +40,6 @@ export class MemorialTimelineComponent implements OnInit {
   onFilterChange(value: 'all' | 'jeffrey-ai' | TimelineEventType) {
     this.selectedFilter = value;
     if (value === 'jeffrey-ai') {
-
       this.router.navigate(['/family', 'memorial-timeline', 'jeffrey-ai']);
     } else {
       this.filter$.next(value);

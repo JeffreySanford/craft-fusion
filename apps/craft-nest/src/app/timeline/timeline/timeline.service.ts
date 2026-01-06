@@ -10,31 +10,63 @@ import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class TimelineService {
-  constructor(
-    @InjectModel(TimelineEvent.name) private timelineEventModel: Model<TimelineEvent>,
-    private logger: LoggingService
-  ) {}
+  constructor(@InjectModel(TimelineEvent.name) private timelineEventModel: Model<TimelineEvent>, private logger: LoggingService) {}
 
   create(createTimelineEventDto: CreateTimelineEventDto): Observable<TimelineEvent> {
     this.logger.debug('Creating timeline event', createTimelineEventDto);
-    
+
     const createdEvent = new this.timelineEventModel(createTimelineEventDto);
-    return from(createdEvent.save()).pipe(
-      tap(result => this.logger.debug('Timeline event created', { id: (result as any).id || (result as any)._id }))
-    );
+    return from(createdEvent.save()).pipe(tap(result => this.logger.debug('Timeline event created', { id: (result as any).id || (result as any)._id })));
   }
 
-  findAll(): Observable<TimelineEvent[]> {
+  findAll(person?: string, type?: string): Observable<TimelineEvent[]> {
     this.logger.debug('Finding all timeline events');
-    
-    return from(this.timelineEventModel.find().exec()).pipe(
-      tap(events => this.logger.debug(`Found ${events.length} timeline events`))
-    );
+
+    const filter: Record<string, unknown> = {};
+
+    const mappedTypes = this.mapType(type);
+    if (mappedTypes && mappedTypes.length) {
+      filter['type'] = { $in: mappedTypes };
+    }
+
+    if (person) {
+      const regex = this.buildPersonRegex(person);
+      if (regex) {
+        filter['$or'] = [{ title: { $regex: regex } }, { description: { $regex: regex } }];
+      }
+    }
+
+    return from(this.timelineEventModel.find(filter).exec()).pipe(tap(events => this.logger.debug(`Found ${events.length} timeline events`)));
+  }
+
+  private mapType(type?: string): string[] | undefined {
+    if (!type) return undefined;
+    const normalized = type.toLowerCase();
+    if (normalized === 'professional') return ['historical', 'project', 'personal'];
+    if (normalized === 'technical') return ['project', 'personal'];
+    if (normalized === 'personal') return ['personal', 'historical'];
+    if (normalized === 'historical') return ['historical'];
+    if (normalized === 'all') return undefined;
+    return [type];
+  }
+
+  private buildPersonRegex(person: string): RegExp | null {
+    const normalized = person.toLowerCase();
+    if (normalized === 'raymond-sanford') {
+      return /(ray(\s|$)|raymond|sanford)/i;
+    }
+    if (normalized === 'jeffrey') {
+      return /(jeffrey|developer journal)/i;
+    }
+    if (normalized === 'all') {
+      return null;
+    }
+    return new RegExp(normalized, 'i');
   }
 
   findOne(id: string): Observable<TimelineEvent | null> {
     this.logger.debug(`Finding timeline event with ID: ${id}`);
-    
+
     return from(this.timelineEventModel.findById(id).exec()).pipe(
       tap(event => {
         if (!event) {
@@ -42,30 +74,27 @@ export class TimelineService {
         } else {
           this.logger.debug(`Found timeline event: ${event.title}`);
         }
-      })
+      }),
     );
   }
 
   update(id: string, updateTimelineEventDto: UpdateTimelineEventDto): Observable<TimelineEvent | null> {
     this.logger.debug(`Updating timeline event ${id}: ${JSON.stringify(updateTimelineEventDto)}`);
-    
-    return from(this.timelineEventModel
-      .findByIdAndUpdate(id, updateTimelineEventDto, { new: true })
-      .exec()
-    ).pipe(
+
+    return from(this.timelineEventModel.findByIdAndUpdate(id, updateTimelineEventDto, { new: true }).exec()).pipe(
       tap(updatedEvent => {
         if (!updatedEvent) {
           this.logger.warn(`Timeline event with ID ${id} not found during update`);
         } else {
           this.logger.debug(`Timeline event updated: ${updatedEvent.title}`);
         }
-      })
+      }),
     );
   }
 
   remove(id: string): Observable<TimelineEvent | null> {
     this.logger.debug(`Removing timeline event with ID: ${id}`);
-    
+
     return from(this.timelineEventModel.findByIdAndDelete(id).exec()).pipe(
       tap(removedEvent => {
         if (!removedEvent) {
@@ -73,7 +102,7 @@ export class TimelineService {
         } else {
           this.logger.debug(`Timeline event removed: ${removedEvent.title}`);
         }
-      })
+      }),
     );
   }
 }

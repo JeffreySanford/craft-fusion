@@ -5,10 +5,7 @@ import { summarizeForLog } from '../logging/logging.utils';
 
 @Injectable()
 export class AiService {
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly logger: LoggingService
-  ) {}
+  constructor(private readonly configService: ConfigService, private readonly logger: LoggingService) {}
 
   private get apiKey(): string | undefined {
     return this.configService.get<string>('OPENAI_API_KEY');
@@ -33,13 +30,13 @@ export class AiService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${key}`
+          Authorization: `Bearer ${key}`,
         },
         body: JSON.stringify({
           model: 'gpt-4o-mini',
           messages: [{ role: 'user', content: prompt }],
-          max_tokens: maxTokens
-        })
+          max_tokens: maxTokens,
+        }),
       });
 
       const json = await res.json();
@@ -52,33 +49,25 @@ export class AiService {
     }
   }
 
-  private logSuccess(
-    operation: string,
-    payload: Record<string, unknown>,
-    result: unknown,
-    startTime: number
-  ): void {
+  private logSuccess(operation: string, payload: Record<string, unknown>, result: unknown, startTime: number): void {
     this.logger.info('External API request success', {
       service: 'openai',
       operation,
       payload,
       result: summarizeForLog(result),
       durationMs: Date.now() - startTime,
+      suppressConsole: true,
     });
   }
 
-  private logError(
-    operation: string,
-    payload: Record<string, unknown>,
-    error: unknown,
-    startTime: number
-  ): void {
+  private logError(operation: string, payload: Record<string, unknown>, error: unknown, startTime: number): void {
     this.logger.error('External API request error', {
       service: 'openai',
       operation,
       payload,
       error,
       durationMs: Date.now() - startTime,
+      suppressConsole: true,
     });
   }
 

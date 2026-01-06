@@ -1,71 +1,71 @@
-<testsuites id="" name="" tests="48" failures="0" skipped="21" errors="0" time="27.946731">
-<testsuite name="admin\logs.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="chromium" tests="2" failures="0" skipped="0" time="14.591" errors="0">
-<testcase name="Admin - Logs controls visibility › all floating labels and mat-labels are visible" classname="admin\logs.spec.ts" time="7.264">
+<testsuites id="" name="" tests="48" failures="0" skipped="21" errors="0" time="27.334619">
+<testsuite name="admin\logs.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="chromium" tests="2" failures="0" skipped="0" time="15.549" errors="0">
+<testcase name="Admin - Logs controls visibility › all floating labels and mat-labels are visible" classname="admin\logs.spec.ts" time="7.801">
 </testcase>
-<testcase name="Admin - Logs controls visibility › selects, inputs and action buttons are present and visible" classname="admin\logs.spec.ts" time="7.327">
-</testcase>
-</testsuite>
-<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="chromium" tests="5" failures="0" skipped="0" time="37.462" errors="0">
-<testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="6.999">
-</testcase>
-<testcase name="Admin dashboard tabs › renders Performance tab" classname="admin-dashboard.spec.ts" time="7.379">
-</testcase>
-<testcase name="Admin dashboard tabs › renders Security &amp; Access tab" classname="admin-dashboard.spec.ts" time="7.209">
-</testcase>
-<testcase name="Admin dashboard tabs › renders Logs tab" classname="admin-dashboard.spec.ts" time="7.265">
-</testcase>
-<testcase name="Admin dashboard tabs › cycles through tabs in sequence" classname="admin-dashboard.spec.ts" time="8.61">
+<testcase name="Admin - Logs controls visibility › selects, inputs and action buttons are present and visible" classname="admin\logs.spec.ts" time="7.748">
 </testcase>
 </testsuite>
-<testsuite name="portfolio.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="chromium" tests="1" failures="0" skipped="0" time="5.046" errors="0">
-<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="5.046">
+<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="chromium" tests="5" failures="0" skipped="0" time="39.636" errors="0">
+<testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="7.406">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Performance tab" classname="admin-dashboard.spec.ts" time="7.794">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Security &amp; Access tab" classname="admin-dashboard.spec.ts" time="7.712">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Logs tab" classname="admin-dashboard.spec.ts" time="7.783">
+</testcase>
+<testcase name="Admin dashboard tabs › cycles through tabs in sequence" classname="admin-dashboard.spec.ts" time="8.941">
 </testcase>
 </testsuite>
-<testsuite name="admin\logs.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="firefox" tests="2" failures="0" skipped="0" time="19.215" errors="0">
-<testcase name="Admin - Logs controls visibility › all floating labels and mat-labels are visible" classname="admin\logs.spec.ts" time="9.667">
-</testcase>
-<testcase name="Admin - Logs controls visibility › selects, inputs and action buttons are present and visible" classname="admin\logs.spec.ts" time="9.548">
+<testsuite name="portfolio.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="chromium" tests="1" failures="0" skipped="0" time="5.344" errors="0">
+<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="5.344">
 </testcase>
 </testsuite>
-<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="firefox" tests="5" failures="0" skipped="0" time="48.977" errors="0">
-<testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="9.98">
+<testsuite name="admin\logs.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="firefox" tests="2" failures="0" skipped="0" time="19.335" errors="0">
+<testcase name="Admin - Logs controls visibility › all floating labels and mat-labels are visible" classname="admin\logs.spec.ts" time="9.025">
 </testcase>
-<testcase name="Admin dashboard tabs › renders Performance tab" classname="admin-dashboard.spec.ts" time="9.599">
-</testcase>
-<testcase name="Admin dashboard tabs › renders Security &amp; Access tab" classname="admin-dashboard.spec.ts" time="9.478">
-</testcase>
-<testcase name="Admin dashboard tabs › renders Logs tab" classname="admin-dashboard.spec.ts" time="8.875">
-</testcase>
-<testcase name="Admin dashboard tabs › cycles through tabs in sequence" classname="admin-dashboard.spec.ts" time="11.045">
+<testcase name="Admin - Logs controls visibility › selects, inputs and action buttons are present and visible" classname="admin\logs.spec.ts" time="10.31">
 </testcase>
 </testsuite>
-<testsuite name="portfolio.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="firefox" tests="1" failures="0" skipped="0" time="6.703" errors="0">
-<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="6.703">
+<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="firefox" tests="5" failures="0" skipped="0" time="47.786" errors="0">
+<testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="12.774">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Performance tab" classname="admin-dashboard.spec.ts" time="9.114">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Security &amp; Access tab" classname="admin-dashboard.spec.ts" time="7.716">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Logs tab" classname="admin-dashboard.spec.ts" time="7.807">
+</testcase>
+<testcase name="Admin dashboard tabs › cycles through tabs in sequence" classname="admin-dashboard.spec.ts" time="10.375">
 </testcase>
 </testsuite>
-<testsuite name="admin\logs.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="webkit" tests="2" failures="0" skipped="0" time="21.081" errors="0">
-<testcase name="Admin - Logs controls visibility › all floating labels and mat-labels are visible" classname="admin\logs.spec.ts" time="11.246">
-</testcase>
-<testcase name="Admin - Logs controls visibility › selects, inputs and action buttons are present and visible" classname="admin\logs.spec.ts" time="9.835">
+<testsuite name="portfolio.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="firefox" tests="1" failures="0" skipped="0" time="5.676" errors="0">
+<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="5.676">
 </testcase>
 </testsuite>
-<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="webkit" tests="5" failures="0" skipped="0" time="44.917" errors="0">
-<testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="7.781">
+<testsuite name="admin\logs.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="webkit" tests="2" failures="0" skipped="0" time="19.976" errors="0">
+<testcase name="Admin - Logs controls visibility › all floating labels and mat-labels are visible" classname="admin\logs.spec.ts" time="10.457">
 </testcase>
-<testcase name="Admin dashboard tabs › renders Performance tab" classname="admin-dashboard.spec.ts" time="8.654">
-</testcase>
-<testcase name="Admin dashboard tabs › renders Security &amp; Access tab" classname="admin-dashboard.spec.ts" time="9.292">
-</testcase>
-<testcase name="Admin dashboard tabs › renders Logs tab" classname="admin-dashboard.spec.ts" time="8.787">
-</testcase>
-<testcase name="Admin dashboard tabs › cycles through tabs in sequence" classname="admin-dashboard.spec.ts" time="10.403">
+<testcase name="Admin - Logs controls visibility › selects, inputs and action buttons are present and visible" classname="admin\logs.spec.ts" time="9.519">
 </testcase>
 </testsuite>
-<testsuite name="portfolio.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="webkit" tests="1" failures="0" skipped="0" time="6.293" errors="0">
-<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="6.293">
+<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="webkit" tests="5" failures="0" skipped="0" time="41.76" errors="0">
+<testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="7.658">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Performance tab" classname="admin-dashboard.spec.ts" time="7.682">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Security &amp; Access tab" classname="admin-dashboard.spec.ts" time="8">
+</testcase>
+<testcase name="Admin dashboard tabs › renders Logs tab" classname="admin-dashboard.spec.ts" time="8.321">
+</testcase>
+<testcase name="Admin dashboard tabs › cycles through tabs in sequence" classname="admin-dashboard.spec.ts" time="10.099">
 </testcase>
 </testsuite>
-<testsuite name="admin\logs.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="mobile-chrome" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testsuite name="portfolio.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="webkit" tests="1" failures="0" skipped="0" time="3.709" errors="0">
+<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="3.709">
+</testcase>
+</testsuite>
+<testsuite name="admin\logs.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="mobile-chrome" tests="2" failures="0" skipped="2" time="0" errors="0">
 <testcase name="Admin - Logs controls visibility › all floating labels and mat-labels are visible" classname="admin\logs.spec.ts" time="0">
 <properties>
 <property name="skip" value="">
@@ -83,7 +83,7 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="mobile-chrome" tests="5" failures="0" skipped="5" time="0" errors="0">
+<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="mobile-chrome" tests="5" failures="0" skipped="5" time="0" errors="0">
 <testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="0">
 <properties>
 <property name="skip" value="">
@@ -125,11 +125,11 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="portfolio.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="mobile-chrome" tests="1" failures="0" skipped="0" time="1.505" errors="0">
-<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="1.505">
+<testsuite name="portfolio.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="mobile-chrome" tests="1" failures="0" skipped="0" time="1.394" errors="0">
+<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="1.394">
 </testcase>
 </testsuite>
-<testsuite name="admin\logs.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="mobile-safari" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testsuite name="admin\logs.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="mobile-safari" tests="2" failures="0" skipped="2" time="0" errors="0">
 <testcase name="Admin - Logs controls visibility › all floating labels and mat-labels are visible" classname="admin\logs.spec.ts" time="0">
 <properties>
 <property name="skip" value="">
@@ -147,7 +147,7 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="mobile-safari" tests="5" failures="0" skipped="5" time="0" errors="0">
+<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="mobile-safari" tests="5" failures="0" skipped="5" time="0" errors="0">
 <testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="0">
 <properties>
 <property name="skip" value="">
@@ -189,11 +189,11 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="portfolio.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="mobile-safari" tests="1" failures="0" skipped="0" time="1.499" errors="0">
-<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="1.499">
+<testsuite name="portfolio.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="mobile-safari" tests="1" failures="0" skipped="0" time="1.526" errors="0">
+<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="1.526">
 </testcase>
 </testsuite>
-<testsuite name="admin\logs.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="tablet" tests="2" failures="0" skipped="2" time="0" errors="0">
+<testsuite name="admin\logs.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="tablet" tests="2" failures="0" skipped="2" time="0" errors="0">
 <testcase name="Admin - Logs controls visibility › all floating labels and mat-labels are visible" classname="admin\logs.spec.ts" time="0">
 <properties>
 <property name="skip" value="">
@@ -211,7 +211,7 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="tablet" tests="5" failures="0" skipped="5" time="0" errors="0">
+<testsuite name="admin-dashboard.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="tablet" tests="5" failures="0" skipped="5" time="0" errors="0">
 <testcase name="Admin dashboard tabs › renders Overview tab" classname="admin-dashboard.spec.ts" time="0">
 <properties>
 <property name="skip" value="">
@@ -253,8 +253,8 @@
 </skipped>
 </testcase>
 </testsuite>
-<testsuite name="portfolio.spec.ts" timestamp="2026-01-05T22:02:48.846Z" hostname="tablet" tests="1" failures="0" skipped="0" time="1.433" errors="0">
-<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="1.433">
+<testsuite name="portfolio.spec.ts" timestamp="2026-01-06T20:13:09.559Z" hostname="tablet" tests="1" failures="0" skipped="0" time="1.492" errors="0">
+<testcase name="displays portfolio title" classname="portfolio.spec.ts" time="1.492">
 </testcase>
 </testsuite>
 </testsuites>

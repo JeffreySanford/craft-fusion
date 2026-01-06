@@ -15,17 +15,14 @@ export class JeffreyAiComponent implements OnInit, OnDestroy {
   private sub?: Subscription;
   narratives = new Map<string, string>();
 
-  constructor(
-    private timelineService: TimelineService,
-    private http: HttpClient,
-  ) {
-    this.jeffreyEvents$ = this.timelineService.events$.pipe(map(events => (events || []).filter(e => e.title && e.title.toLowerCase().includes('jeffrey'))));
+  constructor(private timelineService: TimelineService, private http: HttpClient) {
+    this.jeffreyEvents$ = this.timelineService.events$.pipe(
+      map((events: TimelineEvent[]) => (events || []).filter((e: TimelineEvent) => e.title && e.title.toLowerCase().includes('jeffrey'))),
+    );
   }
 
   ngOnInit(): void {
-
     this.sub = this.timelineService.loadInitialEvents().subscribe(() => {
-
       this.regenerateNarratives();
     });
   }
