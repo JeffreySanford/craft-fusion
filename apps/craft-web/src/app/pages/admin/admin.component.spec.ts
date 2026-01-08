@@ -6,7 +6,6 @@ import { ServicesDashboardService } from './services-dashboard/services-dashboar
 import { LoggerService } from '../../common/services/logger.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { MatTabChangeEvent } from '@angular/material/tabs';
 
 class MockServicesDashboardService {
   metrics$ = new BehaviorSubject([]);
@@ -33,9 +32,7 @@ class MockDataSimulationService {
 }
 
 describe('AdminComponent', () => {
-  let component: AdminComponent;
   let fixture: ComponentFixture<AdminComponent>;
-  let servicesDashboard: MockServicesDashboardService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -51,8 +48,6 @@ describe('AdminComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(AdminComponent);
-    component = fixture.componentInstance;
-    servicesDashboard = TestBed.inject(ServicesDashboardService) as unknown as MockServicesDashboardService;
   });
 
   it('should render five tabs including Performance', () => {

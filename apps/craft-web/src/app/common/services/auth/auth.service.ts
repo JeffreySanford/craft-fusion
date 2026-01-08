@@ -94,7 +94,7 @@ export class AuthService {
 
   private isGuestResource(resource: string): boolean {
 
-    const guestResources = ['memorial-timeline', 'public-gallery', 'about', 'contact'];
+    const guestResources = ['timeline', 'public-gallery', 'about', 'contact'];
     return guestResources.some(r => resource.includes(r));
   }
 

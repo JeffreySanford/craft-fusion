@@ -22,6 +22,7 @@ describe('TimelineService', () => {
     actionLink: 'http://example.com',
     createdAt: new Date(),
     updatedAt: new Date(),
+    person: 'jeffrey-sanford',
   };
 
   const mockLoggingService = {
@@ -67,6 +68,7 @@ describe('TimelineService', () => {
         type: TimelineEventType.PERSONAL,
         imageUrl: 'http://example.com/image.jpg',
         actionLink: 'http://example.com',
+        person: 'jeffrey-sanford',
       };
 
       const result = await lastValueFrom(service.create(createDto));
@@ -81,6 +83,7 @@ describe('TimelineService', () => {
         description: 'Test Description',
         date: '2023-01-01T00:00:00.000Z',
         type: TimelineEventType.PERSONAL,
+        person: 'jeffrey-sanford',
       };
 
       const mockInstance = {

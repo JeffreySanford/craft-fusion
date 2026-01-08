@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-import { MaterialModule } from '../../../material.module';
-import { AnimatedDirectivesModule } from '../../../animated-directives.module';
+import { MaterialModule } from '../../material.module';
+import { AnimatedDirectivesModule } from '../../animated-directives.module';
 
 import { TimelinePageComponent } from './components/timeline-page/timeline-page.component';
 import { TimelineListComponent } from './components/timeline-list/timeline-list.component';
@@ -16,7 +16,7 @@ import { JeffreyAiComponent } from './components/jeffrey-ai/jeffrey-ai.component
     TimelinePageComponent,
     TimelineListComponent,
     TimelineItemComponent,
-    MemorialTimelineComponent,                               
+    MemorialTimelineComponent,
     JeffreyAiComponent,
   ],
   imports: [
@@ -39,7 +39,7 @@ import { JeffreyAiComponent } from './components/jeffrey-ai/jeffrey-ai.component
     TimelinePageComponent,
     TimelineListComponent,
     TimelineItemComponent,
-    MemorialTimelineComponent,                        
+    MemorialTimelineComponent,
   ],
 })
-export class MemorialTimelineModule {}
+export class TimelineModule {}

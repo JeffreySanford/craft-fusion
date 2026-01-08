@@ -17,7 +17,7 @@ export class SparkleDirective implements OnInit, OnDestroy {
 
     this.renderer.setStyle(this.el.nativeElement, 'position', 'relative');
 
-    this.renderer.setStyle(this.el.nativeElement, 'animation', 'pulse 2s infinite');
+    // keep the existing fade-in animation intact by avoiding overriding it here
     this.renderer.setStyle(this.el.nativeElement, 'transform-origin', 'center');
 
     const style = document.createElement('style');

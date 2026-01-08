@@ -12,7 +12,7 @@ const routes: Routes = [
     children: [
       {
         path: 'timeline',
-        loadChildren: () => import('./projects/timeline/memorial-timeline/memorial-timeline.module').then(m => m.MemorialTimelineModule),
+        loadChildren: () => import('./projects/timeline/timeline.module').then(m => m.TimelineModule),
       },
     ],
   },

@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, Inject, inject } from '@angular/core';
-import { MatTabChangeEvent } from '@angular/material/tabs';
 import { Router } from '@angular/router';
 import { LoggerService, ServiceCallMetric } from '../../common/services/logger.service';
 import { DataSimulationService } from '../../common/services/data-simulation.service';
@@ -7,6 +6,7 @@ import { ServicesDashboardService } from './services-dashboard/services-dashboar
 import { AuthenticationService } from '../../common/services/authentication.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { SocketClientService } from '../../common/services/socket-client.service';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-admin',
@@ -73,7 +73,8 @@ export class AdminComponent implements OnInit, OnDestroy {
     });
   }
 
-  onTabChange(event: MatTabChangeEvent): void {
+  onTabChange(_event: MatTabChangeEvent): void {
+    void _event;
     // No tab-specific monitoring; tabs share the same shell now.
   }
 

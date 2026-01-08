@@ -20,7 +20,7 @@ export const appRoutes: Routes = [
 
   {
     path: 'timeline',
-    loadChildren: () => import('./projects/family/memorial-timeline/memorial-timeline.module').then(m => m.MemorialTimelineModule),
+    loadChildren: () => import('./projects/timeline/timeline.module').then(m => m.TimelineModule),
     canActivate: [AuthGuard, AdminGuard],
   },
   {

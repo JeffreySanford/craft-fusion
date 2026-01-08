@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AdminLandingComponent } from './admin-landing.component';
 import { ServicesDashboardService, ServiceMetricsSummary } from '../services-dashboard/services-dashboard.service';
 import { LoggerService, LogEntry, LogLevel } from '../../../common/services/logger.service';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('AdminLandingComponent', () => {

@@ -1,4 +1,4 @@
-# Memorial Timeline — Project Overview
+# Timeline - Project Overview
 
 Last updated: 2025-12-30
 
@@ -7,22 +7,22 @@ Last updated: 2025-12-30
 - Backend: `apps/craft-nest` exposes a timeline API using Mongoose schemas. In development the app will start an in-memory MongoDB (mongodb-memory-server) when no `MONGODB_URI` is configured so seeded events are available locally.
 - Seed file: `apps/craft-nest/src/app/timeline/timeline/seed-events.json` contains the three curated events (Ray Sanford, Jeffrey Sanford, Gotcha Harness). A dev-only idempotent seeder runs at bootstrap and skips already-present events.
 - Server-side AI proxy: AI generation is proxied through `apps/craft-nest/src/app/ai` endpoints and reads `OPENAI_API_KEY` from server-side `ConfigService` (see `.env.example`). Client no longer holds the API key.
-- UI: `apps/craft-web` uses `TimelineService` (REST + WS) and `memorial-timeline` components were wired to load initial events on startup. Inline styles were moved into component SCSS for linting and consistency.
+- UI: `apps/craft-web` uses `TimelineService` (REST + WS) and timeline components were wired to load initial events on startup. Inline styles were moved into component SCSS for linting and consistency.
 - Testing: an e2e spec was added at `apps/craft-nest/test/timeline.e2e-spec.ts` that validates request validation (400 on malformed payloads) and a happy-path create (201). `supertest` is used for HTTP assertions and has been added to devDependencies.
 
 ### Dev notes and logs
 
-- When navigating to `/family` locally you may see router lifecycle log entries (Guard checks, ResolveStart/End, Activation events) and auth guard logs such as:
+When navigating to `/timeline` locally you may see router lifecycle log entries (Guard checks, ResolveStart/End, Activation events) and auth guard logs such as:
 
-  - `Auth guard: User is authorized to access route {url: '/family'}`
-  - `logger.service.ts:353 [OperatorSubscriber] Admin guard: User has admin permissions {url: '/family'}`
-  - `logger.service.ts:356 [Object] User navigated to /family`
+  - `Auth guard: User is authorized to access route {url: '/timeline'}`
+  - `logger.service.ts:353 [OperatorSubscriber] Admin guard: User has admin permissions {url: '/timeline'}`
+  - `logger.service.ts:356 [Object] User navigated to /timeline`
 
 These are produced by runtime debug logging in the Angular app and the server-side guards/gateway code; they help diagnose activation/guard/resolver flows and verify seeded data is presented after the router finishes navigation.
 
 ## Vision and narrative (verbose plan)
 
-The Memorial Timeline is a living, respectful archive for the family. It should feel like an intentional, curated space: part historical record, part memory album, part developer story. The experience is not a social feed. It is a deliberate timeline with context, provenance, and sensitivity. Each entry should be concise enough to scan, yet deep enough to honor the person or moment when expanded. The content should reinforce continuity across generations while still making space for modern artifacts (projects, AI work, or technical milestones) that document the family's ongoing story.
+The timeline is a living, respectful archive for the family. It should feel like an intentional, curated space: part historical record, part memory album, part developer story. The experience is not a social feed. It is a deliberate timeline with context, provenance, and sensitivity. Each entry should be concise enough to scan, yet deep enough to honor the person or moment when expanded. The content should reinforce continuity across generations while still making space for modern artifacts (projects, AI work, or technical milestones) that document the family's ongoing story.
 
 The tone is calm, dignified, and human. The design should support solemn moments without feeling heavy, and celebratory moments without feeling loud. That balance comes from typography, spacing, and a subtle patriotic motif that feels respectful rather than performative. Every visual decision should communicate "care" - for the people represented, for the accuracy of the story, and for the privacy of those involved.
 
@@ -113,7 +113,7 @@ The tone is calm, dignified, and human. The design should support solemn moments
 
 Purpose
 
-- A focused memorial timeline feature that surfaces three curated items: two historical/personal memorials and one developer/AI artifact. Each item includes provenance, privacy metadata, and an optional link to a longer report or documentation.
+- A focused timeline feature that surfaces three curated items: two historical/personal memorials and one developer/AI artifact. Each item includes provenance, privacy metadata, and an optional link to a longer report or documentation.
 
 What we will ship first
 
@@ -129,9 +129,9 @@ Why three items
 
 Where to look in the code
 
-- Frontend timeline service: `apps/craft-web/src/app/projects/family/memorial-timeline/services/timeline.service.ts` (REST + WS logic)
-- Client model: `apps/craft-web/src/app/projects/family/memorial-timeline/models/timeline-event.model.ts`
-- Page component: `apps/craft-web/src/app/projects/family/memorial-timeline/components/timeline-page/timeline-page.component.ts`
+- Frontend timeline service: `apps/craft-web/src/app/projects/timeline/services/timeline.service.ts` (REST + WS logic)
+- Client model: `apps/craft-web/src/app/projects/timeline/models/timeline-event.model.ts`
+- Page component: `apps/craft-web/src/app/projects/timeline/components/timeline-page/timeline-page.component.ts`
 - Presentation components: `components/timeline-list` and `components/timeline-item`
 - Backend timeline schema/controller: `apps/craft-nest/src/app/timeline/timeline/*` (see `schemas/timeline-event.schema.ts`)
 
@@ -184,7 +184,7 @@ Seed payloads (ready-to-edit)
   "type": "project",
   "createdBy": "jeffrey",
   "visibility": "public",
-  "actionLink": "/documentation/projects/memorial-timeline.md",
+  "actionLink": "/documentation/projects/timeline.md",
   "tags": ["testing","security","gotcha"]
  }
 
@@ -239,7 +239,7 @@ The detail view should render gracefully when optional fields are missing (no em
 ### Behavior and interaction
 
 - Entry point: open from a timeline card (button or card click).
-- Deep link: optional `/family/memorial-timeline/:id` route renders the same view.
+- Deep link: optional `/timeline/:id` route renders the same view.
 - The detail view listens for updated event data and refreshes if the record changes.
 - "Request access" should route to a contact or access flow (future) when visibility is restricted.
 - For external links, open in a new tab with `rel="noopener noreferrer"`.
@@ -266,7 +266,7 @@ The detail view should render gracefully when optional fields are missing (no em
 - Given an event without media, the media region is omitted (no empty containers).
 - When the user opens the detail view, focus lands on the title and stays trapped inside the dialog until closed.
 - When Escape is pressed (modal), the dialog closes and focus returns to the event card.
-- When `/family/memorial-timeline/:id` is visited directly, the detail view loads the event or shows a not-found state.
+- When `/timeline/:id` is visited directly, the detail view loads the event or shows a not-found state.
 - When `visibility` is `private` or `moderated`, the view shows a badge and a "Request access" action.
 - When `actionLink` is present, the "Learn more" action opens a new tab with `rel="noopener noreferrer"`.
 - When the event type is known, the correct badge color and icon display consistently with the list view.
@@ -274,7 +274,7 @@ The detail view should render gracefully when optional fields are missing (no em
 
 Moderation & privacy
 
-- Default memorials to `moderated` and require admin approval before public display.
+- Default entries to `moderated` and require admin approval before public display.
 - Audit logs for create/approve actions (server-side) to ensure tamper evidence.
 - Sanitize and validate all user-submitted content; images must be uploaded to a controlled store and filenames sanitized.
 

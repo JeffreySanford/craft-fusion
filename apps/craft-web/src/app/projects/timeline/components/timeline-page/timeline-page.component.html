@@ -14,9 +14,9 @@
             <mat-icon>family_restroom</mat-icon>
             Ray Sanford
           </mat-option>
-          <mat-option value="jeffrey">
+          <mat-option value="jeffrey-sanford">
             <mat-icon>person</mat-icon>
-            Jeffrey
+            Jeffrey Sanford
           </mat-option>
         </mat-select>
       </mat-form-field>
@@ -37,6 +37,10 @@
             <mat-icon>person_outline</mat-icon>
             Personal
           </mat-option>
+          <mat-option value="education">
+            <mat-icon>school</mat-icon>
+            Education
+          </mat-option>
           <mat-option value="historical">
             <mat-icon>history</mat-icon>
             Historical
@@ -45,27 +49,30 @@
       </mat-form-field>
     </div>
 
-    <div *ngIf="loading" class="loading-container">
+    <div *ngIf="selectedPerson !== 'all' && loading" class="loading-container">
       <mat-spinner diameter="40"></mat-spinner>
       <span>Loading timeline events...</span>
     </div>
 
-    <div *ngIf="!loading && (selectedPerson === 'all' || selectedType === 'all')" class="selection-prompt">
-      <mat-icon class="prompt-icon">timeline</mat-icon>
-      <h3>Please select filters to view timeline events</h3>
-      <p>Choose a person and event type above to explore the interactive timeline</p>
+    <div *ngIf="!loading" class="timeline-display">
+      <div *ngIf="selectedPerson === 'all'" class="filter-note">
+        <mat-icon>info</mat-icon>
+        <p>Select a person to load their curated timeline; use the type filter only if you want to narrow the view.</p>
+      </div>
+
+      <div *ngIf="selectedPerson !== 'all'" class="timeline-area">
+        <ng-container *ngIf="filteredEvents$ | async as events">
+          <div *ngIf="events.length === 0" class="selection-prompt">
+            <mat-icon class="prompt-icon">info</mat-icon>
+            <h3>No timeline events found</h3>
+            <p>Try adjusting the filters or refresh the page.</p>
+          </div>
+
+          <div *ngIf="events.length > 0" class="timeline-display-shell">
+            <app-timeline-list [events]="events"></app-timeline-list>
+          </div>
+        </ng-container>
+      </div>
     </div>
-
-    <ng-container *ngIf="!loading && selectedPerson !== 'all' && selectedType !== 'all'">
-      <ng-container *ngIf="filteredEvents$ | async as events">
-        <div *ngIf="events.length === 0" class="selection-prompt">
-          <mat-icon class="prompt-icon">info</mat-icon>
-          <h3>No timeline events found</h3>
-          <p>Try adjusting the filters or refresh the page.</p>
-        </div>
-
-        <app-timeline-list *ngIf="events.length > 0" [events]="events"></app-timeline-list>
-      </ng-container>
-    </ng-container>
   </div>
 </div>

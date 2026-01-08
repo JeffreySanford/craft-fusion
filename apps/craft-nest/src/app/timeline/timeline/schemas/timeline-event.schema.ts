@@ -6,7 +6,9 @@ export enum TimelineEventType {
   TIMELINE = 'timeline',
   HISTORICAL = 'historical',
   ANNIVERSARY = 'anniversary',
-  PROJECT = 'project'
+  PROJECT = 'project',
+  PROFESSIONAL = 'professional',
+  EDUCATION = 'education',
 }
 
 @Schema({ timestamps: true })
@@ -32,6 +34,9 @@ export class TimelineEvent extends Document {
     default: TimelineEventType.PERSONAL
   })
   type: TimelineEventType = TimelineEventType.PERSONAL;
+
+  @Prop({ required: true, default: 'jeffrey-sanford' })
+  person: string = 'jeffrey-sanford';
 
   @Prop()
   createdAt: Date = new Date();

@@ -8,7 +8,7 @@
       class="mat-elevation-z10 menu-item"
       [class.mat-elevation-z8]="item.active"
       [class.collapsed]="isCollapsed"
-      [class.admin-link]="item.label === 'Admin'"
+      [class.admin-link]="item.isProtected"
     >
       <mat-icon>{{ item.icon }}</mat-icon>
       <span class="menu-text" [class.collapsed]="isCollapsed" *ngIf="!isCollapsed">{{ item.label }}</span>

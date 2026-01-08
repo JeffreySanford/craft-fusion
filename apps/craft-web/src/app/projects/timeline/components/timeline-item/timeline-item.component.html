@@ -1,0 +1,41 @@
+<mat-card class="timeline-item-card" [ngClass]="[cardTypeClass, cardStateClass]">
+  <mat-card-header class="timeline-card-header">
+    <div mat-card-avatar class="timeline-avatar">
+      <mat-icon>{{ iconName }}</mat-icon>
+    </div>
+    <div class="timeline-card-meta">
+      <div class="timeline-card-heading">
+        <div class="timeline-title-lines">
+          <span class="timeline-title-primary">{{ titleLines.primary }}</span>
+          <span *ngIf="titleLines.secondary" class="timeline-title-secondary">{{ titleLines.secondary }}</span>
+        </div>
+      </div>
+      <mat-card-subtitle class="timeline-item-subtitle">{{ formattedDate }}</mat-card-subtitle>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content class="timeline-item-body" [class.timeline-item-body--expanded]="expanded">
+    <p
+      class="timeline-item-description"
+      [class.timeline-item-description--expanded]="expanded"
+      *ngIf="event.description">
+      {{ event.description }}
+    </p>
+
+    <div *ngIf="event.imageUrl" class="timeline-image-container">
+      <img [src]="event.imageUrl" [alt]="event.title" class="timeline-image" />
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions *ngIf="hasDescription || event.actionLink" class="timeline-actions">
+    <button mat-button *ngIf="hasDescription" (click)="toggleExpanded()" [attr.aria-expanded]="expanded">
+      <mat-icon>{{ expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+      {{ expanded ? 'Show less' : 'Read more' }}
+    </button>
+    <a mat-button *ngIf="event.actionLink" [href]="event.actionLink" target="_blank" rel="noopener noreferrer">
+      <mat-icon>open_in_new</mat-icon>
+      Learn more
+    </a>
+  </mat-card-actions>
+  <div *ngIf="typeLabel" class="timeline-card-type" [ngClass]="'timeline-type--' + event.type">{{ typeLabel }}</div>
+</mat-card>

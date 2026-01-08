@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, EMPTY } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, tap, map, shareReplay } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { TimelineEvent } from '../models/timeline-event.model';
-import { AuthService } from '../../../../common/services/auth/auth.service';
-import { LoggerService } from '../../../../common/services/logger.service';
-import { environment } from '../../../../../environments/environment';
+import { AuthService } from '../../../common/services/auth/auth.service';
+import { LoggerService } from '../../../common/services/logger.service';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -87,10 +87,17 @@ export class TimelineService {
       url = `${url}?${params.join('&')}`;
     }
 
+    const personLabel = person ?? 'all people';
+    const typeLabel = type ?? 'any type';
+
+    console.log(`[TimelineService] Requesting timeline events for ${personLabel} (${typeLabel}) from ${url}`);
+
     return this.http.get<any[]>(url).pipe(
       map((events: any[]) => events.map((event: any) => this.mapApiEventToTimelineEvent(event))),
       tap((events: TimelineEvent[]) => {
-        console.log(`[TimelineService] Loaded initial events from ${url}: ${Array.isArray(events) ? events.length : 0}`);
+        console.log(
+          `[TimelineService] Loaded initial events for ${personLabel} (${typeLabel}) from ${url}: ${Array.isArray(events) ? events.length : 0}`,
+        );
         this.eventsSubject.next(events);
       }),
       catchError(error => {
@@ -109,6 +116,7 @@ export class TimelineService {
       imageUrl: apiEvent.imageUrl,
       actionLink: apiEvent.actionLink,
       type: apiEvent.type,
+      person: apiEvent.person,
     };
   }
 

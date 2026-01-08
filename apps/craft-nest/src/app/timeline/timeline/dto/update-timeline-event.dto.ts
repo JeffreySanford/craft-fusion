@@ -25,4 +25,8 @@ export class UpdateTimelineEventDto {
   @IsOptional()
   @IsEnum(TimelineEventType)
   type?: TimelineEventType;
+
+  @IsOptional()
+  @IsString()
+  person?: string;
 }

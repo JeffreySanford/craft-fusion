@@ -15,6 +15,7 @@ describe('TimelineGateway', () => {
     date: new Date('2023-01-01'),
     imageUrl: 'http://example.com/image.jpg',
     actionLink: 'http://example.com',
+    person: 'jeffrey-sanford',
     createdBy: { id: 'system', username: 'system', email: 'system@example.com', firstName: 'System', lastName: 'User', createdAt: new Date(), updatedAt: new Date() },
     createdAt: new Date(),
     updatedAt: new Date(),

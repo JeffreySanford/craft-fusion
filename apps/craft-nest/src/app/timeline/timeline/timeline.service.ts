@@ -29,11 +29,18 @@ export class TimelineService {
       filter['type'] = { $in: mappedTypes };
     }
 
-    if (person) {
+    if (person && person.toLowerCase() !== 'all') {
+      const normalizedPerson = this.normalizePerson(person);
       const regex = this.buildPersonRegex(person);
+      const orClauses: Record<string, unknown>[] = [
+        { person: { $regex: new RegExp(`^${normalizedPerson}$`, 'i') } },
+      ];
+
       if (regex) {
-        filter['$or'] = [{ title: { $regex: regex } }, { description: { $regex: regex } }];
+        orClauses.push({ title: { $regex: regex } }, { description: { $regex: regex } });
       }
+
+      filter['$or'] = orClauses;
     }
 
     return from(this.timelineEventModel.find(filter).exec()).pipe(tap(events => this.logger.debug(`Found ${events.length} timeline events`)));
@@ -42,7 +49,8 @@ export class TimelineService {
   private mapType(type?: string): string[] | undefined {
     if (!type) return undefined;
     const normalized = type.toLowerCase();
-    if (normalized === 'professional') return ['historical', 'project', 'personal'];
+    if (normalized === 'professional') return ['professional', 'project'];
+    if (normalized === 'education') return ['education'];
     if (normalized === 'technical') return ['project', 'personal'];
     if (normalized === 'personal') return ['personal', 'historical'];
     if (normalized === 'historical') return ['historical'];
@@ -50,16 +58,24 @@ export class TimelineService {
     return [type];
   }
 
+  private normalizePerson(person: string): string {
+    const normalized = person.toLowerCase();
+    if (normalized === 'jeffrey' || normalized === 'jeffrey-sanford') {
+      return 'jeffrey-sanford';
+    }
+    if (normalized === 'raymond' || normalized === 'raymond-sanford') {
+      return 'raymond-sanford';
+    }
+    return normalized;
+  }
+
   private buildPersonRegex(person: string): RegExp | null {
     const normalized = person.toLowerCase();
-    if (normalized === 'raymond-sanford') {
+    if (normalized === 'raymond-sanford' || normalized === 'raymond') {
       return /(ray(\s|$)|raymond|sanford)/i;
     }
-    if (normalized === 'jeffrey') {
+    if (normalized === 'jeffrey-sanford' || normalized === 'jeffrey') {
       return /(jeffrey|developer journal)/i;
-    }
-    if (normalized === 'all') {
-      return null;
     }
     return new RegExp(normalized, 'i');
   }

@@ -7,6 +7,7 @@ export class TimelineEvent {
   description: string = '';
   imageUrl: string = '';
   actionLink?: string;
+  person: string = '';
   createdBy: User = new User();
   createdAt: Date = new Date();
   updatedAt: Date = new Date();

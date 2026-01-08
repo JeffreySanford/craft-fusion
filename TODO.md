@@ -144,9 +144,9 @@ This file is the planning source of truth. It records decisions, risks, and the 
 
 - [x] Ensure timeline schema includes `project` type (`apps/craft-nest/src/app/timeline/timeline/schemas/timeline-event.schema.ts`)
 - [x] Seed three curated events (`apps/craft-nest/src/app/timeline/timeline/seed-events.json`)
-- [x] Wire `TimelineService.events$` to the timeline page and keep loading state (`apps/craft-web/src/app/projects/timeline/memorial-timeline/components/timeline-page/timeline-page.component.ts`)
-- [x] Add type filters and consistent options (`apps/craft-web/src/app/projects/timeline/memorial-timeline/components/timeline-page/timeline-page.component.html`)
-- [x] Add type icon + badge and read-more toggle (`apps/craft-web/src/app/projects/timeline/memorial-timeline/components/timeline-item/*`)
+- [x] Wire `TimelineService.events$` to the timeline page and keep loading state (`apps/craft-web/src/app/projects/timeline/components/timeline-page/timeline-page.component.ts`)
+- [x] Add type filters and consistent options (`apps/craft-web/src/app/projects/timeline/components/timeline-page/timeline-page.component.html`)
+- [x] Add type icon + badge and read-more toggle (`apps/craft-web/src/app/projects/timeline/components/timeline-item/*`)
 - [ ] Investigate missing rendered events in Timeline UI (API/stream appears reachable)
 - [ ] Add empty-state copy that guides filter changes and access requests
 - [ ] Add unit tests for filtering and read-more behavior

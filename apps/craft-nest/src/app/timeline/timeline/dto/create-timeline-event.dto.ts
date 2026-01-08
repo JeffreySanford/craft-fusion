@@ -25,4 +25,8 @@ export class CreateTimelineEventDto {
   @IsNotEmpty()
   @IsEnum(TimelineEventType)
   type: TimelineEventType = TimelineEventType.PERSONAL;
+
+  @IsNotEmpty()
+  @IsString()
+  person: string = 'jeffrey-sanford';
 }

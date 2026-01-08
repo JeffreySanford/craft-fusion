@@ -86,12 +86,12 @@ export class SidebarComponent implements OnInit {
           const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
           if (adminItemIndex === -1) {
             console.log('🔧 Sidebar: Adding admin menu items');
-            this.menuGroups[0].items.push(
-              { icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false },
-              { icon: 'schedule', label: 'Timeline', routerLink: '/timeline', active: false },
-              { icon: 'chat_bubble', label: 'Chat', routerLink: '/chat', active: false },
-              { icon: 'book', label: 'Book', routerLink: '/book', active: false },
-            );
+          this.menuGroups[0].items.push(
+            { icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false, isProtected: true },
+            { icon: 'schedule', label: 'Timeline', routerLink: '/timeline', active: false, isProtected: true },
+            { icon: 'chat_bubble', label: 'Chat', routerLink: '/chat', active: false, isProtected: true },
+            { icon: 'book', label: 'Book', routerLink: '/book', active: false, isProtected: true },
+          );
           }
         }
       } else {

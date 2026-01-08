@@ -26,6 +26,7 @@ describe('TimelineController', () => {
       username: 'system',
       role: 'system',
     },
+    person: 'jeffrey-sanford',
   };
 
   const mockTimelineService = {
@@ -67,6 +68,7 @@ describe('TimelineController', () => {
         description: 'Test Description',
         date: '2023-01-01T00:00:00.000Z',
         type: TimelineEventType.PERSONAL,
+        person: 'jeffrey-sanford',
       };
 
       mockTimelineService.create.mockReturnValue(of(mockTimelineEvent));
@@ -86,6 +88,7 @@ describe('TimelineController', () => {
         description: 'Test Description',
         date: '2023-01-01T00:00:00.000Z',
         type: TimelineEventType.PERSONAL,
+        person: 'jeffrey-sanford',
       };
 
       mockTimelineService.create.mockReturnValue(throwError(() => new Error('Creation failed')));
