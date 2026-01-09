@@ -14,7 +14,8 @@ export class LandingComponent implements OnInit, AfterViewInit {
   sectionDelay = 0;
   private readonly wordTotal = 0.9;
   private readonly wordPause = 0.25;
-  private readonly letterDuration = 0.4;
+  private readonly letterDuration = 0.075; // Twice as fast (was 0.15)
+  private readonly letterPause = 0.015; // Twice as fast (was 0.03)
   private readonly fireworkDelay = 0.3;
   @ViewChild('titleRef', { static: true }) titleRef!: ElementRef<HTMLElement>;
 
@@ -39,17 +40,16 @@ export class LandingComponent implements OnInit, AfterViewInit {
       if (!textEl) return;
       const text = textEl.textContent?.trim() || '';
       textEl.innerHTML = '';
-      const wordTotal = this.wordTotal;
       const letterDuration = this.letterDuration;
-      const letters = Math.max(1, text.length);
-      const stagger = letters > 1 ? (wordTotal - letterDuration) / (letters - 1) : 0;
+      const letterPause = this.letterPause;
+      const letters = text.length;
 
-      for (let i = 0; i < text.length; i++) {
+      for (let i = 0; i < letters; i++) {
         const ch = text.charAt(i);
         const span = this.renderer.createElement('span');
         this.renderer.addClass(span, 'char');
         this.renderer.setProperty(span, 'textContent', ch);
-        const delay = globalDelay + i * stagger;
+        const delay = globalDelay + i * (letterDuration + letterPause);
         try {
           (span as HTMLElement).style.setProperty('--delay', `${delay}s`);
           (span as HTMLElement).style.setProperty('--duration', `${letterDuration}s`);
@@ -60,7 +60,8 @@ export class LandingComponent implements OnInit, AfterViewInit {
         this.renderer.appendChild(textEl, span);
       }
 
-      globalDelay += wordTotal;
+      // Total time for this word = last letter delay + letter duration
+      globalDelay += (letters - 1) * (letterDuration + letterPause) + letterDuration;
       if (wordIndex < words.length - 1) globalDelay += this.wordPause;
     });
 
@@ -108,7 +109,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
 
       this.renderer.addClass(anchorEl, 'firework-anchor');
 
-      const particleCount = 22;
+      const particleCount = 44;
       for (let i = 0; i < particleCount; i++) {
         const particle = this.renderer.createElement('span');
         this.renderer.addClass(particle, 'firework-particle');
