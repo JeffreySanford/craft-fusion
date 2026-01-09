@@ -103,7 +103,7 @@
                 <mat-icon *ngIf="isOscalRunning(profile)">sync</mat-icon>
                 {{ isOscalRunning(profile) ? 'Scanning...' : 'Run scan' }}
               </button>
-              <button mat-button color="accent" (click)="viewOscalReport(profile)">View report</button>
+              <button mat-button color="accent" (click)="viewOscalReport(profile)" *ngIf="hasOscalReport(profile)">View report</button>
             </div>
           </article>
         </div>
@@ -169,8 +169,7 @@
 
         <div class="realtime-grid" *ngIf="realtimeChecks.length > 0">
           <article class="realtime-card" *ngFor="let check of realtimeChecks" 
-                   [class.running]="isRealtimeCheckRunning(check)"
-                   (click)="runRealtimeCheck(check)">
+                   [class.running]="isRealtimeCheckRunning(check)">
             <div>
               <p class="label">
                 <mat-icon *ngIf="isRealtimeCheckRunning(check)" class="spin">sync</mat-icon>
@@ -180,6 +179,12 @@
               <p class="hint" *ngIf="check.endpoint">Endpoint: {{ check.endpoint }}</p>
             </div>
             <span class="badge" [ngClass]="check.status">{{ check.status | titlecase }}</span>
+            <div class="realtime-actions">
+              <button mat-stroked-button color="primary" (click)="runRealtimeCheck(check)" [disabled]="isRealtimeCheckRunning(check)">
+                {{ isRealtimeCheckRunning(check) ? 'Running...' : 'Run check' }}
+              </button>
+              <button mat-button color="accent" (click)="viewRealtimeReport(check)" *ngIf="hasRealtimeReport(check)">View report</button>
+            </div>
           </article>
         </div>
       </div>

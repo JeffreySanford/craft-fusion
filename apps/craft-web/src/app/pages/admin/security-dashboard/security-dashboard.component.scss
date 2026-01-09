@@ -457,8 +457,7 @@
   box-shadow: 0 18px 30px rgba(2, 6, 23, 0.45);
   padding: 1.25rem;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   gap: 0.75rem;
   position: relative;
   overflow: hidden;
@@ -487,7 +486,16 @@
   .badge {
     position: relative;
     z-index: 1;
+    align-self: flex-start;
   }
+}
+
+.realtime-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  position: relative;
+  z-index: 1;
 }
 
 .findings-grid {

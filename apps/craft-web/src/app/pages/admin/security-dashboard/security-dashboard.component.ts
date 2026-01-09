@@ -121,6 +121,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   activeScanId: string | null = null;
   scanProgress: ScanProgress | null = null;
   runningScanMap = new Map<string, boolean>(); // Track which items are currently running
+  completedScanMap = new Map<string, boolean>(); // Track which items have completed at least one scan
 
   // Computed properties for Overview tab (cached)
   sessionSecurityStatus: { label: string; value: string; hint: string; type: 'stable' | 'warning' | 'neutral' } = {
@@ -191,6 +192,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
           
           if (progress.status === 'completed') {
             this.runningScanMap.set(progress.scanId, false);
+            this.completedScanMap.set(progress.scanId, true);
             // Refresh the relevant data
             if (progress.type === 'oscal') {
               this.loadOscalProfiles();
@@ -751,7 +753,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
 
     this.runningScanMap.set(profile.id, true);
     
-    this.apiService.post(`/api/security/oscal-profiles/${profile.id}/scan`, null)
+    this.apiService.post(`security/oscal-profiles/${profile.id}/scan`, null)
       .pipe(
         take(1),
         catchError((error) => {
@@ -794,6 +796,11 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
     return !!profile.id && !!this.runningScanMap.get(profile.id);
   }
 
+  hasOscalReport(profile: OscalProfile): boolean {
+    // Show report if profile has lastRun date OR if a scan completed
+    return !!profile.lastRun || (!!profile.id && !!this.completedScanMap.get(profile.id));
+  }
+
   /**
    * SBOM Actions
    */
@@ -810,7 +817,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
 
     this.runningScanMap.set(check.id, true);
     
-    this.apiService.post(`/api/security/realtime-checks/${check.id}/run`, null)
+    this.apiService.post(`security/realtime-checks/${check.id}/run`, null)
       .pipe(
         take(1),
         catchError((error) => {
@@ -851,6 +858,11 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
 
   isRealtimeCheckRunning(check: RealtimeCheck): boolean {
     return !!check.id && !!this.runningScanMap.get(check.id);
+  }
+
+  hasRealtimeReport(check: RealtimeCheck): boolean {
+    // Show report if check has lastRun date OR if a scan completed
+    return !!check.lastRun || (!!check.id && !!this.completedScanMap.get(check.id));
   }
 
   /**
