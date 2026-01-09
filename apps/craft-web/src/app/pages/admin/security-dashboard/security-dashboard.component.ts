@@ -122,6 +122,37 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   scanProgress: ScanProgress | null = null;
   runningScanMap = new Map<string, boolean>(); // Track which items are currently running
 
+  // Computed properties for Overview tab (cached)
+  sessionSecurityStatus: { label: string; value: string; hint: string; type: 'stable' | 'warning' | 'neutral' } = {
+    label: 'Session security',
+    value: 'Loading...',
+    hint: 'Initializing',
+    type: 'neutral'
+  };
+
+  activeUsersCount: { label: string; value: string; hint: string; type: 'stable' | 'warning' | 'neutral' } = {
+    label: 'Active users',
+    value: '1',
+    hint: 'Admin channel only',
+    type: 'neutral'
+  };
+
+  tlsStatus: { label: string; value: string; hint: string; type: 'stable' | 'warning' | 'neutral' } = {
+    label: 'Connection',
+    value: 'TLS 1.3',
+    hint: 'Perfect forward secrecy',
+    type: 'stable'
+  };
+
+  pendingPermissions: { label: string; value: string; hint: string; type: 'stable' | 'warning' | 'neutral' } = {
+    label: 'Permission requests',
+    value: 'Loading...',
+    hint: 'Checking',
+    type: 'neutral'
+  };
+
+  hardeningControls: Array<{ icon: string; label: string; hint: string; badge: string; active: boolean }> = [];
+
   constructor(
     private apiLogger: ApiLoggerService,
     private logger: LoggerService,
@@ -261,6 +292,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
       )
       .subscribe(data => {
         this.findings = Array.isArray(data) ? data : [];
+        this.updateOverviewMetrics();
       });
 
     this.dataSubscription.add(sub);
@@ -333,6 +365,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
       )
       .subscribe(data => {
         this.oscalProfiles = Array.isArray(data) ? data : [];
+        this.updateOverviewMetrics();
       });
 
     this.dataSubscription.add(sub);
@@ -428,60 +461,36 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Overview Tab Computed Properties
+   * Update Overview Tab Computed Properties
    */
-  get sessionSecurityStatus(): { label: string; value: string; hint: string; type: 'stable' | 'warning' | 'neutral' } {
-    // Check if auth is working and session rotation is enabled
+  private updateOverviewMetrics(): void {
+    // Session security status
     const authWorking = !this.oscalProfilesError && !this.findingsError;
-    return {
+    this.sessionSecurityStatus = {
       label: 'Session security',
       value: authWorking ? 'Protected' : 'Degraded',
       hint: authWorking ? 'Rotating tokens enabled' : 'Check auth configuration',
       type: authWorking ? 'stable' : 'warning'
     };
-  }
 
-  get activeUsersCount(): { label: string; value: string; hint: string; type: 'stable' | 'warning' | 'neutral' } {
-    // This could be enhanced with actual user session data
-    return {
-      label: 'Active users',
-      value: '1',
-      hint: 'Admin channel only',
-      type: 'neutral'
-    };
-  }
-
-  get tlsStatus(): { label: string; value: string; hint: string; type: 'stable' | 'warning' | 'neutral' } {
-    return {
-      label: 'Connection',
-      value: 'TLS 1.3',
-      hint: 'Perfect forward secrecy',
-      type: 'stable'
-    };
-  }
-
-  get pendingPermissions(): { label: string; value: string; hint: string; type: 'stable' | 'warning' | 'neutral' } {
+    // Pending permissions
     const openFindings = this.findings.filter(f => 
       ['open', 'new', 'active'].includes((f.status || '').toLowerCase())
     ).length;
     
-    return {
+    this.pendingPermissions = {
       label: 'Permission requests',
       value: openFindings > 0 ? `${openFindings} pending` : 'None pending',
       hint: openFindings > 0 ? 'Awaiting approval' : 'All clear',
       type: openFindings > 0 ? 'warning' : 'stable'
     };
-  }
 
-  get hardeningControls(): Array<{ icon: string; label: string; hint: string; badge: string; active: boolean }> {
+    // Hardening controls
     const criticalFindings = this.findings.filter(f => 
       ['critical', 'high'].includes((f.severity || '').toLowerCase())
     ).length;
     
-    const scaItemsActive = this.scaItems.filter(item => item.status === 'pass').length;
-    const totalScaItems = this.scaItems.length;
-    
-    return [
+    this.hardeningControls = [
       {
         icon: 'filter_list',
         label: 'Request filtering',
