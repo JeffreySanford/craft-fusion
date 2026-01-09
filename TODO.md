@@ -92,19 +92,19 @@ This file is the planning source of truth. It records decisions, risks, and the 
 
 ### Latest run (2026-01-08)
 
-**Status:** CI build failing on craft-web
+**Status:** ✅ All tests passing (local and CI)
 
-- Build: ❌ `craft-web:build` failing in GitHub Actions CI (local build successful)
+- Build: ✅ craft-web builds successfully (23s local, CI passing)
+- CI: ✅ Full pipeline passing in 6m 36s (commit 2779f828)
 - Login: Working correctly - users can login as admin
 - Refresh: Now properly clears authentication on page refresh (backend logout endpoint called)
-- E2E: craft-nest-e2e attempting to run before server fully started
+- E2E: ✅ craft-nest-e2e passing with MongoDB service container
 - Lint: `craft-web` passes with one `security/detect-object-injection` warning in `services-dashboard.service.ts`
 - Unit Tests: `craft-web` passes with some console logs but no failures
 - Playwright: Global setup/teardown ensures `craft-nest` runs before tests
 
 **Known Issues:**
 
-- craft-web:build failing in CI (investigation needed - check build logs)
 - Expected 401 errors logged during unauthenticated state (reduced to debug level)
 - Firefox e2e tests fail on admin dashboard and timeline components
 
