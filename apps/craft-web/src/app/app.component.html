@@ -3,7 +3,7 @@
     <app-header></app-header>
   </header>
   <div class="layout-container flex-row flex-1 gap-1em" [class.sidebar-collapsed]="isCollapsed">
-    <aside class="sidebar">
+    <aside class="sidebar" [class.collapsed]="isCollapsed">
       <app-sidebar [isSmallScreen]="isSmallScreen" [isCollapsed]="isCollapsed"></app-sidebar>
     </aside>
     <main class="main-stage flex-1" [class.footer-expanded]="isFooterExpanded" [class.sidebar-collapsed]="isCollapsed">

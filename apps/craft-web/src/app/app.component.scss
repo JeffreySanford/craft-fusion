@@ -57,13 +57,13 @@ app-header {
 }
 
 .sidebar.collapsed {
-  flex-basis: 0 !important;
+  flex-basis: 7em !important;
+  max-width: 7em !important;
+  min-width: 7em !important;
   margin: 0 !important;
-  max-width: 0 !important;
-  min-width: 0 !important;
   overflow: hidden;
   padding: 0 !important;
-  width: 0 !important;
+  width: 7em !important;
 }
 
 .main-stage,
@@ -91,13 +91,8 @@ app-header {
   margin-left: 1em;
 }
 
-.router-content-wrapper {
-  box-sizing: border-box;
-  display: flex;
-  flex: 1 1 0;
-  flex-direction: column;
-  height: 100%;
-
+.router-content-wrapper.footer-expanded {
+  padding-bottom: var(--footer-expanded-effective-height);
 }
 
 app-footer {
@@ -120,15 +115,15 @@ app-footer {
 }
 
 :root {
-  --footer-expanded-effective-height: 15em;                                                                                             
-  --main-content-target-vh-when-footer-expanded: 70vh;
+  --footer-expanded-effective-height: 10em;
+  --main-content-target-vh-when-footer-expanded: 100vh;
   --calculated-layout-height-footer-expanded: calc(var(--main-content-target-vh-when-footer-expanded) - var(--footer-expanded-effective-height));
 }
 
 .main-stage.footer-expanded,
-.layout-container.footer-expanded,                                                            
+.layout-container.footer-expanded,
 .router-content-wrapper.footer-expanded {
-  max-height: calc(85vh - 15em) !important;
+  max-height: calc(100vh - var(--footer-expanded-effective-height)) !important;
 }
 
 .layout-container.footer-expanded {

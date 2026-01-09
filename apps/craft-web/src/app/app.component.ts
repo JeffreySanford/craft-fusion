@@ -8,6 +8,7 @@ import { UserActivityService } from './common/services/user-activity.service';
 import { LoggerService } from './common/services/logger.service';
 import { AdminStateService } from './common/services/admin-state.service';
 import { FooterStateService } from './common/services/footer-state.service';
+import { SidebarStateService } from './common/services/sidebar-state.service';
 import { UserTrackingService } from './common/services/user-tracking.service';
 import { AuthService } from './common/services/auth/auth.service';
 
@@ -47,6 +48,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private logger: LoggerService,
     private authService: AuthService,
     private footerStateService: FooterStateService,
+    private sidebarStateService: SidebarStateService,
     private userStateService: UserStateService,
   ) {
 
@@ -88,9 +90,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     console.log('debug-router: AppComponent ngOnInit');
+    this.sidebarStateService.isCollapsed$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(collapsed => {
+        this.isCollapsed = collapsed;
+      });
     this.breakpointObserver.observe([Breakpoints.Handset]).subscribe((result: BreakpointState) => {
       this.isSmallScreen = !!result && !!result.matches;
-      this.isCollapsed = this.isSmallScreen;
+      if (this.isSmallScreen) {
+        this.sidebarStateService.toggleSidebar(true);
+      }
     });
 
     this.isSmallScreen = this.breakpointObserver.isMatched('(max-width: 599px)');
