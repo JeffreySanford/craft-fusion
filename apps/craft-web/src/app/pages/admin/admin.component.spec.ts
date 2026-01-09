@@ -18,12 +18,22 @@ class MockServicesDashboardService {
   getRegisteredServices() {
     return [];
   }
+  getLatestServiceMetrics() {
+    return [];
+  }
+  getServiceStatistics() {
+    return null;
+  }
 }
 
 class MockLoggerService {
   debug = jest.fn();
   info = jest.fn();
   warn = jest.fn();
+  logAdded$ = new BehaviorSubject({});
+  getLogs() {
+    return [];
+  }
 }
 
 class MockDataSimulationService {

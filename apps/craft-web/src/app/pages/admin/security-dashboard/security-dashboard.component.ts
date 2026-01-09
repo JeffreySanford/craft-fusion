@@ -1,9 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Subscription, of } from 'rxjs';
 import { catchError, finalize, take } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
 import { ApiLoggerService, ApiLogEntry } from '../../../common/services/api-logger.service';
 import { LoggerService } from '../../../common/services/logger.service';
 import { ApiService } from '../../../common/services/api.service';
+import { SecurityScanService, ScanProgress } from '../../../common/services/security-scan.service';
+import { SecurityReportModalComponent, SecurityReportData } from '../../../common/components/security-report-modal/security-report-modal.component';
 
 interface ApiEndpointLog {
   path: string;
@@ -41,6 +44,46 @@ interface SecurityEvidence {
   downloadUrl?: string;
 }
 
+interface Sbom {
+  id?: string;
+  name?: string;
+  format?: string;
+  created?: string;
+  delta?: string;
+  status?: string;
+  components?: number;
+  vulnerabilities?: number;
+  downloadUrl?: string;
+}
+
+interface OscalProfile {
+  id?: string;
+  name?: string;
+  status?: string;
+  lastRun?: string;
+  pass?: number;
+  fail?: number;
+  duration?: string;
+  profileType?: string;
+}
+
+interface ScaItem {
+  id?: string;
+  label?: string;
+  status?: string;
+  description?: string;
+  lastChecked?: string;
+}
+
+interface RealtimeCheck {
+  id?: string;
+  name?: string;
+  status?: string;
+  duration?: string;
+  lastRun?: string;
+  endpoint?: string;
+}
+
 @Component({
   selector: 'app-security-dashboard',
   templateUrl: './security-dashboard.component.html',
@@ -55,52 +98,48 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   timestampFormat = 'shortTime';
   findings: SecurityFinding[] = [];
   evidence: SecurityEvidence[] = [];
+  sboms: Sbom[] = [];
+  oscalProfiles: OscalProfile[] = [];
+  scaItems: ScaItem[] = [];
+  realtimeChecks: RealtimeCheck[] = [];
+
   findingsLoading = false;
   evidenceLoading = false;
+  sbomsLoading = false;
+  oscalProfilesLoading = false;
+  scaItemsLoading = false;
+  realtimeChecksLoading = false;
+
   findingsError: string | null = null;
   evidenceError: string | null = null;
+  sbomsError: string | null = null;
+  oscalProfilesError: string | null = null;
+  scaItemsError: string | null = null;
+  realtimeChecksError: string | null = null;
 
-  oscalProfiles = [
-    { name: 'OSCAL Standard', status: 'pass', lastRun: 'Today 10:15', pass: 122, fail: 0, duration: '2m 13s' },
-    { name: 'OSCAL PCI-DSS', status: 'warn', lastRun: 'Yesterday 16:05', pass: 117, fail: 3, duration: '2m 45s' },
-    { name: 'OSCAL OSPP', status: 'pending', lastRun: 'Not run', pass: 0, fail: 0, duration: '-' },
-  ];
-
-  scaTop10 = [
-    { label: 'A01: Deprecated packages removed', status: 'pass' },
-    { label: 'A02: Known CVEs triaged', status: 'warn' },
-    { label: 'A03: License policy enforced', status: 'pass' },
-    { label: 'A04: Outdated majors pinned', status: 'warn' },
-    { label: 'A05: Dev-time vs prod deps separated', status: 'pass' },
-    { label: 'A06: Integrity (SRI hashes) tracked', status: 'todo' },
-    { label: 'A07: Transitives audited', status: 'todo' },
-    { label: 'A08: SBOM emitted per build', status: 'pass' },
-    { label: 'A09: Supply-chain alerts wired', status: 'warn' },
-    { label: 'A10: Artifact signing planned', status: 'todo' },
-  ];
-
-  sboms = [
-    { name: 'Frontend SBOM', format: 'CycloneDX', created: 'Today 09:50', delta: '+2 / -1', status: 'ready' },
-    { name: 'Backend SBOM', format: 'SPDX', created: 'Yesterday 18:22', delta: '+0 / -0', status: 'ready' },
-  ];
-
-  realtimeChecks = [
-    { name: 'CSP/XSS smoke', status: 'pass', duration: '2.1s' },
-    { name: 'Rate-limit probe', status: 'pass', duration: '1.4s' },
-    { name: 'Auth freshness', status: 'warn', duration: '1.1s' },
-    { name: 'Headers (HSTS/CORS)', status: 'pass', duration: '0.9s' },
-  ];
+  // Scan progress tracking
+  activeScanId: string | null = null;
+  scanProgress: ScanProgress | null = null;
+  runningScanMap = new Map<string, boolean>(); // Track which items are currently running
 
   constructor(
     private apiLogger: ApiLoggerService,
     private logger: LoggerService,
     private apiService: ApiService,
+    private dialog: MatDialog,
+    private securityScanService: SecurityScanService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
     this.monitorApiEndpoints();
     this.loadFindings();
     this.loadEvidence();
+    this.loadSboms();
+    this.loadOscalProfiles();
+    this.loadScaItems();
+    this.loadRealtimeChecks();
+    this.setupScanProgressListener();
   }
 
   ngOnDestroy(): void {
@@ -108,6 +147,35 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
       this.apiLogsSubscription.unsubscribe();
     }
     this.dataSubscription.unsubscribe();
+    this.securityScanService.disconnect();
+  }
+
+  private setupScanProgressListener(): void {
+    this.securityScanService.connect();
+    
+    this.dataSubscription.add(
+      this.securityScanService.getScanProgress().subscribe({
+        next: (progress) => {
+          this.scanProgress = progress;
+          
+          if (progress.status === 'completed') {
+            this.runningScanMap.set(progress.scanId, false);
+            // Refresh the relevant data
+            if (progress.type === 'oscal') {
+              this.loadOscalProfiles();
+            } else if (progress.type === 'realtime') {
+              this.loadRealtimeChecks();
+            }
+          } else if (progress.status === 'failed') {
+            this.runningScanMap.set(progress.scanId, false);
+            this.logger.error('Scan failed', progress.message);
+          }
+          
+          this.cdr.markForCheck();
+        },
+        error: (error) => this.logger.error('Scan progress error', error),
+      })
+    );
   }
 
   private monitorApiEndpoints(): void {
@@ -217,6 +285,102 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
       )
       .subscribe(data => {
         this.evidence = Array.isArray(data) ? data : [];
+      });
+
+    this.dataSubscription.add(sub);
+  }
+
+  private loadSboms(): void {
+    this.sbomsLoading = true;
+    this.sbomsError = null;
+
+    const sub = this.apiService
+      .get<Sbom[]>('security/sboms')
+      .pipe(
+        take(1),
+        catchError(error => {
+          this.logger.warn('Failed to load SBOMs', { status: error?.status });
+          this.sbomsError = 'Unable to load SBOMs right now.';
+          return of([]);
+        }),
+        finalize(() => {
+          this.sbomsLoading = false;
+        }),
+      )
+      .subscribe(data => {
+        this.sboms = Array.isArray(data) ? data : [];
+      });
+
+    this.dataSubscription.add(sub);
+  }
+
+  private loadOscalProfiles(): void {
+    this.oscalProfilesLoading = true;
+    this.oscalProfilesError = null;
+
+    const sub = this.apiService
+      .get<OscalProfile[]>('security/oscal-profiles')
+      .pipe(
+        take(1),
+        catchError(error => {
+          this.logger.warn('Failed to load OSCAL profiles', { status: error?.status });
+          this.oscalProfilesError = 'Unable to load OSCAL profiles right now.';
+          return of([]);
+        }),
+        finalize(() => {
+          this.oscalProfilesLoading = false;
+        }),
+      )
+      .subscribe(data => {
+        this.oscalProfiles = Array.isArray(data) ? data : [];
+      });
+
+    this.dataSubscription.add(sub);
+  }
+
+  private loadScaItems(): void {
+    this.scaItemsLoading = true;
+    this.scaItemsError = null;
+
+    const sub = this.apiService
+      .get<ScaItem[]>('security/sca-items')
+      .pipe(
+        take(1),
+        catchError(error => {
+          this.logger.warn('Failed to load SCA items', { status: error?.status });
+          this.scaItemsError = 'Unable to load SCA items right now.';
+          return of([]);
+        }),
+        finalize(() => {
+          this.scaItemsLoading = false;
+        }),
+      )
+      .subscribe(data => {
+        this.scaItems = Array.isArray(data) ? data : [];
+      });
+
+    this.dataSubscription.add(sub);
+  }
+
+  private loadRealtimeChecks(): void {
+    this.realtimeChecksLoading = true;
+    this.realtimeChecksError = null;
+
+    const sub = this.apiService
+      .get<RealtimeCheck[]>('security/realtime-checks')
+      .pipe(
+        take(1),
+        catchError(error => {
+          this.logger.warn('Failed to load realtime checks', { status: error?.status });
+          this.realtimeChecksError = 'Unable to load realtime checks right now.';
+          return of([]);
+        }),
+        finalize(() => {
+          this.realtimeChecksLoading = false;
+        }),
+      )
+      .subscribe(data => {
+        this.realtimeChecks = Array.isArray(data) ? data : [];
       });
 
     this.dataSubscription.add(sub);
@@ -468,5 +632,198 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
     const width = 250;
     const height = 80;
     return `\n      <svg width="${width}" height="${height}" class="sparkline-detailed empty" xmlns="http://www.w3.org/2000/svg">\n        <text x="${width / 2}" y="${height / 2}" text-anchor="middle" fill="#9CA3AF" font-size="12">No data available</text>\n      </svg>\n    `;
+  }
+
+  /**
+   * OSCAL Actions
+   */
+  runOscalScan(profile: OscalProfile): void {
+    if (!profile.id || this.runningScanMap.get(profile.id)) return;
+
+    this.runningScanMap.set(profile.id, true);
+    
+    this.apiService.post(`/api/security/oscal-profiles/${profile.id}/scan`, null)
+      .pipe(
+        take(1),
+        catchError((error) => {
+          this.logger.error('Failed to start OSCAL scan', error);
+          this.runningScanMap.set(profile.id!, false);
+          return of(null);
+        })
+      )
+      .subscribe({
+        next: (response: any) => {
+          if (response?.scanId) {
+            this.activeScanId = response.scanId;
+            this.securityScanService.subscribeScan(response.scanId);
+          }
+        }
+      });
+  }
+
+  viewOscalReport(profile: OscalProfile): void {
+    const dialogData: SecurityReportData = {
+      title: `OSCAL Report - ${profile.name}`,
+      reportType: 'oscal',
+      data: profile,
+    };
+
+    const dialogRef = this.dialog.open(SecurityReportModalComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      data: dialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'download' && profile.id) {
+        this.downloadReport('oscal-profiles', profile.id, result.format);
+      }
+    });
+  }
+
+  isOscalRunning(profile: OscalProfile): boolean {
+    return !!profile.id && !!this.runningScanMap.get(profile.id);
+  }
+
+  /**
+   * SBOM Actions
+   */
+  compareSbom(sbom: Sbom): void {
+    // TODO: Implement SBOM comparison
+    this.logger.info('SBOM comparison not yet implemented', sbom);
+  }
+
+  /**
+   * Real-Time Test Actions
+   */
+  runRealtimeCheck(check: RealtimeCheck): void {
+    if (!check.id || this.runningScanMap.get(check.id)) return;
+
+    this.runningScanMap.set(check.id, true);
+    
+    this.apiService.post(`/api/security/realtime-checks/${check.id}/run`, null)
+      .pipe(
+        take(1),
+        catchError((error) => {
+          this.logger.error('Failed to run real-time check', error);
+          this.runningScanMap.set(check.id!, false);
+          return of(null);
+        })
+      )
+      .subscribe({
+        next: (response: any) => {
+          if (response?.scanId) {
+            this.activeScanId = response.scanId;
+            this.securityScanService.subscribeScan(response.scanId);
+          }
+        }
+      });
+  }
+
+  viewRealtimeReport(check: RealtimeCheck): void {
+    const dialogData: SecurityReportData = {
+      title: `Real-Time Check - ${check.name}`,
+      reportType: 'realtime',
+      data: check,
+    };
+
+    const dialogRef = this.dialog.open(SecurityReportModalComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      data: dialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'download' && check.id) {
+        this.downloadReport('realtime-checks', check.id, result.format);
+      }
+    });
+  }
+
+  isRealtimeCheckRunning(check: RealtimeCheck): boolean {
+    return !!check.id && !!this.runningScanMap.get(check.id);
+  }
+
+  /**
+   * Findings Actions
+   */
+  exportFindings(): void {
+    const dialogData: SecurityReportData = {
+      title: 'Security Findings Export',
+      reportType: 'findings',
+      data: this.findings,
+    };
+
+    const dialogRef = this.dialog.open(SecurityReportModalComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      data: dialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'download') {
+        this.downloadExport('findings', result.format);
+      }
+    });
+  }
+
+  /**
+   * Evidence Actions
+   */
+  downloadEvidenceBundle(): void {
+    const dialogData: SecurityReportData = {
+      title: 'Evidence Bundle',
+      reportType: 'evidence',
+      data: this.evidence,
+    };
+
+    const dialogRef = this.dialog.open(SecurityReportModalComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      data: dialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'download') {
+        // For evidence bundle, always download as ZIP/JSON
+        window.open(`/api/security/evidence/bundle`, '_blank');
+      }
+    });
+  }
+
+  /**
+   * SCA Actions
+   */
+  exportScaReport(): void {
+    const dialogData: SecurityReportData = {
+      title: 'Security Checklist Assessment',
+      reportType: 'sca',
+      data: this.scaItems,
+    };
+
+    const dialogRef = this.dialog.open(SecurityReportModalComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      data: dialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'download') {
+        this.downloadExport('sca-items', result.format);
+      }
+    });
+  }
+
+  /**
+   * Generic download helpers
+   */
+  private downloadReport(endpoint: string, id: string, format: 'pdf' | 'json' | 'xml'): void {
+    const url = `/api/security/${endpoint}/${id}/report?format=${format}`;
+    window.open(url, '_blank');
+  }
+
+  private downloadExport(endpoint: string, format: 'pdf' | 'json' | 'xml'): void {
+    const url = `/api/security/${endpoint}/export?format=${format}`;
+    window.open(url, '_blank');
   }
 }

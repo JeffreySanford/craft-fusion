@@ -15,10 +15,11 @@ describe('HeroTileComponent', () => {
 
     fixture = TestBed.createComponent(HeroTileComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    // Don't call detectChanges here - let each test set up inputs first
   });
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
@@ -26,6 +27,7 @@ describe('HeroTileComponent', () => {
     component.label = 'Test Label';
     component.value = '42';
     component.subLabel = 'Test Subtitle';
+    component.icon = 'info';
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
@@ -68,25 +70,28 @@ describe('HeroTileComponent', () => {
   });
 
   it('should emit tileClick when clickable and clicked', () => {
-    spyOn(component.tileClick, 'emit');
+    const emitSpy = jest.spyOn(component.tileClick, 'emit');
     component.clickable = true;
 
     component.onTileClick();
 
-    expect(component.tileClick.emit).toHaveBeenCalled();
+    expect(emitSpy).toHaveBeenCalled();
   });
 
   it('should not emit tileClick when not clickable', () => {
-    spyOn(component.tileClick, 'emit');
+    const emitSpy = jest.spyOn(component.tileClick, 'emit');
     component.clickable = false;
 
     component.onTileClick();
 
-    expect(component.tileClick.emit).not.toHaveBeenCalled();
+    expect(emitSpy).not.toHaveBeenCalled();
   });
 
   it('should display detail text when provided', () => {
+    component.label = 'Test';
+    component.value = '1';
     component.detail = 'Additional detail';
+    component.icon = 'info';
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
@@ -114,6 +119,7 @@ describe('HeroTileComponent', () => {
     component.label = 'Errors';
     component.value = '5';
     component.subLabel = '3 warnings';
+    component.icon = 'error';
     fixture.detectChanges();
 
     const article = fixture.nativeElement.querySelector('.hero-tile');

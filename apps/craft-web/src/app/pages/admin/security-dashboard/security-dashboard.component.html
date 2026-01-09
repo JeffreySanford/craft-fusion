@@ -12,7 +12,7 @@
     <mat-tab label="Overview">
       <div class="tab-pane">
         <div class="shield-grid">
-          <article class="shield-card stable">
+          <article class="shield-card stable mock-data">
             <div class="shield-icon"><mat-icon>verified_user</mat-icon></div>
             <div class="shield-body">
               <p class="label">Session security</p>
@@ -21,7 +21,7 @@
             </div>
           </article>
 
-          <article class="shield-card neutral">
+          <article class="shield-card neutral mock-data">
             <div class="shield-icon"><mat-icon>people</mat-icon></div>
             <div class="shield-body">
               <p class="label">Active users</p>
@@ -30,7 +30,7 @@
             </div>
           </article>
 
-          <article class="shield-card stable">
+          <article class="shield-card stable mock-data">
             <div class="shield-icon"><mat-icon>https</mat-icon></div>
             <div class="shield-body">
               <p class="label">Connection</p>
@@ -39,7 +39,7 @@
             </div>
           </article>
 
-          <article class="shield-card warning">
+          <article class="shield-card warning mock-data">
             <div class="shield-icon"><mat-icon>gpp_maybe</mat-icon></div>
             <div class="shield-body">
               <p class="label">Permission requests</p>
@@ -57,7 +57,7 @@
             </div>
           </div>
           <div class="feature-grid">
-            <article class="feature-card active">
+            <article class="feature-card active mock-data">
               <mat-icon>filter_list</mat-icon>
               <div>
                 <p class="label">Request filtering</p>
@@ -66,7 +66,7 @@
               <span class="badge">Active</span>
             </article>
 
-            <article class="feature-card active">
+            <article class="feature-card active mock-data">
               <mat-icon>lock_clock</mat-icon>
               <div>
                 <p class="label">Session timeout</p>
@@ -75,7 +75,7 @@
               <span class="badge">Enforced</span>
             </article>
 
-            <article class="feature-card active">
+            <article class="feature-card active mock-data">
               <mat-icon>security</mat-icon>
               <div>
                 <p class="label">Transport security</p>
@@ -84,7 +84,7 @@
               <span class="badge">Locked</span>
             </article>
 
-            <article class="feature-card inactive">
+            <article class="feature-card inactive mock-data">
               <mat-icon>fingerprint</mat-icon>
               <div>
                 <p class="label">MFA coverage</p>
@@ -93,7 +93,7 @@
               <span class="badge">TODO</span>
             </article>
 
-            <article class="feature-card inactive">
+            <article class="feature-card inactive mock-data">
               <mat-icon>vpn_lock</mat-icon>
               <div>
                 <p class="label">IP allowlist</p>
@@ -102,8 +102,8 @@
               <span class="badge">Off</span>
             </article>
 
-            <article class="feature-card active">
-              <mat-icon>privacy_tip</mat-icon>
+            <article class="feature-card active mock-data">
+              <mat-icon>enhanced_encryption</mat-icon>
               <div>
                 <p class="label">Data encryption</p>
                 <p class="hint">AES-256 at rest</p>
@@ -117,7 +117,13 @@
 
     <mat-tab label="OSCAL Scans">
       <div class="tab-pane">
-        <div class="oscal-grid">
+        <div class="status-message" *ngIf="oscalProfilesLoading">Loading OSCAL profiles...</div>
+        <div class="status-message error" *ngIf="oscalProfilesError">{{ oscalProfilesError }}</div>
+        <div class="empty-state" *ngIf="!oscalProfilesLoading && !oscalProfilesError && oscalProfiles.length === 0">
+          No OSCAL profiles available.
+        </div>
+
+        <div class="oscal-grid" *ngIf="oscalProfiles.length > 0">
           <article class="oscal-card" *ngFor="let profile of oscalProfiles">
             <div class="oscal-head">
               <h4>{{ profile.name }}</h4>
@@ -126,7 +132,7 @@
             <div class="oscal-meta">
               <div>
                 <p class="label">Last run</p>
-                <p class="value">{{ profile.lastRun }}</p>
+                <p class="value">{{ profile.lastRun ? (profile.lastRun | date: 'short') : 'Not run' }}</p>
               </div>
               <div>
                 <p class="label">Pass / Fail</p>
@@ -138,8 +144,11 @@
               </div>
             </div>
             <div class="oscal-actions">
-              <button mat-stroked-button color="primary">Run scan</button>
-              <button mat-button color="accent">View report</button>
+              <button mat-stroked-button color="primary" (click)="runOscalScan(profile)" [disabled]="isOscalRunning(profile)">
+                <mat-icon *ngIf="isOscalRunning(profile)">sync</mat-icon>
+                {{ isOscalRunning(profile) ? 'Scanning...' : 'Run scan' }}
+              </button>
+              <button mat-button color="accent" (click)="viewOscalReport(profile)">View report</button>
             </div>
           </article>
         </div>
@@ -148,8 +157,14 @@
 
     <mat-tab label="SCA Top 10">
       <div class="tab-pane">
-        <div class="sca-grid">
-          <article class="sca-item" *ngFor="let item of scaTop10">
+        <div class="status-message" *ngIf="scaItemsLoading">Loading SCA items...</div>
+        <div class="status-message error" *ngIf="scaItemsError">{{ scaItemsError }}</div>
+        <div class="empty-state" *ngIf="!scaItemsLoading && !scaItemsError && scaItems.length === 0">
+          No SCA items available.
+        </div>
+
+        <div class="sca-grid" *ngIf="scaItems.length > 0">
+          <article class="sca-item" *ngFor="let item of scaItems">
             <mat-icon class="sca-icon" [ngClass]="item.status">
               {{ item.status === 'pass' ? 'check_circle' : item.status === 'warn' ? 'error_outline' : 'schedule' }}
             </mat-icon>
@@ -164,18 +179,25 @@
 
     <mat-tab label="SBOMs">
       <div class="tab-pane">
-        <div class="sbom-grid">
+        <div class="status-message" *ngIf="sbomsLoading">Loading SBOMs...</div>
+        <div class="status-message error" *ngIf="sbomsError">{{ sbomsError }}</div>
+        <div class="empty-state" *ngIf="!sbomsLoading && !sbomsError && sboms.length === 0">
+          No SBOMs available.
+        </div>
+
+        <div class="sbom-grid" *ngIf="sboms.length > 0">
           <article class="sbom-card" *ngFor="let sbom of sboms">
             <div class="sbom-head">
               <h4>{{ sbom.name }}</h4>
               <span class="badge ready">{{ sbom.status }}</span>
             </div>
             <p class="hint">Format: {{ sbom.format }}</p>
-            <p class="hint">Created: {{ sbom.created }}</p>
+            <p class="hint">Created: {{ sbom.created | date: 'medium' }}</p>
             <p class="hint">Delta: {{ sbom.delta }}</p>
+            <p class="hint" *ngIf="sbom.components">Components: {{ sbom.components }}</p>
+            <p class="hint" *ngIf="sbom.vulnerabilities !== undefined">Vulnerabilities: {{ sbom.vulnerabilities }}</p>
             <div class="sbom-actions">
-              <button mat-stroked-button color="primary">Download</button>
-              <button mat-button color="accent">Compare</button>
+              <button mat-button color="accent" (click)="compareSbom(sbom)" disabled>Compare</button>
             </div>
           </article>
         </div>
@@ -184,11 +206,23 @@
 
     <mat-tab label="Real-Time Tests">
       <div class="tab-pane">
-        <div class="realtime-grid">
-          <article class="realtime-card" *ngFor="let check of realtimeChecks">
+        <div class="status-message" *ngIf="realtimeChecksLoading">Loading realtime checks...</div>
+        <div class="status-message error" *ngIf="realtimeChecksError">{{ realtimeChecksError }}</div>
+        <div class="empty-state" *ngIf="!realtimeChecksLoading && !realtimeChecksError && realtimeChecks.length === 0">
+          No realtime checks available.
+        </div>
+
+        <div class="realtime-grid" *ngIf="realtimeChecks.length > 0">
+          <article class="realtime-card" *ngFor="let check of realtimeChecks" 
+                   [class.running]="isRealtimeCheckRunning(check)"
+                   (click)="runRealtimeCheck(check)">
             <div>
-              <p class="label">{{ check.name }}</p>
+              <p class="label">
+                <mat-icon *ngIf="isRealtimeCheckRunning(check)" class="spin">sync</mat-icon>
+                {{ check.name }}
+              </p>
               <p class="hint">Duration: {{ check.duration }}</p>
+              <p class="hint" *ngIf="check.endpoint">Endpoint: {{ check.endpoint }}</p>
             </div>
             <span class="badge" [ngClass]="check.status">{{ check.status | titlecase }}</span>
           </article>
@@ -204,7 +238,7 @@
               <p class="eyebrow">Findings</p>
               <h4>Actionable security insights</h4>
             </div>
-            <button mat-stroked-button color="primary" disabled>Export findings</button>
+            <button mat-stroked-button color="primary" (click)="exportFindings()" [disabled]="findings.length === 0">Export findings</button>
           </div>
 
           <div class="status-message" *ngIf="findingsLoading">Loading findings...</div>
@@ -242,7 +276,7 @@
               <p class="eyebrow">Evidence</p>
               <h4>Artifacts and provenance</h4>
             </div>
-            <button mat-stroked-button color="primary" disabled>Download bundle</button>
+            <button mat-stroked-button color="primary" (click)="downloadEvidenceBundle()" [disabled]="evidence.length === 0">Download bundle</button>
           </div>
 
           <div class="status-message" *ngIf="evidenceLoading">Loading evidence...</div>
@@ -265,9 +299,6 @@
                 <span class="meta" *ngIf="artifact.createdBy">By: {{ artifact.createdBy }}</span>
               </div>
               <p class="hash" *ngIf="artifact.hash">Hash: {{ artifact.hash }}</p>
-              <div class="evidence-actions">
-                <button mat-stroked-button color="primary" [disabled]="!artifact.downloadUrl">Download</button>
-              </div>
             </article>
           </div>
         </div>

@@ -1,0 +1,65 @@
+<div class="report-modal">
+  <div class="modal-header">
+    <h2 mat-dialog-title>{{ data.title }}</h2>
+    <button mat-icon-button (click)="close()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="modal-content">
+    <!-- Progress bar for long-running operations -->
+    <div class="progress-section" *ngIf="data.showProgress">
+      <mat-progress-bar mode="determinate" [value]="data.progress || 0"></mat-progress-bar>
+      <p class="progress-text">
+        {{ data.progress || 0 }}% complete
+        <span *ngIf="data.eta"> • ETA: {{ data.eta }}</span>
+      </p>
+    </div>
+
+    <!-- Report preview -->
+    <div class="preview-section">
+      <div class="preview-header">
+        <h3>Report Preview</h3>
+        <button mat-button (click)="toggleRawJson()" color="accent">
+          <mat-icon>{{ showRawJson ? 'visibility_off' : 'visibility' }}</mat-icon>
+          {{ showRawJson ? 'Hide' : 'Show' }} Raw JSON
+        </button>
+      </div>
+
+      <div class="preview-content" *ngIf="!showRawJson">
+        <pre>{{ formattedPreview }}</pre>
+      </div>
+
+      <div class="preview-content raw-json" *ngIf="showRawJson">
+        <pre>{{ rawJson }}</pre>
+      </div>
+    </div>
+
+    <!-- Format selector -->
+    <div class="format-section">
+      <h3>Download Format</h3>
+      <mat-radio-group [(ngModel)]="selectedFormat" class="format-options">
+        <mat-radio-button value="pdf" color="primary">
+          <mat-icon>picture_as_pdf</mat-icon>
+          PDF (Recommended)
+        </mat-radio-button>
+        <mat-radio-button value="json" color="primary">
+          <mat-icon>data_object</mat-icon>
+          JSON
+        </mat-radio-button>
+        <mat-radio-button value="xml" color="primary">
+          <mat-icon>code</mat-icon>
+          XML
+        </mat-radio-button>
+      </mat-radio-group>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="modal-actions">
+    <button mat-button (click)="close()">Close</button>
+    <button mat-raised-button color="primary" (click)="download()">
+      <mat-icon>download</mat-icon>
+      Download {{ selectedFormat.toUpperCase() }}
+    </button>
+  </mat-dialog-actions>
+</div>

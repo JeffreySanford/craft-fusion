@@ -31,7 +31,7 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "go test ./...",
+        "command": "go test ./... -v",
         "cwd": "apps/craft-go"
       }
     }

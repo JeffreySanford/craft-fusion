@@ -8,6 +8,9 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apps/craft-nest',
+  transformIgnorePatterns: [
+    'node_modules/(?!(uuid)/)',
+  ],
   // Add setup file if needed for NestJS specific mocks or environment setup
   // setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
 };
