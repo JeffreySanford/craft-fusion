@@ -135,16 +135,45 @@
   }
 
   &.stable {
-    background: linear-gradient(135deg, #0ea5e9, #22c55e);
-    color: #0b1220;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+
+    .shield-icon {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .label,
+    .hint {
+      color: rgba(255, 255, 255, 0.9);
+    }
   }
 
   &.neutral {
-    background: linear-gradient(135deg, #1f2937, #334155);
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #ffffff;
+
+    .shield-icon {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .label,
+    .hint {
+      color: rgba(255, 255, 255, 0.9);
+    }
   }
 
   &.warning {
-    background: linear-gradient(135deg, #f97316, #ef4444);
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #ffffff;
+
+    .shield-icon {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .label,
+    .hint {
+      color: rgba(255, 255, 255, 0.9);
+    }
   }
 }
 
