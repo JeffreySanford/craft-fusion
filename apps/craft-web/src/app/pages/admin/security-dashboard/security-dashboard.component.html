@@ -100,10 +100,17 @@
             </div>
             <div class="oscal-actions">
               <button mat-stroked-button color="primary" (click)="runOscalScan(profile)" [disabled]="isOscalRunning(profile)">
-                <mat-icon *ngIf="isOscalRunning(profile)">sync</mat-icon>
+                <mat-icon *ngIf="isOscalRunning(profile)" class="spin">sync</mat-icon>
                 {{ isOscalRunning(profile) ? 'Scanning...' : 'Run scan' }}
               </button>
-              <button mat-button color="accent" (click)="viewOscalReport(profile)" *ngIf="hasOscalReport(profile)">View report</button>
+              <div class="progress-info" *ngIf="isOscalRunning(profile) && getOscalProgress(profile) as progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" [style.width.%]="progress.progress"></div>
+                </div>
+                <p class="progress-text">{{ progress.progress }}%<span *ngIf="progress.eta"> • ETA: {{ progress.eta }}</span></p>
+                <p class="progress-message" *ngIf="progress.message">{{ progress.message }}</p>
+              </div>
+              <button mat-button color="accent" (click)="viewOscalReport(profile)" *ngIf="hasOscalReport(profile) && !isOscalRunning(profile)">View report</button>
             </div>
           </article>
         </div>
@@ -181,9 +188,17 @@
             <span class="badge" [ngClass]="check.status">{{ check.status | titlecase }}</span>
             <div class="realtime-actions">
               <button mat-stroked-button color="primary" (click)="runRealtimeCheck(check)" [disabled]="isRealtimeCheckRunning(check)">
+                <mat-icon *ngIf="isRealtimeCheckRunning(check)" class="spin">sync</mat-icon>
                 {{ isRealtimeCheckRunning(check) ? 'Running...' : 'Run check' }}
               </button>
-              <button mat-button color="accent" (click)="viewRealtimeReport(check)" *ngIf="hasRealtimeReport(check)">View report</button>
+              <div class="progress-info" *ngIf="isRealtimeCheckRunning(check) && getRealtimeProgress(check) as progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" [style.width.%]="progress.progress"></div>
+                </div>
+                <p class="progress-text">{{ progress.progress }}%<span *ngIf="progress.eta"> • ETA: {{ progress.eta }}</span></p>
+                <p class="progress-message" *ngIf="progress.message">{{ progress.message }}</p>
+              </div>
+              <button mat-button color="accent" (click)="viewRealtimeReport(check)" *ngIf="hasRealtimeReport(check) && !isRealtimeCheckRunning(check)">View report</button>
             </div>
           </article>
         </div>

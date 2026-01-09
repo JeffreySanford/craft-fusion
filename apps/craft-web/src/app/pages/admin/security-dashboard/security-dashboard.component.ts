@@ -122,6 +122,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   scanProgress: ScanProgress | null = null;
   runningScanMap = new Map<string, boolean>(); // Track which items are currently running
   completedScanMap = new Map<string, boolean>(); // Track which items have completed at least one scan
+  progressMap = new Map<string, { progress: number; eta?: string; message?: string }>(); // Track progress details per item
 
   // Computed properties for Overview tab (cached)
   sessionSecurityStatus: { label: string; value: string; hint: string; type: 'stable' | 'warning' | 'neutral' } = {
@@ -190,9 +191,19 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
         next: (progress) => {
           this.scanProgress = progress;
           
+          // Store progress data for this specific scan
+          const progressData: { progress: number; eta?: string; message?: string } = {
+            progress: progress.progress
+          };
+          if (progress.eta !== undefined) progressData.eta = progress.eta;
+          if (progress.message !== undefined) progressData.message = progress.message;
+          this.progressMap.set(progress.scanId, progressData);
+          
           if (progress.status === 'completed') {
             this.runningScanMap.set(progress.scanId, false);
             this.completedScanMap.set(progress.scanId, true);
+            // Clear progress data after completion
+            this.progressMap.delete(progress.scanId);
             // Refresh the relevant data
             if (progress.type === 'oscal') {
               this.loadOscalProfiles();
@@ -201,6 +212,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
             }
           } else if (progress.status === 'failed') {
             this.runningScanMap.set(progress.scanId, false);
+            this.progressMap.delete(progress.scanId);
             this.logger.error('Scan failed', progress.message);
           }
           
@@ -801,6 +813,10 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
     return !!profile.lastRun || (!!profile.id && !!this.completedScanMap.get(profile.id));
   }
 
+  getOscalProgress(profile: OscalProfile): { progress: number; eta?: string; message?: string } | null {
+    return profile.id ? this.progressMap.get(profile.id) || null : null;
+  }
+
   /**
    * SBOM Actions
    */
@@ -863,6 +879,10 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   hasRealtimeReport(check: RealtimeCheck): boolean {
     // Show report if check has lastRun date OR if a scan completed
     return !!check.lastRun || (!!check.id && !!this.completedScanMap.get(check.id));
+  }
+
+  getRealtimeProgress(check: RealtimeCheck): { progress: number; eta?: string; message?: string } | null {
+    return check.id ? this.progressMap.get(check.id) || null : null;
   }
 
   /**
