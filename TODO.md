@@ -92,18 +92,19 @@ This file is the planning source of truth. It records decisions, risks, and the 
 
 ### Latest run (2026-01-08)
 
-**Status:** Authentication logout on refresh implemented and working
+**Status:** CI build failing on craft-web
 
-- Build: Compiling successfully after fixing syntax errors in app.component.ts
+- Build: ❌ `craft-web:build` failing in GitHub Actions CI (local build successful)
 - Login: Working correctly - users can login as admin
 - Refresh: Now properly clears authentication on page refresh (backend logout endpoint called)
-- E2E: Firefox fails on admin dashboard and timeline rendering; Chromium passes
+- E2E: craft-nest-e2e attempting to run before server fully started
 - Lint: `craft-web` passes with one `security/detect-object-injection` warning in `services-dashboard.service.ts`
 - Unit Tests: `craft-web` passes with some console logs but no failures
 - Playwright: Global setup/teardown ensures `craft-nest` runs before tests
 
 **Known Issues:**
 
+- craft-web:build failing in CI (investigation needed - check build logs)
 - Expected 401 errors logged during unauthenticated state (reduced to debug level)
 - Firefox e2e tests fail on admin dashboard and timeline components
 
