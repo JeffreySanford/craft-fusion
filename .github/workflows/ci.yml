@@ -65,27 +65,35 @@ jobs:
           NODE_ENV: development
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+          API_BASE_URL: http://localhost:3000
         run: |
           set -euxo pipefail
           mkdir -p ci-logs
           # Start the built NestJS server in background. Assumes build output at dist/apps/craft-nest/src/main.js
           if [ -f dist/apps/craft-nest/src/main.js ]; then
-            cd dist/apps/craft-nest && node src/main.js > ../../ci-logs/craft-nest.log 2>&1 &
+            cd dist/apps/craft-nest && JWT_SECRET="${JWT_SECRET}" ADMIN_SECRET="${ADMIN_SECRET}" NODE_ENV=development node src/main.js > ../../../ci-logs/craft-nest.log 2>&1 &
+            BACKEND_PID=$!
+            echo "Started craft-nest with PID: $BACKEND_PID"
+            cd ../../..
           else
             echo "craft-nest build output not found; skipping background start" > ci-logs/craft-nest.log
           fi
           # Wait for /api to respond (30s timeout)
+          echo "Waiting for craft-nest to be ready..."
           for i in $(seq 1 30); do
             if curl -sS http://localhost:3000/api >/dev/null 2>&1; then
-              echo "craft-nest up"
+              echo "craft-nest is ready!"
               break
             fi
             sleep 1
           done
+          # Verify it's actually responding
+          curl -sS http://localhost:3000/api || echo "Warning: craft-nest may not be responding correctly"
 
       - name: Run E2E
         env:
           API_URL: http://localhost:3000
+          API_BASE_URL: http://localhost:3000
           WEB_URL: http://localhost:4200
           NODE_ENV: development
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
