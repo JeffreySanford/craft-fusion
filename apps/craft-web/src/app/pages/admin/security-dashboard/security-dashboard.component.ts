@@ -123,6 +123,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   runningScanMap = new Map<string, boolean>(); // Track which items are currently running
   completedScanMap = new Map<string, boolean>(); // Track which items have completed at least one scan
   progressMap = new Map<string, { progress: number; eta?: string; message?: string }>(); // Track progress details per item
+  scanIdToItemId = new Map<string, string>(); // Map scanId to item ID (profile.id or check.id)
 
   // Computed properties for Overview tab (cached)
   sessionSecurityStatus: { label: string; value: string; hint: string; type: 'stable' | 'warning' | 'neutral' } = {
@@ -191,19 +192,27 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
         next: (progress) => {
           this.scanProgress = progress;
           
-          // Store progress data for this specific scan
+          // Get the item ID for this scan
+          const itemId = this.scanIdToItemId.get(progress.scanId);
+          if (!itemId) {
+            console.warn('Received progress for unknown scan:', progress.scanId);
+            return;
+          }
+          
+          // Store progress data for this specific item
           const progressData: { progress: number; eta?: string; message?: string } = {
             progress: progress.progress
           };
           if (progress.eta !== undefined) progressData.eta = progress.eta;
           if (progress.message !== undefined) progressData.message = progress.message;
-          this.progressMap.set(progress.scanId, progressData);
+          this.progressMap.set(itemId, progressData);
           
           if (progress.status === 'completed') {
-            this.runningScanMap.set(progress.scanId, false);
-            this.completedScanMap.set(progress.scanId, true);
-            // Clear progress data after completion
-            this.progressMap.delete(progress.scanId);
+            this.runningScanMap.set(itemId, false);
+            this.completedScanMap.set(itemId, true);
+            // Clear progress data and mapping after completion
+            this.progressMap.delete(itemId);
+            this.scanIdToItemId.delete(progress.scanId);
             // Refresh the relevant data
             if (progress.type === 'oscal') {
               this.loadOscalProfiles();
@@ -211,8 +220,9 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
               this.loadRealtimeChecks();
             }
           } else if (progress.status === 'failed') {
-            this.runningScanMap.set(progress.scanId, false);
-            this.progressMap.delete(progress.scanId);
+            this.runningScanMap.set(itemId, false);
+            this.progressMap.delete(itemId);
+            this.scanIdToItemId.delete(progress.scanId);
             this.logger.error('Scan failed', progress.message);
           }
           
@@ -778,6 +788,8 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
         next: (response: any) => {
           if (response?.scanId) {
             this.activeScanId = response.scanId;
+            // Map scanId to profile ID
+            this.scanIdToItemId.set(response.scanId, profile.id!);
             this.securityScanService.subscribeScan(response.scanId);
           }
         }
@@ -846,6 +858,8 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
         next: (response: any) => {
           if (response?.scanId) {
             this.activeScanId = response.scanId;
+            // Map scanId to check ID
+            this.scanIdToItemId.set(response.scanId, check.id!);
             this.securityScanService.subscribeScan(response.scanId);
           }
         }
