@@ -4,25 +4,68 @@ import Chart from 'chart.js/auto';
 @Injectable({ providedIn: 'root' })
 export class PerformanceHelperService {
   createBarChart(ctx: CanvasRenderingContext2D, labels: string[], data: number[], colors: string[]) {
+    const shortLabels = labels.map(label => {
+      // Shorten service names for better display
+      return label.replace('Service', '').replace('State', '').trim();
+    });
+    
     return new Chart(ctx, {
       type: 'bar',
       data: {
-        labels,
+        labels: shortLabels,
         datasets: [
           {
-            label: 'Value',
+            label: 'Avg Response Time (ms)',
             data,
             backgroundColor: colors,
             borderWidth: 1,
+            borderColor: colors.map(c => c),
+            borderRadius: 6,
           },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            callbacks: {
+              title: (items) => {
+                const index = items[0]?.dataIndex;
+                return index !== undefined ? labels[index] : '';
+              },
+              label: (context) => {
+                const value = context.parsed.y;
+                return value !== null ? `Response Time: ${value.toFixed(1)}ms` : 'No data';
+              },
+            },
+          },
+        },
         scales: {
-          x: { grid: { display: false } },
-          y: { beginAtZero: true },
+          x: {
+            grid: { display: false },
+            ticks: {
+              color: 'rgba(255, 255, 255, 0.7)',
+              font: {
+                size: 11,
+              },
+              maxRotation: 45,
+              minRotation: 45,
+            },
+          },
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(255, 255, 255, 0.05)',
+            },
+            ticks: {
+              color: 'rgba(255, 255, 255, 0.7)',
+              callback: (value) => `${value}ms`,
+            },
+          },
         },
       },
     });

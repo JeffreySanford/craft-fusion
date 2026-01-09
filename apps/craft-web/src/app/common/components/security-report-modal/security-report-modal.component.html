@@ -20,14 +20,47 @@
     <div class="preview-section">
       <div class="preview-header">
         <h3>Report Preview</h3>
-        <button mat-button (click)="toggleRawJson()" color="accent">
-          <mat-icon>{{ showRawJson ? 'visibility_off' : 'visibility' }}</mat-icon>
-          {{ showRawJson ? 'Hide' : 'Show' }} Raw JSON
-        </button>
+        <div class="preview-controls">
+          <button 
+            mat-button 
+            (click)="toggleViewMode()" 
+            color="accent" 
+            *ngIf="hasDetailedData && !showRawJson">
+            <mat-icon>{{ viewMode === 'detailed' ? 'summarize' : 'list' }}</mat-icon>
+            {{ viewMode === 'detailed' ? 'Summary' : 'Detailed' }} View
+          </button>
+          <button mat-button (click)="toggleRawJson()" color="accent">
+            <mat-icon>{{ showRawJson ? 'visibility_off' : 'visibility' }}</mat-icon>
+            {{ showRawJson ? 'Hide' : 'Show' }} Raw JSON
+          </button>
+        </div>
       </div>
 
       <div class="preview-content" *ngIf="!showRawJson">
-        <pre>{{ formattedPreview }}</pre>
+        <div [ngSwitch]="data.reportType" class="structured-report">
+          <div *ngSwitchCase="'oscal'">
+            <app-oscal-report-view 
+              [reportData]="data.data" 
+              [viewMode]="viewMode"
+              (expandControl)="toggleControlExpanded($event)">
+            </app-oscal-report-view>
+          </div>
+          <div *ngSwitchCase="'realtime'">
+            <app-realtime-report-view 
+              [reportData]="data.data" 
+              [viewMode]="viewMode">
+            </app-realtime-report-view>
+          </div>
+          <div *ngSwitchCase="'sca'">
+            <app-sca-report-view 
+              [reportData]="data.data" 
+              [viewMode]="viewMode">
+            </app-sca-report-view>
+          </div>
+          <div *ngSwitchDefault>
+            <pre>{{ formattedPreview }}</pre>
+          </div>
+        </div>
       </div>
 
       <div class="preview-content raw-json" *ngIf="showRawJson">

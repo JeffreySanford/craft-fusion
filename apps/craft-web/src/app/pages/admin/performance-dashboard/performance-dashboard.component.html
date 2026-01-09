@@ -61,4 +61,62 @@
       <canvas #systemCanvas></canvas>
     </div>
   </div>
+
+  <div class="services-panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Service health</p>
+        <h4>Individual service monitoring</h4>
+      </div>
+      <span class="pill services-active">{{ activeServicesCount }}/{{ totalServicesCount }} Active</span>
+    </div>
+    
+    <div class="services-grid">
+      <article 
+        *ngFor="let service of servicesData; trackBy: trackByServiceName" 
+        class="service-card" 
+        [ngClass]="{
+          'active': service.active,
+          'inactive': !service.active,
+          'warning': service.avgResponseTime > 500,
+          'updating': service.updating
+        }">
+        <div class="service-header">
+          <div class="service-icon-wrapper">
+            <mat-icon class="service-icon">{{ service.icon }}</mat-icon>
+          </div>
+          <div class="service-status">
+            <span class="status-dot" [ngClass]="service.active ? 'active' : 'inactive'"></span>
+            <span class="status-text">{{ service.active ? 'Active' : 'Idle' }}</span>
+          </div>
+        </div>
+        <div class="service-body">
+          <h5 class="service-name">{{ service.name }}</h5>
+          <p class="service-description">{{ service.description }}</p>
+        </div>
+        <div class="service-metrics">
+          <div class="metric-item">
+            <span class="metric-label">Latency</span>
+            <span class="metric-value" [ngClass]="{
+              'good': service.avgResponseTime < 200,
+              'warning': service.avgResponseTime >= 200 && service.avgResponseTime < 500,
+              'critical': service.avgResponseTime >= 500
+            }">{{ service.avgResponseTime }}ms</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Calls</span>
+            <span class="metric-value">{{ service.callCount }}</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Success</span>
+            <span class="metric-value" [ngClass]="{
+              'good': service.successRate >= 95,
+              'warning': service.successRate >= 80 && service.successRate < 95,
+              'critical': service.successRate < 80
+            }">{{ service.successRate }}%</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
 </div>

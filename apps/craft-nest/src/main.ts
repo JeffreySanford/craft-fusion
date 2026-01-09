@@ -376,16 +376,12 @@ async function bootstrap() {
                 const already = Array.isArray(existing) && existing.some(ev => ev.title === title && new Date(ev.date).toISOString() === new Date(dateStr).toISOString());
                 if (!already) {
                   await firstValueFrom(timelineService.create(s as any));
-                  Logger.log(`Seeded timeline event: ${title}`);
-                  console.log(`[seeder] Seeded timeline event: ${title}`);
+                  console.log(`[seeder] ✓ ${title}`);
                   seededCollections.add('timeline');
-                } else {
-                  Logger.log(`Skipping existing seeded event: ${title}`);
-                  console.log(`[seeder] Skipping existing timeline event: ${title}`);
                 }
               } catch (e: unknown) {
-                Logger.warn(`Failed to seed event: ${String(e)}`);
-                console.log(`[seeder] Failed to seed event ${String((s as any)['title'] || '')}: ${String(e)}`);
+                const title = String((s as any)['title'] || '');
+                console.log(`[seeder] ✗ ${title}: ${String(e)}`);
               }
             }
           }

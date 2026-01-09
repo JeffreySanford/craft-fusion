@@ -22,7 +22,7 @@ export class UserStateService implements OnDestroy {
     private socketClient: SocketClientService,
     private logger: LoggerService,
   ) {
-
+    this.logger.registerService('UserStateService');
     this.user$ = of(null);
 
     if (!this.loginDateTimeSubject.value) {
@@ -74,6 +74,7 @@ export class UserStateService implements OnDestroy {
   }
 
   private processStateChange(change: any): void {
+    const callId = this.logger.startServiceCall('UserStateService', 'PROCESS', '/state/change');
     switch (change.type) {
       case 'loginDateTimeUpdated':
         if (change.data?.dateTime) {
@@ -93,6 +94,7 @@ export class UserStateService implements OnDestroy {
       default:
         this.logger.debug('Received unknown state change event', { change });
     }
+    this.logger.endServiceCall(callId, 200);
   }
 
   getLoginDateTime(): Date | null {

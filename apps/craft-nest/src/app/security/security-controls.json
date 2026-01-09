@@ -1,0 +1,1132 @@
+{
+  "controls": {
+    "PCI-DSS-Req-1.1": {
+      "id": "PCI-DSS-Req-1.1",
+      "title": "Firewall Configuration Standards",
+      "framework": "PCI-DSS",
+      "category": "Network Security",
+      "description": "Firewall and router configuration standards do not meet PCI-DSS requirements. Missing formal approval process for network connections and firewall rule changes. Configuration review procedures are not documented.",
+      "remediation": "Document and implement comprehensive firewall configuration standards. Establish formal change management process with approval workflow. Create firewall rule review schedule. Implement automated configuration compliance monitoring.",
+      "evidence": "Firewall configuration review revealed missing change approval documentation. Files examined: /etc/firewall/rules.conf, /var/log/firewall-changes.log. Last review: Never. Recommendation: Implement Firewall Manager with integrated change control.",
+      "severity": "high",
+      "references": [
+        "PCI DSS v4.0 Requirement 1.1",
+        "NIST SP 800-41 Rev 1",
+        "CIS Critical Security Control 9"
+      ]
+    },
+    "PCI-DSS-Req-1.2": {
+      "id": "PCI-DSS-Req-1.2",
+      "title": "Restrict Connections Between Untrusted Networks",
+      "framework": "PCI-DSS",
+      "category": "Network Security",
+      "description": "Insecure connections detected between cardholder data environment and untrusted networks. Firewall rules allow unrestricted traffic from untrusted sources.",
+      "remediation": "Configure firewalls to deny all traffic by default. Implement strict allow-list for necessary connections. Deploy DMZ architecture for internet-facing systems. Enable stateful packet inspection.",
+      "evidence": "Network traffic analysis identified unrestricted inbound connections from 0.0.0.0/0 on ports 22, 3389, 1433. Firewall rule audit log: /var/log/fw-audit/violations-2026-01.log. Detected at: 2026-01-09 14:23:15 UTC.",
+      "severity": "critical",
+      "references": [
+        "PCI DSS v4.0 Requirement 1.2",
+        "NIST SP 800-41 Rev 1"
+      ]
+    },
+    "PCI-DSS-Req-2.1": {
+      "id": "PCI-DSS-Req-2.1",
+      "title": "Change Vendor-Supplied Defaults",
+      "framework": "PCI-DSS",
+      "category": "System Hardening",
+      "description": "System deployed with vendor-supplied default credentials. Default accounts (admin, root) detected with factory passwords. Default SNMP community strings in use.",
+      "remediation": "Change all vendor-supplied defaults before production deployment. Remove or disable unnecessary default accounts. Implement automated scanning for default credentials. Document all system hardening procedures.",
+      "evidence": "Credential scan detected default credentials on 12 systems. Affected systems: db-server-01, app-server-05, switch-core-02. Evidence: /var/log/security/default-creds-scan.json. Scan timestamp: 2026-01-09 10:00:00 UTC.",
+      "severity": "critical",
+      "references": [
+        "PCI DSS v4.0 Requirement 2.1",
+        "CIS Critical Security Control 5.2"
+      ]
+    },
+    "PCI-DSS-Req-2.2": {
+      "id": "PCI-DSS-Req-2.2",
+      "title": "Configuration Standards for System Components",
+      "framework": "PCI-DSS",
+      "category": "System Hardening",
+      "description": "System hardening standards not implemented. Unnecessary services and protocols enabled. Missing security configuration baseline documentation.",
+      "remediation": "Develop and implement system hardening standards based on industry best practices. Remove unnecessary services and protocols. Enable only required functionality. Document security configuration baseline.",
+      "evidence": "Configuration compliance scan failed. 47 unnecessary services detected. Full report: /var/log/security/hardening-scan-20260109.xml. Benchmark: CIS Level 1. Compliance score: 62/100.",
+      "severity": "high",
+      "references": [
+        "PCI DSS v4.0 Requirement 2.2",
+        "CIS Benchmarks",
+        "NIST SP 800-123"
+      ]
+    },
+    "PCI-DSS-Req-3.1": {
+      "id": "PCI-DSS-Req-3.1",
+      "title": "Data Retention and Disposal Policies",
+      "framework": "PCI-DSS",
+      "category": "Data Protection",
+      "description": "Data retention policy not defined or enforced. Cardholder data stored beyond business justification period. No automated purging mechanism implemented.",
+      "remediation": "Establish and document data retention and disposal policy. Implement automated data purging mechanisms. Define business justification for all stored cardholder data. Deploy secure data destruction procedures.",
+      "evidence": "Database analysis revealed cardholder data older than 90 days. Records count: 15,847. Database: payment_archive. Query log: /var/log/db/retention-audit.log. Oldest record: 2024-03-15.",
+      "severity": "medium",
+      "references": [
+        "PCI DSS v4.0 Requirement 3.1",
+        "NIST SP 800-88 Rev 1"
+      ]
+    },
+    "PCI-DSS-Req-3.4": {
+      "id": "PCI-DSS-Req-3.4",
+      "title": "Render PAN Unreadable",
+      "framework": "PCI-DSS",
+      "category": "Data Protection",
+      "description": "Primary Account Number (PAN) stored in clear text. Encryption not implemented for sensitive authentication data. Missing key management procedures.",
+      "remediation": "Implement strong cryptography (AES-256) for PAN storage. Deploy tokenization or data masking where feasible. Establish key management procedures following industry standards. Encrypt sensitive authentication data.",
+      "evidence": "Database dump analysis found 3,245 records with unencrypted PAN. Tables: transactions, payment_methods. Evidence file: /var/log/security/pci-dss-req-3.4.log. Detection method: Regex pattern matching.",
+      "severity": "critical",
+      "references": [
+        "PCI DSS v4.0 Requirement 3.4",
+        "NIST SP 800-57",
+        "FIPS 140-2"
+      ]
+    },
+    "PCI-DSS-Req-4.1": {
+      "id": "PCI-DSS-Req-4.1",
+      "title": "Strong Cryptography for Data Transmission",
+      "framework": "PCI-DSS",
+      "category": "Cryptography",
+      "description": "Weak encryption protocols in use for data transmission. TLS 1.0/1.1 detected. Strong cryptography (TLS 1.2+) not enforced for all cardholder data transmissions.",
+      "remediation": "Enforce TLS 1.2 or higher for all cardholder data transmissions. Disable weak ciphers and protocols. Implement certificate management procedures. Use only trusted encryption keys and certificates.",
+      "evidence": "TLS cipher suite analysis detected weak protocols. TLS 1.0/1.1 enabled on 8 servers. SSL Labs score: B. Scan report: /var/log/security/tls-scan-results.json. Weak ciphers: 3DES, RC4.",
+      "severity": "high",
+      "references": [
+        "PCI DSS v4.0 Requirement 4.1",
+        "NIST SP 800-52 Rev 2",
+        "RFC 8446 (TLS 1.3)"
+      ]
+    },
+    "PCI-DSS-Req-5.1": {
+      "id": "PCI-DSS-Req-5.1",
+      "title": "Deploy Anti-Virus Software",
+      "framework": "PCI-DSS",
+      "category": "Malware Protection",
+      "description": "Anti-virus software not deployed on all systems commonly affected by malware. Outdated virus definitions detected. Real-time scanning not enabled.",
+      "remediation": "Deploy anti-virus/anti-malware on all systems commonly affected by malware. Configure automatic signature updates. Enable real-time scanning. Implement centralized management and monitoring.",
+      "evidence": "Anti-virus deployment scan: 23 of 150 systems without AV software. 45 systems with outdated definitions (>30 days). Report: /var/log/security/av-compliance.csv. Last scan: 2026-01-09.",
+      "severity": "high",
+      "references": [
+        "PCI DSS v4.0 Requirement 5.1",
+        "NIST SP 800-83 Rev 1"
+      ]
+    },
+    "PCI-DSS-Req-6.1": {
+      "id": "PCI-DSS-Req-6.1",
+      "title": "Security Patch Management Process",
+      "framework": "PCI-DSS",
+      "category": "Vulnerability Management",
+      "description": "Security patch management process not established. Critical vulnerabilities remain unpatched beyond acceptable timeframe. Missing vulnerability assessment procedures.",
+      "remediation": "Establish vulnerability management program with defined roles. Implement regular vulnerability scanning (monthly minimum). Define patch deployment SLAs by severity. Track vulnerabilities through remediation.",
+      "evidence": "Vulnerability scan results: 18 critical, 67 high severity findings. Average remediation time: 45 days (exceeds policy). Scan report: /var/log/security/vuln-scan-20260109.nessus. Overdue CVEs: 12.",
+      "severity": "high",
+      "references": [
+        "PCI DSS v4.0 Requirement 6.1",
+        "NIST SP 800-40 Rev 4",
+        "CIS Critical Security Control 7"
+      ]
+    },
+    "PCI-DSS-Req-6.5": {
+      "id": "PCI-DSS-Req-6.5",
+      "title": "Address Common Coding Vulnerabilities",
+      "framework": "PCI-DSS",
+      "category": "Secure Development",
+      "description": "Common coding vulnerabilities detected in web applications. SQL injection, XSS, and CSRF vulnerabilities identified. Secure coding practices not followed.",
+      "remediation": "Implement secure software development lifecycle. Train developers on secure coding practices. Deploy static and dynamic application security testing. Remediate OWASP Top 10 vulnerabilities.",
+      "evidence": "DAST scan identified 15 OWASP Top 10 vulnerabilities. SQL injection (3), XSS (7), CSRF (5). Application: payment-portal. Report: /var/log/security/dast-report.html. Severity distribution: Critical(3), High(8), Medium(4).",
+      "severity": "critical",
+      "references": [
+        "PCI DSS v4.0 Requirement 6.5",
+        "OWASP Top 10",
+        "CWE/SANS Top 25"
+      ]
+    },
+    "PCI-DSS-Req-7.1": {
+      "id": "PCI-DSS-Req-7.1",
+      "title": "Limit Access to System Components",
+      "framework": "PCI-DSS",
+      "category": "Access Control",
+      "description": "Access to cardholder data not restricted to business need-to-know. Excessive user privileges detected. Role-based access control not implemented.",
+      "remediation": "Implement role-based access control (RBAC) aligned with business need-to-know. Remove unnecessary access rights. Conduct quarterly access reviews. Document access authorization procedures.",
+      "evidence": "Access review identified 127 users with excessive permissions. 45 users with access to all cardholder data. Review log: /var/log/security/access-review-Q1-2026.xlsx. Recommended removals: 203 permissions.",
+      "severity": "high",
+      "references": [
+        "PCI DSS v4.0 Requirement 7.1",
+        "NIST SP 800-53 Rev 5 AC-6"
+      ]
+    },
+    "PCI-DSS-Req-8.1": {
+      "id": "PCI-DSS-Req-8.1",
+      "title": "Assign Unique ID to Each Person",
+      "framework": "PCI-DSS",
+      "category": "Identity Management",
+      "description": "Users not assigned unique identification credentials. Shared accounts detected for system administration. User account management procedures inadequate.",
+      "remediation": "Assign unique user IDs to all personnel. Eliminate shared accounts. Implement user provisioning and deprovisioning procedures. Maintain user access inventory.",
+      "evidence": "User account audit found 12 shared accounts (sysadmin, dbadmin, app_admin). 8 accounts without owner assignment. Audit report: /var/log/security/account-audit.log. Violation count: 20.",
+      "severity": "high",
+      "references": [
+        "PCI DSS v4.0 Requirement 8.1",
+        "NIST SP 800-53 Rev 5 IA-2"
+      ]
+    },
+    "PCI-DSS-Req-8.2": {
+      "id": "PCI-DSS-Req-8.2",
+      "title": "Strong Authentication Controls",
+      "framework": "PCI-DSS",
+      "category": "Authentication",
+      "description": "Multi-factor authentication not implemented for remote access. Password complexity requirements not enforced. Account lockout mechanisms missing.",
+      "remediation": "Implement multi-factor authentication for all remote access and administrative access. Enforce strong password policies (minimum 12 characters, complexity). Deploy account lockout after failed attempts.",
+      "evidence": "Authentication audit: MFA not enabled for 34 remote access accounts. 67 accounts with weak passwords (<12 chars). Report: /var/log/security/auth-audit-20260109.pdf. Password policy violations: 89.",
+      "severity": "critical",
+      "references": [
+        "PCI DSS v4.0 Requirement 8.2",
+        "NIST SP 800-63B",
+        "FIDO2 Standards"
+      ]
+    },
+    "PCI-DSS-Req-8.5": {
+      "id": "PCI-DSS-Req-8.5",
+      "title": "Prevent Misuse of Shared IDs and Passwords",
+      "framework": "PCI-DSS",
+      "category": "Authentication",
+      "description": "Shared authentication credentials in use for administrative access. Generic accounts with known passwords detected. No controls to prevent password sharing.",
+      "remediation": "Eliminate all shared authentication credentials. Implement technical controls to prevent password sharing. Deploy privileged access management (PAM) solution. Enforce individual accountability.",
+      "evidence": "Privileged account analysis detected shared credentials in /etc/shadow, database connection strings. Affected accounts: 8. Evidence: /var/log/security/shared-cred-scan.json. Risk score: 9.2/10.",
+      "severity": "critical",
+      "references": [
+        "PCI DSS v4.0 Requirement 8.5",
+        "NIST SP 800-53 Rev 5 IA-4"
+      ]
+    },
+    "PCI-DSS-Req-9.1": {
+      "id": "PCI-DSS-Req-9.1",
+      "title": "Physical Access Controls",
+      "framework": "PCI-DSS",
+      "category": "Physical Security",
+      "description": "Physical access controls inadequate for facilities containing cardholder data. Badge readers not deployed. Video surveillance gaps identified.",
+      "remediation": "Implement physical access controls including badge readers, biometric scanners. Deploy video surveillance with retention. Establish visitor escort procedures. Implement physical security monitoring.",
+      "evidence": "Physical security audit: 3 entrances without badge readers. Video surveillance covers 65% of facility. Audit report: /var/log/security/physical-audit-2026.pdf. Gap analysis: 23 deficiencies.",
+      "severity": "medium",
+      "references": [
+        "PCI DSS v4.0 Requirement 9.1",
+        "NIST SP 800-116"
+      ]
+    },
+    "PCI-DSS-Req-10.1": {
+      "id": "PCI-DSS-Req-10.1",
+      "title": "Implement Audit Trails",
+      "framework": "PCI-DSS",
+      "category": "Logging & Monitoring",
+      "description": "Audit trail implementation incomplete. User actions not linked to individual identities. Missing logs for administrative access to cardholder data.",
+      "remediation": "Implement comprehensive audit logging to link all access to individual users. Deploy log aggregation solution. Ensure non-repudiation of user actions. Enable audit trail for all privileged operations.",
+      "evidence": "Audit log analysis: 45% of administrative actions not linked to individual users. Shared account usage detected. Log analysis: /var/log/security/audit-trail-gaps.log. Missing accountability: 1,247 events.",
+      "severity": "high",
+      "references": [
+        "PCI DSS v4.0 Requirement 10.1",
+        "NIST SP 800-92"
+      ]
+    },
+    "PCI-DSS-Req-10.2": {
+      "id": "PCI-DSS-Req-10.2",
+      "title": "Automated Audit Trail for All System Components",
+      "framework": "PCI-DSS",
+      "category": "Logging & Monitoring",
+      "description": "Automated audit trail not implemented for all system components. Log aggregation and correlation missing. Critical security events not captured.",
+      "remediation": "Configure automated audit trails for all system components. Implement Security Information and Event Management (SIEM). Enable logging for all critical security events. Ensure log synchronization.",
+      "evidence": "Log collection gaps identified for 18 in-scope systems. Critical events not logged: privilege escalation, configuration changes. Gap analysis: /var/log/security/log-coverage-audit.json. Coverage: 72%.",
+      "severity": "high",
+      "references": [
+        "PCI DSS v4.0 Requirement 10.2",
+        "NIST SP 800-92",
+        "CIS Critical Security Control 8"
+      ]
+    },
+    "PCI-DSS-Req-11.1": {
+      "id": "PCI-DSS-Req-11.1",
+      "title": "Wireless Access Points Detection",
+      "framework": "PCI-DSS",
+      "category": "Wireless Security",
+      "description": "Wireless access point detection not performed quarterly. Rogue wireless devices may be present. Wireless IDS/IPS not deployed.",
+      "remediation": "Implement quarterly wireless access point detection using wireless IDS/IPS. Deploy rogue access point detection tools. Maintain inventory of authorized wireless devices. Investigate all unauthorized wireless.",
+      "evidence": "Wireless scan detected 2 rogue access points. SSIDs: 'Guest-WiFi-Free', 'Office-Temp'. Location: Building A, 3rd floor. Detection log: /var/log/security/wireless-scan-20260109.pcap. Last scan: 4 months ago.",
+      "severity": "high",
+      "references": [
+        "PCI DSS v4.0 Requirement 11.1",
+        "NIST SP 800-153"
+      ]
+    },
+    "PCI-DSS-Req-12.1": {
+      "id": "PCI-DSS-Req-12.1",
+      "title": "Information Security Policy",
+      "framework": "PCI-DSS",
+      "category": "Security Governance",
+      "description": "Information security policy not established, published, or maintained. Policy does not address all PCI-DSS requirements. Annual review not performed.",
+      "remediation": "Develop and publish comprehensive information security policy covering all PCI-DSS requirements. Distribute to all relevant personnel. Implement annual policy review process. Obtain executive management approval.",
+      "evidence": "Policy review found information security policy last updated 2023-06-15 (30 months ago). Missing sections: incident response, vendor management. Policy file: /docs/policies/infosec-policy-v2.1.pdf. Review status: Overdue.",
+      "severity": "medium",
+      "references": [
+        "PCI DSS v4.0 Requirement 12.1",
+        "ISO 27001",
+        "NIST Cybersecurity Framework"
+      ]
+    },
+    "BASELINE-1": {
+      "id": "BASELINE-1",
+      "title": "Access Control Policy and Procedures",
+      "framework": "NIST 800-53",
+      "category": "Access Control",
+      "description": "Access control policy and procedures not formally documented. Roles and responsibilities for access control not defined. Policy review cycle not established.",
+      "remediation": "Develop formal access control policy addressing identification, authentication, and authorization. Define roles and responsibilities. Implement policy review and update procedures. Ensure policy approval and distribution.",
+      "evidence": "Access control policy document not found in policy repository. Expected location: /docs/policies/access-control.pdf. Last verification: 2026-01-09. Status: Document missing.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-53 Rev 5 AC-1",
+        "ISO 27001 A.9.1",
+        "COBIT 2019 DSS05.04"
+      ]
+    },
+    "BASELINE-2": {
+      "id": "BASELINE-2",
+      "title": "Account Management",
+      "framework": "NIST 800-53",
+      "category": "Identity Management",
+      "description": "Account management procedures inadequate. Orphaned accounts detected. Periodic account review process not implemented.",
+      "remediation": "Implement automated account management procedures. Configure periodic account review (quarterly minimum). Disable accounts after termination/transfer. Remove orphaned accounts. Implement least privilege principle.",
+      "evidence": "Account lifecycle audit revealed 87 orphaned accounts. Accounts inactive >180 days: 134. Report: /var/log/security/account-lifecycle-audit.csv. Last review: Never.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-53 Rev 5 AC-2",
+        "CIS Critical Security Control 5"
+      ]
+    },
+    "BASELINE-3": {
+      "id": "BASELINE-3",
+      "title": "Audit and Accountability",
+      "framework": "NIST 800-53",
+      "category": "Logging & Monitoring",
+      "description": "Audit and accountability mechanisms insufficient. Audit log retention policy not defined. Audit review and analysis procedures missing.",
+      "remediation": "Establish audit and accountability policy. Define audit log retention requirements (minimum 90 days). Implement automated log analysis. Deploy SIEM for centralized log management. Enable audit reduction and reporting.",
+      "evidence": "Audit log retention analysis: 40% of systems retain logs <90 days. SIEM not deployed. Log management assessment: /var/log/security/audit-retention-check.log. Non-compliant systems: 45.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-53 Rev 5 AU-1 through AU-12",
+        "NIST SP 800-92"
+      ]
+    },
+    "BASELINE-4": {
+      "id": "BASELINE-4",
+      "title": "Security Awareness and Training",
+      "framework": "NIST 800-53",
+      "category": "Security Awareness",
+      "description": "Security awareness training program not established. Users not trained on security responsibilities. Training effectiveness not measured.",
+      "remediation": "Develop security awareness training program. Deliver training to all users upon hire and annually. Track training completion. Implement phishing simulation exercises. Measure training effectiveness.",
+      "evidence": "Training records review: 156 employees without security awareness training. Completion rate: 67%. Training database: /var/log/hr/training-status.db. Last campaign: 2025-03-15.",
+      "severity": "medium",
+      "references": [
+        "NIST SP 800-53 Rev 5 AT-1 through AT-4",
+        "NIST SP 800-50"
+      ]
+    },
+    "BASELINE-5": {
+      "id": "BASELINE-5",
+      "title": "Configuration Management",
+      "framework": "NIST 800-53",
+      "category": "Configuration Management",
+      "description": "Configuration management plan not documented. Baseline configurations not established. Change control board not functional.",
+      "remediation": "Develop configuration management plan. Establish baseline configurations for all system types. Implement automated configuration monitoring. Deploy change control procedures with approval workflow.",
+      "evidence": "Configuration management plan not found. Baseline configs not established for any system category. Expected document: /docs/cm/cm-plan.pdf. Configuration drift: Unmonitored.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-53 Rev 5 CM-1 through CM-9",
+        "NIST SP 800-128"
+      ]
+    },
+    "BASELINE-6": {
+      "id": "BASELINE-6",
+      "title": "Contingency Planning",
+      "framework": "NIST 800-53",
+      "category": "Business Continuity",
+      "description": "Contingency planning procedures incomplete. Business continuity plan not tested. Backup and recovery procedures not documented.",
+      "remediation": "Develop comprehensive contingency plan. Conduct business impact analysis. Implement backup procedures with offsite storage. Test contingency plan annually. Establish alternate processing sites.",
+      "evidence": "Contingency plan last tested 2024-02-10 (23 months ago). Recovery time objective (RTO) not defined. Test results: /var/log/security/contingency-test-2024.pdf. Status: Expired.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-53 Rev 5 CP-1 through CP-10",
+        "NIST SP 800-34 Rev 1"
+      ]
+    },
+    "BASELINE-7": {
+      "id": "BASELINE-7",
+      "title": "Identification and Authentication",
+      "framework": "NIST 800-53",
+      "category": "Authentication",
+      "description": "Identification and authentication controls inadequate. Device authentication not implemented. Authenticator management procedures missing.",
+      "remediation": "Implement strong identification and authentication controls. Deploy multi-factor authentication for privileged access. Establish authenticator management procedures. Implement device authentication.",
+      "evidence": "Authentication assessment: Device authentication not configured. 78 systems allow authentication with password only. Report: /var/log/security/ia-assessment.log. MFA adoption: 22%.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-53 Rev 5 IA-1 through IA-12",
+        "NIST SP 800-63B"
+      ]
+    },
+    "BASELINE-8": {
+      "id": "BASELINE-8",
+      "title": "Incident Response",
+      "framework": "NIST 800-53",
+      "category": "Incident Response",
+      "description": "Incident response capability not established. Incident handling procedures not documented. Incident response team not trained.",
+      "remediation": "Establish incident response capability with 24x7 availability. Develop incident handling procedures. Train incident response team. Implement incident tracking and reporting. Conduct tabletop exercises.",
+      "evidence": "Incident response plan dated 2023-11-01. Team roster outdated (5 members departed). Tabletop exercise: Never conducted. Plan location: /docs/ir/ir-plan-v1.2.pdf. Readiness score: 3/10.",
+      "severity": "critical",
+      "references": [
+        "NIST SP 800-53 Rev 5 IR-1 through IR-10",
+        "NIST SP 800-61 Rev 2"
+      ]
+    },
+    "BASELINE-9": {
+      "id": "BASELINE-9",
+      "title": "System and Information Integrity",
+      "framework": "NIST 800-53",
+      "category": "System Integrity",
+      "description": "System integrity monitoring not implemented. Malicious code protection inadequate. Security alerts and advisories not monitored.",
+      "remediation": "Deploy host-based intrusion detection/prevention. Implement malicious code protection with automatic updates. Enable security alert monitoring. Deploy file integrity monitoring. Implement security patch management.",
+      "evidence": "System integrity monitoring: HIDS deployed on 15% of systems. Malicious code protection: 78% coverage. Assessment: /var/log/security/si-assessment.xlsx. Critical gaps: 23.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-53 Rev 5 SI-1 through SI-16",
+        "NIST SP 800-83 Rev 1"
+      ]
+    },
+    "BASELINE-10": {
+      "id": "BASELINE-10",
+      "title": "Risk Assessment",
+      "framework": "NIST 800-53",
+      "category": "Risk Management",
+      "description": "Risk assessment not conducted. Threat and vulnerability identification incomplete. Risk mitigation strategy not developed.",
+      "remediation": "Conduct comprehensive risk assessment annually. Implement threat modeling. Perform vulnerability assessments. Develop risk mitigation strategy. Update risk register. Implement continuous monitoring.",
+      "evidence": "Risk assessment last conducted 2024-07-15 (18 months ago). Current threats not evaluated. Risk register: /docs/risk/risk-register-2024.xlsx. Update frequency: Annual (overdue).",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-53 Rev 5 RA-1 through RA-10",
+        "NIST SP 800-30 Rev 1"
+      ]
+    },
+    "OSPP-AC-1": {
+      "id": "OSPP-AC-1",
+      "title": "Access Control Policy",
+      "framework": "OSPP",
+      "category": "OS Access Control",
+      "description": "Operating system access control policy not defined. Access enforcement mechanisms not configured. Policy dissemination procedures missing.",
+      "remediation": "Develop OS-level access control policy. Implement mandatory or role-based access control. Configure access enforcement mechanisms. Document policy dissemination procedures. Enable audit logging for access violations.",
+      "evidence": "OS access control policy not configured. SELinux/AppArmor in permissive mode on 67% of systems. Policy audit: /var/log/security/os-ac-audit.log. Enforcement: Disabled.",
+      "severity": "high",
+      "references": [
+        "Common Criteria Protection Profile",
+        "NIST SP 800-53 Rev 5 AC-1"
+      ]
+    },
+    "OSPP-AC-2": {
+      "id": "OSPP-AC-2",
+      "title": "Account Management Controls",
+      "framework": "OSPP",
+      "category": "OS Account Management",
+      "description": "Account management controls not implemented at OS level. Privileged account oversight inadequate. Account creation/modification audit trail missing.",
+      "remediation": "Implement OS-level account management controls. Configure privileged account monitoring. Enable automated account provisioning/deprovisioning. Implement periodic account reviews. Disable inactive accounts.",
+      "evidence": "OS account management audit: 23 privileged accounts without monitoring. sudo logs not centralized. Audit file: /var/log/secure (local only). Privileged session recording: Not implemented.",
+      "severity": "high",
+      "references": [
+        "Common Criteria Protection Profile",
+        "NIST SP 800-53 Rev 5 AC-2"
+      ]
+    },
+    "OSPP-AU-1": {
+      "id": "OSPP-AU-1",
+      "title": "Audit Policy and Procedures",
+      "framework": "OSPP",
+      "category": "OS Auditing",
+      "description": "OS-level audit policy not established. Audit scope and objectives not defined. Audit planning procedures not documented.",
+      "remediation": "Establish comprehensive OS audit policy. Define audit objectives and scope. Implement audit planning procedures. Configure audit log protection. Enable tamper-resistant audit mechanisms.",
+      "evidence": "OS audit subsystem configuration: auditd not installed on 34 systems. 45 systems with minimal audit rules. Config review: /var/log/security/auditd-compliance.txt. Coverage: 45%.",
+      "severity": "high",
+      "references": [
+        "Common Criteria Protection Profile",
+        "NIST SP 800-92"
+      ]
+    },
+    "OSPP-AU-2": {
+      "id": "OSPP-AU-2",
+      "title": "Auditable Events",
+      "framework": "OSPP",
+      "category": "OS Auditing",
+      "description": "Auditable events not properly configured in operating system. Critical security events not logged. Audit log format not standardized.",
+      "remediation": "Configure OS to log all auditable events. Enable logging for authentication, authorization, and administrative actions. Implement standardized log formats. Ensure adequate audit storage.",
+      "evidence": "OS auditable events assessment: Critical events not logged (su, sudo, ssh, file modifications). Audit rule analysis: /var/log/security/audit-rules-gaps.log. Missing rules: 67.",
+      "severity": "high",
+      "references": [
+        "Common Criteria Protection Profile",
+        "NIST SP 800-53 Rev 5 AU-2"
+      ]
+    },
+    "OSPP-CM-1": {
+      "id": "OSPP-CM-1",
+      "title": "Configuration Management Policy",
+      "framework": "OSPP",
+      "category": "OS Configuration",
+      "description": "OS configuration management policy not defined. Security configuration baselines not established. Configuration change tracking not implemented.",
+      "remediation": "Develop OS configuration management policy. Establish security configuration baselines. Implement automated compliance monitoring. Deploy configuration change tracking. Enable version control.",
+      "evidence": "OS configuration baselines not established. Configuration drift monitoring: Not implemented. Compliance scanning: Never performed. Expected baseline location: /docs/baselines/. Status: Missing.",
+      "severity": "high",
+      "references": [
+        "Common Criteria Protection Profile",
+        "NIST SP 800-128"
+      ]
+    },
+    "OSPP-IA-1": {
+      "id": "OSPP-IA-1",
+      "title": "Identification and Authentication Policy",
+      "framework": "OSPP",
+      "category": "OS Authentication",
+      "description": "Identity and authentication policy not established for OS access. Authentication requirements not documented. Policy enforcement mechanisms missing.",
+      "remediation": "Establish OS identification and authentication policy. Document authentication requirements. Implement policy enforcement mechanisms. Configure password policies. Deploy multi-factor authentication.",
+      "evidence": "OS authentication policy: PAM configuration inconsistent across systems. Password policies vary by server. PAM audit: /var/log/security/pam-config-audit.log. Standardization: 0%.",
+      "severity": "high",
+      "references": [
+        "Common Criteria Protection Profile",
+        "NIST SP 800-63B"
+      ]
+    },
+    "OSPP-IA-2": {
+      "id": "OSPP-IA-2",
+      "title": "User Identification and Authentication",
+      "framework": "OSPP",
+      "category": "OS Authentication",
+      "description": "User authentication mechanisms inadequate. Multi-factor authentication not required for privileged access. Password policies not enforced.",
+      "remediation": "Implement strong user authentication mechanisms. Enforce password complexity requirements. Deploy multi-factor authentication for privileged accounts. Implement account lockout. Configure session timeouts.",
+      "evidence": "User authentication analysis: 89 accounts without password expiration. Password complexity not enforced on 56 systems. Report: /var/log/security/ia-2-audit.csv. Policy violations: 145.",
+      "severity": "high",
+      "references": [
+        "Common Criteria Protection Profile",
+        "NIST SP 800-53 Rev 5 IA-2"
+      ]
+    },
+    "OSPP-SC-1": {
+      "id": "OSPP-SC-1",
+      "title": "System and Communications Protection",
+      "framework": "OSPP",
+      "category": "OS Security",
+      "description": "System and communications protection policy not defined. Encryption requirements not specified. Network protection controls not documented.",
+      "remediation": "Develop system and communications protection policy. Define encryption requirements. Document network protection controls. Implement boundary protection. Configure secure communications protocols.",
+      "evidence": "OS communications protection: IPsec not configured. SSH weak ciphers allowed. Encryption assessment: /var/log/security/sc-audit.log. Secure protocols enforcement: 34%.",
+      "severity": "high",
+      "references": [
+        "Common Criteria Protection Profile",
+        "NIST SP 800-111"
+      ]
+    },
+    "OSPP-SC-2": {
+      "id": "OSPP-SC-2",
+      "title": "Application Partitioning",
+      "framework": "OSPP",
+      "category": "OS Security",
+      "description": "Application partitioning not implemented. User/privileged function separation inadequate. Process isolation controls missing.",
+      "remediation": "Implement application partitioning. Separate user and privileged functions. Configure process isolation. Deploy address space layout randomization. Implement execute protection.",
+      "evidence": "Application partitioning: Privilege separation not implemented. All apps run with full system privileges. Analysis: /var/log/security/app-partition-audit.log. Isolation score: 2/10.",
+      "severity": "medium",
+      "references": [
+        "Common Criteria Protection Profile",
+        "NIST SP 800-53 Rev 5 SC-2"
+      ]
+    },
+    "OSPP-SI-1": {
+      "id": "OSPP-SI-1",
+      "title": "System and Information Integrity Policy",
+      "framework": "OSPP",
+      "category": "OS Integrity",
+      "description": "System and information integrity policy not established. Flaw remediation procedures not defined. Security alert handling not documented.",
+      "remediation": "Establish system integrity policy. Implement flaw remediation procedures. Deploy intrusion detection/prevention. Configure security alert handling. Implement file integrity monitoring.",
+      "evidence": "System integrity policy: AIDE/Tripwire not deployed. File integrity monitoring coverage: 0%. Security patch SLA: Not defined. Policy document: Missing. Status: Non-compliant.",
+      "severity": "high",
+      "references": [
+        "Common Criteria Protection Profile",
+        "NIST SP 800-53 Rev 5 SI-1"
+      ]
+    },
+    "CTRL-1": {
+      "id": "CTRL-1",
+      "title": "Administrative Access Control",
+      "framework": "Generic",
+      "category": "Privileged Access",
+      "description": "Administrative access control mechanisms not properly configured. Privileged access management solution not deployed. Excessive administrative rights detected across the environment.",
+      "remediation": "Deploy privileged access management (PAM) solution. Implement just-in-time administrative access. Enable session recording for privileged operations. Remove unnecessary admin rights. Conduct quarterly privileged access reviews.",
+      "evidence": "Privileged access audit: PAM solution not deployed. 234 accounts with administrative rights. 67 service accounts with persistent admin privileges. Report: /var/log/security/priv-access-audit.json. Risk exposure: High.",
+      "severity": "critical",
+      "references": [
+        "CIS Critical Security Control 4",
+        "NIST SP 800-53 Rev 5 AC-6"
+      ]
+    },
+    "CTRL-2": {
+      "id": "CTRL-2",
+      "title": "Data Encryption at Rest",
+      "framework": "Generic",
+      "category": "Data Protection",
+      "description": "Data encryption at rest not implemented for sensitive data stores. Database encryption disabled. File system encryption not configured. Encryption key management procedures inadequate.",
+      "remediation": "Enable full-disk encryption on all endpoints. Implement database transparent data encryption (TDE). Configure file-level encryption for sensitive data. Deploy enterprise key management system (KMS). Implement encryption key rotation.",
+      "evidence": "Encryption audit: Full-disk encryption on 23% of endpoints. Database TDE disabled on production systems. Key management: Manual processes. Report: /var/log/security/encryption-status.csv. Compliance: 23%.",
+      "severity": "critical",
+      "references": [
+        "NIST SP 800-111",
+        "FIPS 140-2",
+        "CIS Critical Security Control 14"
+      ]
+    },
+    "CTRL-3": {
+      "id": "CTRL-3",
+      "title": "Network Segmentation",
+      "framework": "Generic",
+      "category": "Network Security",
+      "description": "Network segmentation controls insufficient. Flat network architecture detected. VLANs not implemented for sensitive systems. Micro-segmentation not deployed.",
+      "remediation": "Implement network segmentation using VLANs. Deploy next-generation firewalls between segments. Implement micro-segmentation for critical applications. Configure access control lists (ACLs). Deploy zero-trust network architecture.",
+      "evidence": "Network segmentation assessment: Flat Layer 2 network detected. No VLANs configured. Micro-segmentation: Not implemented. Network topology: /var/log/security/network-map.pdf. Segmentation score: 1/10.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-41 Rev 1",
+        "CIS Critical Security Control 12"
+      ]
+    },
+    "CTRL-4": {
+      "id": "CTRL-4",
+      "title": "Security Logging and Monitoring",
+      "framework": "Generic",
+      "category": "Logging & Monitoring",
+      "description": "Security logging and monitoring capabilities inadequate. SIEM solution not deployed. Log correlation rules not defined. Security event alerting not configured. Log retention period insufficient.",
+      "remediation": "Deploy enterprise SIEM solution. Configure comprehensive log collection from all systems. Implement automated correlation rules. Enable real-time alerting for security events. Extend log retention to 1 year minimum. Deploy SOAR for automated response.",
+      "evidence": "Security monitoring coverage: SIEM not deployed. 67% of systems not forwarding logs. Log retention: 30 days average. Monitoring assessment: /var/log/security/monitoring-gaps.xlsx. Alert coverage: 15%.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-92",
+        "CIS Critical Security Control 8"
+      ]
+    },
+    "CTRL-5": {
+      "id": "CTRL-5",
+      "title": "Vulnerability Management",
+      "framework": "Generic",
+      "category": "Vulnerability Management",
+      "description": "Vulnerability management program not mature. Vulnerability scanning not performed regularly. Patch deployment SLAs not met. Critical vulnerabilities remain unaddressed beyond acceptable risk threshold.",
+      "remediation": "Implement enterprise vulnerability management platform. Configure weekly authenticated scanning. Deploy continuous vulnerability assessment. Establish patch deployment SLAs (Critical: 7 days, High: 30 days). Implement virtual patching for legacy systems.",
+      "evidence": "Vulnerability management metrics: 234 high/critical vulnerabilities open >90 days. Scan coverage: 78% of assets. Patch compliance: 56%. Report: /var/log/security/vuln-mgmt-dashboard.html. Program maturity: Level 1 (Ad Hoc).",
+      "severity": "critical",
+      "references": [
+        "NIST SP 800-40 Rev 4",
+        "CIS Critical Security Control 7"
+      ]
+    },
+    "FEDRAMP-AC-2": {
+      "id": "FEDRAMP-AC-2",
+      "title": "Account Management (FedRAMP Moderate)",
+      "framework": "FedRAMP 2.0",
+      "category": "Access Control",
+      "description": "FedRAMP account management requirements not met. Automated account management not implemented. Account review procedures inadequate for federal systems. Cloud service provider responsibilities not clearly defined.",
+      "remediation": "Implement FedRAMP-compliant account management procedures. Deploy automated provisioning/deprovisioning aligned with FedRAMP baseline. Conduct monthly account reviews for privileged accounts. Document CSP/customer shared responsibility model. Implement just-in-time access for administrative functions.",
+      "evidence": "FedRAMP compliance assessment: Account lifecycle automation not implemented. Manual provisioning delays average 4.2 days. Privileged account review: Last conducted 6 months ago. SSP documentation: /docs/fedramp/ssp-ac-2.pdf. Status: Non-compliant.",
+      "severity": "high",
+      "references": [
+        "FedRAMP Rev 5 Moderate Baseline AC-2",
+        "NIST SP 800-53 Rev 5 AC-2",
+        "FedRAMP 2.0 OSCAL Templates"
+      ]
+    },
+    "FEDRAMP-AU-6": {
+      "id": "FEDRAMP-AU-6",
+      "title": "Audit Review, Analysis, and Reporting (FedRAMP High)",
+      "framework": "FedRAMP 2.0",
+      "category": "Audit & Accountability",
+      "description": "FedRAMP continuous monitoring requirements not satisfied. SIEM solution not configured for FedRAMP compliance. Security event correlation insufficient. Incident response integration lacking. Monthly security reports not generated per FedRAMP requirements.",
+      "remediation": "Deploy FedRAMP-approved SIEM solution. Configure automated correlation rules for security events per FedRAMP templates. Implement continuous monitoring dashboard. Generate monthly security reports including: failed login attempts, privilege escalations, configuration changes. Integrate with FedRAMP incident response procedures.",
+      "evidence": "FedRAMP POA&M item #AU-6-001: SIEM deployment 45% complete. Current monitoring: Manual review only. Event correlation: Not implemented. Monthly security reports: Never generated. ConMon dashboard: /fedramp/conmon (offline). Authorization package status: Delayed.",
+      "severity": "critical",
+      "references": [
+        "FedRAMP Rev 5 High Baseline AU-6",
+        "NIST SP 800-53 Rev 5 AU-6",
+        "FedRAMP Continuous Monitoring Guide"
+      ]
+    },
+    "FEDRAMP-IA-2": {
+      "id": "FEDRAMP-IA-2",
+      "title": "Identification and Authentication (FedRAMP Moderate)",
+      "framework": "FedRAMP 2.0",
+      "category": "Identity Management",
+      "description": "Multi-factor authentication not implemented per FedRAMP requirements. PIV/CAC authentication not supported for federal users. MFA adoption below FedRAMP threshold. FICAM integration not configured.",
+      "remediation": "Implement FIPS 140-2 validated MFA solution. Enable PIV/CAC authentication for all federal government users. Integrate with FICAM (Federal Identity, Credential, and Access Management). Require phishing-resistant MFA for all privileged access. Document MFA exceptions in POA&M.",
+      "evidence": "FedRAMP authorization assessment: PIV/CAC support not implemented. MFA enrollment: 67% (FedRAMP requires 100%). FIPS 140-2 validation: Pending. FICAM integration status: Not started. Assessment findings: /fedramp/assessment/ia-2-findings.pdf.",
+      "severity": "critical",
+      "references": [
+        "FedRAMP Rev 5 Moderate Baseline IA-2",
+        "NIST SP 800-63B",
+        "FICAM Architecture",
+        "OMB M-22-09 Zero Trust"
+      ]
+    },
+    "FEDRAMP-SC-7": {
+      "id": "FEDRAMP-SC-7",
+      "title": "Boundary Protection (FedRAMP High)",
+      "framework": "FedRAMP 2.0",
+      "category": "Network Security",
+      "description": "FedRAMP boundary protection requirements not implemented. Network segmentation insufficient for federal data. Managed interfaces not clearly defined. DMZ architecture does not meet FedRAMP specifications. TIC 3.0 compliance not achieved.",
+      "remediation": "Implement FedRAMP-compliant boundary protection architecture. Deploy next-generation firewalls at all trust boundaries. Document all managed interfaces in system security plan. Achieve TIC 3.0 (Trusted Internet Connections) compliance. Implement network micro-segmentation for federal data separation.",
+      "evidence": "FedRAMP 3PAO assessment: Boundary protection inadequate. Network diagram review: /fedramp/network-architecture.pdf. TIC compliance: 34% complete. Managed interfaces: Not documented. Finding severity: High. Estimated remediation: 120 days.",
+      "severity": "high",
+      "references": [
+        "FedRAMP Rev 5 High Baseline SC-7",
+        "NIST SP 800-53 Rev 5 SC-7",
+        "CISA TIC 3.0",
+        "FedRAMP Network Architecture Guidance"
+      ]
+    },
+    "FEDRAMP-SI-2": {
+      "id": "FEDRAMP-SI-2",
+      "title": "Flaw Remediation (FedRAMP Moderate)",
+      "framework": "FedRAMP 2.0",
+      "category": "System Integrity",
+      "description": "Vulnerability remediation does not meet FedRAMP timelines. Critical vulnerabilities not patched within 30 days. High severity vulnerabilities exceed 90-day remediation requirement. POA&M not maintained according to FedRAMP requirements.",
+      "remediation": "Establish FedRAMP-compliant patch management: Critical vulnerabilities within 30 days, High within 90 days. Implement automated vulnerability scanning per FedRAMP continuous monitoring. Maintain active POA&M with remediation milestones. Deploy compensating controls when patches unavailable. Report deviations to FedRAMP PMO.",
+      "evidence": "FedRAMP ConMon scan results: 15 critical vulnerabilities open >30 days. 34 high vulnerabilities open >90 days. POA&M status: 23 overdue items. Scan frequency: Monthly (compliant). Remediation SLA compliance: 56%. Report: /fedramp/conmon/vuln-summary-2026-01.pdf.",
+      "severity": "critical",
+      "references": [
+        "FedRAMP Rev 5 Moderate Baseline SI-2",
+        "NIST SP 800-40 Rev 4",
+        "FedRAMP ConMon Requirements"
+      ]
+    },
+    "FEDRAMP-CA-2": {
+      "id": "FEDRAMP-CA-2",
+      "title": "Security Assessments (FedRAMP 2.0)",
+      "framework": "FedRAMP 2.0",
+      "category": "Security Assessment",
+      "description": "Security assessments required by FedRAMP Rev 5 are overdue. 3PAO validation window missed and evidence packages are incomplete. Authorization package lacks recent assessment findings.",
+      "remediation": "Engage a FedRAMP-accredited 3PAO, update the security assessment plan, perform the required vulnerability scans, and package results in the SSP. Document remediation steps in the POA&M and submit the findings to the federal customer before the next authorization milestone.",
+      "evidence": "3PAO report schedule: overdue by 28 days. Security assessment evidence incomplete: /fedramp/assessments/ca-2-pocket.json. Authorization package status: Assessment Step not completed. POA&M items related to CA-2: 4 open.",
+      "severity": "high",
+      "references": [
+        "FedRAMP Rev 5 Moderate Baseline CA-2",
+        "NIST SP 800-53 Rev 5 CA-2",
+        "FedRAMP Security Assessment Guide"
+      ]
+    },
+    "FEDRAMP-IR-4": {
+      "id": "FEDRAMP-IR-4",
+      "title": "Incident Response Testing (FedRAMP 2.0)",
+      "framework": "FedRAMP 2.0",
+      "category": "Incident Response",
+      "description": "FedRAMP incident response testing requirements not met. Quarterly playbooks not executed, tabletop exercises incomplete, and incident handling team has not verified notification timelines.",
+      "remediation": "Conduct FedRAMP-mandated incident response exercises, document lessons learned, update the IR playbook, and verify notification paths for federal stakeholders. Coordinate with the FedRAMP PMO on incident reporting timelines.",
+      "evidence": "IR test log: /fedramp/ir/ir-4-tests.log indicates last exercise performed 11 months ago. Incident communication drill: incomplete. Senior ops sign-off missing. Notification SLA sample: not validated.",
+      "severity": "medium",
+      "references": [
+        "FedRAMP Rev 5 Moderate Baseline IR-4",
+        "NIST SP 800-61 Rev 2",
+        "FedRAMP Incident Response Guide"
+      ]
+    },
+    "FEDRAMP-MA-4": {
+      "id": "FEDRAMP-MA-4",
+      "title": "Nonlocal Maintenance (FedRAMP 2.0)",
+      "framework": "FedRAMP 2.0",
+      "category": "Maintenance",
+      "description": "Remote maintenance procedures do not align with FedRAMP requirements. Third-party vendors access production systems without dual authorization or break-glass controls.",
+      "remediation": "Implement dual control and break-glass processes for remote maintenance. Require tamper protection, split knowledge, and logging for vendor sessions. Review maintenance agreements and document CSP/customer responsibilities in the SSP.",
+      "evidence": "Remote maintenance audit: 19 sessions without dual review. Vendor MFA: not enforced. Maintenance plan: /fedramp/maintenance/ma-4-plan.pdf missing control references. Highest risk services: database, network.",
+      "severity": "medium",
+      "references": [
+        "FedRAMP Rev 5 Moderate Baseline MA-4",
+        "NIST SP 800-53 Rev 5 MA-4",
+        "FedRAMP Maintenance Guide"
+      ]
+    },
+    "FEDRAMP-CP-9": {
+      "id": "FEDRAMP-CP-9",
+      "title": "Information System Backup (FedRAMP 2.0)",
+      "framework": "FedRAMP 2.0",
+      "category": "Contingency Planning",
+      "description": "FedRAMP back-up requirements not satisfied; backups not encrypted at rest, and restoration procedures have never been exercised for federal customer data.",
+      "remediation": "Encrypt backups using FedRAMP-approved cryptography, document backup retention aligned with federal policy, and conduct restoration drills quarterly. Publish the results to the PMO and update the contingency plan.",
+      "evidence": "Backup audit: /fedramp/cp/cp-9-backup-report.xlsx shows unencrypted backups stored in plain text. Restoration drill: not conducted in 280 days. Backup retention policy: not approved.",
+      "severity": "high",
+      "references": [
+        "FedRAMP Rev 5 Moderate Baseline CP-9",
+        "NIST SP 800-34 Rev 1",
+        "FedRAMP Contingency Guidance"
+      ]
+    },
+    "FEDRAMP-PL-2": {
+      "id": "FEDRAMP-PL-2",
+      "title": "System Security Plan (FedRAMP 2.0)",
+      "framework": "FedRAMP 2.0",
+      "category": "Planning",
+      "description": "The SSP lacks required FedRAMP references and does not include privacy control mappings. Authority to Operate (ATO) milestones are missing from the plan.",
+      "remediation": "Update the SSP with FedRAMP Rev 5 references, include privacy control baselines, and map each control to implementation narratives. Align the plan with the authorization milestones and track statuses in the PMO portal.",
+      "evidence": "SSP snapshot: /fedramp/ssp/ssp-v1.pdf missing FedRAMP references. Privacy section: incomplete. ATO milestone schedule: undefined. Control ownership matrix: outdated.",
+      "severity": "medium",
+      "references": [
+        "FedRAMP Rev 5 Moderate Baseline PL-2",
+        "NIST SP 800-18 Rev 1",
+        "FedRAMP SSP Template"
+      ]
+    },
+    "FEDRAMP-RA-3": {
+      "id": "FEDRAMP-RA-3",
+      "title": "Risk Assessment (FedRAMP 2.0)",
+      "framework": "FedRAMP 2.0",
+      "category": "Risk Management",
+      "description": "FedRAMP risk assessments are not refreshed annually. Risk acceptance statements outdated, and threat models are not aligned with federal cloud risks.",
+      "remediation": "Update risk assessment documents annually, include federal threat intelligence, and publish risk acceptance decisions. Align the risk register with FedRAMP-specific threats from CISA and share outcomes with federal connectors.",
+      "evidence": "Risk register: /fedramp/ra/ra-3-register.xlsx last updated 14 months ago. Threat modeling: absent. Risk acceptance log: missing signatures.",
+      "severity": "high",
+      "references": [
+        "FedRAMP Rev 5 Moderate Baseline RA-3",
+        "NIST SP 800-30 Rev 1",
+        "CISA Threat Catalog"
+      ]
+    },
+    "FEDRAMP-SI-4": {
+      "id": "FEDRAMP-SI-4",
+      "title": "System Monitoring (FedRAMP 2.0)",
+      "framework": "FedRAMP 2.0",
+      "category": "System Integrity",
+      "description": "Continuous monitoring coverage does not meet FedRAMP high expectations. Alerts are not tuned for federal data, and automated anomaly detection is missing.",
+      "remediation": "Implement FedRAMP-approved monitoring rules, integrate with FedRAMP logging requirements, and enable anomaly detection for privileged activity. Publish monitoring metrics monthly to the PMO.",
+      "evidence": "Monitoring tuning log: /fedramp/si/si-4-tune.csv shows no federal data filters. Alerts fired: 2 per week with no responder. Anomaly detection: not enabled. ISSO notes: 'Insufficient coverage'.",
+      "severity": "high",
+      "references": [
+        "FedRAMP Rev 5 High Baseline SI-4",
+        "NIST SP 800-137",
+        "FedRAMP Monitoring Guide"
+      ]
+    },
+    "FEDRAMP-AC-17": {
+      "id": "FEDRAMP-AC-17",
+      "title": "Remote Access (FedRAMP 2.0)",
+      "framework": "FedRAMP 2.0",
+      "category": "Access Control",
+      "description": "Remote access for administrative users lacks FedRAMP protections. No jump-hosts, no strong authentication, and remote session monitoring is absent.",
+      "remediation": "Use FedRAMP-approved jump hosts, enforce multi-factor authentication with privileged elevation, and log remote sessions for federal accounts. Apply session masking for sensitive data transfers.",
+      "evidence": "Remote access audit: /fedramp/ac/ac-17-jumphost.json shows 12 sessions bypassing jump hosts. MFA: only password (not FedRAMP compliant). Monitoring: remote sessions not logged. FedRAMP ATO callout: 'Remote access missing'.",
+      "severity": "critical",
+      "references": [
+        "FedRAMP Rev 5 High Baseline AC-17",
+        "NIST SP 800-46 Rev 2",
+        "FDCC Remote Access Guide"
+      ]
+    },
+    "FEDRAMP-AC-19": {
+      "id": "FEDRAMP-AC-19",
+      "title": "Access Control for Mobile Devices (FedRAMP 2.0)",
+      "framework": "FedRAMP 2.0",
+      "category": "Access Control",
+      "description": "FedRAMP mobile device controls incomplete. BYOD policies are not enforced, and mobile device management (MDM) lacks encryption profiling.",
+      "remediation": "Deploy FedRAMP-approved MDM solution, enforce device encryption, and register all mobile assets in the FedRAMP inventory. Enforce containerization for federal data on mobile endpoints.",
+      "evidence": "MDM report: /fedramp/ac/ac-19-mdm.pdf shows 42 unregistered devices. Encryption status: 58% encrypted. Policy review: no FedRAMP references.",
+      "severity": "medium",
+      "references": [
+        "FedRAMP Rev 5 Moderate Baseline AC-19",
+        "NIST SP 800-124 Rev 2",
+        "Federal Mobility Guidelines"
+      ]
+    },
+    "FEDRAMP-SC-8": {
+      "id": "FEDRAMP-SC-8",
+      "title": "Transmission Integrity (FedRAMP 2.0)",
+      "framework": "FedRAMP 2.0",
+      "category": "Communication Protection",
+      "description": "Transmission integrity controls do not meet FedRAMP expectations. TLS deprecation not enforced; FedRAMP data flows are not integrity protected.",
+      "remediation": "Enforce TLS 1.3 for all federal data, sign packets using FedRAMP approved certificates, and deploy end-to-end message authentication codes. Monitor for TLS downgrades and document encryption status in SSP.",
+      "evidence": "TLS scan: /fedramp/sc/sc-8-tls.csv shows TLS 1.0/1.1 on 4 service endpoints. Message integrity: not validated. PMO note: 'Transmission integrity out of compliance'.",
+      "severity": "critical",
+      "references": [
+        "FedRAMP Rev 5 High Baseline SC-8",
+        "NIST SP 800-52 Rev 2",
+        "FedRAMP Communication Protection Guide"
+      ]
+    },
+    "RMF-CA-2": {
+      "id": "RMF-CA-2",
+      "title": "Security Assessments (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "Security Assessment",
+      "description": "System security assessments required by NIST RMF are overdue and incomplete. 3PAO-equivalent validation packages lack evidence of technical control testing.",
+      "remediation": "Update the RMF security assessment plan, execute vulnerability scanning aligned with NIST SP 800-53, and capture evidence in the authorization package. Remediate findings, update the POA&M, and obtain assessor sign-off before the next step in the RMF cycle.",
+      "evidence": "RMF assessment log: /rmf/ca-2/assessment-pkg.json indicates missing control families. Assessment package: incomplete. POA&M: 5 items pending for CA-2. Status: RMF Step 5 not reached.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-37 Rev 2",
+        "NIST SP 800-53 Rev 5 CA-2",
+        "NIST SP 800-115 Security Testing"
+      ]
+    },
+    "RMF-IR-4": {
+      "id": "RMF-IR-4",
+      "title": "Incident Response Testing (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "Incident Response",
+      "description": "Incident response testing schedule is stale. Tabletop exercises are missing and notification timelines have not been validated for the RMF authorization boundary.",
+      "remediation": "Conduct RMF-aligned incident response exercises, capture lessons learned, and update the incident response playbook. Ensure notification timelines harmonize with RMF reporting requirements and escalate to authorizing officials when needed.",
+      "evidence": "IR exercise log: /rmf/ir/ir-4-tests.log last update 11 months ago. Notification drill: not completed. Senior leadership sign-off missing. Incident dossier: incomplete.",
+      "severity": "medium",
+      "references": [
+        "NIST SP 800-61 Rev 2",
+        "NIST SP 800-53 Rev 5 IR-4",
+        "NIST SP 800-37 Rev 2"
+      ]
+    },
+    "RMF-MA-4": {
+      "id": "RMF-MA-4",
+      "title": "Nonlocal Maintenance (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "Maintenance",
+      "description": "Nonlocal maintenance procedures rely on vendor access without dual control. RMF-required break-glass or session monitoring controls are absent.",
+      "remediation": "Enforce dual control and break-glass for RMF nonlocal maintenance. Log all maintenance sessions, require tamper protection, and document responsibilities in the SSP. Validate configuration management updates post-maintenance.",
+      "evidence": "Maintenance audit: /rmf/maintenance/ma-4-report.json shows 16 sessions lacking dual supervision. Vendor MFA: weak. Session logging: off. SSP section: incomplete.",
+      "severity": "medium",
+      "references": [
+        "NIST SP 800-53 Rev 5 MA-4",
+        "NIST SP 800-37 Rev 2",
+        "NIST SP 800-171 Rev 3"
+      ]
+    },
+    "RMF-CP-9": {
+      "id": "RMF-CP-9",
+      "title": "Information System Backup (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "Contingency Planning",
+      "description": "RMF backup requirements are not met. Backups are stored in cleartext and restoration plans have not been exercised for CUI data sets.",
+      "remediation": "Encrypt backups using FIPS 140-2 validated cryptography, document backup retention aligned with RMF controls, and run quarterly restoration drills. Include results in the RMF contingency plan and share with the authorizing official.",
+      "evidence": "Backup audit: /rmf/cp/cp-9-backup-report.xlsx shows 100% of backups unencrypted. Drill log: none in 280 days. Retention policy: not approved. Restoration scripts: outdated.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-34 Rev 1",
+        "NIST SP 800-53 Rev 5 CP-9",
+        "NIST SP 800-37 Rev 2"
+      ]
+    },
+    "RMF-PL-2": {
+      "id": "RMF-PL-2",
+      "title": "System Security Plan (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "Planning",
+      "description": "The SSP lacks RMF references, privacy impact details, and implementation narratives tied to current controls. Authorization milestones are not tracked.",
+      "remediation": "Update the SSP with RMF control references, include privacy impact statements, and map implementation details to each control. Align the document with RMF authorization milestones and maintain living updates.",
+      "evidence": "SSP snapshot: /rmf/ssp/ssp-v1.pdf missing RMF control mappings. Privacy section: placeholder text only. Milestone tracker: empty. Control owner table: outdated.",
+      "severity": "medium",
+      "references": [
+        "NIST SP 800-18 Rev 1",
+        "NIST SP 800-37 Rev 2",
+        "NIST SP 800-53 Rev 5 PL-2"
+      ]
+    },
+    "RMF-RA-3": {
+      "id": "RMF-RA-3",
+      "title": "Risk Assessment (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "Risk Management",
+      "description": "Risk assessments are outdated and do not incorporate current threat intelligence. Risk acceptance decisions are stale and unapproved.",
+      "remediation": "Refresh the risk assessment annually, integrate threat intel from CISA/NCSC, and publish risk acceptance statements. Update the risk register and coordinate with authorizing officials.",
+      "evidence": "Risk register: /rmf/ra/ra-3-register.xlsx last updated 14 months ago. Threat modeling: missing. Risk acceptance log: unsigned. RMF documentation: outdated.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-30 Rev 1",
+        "NIST SP 800-37 Rev 2",
+        "NIST SP 800-53 Rev 5 RA-3"
+      ]
+    },
+    "RMF-SI-4": {
+      "id": "RMF-SI-4",
+      "title": "System Monitoring (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "System Integrity",
+      "description": "RMF ISCM program lacks tuned alerts for high-value assets. Anomaly detection capabilities are not configured for critical controls.",
+      "remediation": "Define RMF monitoring rules, tune alerts, and enable anomaly detection for privileged activity. Share metrics monthly with authorizing officials and integrate with RMF Step 6 monitoring dashboards.",
+      "evidence": "Monitoring log: /rmf/si/si-4-tune.csv shows no federal data filtering. Anomaly detection: disabled. Alerts: 2 per week with no response. ISSO notes: insufficient coverage.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-137",
+        "NIST SP 800-53 Rev 5 SI-4",
+        "NIST SP 800-37 Rev 2"
+      ]
+    },
+    "RMF-AC-17": {
+      "id": "RMF-AC-17",
+      "title": "Remote Access (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "Access Control",
+      "description": "Remote administrative access does not meet RMF requirements. Jump hosts not used, MFA lacking, and session monitoring absent.",
+      "remediation": "Deploy RMF-compliant jump hosts, enforce strong MFA for remote sessions, and log all remote activity. Apply session masking for sensitive operations and review remote access policies quarterly.",
+      "evidence": "Remote access audit: /rmf/ac/ac-17-jumphost.json shows 12 sessions bypassing jump hosts. MFA: password-only. Logging: disabled. RMF P-ATO review: flagged.",
+      "severity": "critical",
+      "references": [
+        "NIST SP 800-46 Rev 2",
+        "NIST SP 800-53 Rev 5 AC-17",
+        "NIST SP 800-37 Rev 2"
+      ]
+    },
+    "RMF-AC-19": {
+      "id": "RMF-AC-19",
+      "title": "Access Control for Mobile Devices (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "Access Control",
+      "description": "Mobile device controls are incomplete for handling CUI. BYOD policies unenforced and device management lacks encryption profiling.",
+      "remediation": "Implement RMF-compliant MDM, enforce encryption on all mobile endpoints, and register devices in the asset inventory. Enable secure containers for federal data and document policies in the SSP.",
+      "evidence": "MDM report: /rmf/ac/ac-19-mdm.pdf shows 42 unregistered devices. Encryption status: 58% encrypted. Policy review: no RMF references.",
+      "severity": "medium",
+      "references": [
+        "NIST SP 800-124 Rev 2",
+        "NIST SP 800-53 Rev 5 AC-19",
+        "NIST SP 800-37 Rev 2"
+      ]
+    },
+    "RMF-SC-8": {
+      "id": "RMF-SC-8",
+      "title": "Transmission Integrity (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "Communications Protection",
+      "description": "Transmission integrity controls fail to enforce modern TLS configurations and integrity checks for RMF systems.",
+      "remediation": "Enforce TLS 1.3, apply message authentication codes, and monitor for protocol downgrades. Document encryption status in the RMF SSP and include findings in the authorization package.",
+      "evidence": "TLS scan: /rmf/sc/sc-8-tls.csv shows TLS 1.0/1.1 on 4 endpoints. Message integrity validation missing. PMO note: 'Transmission integrity out of compliance'.",
+      "severity": "critical",
+      "references": [
+        "NIST SP 800-52 Rev 2",
+        "NIST SP 800-53 Rev 5 SC-8",
+        "NIST SP 800-37 Rev 2"
+      ]
+    },
+    "RMF-CA-7": {
+      "id": "RMF-CA-7",
+      "title": "Continuous Monitoring (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "Risk Assessment",
+      "description": "NIST RMF continuous monitoring strategy not established. ISCM (Information Security Continuous Monitoring) program not implemented. Automated security status monitoring inadequate. Risk scoring methodology not defined per RMF requirements.",
+      "remediation": "Develop comprehensive ISCM strategy aligned with NIST RMF Step 6 (Monitor). Implement automated continuous monitoring tools for: vulnerability scanning, configuration management, security controls assessment. Define risk scoring methodology using CVSS v3.1. Establish continuous monitoring dashboard with real-time risk visualization.",
+      "evidence": "RMF assessment: ISCM strategy document not approved. Continuous monitoring: Ad-hoc only. Risk dashboard: Not implemented. Security control monitoring frequency: Undefined. RMF package status: Step 4 complete, Step 6 not started. Documentation: /rmf/ca-7/iscm-strategy-draft.docx.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-37 Rev 2 (RMF)",
+        "NIST SP 800-53 Rev 5 CA-7",
+        "NIST SP 800-137 ISCM",
+        "NIST SP 800-137A Assessment"
+      ]
+    },
+    "RMF-PM-9": {
+      "id": "RMF-PM-9",
+      "title": "Risk Management Strategy (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "Risk Management",
+      "description": "Organization-wide risk management strategy not established per NIST RMF. Risk tolerance levels not defined. Risk assessment methodology not documented. Integration with enterprise risk management incomplete.",
+      "remediation": "Develop organization risk management strategy per NIST SP 800-39. Define risk tolerance levels for confidentiality, integrity, availability. Establish risk assessment methodology using NIST SP 800-30. Implement enterprise risk management integration. Obtain senior leadership approval for risk management strategy.",
+      "evidence": "RMF documentation review: Risk management strategy not found. Expected location: /rmf/pm-9/risk-strategy.pdf. Risk tolerance: Not defined. Assessment methodology: Inconsistent across systems. ERM integration: 0%. Organizational risk register: Not maintained.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-37 Rev 2 (RMF)",
+        "NIST SP 800-39 Risk Management",
+        "NIST SP 800-30 Rev 1 Risk Assessment"
+      ]
+    },
+    "RMF-SA-11": {
+      "id": "RMF-SA-11",
+      "title": "Developer Security Testing (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "Secure Development",
+      "description": "Security testing not integrated into SDLC per RMF requirements. Static application security testing (SAST) not performed. Dynamic application security testing (DAST) coverage inadequate. Software composition analysis not implemented.",
+      "remediation": "Integrate security testing throughout SDLC aligned with NIST RMF SA family. Implement automated SAST in CI/CD pipeline. Deploy DAST scanning for all web applications. Enable software composition analysis for dependency scanning. Conduct penetration testing per NIST SP 800-115. Document security test results in RMF authorization package.",
+      "evidence": "SDLC security assessment: SAST tools not deployed. DAST coverage: 12% of applications. SCA implementation: Not started. Penetration test: Last conducted 18 months ago. RMF SA-11 compliance: 23%. Security test repository: /rmf/sa-11/ (mostly empty).",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-37 Rev 2 (RMF)",
+        "NIST SP 800-53 Rev 5 SA-11",
+        "NIST SP 800-115 Security Testing"
+      ]
+    },
+    "RMF-RA-5": {
+      "id": "RMF-RA-5",
+      "title": "Vulnerability Monitoring and Scanning (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "Vulnerability Management",
+      "description": "Vulnerability scanning does not meet RMF frequency requirements. Authenticated scanning not configured. Vulnerability correlation with threat intelligence not implemented. Remediation tracking inadequate for RMF continuous authorization.",
+      "remediation": "Implement weekly authenticated vulnerability scanning per NIST RMF requirements. Deploy vulnerability management platform with CVE correlation. Integrate with threat intelligence feeds (CISA KEV, NVD). Establish vulnerability remediation workflow with SLA tracking. Generate monthly vulnerability reports for RMF authorization package updates.",
+      "evidence": "RMF vulnerability management assessment: Scan frequency: Monthly (RMF requires weekly). Authenticated scans: 45% of assets. Threat intelligence integration: Not configured. CVE tracking: Manual spreadsheet. Remediation metrics: Not automated. Assessment: /rmf/ra-5/vuln-assessment-2026.pdf.",
+      "severity": "high",
+      "references": [
+        "NIST SP 800-37 Rev 2 (RMF)",
+        "NIST SP 800-53 Rev 5 RA-5",
+        "CISA Known Exploited Vulnerabilities"
+      ]
+    },
+    "RMF-SC-28": {
+      "id": "RMF-SC-28",
+      "title": "Protection of Information at Rest (NIST RMF)",
+      "framework": "NIST RMF",
+      "category": "Cryptography",
+      "description": "Encryption at rest not implemented per NIST RMF cryptographic requirements. FIPS 140-2/140-3 validated modules not used. Cryptographic key management does not meet NIST standards. Data classification not driving encryption requirements.",
+      "remediation": "Implement FIPS 140-2/140-3 validated encryption for data at rest. Deploy centralized key management system per NIST SP 800-57. Encrypt all CUI (Controlled Unclassified Information) and sensitive data. Document cryptographic implementation in RMF security plan. Conduct annual cryptographic module inventory.",
+      "evidence": "RMF cryptographic assessment: FIPS validation: 34% of systems. Full-disk encryption: 56% deployment. Database TDE: Not implemented. Key management: Decentralized (non-compliant). CUI encryption: Not enforced. Crypto inventory: /rmf/sc-28/crypto-modules.xlsx (incomplete).",
+      "severity": "critical",
+      "references": [
+        "NIST SP 800-37 Rev 2 (RMF)",
+        "NIST SP 800-53 Rev 5 SC-28",
+        "NIST SP 800-57 Key Management",
+        "FIPS 140-3"
+      ]
+    }
+  },
+  "metadata": {
+    "version": "2.0.0",
+    "lastUpdated": "2026-01-09T12:00:00Z",
+    "totalControls": 74,
+    "frameworks": {
+      "PCI-DSS": 19,
+      "NIST 800-53": 10,
+      "OSPP": 10,
+      "Generic": 5,
+      "FedRAMP 2.0": 15,
+      "NIST RMF": 15
+    },
+    "severityDistribution": {
+      "critical": 20,
+      "high": 42,
+      "medium": 12,
+      "low": 0
+    },
+    "compliancePrograms": {
+      "fedramp": {
+        "name": "FedRAMP 2.0 (Federal Risk and Authorization Management Program)",
+        "version": "Rev 5",
+        "baselines": ["Low", "Moderate", "High"],
+        "description": "Cloud security authorization program for federal agencies",
+        "keyRequirements": [
+          "Continuous monitoring with monthly reporting",
+          "3PAO (Third Party Assessment Organization) validation",
+          "PIV/CAC authentication support",
+          "TIC 3.0 compliance",
+          "POA&M maintenance"
+        ]
+      },
+      "rmf": {
+        "name": "NIST Risk Management Framework",
+        "version": "SP 800-37 Rev 2",
+        "steps": ["Prepare", "Categorize", "Select", "Implement", "Assess", "Authorize", "Monitor"],
+        "description": "Risk-based approach for authorization of information systems",
+        "keyRequirements": [
+          "System categorization (FIPS 199)",
+          "Security control selection (NIST SP 800-53 Rev 5)",
+          "Continuous monitoring (ISCM)",
+          "Authorization package documentation",
+          "Ongoing authorization"
+        ]
+      }
+    }
+  }
+}

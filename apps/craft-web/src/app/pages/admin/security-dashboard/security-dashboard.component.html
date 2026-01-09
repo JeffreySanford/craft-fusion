@@ -78,6 +78,60 @@
           No OSCAL profiles available.
         </div>
 
+        <div class="oscal-update-panel" *ngIf="oscalUpdateStatus; else updateStatusPlaceholder">
+          <div class="update-meta">
+            <p class="eyebrow">Catalog sync</p>
+            <div class="meta-row">
+              <p class="label">Last updated</p>
+              <p class="value">{{ oscalUpdateStatus.lastUpdated ? (oscalUpdateStatus.lastUpdated | date: 'medium') : '—' }}</p>
+            </div>
+            <div class="update-sources">
+              <article class="update-source">
+                <p class="source-title">FedRAMP</p>
+                <p class="source-version">{{ oscalUpdateStatus.sources?.fedramp?.version || 'Rev 5' }}</p>
+                <p class="source-status" [ngClass]="oscalUpdateStatus.sources?.fedramp?.status">
+                  {{ (oscalUpdateStatus.sources?.fedramp?.status || 'pending') | titlecase }} •
+                  <span class="source-time" *ngIf="oscalUpdateStatus.sources?.fedramp?.lastChecked">{{ oscalUpdateStatus.sources?.fedramp?.lastChecked | date: 'short' }}</span>
+                </p>
+              </article>
+              <article class="update-source">
+                <p class="source-title">NIST RMF</p>
+                <p class="source-version">{{ oscalUpdateStatus.sources?.nist?.version || 'SP 800-37 Rev 2' }}</p>
+                <p class="source-status" [ngClass]="oscalUpdateStatus.sources?.nist?.status">
+                  {{ (oscalUpdateStatus.sources?.nist?.status || 'pending') | titlecase }} •
+                  <span class="source-time" *ngIf="oscalUpdateStatus.sources?.nist?.lastChecked">{{ oscalUpdateStatus.sources?.nist?.lastChecked | date: 'short' }}</span>
+                </p>
+              </article>
+            </div>
+          </div>
+          <div class="update-actions">
+            <mat-progress-bar
+              [mode]="oscalUpdateStatus.progress?.status === 'in-progress' ? 'indeterminate' : 'determinate'"
+              [value]="oscalUpdateStatus.progress?.value || 0">
+            </mat-progress-bar>
+            <p class="update-progress-note">{{ oscalUpdateStatus.progress?.message }}</p>
+            <button mat-stroked-button color="accent" class="update-button" (click)="refreshOscalUpdates()"
+              [disabled]="oscalUpdateLoading || oscalUpdateRefreshing">
+              <mat-icon>update</mat-icon>
+              {{ oscalUpdateRefreshing ? 'Updating catalogs…' : 'Refresh catalogs' }}
+            </button>
+          </div>
+        </div>
+        <ng-template #updateStatusPlaceholder>
+          <div class="oscal-update-panel placeholder">
+            <p class="status-message" *ngIf="oscalUpdateLoading">Checking OSCAL catalogs for updates...</p>
+            <p class="status-message error" *ngIf="oscalUpdateError">{{ oscalUpdateError }}</p>
+            <div class="update-actions">
+              <mat-progress-bar mode="indeterminate" value="100"></mat-progress-bar>
+              <button mat-stroked-button color="accent" (click)="refreshOscalUpdates()"
+                [disabled]="oscalUpdateRefreshing">
+                <mat-icon>update</mat-icon>
+                {{ oscalUpdateRefreshing ? 'Updating catalogs…' : 'Refresh catalogs' }}
+              </button>
+            </div>
+          </div>
+        </ng-template>
+
         <div class="oscal-grid" *ngIf="oscalProfiles.length > 0">
           <article class="oscal-card" *ngFor="let profile of oscalProfiles">
             <div class="oscal-head">
@@ -87,7 +141,10 @@
             <div class="oscal-meta">
               <div>
                 <p class="label">Last run</p>
-                <p class="value">{{ profile.lastRun ? (profile.lastRun | date: 'short') : 'Not run' }}</p>
+                <p class="value">
+                  <span>{{ profile.lastRun ? (profile.lastRun | date: 'shortDate') : 'Not run' }}</span>
+                  <span *ngIf="profile.lastRun" class="time">{{ profile.lastRun | date: 'shortTime' }}</span>
+                </p>
               </div>
               <div>
                 <p class="label">Pass / Fail</p>
@@ -110,7 +167,10 @@
                 <p class="progress-text">{{ progress.progress }}%<span *ngIf="progress.eta"> • ETA: {{ progress.eta }}</span></p>
                 <p class="progress-message" *ngIf="progress.message">{{ progress.message }}</p>
               </div>
-              <button mat-button color="accent" (click)="viewOscalReport(profile)" *ngIf="hasOscalReport(profile) && !isOscalRunning(profile)">View report</button>
+              <button mat-button color="accent" (click)="viewOscalReport(profile)" *ngIf="hasOscalReport(profile) && !isOscalRunning(profile)">
+                <mat-icon>visibility</mat-icon>
+                View Report
+              </button>
             </div>
           </article>
         </div>
@@ -134,6 +194,14 @@
               <p class="label">{{ item.label }}</p>
               <span class="badge" [ngClass]="item.status">{{ item.status | titlecase }}</span>
             </div>
+            <button 
+              mat-icon-button 
+              class="sca-view-btn" 
+              (click)="viewScaItemReport(item)"
+              matTooltip="View detailed report"
+              color="primary">
+              <mat-icon>visibility</mat-icon>
+            </button>
           </article>
         </div>
       </div>
@@ -159,7 +227,14 @@
             <p class="hint" *ngIf="sbom.components">Components: {{ sbom.components }}</p>
             <p class="hint" *ngIf="sbom.vulnerabilities !== undefined">Vulnerabilities: {{ sbom.vulnerabilities }}</p>
             <div class="sbom-actions">
-              <button mat-button color="accent" (click)="compareSbom(sbom)" disabled>Compare</button>
+              <button mat-button color="primary" (click)="viewSbomReport(sbom)">
+                <mat-icon>visibility</mat-icon>
+                View Report
+              </button>
+              <button mat-button color="accent" (click)="compareSbom(sbom)" disabled>
+                <mat-icon>compare_arrows</mat-icon>
+                Compare
+              </button>
             </div>
           </article>
         </div>
@@ -198,7 +273,10 @@
                 <p class="progress-text">{{ progress.progress }}%<span *ngIf="progress.eta"> • ETA: {{ progress.eta }}</span></p>
                 <p class="progress-message" *ngIf="progress.message">{{ progress.message }}</p>
               </div>
-              <button mat-button color="accent" (click)="viewRealtimeReport(check)" *ngIf="hasRealtimeReport(check) && !isRealtimeCheckRunning(check)">View report</button>
+              <button mat-button color="accent" (click)="viewRealtimeReport(check)" *ngIf="hasRealtimeReport(check) && !isRealtimeCheckRunning(check)">
+                <mat-icon>visibility</mat-icon>
+                View Report
+              </button>
             </div>
           </article>
         </div>
@@ -213,7 +291,10 @@
               <p class="eyebrow">Findings</p>
               <h4>Actionable security insights</h4>
             </div>
-            <button mat-stroked-button color="primary" (click)="exportFindings()" [disabled]="findings.length === 0">Export findings</button>
+            <button mat-stroked-button color="primary" (click)="exportFindings()" [disabled]="findings.length === 0">
+              <mat-icon>visibility</mat-icon>
+              View/Export Report
+            </button>
           </div>
 
           <div class="status-message" *ngIf="findingsLoading">Loading findings...</div>
@@ -251,7 +332,10 @@
               <p class="eyebrow">Evidence</p>
               <h4>Artifacts and provenance</h4>
             </div>
-            <button mat-stroked-button color="primary" (click)="downloadEvidenceBundle()" [disabled]="evidence.length === 0">Download bundle</button>
+            <button mat-stroked-button color="primary" (click)="downloadEvidenceBundle()" [disabled]="evidence.length === 0">
+              <mat-icon>visibility</mat-icon>
+              View/Download Bundle
+            </button>
           </div>
 
           <div class="status-message" *ngIf="evidenceLoading">Loading evidence...</div>

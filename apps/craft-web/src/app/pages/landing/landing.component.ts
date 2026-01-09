@@ -17,6 +17,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
   private readonly letterDuration = 0.075; // Twice as fast (was 0.15)
   private readonly letterPause = 0.015; // Twice as fast (was 0.03)
   private readonly fireworkDelay = 0.3;
+  private readonly initialWordDelay = 2;
   @ViewChild('titleRef', { static: true }) titleRef!: ElementRef<HTMLElement>;
 
   constructor(private logger: LoggerService, private renderer: Renderer2) {}
@@ -24,7 +25,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.logger.info('LandingComponent', 'LandingComponent initialized');
     const wordCount = this.getWordCount();
-    const totalDuration = wordCount ? wordCount * this.wordTotal + Math.max(0, wordCount - 1) * this.wordPause : 0;
+    const totalDuration = wordCount ? wordCount * this.wordTotal + Math.max(0, wordCount - 1) * this.wordPause + this.initialWordDelay : 0;
     const sectionDelay = totalDuration + this.fireworkDelay;
     this.sectionDelay = sectionDelay;
     this.itemDelayBase = sectionDelay;
@@ -33,7 +34,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     const root = this.titleRef?.nativeElement ?? document;
     const words = Array.from(root.querySelectorAll('.word')) as HTMLElement[];
-    let globalDelay = 0;
+    let globalDelay = this.initialWordDelay;
 
     words.forEach((wordEl, wordIndex) => {
       const textEl = wordEl.querySelector('.word-text') as HTMLElement | null;

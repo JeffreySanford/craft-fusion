@@ -201,6 +201,7 @@ export class AuthenticationService {
     );
   }
   public login(username: string, password: string): Observable<AuthResponse> {
+    const callId = this.logger.startServiceCall('AuthenticationService', 'POST', '/auth/login');
     this.clearAuthState();
 
     this.logger.info('Login attempt initiated', {
@@ -224,9 +225,11 @@ export class AuthenticationService {
         if (expiresAt) {
           this.scheduleTokenRefresh(expiresAt);
         }
+        this.logger.endServiceCall(callId, 200);
       }),
       catchError((error: any) => {
-        const status = error?.status;
+        const status = error?.status || 500;
+        this.logger.endServiceCall(callId, status, error);
         const message = error?.message || 'Unknown error';
 
         if (status === 0 || status === 504) {
@@ -243,6 +246,7 @@ export class AuthenticationService {
     );
   }
   public logout(): void {
+    const callId = this.logger.startServiceCall('AuthenticationService', 'POST', '/auth/logout');
     const currentUser = this.authState.value.user;
     this.logger.info('User logout initiated', {
       username: currentUser?.username,
@@ -261,7 +265,11 @@ export class AuthenticationService {
     this.apiService
       .authRequest('POST', 'auth/logout')
       .pipe(
+        tap(() => {
+          this.logger.endServiceCall(callId, 200);
+        }),
         catchError(error => {
+          this.logger.endServiceCall(callId, error?.status || 500, error);
           this.logger.warn('Logout API call failed, clearing local state anyway', { error });
           return throwError(() => error);
         }),

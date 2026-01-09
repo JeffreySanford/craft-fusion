@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Param, Res, Query } from '@nestjs/common';
 import { Response } from 'express';
-import { SecurityService, SecurityEvidence, SecurityFinding, Sbom, OscalProfile, ScaItem, RealtimeCheck } from './security.service';
+import { SecurityService, SecurityEvidence, SecurityFinding, Sbom, OscalProfile, OscalUpdateStatus, ScaItem, RealtimeCheck } from './security.service';
 import { PdfGenerationService } from '../common/pdf-generation.service';
 import { SecurityScanGateway } from '../security-scan/security-scan.gateway';
 import { v4 as uuidv4 } from 'uuid';
@@ -33,6 +33,11 @@ export class SecurityController {
     return this.securityService.getOscalProfiles();
   }
 
+  @Get('oscal-updates')
+  getOscalUpdates(): OscalUpdateStatus {
+    return this.securityService.getOscalUpdateStatus();
+  }
+
   @Get('sca-items')
   getScaItems(): ScaItem[] {
     return this.securityService.getScaItems();
@@ -41,6 +46,22 @@ export class SecurityController {
   @Get('realtime-checks')
   getRealtimeChecks(): RealtimeCheck[] {
     return this.securityService.getRealtimeChecks();
+  }
+
+  /**
+   * Get all security controls from the database
+   */
+  @Get('controls')
+  getSecurityControls() {
+    return this.securityService.getControlsDatabase();
+  }
+
+  /**
+   * Get a specific security control by ID
+   */
+  @Get('controls/:id')
+  getSecurityControl(@Param('id') controlId: string) {
+    return this.securityService.getControl(controlId);
   }
 
   /**
@@ -59,6 +80,11 @@ export class SecurityController {
     });
     
     return { scanId };
+  }
+
+  @Post('oscal-updates/refresh')
+  refreshOscalUpdates(): Promise<OscalUpdateStatus> {
+    return this.securityService.refreshOscalUpdates();
   }
 
   /**

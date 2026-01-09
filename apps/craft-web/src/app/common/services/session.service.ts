@@ -1,11 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { User } from './user.interface';
+import { LoggerService } from './logger.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SessionService {
+  constructor(private logger: LoggerService) {
+    this.logger.registerService('SessionService');
+  }
 
   getFullName(user: User): string {
     if (user.firstName && user.lastName) {
@@ -28,7 +32,9 @@ export class SessionService {
   }
 
   setUserSession(user: User) {
+    const callId = this.logger.startServiceCall('SessionService', 'SET', '/session/user');
     sessionStorage.setItem('username', user.username);
+    this.logger.endServiceCall(callId, 200);
   }
 
   clearUserSession() {
@@ -46,10 +52,13 @@ export class SessionService {
   }
 
   validateToken(token: string): Observable<boolean> {
+    const callId = this.logger.startServiceCall('SessionService', 'VALIDATE', '/session/token');
     return new Observable<boolean>(observer => {
       const stored = this.getUserSession();
-      observer.next(this.constantTimeEquals(stored, token));
+      const isValid = this.constantTimeEquals(stored, token);
+      observer.next(isValid);
       observer.complete();
+      this.logger.endServiceCall(callId, isValid ? 200 : 401);
     });
   }
 }

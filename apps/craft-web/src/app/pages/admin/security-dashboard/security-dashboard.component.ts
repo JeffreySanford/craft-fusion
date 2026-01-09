@@ -56,6 +56,17 @@ interface Sbom {
   downloadUrl?: string;
 }
 
+interface OscalControlResult {
+  id?: string;
+  title?: string;
+  status?: string;
+  severity?: string;
+  description?: string;
+  recommendation?: string;
+  evidence?: string;
+  timestamp?: string;
+}
+
 interface OscalProfile {
   id?: string;
   name?: string;
@@ -65,6 +76,41 @@ interface OscalProfile {
   fail?: number;
   duration?: string;
   profileType?: string;
+  description?: string;
+  total?: number;
+  notapplicable?: number;
+  controlResults?: OscalControlResult[];
+}
+
+interface OscalUpdateSource {
+  version?: string;
+  status?: 'synced' | 'pending' | 'stale';
+  lastChecked?: string;
+  note?: string;
+}
+
+interface OscalUpdateStatus {
+  lastUpdated?: string;
+  sources?: {
+    fedramp: OscalUpdateSource;
+    nist: OscalUpdateSource;
+  };
+  progress?: {
+    status: 'idle' | 'in-progress' | 'error';
+    value: number;
+    message: string;
+  };
+}
+
+interface ScaCheckResult {
+  id?: string;
+  title?: string;
+  status?: string;
+  severity?: string;
+  description?: string;
+  recommendation?: string;
+  reference?: string;
+  timestamp?: string;
 }
 
 interface ScaItem {
@@ -73,6 +119,23 @@ interface ScaItem {
   status?: string;
   description?: string;
   lastChecked?: string;
+  pass?: number;
+  fail?: number;
+  warning?: number;
+  total?: number;
+  checkResults?: ScaCheckResult[];
+}
+
+interface RealtimeCheckResult {
+  id?: string;
+  testName?: string;
+  status?: string;
+  severity?: string;
+  responseTime?: number;
+  statusCode?: number;
+  message?: string;
+  recommendation?: string;
+  timestamp?: string;
 }
 
 interface RealtimeCheck {
@@ -82,6 +145,11 @@ interface RealtimeCheck {
   duration?: string;
   lastRun?: string;
   endpoint?: string;
+  pass?: number;
+  fail?: number;
+  warning?: number;
+  total?: number;
+  testResults?: RealtimeCheckResult[];
 }
 
 @Component({
@@ -91,6 +159,14 @@ interface RealtimeCheck {
   standalone: false,
 })
 export class SecurityDashboardComponent implements OnInit, OnDestroy {
+  // Modal configuration constants
+  private readonly MODAL_CONFIG = {
+    width: '900px',
+    maxWidth: '95vw',
+    maxHeight: '90vh',
+    panelClass: 'security-report-modal-panel'
+  };
+
   endpointLogs = new Map<string, ApiEndpointLog>();
   apiLogsSubscription!: Subscription;
   dataSubscription = new Subscription();
@@ -102,6 +178,11 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   oscalProfiles: OscalProfile[] = [];
   scaItems: ScaItem[] = [];
   realtimeChecks: RealtimeCheck[] = [];
+
+  oscalUpdateStatus: OscalUpdateStatus | null = null;
+  oscalUpdateLoading = false;
+  oscalUpdateRefreshing = false;
+  oscalUpdateError: string | null = null;
 
   findingsLoading = false;
   evidenceLoading = false;
@@ -171,6 +252,7 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
     this.loadEvidence();
     this.loadSboms();
     this.loadOscalProfiles();
+    this.loadOscalUpdateStatus();
     this.loadScaItems();
     this.loadRealtimeChecks();
     this.setupScanProgressListener();
@@ -192,14 +274,12 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
         next: (progress) => {
           this.scanProgress = progress;
           
-          // Get the item ID for this scan
           const itemId = this.scanIdToItemId.get(progress.scanId);
           if (!itemId) {
             console.warn('Received progress for unknown scan:', progress.scanId);
             return;
           }
           
-          // Store progress data for this specific item
           const progressData: { progress: number; eta?: string; message?: string } = {
             progress: progress.progress
           };
@@ -210,10 +290,8 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
           if (progress.status === 'completed') {
             this.runningScanMap.set(itemId, false);
             this.completedScanMap.set(itemId, true);
-            // Clear progress data and mapping after completion
             this.progressMap.delete(itemId);
             this.scanIdToItemId.delete(progress.scanId);
-            // Refresh the relevant data
             if (progress.type === 'oscal') {
               this.loadOscalProfiles();
             } else if (progress.type === 'realtime') {
@@ -390,6 +468,32 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
       .subscribe(data => {
         this.oscalProfiles = Array.isArray(data) ? data : [];
         this.updateOverviewMetrics();
+      });
+
+    this.dataSubscription.add(sub);
+  }
+
+  private loadOscalUpdateStatus(): void {
+    this.oscalUpdateLoading = true;
+    this.oscalUpdateError = null;
+
+    const sub = this.apiService
+      .get<OscalUpdateStatus>('security/oscal-updates')
+      .pipe(
+        take(1),
+        catchError(error => {
+          this.logger.warn('Failed to load OSCAL update status', { status: error?.status });
+          this.oscalUpdateError = 'Unable to load OSCAL update status right now.';
+          return of(null);
+        }),
+        finalize(() => {
+          this.oscalUpdateLoading = false;
+        }),
+      )
+      .subscribe(data => {
+        if (data) {
+          this.oscalUpdateStatus = data;
+        }
       });
 
     this.dataSubscription.add(sub);
@@ -788,7 +892,6 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
         next: (response: any) => {
           if (response?.scanId) {
             this.activeScanId = response.scanId;
-            // Map scanId to profile ID
             this.scanIdToItemId.set(response.scanId, profile.id!);
             this.securityScanService.subscribeScan(response.scanId);
           }
@@ -796,16 +899,42 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
       });
   }
 
+  refreshOscalUpdates(): void {
+    if (this.oscalUpdateRefreshing) return;
+    this.oscalUpdateRefreshing = true;
+    this.oscalUpdateError = null;
+
+    const sub = this.apiService
+      .post<null, OscalUpdateStatus>('security/oscal-updates/refresh', null)
+      .pipe(
+        take(1),
+        catchError(error => {
+          this.logger.warn('Failed to refresh OSCAL catalogs', { status: error?.status });
+          this.oscalUpdateError = 'Unable to refresh OSCAL catalogs right now.';
+          return of(null);
+        }),
+        finalize(() => {
+          this.oscalUpdateRefreshing = false;
+        }),
+      )
+      .subscribe(data => {
+        if (data) {
+          this.oscalUpdateStatus = data;
+        }
+      });
+
+    this.dataSubscription.add(sub);
+  }
+
   viewOscalReport(profile: OscalProfile): void {
     const dialogData: SecurityReportData = {
-      title: `OSCAL Report - ${profile.name}`,
+      title: `OSCAL Compliance Report: ${profile.name}`,
       reportType: 'oscal',
       data: profile,
     };
 
     const dialogRef = this.dialog.open(SecurityReportModalComponent, {
-      width: '800px',
-      maxWidth: '90vw',
+      ...this.MODAL_CONFIG,
       data: dialogData,
     });
 
@@ -832,6 +961,25 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   /**
    * SBOM Actions
    */
+  viewSbomReport(sbom: Sbom): void {
+    const dialogData: SecurityReportData = {
+      title: `SBOM Report: ${sbom.name}`,
+      reportType: 'sbom',
+      data: sbom,
+    };
+
+    const dialogRef = this.dialog.open(SecurityReportModalComponent, {
+      ...this.MODAL_CONFIG,
+      data: dialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'download' && sbom.id) {
+        this.downloadReport('sboms', sbom.id, result.format);
+      }
+    });
+  }
+
   compareSbom(sbom: Sbom): void {
     // TODO: Implement SBOM comparison
     this.logger.info('SBOM comparison not yet implemented', sbom);
@@ -858,7 +1006,6 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
         next: (response: any) => {
           if (response?.scanId) {
             this.activeScanId = response.scanId;
-            // Map scanId to check ID
             this.scanIdToItemId.set(response.scanId, check.id!);
             this.securityScanService.subscribeScan(response.scanId);
           }
@@ -868,14 +1015,13 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
 
   viewRealtimeReport(check: RealtimeCheck): void {
     const dialogData: SecurityReportData = {
-      title: `Real-Time Check - ${check.name}`,
+      title: `Real-Time Security Check: ${check.name}`,
       reportType: 'realtime',
       data: check,
     };
 
     const dialogRef = this.dialog.open(SecurityReportModalComponent, {
-      width: '800px',
-      maxWidth: '90vw',
+      ...this.MODAL_CONFIG,
       data: dialogData,
     });
 
@@ -904,14 +1050,13 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
    */
   exportFindings(): void {
     const dialogData: SecurityReportData = {
-      title: 'Security Findings Export',
+      title: 'Security Findings Report',
       reportType: 'findings',
       data: this.findings,
     };
 
     const dialogRef = this.dialog.open(SecurityReportModalComponent, {
-      width: '800px',
-      maxWidth: '90vw',
+      ...this.MODAL_CONFIG,
       data: dialogData,
     });
 
@@ -927,14 +1072,13 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
    */
   downloadEvidenceBundle(): void {
     const dialogData: SecurityReportData = {
-      title: 'Evidence Bundle',
+      title: 'Evidence Bundle Report',
       reportType: 'evidence',
       data: this.evidence,
     };
 
     const dialogRef = this.dialog.open(SecurityReportModalComponent, {
-      width: '800px',
-      maxWidth: '90vw',
+      ...this.MODAL_CONFIG,
       data: dialogData,
     });
 
@@ -949,16 +1093,34 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   /**
    * SCA Actions
    */
+  viewScaItemReport(item: ScaItem): void {
+    const dialogData: SecurityReportData = {
+      title: `SCA Item Report: ${item.label}`,
+      reportType: 'sca',
+      data: item,
+    };
+
+    const dialogRef = this.dialog.open(SecurityReportModalComponent, {
+      ...this.MODAL_CONFIG,
+      data: dialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.action === 'download' && item.id) {
+        this.downloadReport('sca-items', item.id, result.format);
+      }
+    });
+  }
+
   exportScaReport(): void {
     const dialogData: SecurityReportData = {
-      title: 'Security Checklist Assessment',
+      title: 'OWASP Top 10 Assessment Report',
       reportType: 'sca',
       data: this.scaItems,
     };
 
     const dialogRef = this.dialog.open(SecurityReportModalComponent, {
-      width: '800px',
-      maxWidth: '90vw',
+      ...this.MODAL_CONFIG,
       data: dialogData,
     });
 

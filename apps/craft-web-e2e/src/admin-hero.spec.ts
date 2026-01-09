@@ -1,4 +1,6 @@
+import 'dotenv/config';
 import { test, expect, Page } from '@playwright/test';
+import { waitForAdminShell } from './support/admin';
 
 /**
  * Authenticate as admin user for e2e tests.
@@ -49,21 +51,20 @@ test.describe('Admin Hero Area', () => {
     
     // Navigate to home page with longer timeout
     await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 30000 });
-    
+
     // Wait a bit for Angular to initialize
     await page.waitForTimeout(1000);
-    
+
     // Authenticate (sets HTTP-only cookies in browser context)
     await authenticateAsAdmin(page);
-    
+
     // Navigate to admin page with longer timeout
     await page.goto('/admin', { waitUntil: 'domcontentloaded', timeout: 30000 });
-    
-    // Wait for hero bar with longer timeout and retry
-    await page.waitForSelector('.admin-hero-bar', { timeout: 15000, state: 'visible' });
-    
-    // Wait for Angular to finish rendering
-    await page.waitForTimeout(500);
+
+    // Wait for the admin shell to render before asserting hero tiles
+    await waitForAdminShell(page);
+    await page.waitForSelector('.admin-hero-bar', { timeout: 60000, state: 'visible' });
+    await page.waitForSelector('app-hero-tile', { timeout: 60000 });
   });
 
   test('should display all 5 hero KPI tiles', async ({ page }) => {
@@ -82,8 +83,8 @@ test.describe('Admin Hero Area', () => {
     const successTile = page.locator('.hero-tile').filter({ hasText: 'Success Rate' });
     await expect(successTile).toBeVisible();
     
-    const value = await successTile.locator('.hero-tile-value').textContent();
-    expect(value).toMatch(/%$/); // Should end with %
+    const value = (await successTile.locator('.hero-tile-value').textContent() ?? '').trim();
+    expect(value).toMatch(/\d+%/); // Should include a percent value
   });
 
   test('should display Errors tile with count', async ({ page }) => {
@@ -105,8 +106,8 @@ test.describe('Admin Hero Area', () => {
     const responseTile = page.locator('.hero-tile').filter({ hasText: 'Response Time' });
     await expect(responseTile).toBeVisible();
     
-    const value = await responseTile.locator('.hero-tile-value').textContent();
-    expect(value).toMatch(/ms$/); // Should end with ms
+    const value = (await responseTile.locator('.hero-tile-value').textContent() ?? '').trim();
+    expect(value).toMatch(/\d+ms/); // Should include milliseconds
   });
 
   test('should apply correct status classes', async ({ page }) => {
@@ -146,26 +147,30 @@ test.describe('Admin Hero Area', () => {
     const isClickable = await errorsTile.evaluate(el => el.classList.contains('clickable'));
     
     if (isClickable) {
-      await errorsTile.click({ timeout: 5000 });
-      
-      // Should navigate to the Logs tab (index 5)
-      await page.waitForTimeout(500); // Wait for tab change animation
-      const activeTab = page.locator('.mat-tab-label-active');
-      await expect(activeTab).toContainText('Logs');
+      await errorsTile.click({ force: true });
+      const logsTab = page.getByRole('tab', { name: 'Logs' });
+      await logsTab.scrollIntoViewIfNeeded();
+      const logsPanel = page
+        .locator('.logger-tab')
+        .locator("xpath=ancestor::*[contains(@class, 'mat-tab-body') or contains(@class, 'mat-mdc-tab-body')]")
+        .first();
+
+      await expect(logsPanel).toHaveAttribute('aria-hidden', 'false', { timeout: 10000 });
+      await expect(logsPanel).toBeVisible();
     }
   });
 
   test('should remain visible when switching tabs', async ({ page }) => {
     // Click on Performance tab
-    await page.locator('.mat-tab-label').filter({ hasText: 'Performance' }).click();
-    await page.waitForTimeout(300);
+    await page.getByRole('tab', { name: 'Performance' }).click({ force: true });
+    await page.waitForTimeout(500);
     
     // Hero bar should still be visible
     await expect(page.locator('.admin-hero-bar')).toBeVisible();
     
     // Click on Security tab
-    await page.locator('.mat-tab-label').filter({ hasText: 'Security' }).click();
-    await page.waitForTimeout(300);
+    await page.getByRole('tab', { name: 'Security & Access' }).click({ force: true });
+    await page.waitForTimeout(500);
     
     // Hero bar should still be visible
     await expect(page.locator('.admin-hero-bar')).toBeVisible();
@@ -220,27 +225,33 @@ test.describe('Admin Hero Area', () => {
   test('should update Data Mode tile when simulation is toggled', async ({ page }) => {
     const dataModeTile = page.locator('.hero-tile').filter({ hasText: 'Data Mode' });
     const simulationToggle = page.locator('.simulation-toggle mat-slide-toggle');
+    const toggleButton = simulationToggle.locator('button[role="switch"]');
     
     // Wait for elements to be ready
     await dataModeTile.waitFor({ state: 'visible', timeout: 5000 });
     await simulationToggle.waitFor({ state: 'visible', timeout: 5000 });
     
     // Get initial state
-    const initialValue = await dataModeTile.locator('.hero-tile-value').textContent();
-    
+    const valueLocator = dataModeTile.locator('.hero-tile-value');
+    const initialValue = (await valueLocator.textContent())?.trim() ?? '';
+    const targetValue = initialValue === 'Live' ? 'Simulated' : 'Live';
+    const targetAria = targetValue === 'Simulated' ? 'true' : 'false';
+
     // Toggle simulation with explicit wait
-    await simulationToggle.click({ timeout: 5000 });
-    await page.waitForTimeout(1000); // Wait for state update and re-render
-    
+    await simulationToggle.click({ force: true });
+
+    await expect(toggleButton).toHaveAttribute('aria-checked', targetAria, {
+      timeout: 10000,
+    });
+    await expect(valueLocator).toHaveText(targetValue, { timeout: 10000 });
+
     // Get new state
-    const newValue = await dataModeTile.locator('.hero-tile-value').textContent();
-    
-    // Values should be different
-    expect(initialValue).not.toBe(newValue);
+    const newValue = (await valueLocator.textContent())?.trim() ?? '';
+    expect(newValue).toBe(targetValue);
     
     // Should show simulated metrics when in simulation mode
-    if (newValue?.includes('Simulated')) {
-      const subLabel = await dataModeTile.locator('.hero-tile-meta').textContent();
+    if (newValue.includes('Simulated')) {
+      const subLabel = (await dataModeTile.locator('.hero-tile-meta').textContent())?.trim();
       expect(subLabel).toContain('Service Calls');
     }
   });

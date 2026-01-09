@@ -13,8 +13,6 @@ export class TimelineService {
   constructor(@InjectModel(TimelineEvent.name) private timelineEventModel: Model<TimelineEvent>, private logger: LoggingService) {}
 
   create(createTimelineEventDto: CreateTimelineEventDto): Observable<TimelineEvent> {
-    this.logger.debug('Creating timeline event', createTimelineEventDto);
-
     const createdEvent = new this.timelineEventModel(createTimelineEventDto);
     return from(createdEvent.save()).pipe(tap(result => this.logger.debug('Timeline event created', { id: (result as any).id || (result as any)._id })));
   }

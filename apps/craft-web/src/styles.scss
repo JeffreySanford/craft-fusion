@@ -27,3 +27,18 @@
   padding: 0.5em !important;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
+
+// Security Report Modal Panel Styling
+.security-report-modal-panel {
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-shape: 12px;
+    background: linear-gradient(135deg, rgba(40, 20, 10, 0.95), rgba(60, 15, 5, 0.95));
+    border: 2px solid rgba(255, 180, 60, 0.5);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 100px rgba(255, 140, 0, 0.3);
+    backdrop-filter: blur(12px);
+    
+    .mat-mdc-dialog-surface {
+      background: transparent;
+    }
+  }
+}

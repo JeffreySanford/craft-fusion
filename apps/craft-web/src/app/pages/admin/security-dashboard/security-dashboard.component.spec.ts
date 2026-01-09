@@ -3,7 +3,7 @@ import { SecurityDashboardComponent } from './security-dashboard.component';
 import { ApiLoggerService } from '../../../common/services/api-logger.service';
 import { LoggerService } from '../../../common/services/logger.service';
 import { ApiService } from '../../../common/services/api.service';
-import { of, BehaviorSubject } from 'rxjs';
+import { of, BehaviorSubject, throwError } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('SecurityDashboardComponent', () => {
@@ -29,6 +29,7 @@ describe('SecurityDashboardComponent', () => {
 
     mockApiService = {
       get: jest.fn().mockReturnValue(of([])),
+      post: jest.fn().mockReturnValue(of(null)),
     } as any;
 
     await TestBed.configureTestingModule({
@@ -43,6 +44,7 @@ describe('SecurityDashboardComponent', () => {
 
     fixture = TestBed.createComponent(SecurityDashboardComponent);
     component = fixture.componentInstance;
+    (component as any).apiService = mockApiService;
   });
 
   it('should create', () => {
@@ -88,6 +90,85 @@ describe('SecurityDashboardComponent', () => {
 
     it('should set evidenceError to null initially', () => {
       expect(component.evidenceError).toBeNull();
+    });
+  });
+
+  describe('OSCAL update status management', () => {
+    const createStatus = () => ({
+      lastUpdated: '2026-01-09T00:00:00.000Z',
+      sources: {
+        fedramp: {
+          version: 'Rev 5',
+          status: 'synced',
+          lastChecked: '2026-01-08T12:00:00.000Z',
+        },
+        nist: {
+          version: 'SP 800-37 Rev 2',
+          status: 'synced',
+          lastChecked: '2026-01-08T12:05:00.000Z',
+        },
+      },
+      progress: {
+        status: 'idle',
+        value: 100,
+        message: 'Synced',
+      },
+    });
+
+    it('should load OSCAL update status from the API', () => {
+      const mockStatus = createStatus();
+      mockApiService.get.mockReturnValueOnce(of(mockStatus));
+
+      (component as any).loadOscalUpdateStatus();
+
+      expect(mockApiService.get).toHaveBeenCalledWith('security/oscal-updates');
+      expect(component.oscalUpdateStatus).toEqual(mockStatus);
+      expect(component.oscalUpdateLoading).toBe(false);
+      expect(component.oscalUpdateError).toBeNull();
+    });
+
+    it('should handle errors when loading OSCAL status', () => {
+      mockApiService.get.mockReturnValueOnce(throwError(() => ({ status: 503 })));
+
+      (component as any).loadOscalUpdateStatus();
+
+      expect(component.oscalUpdateStatus).toBeNull();
+      expect(component.oscalUpdateError).toBe('Unable to load OSCAL update status right now.');
+      expect(component.oscalUpdateLoading).toBe(false);
+    });
+
+    it('should refresh OSCAL updates and replace the cached status', () => {
+      const mockStatus = createStatus();
+      mockApiService.post.mockReturnValueOnce(of(mockStatus));
+
+      component.refreshOscalUpdates();
+
+      expect(mockApiService.post).toHaveBeenCalledWith('security/oscal-updates/refresh', null);
+      expect(component.oscalUpdateStatus).toEqual(mockStatus);
+      expect(component.oscalUpdateRefreshing).toBe(false);
+      expect(component.oscalUpdateError).toBeNull();
+    });
+
+    it('should not refresh if a refresh is already in progress', () => {
+      component.oscalUpdateRefreshing = true;
+      component.refreshOscalUpdates();
+
+      expect(mockApiService.post).not.toHaveBeenCalled();
+      component.oscalUpdateRefreshing = false;
+    });
+
+    it('should capture errors when refresh fails', () => {
+      mockLoggerService.warn.mockClear();
+      mockApiService.post.mockReturnValueOnce(throwError(() => ({ status: 500 })));
+
+      component.refreshOscalUpdates();
+
+      expect(component.oscalUpdateRefreshing).toBe(false);
+      expect(component.oscalUpdateError).toBe('Unable to refresh OSCAL catalogs right now.');
+      expect(mockLoggerService.warn).toHaveBeenCalledWith(
+        'Failed to refresh OSCAL catalogs',
+        { status: 500 },
+      );
     });
   });
 

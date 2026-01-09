@@ -7,11 +7,11 @@
 
 .security-tabs {
   .mat-mdc-tab-header {
-    background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8));
-    border: 1px solid rgba(59, 130, 246, 0.35);
+    background: rgba(30, 25, 15, 0.95);
+    border: 2px solid rgba(255, 180, 60, 0.4);
     border-radius: 1.25rem;
     padding: 0.25rem 0.55rem;
-    box-shadow: 0 15px 40px rgba(2, 6, 23, 0.65);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 180, 60, 0.15);
 
     .mat-mdc-tab-label {
       color: rgba(255, 255, 255, 0.9);
@@ -22,10 +22,11 @@
     }
 
     .mat-mdc-tab-label-active {
-      color: #fff;
-      background: rgba(59, 130, 246, 0.25);
-      box-shadow: inset 0 0 0.5rem rgba(59, 130, 246, 0.4);
+      color: #000;
+      background: rgba(255, 215, 0, 0.9);
+      box-shadow: inset 0 0 0.5rem rgba(255, 180, 0, 0.6), 0 4px 12px rgba(255, 180, 0, 0.3);
       transform: translateY(-1px);
+      font-weight: 700;
     }
 
     .mat-mdc-tab-header-pagination {
@@ -109,10 +110,10 @@
 }
 
 .shield-card {
-  background: linear-gradient(140deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(20, 18, 15, 0.95);
+  border: 1px solid rgba(255, 180, 60, 0.25);
   border-radius: 1rem;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 180, 60, 0.1);
   display: flex;
   gap: 0.9rem;
   padding: 1rem 1.1rem;
@@ -122,7 +123,8 @@
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 180, 60, 0.2);
+    border-color: rgba(255, 180, 60, 0.4);
   }
 
   &::after {
@@ -178,10 +180,10 @@
 }
 
 %security-card-base {
-  background: linear-gradient(145deg, rgba(2, 6, 23, 0.95), rgba(15, 23, 42, 0.95));
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(20, 18, 15, 0.95);
+  border: 1px solid rgba(255, 180, 60, 0.25);
   border-radius: 1rem;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 180, 60, 0.1);
   position: relative;
   overflow: hidden;
   padding: 1rem;
@@ -189,7 +191,8 @@
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 24px 55px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 24px 55px rgba(0, 0, 0, 0.7), 0 0 35px rgba(255, 180, 60, 0.2);
+    border-color: rgba(255, 180, 60, 0.4);
   }
 
   &::after {
@@ -315,6 +318,116 @@
   gap: 1rem;
 }
 
+.oscal-update-panel {
+  @extend %security-card-base;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.4), rgba(8, 16, 38, 0.95));
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+
+  .update-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .meta-row .value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .update-sources {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.6rem;
+  }
+
+  .update-source {
+    padding: 0.65rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .source-title {
+    margin: 0;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .source-version {
+    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .source-status {
+    margin: 0.15rem 0 0;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    text-transform: capitalize;
+  }
+
+  .source-status.synced {
+    color: #22c55e;
+  }
+
+  .source-status.pending {
+    color: #f59e0b;
+  }
+
+  .source-status.stale {
+    color: #ef4444;
+  }
+
+  .source-time {
+    font-size: 0.7rem;
+    opacity: 0.65;
+  }
+
+  .update-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  mat-progress-bar {
+    height: 6px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .update-progress-note {
+    margin: 0;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .update-button {
+    align-self: flex-start;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+}
+
+.oscal-update-panel.placeholder {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
 .oscal-card {
   @extend %security-card-base;
   display: flex;
@@ -343,6 +456,18 @@
 .oscal-meta .value {
   font-size: 0.95rem;
   font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  span {
+    display: block;
+  }
+
+  .time {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+  }
 }
 
 .oscal-actions {
@@ -429,6 +554,17 @@
   align-items: center;
   gap: 0.75rem;
   border-radius: 0.9rem;
+  position: relative;
+
+  .sca-view-btn {
+    margin-left: auto;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover .sca-view-btn {
+    opacity: 1;
+  }
 }
 
 .sca-icon {

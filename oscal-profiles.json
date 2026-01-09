@@ -8,7 +8,7 @@
       "name": "standard",
       "notapplicable": 52,
       "pass": 18,
-      "total": 994,
+      "total": 75,
       "updated": "2025-05-27T09:04:00-05:00"
     },
     {
@@ -19,7 +19,7 @@
       "name": "ospp",
       "notapplicable": 176,
       "pass": 8,
-      "total": 994,
+      "total": 206,
       "updated": "2025-05-27T09:04:00-05:00"
     },
     {
@@ -30,7 +30,7 @@
       "name": "pci-dss",
       "notapplicable": 86,
       "pass": 18,
-      "total": 994,
+      "total": 119,
       "updated": "2025-05-27T09:04:00-05:00"
     },
     {
