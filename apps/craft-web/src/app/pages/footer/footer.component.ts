@@ -55,7 +55,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     { name: 'BusyService', description: 'Loading state management' },
     { name: 'NotificationService', description: 'User notifications' },
     { name: 'LoggerService', description: 'Application logging' },
-    { name: 'ChatService', description: 'Chat functionality' },
     { name: 'SettingsService', description: 'Application settings' },
   ];
 
@@ -69,7 +68,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     busy: 'hourglass_empty',
     notification: 'notifications',
     logger: 'receipt_long',
-    chat: 'chat',
     settings: 'settings',
   };
 
@@ -402,6 +400,17 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
 
+      const createGradient = (startColor: string, endColor: string) => {
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, startColor);
+        gradient.addColorStop(1, endColor);
+        return gradient;
+      };
+
+      const memoryGradient = createGradient('rgba(59, 130, 246, 0.45)', 'rgba(59, 130, 246, 0.05)');
+      const cpuGradient = createGradient('rgba(16, 185, 129, 0.35)', 'rgba(16, 185, 129, 0.04)');
+      const latencyGradient = createGradient('rgba(239, 68, 68, 0.45)', 'rgba(239, 68, 68, 0.05)');
+
       this.chart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -410,37 +419,93 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
             {
               label: 'Memory Usage',
               data: [],
-              borderColor: 'blue',
-              fill: false,
+              borderColor: '#3b82f6',
+              backgroundColor: memoryGradient,
+              fill: true,
+              borderWidth: 2,
+              tension: 0.35,
+              pointRadius: 3,
+              pointHoverRadius: 5,
             },
             {
               label: 'CPU Load',
               data: [],
-              borderColor: 'green',
-              fill: false,
+              borderColor: '#10b981',
+              backgroundColor: cpuGradient,
+              fill: true,
+              borderWidth: 2,
+              tension: 0.35,
+              pointRadius: 3,
+              pointHoverRadius: 5,
             },
             {
               label: 'Network Latency',
               data: [],
-              borderColor: 'red',
-              fill: false,
+              borderColor: '#ef4444',
+              backgroundColor: latencyGradient,
+              fill: true,
+              borderWidth: 2,
+              tension: 0.35,
+              pointRadius: 3,
+              pointHoverRadius: 5,
             },
           ],
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                color: '#d1d5db',
+                  font: {
+                    weight: 500,
+                  },
+              },
+            },
+            tooltip: {
+              backgroundColor: 'rgba(15, 23, 42, 0.92)',
+              bodyColor: '#f8fafc',
+              titleColor: '#f8fafc',
+              borderWidth: 0,
+              callbacks: {
+                label: context => {
+                  const parsedValue =
+                    typeof context.parsed === 'number' ? context.parsed : context.parsed?.y ?? 0;
+                  return `${context.dataset.label}: ${parsedValue.toFixed(2)}`;
+                },
+              },
+            },
+          },
+          interaction: {
+            intersect: false,
+            mode: 'index',
+          },
           scales: {
             x: {
               display: true,
               title: {
                 display: true,
                 text: 'Time',
+                color: '#cbd5f5',
+              },
+              ticks: {
+                color: '#e5e7eb',
+              },
+              grid: {
+                color: 'rgba(148, 163, 184, 0.2)',
               },
             },
             y: {
               beginAtZero: true,
-              max: 100,
+              suggestedMax: 120,
+              ticks: {
+                color: '#e5e7eb',
+              },
+              grid: {
+                color: 'rgba(148, 163, 184, 0.15)',
+              },
             },
           },
         },

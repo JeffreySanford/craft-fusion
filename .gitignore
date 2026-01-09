@@ -124,3 +124,11 @@ database.sqlite # Ignore specific sqlite db file
 
 # Archived development scripts
 scripts/archive/
+
+# Playwright auth state (never commit)
+playwright/.auth/
+playwright/.tmp/
+
+# Playwright test output
+apps/craft-web-e2e/playwright/test-results/
+playwright-report/

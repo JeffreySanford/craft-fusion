@@ -23,9 +23,9 @@ See `documentation/INDEX.md` for the canonical doc list.
 
 ## Live demo
 
-- https://jeffreysanford.us
+- <https://jeffreysanford.us>
 
 ## Notes
 
 - Use Nx for all workspace commands.
-- Auth is demo-only until the security roadmap is completed. See `documentation/AUTHENTICATION-SECURITY-ASSESSMENT.md`.
+- Authentication: HttpOnly cookie-based JWT with logout-on-refresh implemented (2026-01-08). See `documentation/AUTHENTICATION.md` for current implementation and `documentation/AUTHENTICATION-SECURITY-ASSESSMENT.md` for security roadmap.

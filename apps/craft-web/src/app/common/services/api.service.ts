@@ -68,17 +68,10 @@ export class ApiService {
   }
 
   private getHeaders(): HttpHeaders {
-
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const authHeader = token ? `Bearer ${token}` : '';
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
-    if (authHeader) {
-      headers['Authorization'] = authHeader;
-    }
 
-    this.logger.debug('ApiService.getHeaders', { hasToken: !!token, tokenPreview: token ? token.slice(0, 24) + '...' : null });
     return new HttpHeaders(headers);
   }
 
@@ -123,6 +116,9 @@ export class ApiService {
     const opts: any = { ...(options || {}) };
     if (opts.headers) {
       opts.headers = this.normalizeHeaders(opts.headers);
+    }
+    if (opts.withCredentials === undefined) {
+      opts.withCredentials = true;
     }
     return opts;
   }

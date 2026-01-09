@@ -16,16 +16,14 @@
     "noUnusedParameters": false
   },
   "include": [
+    "src/**/*.d.ts"
+  ],
+  "files": [
     "src/main.ts",
-    "src/polyfills.ts",
-    "../../libs/craft-library/src/index.ts",
-    "../../libs/craft-library/src/**/*.ts"
+    "src/polyfills.ts"
   ],
   "exclude": [
     "src/test-setup.ts",
     "**/*.spec.ts"
-  ],
-  "files": [
-    // No changes needed for SCSS import resolution
   ]
 }

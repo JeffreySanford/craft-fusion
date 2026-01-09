@@ -385,7 +385,8 @@
   }
 }
 
-@mixin footer-expansion-panel($panelBg, $headerBg, $indicatorColor, $radius: 0.25em) {
+@mixin footer-expansion-panel($panelBg, $headerBg, $indicatorColor, $contentBg: null, $radius: 0.25em) {
+  $panelContentBg: if($contentBg != null, $contentBg, $headerBg);
   .mat-expansion-panel {
     background: $panelBg;
     border-radius: $radius;
@@ -397,7 +398,11 @@
     }
 
     .mat-expansion-panel-content {
-      background-color: $headerBg;
+      background-color: $panelContentBg;
+    }
+
+    .mat-expansion-panel-body {
+      background-color: $panelContentBg;
     }
 
     .mat-expansion-panel-indicator {

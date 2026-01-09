@@ -195,5 +195,83 @@
         </div>
       </div>
     </mat-tab>
+
+    <mat-tab label="Findings">
+      <div class="tab-pane">
+        <div class="feature-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Findings</p>
+              <h4>Actionable security insights</h4>
+            </div>
+            <button mat-stroked-button color="primary" disabled>Export findings</button>
+          </div>
+
+          <div class="status-message" *ngIf="findingsLoading">Loading findings...</div>
+          <div class="status-message error" *ngIf="findingsError">{{ findingsError }}</div>
+          <div class="empty-state" *ngIf="!findingsLoading && !findingsError && findings.length === 0">
+            No findings yet. Run a scan to populate this view.
+          </div>
+
+          <div class="findings-grid" *ngIf="findings.length > 0">
+            <article class="finding-card" *ngFor="let finding of findings">
+              <div class="finding-head">
+                <div>
+                  <p class="label">Source</p>
+                  <p class="hint">{{ finding.source || 'Unknown' }}</p>
+                </div>
+                <span class="badge" [ngClass]="getSeverityClass(finding.severity)">{{ finding.severity || 'Unknown' }}</span>
+              </div>
+              <h4>{{ finding.title || 'Untitled finding' }}</h4>
+              <div class="meta-row">
+                <span class="meta">Component: {{ finding.component || 'Unspecified' }}</span>
+                <span class="badge" [ngClass]="getFindingStatusClass(finding.status)">{{ finding.status || 'Open' }}</span>
+              </div>
+              <p class="hint" *ngIf="finding.createdAt">Observed: {{ finding.createdAt | date: 'mediumDate' }}</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Evidence">
+      <div class="tab-pane">
+        <div class="feature-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Evidence</p>
+              <h4>Artifacts and provenance</h4>
+            </div>
+            <button mat-stroked-button color="primary" disabled>Download bundle</button>
+          </div>
+
+          <div class="status-message" *ngIf="evidenceLoading">Loading evidence...</div>
+          <div class="status-message error" *ngIf="evidenceError">{{ evidenceError }}</div>
+          <div class="empty-state" *ngIf="!evidenceLoading && !evidenceError && evidence.length === 0">
+            No evidence captured yet. Trigger a scan to generate artifacts.
+          </div>
+
+          <div class="evidence-grid" *ngIf="evidence.length > 0">
+            <article class="evidence-card" *ngFor="let artifact of evidence">
+              <div class="evidence-head">
+                <div>
+                  <p class="label">{{ artifact.name || 'Evidence artifact' }}</p>
+                  <p class="hint">Type: {{ artifact.type || 'Unknown' }}</p>
+                </div>
+                <span class="badge" [ngClass]="getEvidenceStatusClass(artifact.status)">{{ artifact.status || 'Pending' }}</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta">Created: {{ artifact.createdAt ? (artifact.createdAt | date: 'mediumDate') : 'Unknown' }}</span>
+                <span class="meta" *ngIf="artifact.createdBy">By: {{ artifact.createdBy }}</span>
+              </div>
+              <p class="hash" *ngIf="artifact.hash">Hash: {{ artifact.hash }}</p>
+              <div class="evidence-actions">
+                <button mat-stroked-button color="primary" [disabled]="!artifact.downloadUrl">Download</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
   </mat-tab-group>
 </div>

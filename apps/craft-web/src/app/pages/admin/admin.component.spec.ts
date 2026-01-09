@@ -42,7 +42,15 @@ describe('AdminComponent', () => {
         { provide: ServicesDashboardService, useClass: MockServicesDashboardService },
         { provide: LoggerService, useClass: MockLoggerService },
         { provide: DataSimulationService, useClass: MockDataSimulationService },
-        { provide: 'AuthService', useClass: class { isAdmin$ = new BehaviorSubject(true); isAdmin = true; } },
+        {
+          provide: 'AuthService',
+          useClass: class {
+            isAdmin$ = new BehaviorSubject(true);
+            isLoggedIn$ = new BehaviorSubject(true);
+            isAdmin = true;
+            initializeAuthentication = jest.fn();
+          },
+        },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

@@ -43,6 +43,44 @@ export interface ProxyRouteStatus {
   statusCode?: number;
 }
 
+interface PortsResponse {
+  ports?: Record<string, boolean>;
+}
+
+interface SocketStatusResponse {
+  connected?: boolean;
+}
+
+interface ServerInfoResponse {
+  serverInfo?: {
+    binding?: string;
+  };
+}
+
+interface HttpErrorLike {
+  status?: number;
+  statusText?: string;
+  message?: string;
+}
+
+interface DiagnosticDashboardData {
+  apiConnection: {
+    status: ConnectionDiagnostics['status'];
+    isConnected: boolean;
+    lastChecked: Date;
+    responseTimes: number[];
+    averageResponseTime: number;
+  };
+  socketConnection: {
+    isConnected: boolean;
+    reconnectAttempts: number;
+    pingTime?: number;
+    connectionId?: string;
+  };
+  suggestions: string[];
+  namespaceStatuses: NamespacedSocketStatus[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -246,17 +284,17 @@ export class ApiDiagnosticsService {
       })
       .pipe(
         map(response => {
-          if (response && response.ports) {
-            const ports = response.ports;
-            let message = 'Port status:\n';
-
-            Object.entries(ports).forEach(([port, inUse]) => {
-              message += `- Port ${port}: ${inUse ? 'In use' : 'Available'}\n`;
-            });
-
-            return message;
+          const ports = (response as PortsResponse).ports;
+          if (!ports) {
+            return 'Port availability check completed, but no data returned';
           }
-          return 'Port availability check completed, but no data returned';
+
+          let message = 'Port status:\n';
+          Object.entries(ports).forEach(([port, inUse]) => {
+            message += `- Port ${port}: ${inUse ? 'In use' : 'Available'}\n`;
+          });
+
+          return message;
         }),
         catchError(error => {
           return of(`Port availability check failed: ${this.formatError(error)}`);
@@ -299,7 +337,7 @@ export class ApiDiagnosticsService {
 
   checkSocketConnection(): Observable<boolean> {
     return this.http.get<unknown>(`${environment.apiUrl}/api/socket-status`).pipe(
-      map(response => response.connected === true),
+      map(response => (response as SocketStatusResponse).connected === true),
       catchError(() => of(false)),
     );
   }
@@ -322,11 +360,12 @@ export class ApiDiagnosticsService {
 
       this.socketInstance.on('connect', () => {
         this.socketReconnectAttempts = 0;
+        const connectionId = this.socketInstance?.id;
         const socketDiagnostics: SocketDiagnostics = {
           isConnected: true,
-          connectionId: this.socketInstance?.id,                         
           reconnectAttempts: this.socketReconnectAttempts,
           socketUrl,
+          ...(connectionId ? { connectionId } : {}),
         };
         this.socketDiagnosticsSubject.next(socketDiagnostics);
         this.logger.info('Socket connected successfully', {
@@ -340,20 +379,21 @@ export class ApiDiagnosticsService {
       this.socketInstance.on('disconnect', reason => {
         const socketDiagnostics: SocketDiagnostics = {
           isConnected: false,
-          lastError: reason,
           reconnectAttempts: this.socketReconnectAttempts,
           socketUrl,
+          ...(reason ? { lastError: reason } : {}),
         };
         this.socketDiagnosticsSubject.next(socketDiagnostics);
         this.logger.warn('Socket disconnected', { reason });
       });
 
       this.socketInstance.on('error', error => {
+        const message = error?.message || 'Unknown socket error';
         const socketDiagnostics: SocketDiagnostics = {
           isConnected: false,
-          lastError: error.message || 'Unknown socket error',
           reconnectAttempts: this.socketReconnectAttempts,
           socketUrl,
+          ...(message ? { lastError: message } : {}),
         };
         this.socketDiagnosticsSubject.next(socketDiagnostics);
         this.logger.error('Socket connection error', { error });
@@ -371,11 +411,12 @@ export class ApiDiagnosticsService {
       });
 
       this.socketInstance.on('reconnect_failed', () => {
+        const lastError = 'Reconnection failed after maximum attempts';
         const socketDiagnostics: SocketDiagnostics = {
           isConnected: false,
-          lastError: 'Reconnection failed after maximum attempts',
           reconnectAttempts: this.socketReconnectAttempts,
           socketUrl,
+          ...(lastError ? { lastError } : {}),
         };
         this.socketDiagnosticsSubject.next(socketDiagnostics);
         this.logger.error('Socket reconnection failed', {
@@ -487,17 +528,16 @@ export class ApiDiagnosticsService {
         this.knownNamespaces.set(namespace, {
           namespace,
           isConnected: false,
-          connectionId: undefined,
-          lastError: undefined,
         });
       }
 
       nsSocket.on('connect', () => {
+        const connectionId = nsSocket.id;
         const status: NamespacedSocketStatus = {
           namespace,
           isConnected: true,
-          connectionId: nsSocket.id,
           lastConnectedTime: new Date(),
+          ...(connectionId ? { connectionId } : {}),
         };
 
         this.knownNamespaces.set(namespace, status);
@@ -515,11 +555,12 @@ export class ApiDiagnosticsService {
           isConnected: false,
         };
 
+        const lastError = reason;
         const status: NamespacedSocketStatus = {
           ...existingStatus,
           isConnected: false,
-          lastError: reason,
           lastDisconnectedTime: new Date(),
+          ...(lastError ? { lastError } : {}),
         };
 
         this.knownNamespaces.set(namespace, status);
@@ -534,11 +575,12 @@ export class ApiDiagnosticsService {
           isConnected: false,
         };
 
+        const lastError = error?.message || 'Unknown socket error';
         const status: NamespacedSocketStatus = {
           ...existingStatus,
           isConnected: false,
-          lastError: error.message || 'Unknown socket error',
           lastDisconnectedTime: new Date(),
+          ...(lastError ? { lastError } : {}),
         };
 
         this.knownNamespaces.set(namespace, status);
@@ -712,9 +754,20 @@ export class ApiDiagnosticsService {
     return suggestions;
   }
 
-  getDiagnosticDashboardData(): Observable<unknown> {
+  getDiagnosticDashboardData(): Observable<DiagnosticDashboardData> {
     const connectionDiagnostics = this.diagnosticsSubject.value;
     const socketDiagnostics = this.socketDiagnosticsSubject.value;
+    const socketConnection: DiagnosticDashboardData['socketConnection'] = {
+      isConnected: socketDiagnostics.isConnected,
+      reconnectAttempts: socketDiagnostics.reconnectAttempts,
+    };
+
+    if (socketDiagnostics.pingTime !== undefined) {
+      socketConnection.pingTime = socketDiagnostics.pingTime;
+    }
+    if (socketDiagnostics.connectionId) {
+      socketConnection.connectionId = socketDiagnostics.connectionId;
+    }
 
     return of({
       apiConnection: {
@@ -724,12 +777,7 @@ export class ApiDiagnosticsService {
         responseTimes: connectionDiagnostics.responseTimes || [],
         averageResponseTime: this.calculateAverageResponseTime(connectionDiagnostics.responseTimes || []),
       },
-      socketConnection: {
-        isConnected: socketDiagnostics.isConnected,
-        reconnectAttempts: socketDiagnostics.reconnectAttempts,
-        pingTime: socketDiagnostics.pingTime,
-        connectionId: socketDiagnostics.connectionId,
-      },
+      socketConnection,
       suggestions: this.getSuggestedFixes(),
       namespaceStatuses: Array.from(this.knownNamespaces.values()),
     });
@@ -743,10 +791,11 @@ export class ApiDiagnosticsService {
     const anyFailing = statuses.some(s => !s.isConnected);
 
     if (anyConnected) {
+      const lastError = anyFailing ? 'Some socket namespaces are failing' : undefined;
       const socketDiagnostics: SocketDiagnostics = {
         ...this.socketDiagnosticsSubject.value,
         isConnected: true,
-        lastError: anyFailing ? 'Some socket namespaces are failing' : undefined,
+        ...(lastError ? { lastError } : {}),
       };
       this.socketDiagnosticsSubject.next(socketDiagnostics);
     }
@@ -769,8 +818,9 @@ export class ApiDiagnosticsService {
 
   private extractServerBinding(response: unknown): string {
 
-    if (response?.serverInfo?.binding) {
-      return response.serverInfo.binding;
+    const serverInfo = (response as ServerInfoResponse)?.serverInfo;
+    if (serverInfo?.binding) {
+      return serverInfo.binding;
     }
 
     if (environment.production) {
@@ -783,17 +833,19 @@ export class ApiDiagnosticsService {
   private formatError(error: unknown): string {
     if (!error) return 'Unknown error';
 
-    if (error.status === 0) {
-      if (error.message && error.message.includes('ECONNREFUSED')) {
+    const err = error as HttpErrorLike;
+
+    if (err.status === 0) {
+      if (err.message && err.message.includes('ECONNREFUSED')) {
         return 'Connection refused (ECONNREFUSED) - Backend server may not be running';
       }
       return 'Connection refused - Network error';
     }
 
-    if (error.status === 504) {
+    if (err.status === 504) {
       return `504: Gateway Timeout - Server took too long to respond`;
     }
 
-    return `${error.status}: ${error.statusText || error.message || 'Unknown error'}`;
+    return `${err.status}: ${err.statusText || err.message || 'Unknown error'}`;
   }
 }

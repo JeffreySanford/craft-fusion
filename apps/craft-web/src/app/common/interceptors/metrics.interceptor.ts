@@ -17,7 +17,7 @@ export class MetricsInterceptor implements HttpInterceptor {
     try {
       const url = new URL(req.url || '', window.location.origin);
       const pathParts = url.pathname.split('/');
-      serviceName = pathParts.length > 1 ? pathParts[1] : 'api';
+      serviceName = pathParts.length > 1 && pathParts[1] ? pathParts[1] : 'api';
     } catch (error) {
       this.logger.warn('Failed to parse URL for service name', { url: req.url, error });
     }

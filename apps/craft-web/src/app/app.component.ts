@@ -52,6 +52,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.logger.info('App component initialized', { appVersion: '1.0.0' });
     console.log('debug-router: AppComponent instantiated');
+    
+    // Skip auto-logout in e2e test environment
+    const isE2E = (window as any)['__E2E_TEST_MODE__'] === true;
+    if (isE2E) {
+      this.logger.info('E2E test mode detected - skipping auto-logout');
+    } else {
+      // Always clear authentication on app load/refresh in normal mode
+      this.logger.info('Clearing authentication on app initialization');
+      this.authService.logout();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -99,6 +109,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.authService.isAdmin$.subscribe(isAdmin => {
       this.adminStateService.setAdminStatus(isAdmin);
     });
+
+    this.authService.initializeAuthentication();
 
     let lastInteractionLog = 0;
     document.addEventListener('click', () => {
@@ -157,9 +169,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.inactivityTimeout = null;
     }
 
+    // Remove beforeunload handler
+    window.removeEventListener('beforeunload', this.handleBeforeUnload);
+
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  private handleBeforeUnload = () => {
+    // Placeholder for beforeunload event if needed in future
+  };
 
   setActive(item: any) {
     this.menuItems.forEach(menuItem => (menuItem.active = false));
@@ -212,11 +231,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           });
       }, 20);
     } else {
-
-      if (this.polling) {
-        this.stopVideoCheckPolling();
-        this.polling = false;
-      }
+      this.stopVideoCheckPolling();
+      this.polling = false;
     }
   }
 

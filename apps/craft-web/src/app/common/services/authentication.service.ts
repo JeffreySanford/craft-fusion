@@ -2,39 +2,20 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError, Subject } from 'rxjs';
-import { catchError, map, tap, timeout, delay, concatMap, shareReplay } from 'rxjs/operators';
+import { catchError, map, tap, timeout, delay, concatMap, shareReplay, finalize, filter, take } from 'rxjs/operators';
 import { AdminStateService } from './admin-state.service';
 import { UserTrackingService } from './user-tracking.service';
 import { ApiService } from './api.service';
 import { SessionService } from './session.service';
 import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
-import { User } from '../interfaces/user.interface';
+import { User, AuthResponse } from '../interfaces/user.interface';
 import { environment } from '../../../environments/environment';
 import { io, Socket } from 'socket.io-client';
-
-export interface AuthResponse {
-  success: boolean;
-  token: string;
-  refreshToken?: string;
-  user: User;
-  expiresIn?: number;                                    
-  message?: string;
-}
 
 export interface LoginRequest {
   username: string;
   password: string;
-}
-
-export interface RefreshTokenRequest {
-  refreshToken: string;
-}
-
-export interface TokenInfo {
-  token: string;
-  refreshToken?: string | undefined;
-  expiresAt?: number | undefined;                        
 }
 
 export interface AuthState {
@@ -48,15 +29,14 @@ export interface AuthState {
 @Injectable()
 export class AuthenticationService {
 
-  private readonly TOKEN_KEY = 'auth_token';
-  private readonly REFRESH_TOKEN_KEY = 'auth_refresh_token';
-  private readonly TOKEN_EXPIRES_KEY = 'auth_token_expires';
   private readonly AUTH_TIMEOUT = 15000;                                        
   private readonly TOKEN_REFRESH_THRESHOLD = 300;                                         
-  private readonly MAX_RETRIES = 3;                                                   
+  private readonly MAX_RETRIES = 3;                                                    
 
   private socket: Socket | null = null;
   private socketDestroy$ = new Subject<void>();
+  private authInitialized = new BehaviorSubject<boolean>(false);
+  private authInitializationInProgress = false;
 
   private authState = new BehaviorSubject<AuthState>({
     user: {
@@ -86,9 +66,10 @@ export class AuthenticationService {
   );
   public readonly isAdmin$ = this.authState$.pipe(
     map(state => state.isAdmin),
-    tap(isAdmin => console.log('🔐 AuthService: isAdmin$ emitted:', isAdmin)),
+    tap(isAdmin => this.logger.debug('🔐 AuthService: isAdmin$ emitted', { isAdmin })),
     shareReplay(1),
   );
+  public readonly authInitialized$ = this.authInitialized.asObservable().pipe(shareReplay(1));
 
   private _isOfflineMode = false;
   private connectionRetryCount = 0;
@@ -121,7 +102,7 @@ export class AuthenticationService {
     private userTrackingService: UserTrackingService,
   ) {
     this.logger.registerService('AuthService');
-    console.log('🔐 AuthService: Constructor called');
+    this.logger.debug('🔐 AuthService: Constructor called');
     this.logger.info('Authentication Service initialized');
 
     this.clearAuthState();
@@ -134,12 +115,12 @@ export class AuthenticationService {
 
   private hasAdminRole(user: User | null): boolean {
     if (!user) {
-      console.log('hasAdminRole: No user provided');
+      this.logger.warn('hasAdminRole: No user provided');
       return false;
     }
 
     const isAdmin = Array.isArray(user.roles) && user.roles.includes('admin');
-    console.log('hasAdminRole:', { username: user.username, roles: user.roles, isAdmin });
+    this.logger.debug('hasAdminRole', { username: user.username, roles: user.roles, isAdmin });
 
     return isAdmin;
   }
@@ -157,150 +138,91 @@ export class AuthenticationService {
   }
 
   public initializeAuthentication(): void {
-    console.log('🔐 AuthService: initializeAuthentication called');
-    this.logger.debug('Initializing authentication - checking for existing tokens');
-
-    const overrideUser = (globalThis as any).__PLAYWRIGHT_ADMIN_USER;
-    if (overrideUser) {
-      const overrideToken = (globalThis as any).__PLAYWRIGHT_AUTH_TOKEN ?? 'playwright-admin-token';
-      const overrideRefresh = (globalThis as any).__PLAYWRIGHT_AUTH_REFRESH ?? 'playwright-admin-refresh';
-      const overrideExpiresIn = (globalThis as any).__PLAYWRIGHT_AUTH_EXPIRES_IN ?? 3600;
-      const overrideExpiresAt = Date.now() + overrideExpiresIn * 1000;
-      const mockResponse: AuthResponse = {
-        success: true,
-        token: overrideToken,
-        refreshToken: overrideRefresh,
-        expiresIn: overrideExpiresIn,
-        user: overrideUser,
-      };
-      this.handleSuccessfulLogin(mockResponse, overrideExpiresAt);
-      this.initializeAuthSocket();
-      this.scheduleTokenRefresh(overrideExpiresAt);
+    if (this.authInitializationInProgress) {
       return;
     }
+    this.authInitializationInProgress = true;
+    this.logger.debug('?? AuthService: initializeAuthentication called');
+    this.logger.debug('Initializing authentication - validating session via cookies');
 
-    const tokenInfo = this.getStoredTokenInfo();
-    console.log('🔐 AuthService: Token info found:', {
-      hasToken: !!tokenInfo?.token,
-      hasRefreshToken: !!tokenInfo?.refreshToken,
-      expiresAt: tokenInfo?.expiresAt,
-    });
-
-    if (tokenInfo && tokenInfo.token) {
-      this.logger.debug('Found existing token, validating with API');
-
-      this.apiService
-        .get<User>('auth/user')
-        .pipe(
-          timeout(this.AUTH_TIMEOUT),
-          catchError((error: any) => {
-            console.log('initializeAuthentication: Token validation failed', error);
-            this.logger.warn('Token validation failed, clearing auth state', {
+    this.apiService
+      .authRequest<AuthResponse>('GET', 'auth/user')
+      .pipe(
+        timeout(this.AUTH_TIMEOUT),
+        catchError((error: any) => {
+          const status = error?.status || 0;
+          
+          // 401 is expected when user is not authenticated - don't log as error
+          if (status === 401) {
+            this.logger.debug('No active session found (expected when not logged in)');
+          } else {
+            this.logger.warn('initializeAuthentication: User fetch failed', { error });
+            this.logger.warn('User validation failed, clearing auth state', {
               error: (error && error.message) || 'Unknown error',
-              status: (error && error.status) || 0,
+              status,
             });
-
-            this.clearAuthState();
-            return throwError(() => error);
-          }),
-        )
-        .subscribe({
-          next: user => {
-            console.log('initializeAuthentication: Token validation successful', {
-              username: user.username,
-              roles: user.roles,
-              isAdmin: this.hasAdminRole(user),
-            });
-
-            this.logger.info('Token validation successful, restoring user session', {
-              username: user.username,
-              isAdmin: this.hasAdminRole(user),
-            });
-
-            this.updateAuthState({
-              user,
-              isLoggedIn: true,
-              isAdmin: this.hasAdminRole(user),
-              isOffline: false,
-              lastSyncTime: new Date(),
-            });
-
-            this.sessionService.setUserSession(user);
-
-            if (tokenInfo.expiresAt) {
-              this.scheduleTokenRefresh(tokenInfo.expiresAt);
-            }
-          },
-          error: () => {
-            console.log('initializeAuthentication: Token validation failed, clearing state');
-
-            this.clearAuthState();
-            this.router.navigate(['/home']);
-          },
-        });
-    } else {
-      console.log('initializeAuthentication: No existing tokens found');
-      this.logger.debug('No existing tokens found, user not authenticated');
-
-      this.clearAuthState();
-      this.router.navigate(['/home']);
-    }
+          }
+          return throwError(() => error);
+        }),
+        finalize(() => {
+          this.authInitialized.next(true);
+          this.authInitializationInProgress = false;
+        }),
+      )
+      .subscribe({
+        next: response => {
+          this.logger.info('initializeAuthentication: User validated', {
+            username: response.user.username,
+            roles: response.user.roles,
+          });
+          const expiresAt = response.expiresIn ? Date.now() + response.expiresIn * 1000 : undefined;
+          this.handleSuccessfulLogin(response);
+          this.initializeAuthSocket();
+          if (expiresAt) {
+            this.scheduleTokenRefresh(expiresAt);
+          }
+        },
+        error: () => {
+          this.logger.debug('initializeAuthentication: User fetch failed, clearing state');
+          this.clearAuthState();
+          this.router.navigate(['/home']);
+        },
+      });
   }
 
-  public login(username: string, password: string): Observable<AuthResponse> {
+  public ensureAuthInitialized(): Observable<boolean> {
+    if (!this.authInitialized.value && !this.authInitializationInProgress) {
+      this.initializeAuthentication();
+    }
 
+    return this.authInitialized$.pipe(
+      filter(initialized => initialized),
+      take(1),
+    );
+  }
+  public login(username: string, password: string): Observable<AuthResponse> {
     this.clearAuthState();
 
     this.logger.info('Login attempt initiated', {
       username,
       timestamp: new Date().toISOString(),
-      isOffline: this._isOfflineMode,
       serverStarting: this.apiService.isServerStarting,
     });
 
-    if (this._isOfflineMode) {
-      this.logger.warn('Operating in offline mode, using fallback login mechanism');
-      return this.handleOfflineLogin(username, password);
-    }
-
-    if (username === 'test' && password === 'test') {
-      this.logger.debug('Test credentials detected - proceeding with normal API call');
-    }
-
-    if (username === 'admin' && password === 'admin') {
-      this.logger.debug('Admin credentials detected - proceeding with normal API call');
-    }
-
     const loginRequest: LoginRequest = { username, password };
-
-    this.logger.debug('Making authentication request to server', {
-      endpoint: 'auth/login',
-    });
 
     return this.apiService.authRequest<AuthResponse>('POST', 'auth/login', loginRequest).pipe(
       tap((response: AuthResponse) => {
-        if (response && response.token) {
-          this._isOfflineMode = false;
-
-          this.logger.info('Authentication successful', {
-            username: response.user?.username,
-            hasRoles: Array.isArray(response.user?.roles),
-            tokenReceived: true,
-            tokenLength: response.token.length,
-            hasRefreshToken: !!response.refreshToken,
-          });
-
-          const expiresAt = response.expiresIn ? Date.now() + response.expiresIn * 1000 : undefined;
-
-          this.handleSuccessfulLogin(response, expiresAt);
-
-          this.initializeAuthSocket();
-
-          if (expiresAt) {
-            this.scheduleTokenRefresh(expiresAt);
-          }
-        } else {
-          this.logger.warn('Server returned success but no token was provided');
+        const expiresAt = response.expiresIn ? Date.now() + response.expiresIn * 1000 : undefined;
+        this.logger.info('Authentication successful', {
+          username: response.user?.username,
+          hasRoles: Array.isArray(response.user?.roles),
+          accessExpiresIn: response.expiresIn,
+        });
+          this.handleSuccessfulLogin(response);
+        this.initializeAuthSocket();
+        if (expiresAt) {
+          this.scheduleTokenRefresh(expiresAt);
         }
       }),
       catchError((error: any) => {
@@ -308,25 +230,18 @@ export class AuthenticationService {
         const message = error?.message || 'Unknown error';
 
         if (status === 0 || status === 504) {
-          this._isOfflineMode = true;
           this.logger.warn('Network connectivity issue detected during authentication', {
             errorStatus: status,
             errorMessage: message,
             errorType: error?.name,
             timestamp: new Date().toISOString(),
-            offlineModeActivated: true,
           });
-
-          this.notificationService.showWarning(`Server appears to be unavailable. Using offline mode for demonstration.`, 'Switching to Offline Mode');
-
-          return this.handleOfflineLogin(username, password);
         }
 
         return this.handleLoginError(error, username);
       }),
     );
   }
-
   public logout(): void {
     const currentUser = this.authState.value.user;
     this.logger.info('User logout initiated', {
@@ -342,16 +257,32 @@ export class AuthenticationService {
       this.refreshTokenTimeout = null;
     }
 
-    this.clearAuthState();
-    this.sessionService.clearUserSession();
-
-    this.adminStateService.setAdminStatus(false);
-
-    this.userTrackingService.setCurrentUser(null);
-
-    this.router.navigate(['/home']);
-
-    this.logger.debug('User logout completed, all authentication and administrative state reset');
+    // Call backend to clear httpOnly cookies
+    this.apiService
+      .authRequest('POST', 'auth/logout')
+      .pipe(
+        catchError(error => {
+          this.logger.warn('Logout API call failed, clearing local state anyway', { error });
+          return throwError(() => error);
+        }),
+        finalize(() => {
+          // Always clear local state regardless of API success/failure
+          this.clearAuthState();
+          this.sessionService.clearUserSession();
+          this.adminStateService.setAdminStatus(false);
+          this.userTrackingService.setCurrentUser(null);
+          this.router.navigate(['/home']);
+          this.logger.debug('User logout completed, all authentication and administrative state reset');
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.logger.debug('Server-side logout successful, cookies cleared');
+        },
+        error: () => {
+          // Error already logged in catchError
+        },
+      });
   }
 
   public refreshToken(): Observable<AuthResponse> {
@@ -360,39 +291,17 @@ export class AuthenticationService {
       return throwError(() => new Error('Token refresh already in progress'));
     }
 
-    const tokenInfo = this.getStoredTokenInfo();
-    if (!tokenInfo || !tokenInfo.refreshToken) {
-      this.logger.warn('Cannot refresh token - no refresh token available');
-      return throwError(() => new Error('No refresh token available'));
-    }
-
     this.tokenRefreshInProgress = true;
     this.logger.debug('Attempting to refresh authentication token');
 
-    const refreshRequest: RefreshTokenRequest = {
-      refreshToken: tokenInfo.refreshToken,
-    };
-
-    return this.apiService.authRequest<AuthResponse>('POST', 'auth/refresh-token', refreshRequest).pipe(
+    return this.apiService.authRequest<AuthResponse>('POST', 'auth/refresh-token').pipe(
       tap((response: AuthResponse) => {
-        if (response && response.token) {
-          this.logger.info('Token refreshed successfully');
-
-          const expiresAt = response.expiresIn ? Date.now() + response.expiresIn * 1000 : undefined;
-
-          this.storeTokenInfo({
-            token: response.token,
-            refreshToken: response.refreshToken || tokenInfo.refreshToken,
-            expiresAt: expiresAt,
-          });
-
-          if (expiresAt) {
-            this.scheduleTokenRefresh(expiresAt);
-          }
-        } else {
-          this.logger.warn('Token refresh response missing token');
+        this.logger.info('Token refreshed successfully');
+        const expiresAt = response.expiresIn ? Date.now() + response.expiresIn * 1000 : undefined;
+        this.handleSuccessfulLogin(response);
+        if (expiresAt) {
+          this.scheduleTokenRefresh(expiresAt);
         }
-
         this.tokenRefreshInProgress = false;
       }),
       catchError((error: any) => {
@@ -460,17 +369,17 @@ export class AuthenticationService {
   private updateAuthState(state: Partial<AuthState>): void {
     const oldAdminState = this.authState.value.isAdmin;
     const oldLoggedInState = this.authState.value.isLoggedIn;
-    console.log('🔐 AuthService: updateAuthState called with:', state);
+    this.logger.debug('🔐 AuthService: updateAuthState called with', state);
     this.authState.next({
       ...this.authState.value,
       ...state,
     });
 
     if (state.isAdmin !== undefined && state.isAdmin !== oldAdminState) {
-      console.log('🔐 AuthService: isAdmin changed from', oldAdminState, 'to', state.isAdmin);
+      this.logger.debug('🔐 AuthService: isAdmin changed', { oldAdminState, newAdminState: state.isAdmin });
     }
     if (state.isLoggedIn !== undefined && state.isLoggedIn !== oldLoggedInState) {
-      console.log('🔐 AuthService: isLoggedIn changed from', oldLoggedInState, 'to', state.isLoggedIn);
+      this.logger.debug('🔐 AuthService: isLoggedIn changed', { oldLoggedInState, newLoggedInState: state.isLoggedIn });
     }
 
     if (state.isOffline !== undefined) {
@@ -478,19 +387,14 @@ export class AuthenticationService {
     }
   }
 
-  private handleSuccessfulLogin(response: AuthResponse, expiresAt?: number): void {
-    console.log('handleSuccessfulLogin: Processing login response', {
+  private handleSuccessfulLogin(response: AuthResponse): void {
+    this.logger.debug('handleSuccessfulLogin: Processing login response', {
       username: response.user?.username,
       roles: response.user?.roles,
-      hasToken: !!response.token,
+      expiresIn: response.expiresIn,
     });
 
-    this.storeTokenInfo({
-      token: response.token,
-      refreshToken: response.refreshToken,
-      expiresAt: expiresAt,
-    });
-
+    this.authInitialized.next(true);
     this.updateAuthState({
       user: response.user,
       isLoggedIn: true,
@@ -522,6 +426,10 @@ export class AuthenticationService {
       permissions: response.user.permissions?.join(',') || 'none specified',
       sessionEstablished: true,
     });
+  }
+
+  public getAuthToken(): string | null {
+    return null;
   }
 
   private handleLoginError(error: unknown, username: string): Observable<never> {
@@ -562,56 +470,8 @@ export class AuthenticationService {
     return throwError(() => error);
   }
 
-  private handleOfflineLogin(username: string, password: string): Observable<AuthResponse> {
-
-    const validOfflineUsers = ['test', 'demo', 'admin', 'guest'];
-
-    if (validOfflineUsers.includes(username.toLowerCase())) {
-      const mockUser: User = {
-        id: 999,
-        username: username,
-        name: `${username.charAt(0).toUpperCase() + username.slice(1)} User`,
-        firstName: username.charAt(0).toUpperCase() + username.slice(1),
-        lastName: 'User',
-        email: `${username}@example.com`,
-        roles: username === 'admin' ? ['admin'] : ['user'],
-        permissions: username === 'admin' ? ['user:read', 'user:write', 'admin:access'] : ['user:read'],
-        password: password,
-      };
-
-      const mockResponse: AuthResponse = {
-        success: true,
-        token: 'offline-mock-token-' + Date.now(),
-        user: mockUser,
-      };
-
-      this.handleSuccessfulLogin(mockResponse);
-
-      this.updateAuthState({
-        isOffline: true,
-      });
-
-      this.logger.info('Offline mode login successful', {
-        username,
-        roles: mockUser.roles,
-        isAdmin: this.hasAdminRole(mockUser),
-      });
-
-      this.notificationService.showInfo('You are working in offline mode. Some features may be limited.', 'Offline Mode Active');
-
-      return of(mockResponse).pipe(delay(500));                          
-    } else {
-      this.notificationService.showError('Only test, demo and admin users are available in offline mode', 'Login Failed');
-      return throwError(() => new Error('Invalid offline user'));
-    }
-  }
-
   private clearAuthState(): void {
-    console.log('AuthService: Clearing authentication state');
-
-    sessionStorage.removeItem(this.TOKEN_KEY);
-    sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    sessionStorage.removeItem(this.TOKEN_EXPIRES_KEY);
+    this.logger.debug('AuthService: Clearing authentication state');
 
     this.authState.next({
       user: {
@@ -638,61 +498,6 @@ export class AuthenticationService {
     this.closeAuthSocket();
 
     this.logger.debug('Authentication state cleared');
-  }
-
-  private storeTokenInfo(tokenInfo: TokenInfo): void {
-    sessionStorage.setItem(this.TOKEN_KEY, tokenInfo.token);
-
-    if (tokenInfo.refreshToken) {
-      sessionStorage.setItem(this.REFRESH_TOKEN_KEY, tokenInfo.refreshToken);
-    }
-
-    if (tokenInfo.expiresAt) {
-      sessionStorage.setItem(this.TOKEN_EXPIRES_KEY, tokenInfo.expiresAt.toString());
-    }
-  }
-
-  private getStoredTokenInfo(): TokenInfo | null {
-    const token = sessionStorage.getItem(this.TOKEN_KEY);
-
-    if (!token) {
-      return null;
-    }
-
-    const refreshToken = sessionStorage.getItem(this.REFRESH_TOKEN_KEY);
-    const expiresAtStr = sessionStorage.getItem(this.TOKEN_EXPIRES_KEY);
-    const expiresAt = expiresAtStr ? parseInt(expiresAtStr, 10) : undefined;
-
-    if (expiresAt && Date.now() > expiresAt) {
-      console.log('Stored token has expired, clearing authentication state');
-      this.clearAuthState();
-      return null;
-    }
-
-    return {
-      token,
-      refreshToken: refreshToken || undefined,
-      expiresAt,
-    };
-  }
-
-  public getAuthToken(): string | null {
-    const token = sessionStorage.getItem(this.TOKEN_KEY);
-
-    if (token) {
-      const expiresAtStr = sessionStorage.getItem(this.TOKEN_EXPIRES_KEY);
-      const expiresAt = expiresAtStr ? parseInt(expiresAtStr, 10) : undefined;
-
-      if (expiresAt && Date.now() > expiresAt) {
-        console.log('Token has expired, clearing authentication state');
-        this.clearAuthState();
-        return null;
-      }
-
-      return token;
-    }
-
-    return null;
   }
 
   private scheduleTokenRefresh(expiresAt?: number): void {
@@ -726,7 +531,7 @@ export class AuthenticationService {
 
     this.closeAuthSocket();
 
-    if (this._isOfflineMode || !this.getAuthToken()) {
+    if (this._isOfflineMode || !this.isAuthenticated) {
       return;
     }
 
@@ -736,9 +541,7 @@ export class AuthenticationService {
     try {
       this.socket = io(`${socketUrl}/auth`, {
         transports: ['websocket', 'polling'],
-        auth: {
-          token: this.getAuthToken(),
-        },
+        withCredentials: true,
       });
 
       this.socket.on('connect', () => {

@@ -13,12 +13,6 @@ export const appRoutes: Routes = [
     loadChildren: () => import('./projects/data-visualizations/data-visualizations.module').then(m => m.DataVisualizationsModule),
   },
   {
-    path: 'book',
-    loadChildren: () => import('./projects/book/book.module').then(m => m.BookModule),
-    canActivate: [AuthGuard, AdminGuard],
-  },
-
-  {
     path: 'timeline',
     loadChildren: () => import('./projects/timeline/timeline.module').then(m => m.TimelineModule),
     canActivate: [AuthGuard, AdminGuard],
@@ -40,11 +34,6 @@ export const appRoutes: Routes = [
       import(/* webpackChunkName: "admin-module" */ './pages/admin/admin.module').then(
         m => m.AdminModule,
       ),
-    canActivate: [AuthGuard, AdminGuard],
-  },
-  {
-    path: 'chat',
-    loadChildren: () => import('./projects/chat/chat.module').then(m => m.ChatModule),
     canActivate: [AuthGuard, AdminGuard],
   },
   { path: '', redirectTo: '/home', pathMatch: 'full' },

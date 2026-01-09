@@ -12,9 +12,163 @@ This document defines the visual direction and component rules for the admin das
 ## Layout and structure
 
 - Use a 12-column grid on desktop, 8 on tablet, 4 on mobile.
-- Top row: admin hero (summary tiles + key alerts).
+- Top row: admin hero (summary tiles + key alerts) - **persistent across all admin tabs**.
 - Middle: data grids (cards + charts).
 - Bottom: detailed tables or logs inside distinct cards.
+
+## Admin hero area (persistent KPI bar)
+
+The hero area is a **top-level summary bar** that appears above all admin tabs, providing at-a-glance system health regardless of which tab is active.
+
+### Hero KPI tiles (minimum viable set)
+
+1. **Active services** - `X/Y services online`
+   - Icon: `cloud_done` or `dns`
+   - Status: ok (all online), warning (partial), critical (<50%)
+   - Source: `ServicesDashboardService.getRegisteredServices()`
+   - Animation: Count-up from previous value
+   - Delta: Show change from last refresh
+
+2. **Success rate** - `XX%` aggregate
+   - Icon: `thumb_up` or `done_all`
+   - Status: ok (≥95%), warning (85-94%), critical (<85%)
+   - Source: Average of all service success rates from `ServiceMetricsSummary`
+   - Animation: Percentage counter with delta badge
+   - Delta: `+X.X%` vs prior measurement
+
+3. **Errors/Warnings** - `X errors, Y warnings`
+   - Icon: `error_outline` or `warning`
+   - Status: critical (errors>0), warning (warnings>0), ok (clean)
+   - Source: `LoggerService.getLogs()` filtered by `LogLevel.ERROR` and `LogLevel.WARN`
+   - Animation: Pulse on new error/warning
+   - Detail: Show most recent error timestamp
+
+4. **System health** - `Live data` or `Offline`
+   - Icon: `wifi` or `wifi_off`
+   - Status: ok (navigator.onLine), warning (offline)
+   - Source: `navigator.onLine` + WebSocket connection state
+   - Animation: Connection pulse when live
+
+5. **Response time** - `XXms avg`
+   - Icon: `speed` or `timeline`
+   - Status: ok (<200ms), warning (200-500ms), critical (>500ms)
+   - Source: Average duration from recent `ServiceCallMetric[]`
+   - Animation: Real-time spark line (optional)
+
+6. **Active alerts** - `X critical, Y warnings`
+   - Icon: `notifications_active` or `campaign`
+   - Status: critical (critical alerts>0), warning (warnings>0), ok (none)
+   - Source: Security findings + system alerts aggregate
+   - Animation: Badge pulse on new alert
+   - Click action: Jump to security findings or logs tab
+
+### Hero area layout options
+
+**Option A: Sticky top bar** (recommended)
+
+- Fixed position bar above tab navigation
+- Always visible when scrolling
+- 4-6 tiles in horizontal row
+- Compact height (80-100px)
+- Responsive: Stack to 2x3 grid on mobile
+
+### Option B: Collapsible banner
+
+- Expandable/collapsible summary bar
+- Default expanded, user can collapse
+- Shows compact badges when collapsed
+- Full tiles when expanded
+
+**Option C: Overview tab enhancement** (current implementation)
+
+- Hero tiles only in Overview tab
+- Not persistent across other tabs
+- Simpler to implement but less PM-friendly
+
+### Data sources and refresh strategy
+
+```typescript
+// Aggregate from existing services
+interface HeroMetrics {
+  activeServices: { current: number; total: number; };
+  successRate: { value: number; delta: number; };
+  errors: { count: number; warnings: number; lastError?: Date; };
+  health: { online: boolean; wsConnected: boolean; };
+  responseTime: { avg: number; p95: number; };
+  alerts: { critical: number; warnings: number; };
+}
+
+// Hero service (new)
+@Injectable({ providedIn: 'root' })
+export class AdminHeroService {
+  private heroMetrics$ = new BehaviorSubject<HeroMetrics>(initialState);
+  
+  // Subscribe to all data sources
+  constructor(
+    private servicesDashboard: ServicesDashboardService,
+    private logger: LoggerService,
+    private securityService: SecurityService,
+  ) {
+    // Combine metrics from all sources
+    // Throttle to ~2-3 second refresh
+    // Emit consolidated HeroMetrics
+  }
+}
+```
+
+### Animation and visual specs
+
+- **Tile entrance**: Stagger by 60-80ms on page load
+- **Value updates**:
+  - Count-up animation: 600-900ms ease-out
+  - Delta badges: Slide in from right, 300ms
+  - Status changes: Color transition 400ms
+- **Alert pulses**:
+  - New error: 2-second red pulse on error tile
+  - New warning: 1.5-second gold pulse on warning tile
+  - Critical alert: Continuous subtle pulse until acknowledged
+- **Connection status**:
+  - Online: Gentle green pulse every 3s
+  - Offline: Static orange/red indicator
+
+### Status color mapping
+
+- **OK**: Navy gradient (`--admin-gradient-navy`)
+- **Warning**: Gold gradient (`--admin-gradient-gold`)
+- **Critical**: Red gradient (`--admin-gradient-red`)
+
+### Accessibility requirements
+
+- Each tile must have `aria-label` with full context
+- Status changes must announce via `aria-live="polite"`
+- Color + icon + text (never color alone)
+- Keyboard navigable
+- Reduced motion: Disable animations, use static color changes
+
+### Implementation phases
+
+**Phase 1**: Current state (Overview tab only) ✓ Complete
+
+- ✓ Hero tiles in `admin-landing.component.ts`
+- ✓ Basic metrics from `ServicesDashboardService` and `LoggerService`
+- ✓ Status-based styling
+
+**Phase 2**: Persistent hero bar (recommended next) ✓ Complete (2026-01-08)
+
+- ✓ Moved hero tiles to `admin.component.ts` (parent level)
+- ✓ Created sticky header above tab navigation
+- ✓ Created `AdminHeroService` to consolidate data sources
+- ✓ Implemented count-up animations and delta badges
+- ✓ Added 6 KPI tiles with real data sources
+- ✓ Implemented click navigation (errors → Logs, alerts → Security)
+- ✓ WCAG AA compliance with reduced-motion support
+
+**Phase 3**: Advanced features (future)
+
+- Add response time spark line visualization
+- Integrate security service for dedicated alerts tile
+- Implement alert acknowledgment flow
+- Add WebSocket connection state indicator
 
 ## Tab roadmap
 

@@ -6,6 +6,7 @@ export default {
   preset: '../../jest.preset',
   setupFilesAfterEnv: ['./test-setup.ts'],
   coverageDirectory: '../../coverage/craft-web-e2e',
+  passWithNoTests: true,
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',
@@ -22,6 +23,6 @@ export default {
     'jest-preset-angular/build/serializers/html-comment',
   ],
   testMatch: [
-    '<rootDir>/src/**/*.spec.ts'
+    '<rootDir>/src/**/*.unit-spec.ts'
   ],
 };

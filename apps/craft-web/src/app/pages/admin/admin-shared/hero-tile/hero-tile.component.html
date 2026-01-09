@@ -1,0 +1,28 @@
+<article
+  class="hero-tile"
+  [ngClass]="[statusClass, clickable ? 'clickable' : '', showPulse ? 'pulse' : '']"
+  (click)="onTileClick()"
+  [attr.role]="clickable ? 'button' : null"
+  [attr.tabindex]="clickable ? 0 : null"
+  [attr.aria-label]="label + ': ' + value + '. ' + subLabel">
+  
+  <div class="hero-tile-content">
+    <div class="hero-tile-header">
+      <span class="hero-tile-label">{{ label }}</span>
+      <mat-icon class="hero-tile-icon">{{ icon }}</mat-icon>
+    </div>
+    
+    <div class="hero-tile-value">
+      {{ value }}
+      <span class="hero-tile-delta" *ngIf="delta !== 0" [ngClass]="deltaClass">
+        <mat-icon class="delta-icon">{{ deltaIcon }}</mat-icon>
+        {{ delta > 0 ? '+' : '' }}{{ delta | number:'1.0-1' }}
+      </span>
+    </div>
+    
+    <div class="hero-tile-meta">
+      <span *ngIf="detail" class="hero-tile-detail">{{ detail }}</span>
+      <span class="hero-tile-sub">{{ subLabel }}</span>
+    </div>
+  </div>
+</article>

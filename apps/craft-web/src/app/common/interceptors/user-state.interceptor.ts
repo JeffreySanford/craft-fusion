@@ -12,7 +12,6 @@ export class UserStateInterceptor implements HttpInterceptor {
     ['/table', 'Table'],
     ['/table/:id', 'Table Detail'],
     ['/data-visualizations', 'Data Visualizations'],
-    ['/book', 'Book'],
     ['/peasant-kitchen', 'Peasant Kitchen'],
     ['/peasant-kitchen/recipe/:id', 'Recipe Detail'],
     ['/space-video', 'Space Video'],
@@ -58,7 +57,10 @@ export class UserStateInterceptor implements HttpInterceptor {
   }
 
   private getPageNameFromUrl(url: string): string | null {
-    const path = url.split('?')[0];
+    const path = (url || '').split('?')[0] || '';
+    if (!path) {
+      return null;
+    }
     return this.pageNameMapping.get(path) || null;
   }
 }

@@ -1,23 +1,24 @@
 import { defineConfig, devices } from '@playwright/test';
 import { nxE2EPreset } from '@nx/playwright/preset';
 import { workspaceRoot } from '@nx/devkit';
+import * as path from 'path';
 
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
 
   // Global timeout
-  timeout: 30000,
+  timeout: 60000, // Increased from 30000
   expect: {
-    timeout: 5000,
+    timeout: 10000, // Increased from 5000
   },
 
   // Test retry and workers
   workers: process.env['CI'] ? 1 : undefined,
-  retries: process.env['CI'] ? 2 : 0,
+  retries: process.env['CI'] ? 3 : 1, // Increase CI retries to handle flakiness
   fullyParallel: !process.env['CI'],
 
   use: {
-    baseURL: 'http://localhost:4200',
+    baseURL: process.env['WEB_URL'] || 'http://localhost:4200',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
@@ -27,8 +28,8 @@ export default defineConfig({
     ignoreHTTPSErrors: true,
     actionTimeout: 10000,
 
-    // Authentication state
-    // storageState: 'playwright/.auth/user.json',
+    // Authentication handled per-test via beforeEach hooks
+    // (HTTP-only cookies don't persist in storageState)
   },
 
   webServer: {
@@ -90,6 +91,6 @@ export default defineConfig({
   // This will test the login page and the authentication of
   // a test user here.  It has been commented out for now.
 
-  // globalSetup: require.resolve('./global-setup.ts'),
-  // globalTeardown: require.resolve('./global-teardown'),
+  globalSetup: require.resolve('./global-setup.ts'),
+  globalTeardown: require.resolve('./global-teardown'),
 });

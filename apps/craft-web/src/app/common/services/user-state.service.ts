@@ -2,20 +2,17 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { LoggerService } from './logger.service';
-import { Document } from '../../projects/book/book.component';
 import { SocketClientService } from './socket-client.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserStateService implements OnDestroy {
-  private openedDocumentsSubject = new BehaviorSubject<Document[]>([]);
   private loginDateTimeSubject = new BehaviorSubject<Date | null>(null);
   private visitLengthSubject = new BehaviorSubject<number | null>(null);
   private visitedPagesSubject = new BehaviorSubject<string[]>([]);
   private destroy$ = new Subject<void>();
 
-  readonly openedDocuments$ = this.openedDocumentsSubject.asObservable();
   readonly loginDateTime$ = this.loginDateTimeSubject.asObservable();
   readonly visitLength$ = this.visitLengthSubject.asObservable();
   readonly visitedPages$ = this.visitedPagesSubject.asObservable();
@@ -69,14 +66,6 @@ export class UserStateService implements OnDestroy {
       });
 
     userStateSocket
-      .on<{ documents: Document[] }>('openedDocumentsUpdated')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(data => {
-        this.openedDocumentsSubject.next(data.documents);
-        this.logger.debug('Received opened documents update via socket', { documents: data.documents });
-      });
-
-    userStateSocket
       .on<unknown>('state-change')
       .pipe(takeUntil(this.destroy$))
       .subscribe(change => {
@@ -101,47 +90,9 @@ export class UserStateService implements OnDestroy {
           this.visitedPagesSubject.next(change.data.pages);
         }
         break;
-      case 'openedDocumentsUpdated':
-        if (change.data?.documents) {
-          this.openedDocumentsSubject.next(change.data.documents);
-        }
-        break;
       default:
         this.logger.debug('Received unknown state change event', { change });
     }
-  }
-
-  getOpenedDocuments(): Document[] {
-    return this.openedDocumentsSubject.value;
-  }
-
-  setOpenedDocument(documentName: string): Observable<Document[]> {
-
-    const currentDocs = this.openedDocumentsSubject.value;
-    if (!currentDocs.some(doc => doc.name === documentName)) {
-
-      const newDoc: Document = {
-        name: documentName,
-        color: 'Patriotic Red',                 
-        contrast: '',
-      };
-      const updatedDocs = [...currentDocs, newDoc];
-      this.openedDocumentsSubject.next(updatedDocs);
-
-      this.socketClient.emit('updateOpenedDocuments', { documents: updatedDocs });
-
-      return of(updatedDocs);
-    }
-
-    return of(currentDocs);
-  }
-
-  setOpenedDocuments(documents: Document[]): Observable<Document[]> {
-    this.openedDocumentsSubject.next(documents);
-
-    this.socketClient.emit('updateOpenedDocuments', { documents });
-
-    return of(documents);
   }
 
   getLoginDateTime(): Date | null {

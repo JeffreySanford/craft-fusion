@@ -14,9 +14,9 @@ Last updated: 2025-12-30
 
 When navigating to `/timeline` locally you may see router lifecycle log entries (Guard checks, ResolveStart/End, Activation events) and auth guard logs such as:
 
-  - `Auth guard: User is authorized to access route {url: '/timeline'}`
-  - `logger.service.ts:353 [OperatorSubscriber] Admin guard: User has admin permissions {url: '/timeline'}`
-  - `logger.service.ts:356 [Object] User navigated to /timeline`
+- `Auth guard: User is authorized to access route {url: '/timeline'}`
+- `logger.service.ts:353 [OperatorSubscriber] Admin guard: User has admin permissions {url: '/timeline'}`
+- `logger.service.ts:356 [Object] User navigated to /timeline`
 
 These are produced by runtime debug logging in the Angular app and the server-side guards/gateway code; they help diagnose activation/guard/resolver flows and verify seeded data is presented after the router finishes navigation.
 
@@ -65,37 +65,17 @@ The tone is calm, dignified, and human. The design should support solemn moments
 - Each entry should include a clear date, a 1-3 sentence description, and a source.
 - Include a "created by" attribution, even if it is "family-admin."
 - For sensitive events, keep the entry short and use the detail view for context.
-- Encourage updates through a review process, not direct public edits.
+- Encourage updates through review when needed
 
-### Moderation and privacy workflow (draft)
+### Implementation phases
 
-- New entries default to "moderated" visibility.
-- A moderator reviews the content, sources, and tone before approval.
-- Approved entries become "public" within the family scope.
-- Revisions create an audit trail with timestamps and actor identity.
-- Redaction is possible for sensitive content without deleting the event.
+1) **Phase 0 - Seed and view (Complete)**
+   - Seed events, basic list view, and REST loading
+   - Filters and read-more behavior on the client
 
-### AI assistance (optional, human-in-the-loop)
-
-- AI can draft short summaries or suggest tags, never publish directly.
-- AI output must be reviewed and approved by a human moderator.
-- The UI should label AI-generated text and allow edits before saving.
-- The system should never fabricate facts; it can only summarize provided notes.
-
-### Implementation phases (high-level)
-
-1) Phase 0 - Seed and view
-   - Seed events, basic list view, and REST loading.
-   - Confirm filters and read-more behavior on the client.
-2) Phase 1 - Detail view
-   - Modal or routed detail view with expanded text and media.
-   - "Source" and "provenance" blocks for transparency.
-3) Phase 2 - Curation workflow
-   - Authoring UI for moderators, approval flow, and audit logs.
-   - Visibility toggles and moderation queue.
-4) Phase 3 - Media and storytelling polish
-   - Media galleries, decade groupings, and chapter anchors.
-   - Optional narrative highlights (featured events).
+2) **Phase 1 - Detail view (In Progress)**
+   - Modal or routed detail view with expanded text
+   - Source and provenance blocks for transparency
 
 ### Success criteria
 
@@ -272,24 +252,6 @@ The detail view should render gracefully when optional fields are missing (no em
 - When the event type is known, the correct badge color and icon display consistently with the list view.
 - When the backend updates an event, the detail view refreshes to show the latest content.
 
-Moderation & privacy
+## Current scope
 
-- Default entries to `moderated` and require admin approval before public display.
-- Audit logs for create/approve actions (server-side) to ensure tamper evidence.
-- Sanitize and validate all user-submitted content; images must be uploaded to a controlled store and filenames sanitized.
-
-AI / Developer Growth — what to include in the Gotcha Report
-
-- Executive summary: short statement of purpose and score (probing sophistication). Include the numeric score and confidence level.
-- Evidence list: 10–20 repo-grounded items (file path + snippet + why it qualifies + probe type). Link to relevant files in the repo.
-- Gaps: explicit missing items (property-based tests, SBOM/CI gates, runtime validation at boundaries, structured abuse-case tests).
-- Action plan: 8–10 concrete engineering improvements with exact file locations, sample snippets, and measurable success signals.
-- Gotcha harness scaffold: directory listing, three Jest TS tests (validation/auth/malformed), and an Nx test target. Point to `libs/gotcha-harness` for the initial scaffold.
-
-AI Growth Areas (skills and artifacts to document)
-
-- Threat modeling: create a short threat-model document for the timeline feature describing abuse cases and mitigations.
-- Property-based testing & fuzzing: add `fast-check` tests for DTOs and parsers.
-- CI security gates: add SCA/SBOM generation and secret scanning to CI.
-- Observability: instrument audit logs, attach tamper-evident hashes, and export findings to the security tab.
-- Responsible AI: document how AI is used (summarization, suggestions), constraints, and human-in-the-loop moderation.
+The timeline feature focuses on viewing curated family and project milestones. Three seed events demonstrate the types (historical, personal, project). Future enhancements may include editing capabilities and media galleries as needed.

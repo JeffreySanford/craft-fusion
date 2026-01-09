@@ -31,7 +31,7 @@ export class GatewayService {
       body?: unknown;
       headers?: HttpHeaders;
       params?: HttpParams;
-      responseType?: unknown;
+      responseType?: 'json' | 'arraybuffer' | 'blob' | 'text';
       timeout?: number;
       retries?: number;
       isAuthRequest?: boolean;
@@ -53,20 +53,27 @@ export class GatewayService {
       isAuthRequest,
     });
 
+    const responseType = options.responseType ?? 'json';
+    const httpOptions = {
+      headers: options.headers,
+      params: options.params,
+      responseType,
+      body: options.body,
+    } as {
+      headers?: HttpHeaders;
+      params?: HttpParams;
+      responseType: 'json' | 'arraybuffer' | 'blob' | 'text';
+      body?: unknown;
+    };
+
     let request: Observable<T>;
 
     switch (method.toUpperCase()) {
       case 'GET':
-        request = this.http.get<T>(url, options);
-        break;
       case 'POST':
-        request = this.http.post<T>(url, options.body, options);
-        break;
       case 'PUT':
-        request = this.http.put<T>(url, options.body, options);
-        break;
       case 'DELETE':
-        request = this.http.delete<T>(url, options);
+        request = this.http.request(method.toUpperCase(), url, httpOptions) as Observable<T>;
         break;
       default:
         this.logger.error(`Unsupported HTTP method: ${method}`);

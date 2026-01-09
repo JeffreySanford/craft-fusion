@@ -244,6 +244,7 @@ export class RecordListComponent implements OnInit {
 ```
 
 ## Project-wide Standards
+
 - If automation scripts are reintroduced, keep a shared prep step and consistent output conventions.
 
 ## Design Standards

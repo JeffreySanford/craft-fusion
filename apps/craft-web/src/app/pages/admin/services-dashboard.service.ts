@@ -25,7 +25,6 @@ export class ServicesDashboardService {
     { name: 'BusyService', description: 'Loading state management', active: false },
     { name: 'NotificationService', description: 'User notifications', active: true },
     { name: 'LoggerService', description: 'Application logging', active: true },
-    { name: 'ChatService', description: 'Chat functionality', active: false },
     { name: 'SettingsService', description: 'Application settings', active: true },
     { name: 'AdminStateService', description: 'Admin state management', active: true },
   ];
@@ -38,7 +37,6 @@ export class ServicesDashboardService {
     ['BusyService', '#FFEEAD'],
     ['NotificationService', '#D4A5A5'],
     ['LoggerService', '#9B59B6'],
-    ['ChatService', '#3498DB'],
     ['SettingsService', '#FF9F4A'],
     ['AdminStateService', '#2ECC71'],
   ]);

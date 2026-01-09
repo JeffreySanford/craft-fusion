@@ -9,12 +9,13 @@ This document defines the admin Security tab experience. It is a top-level admin
 - Support manual and scheduled scans with clear status.
 - Keep the UI transparent about what is real vs mocked.
 
-## Current implementation status (2026-01-06)
+## Current implementation status (2026-01-08)
 
-- Overview + OSCAL Scans + SCA Top 10 + SBOMs + Real-Time Tests tabs are scaffolded in the admin Security dashboard (mock data only).
-- Findings and Evidence views are not built yet.
-- Backend/API wiring is pending for all tabs; actions are UI-only.
-- Loading/error/empty states are not implemented.
+- Overview, OSCAL Scans, SCA Top 10, SBOM, and Real-Time Tests tabs are implemented in `security-dashboard.component.html` and styled with the patriotic cards/gradients defined in `security-dashboard.component.scss`.
+- Findings and Evidence views now exist with API-driven panels, loading/empty states, and badge styling; they still depend on `/api/security/findings` and `/api/security/evidence` returning real data.
+- All tab content outside the API log stream consumes static arrays (`oscalProfiles`, `scaTop10`, `sboms`, `realtimeChecks`) defined in the component, so it is still mocked.
+- `ApiLoggerService` is the only live data source right now; only the endpoint timeline details reflect actual API traffic.
+- Primary CTA buttons (run scan, download, compare, etc.) are stubs and do not call backend endpoints yet, and loading/error/empty states are missing.
 
 ## Navigation
 
@@ -108,19 +109,22 @@ export interface SecurityFinding {
 - Provide reduced motion for live tiles.
 - Keep contrast AA or higher.
 
-## Backend/API expectations (initial)
+## Backend/API expectations
 
-- `GET /api/security/overview`
-- `GET /api/security/oscal` / `POST /api/security/oscal:run`
-- `GET /api/security/sca` / `POST /api/security/sca:run`
-- `GET /api/security/sbom` / `POST /api/security/sbom:generate`
-- `GET /api/security/tests` / `POST /api/security/tests:run`
-- `GET /api/security/findings`
-- `GET /api/security/evidence`
+**Status (2026-01-08):** Backend stubs in place for findings and evidence; other endpoints not yet implemented.
+
+- `GET /api/security/overview` (planned)
+- `GET /api/security/oscal` / `POST /api/security/oscal:run` (planned)
+- `GET /api/security/sca` / `POST /api/security/sca:run` (planned)
+- `GET /api/security/sbom` / `POST /api/security/sbom:generate` (planned)
+- `GET /api/security/tests` / `POST /api/security/tests:run` (planned)
+- `GET /api/security/findings` (stub implemented)
+- `GET /api/security/evidence` (stub implemented)
 
 ## Next steps
 
-- Implement Findings and Evidence views (table + artifact list with hashes and retention).
-- Add loading/error/empty states and connect to the `/api/security/*` endpoints.
-- Wire primary CTAs to actions (run scan, generate SBOM, export findings) with backend hooks.
-- Add evidence metadata (hash, size, retention) to artifact cards.
+- Build the Findings and Evidence tabs (findings table, evidence artifacts list, metadata, hash/verifications).
+- Replace the static arrays with service-driven data from `/api/security/{oscal,sca,sbom,tests}` and show loading/error placeholders until the payload arrives.
+- Wire every primary CTA (`Run scan`, `Generate SBOM`, `Download evidence`, `Export findings`) to backend handlers or gate the buttons until the capability lands.
+- Surface artifact metadata (hash, created-by, retention window, size) alongside each download link, so the UI can highlight what is real vs mocked.
+- Define and implement the backend contract that the dashboard expects (overview tiles, OSCAL/SCA/SBOM result sets, real-time checks, findings, evidence) so the UI can safely retire the mocked data and show a “live” indicator when the payload is real.

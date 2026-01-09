@@ -9,6 +9,7 @@ import { AdminComponent } from './admin.component';
 import { AdminLandingComponent } from './admin-landing/admin-landing.component';
 import { SecurityDashboardComponent } from './security-dashboard/security-dashboard.component';
 import { PerformanceDashboardComponent } from './performance-dashboard/performance-dashboard.component';
+import { HeroTileComponent } from './admin-shared/hero-tile/hero-tile.component';
 
 import { RouterModule } from '@angular/router';
 
@@ -24,6 +25,7 @@ import { AuthService } from '../../common/services/auth/auth.service';
     AdminLandingComponent,
     SecurityDashboardComponent,
     PerformanceDashboardComponent,
+    HeroTileComponent,
   ],
   imports: [
     CommonModule,

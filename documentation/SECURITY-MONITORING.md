@@ -6,7 +6,7 @@ This document describes the intended security monitoring approach. Some tooling 
 
 - OSCAL profile data is stored in `oscal-profiles.json`.
 - No automated scanning scripts are present in the repository.
-- Security monitoring UI is planned for the Admin Security tab.
+- The Admin Security tab now exists with the Overview/OSCAL/SCA/SBOM/Real-Time tabs styled per the spec, but most cards are still populated from mocked arrays until the backend endpoints deliver live data.
 
 ## Planned capabilities
 

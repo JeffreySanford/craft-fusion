@@ -1,15 +1,5 @@
 import { test, expect } from '@playwright/test';
-
-const adminUser = {
-  id: 'admin-user',
-  username: 'admin',
-  name: 'Admin User',
-  firstName: 'Admin',
-  lastName: 'User',
-  email: 'admin@example.com',
-  role: 'admin',
-};
-
+import { loginAsAdmin } from './support/auth';
 const timelineEvents = [
   {
     _id: 'event-1',
@@ -39,16 +29,8 @@ test.describe('Timeline experience', () => {
       test.skip();
     }
   });
-  test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => {
-      sessionStorage.setItem('auth_token', 'playwright-admin-token');
-      sessionStorage.setItem('auth_refresh_token', 'playwright-admin-refresh');
-      sessionStorage.setItem('auth_token_expires', (Date.now() + 3600 * 1000).toString());
-      (window as any).__SKIP_ADMIN_GUARD = true;
-      (window as any).__SKIP_AUTH_GUARD = true;
-      (window as any).__SKIP_ADMIN_REDIRECT = true;
-    });
 
+  test.beforeEach(async ({ page }) => {
     await page.route('**/api/timeline**', route =>
       route.fulfill({
         status: 200,
@@ -56,20 +38,13 @@ test.describe('Timeline experience', () => {
         body: JSON.stringify(timelineEvents),
       }),
     );
-
-    await page.route('**/api/auth/user', route =>
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(adminUser),
-      }),
-    );
   });
 
   test('expands an event card when Read more is clicked', async ({ page }) => {
-    await page.goto('/timeline');
+    await loginAsAdmin(page, '/timeline');
 
     const personSelect = page.getByRole('combobox', { name: 'Select Person' });
+    await expect(personSelect).toBeVisible({ timeout: 15000 });
     await personSelect.click();
     await page.getByRole('option', { name: 'Jeffrey Sanford' }).click();
 

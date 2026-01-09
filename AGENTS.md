@@ -56,30 +56,12 @@ The Angular dev server uses `apps/craft-web/src/proxy.config.json` to route `/ap
 - If you need assumptions or missing info, ask briefly and proceed with a safe default.
 - Summarize changes and list tests executed in your final response.
 
+## Current Status (2026-01-08)
+
+- **Authentication:** HttpOnly cookie-based JWT with logout-on-refresh implemented
+- **Build:** Angular 19.2.13 compiling successfully
+- **Tests:** Lint and unit tests passing; Firefox e2e has rendering issues
+- **Priority:** File upload pipeline, pagination, XSS sanitization
+
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->
-
-├────────┼────────────────────────────────────────┼────────┼───────────────────────────────────────┤
-│   ✖      craft-web:build                                            1m 18s        Cache Miss     │
-│           > Logs: <https://cloud.nx.app/runs/EqLAtqW8n7/task/craft-web%3Abuild>                    │
-└──────────────────────────────────────────────────────────────────────────────────────────────────┘
-┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                   Nx Cloud Task Runner Report                                    │
-├──────────────────────────────────────────────────────────────────────────────────────────────────┤
-├────────┬────────────────────────────────────────┬────────┬───────────────────────────────────────┤
-│ 4      │ Successful Tasks                       │ 80.00% │ Success Percentage                    │
-│ 1      │ Failed Tasks                           │ 20.00% │ Failure Percentage                    │
-├────────┼────────────────────────────────────────┼────────┼───────────────────────────────────────┤
-│ 0      │ Cached Tasks                           │ 0%     │ Cache Hit Percentage                  │
-│ 5      │ Total Executed Tasks                   │ 1m 18s │ Run Duration                          │
-└────────┴────────────────────────────────────────┴────────┴───────────────────────────────────────┘
- See more details at: <https://cloud.nx.app/cipes/695b74262068eb0a49037553>  General Guidelines for working with Nx
-
-- When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
-- You have access to the Nx MCP server and its tools, use them to help the user
-- When answering questions about the repository, use the `nx_workspace` tool first to gain an understanding of the workspace architecture where applicable.
-- When working in individual projects, use the `nx_project_details` mcp tool to analyze and understand the specific project structure and dependencies
-- For questions around nx configuration, best practices or if you're unsure, use the `nx_docs` tool to get relevant, up-to-date docs. Always use this instead of assuming things about nx configuration
-- If the user needs help with an Nx configuration or project graph error, use the `nx_workspace` tool to get any errors
-
-<!-- nx configuration end-->

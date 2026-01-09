@@ -39,80 +39,91 @@ export class TimelinePageComponent implements OnInit, OnDestroy {
         if (typeFilter !== 'all') {
           if (typeFilter === 'professional') {
             filteredEvents = filteredEvents.filter(event =>
-              ['professional', 'project', 'timeline', 'family'].includes(event.type ?? ''),
+              ['professional', 'project', 'timeline', 'family'].includes((event.type ?? '').toLowerCase()),
             );
           } else if (typeFilter === 'education') {
-            filteredEvents = filteredEvents.filter(event => event.type === 'education');
+            filteredEvents = filteredEvents.filter(event => (event.type ?? '').toLowerCase() === 'education');
           } else if (typeFilter === 'technical') {
-            filteredEvents = filteredEvents.filter(
-              event =>
-                (event.type === 'personal' && event.title.toLowerCase().includes('developer journal')) ||
-                event.type === 'project' ||
-                event.description.toLowerCase().includes('angular') ||
-                event.description.toLowerCase().includes('typescript') ||
-                event.description.toLowerCase().includes('javascript') ||
-                event.description.toLowerCase().includes('react') ||
-                event.description.toLowerCase().includes('node') ||
-                event.description.toLowerCase().includes('java') ||
-                event.description.toLowerCase().includes('spring boot') ||
-                event.description.toLowerCase().includes('nestjs') ||
-                event.description.toLowerCase().includes('playwright') ||
-                event.description.toLowerCase().includes('tdd') ||
-                event.description.toLowerCase().includes('bdd') ||
-                event.description.toLowerCase().includes('kafka') ||
-                event.description.toLowerCase().includes('kubernetes') ||
-                event.description.toLowerCase().includes('oracle') ||
-                event.description.toLowerCase().includes('d3js') ||
-                event.description.toLowerCase().includes('material design') ||
-                event.description.toLowerCase().includes('rxjs') ||
-                event.description.toLowerCase().includes('sharepoint') ||
-                event.description.toLowerCase().includes('azure') ||
-                event.description.toLowerCase().includes('git') ||
-                event.description.toLowerCase().includes('agile') ||
-                event.description.toLowerCase().includes('scrum') ||
-                event.description.toLowerCase().includes('html5') ||
-                event.description.toLowerCase().includes('css3') ||
-                event.description.toLowerCase().includes('bootstrap') ||
-                event.description.toLowerCase().includes('wordpress') ||
-                event.description.toLowerCase().includes('jquery') ||
-                event.description.toLowerCase().includes('angularjs') ||
-                event.description.toLowerCase().includes('php') ||
-                event.description.toLowerCase().includes('codeigniter') ||
-                event.description.toLowerCase().includes('redis') ||
-                event.description.toLowerCase().includes('coldfusion') ||
-                event.description.toLowerCase().includes('phantomjs') ||
-                event.description.toLowerCase().includes('ruby') ||
-                event.description.toLowerCase().includes('less') ||
-                event.description.toLowerCase().includes('grunt') ||
-                event.description.toLowerCase().includes('mocha') ||
-                event.description.toLowerCase().includes('citrix') ||
-                event.description.toLowerCase().includes('lotus notes') ||
-                event.description.toLowerCase().includes('unix') ||
-                event.description.toLowerCase().includes('aix') ||
-                event.description.toLowerCase().includes('nt') ||
-                event.description.toLowerCase().includes('xdm') ||
-                event.description.toLowerCase().includes('cisco vpn') ||
-                event.description.toLowerCase().includes('remedy') ||
-                event.description.toLowerCase().includes('modem') ||
-                event.description.toLowerCase().includes('majordomo') ||
-                event.description.toLowerCase().includes('newsgroups') ||
-                event.description.toLowerCase().includes('radar') ||
-                event.description.toLowerCase().includes('icwar') ||
-                event.description.toLowerCase().includes('iphipar'),
-            );
+            filteredEvents = filteredEvents.filter(event => {
+              const eventType = (event.type ?? '').toLowerCase();
+              const title = (event.title ?? '').toLowerCase();
+              const description = (event.description ?? '').toLowerCase();
+
+              return (
+                (eventType === 'personal' && title.includes('developer journal')) ||
+                eventType === 'project' ||
+                description.includes('angular') ||
+                description.includes('typescript') ||
+                description.includes('javascript') ||
+                description.includes('react') ||
+                description.includes('node') ||
+                description.includes('java') ||
+                description.includes('spring boot') ||
+                description.includes('nestjs') ||
+                description.includes('playwright') ||
+                description.includes('tdd') ||
+                description.includes('bdd') ||
+                description.includes('kafka') ||
+                description.includes('kubernetes') ||
+                description.includes('oracle') ||
+                description.includes('d3js') ||
+                description.includes('material design') ||
+                description.includes('rxjs') ||
+                description.includes('sharepoint') ||
+                description.includes('azure') ||
+                description.includes('git') ||
+                description.includes('agile') ||
+                description.includes('scrum') ||
+                description.includes('html5') ||
+                description.includes('css3') ||
+                description.includes('bootstrap') ||
+                description.includes('wordpress') ||
+                description.includes('jquery') ||
+                description.includes('angularjs') ||
+                description.includes('php') ||
+                description.includes('codeigniter') ||
+                description.includes('redis') ||
+                description.includes('coldfusion') ||
+                description.includes('phantomjs') ||
+                description.includes('ruby') ||
+                description.includes('less') ||
+                description.includes('grunt') ||
+                description.includes('mocha') ||
+                description.includes('citrix') ||
+                description.includes('lotus notes') ||
+                description.includes('unix') ||
+                description.includes('aix') ||
+                description.includes('nt') ||
+                description.includes('xdm') ||
+                description.includes('cisco vpn') ||
+                description.includes('remedy') ||
+                description.includes('modem') ||
+                description.includes('majordomo') ||
+                description.includes('newsgroups') ||
+                description.includes('radar') ||
+                description.includes('icwar') ||
+                description.includes('iphipar')
+              );
+            });
           } else if (typeFilter === 'personal') {
             filteredEvents = filteredEvents.filter(
-              event =>
-                event.type === 'personal' ||
-                (event.type === 'historical' &&
-                  (event.title.toLowerCase().includes('early life') ||
-                    event.title.toLowerCase().includes('birth') ||
-                    event.title.toLowerCase().includes('passing') ||
-                    event.title.toLowerCase().includes('church') ||
-                    event.title.toLowerCase().includes('assembly of god'))),
+              event => {
+                const eventType = (event.type ?? '').toLowerCase();
+                const title = (event.title ?? '').toLowerCase();
+
+                return (
+                  eventType === 'personal' ||
+                  (eventType === 'historical' &&
+                    (title.includes('early life') ||
+                      title.includes('birth') ||
+                      title.includes('passing') ||
+                      title.includes('church') ||
+                      title.includes('assembly of god')))
+                );
+              },
             );
           } else if (typeFilter === 'historical') {
-            filteredEvents = filteredEvents.filter(event => event.type === 'historical');
+            filteredEvents = filteredEvents.filter(event => (event.type ?? '').toLowerCase() === 'historical');
           }
         }
 

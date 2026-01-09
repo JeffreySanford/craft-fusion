@@ -89,15 +89,13 @@ export class SidebarComponent implements OnInit {
           this.menuGroups[0].items.push(
             { icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false, isProtected: true },
             { icon: 'schedule', label: 'Timeline', routerLink: '/timeline', active: false, isProtected: true },
-            { icon: 'chat_bubble', label: 'Chat', routerLink: '/chat', active: false, isProtected: true },
-            { icon: 'book', label: 'Book', routerLink: '/book', active: false, isProtected: true },
           );
           }
         }
       } else {
         if (this.menuGroups?.[0]?.items) {
           console.log('🔧 Sidebar: Removing admin menu items');
-          this.menuGroups[0].items = this.menuGroups[0].items.filter(item => !['Admin', 'Timeline', 'Chat', 'Book'].includes(item.label));
+          this.menuGroups[0].items = this.menuGroups[0].items.filter(item => !['Admin', 'Timeline'].includes(item.label));
         }
       }
 
@@ -141,7 +139,7 @@ export class SidebarComponent implements OnInit {
   onMenuItemClick(item: MenuItem) {
     this.setActive(item);
 
-    if (['Admin', 'Timeline', 'Chat', 'Book'].includes(item.label)) {
+    if (['Admin', 'Timeline'].includes(item.label)) {
       console.log('🔧 Sidebar: Admin button clicked:', item.label);
     }
   }

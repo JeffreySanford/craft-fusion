@@ -87,8 +87,9 @@ export interface CreateUserRequest {
 
 export interface AuthResponse {
   user: User;
-  token: string;
-  expiresAt?: string | Date;
+  expiresIn?: number;
+  refreshExpiresIn?: number;
+  message?: string;
 }
 
 export interface LoginRequest {

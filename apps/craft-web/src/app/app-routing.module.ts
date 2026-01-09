@@ -8,13 +8,8 @@ const routes: Routes = [
   {
     path: 'timeline',
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['timeline'] },
-    children: [
-      {
-        path: 'timeline',
-        loadChildren: () => import('./projects/timeline/timeline.module').then(m => m.TimelineModule),
-      },
-    ],
+    data: { roles: ['timeline', 'admin'] },
+    loadChildren: () => import('./projects/timeline/timeline.module').then(m => m.TimelineModule),
   },
 
 ];

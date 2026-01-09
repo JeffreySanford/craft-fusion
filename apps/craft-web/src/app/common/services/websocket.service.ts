@@ -11,7 +11,7 @@ export class WebsocketService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private baseReconnectDelay = 1000;
-  private reconnectTimer: unknown;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
   private connectionStatusSubject = new BehaviorSubject<boolean>(false);
   public connectionStatus$ = this.connectionStatusSubject.asObservable();
@@ -104,6 +104,7 @@ export class WebsocketService {
 
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
     }
 
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {

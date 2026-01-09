@@ -26,7 +26,6 @@ export class ServicesDashboardService {
     ['BusyService', 'hourglass_top'],
     ['NotificationService', 'notifications'],
     ['LoggerService', 'list'],
-    ['ChatService', 'chat'],
     ['SettingsService', 'settings'],
     ['AdminStateService', 'admin_panel_settings'],
   ]);
@@ -46,7 +45,6 @@ export class ServicesDashboardService {
     { name: 'BusyService', description: 'Loading state management', active: false },
     { name: 'NotificationService', description: 'User notifications', active: true },
     { name: 'LoggerService', description: 'Application logging', active: true },
-    { name: 'ChatService', description: 'Chat functionality', active: false },
     { name: 'SettingsService', description: 'Application settings', active: true },
     { name: 'AdminStateService', description: 'Admin state management', active: true },
   ];
@@ -59,10 +57,13 @@ export class ServicesDashboardService {
     ['BusyService', '#FFEEAD'],
     ['NotificationService', '#D4A5A5'],
     ['LoggerService', '#9B59B6'],
-    ['ChatService', '#3498DB'],
     ['SettingsService', '#FF9F4A'],
     ['AdminStateService', '#2ECC71'],
   ]);
+
+  private readonly SIMULATION_USER_COUNT = 20;
+  private readonly SIMULATION_INTERVAL_BASE = 1400;
+  private readonly SIMULATION_INTERVAL_VARIANCE = 600;
 
   constructor(private metricsBridge: ServiceMetricsBridgeService, private ngZone: NgZone) {}
 
@@ -272,17 +273,18 @@ export class ServicesDashboardService {
 
   startSimulation() {
     this.stopSimulation();
-    this.simulationIntervalId = window.setInterval(
-      () => {
-        this.getRegisteredServices().forEach(s => {
-          const avg = Math.random() * 200 + 20;
-          const calls = Math.floor(Math.random() * 50);
-          const success = 75 + Math.random() * 25;
-          this.updateServiceStats(s.name, { avgResponseTime: avg, callCount: calls, successRate: success, lastUpdate: Date.now() });
-        });
-      },
-      8000 + Math.random() * 4000,
-    );
+    this.simulationIntervalId = window.setInterval(() => {
+      const batch = this.createSimulationBatch();
+      if (batch.length === 0) {
+        return;
+      }
+
+      const added = this.setServiceMetrics(batch);
+      if (added.length) {
+        this.processMetricsForLogs(added);
+        this.updateLiteStats();
+      }
+    }, this.SIMULATION_INTERVAL_BASE + Math.random() * this.SIMULATION_INTERVAL_VARIANCE);
   }
 
   stopSimulation() {
@@ -290,6 +292,53 @@ export class ServicesDashboardService {
       clearInterval(this.simulationIntervalId);
       this.simulationIntervalId = undefined;
     }
+  }
+
+  private createSimulationBatch(): ServiceCallMetric[] {
+    const activeServices = this.getRegisteredServices().filter(s => s.active);
+    if (!activeServices.length) {
+      return [];
+    }
+
+    const batch: ServiceCallMetric[] = [];
+    for (let userIndex = 0; userIndex < this.SIMULATION_USER_COUNT; userIndex++) {
+      const hits = 1 + Math.floor(Math.random() * 2);
+      for (let hitIndex = 0; hitIndex < hits; hitIndex++) {
+        const targetIndex = Math.floor(Math.random() * activeServices.length);
+        // eslint-disable-next-line security/detect-object-injection
+        const target = activeServices[targetIndex];
+        if (!target) {
+          continue;
+        }
+        batch.push(this.buildSimulatedMetric(target.name, userIndex, hitIndex));
+      }
+    }
+    return batch;
+  }
+
+  private buildSimulatedMetric(serviceName: string, userIndex: number, hitIndex: number): ServiceCallMetric {
+    const timestamp = new Date(Date.now() - Math.random() * 1500);
+    const duration = 200 + Math.random() * 400;
+    const status = Math.random() < 0.9 ? 200 : 503;
+    const method = Math.random() < 0.6 ? 'POST' : 'GET';
+    return {
+      id: `sim-${serviceName}-${userIndex}-${hitIndex}-${timestamp.getTime()}-${Math.random().toString(36).slice(2, 6)}`,
+      timestamp,
+      serviceName,
+      method,
+      url: this.buildServiceUrl(serviceName),
+      status,
+      duration,
+      activeUsers: this.SIMULATION_USER_COUNT,
+      averageLatency: duration,
+    };
+  }
+
+  private buildServiceUrl(serviceName: string): string {
+    return `/api/${serviceName
+      .replace(/([A-Z])/g, '-$1')
+      .replace(/^-/, '')
+      .toLowerCase()}`;
   }
 
   getServiceStatistics(serviceName: string) {

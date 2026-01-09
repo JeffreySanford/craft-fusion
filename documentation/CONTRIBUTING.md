@@ -30,11 +30,13 @@ Craft Fusion is a monorepo using Nx for workspace management. It contains:
 
 1. Clone the repository
 2. Install dependencies:
+
 ```bash
 pnpm install
 ```
 
-3. Run a specific application (Nx only):
+1. Run a specific application (Nx only):
+
 ```bash
 pnpm dlx nx serve craft-web
 # or
@@ -62,6 +64,7 @@ pnpm add -D your-dev-package
 The project uses GitHub Actions for CI. The workflow (`.github/workflows/ci.yml`) runs on pushes to `main` and pull requests.
 
 It performs:
+
 - Dependency installation
 - Format checking
 - Testing (unit and E2E)
@@ -69,6 +72,7 @@ It performs:
 - Starting the Nest backend for E2E tests
 
 Ensure your changes pass locally before pushing:
+
 ```bash
 pnpm dlx nx format:check
 pnpm dlx nx affected -t test
@@ -76,6 +80,7 @@ pnpm dlx nx affected -t build
 ```
 
 ## Project-wide Standards
+
 - Keep CLI output consistent and readable across tools.
 
-Last Updated: 2026-01-05
+Last Updated: 2026-01-08

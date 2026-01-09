@@ -1,7 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subscription, of } from 'rxjs';
+import { catchError, finalize, take } from 'rxjs/operators';
 import { ApiLoggerService, ApiLogEntry } from '../../../common/services/api-logger.service';
 import { LoggerService } from '../../../common/services/logger.service';
+import { ApiService } from '../../../common/services/api.service';
 
 interface ApiEndpointLog {
   path: string;
@@ -17,6 +19,28 @@ interface ApiEndpointLog {
   timelineData: { timestamp: Date; responseTime: number; status?: number; requestBody?: unknown; responseBody?: unknown; headers?: unknown }[];
 }
 
+interface SecurityFinding {
+  id?: string;
+  source?: string;
+  severity?: string;
+  title?: string;
+  component?: string;
+  status?: string;
+  createdAt?: string;
+}
+
+interface SecurityEvidence {
+  id?: string;
+  type?: string;
+  name?: string;
+  status?: string;
+  hash?: string;
+  createdAt?: string;
+  createdBy?: string;
+  retention?: string;
+  downloadUrl?: string;
+}
+
 @Component({
   selector: 'app-security-dashboard',
   templateUrl: './security-dashboard.component.html',
@@ -26,8 +50,15 @@ interface ApiEndpointLog {
 export class SecurityDashboardComponent implements OnInit, OnDestroy {
   endpointLogs = new Map<string, ApiEndpointLog>();
   apiLogsSubscription!: Subscription;
+  dataSubscription = new Subscription();
   expandedEndpoint: string | null = null;
   timestampFormat = 'shortTime';
+  findings: SecurityFinding[] = [];
+  evidence: SecurityEvidence[] = [];
+  findingsLoading = false;
+  evidenceLoading = false;
+  findingsError: string | null = null;
+  evidenceError: string | null = null;
 
   oscalProfiles = [
     { name: 'OSCAL Standard', status: 'pass', lastRun: 'Today 10:15', pass: 122, fail: 0, duration: '2m 13s' },
@@ -63,16 +94,20 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private apiLogger: ApiLoggerService,
     private logger: LoggerService,
+    private apiService: ApiService,
   ) {}
 
   ngOnInit(): void {
     this.monitorApiEndpoints();
+    this.loadFindings();
+    this.loadEvidence();
   }
 
   ngOnDestroy(): void {
     if (this.apiLogsSubscription) {
       this.apiLogsSubscription.unsubscribe();
     }
+    this.dataSubscription.unsubscribe();
   }
 
   private monitorApiEndpoints(): void {
@@ -137,6 +172,90 @@ export class SecurityDashboardComponent implements OnInit, OnDestroy {
         this.logger.error('Error processing log entry in SecurityDashboard', err);
       }
     });
+  }
+
+  private loadFindings(): void {
+    this.findingsLoading = true;
+    this.findingsError = null;
+
+    const sub = this.apiService
+      .get<SecurityFinding[]>('security/findings')
+      .pipe(
+        take(1),
+        catchError(error => {
+          this.logger.warn('Failed to load security findings', { status: error?.status });
+          this.findingsError = 'Unable to load findings right now.';
+          return of([]);
+        }),
+        finalize(() => {
+          this.findingsLoading = false;
+        }),
+      )
+      .subscribe(data => {
+        this.findings = Array.isArray(data) ? data : [];
+      });
+
+    this.dataSubscription.add(sub);
+  }
+
+  private loadEvidence(): void {
+    this.evidenceLoading = true;
+    this.evidenceError = null;
+
+    const sub = this.apiService
+      .get<SecurityEvidence[]>('security/evidence')
+      .pipe(
+        take(1),
+        catchError(error => {
+          this.logger.warn('Failed to load security evidence', { status: error?.status });
+          this.evidenceError = 'Unable to load evidence right now.';
+          return of([]);
+        }),
+        finalize(() => {
+          this.evidenceLoading = false;
+        }),
+      )
+      .subscribe(data => {
+        this.evidence = Array.isArray(data) ? data : [];
+      });
+
+    this.dataSubscription.add(sub);
+  }
+
+  getSeverityClass(severity?: string): string {
+    const normalized = (severity || '').toLowerCase();
+    if (['critical', 'high'].includes(normalized)) {
+      return 'severity-critical';
+    }
+    if (['medium', 'warn', 'warning'].includes(normalized)) {
+      return 'severity-warning';
+    }
+    if (['low', 'info'].includes(normalized)) {
+      return 'severity-low';
+    }
+    return 'severity-unknown';
+  }
+
+  getFindingStatusClass(status?: string): string {
+    const normalized = (status || '').toLowerCase();
+    if (['closed', 'resolved'].includes(normalized)) {
+      return 'status-closed';
+    }
+    if (['open', 'new', 'active'].includes(normalized)) {
+      return 'status-open';
+    }
+    return 'status-unknown';
+  }
+
+  getEvidenceStatusClass(status?: string): string {
+    const normalized = (status || '').toLowerCase();
+    if (['ready', 'complete', 'available'].includes(normalized)) {
+      return 'status-ready';
+    }
+    if (['processing', 'running', 'queued'].includes(normalized)) {
+      return 'status-pending';
+    }
+    return 'status-unknown';
   }
 
   getSuccessRate(serviceInfo: ApiEndpointLog): number {

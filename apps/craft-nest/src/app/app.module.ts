@@ -17,6 +17,7 @@ import { YahooModule as FinancialYahooModule } from './financial/yahoo/yahoo.mod
 import { FirmsModule } from './firms/firms.module';
 import { OpenSkyModule } from './openskies/opensky.module';
 import { HttpLoggingInterceptor } from './logging/http-logging.interceptor';
+import { SecurityModule } from './security/security.module';
 
 @Module({
   imports: [
@@ -100,6 +101,7 @@ import { HttpLoggingInterceptor } from './logging/http-logging.interceptor';
     FinancialYahooModule,
     FirmsModule,
     OpenSkyModule,
+    SecurityModule,
   ],
   controllers: [AppController],
   providers: [

@@ -28,10 +28,6 @@
           <mat-icon>description</mat-icon>
           <p>resume</p>
         </button>
-        <button mat-icon-button class="theme-cycle" (click)="cycleTheme()" aria-label="Cycle theme" title="Cycle theme">
-          <mat-icon>palette</mat-icon>
-          <span class="theme-label">{{ currentTheme ? (currentTheme.replace('-theme','') | titlecase) : 'Vibrant' }}</span>
-        </button>
       </div>
       <div class="logo-performance-block">
         <div class="logo-container">
@@ -45,13 +41,6 @@
 
         <mat-card class="performance-card" [ngClass]="{ 'sim-border': isSimulatingData, 'live-border': !isSimulatingData }">
           <div class="performance-metrics">
-            <div class="data-mode-toggle">
-              <mat-slide-toggle [checked]="isSimulatingData" (change)="toggleDataSimulation()" [class.sim-toggle]="isSimulatingData" [class.live-toggle]="!isSimulatingData">
-                <span [ngClass]="{ 'sim-label': isSimulatingData, 'live-label': !isSimulatingData }">
-                  {{ isSimulatingData ? 'Simulated Data' : 'Live Data' }}
-                </span>
-              </mat-slide-toggle>
-            </div>
             <canvas #performanceChart height="400"></canvas>
             <div *ngIf="!isSimulatingData && serviceMetrics.length > 0" class="service-metrics-overlay">
               <div *ngFor="let metric of serviceMetrics.slice(-3)" class="service-metric">
