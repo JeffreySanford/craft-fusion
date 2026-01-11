@@ -32,7 +32,7 @@
         "tsConfig": "apps/craft-nest/tsconfig.app.json",
         "assets": ["apps/craft-nest/src/assets", { "input": "apps/craft-nest/src/app/seed", "glob": "**/*", "output": "src/seed" }],
         "generatePackageJson": true,
-        "clean": false
+        "clean": true
       },
       "configurations": {
         "development": {

@@ -15,7 +15,6 @@ import { FooterModule } from './pages/footer/footer.module';
 import { LoggerService } from './common/services/logger.service';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { SocketClientService } from './common/services/socket-client.service';
-import { AuthenticationService } from './common/services/authentication.service';
 
 // Import shared types from craft-library
 import { HealthData } from '@craft-fusion/craft-library';
@@ -65,7 +64,6 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
     NgxSpinnerModule // Add NgxSpinnerModule
   ],
   providers: [
-    AuthenticationService,
     provideAppInitializer(() => {
       const router = inject(Router);
       router.events.subscribe(event => {
