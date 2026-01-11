@@ -62,25 +62,14 @@ export class AdminComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Start hero monitoring
-    this.adminHero.startMonitoring();
-
-    // Start lightweight polling for stats; full live monitoring is enabled/disabled
-    // based on the simulation toggle so we don't double-process simulated metrics.
     this.servicesDashboard.startStatisticsPolling(this.METRICS_UPDATE_INTERVAL);
 
     this.dataSimulationService.isSimulating$.subscribe(isSim => {
       this.isSimulatingData = isSim;
-      this.adminHero.setSimulationMode(isSim);
-      if (this.isSimulatingData) {
-        // enable simulation and disable live monitoring
-        this.servicesDashboard.startSimulation();
-        this.servicesDashboard.stopMonitoring();
-      } else {
-        // disable simulation and switch to live monitoring
-        this.servicesDashboard.stopSimulation();
-        this.servicesDashboard.startMonitoring();
-      }
+      this.isSimulatingData
+        ? this.servicesDashboard.startSimulation()
+        : this.servicesDashboard.stopSimulation();
+    });
     });
   }
 
@@ -97,7 +86,6 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.pauseSimulation();
     this.adminHero.stopMonitoring();
     this.servicesDashboard.stopSimulation();
-    this.servicesDashboard.stopMonitoring();
     this.servicesDashboard.stopStatisticsPolling();
   }
 
