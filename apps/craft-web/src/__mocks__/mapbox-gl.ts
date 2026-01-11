@@ -1,5 +1,3 @@
-export {};
-
 class MockMap {
   constructor() {}
   addControl() {
@@ -21,7 +19,7 @@ class MockMap {
   }
 }
 
-const mockMapbox = {
+const mapboxgl = {
   Map: MockMap,
   NavigationControl: class {},
   Marker: class {
@@ -42,5 +40,4 @@ const mockMapbox = {
   supported: () => true,
 };
 
-(globalThis as any).mapboxgl = mockMapbox;
-module.exports = mockMapbox;
+module.exports = mapboxgl;
