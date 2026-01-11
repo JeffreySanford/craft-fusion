@@ -21,20 +21,12 @@
     color: var(--md-sys-color-on-primary);
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
-      background-color: var(--md-sys-color-primary);
-      @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black)) {
-        background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
-      }
+      background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
       box-shadow: var(--md-sys-elevation-level2);
     }
 
     &:active {
-      /* Fallback for browsers that don't support color-mix */
-      background-color: var(--md-sys-color-primary);
-      @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, black)) {
-        background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, black);
-      }
+      background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, black);
     }
   }
 
@@ -44,19 +36,11 @@
     color: var(--md-sys-color-on-secondary-container);
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
-      background-color: var(--md-sys-color-secondary-container);
-      @supports (background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 92%, black)) {
-        background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 92%, black);
-      }
+      background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 92%, black);
     }
 
     &:active {
-      /* Fallback for browsers that don't support color-mix */
-      background-color: var(--md-sys-color-secondary-container);
-      @supports (background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 88%, black)) {
-        background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 88%, black);
-      }
+      background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 88%, black);
     }
   }
 
@@ -66,19 +50,11 @@
     color: var(--md-sys-color-primary);
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
-      background-color: transparent;
-      @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent)) {
-        background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
-      }
+      background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
     }
 
     &:active {
-      /* Fallback for browsers that don't support color-mix */
-      background-color: transparent;
-      @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent)) {
-        background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
-      }
+      background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
     }
   }
 
@@ -89,19 +65,11 @@
     padding: 0 12px;
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
-      background-color: transparent;
-      @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent)) {
-        background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
-      }
+      background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
     }
 
     &:active {
-      /* Fallback for browsers that don't support color-mix */
-      background-color: transparent;
-      @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent)) {
-        background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
-      }
+      background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
     }
   }
 
@@ -191,19 +159,11 @@
     color: var(--md-sys-color-on-surface-variant);
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
-      background-color: var(--md-sys-color-surface-variant);
-      @supports (background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 92%, black)) {
-        background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 92%, black);
-      }
+      background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 92%, black);
     }
 
     &:active {
-      /* Fallback for browsers that don't support color-mix */
-      background-color: var(--md-sys-color-surface-variant);
-      @supports (background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 88%, black)) {
-        background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 88%, black);
-      }
+      background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 88%, black);
     }
   }
 
@@ -237,11 +197,7 @@
     color: var(--md-sys-color-on-surface-variant);
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
-      background-color: var(--md-sys-color-surface-variant);
-      @supports (background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 92%, black)) {
-        background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 92%, black);
-      }
+      background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 92%, black);
     }
   }
 }
@@ -267,11 +223,7 @@
     }
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
-      background-color: transparent;
-      @supports (background-color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent)) {
-        background-color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent);
-      }
+      background-color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent);
     }
 
     .material-icons {
@@ -328,11 +280,7 @@
     padding: 0 16px;
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
-      background-color: transparent;
-      @supports (background-color: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent)) {
-        background-color: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
-      }
+      background-color: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
     }
 
     &.active {
@@ -429,20 +377,12 @@
   width: 56px;
 
   &:hover {
-    /* Fallback for browsers that don't support color-mix */
-    background-color: var(--md-sys-color-primary);
-    @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black)) {
-      background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
-    }
+    background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
     box-shadow: var(--md-sys-elevation-level4);
   }
 
   &:active {
-    /* Fallback for browsers that don't support color-mix */
-    background-color: var(--md-sys-color-primary);
-    @supports (background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, black)) {
-      background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, black);
-    }
+    background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, black);
     box-shadow: var(--md-sys-elevation-level2);
   }
 
@@ -497,11 +437,7 @@
     }
 
     &:hover {
-      /* Fallback for browsers that don't support color-mix */
-      background-color: transparent;
-      @supports (background-color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent)) {
-        background-color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent);
-      }
+      background-color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent);
     }
   }
 }

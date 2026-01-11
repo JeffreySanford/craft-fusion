@@ -2,9 +2,12 @@
    This file now imports those partials. The original large stylesheet
    was moved into smaller files under the same folder.
 */
-/* stylelint-disable selector-class-pattern */
 @use "variables" as vars;
-@use "./styles/index";
+@use "./_admin-header";
+@use "./_admin-metrics";
+@use "./_admin-charts";
+@use "./_admin-services";
+@use "./_admin-logs";
 
 /* Keep this file intentionally small. Split further as needed. */
 .api-table td {

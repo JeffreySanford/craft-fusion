@@ -8,29 +8,35 @@
 $light-theme-colors: (
   primary: #002868,
   // Navy blue
-  on-primary: #fff,
+  on-primary: #ffffff,
   primary-container: #d6e2ff,
   on-primary-container: #001849,
+
   secondary: #bf0a30,
   // USA Red
-  on-secondary: #fff,
+  on-secondary: #ffffff,
   secondary-container: #ffd9d9,
   on-secondary-container: #400012,
+
   tertiary: #ffd700,
   // USA Gold
-  on-tertiary: #000,
+  on-tertiary: #000000,
   tertiary-container: #fff8dc,
   on-tertiary-container: #493900,
+
   surface: #f8f9fa,
   on-surface: #1a1c1e,
   surface-variant: #e7e0ec,
   on-surface-variant: #49454f,
+
   background: #f8f9fa,
   on-background: #1a1c1e,
+
   error: #b3261e,
-  on-error: #fff,
+  on-error: #ffffff,
+
   outline: #79747e,
-  shadow: #000,
+  shadow: #000000,
 );
 
 // Dark theme color scheme
@@ -40,26 +46,32 @@ $dark-theme-colors: (
   on-primary: #002e6a,
   primary-container: #004395,
   on-primary-container: #d6e2ff,
+
   secondary: #ffb4ab,
   // Lighter red for dark theme
   on-secondary: #690020,
   secondary-container: #93000a,
   on-secondary-container: #ffd9d9,
+
   tertiary: #ffd700,
   // Gold remains the same
   on-tertiary: #1c1500,
   tertiary-container: #302a00,
   on-tertiary-container: #ffe979,
+
   surface: #1a1c1e,
   on-surface: #e2e2e6,
   surface-variant: #49454f,
   on-surface-variant: #cac4d0,
+
   background: #111214,
   on-background: #e2e2e6,
+
   error: #f2b8b5,
   on-error: #601410,
+
   outline: #938f99,
-  shadow: #000,
+  shadow: #000000,
 );
 
 // Generate CSS variables for both themes

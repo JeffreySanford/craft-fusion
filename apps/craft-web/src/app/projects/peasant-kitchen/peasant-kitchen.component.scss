@@ -91,6 +91,7 @@
       animation: shimmerHeading 3s infinite;
       background: linear-gradient(45deg, #3c3b6e, #7a7ab8, #3c3b6e);
       background-clip: text;
+      background-clip: text;
       background-size: 200% auto;
       color: #3c3b6e;
       font-family: var(--recipe-heading-font, "Playfair Display", "Georgia", serif);
@@ -201,7 +202,7 @@
       box-shadow: 0 10px 20px rgb(0 0 0 / 20%);
     }
 
-    > * {
+    & > * {
       position: relative;
       z-index: 15;
     }

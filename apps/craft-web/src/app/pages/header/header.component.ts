@@ -3,13 +3,13 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../common/services/auth/authentication.service';
 import { LoggerService } from '../../common/services/logger.service';
-import { ThemeService, ThemeName } from '../../common/services/theme.service';
+import { ThemeService } from '../../common/services/theme.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class HeaderComponent implements OnInit {
   title = 'frontend';
@@ -18,23 +18,18 @@ export class HeaderComponent implements OnInit {
   isCollapsed = false;
   menuItems = [
     { label: 'Home', icon: 'home', routerLink: '/home', active: false },
+    // Add more menu items as needed
   ];
   polling = true;
 
-  userMenuItems: { label: string; icon: string; action: string; active?: boolean }[] = [];
+  userMenuItems: { label: string; icon: string; action: string; active?: boolean }[] = []; // Typed user menu items
   isLoggedIn$: Observable<boolean>;
-  isDarkTheme = false;
-
-  themeOptions: { name: ThemeName; label: string }[] = [
-    { name: 'vibrant', label: 'Vibrant' },
-    { name: 'light', label: 'Light' },
-    { name: 'dark', label: 'Dark' },
-  ];
+  isDarkTheme = false; // Add theme tracking property
 
   constructor(
-    private authService: AuthenticationService,
-    private logger: LoggerService,
-    private themeService: ThemeService,
+    public authService: AuthenticationService,
+    private logger: LoggerService, // Add LoggerService
+    private themeService: ThemeService, // Add ThemeService for theme toggle
     private router: Router,
   ) {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
@@ -44,17 +39,17 @@ export class HeaderComponent implements OnInit {
     this.logger.info('Header component initialized');
 
     this.authService.isLoggedIn$.subscribe(isLoggedIn => {
-      this.updateUserMenuItems();
+      this.updateUserMenuItems(); // Call updateUserMenuItems when login state changes
       this.logger.debug('Auth state changed', { isLoggedIn });
     });
 
-    // Track theme changes (derive dark boolean)
-    this.themeService.theme$.subscribe(theme => {
-      this.isDarkTheme = theme === 'dark';
-      this.logger.debug('Theme changed in header', { theme });
+    // Track theme changes
+    this.themeService.isDarkTheme$.subscribe(isDark => {
+      this.isDarkTheme = isDark;
+      this.logger.debug('Theme changed in header', { isDarkTheme: isDark });
     });
 
-    this.updateUserMenuItems();
+    this.updateUserMenuItems(); // Initial call to set menu items
   }
 
   updateUserMenuItems() {
@@ -65,17 +60,26 @@ export class HeaderComponent implements OnInit {
       { label: 'Reports', icon: 'bar_chart', action: 'reports' },
     ];
 
+    // Subscribe to the isLoggedIn$ Observable to get its current value
     this.authService.isLoggedIn$.subscribe(isLoggedIn => {
       if (isLoggedIn) {
+        // Find and remove login option if it exists
         const loginIndex = this.userMenuItems.findIndex(item => item.action === 'login');
-        if (loginIndex !== -1) this.userMenuItems.splice(loginIndex, 1);
+        if (loginIndex !== -1) {
+          this.userMenuItems.splice(loginIndex, 1);
+        }
+
         if (!this.userMenuItems.some(item => item.action === 'logout')) {
           this.userMenuItems.push({ label: 'Logout', icon: 'logout', action: 'logout' });
           this.logger.debug('Added logout option to user menu');
         }
       } else {
+        // Find and remove logout option if it exists
         const logoutIndex = this.userMenuItems.findIndex(item => item.action === 'logout');
-        if (logoutIndex !== -1) this.userMenuItems.splice(logoutIndex, 1);
+        if (logoutIndex !== -1) {
+          this.userMenuItems.splice(logoutIndex, 1);
+        }
+
         if (!this.userMenuItems.some(item => item.action === 'login')) {
           this.userMenuItems.push({ label: 'Login', icon: 'login', action: 'login' });
           this.logger.debug('Added login option to user menu');
@@ -113,13 +117,11 @@ export class HeaderComponent implements OnInit {
     } else if (action === 'theme') {
       this.toggleTheme();
     }
+    // Handle other actions as needed
   }
 
+  // Add theme toggle method
   toggleTheme() {
     this.themeService.toggleTheme();
-  }
-
-  setThemeByName(name: ThemeName) {
-    this.themeService.setThemeByName(name);
   }
 }

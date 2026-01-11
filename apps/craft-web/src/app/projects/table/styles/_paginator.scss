@@ -4,7 +4,6 @@
 
 .mat-paginator,
 .mat-mdc-paginator {
-  /* stylelint-disable-next-line property-no-vendor-prefix */
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   background-color: var(--mat-paginator-container-background-color, var(--md-sys-color-primary));

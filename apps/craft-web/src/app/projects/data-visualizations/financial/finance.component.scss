@@ -177,8 +177,7 @@ svg {
 }
 
 /* Fix tooltip positioning and appearance */
-tooltip {
-  -webkit-backdrop-filter: blur(2px); /* Safari fallback */
+.tooltip {
   backdrop-filter: blur(2px); /* Blur background slightly for better readability */
   background: rgb(255 255 255 / 98%); /* More opaque for better visibility */
   border: 1px solid #a8dadc;
@@ -279,15 +278,11 @@ tooltip {
 .stock-label-background {
   fill: rgb(255 255 255 / 85%); /* Semi-transparent white background */
   filter: drop-shadow(0 1px 2px rgb(0 0 0 / 15%));
-  /* Use clip-path fallback for browsers that don't support SVG `rx`/`ry` when set via CSS. */
+  rx: 4; /* Rounded corners */
+  ry: 4;
   stroke: rgb(0 0 0 / 15%); /* Light border for definition */
   stroke-width: 0.5;
-  -webkit-clip-path: inset(0 round 4px);
-  clip-path: inset(0 round 4px);
 }
-
-/* Some browsers (old Safari) don't accept SVG presentation attributes like `rx`/`ry` when set via CSS.
-   Keep `rx`/`ry` for engines that accept it, and add a clip-path fallback for others. */
 
 /* Stock label group with hover effect */
 .stock-label-group {
@@ -371,7 +366,6 @@ tooltip {
 
 /* Stock status box in bottom left */
 .stock-status-box {
-  -webkit-backdrop-filter: blur(2px); /* Safari fallback */
   backdrop-filter: blur(2px); /* Blur background slightly for better readability */
   background-color: rgb(255 255 255 / 98%); /* More opaque */
   border: 2px solid #1d3557; /* Thicker border */
@@ -417,7 +411,6 @@ tooltip {
 
 /* Status box with consistent sizing and proper z-index */
 .stock-status-box {
-  -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
   background-color: rgb(255 255 255 / 98%);
   border: 2px solid #1d3557;
@@ -496,7 +489,6 @@ tooltip {
   text-shadow:
     0 0 4px rgb(255 255 255 / 90%),
     0 0 4px rgb(255 255 255 / 90%);
-  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -522,7 +514,6 @@ tooltip {
     align-items: center;
     cursor: pointer;
     display: flex;
-    -webkit-user-select: none;
     user-select: none;
 
     input {
@@ -594,7 +585,6 @@ tooltip {
       0 0 4px rgb(255 255 255 / 90%),
       0 0 4px rgb(255 255 255 / 90%); // Double shadow for clarity
 
-    -webkit-user-select: none;
     user-select: none;
   }
 
@@ -614,7 +604,6 @@ tooltip {
 }
 
 .gantt-tooltip {
-  -webkit-backdrop-filter: blur(2px); /* Safari fallback */
   backdrop-filter: blur(2px); /* Blur background slightly for better readability */
   background-color: rgb(255 255 255 / 99%); /* Almost fully opaque for better contrast */
   border: 2px solid rgb(29 53 87 / 70%); /* Increased border opacity for better contrast */
@@ -668,7 +657,6 @@ tooltip {
   letter-spacing: 0.01em; // Slight letter spacing for better legibility
   pointer-events: none;
   text-shadow: 0 0 4px rgb(255 255 255 / 100%); // Increased shadow for better contrast
-  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -765,7 +753,6 @@ tooltip {
       0 0 5px rgb(255 255 255 / 100%),
       0 0 5px rgb(255 255 255 / 100%); /* Stronger shadow for better contrast */
 
-    -webkit-user-select: none;
     user-select: none;
   }
 
@@ -830,7 +817,6 @@ tooltip {
 
 // Enhance tooltip for Gantt chart
 .gantt-tooltip {
-  -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
   background-color: rgb(255 255 255 / 98%);
   border: 2px solid rgb(29 53 87 / 50%);
@@ -880,7 +866,6 @@ tooltip {
   letter-spacing: 0.01em;
   pointer-events: none;
   text-shadow: 0 0 4px rgb(255 255 255 / 100%);
-  -webkit-user-select: none;
   user-select: none;
 }
 

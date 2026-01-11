@@ -85,7 +85,8 @@ mat-card-title-group {
 .card-description {
   display: flex;
   flex: 1 1 auto; /* Let description take available space */
-  flex-flow: column wrap;
+  flex-direction: column;
+  flex-wrap: wrap;
   gap: 0.5em; /* Reduce gap between components */
   line-height: 1.6;
   max-height: none; /* Remove max-height constraint */
@@ -145,6 +146,7 @@ mat-card-title-group {
 mat-card-title {
   animation: shimmerText 3s infinite linear;
   background: linear-gradient(45deg, #3c3b6e, #7a7ab8);
+  background-clip: text;
   background-clip: text;
   color: #3c3b6e; /* Blue */
   color: transparent;

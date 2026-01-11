@@ -34,7 +34,6 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
     --md-sys-color-primary: #{$vibrant-navy};
     --md-sys-color-secondary: #{$vibrant-red};
     --md-sys-color-tertiary: #{$vibrant-gold};
-    --md-sys-color-on-primary: #fff;
 
     // Shared background gradients for core components
     --sidebar-gradient: var(--vibrant-header-gradient);
@@ -52,24 +51,10 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
     --md-sys-color-primary: #{$dark-navy-glow};
     --md-sys-color-secondary: #{$dark-red-glow};
     --md-sys-color-tertiary: #{$dark-gold-glow};
-    --md-sys-color-on-primary: #001022;
 
     // Shared background gradients for core components
     --sidebar-gradient: var(--vibrant-header-gradient);
     --dashboard-gradient: linear-gradient(135deg, rgb(30 65 190 / 20%) 0%, rgb(255 59 92 / 20%) 100%);
-  }
-
-  // Vibrant theme (named) - ensure on-primary token exists for runtime
-  .vibrant-theme,
-  [data-theme="vibrant"] {
-    --vibrant-header-gradient: linear-gradient(135deg, #001e60 0%, #0046cc 30%, #c80028 70%, #b3002a 100%);
-    --vibrant-menu-gradient: linear-gradient(135deg, rgb(4 0 252 / 70%) 0%, rgb(228 0 50 / 70%) 50%, rgb(4 0 252 / 70%) 100%);
-    --md-sys-color-primary: #{$vibrant-navy};
-    --md-sys-color-secondary: #{$vibrant-red};
-    --md-sys-color-tertiary: #{$vibrant-gold};
-    --md-sys-color-on-primary: #fff;
-    --sidebar-gradient: var(--vibrant-header-gradient);
-    --dashboard-gradient: linear-gradient(135deg, rgb(0 51 160 / 15%) 0%, rgb(228 0 50 / 15%) 100%);
   }
 
   // Apply vibrant gradients to specific components
@@ -106,44 +91,7 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
 
   // Add subtle gold accents to interactive elements
   .mat-mdc-button.mat-primary {
-    background-color: var(--md-sys-color-primary) !important;
     border-bottom: 2px solid $vibrant-gold;
-    color: var(--md-sys-color-on-primary) !important;
-  }
-
-  .menu-item.mdc-button--raised,
-  .menu-item.mat-mdc-raised-button {
-    background-color: var(--md-sys-color-primary) !important;
-    border-bottom: 2px solid $vibrant-gold;
-    color: var(--md-sys-color-on-primary) !important;
-  }
-
-  .menu-item {
-    color: var(--md-sys-color-on-primary) !important;
-  }
-
-  .menu-item,
-  .menu-item * {
-    color: var(--md-sys-color-on-primary) !important;
-  }
-
-  /* Ensure vibrant-theme body receives the same menu rules when theme-class is present */
-  .vibrant-theme .menu-item.mdc-button--raised,
-  .vibrant-theme .menu-item.mat-mdc-raised-button,
-  .vibrant-theme .menu-item {
-    background-color: var(--md-sys-color-primary) !important;
-    border-bottom: 2px solid $vibrant-gold;
-    color: var(--md-sys-color-on-primary) !important;
-  }
-
-  /* Temporary authoritative override removed: rely on emitted MD3 tokens for vibrant theme */
-
-  /* Very specific selector for material-raised menu buttons (matches live DOM classes) */
-  .menu-item.mat-mdc-raised-button.mat-unthemed.mat-mdc-button-base,
-  .menu-item.mat-mdc-button-base.mat-unthemed {
-    background-color: var(--md-sys-color-primary) !important;
-    border-bottom: 2px solid $vibrant-gold;
-    color: var(--md-sys-color-on-primary) !important;
   }
 
   // Star field gets more vibrant
@@ -159,6 +107,7 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
   // Vibrant app title with enhanced shimmer
   .app-title {
     background: linear-gradient(90deg, $pure-white, $vibrant-gold);
+    background-clip: text;
     background-clip: text;
     color: transparent;
     text-shadow: 0 0 20px rgb(255 204 1 / 60%);
@@ -178,6 +127,7 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
   // Make patriotic text more vibrant
   .text-patriotic {
     background: linear-gradient(90deg, $vibrant-navy, $vibrant-red);
+    background-clip: text;
     background-clip: text;
     color: transparent;
     font-weight: bold;

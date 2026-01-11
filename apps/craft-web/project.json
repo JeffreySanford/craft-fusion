@@ -80,7 +80,6 @@
           "mapbox-gl-language",
           "mapbox-gl-traffic",
           "mapbox-gl-traffic",
-          "debug",
           "turndown",
           "turndown-plugin-gfm"
         ]
@@ -132,18 +131,6 @@
       "executor": "@nx/angular:extract-i18n",
       "options": {
         "buildTarget": "craft-web:build"
-      }
-    }
-    ,
-    "check:styles": {
-      "executor": "@nrwl/workspace:run-commands",
-      "options": {
-        "commands": [
-          { "command": "pnpm run lint:styles" },
-          { "command": "pnpm run check:sass" },
-          { "command": "pnpm run check:contrast" }
-        ],
-        "parallel": false
       }
     }
   }

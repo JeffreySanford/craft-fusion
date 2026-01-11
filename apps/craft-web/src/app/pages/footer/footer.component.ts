@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Observable, Subscription, interval, of } from 'rxjs';
 import Chart from 'chart.js/auto';
 import { LoggerService, ServiceCallMetric } from '../../common/services/logger.service';
-import { ThemeService } from '../../services/theme.service';
 import { DataSimulationService } from '../../common/services/data-simulation.service';
 import { FooterStateService } from '../../common/services/footer-state.service';
 
@@ -33,8 +32,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   frameRateUpdateInterval: number | null = null;
   isAdmin = false;
   expanded = false;
-  currentTheme: string | null = null;
-  private themeSub?: Subscription;
 
   logoLinks = [
     { src: 'assets/images/compressed/nodejs-new-pantone-white.png', alt: 'Node.js' },
@@ -83,7 +80,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     private logger: LoggerService,
     private dataSimulationService: DataSimulationService,
     private footerStateService: FooterStateService,
-    private themeService: ThemeService,
   ) {
     this.appStartTime = performance.now();
     this.logger.info('Footer component initialized');
@@ -104,16 +100,8 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
       this.updateChartBorderColor();
     });
 
-    this.themeSub = this.themeService.currentTheme$.subscribe(t => {
-      this.currentTheme = t;
-    });
-
     // Explicitly provide component name for important logs
     this.logger.info('Footer component initialized', {}, 'FooterComponent');
-  }
-
-  cycleTheme(): void {
-    this.themeService.cycleTheme();
   }
 
   ngAfterViewInit() {

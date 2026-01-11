@@ -2,8 +2,8 @@
 @use "sass:color";
 
 .logger-display {
-  background: var(--cf-logger-bg, rgb(23 33 43 / 80%));
-  border: 1px solid rgb(var(--md-sys-color-on-surface-rgb, 255, 255, 255) / 10%);
+  background: rgb(23 33 43 / 80%);
+  border: 1px solid rgb(255 255 255 / 10%);
   border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
@@ -12,7 +12,7 @@
   overflow: hidden;
 
   .log-entries {
-    color: var(--md-sys-color-on-surface, #d1d5db);
+    color: #d1d5db;
     flex: 1;
     font-family: "Courier New", monospace;
     font-size: 14px;
@@ -44,7 +44,7 @@
     padding: 6px 10px;
 
     .log-time {
-      color: var(--md-sys-color-on-surface, #9ca3af);
+      color: #9ca3af;
       font-size: 0.85em;
       margin-right: 10px;
       white-space: nowrap;
@@ -67,22 +67,22 @@
       }
 
       &.error {
-        background: rgb(var(--md-sys-color-error-rgb, 239, 68, 68) / 20%);
+        background: rgb(var(--md-sys-color-error-rgb, 239, 68, 68) / 0.2);
         color: var(--md-sys-color-error, #ef4444);
       }
 
       &.warn {
-        background: rgb(var(--md-sys-color-warning-rgb, 245, 158, 11) / 20%);
+        background: rgb(var(--md-sys-color-warning-rgb, 245, 158, 11) / 0.2);
         color: var(--md-sys-color-warning, #fbbf24);
       }
 
       &.info {
-        background: rgb(var(--md-sys-color-primary-rgb, 59, 130, 246) / 20%);
+        background: rgb(var(--md-sys-color-primary-rgb, 59, 130, 246) / 0.2);
         color: var(--md-sys-color-primary, #3b82f6);
       }
 
       &.debug {
-        background: rgb(var(--md-sys-color-tertiary-rgb, 16, 185, 129) / 20%);
+        background: rgb(var(--md-sys-color-tertiary-rgb, 16, 185, 129) / 0.2);
         color: var(--md-sys-color-tertiary, #10b981);
       }
     }
@@ -114,7 +114,7 @@
 
   .empty-log {
     align-items: center;
-    color: var(--md-sys-color-on-surface, #9ca3af);
+    color: #9ca3af;
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -167,7 +167,7 @@
         margin-bottom: 0.25rem;
 
         .log-timestamp {
-          color: var(--md-sys-color-on-surface, #8b8b8b);
+          color: #8b8b8b;
           font-style: italic;
           font-weight: normal;
         }
@@ -182,9 +182,9 @@
         }
 
         .log-component {
-          background-color: rgb(var(--md-sys-color-on-surface-rgb, 255, 255, 255) / 10%);
+          background-color: rgb(255 255 255 / 10%);
           border-radius: 4px;
-          color: var(--md-sys-color-on-surface, #d9d9d9);
+          color: #d9d9d9;
           font-size: 0.75rem;
           font-weight: 500;
           padding: 0.1rem 0.4rem;
@@ -206,7 +206,7 @@
         overflow: auto;
 
         pre {
-          color: var(--md-sys-color-on-surface, #d9d9d9);
+          color: #d9d9d9;
           font-family: "Source Code Pro", monospace;
           font-size: 0.8rem;
           margin: 0;
@@ -217,7 +217,7 @@
 
     // Vibrant color schemes for different log levels
     .log-level-debug {
-      background-color: rgb(var(--md-sys-color-tertiary-rgb, 16, 185, 129) / 15%);
+      background-color: rgb(var(--md-sys-color-tertiary-rgb, 16, 185, 129) / 0.15);
       border-left-color: var(--md-sys-color-tertiary, #10b981);
 
       .log-level {
@@ -231,7 +231,7 @@
     }
 
     .log-level-info {
-      background-color: rgb(var(--md-sys-color-primary-rgb, 59, 130, 246) / 15%);
+      background-color: rgb(var(--md-sys-color-primary-rgb, 59, 130, 246) / 0.15);
       border-left-color: var(--md-sys-color-primary, #3b82f6);
 
       .log-level {
@@ -245,7 +245,7 @@
     }
 
     .log-level-warn {
-      background-color: rgb(var(--md-sys-color-warning-rgb, 245, 158, 11) / 15%);
+      background-color: rgb(var(--md-sys-color-warning-rgb, 245, 158, 11) / 0.15);
       border-left-color: var(--md-sys-color-warning, #fbbf24);
 
       .log-level {
@@ -259,7 +259,7 @@
     }
 
     .log-level-error {
-      background-color: rgb(var(--md-sys-color-error-rgb, 239, 68, 68) / 15%);
+      background-color: rgb(var(--md-sys-color-error-rgb, 239, 68, 68) / 0.15);
       border-left-color: var(--md-sys-color-error, #ef4444);
 
       .log-level {
@@ -274,8 +274,8 @@
 
     // Special styling for highlighted logs
     .log-highlighted {
-      animation: pulseHighlight 2s infinite;
-      background-color: rgb(var(--md-sys-color-secondary-rgb, 255, 215, 0) / 15%);
+    animation: pulseHighlight 2s infinite;
+    background-color: rgb(var(--md-sys-color-secondary-rgb, 255, 215, 0) / 0.15);
       border-left-color: var(--md-sys-color-secondary, #ffd700);
 
       .log-level {
@@ -293,7 +293,7 @@
 
     // Special styling for security-related logs
     .log-security {
-      background-color: rgb(var(--md-sys-color-error-rgb, 239, 68, 68) / 20%);
+      background-color: rgb(var(--md-sys-color-error-rgb, 239, 68, 68) / 0.2);
       border-left-color: var(--md-sys-color-error, #ef4444);
 
       .log-level {
@@ -308,7 +308,7 @@
 
     // Special styling for performance-related logs
     .log-performance {
-      background-color: rgb(var(--md-sys-color-primary-rgb, 0, 31, 84) / 15%);
+      background-color: rgb(var(--md-sys-color-primary-rgb, 0, 31, 84) / 0.15);
       border-left-color: var(--md-sys-color-primary, #001f54);
 
       .log-level {
@@ -387,12 +387,12 @@
 
   /* WebKit fallback for browsers without scrollbar-color/width support */
   &::-webkit-scrollbar {
-    height: 8px;
     width: 8px;
+    height: 8px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: rgb(255 255 255 / 20%);
+    background-color: rgba(255, 255, 255, 0.2);
     border-radius: 6px;
   }
 

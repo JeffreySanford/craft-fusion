@@ -33,9 +33,7 @@ body {
 }
 
 /* Create a root stacking context */
-/* stylelint-disable-next-line selector-id-pattern */
 #root,
-/* stylelint-disable-next-line selector-id-pattern */
 #__next {
   isolation: isolate;
 }

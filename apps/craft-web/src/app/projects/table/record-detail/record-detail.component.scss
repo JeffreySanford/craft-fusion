@@ -1,14 +1,14 @@
 @use "sass:map";
 
-$md3-primary: var(--md-sys-color-primary, #6750a4);
-$md3-secondary: var(--md-sys-color-secondary, #625b71);
-$md3-surface: var(--md-sys-color-surface, #f5f5fa);
-$md3-background: var(--md-sys-color-background, #f5f5fa);
-$md3-outline: var(--md-sys-color-outline, #cac4d0);
-$md3-on-primary: var(--md-sys-color-on-primary, #fff);
-$md3-on-surface: var(--md-sys-color-on-surface, #1c1b1f);
-$md3-expressive: var(--md-sys-color-expressive, #ffb300);
-$md3-shadow: var(--md-sys-shadow, rgb(103 80 164 / 8%));
+$md3-primary: #6750a4;
+$md3-secondary: #625b71;
+$md3-surface: #f5f5fa;
+$md3-background: #f5f5fa;
+$md3-outline: #cac4d0;
+$md3-on-primary: #fff;
+$md3-on-surface: #1c1b1f;
+$md3-expressive: #ffb300;
+$md3-shadow: rgb(103 80 164 / 8%);
 
 .detail-container {
   align-items: flex-start;
@@ -148,9 +148,9 @@ mat-progress-spinner {
 }
 
 .expressive {
-  background: linear-gradient(90deg, var(--md-sys-color-expressive-start, #ffe082) 0%, var(--md-sys-color-expressive-end, #ffd54f) 100%);
+  background: linear-gradient(90deg, #ffe082 0%, #ffd54f 100%);
   border-radius: 8px;
-  box-shadow: 0 1px 4px rgb(var(--md-sys-color-expressive-rgb, 255, 179, 0) / 8%);
+  box-shadow: 0 1px 4px rgb(255 179 0 / 8%);
   color: $md3-expressive;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -175,7 +175,7 @@ mat-progress-spinner {
 }
 
 .debug-warning {
-  color: var(--md-sys-color-error, #ef4444);
+  color: red;
   font-weight: bold;
   margin-top: 1em;
 }
@@ -194,14 +194,14 @@ mat-progress-spinner {
 }
 
 .icon-green {
-  color: var(--md-sys-color-tertiary, #10b981);
+  color: green;
 }
 
 .icon-bank {
-  color: var(--md-sys-color-primary, #002868);
+  color: #002868;
   font-size: 24px;
 }
 
 .star-icon {
-  color: var(--md-sys-color-secondary, #ffd700);
+  color: gold;
 }

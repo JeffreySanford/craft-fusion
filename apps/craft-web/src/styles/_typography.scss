@@ -1,10 +1,9 @@
-@use "sass:map";
-@use "sass:meta";
 @use "variables" as vars;
+@use "sass:map";
+@use "@angular/material" as mat;
 
-// Google Fonts are loaded from index.html to satisfy Sass @use ordering and stylelint.
-
-// @use '@angular/material' as mat;
+// Import Google Fonts (MD3 recommends Roboto Flex plus our book-specific fonts)
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:wght@300;400;500;700&family=Merriweather:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Source+Sans+Pro:wght@300;400;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap");
 
 // Font families
 $font-families: (
@@ -221,7 +220,7 @@ $type-scale: (
 }
 
 // Book-specific typography classes
-%book-body-text {
+.book-body-text {
   font-family: map.get($book-fonts, body-text);
   font-size: 1.125em;
   font-weight: 400;
@@ -229,11 +228,7 @@ $type-scale: (
   line-height: 1.7;
 }
 
-.book-body-text {
-  @extend %book-body-text;
-}
-
-%book-chapter-title {
+.book-chapter-title {
   font-family: map.get($book-fonts, chapter-heading);
   font-size: 2.5em;
   font-weight: 700;
@@ -242,11 +237,7 @@ $type-scale: (
   margin-bottom: 1em;
 }
 
-.book-chapter-title {
-  @extend %book-chapter-title;
-}
-
-%book-section-title {
+.book-section-title {
   font-family: map.get($book-fonts, section-heading);
   font-size: 1.75em;
   font-weight: 600;
@@ -256,16 +247,8 @@ $type-scale: (
   margin-top: 1.5em;
 }
 
-.book-section-title {
-  @extend %book-section-title;
-}
-
-%book-quote {
-  /* Fallback for browsers that don't support color-mix */
-  background-color: var(--md-sys-color-tertiary, transparent);
-  @supports (background-color: color-mix(in srgb, var(--md-sys-color-tertiary) 10%, transparent)) {
-    background-color: color-mix(in srgb, var(--md-sys-color-tertiary) 10%, transparent);
-  }
+.book-quote {
+  background-color: color-mix(in srgb, var(--md-sys-color-tertiary) 10%, transparent);
   border-left: 4px solid var(--md-sys-color-tertiary);
   font-family: map.get($book-fonts, quotes);
   font-size: 1.25em;
@@ -275,40 +258,32 @@ $type-scale: (
   padding: 1em 2em;
 }
 
-.book-quote {
-  @extend %book-quote;
-}
-
-%book-footnote {
+.book-footnote {
   color: var(--md-sys-color-on-surface-variant);
   font-family: map.get($book-fonts, footnotes);
   font-size: 0.875em;
   line-height: 1.5;
 }
 
-.book-footnote {
-  @extend %book-footnote;
-}
-
 // Apply different fonts for different content types
 .chapter-content {
-  @extend %book-body-text;
+  @extend .book-body-text;
 
   h1 {
-    @extend %book-chapter-title;
+    @extend .book-chapter-title;
   }
 
   h2,
   h3 {
-    @extend %book-section-title;
+    @extend .book-section-title;
   }
 
   blockquote {
-    @extend %book-quote;
+    @extend .book-quote;
   }
 
   .footnote {
-    @extend %book-footnote;
+    @extend .book-footnote;
   }
 }
 

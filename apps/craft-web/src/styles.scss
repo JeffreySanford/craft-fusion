@@ -14,6 +14,3 @@
 @use "layout" as layout;
 @use "responsive" as resp;
 @use "utilities" as util;
-
-// MD3 token overrides (light/dark theme classes)
-@use "md3-tokens-overrides" as md3Overrides;

@@ -3,20 +3,27 @@
 
 // Color tokens
 $md-sys-color: (
+  
   primary: #002868,
-  on-primary: #fff,
+  on-primary: #ffffff,
   primary-container: #d6e2ff,
   on-primary-container: #001849,
+  
+  
   surface: #fdfbff,
   on-surface: #1b1b1f,
   surface-variant: #e1e2ec,
   on-surface-variant: #44474f,
+  
+  
   state-layers: (
     hover-opacity: 0.08,
     focus-opacity: 0.12,
     pressed-opacity: 0.12,
     dragged-opacity: 0.16,
   ),
+
+  
   typography: (
     display-large: (
       font-family: "Roboto Flex, sans-serif",
@@ -25,37 +32,6 @@ $md-sys-color: (
       font-weight: 400,
       letter-spacing: -0.25px,
     ),
+      
   )
 );
-
-@use "sass:map";
-@use "sass:meta";
-
-// Recursively emit CSS custom properties from a Sass map.
-@mixin emit-css-vars($map, $prefix: "") {
-  @each $k, $v in $map {
-    $name: null;
-    @if $prefix == "" {
-      $name: $k;
-    } @else {
-      $name: #{$prefix}-#{$k};
-    }
-
-    @if meta.type-of($v) == "map" {
-      @include emit-css-vars($v, $name);
-    } @else {
-      #{"--md-sys-#{$name}"}: #{$v};
-    }
-  }
-}
-
-/* Export MD3 tokens as CSS custom properties on :root for runtime theming support */
-:root {
-  @include emit-css-vars($md-sys-color);
-}
-
-/* Example: consumers can override by applying theme class to body */
-
-body.dark-theme {
-  /* future: generate dark overrides here when dark map exists */
-}
