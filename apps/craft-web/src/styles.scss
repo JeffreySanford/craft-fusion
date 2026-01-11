@@ -1,16 +1,16 @@
 // Main styles entry point for Craft Fusion
 
-// Import global variables and settings with explicit namespaces
-@use 'variables' as vars;
-@use 'themes' as themes;
-@use 'typography' as type;
-@use 'transition-variables' as trans;
+// Import global variables and settings
+@import 'variables';
+@import 'themes';
+@import 'typography';
+@import 'transition-variables';
 
 // Reset and base styles
-@use 'reset' as reset;
-@use 'scrollbar' as scrollbar;
+@import 'reset';
+@import 'scrollbar';
 
 // Layout and utility styles
-@use 'layout' as layout;
-@use 'responsive' as resp;
-@use 'utilities' as util;
+@import 'layout';
+@import 'responsive';
+@import 'utilities';

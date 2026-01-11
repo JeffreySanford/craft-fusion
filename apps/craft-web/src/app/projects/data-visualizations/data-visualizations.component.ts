@@ -611,20 +611,19 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   
   // Helper function to convert hex color to RGB
   private hexToRgb(hex: string = '#000000'): string {
-    if (!hex || typeof hex !== 'string') hex = '#000000';
-    // Remove leading # if present
-    const cleaned = hex.startsWith('#') ? hex.slice(1) : hex;
-
-    // Handle shorthand hex like 'abc' -> 'aabbcc'
-    const full = cleaned.length === 3
-      ? cleaned.split('').map(c => c + c).join('')
-      : cleaned.padEnd(6, '0').slice(0, 6);
-
-    // Parse the hex values safely
-    const r = parseInt(full.substring(0, 2), 16) || 0;
-    const g = parseInt(full.substring(2, 4), 16) || 0;
-    const b = parseInt(full.substring(4, 6), 16) || 0;
-
+    // Remove # if present
+    hex = hex.replace('#', '');
+    
+    // Handle shorthand hex
+    if (hex.length === 3) {
+      hex = hex.charAt(0).repeat(2) + hex.charAt(1).repeat(2) + hex.charAt(2).repeat(2);
+    }
+    
+    // Parse the hex values
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    
     return `${r}, ${g}, ${b}`;
   }
   

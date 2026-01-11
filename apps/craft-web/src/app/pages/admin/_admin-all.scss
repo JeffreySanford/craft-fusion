@@ -338,7 +338,6 @@ $flag-stars-twinkle: 2s;
   overflow: hidden;
   box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.2);
   background-color: rgba(255, 255, 255, 0.05);
-  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -399,5 +398,3 @@ $flag-stars-twinkle: 2s;
     left: 0;
     height: 6px;
     border-radius: 3px;
-  }
-}
