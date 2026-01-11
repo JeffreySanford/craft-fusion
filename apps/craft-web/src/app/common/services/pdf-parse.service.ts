@@ -16,8 +16,7 @@ export class PdfParseService {
     for (let pageIndex = 1; pageIndex <= pdfDocument.numPages; pageIndex++) {
       const page = await pdfDocument.getPage(pageIndex);
       const text = await page.getTextContent();
-      const textObj: any = text;
-      textContent += (textObj.items || []).map((item: any) => item.str).join(' ');
+      textContent += text.items.map(item => (item as unknown).str).join(' ');
     }
 
     return this.turndownWrapper.turndownHtml(textContent);

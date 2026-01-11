@@ -35,8 +35,7 @@ export class MaterialIconsComponent {
   getTileClass(index: number): string {
     const classes = ['red-tile', 'blue-tile', 'white-tile'];
     console.log('index', index);
-    const cls: string = classes.length ? (classes[index % classes.length] as string) : 'white-tile';
-    console.log('color', cls);
-    return cls;
+    console.log('color', classes[index % classes.length]);
+    return classes[index % classes.length];
   }
 }

@@ -11,7 +11,7 @@ export class TurndownWrapperService {
   }
 
   turndownWithOptions(html: string, options: { keepReplacement?: TurndownKeepReplacement } = {}): string {
-    const turndown = new TurndownService(options as any);
+    const turndown = new TurndownService(options as unknown);
     return turndown.turndown(html);
   }
 }

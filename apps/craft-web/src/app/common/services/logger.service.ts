@@ -523,20 +523,19 @@ export class LoggerService {
       // Look for class name in stack trace - improved detection pattern
       for (let i = 3; i < Math.min(10, stackLines.length); i++) { // Check more lines but limit for performance
         const line = stackLines[i];
-        if (!line) continue;
-
+        
         // Enhanced pattern matching to detect components and services
         const componentMatch = line.match(/at\s+(\w+(?:Component|Service|Guard|Directive|Pipe|Resolver))\./);
         if (componentMatch && componentMatch[1]) {
           return componentMatch[1];
         }
-
+        
         // Try to match class methods with 'this' context
         const methodMatch = line.match(/at\s+([A-Z]\w*)\.((?:\w+))/);
         if (methodMatch && methodMatch[1]) {
           return methodMatch[1]; // Return class name if found
         }
-
+        
         // Last resort: Try to extract file name for context
         const fileMatch = line.match(/\((.+?)(?:\.ts|\.[jt]sx?):(\d+):(\d+)\)$/);
         if (fileMatch && fileMatch[1]) {
@@ -572,32 +571,32 @@ export class LoggerService {
     
     try {
       // Make a copy to avoid modifying the original object
-      const sanitized = JSON.parse(JSON.stringify(details)) as Record<string, any>;
-
+      const sanitized = JSON.parse(JSON.stringify(details));
+      
       // List of sensitive field names to mask
       const sensitiveFields = ['password', 'token', 'secret', 'key', 'authorization', 'auth'];
-
+      
       // Helper to sanitize an object recursively
-      const sanitizeObject = (obj: Record<string, any>) => {
+      const sanitizeObject = (obj: unknown) => {
         if (!obj || typeof obj !== 'object') return;
-
-        for (const key of Object.keys(obj)) {
-          const lowerKey = String(key).toLowerCase();
-
+        
+        Object.keys(obj).forEach(key => {
+          const lowerKey = key.toLowerCase();
+          
           // If sensitive field, mask the value
           if (sensitiveFields.some(field => lowerKey.includes(field))) {
             obj[key] = '[REDACTED]';
           } 
           // Recurse if object or array
-          else if (obj[key] && typeof obj[key] === 'object') {
-            sanitizeObject(obj[key] as Record<string, any>);
+          else if (typeof obj[key] === 'object' && obj[key] !== null) {
+            sanitizeObject(obj[key]);
           }
-        }
+        });
       };
-
+      
       sanitizeObject(sanitized);
       return sanitized;
-
+      
     } catch (error) {
       // If any error during sanitization, return original but add warning
       return { original: details, warning: 'Could not sanitize log details' };

@@ -12,8 +12,7 @@ export class MapboxService {
 
   constructor() {
     // Set Mapbox access token using Object.assign to avoid esbuild import mutation
-    const token = (environment as any)?.mapboxToken ?? '';
-    Object.assign(mapboxgl, { accessToken: token });
+    Object.assign(mapboxgl, { accessToken: (environment as unknown).mapboxToken });
   }
 
   initializeMap(container: string, center: [number, number], zoom: number): mapboxgl.Map {

@@ -36,23 +36,22 @@ export class UserActivityService {
   private initRouterTracking(): void {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
-    ).subscribe((evt) => {
-      const event = evt as NavigationEnd;
+    ).subscribe((event: unknown) => {
       const now = Date.now();
-
+      
       // Calculate duration for previous page
       if (this.currentPage) {
-        this.pageViewDurations[this.currentPage] =
+        this.pageViewDurations[this.currentPage] = 
           (this.pageViewDurations[this.currentPage] || 0) + (now - this.lastActivityTime);
       }
-
+      
       this.lastActivityTime = now;
       this.currentPage = event.urlAfterRedirects;
-
+      
       this.trackActivity('pageview', {
         page: event.urlAfterRedirects
       });
-
+      
       this.logger.info(`User navigated to ${event.urlAfterRedirects}`);
     });
   }
@@ -68,12 +67,12 @@ export class UserActivityService {
     });
     
     // Track scrolls (debounced)
-    let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
+    let scrollTimeout: unknown;
     document.addEventListener('scroll', () => {
       if (scrollTimeout) {
-        clearTimeout(scrollTimeout as unknown as number);
+        clearTimeout(scrollTimeout);
       }
-
+      
       scrollTimeout = setTimeout(() => {
         this.trackActivity('scroll', {
           position: window.scrollY,
@@ -83,14 +82,14 @@ export class UserActivityService {
     });
     
     // Track form inputs (debounced)
-    let inputTimeout: ReturnType<typeof setTimeout> | null = null;
+    let inputTimeout: unknown;
     document.addEventListener('input', (event) => {
       if (inputTimeout) {
-        clearTimeout(inputTimeout as unknown as number);
+        clearTimeout(inputTimeout);
       }
-
+      
       inputTimeout = setTimeout(() => {
-        const target = event.target as HTMLInputElement | null;
+        const target = event.target as HTMLInputElement;
         this.trackActivity('input', {
           target: this.getElementDescription(target),
           page: this.currentPage
@@ -99,7 +98,7 @@ export class UserActivityService {
     });
   }
   
-  private getElementDescription(element: HTMLElement | null): string {
+  private getElementDescription(element: HTMLElement): string {
     if (!element) return 'unknown';
     
     // Try to get a useful description of the element

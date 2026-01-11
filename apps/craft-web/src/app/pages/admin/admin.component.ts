@@ -21,9 +21,8 @@ import { SocketClientService } from '../../common/services/socket-client.service
       state('expanded', style({ height: '*', opacity: 1 })),
       transition('expanded <=> collapsed', animate('300ms cubic-bezier(0.4, 0.0, 0.2, 1)'))
     ])
-  ]
-})
-export class AdminComponent implements OnInit {
+  })
+  export class AdminComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('serviceMetricsChart') serviceMetricsChartRef?: ElementRef;
   @ViewChild('systemMetricsChart') systemMetricsChartRef?: ElementRef;

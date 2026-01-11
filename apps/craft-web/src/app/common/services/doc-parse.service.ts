@@ -42,10 +42,6 @@ export class DocParseService {
     }
   }
 
-  private isElement(obj: unknown): obj is Record<string, any> {
-    return typeof obj === 'object' && obj !== null;
-  }
-
   constructor(private readonly turndownWrapper: TurndownWrapperService) { }
 
   async parseDoc(file: File): Promise<string> {
@@ -61,20 +57,20 @@ export class DocParseService {
       },
       transformDocument: (element: unknown) => {
         // Only process paragraphs
-        if (!this.isElement(element) || element['type'] !== 'paragraph') {
+        if (element.type !== 'paragraph') {
           return element;
         }
 
         // Extract text and log structure
         const text = this.extractText(element);
-        this.log('Paragraph:', { text, type: element['type'] });
+        this.log('Paragraph:', { text, type: element.type });
 
         // Check for myth section start
         const mythMatch = this.detectMythSection(text);
         if (mythMatch) {
           const {verse, content} = mythMatch;
           console.log('Found myth:', {verse, content});
-
+          
           return {
             type: 'html',
             value: `
@@ -116,14 +112,13 @@ export class DocParseService {
   }
 
   private getParagraphText(element: unknown): string {
-    if (!this.isElement(element) || !Array.isArray(element['children'])) return '';
+    if (!element.children) return '';
 
-    return element['children']
+    return element.children
       .map((child: unknown) => {
-        if (!this.isElement(child)) return '';
-        this.log('Child node:', child['type']);
-        if (child['type'] === 'text') return child['value'] || '';
-        if (child['type'] === 'hyperlink') return this.getParagraphText(child);
+        this.log('Child node:', child.type);
+        if (child.type === 'text') return child.value;
+        if (child.type === 'hyperlink') return this.getParagraphText(child);
         return '';
       })
       .join('')
@@ -166,22 +161,20 @@ export class DocParseService {
   private extractFullText(element: unknown): string {
     if (!element) return '';
     if (typeof element === 'string') return element;
-    if (!this.isElement(element)) return '';
-
-    const text = element['value'] || '';
-    const childTexts = Array.isArray(element['children']) ? element['children'].map((c: unknown) => this.extractFullText(c)) : [];
-
+    
+    const text = element.value || '';
+    const childTexts = element.children?.map((c: unknown) => this.extractFullText(c)) || [];
+    
     return [text, ...childTexts].filter(t => t).join(' ').trim();
   }
 
   private extractText(element: unknown): string {
     if (!element) return '';
     if (typeof element === 'string') return element;
-    if (!this.isElement(element)) return '';
 
-    let text = element['value'] || '';
-    if (Array.isArray(element['children'])) {
-      element['children'].forEach((child: unknown) => {
+    let text = element.value || '';
+    if (element.children) {
+      element.children.forEach((child: unknown) => {
         text += this.extractText(child);
       });
     }
@@ -242,7 +235,7 @@ export class DocParseService {
   }
 
   private transformDocument(element: unknown) {
-    if (!this.isElement(element) || element['type'] !== 'paragraph') {
+    if (element.type !== 'paragraph') {
       return element;
     }
 

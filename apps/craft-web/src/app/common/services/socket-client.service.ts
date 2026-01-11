@@ -65,8 +65,7 @@ export class SocketClientService implements OnDestroy {
 
   private handleSocketError(error: unknown): void {
     this.connectionStatus.next(false);
-    const message = (error && typeof error === 'object' && 'message' in error && typeof (error as any).message === 'string') ? (error as any).message : String(error);
-    console.error('Socket error', { error: message });
+    console.error('Socket error', { error: error?.message || error });
   }
 
   private attemptReconnection(): void {
@@ -91,8 +90,8 @@ export class SocketClientService implements OnDestroy {
   }
 
   private extractNamespace(url: string): string {
-    const parts = url.split('/');
-    return parts.length > 3 ? (parts[3] ?? 'default') : 'default';
+    return url.includes('/') && url.split('/').length > 3 ?
+      url.split('/')[3] : 'default';
   }
 
   private closeSocket(): void {

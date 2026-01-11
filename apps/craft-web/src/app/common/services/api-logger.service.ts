@@ -51,8 +51,8 @@ export class ApiLoggerService {
     const url = entry.request.url;
     const time = entry.responseTime.toFixed(1);
     
-    if (typeof status !== 'number' || status >= 400) {
-      this.logger.warn(`API ${method} ${url} failed with status ${status ?? 'unknown'} (${time}ms)`);
+    if (!status || status >= 400) {
+      this.logger.warn(`API ${method} ${url} failed with status ${status || 'unknown'} (${time}ms)`);
     } else {
       this.logger.debug(`API ${method} ${url} completed with status ${status} (${time}ms)`);
     }
@@ -101,7 +101,7 @@ export class ApiLoggerService {
     const timestamp = Date.now();
     const responseTime = Math.floor(Math.random() * 500) + 5; // 5-505ms
     const statusOptions = [200, 200, 200, 200, 201, 204, 400, 404, 500]; // Weighted to favor success
-    const status = statusOptions[Math.floor(Math.random() * statusOptions.length)] ?? 500;
+    const status = statusOptions[Math.floor(Math.random() * statusOptions.length)];
     
     return {
       timestamp,

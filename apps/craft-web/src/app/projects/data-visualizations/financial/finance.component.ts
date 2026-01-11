@@ -441,7 +441,6 @@ export class FinanceComponent implements OnInit, OnChanges {
             .attr('clip-path', `url(#${clipId})`)
             .style('text-shadow', '0 0 5px rgba(255,255,255,1), 0 0 5px rgba(255,255,255,1)')
             .text(phase.label as string);
-          }
       });
     });
     
@@ -712,8 +711,8 @@ export class FinanceComponent implements OnInit, OnChanges {
         
       if (stockData && stockData.length > 1) {
         const stockDataNonNull = stockData as { date: Date; close: number }[];
-        const firstPrice = +stockDataNonNull[0]!.close;
-        const lastPrice = +stockDataNonNull[stockDataNonNull.length - 1]!.close;
+        const firstPrice = +stockDataNonNull[0].close;
+        const lastPrice = +stockDataNonNull[stockDataNonNull.length - 1].close;
         const percentChange = ((lastPrice - firstPrice) / firstPrice) * 100;
         
         results.push({
@@ -1136,10 +1135,7 @@ export class FinanceComponent implements OnInit, OnChanges {
 
   // Add method to better format market phase labels
   formatMarketPhaseLabel(phase: unknown): string {
-    if (!phase || typeof phase !== 'object') return 'Unknown Market';
-    const p = phase as { type?: string };
-    const type = typeof p.type === 'string' ? p.type : 'unknown';
-    return `${type.charAt(0).toUpperCase() + type.slice(1)} Market`;
+    return `${phase.type.charAt(0).toUpperCase() + phase.type.slice(1)} Market`;
   }
 
   // Update the status position function for consistent placement
