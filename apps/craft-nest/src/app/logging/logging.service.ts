@@ -106,12 +106,7 @@ export class LoggingService {
   private addLog(level: string, message: string, metadata?: any): void {
     // Sanitize metadata to prevent sensitive data leakage
     const sanitizedMetadata = metadata ? this.sanitizeMetadata(metadata) : undefined;
-    const suppressConsole = Boolean(sanitizedMetadata?.suppressConsole);
-
-    if (suppressConsole && sanitizedMetadata) {
-      delete sanitizedMetadata.suppressConsole;
-    }
-
+    
     // Create log entry
     const logEntry: LogEntry = {
       timestamp: new Date(),
@@ -119,7 +114,7 @@ export class LoggingService {
       message,
       metadata: sanitizedMetadata
     };
-
+    
     // Add to internal logs array with limit
     this.logs.unshift(logEntry);
     if (this.logs.length > this.MAX_LOGS) {
@@ -127,7 +122,7 @@ export class LoggingService {
     }
 
     // Output to console with appropriate method
-    this.outputToConsole(level, message, sanitizedMetadata, suppressConsole);
+    this.outputToConsole(level, message, sanitizedMetadata);
   }
 
   /**
@@ -200,10 +195,9 @@ export class LoggingService {
     };
   }
 
-  private outputToConsole(level: string, message: string, metadata?: any, suppressConsole = false): void {
+  private outputToConsole(level: string, message: string, metadata?: any): void {
     const timestamp = new Date().toISOString();
     const prefix = `[${timestamp}] [${level.toUpperCase()}]`;
-    if (suppressConsole) return;
     // Use original console methods to avoid recursion
     switch (level) {
       case 'debug':

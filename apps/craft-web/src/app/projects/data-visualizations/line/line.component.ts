@@ -5,15 +5,6 @@ import { LineChartData } from '../data-visualizations.interfaces';
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 
-type LineSeriesKey = Exclude<keyof LineChartData, 'date'>;
-
-interface LegendEntry {
-  name: string;
-  color: string;
-  seriesKey: LineSeriesKey;
-  path: d3.Selection<SVGPathElement, LineChartData[], SVGGElement, unknown>;
-}
-
 @Component({
   selector: 'app-line-chart',
   templateUrl: './line.component.html',
@@ -31,12 +22,11 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
   chartTitle: string = 'American Space Achievements';
   chartSubtitle: string = 'Advancing the Final Frontier';
 
-  seriesLabels = ['NASA Missions', 'Astronaut Hours in Space', 'Space Innovations'];
-  seriesAccessors: Array<(d: LineChartData) => number> = [
-    d => d.series1,
-    d => d.series2,
-    d => d.series3,
-  ];
+  seriesNames = {
+    series1: 'NASA Missions',
+    series2: 'Astronaut Hours in Space',
+    series3: 'Space Innovations',
+  };
 
   colors = ['var(--md-sys-color-primary, #B22234)', 'var(--md-sys-color-on-primary, #FFFFFF)', 'var(--md-sys-color-secondary, #3C3B6E)'];
 
@@ -144,16 +134,6 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
 
     const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
-    const defs = svg.append('defs');
-    const clipId = `line-clip-${Math.random().toString(36).slice(2, 8)}`;
-
-    defs
-      .append('clipPath')
-      .attr('id', clipId)
-      .append('rect')
-      .attr('width', width)
-      .attr('height', height);
-
     const titleFontSize = Math.max(containerWidth * 0.022, isFullscreen ? 22 : isCompact ? 14 : 16);
     const subtitleFontSize = Math.max(containerWidth * 0.016, isFullscreen ? 18 : 14);
     const axisFontSize = Math.max(containerWidth * 0.011, isFullscreen ? 14 : isCompact ? 10 : 11);
@@ -190,7 +170,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       .line<LineChartData>()
       .x((d: LineChartData) => x(d.date))
       .y((d: LineChartData) => y(d.series1))
-      .curve(d3.curveMonotoneX);
+      .curve(d3.curveMonotoneX);                  
 
     const line2 = d3
       .line<LineChartData>()
@@ -203,12 +183,6 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       .x((d: LineChartData) => x(d.date))
       .y((d: LineChartData) => y(d.series3))
       .curve(d3.curveMonotoneX);
-
-    const seriesSpecs: Array<{ lineFunc: (d: LineChartData[]) => string | null; def: { key: LineSeriesKey; name: string; accessor: (d: LineChartData) => number }; color: string }> = [
-      { lineFunc: line1, def: { key: 'series1', name: 'NASA Missions', accessor: d => d.series1 }, color: this.colors[0] as string },
-      { lineFunc: line2, def: { key: 'series2', name: 'Astronaut Hours in Space', accessor: d => d.series2 }, color: this.colors[1] as string },
-      { lineFunc: line3, def: { key: 'series3', name: 'Space Innovations', accessor: d => d.series3 }, color: this.colors[2] as string },
-    ];
 
     const xDomain = d3.extent(this.data, d => d.date) as [Date, Date];
     x.domain(xDomain);
@@ -296,54 +270,20 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       .style('stroke', 'rgba(255, 255, 255, 0.05)')
       .style('stroke-dasharray', '2,2');
 
-    const legendEntries: LegendEntry[] = [];
-    const baseStrokeWidth = isFullscreen ? 3 : 2;
-    const hoverStrokeWidth = isFullscreen ? 5 : 3;
-    const defaultStrokeOpacity = 0.92;
-    const fadedStrokeOpacity = 0.25;
+    const drawLine = (lineFunc: (d: LineChartData[]) => string | null, data: LineChartData[], color: string, index: number) => {
+      const seriesKey = `series${index + 1}`;
+      const seriesName = this.seriesNames[seriesKey as keyof typeof this.seriesNames] || seriesKey;
 
-    const highlightLines = (activeName: string | null): void => {
-      legendEntries.forEach(entry => {
-        const isActive = activeName === entry.name;
-        entry.path
-          .transition()
-          .duration(200)
-          .attr('stroke-width', isActive ? hoverStrokeWidth : baseStrokeWidth)
-          .attr('stroke-opacity', isActive || !activeName ? defaultStrokeOpacity : fadedStrokeOpacity);
-      });
-    };
-
-    const drawLine = (
-      lineFunc: (d: LineChartData[]) => string | null,
-      data: LineChartData[],
-      color: string,
-      seriesDef: { key: LineSeriesKey; name: string; accessor: (d: LineChartData) => number },
-      seriesIndex: number,
-    ) => {
-      const { key: seriesKey, name: seriesName, accessor } = seriesDef;
       const animDuration = Math.min(Math.max(width / 3, 500), 1500);
-
-      const gradientId = `line-gradient-${seriesKey}-${Math.floor(Math.random() * 10000)}`;
-      const gradient = defs
-        .append('linearGradient')
-        .attr('id', gradientId)
-        .attr('x1', '0%')
-        .attr('y1', '0%')
-        .attr('x2', '0%')
-        .attr('y2', '100%');
-
-      gradient.append('stop').attr('offset', '0%').attr('stop-color', color).attr('stop-opacity', 0.45);
-      gradient.append('stop').attr('offset', '100%').attr('stop-color', color).attr('stop-opacity', 0);
 
       const path = g
         .append('path')
         .datum(data)
         .attr('fill', 'none')
         .attr('stroke', color)
-        .attr('stroke-width', baseStrokeWidth)
+        .attr('stroke-width', isFullscreen ? 3 : 2)
         .attr('stroke-linejoin', 'round')
         .attr('stroke-linecap', 'round')
-        .attr('stroke-opacity', defaultStrokeOpacity)
         .attr('class', 'line')
         .attr('d', (d: LineChartData[]) => lineFunc(d) as string);
 
@@ -355,18 +295,19 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
           .area<LineChartData>()
           .x(d => x(d.date))
           .y0(height)
-          .y1(d => y(accessor(d)))
+          .y1(d => y(d[seriesKey as keyof LineChartData] as number))
           .curve(d3.curveMonotoneX);
 
         g.append('path')
           .datum(data)
           .attr('class', 'area')
-          .attr('fill', `url(#${gradientId})`)
+          .attr('fill', color)
+          .attr('fill-opacity', 0.1)
           .attr('d', (d: LineChartData[]) => areaGenerator(d) as string)
-          .attr('clip-path', `url(#${clipId})`)
+          .attr('clip-path', 'url(#clip)')
           .style('opacity', 0)
           .transition()
-          .delay(animDuration * 0.4)
+          .delay(animDuration * 0.5)                                       
           .duration(animDuration * 0.8)
           .style('opacity', 1);
       }
@@ -374,14 +315,14 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       const pointSize = Math.max(Math.min((width + height) / 300, 7), 3);
 
       const circles = g
-        .selectAll(`.dot-series${seriesIndex + 1}`)
+        .selectAll(`.dot-series${index + 1}`)
         .data(data as LineChartData[])
         .enter()
         .append('circle')
-        .attr('class', `dot-series${seriesIndex + 1}`)
+        .attr('class', `dot-series${index + 1}`)
         .attr('cx', (d: LineChartData) => x(d.date))
-        .attr('cy', (d: LineChartData) => y(accessor(d)))
-        .attr('r', 0)
+        .attr('cy', (d: LineChartData) => y(d[seriesKey as keyof LineChartData] as number))
+        .attr('r', 0)                                     
         .attr('fill', color)
         .attr('stroke', 'var(--md-sys-color-on-primary, #fff)')
         .attr('stroke-width', 1)
@@ -403,13 +344,6 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
         .duration(300)
         .attr('r', pointSize);
 
-      legendEntries.push({
-        name: seriesName,
-        color,
-        seriesKey,
-        path: path as unknown as LegendEntry['path'],
-      });
-
       circles
         .on('mouseover', (event: MouseEvent) => {
           const target = event.target as SVGCircleElement;
@@ -427,7 +361,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
           this.tooltip
             .html(
               `
-          <div class="tooltip-title series-${seriesIndex}">${data.seriesName}</div>
+          <div class="tooltip-title series-${index}">${data.seriesName}</div>
           <div>Date: <strong>${date}</strong></div>
           <div>Value: <strong>${value}</strong></div>
         `,
@@ -438,7 +372,10 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
           this.renderer.setStyle(target, 'r', pointSize * 1.5 + 'px');
           this.renderer.setStyle(target, 'opacity', '1');
 
-          highlightLines(data.seriesName);
+          g.selectAll(`.line`)
+            .filter((lineData: unknown, i: number) => i === index)
+            .attr('stroke-width', isFullscreen ? 5 : 3)
+            .attr('stroke-opacity', 1);
         })
         .on('mouseout', (event: MouseEvent) => {
           this.tooltip.transition().duration(500).style('opacity', 0);
@@ -447,72 +384,40 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
           this.renderer.setStyle(target, 'r', pointSize + 'px');
           this.renderer.setStyle(target, 'opacity', '0.7');
 
-          highlightLines(null);
+          g.selectAll(`.line`)
+            .attr('stroke-width', isFullscreen ? 3 : 2)
+            .attr('stroke-opacity', 0.9);
         });
     };
 
-    seriesSpecs.forEach((spec, index) => {
-      drawLine(spec.lineFunc, this.data, spec.color, spec.def, index);
-    });
+    drawLine(line1, this.data, this.colors[0] as string, 0);
+    drawLine(line2, this.data, this.colors[1] as string, 1);
+    drawLine(line3, this.data, this.colors[2] as string, 2);
 
-    highlightLines(null);
+    if (!isCompact) {
+      const legendX = width - 150;
+      const legendY = 10;
+      const legend = g.append('g').attr('class', 'legend').attr('transform', `translate(${legendX},${legendY})`);
 
-    if (!isCompact && legendEntries.length) {
-      const legendPadding = 12;
-      const legendRowHeight = 26;
-      const legendWidth = Math.max(150, Math.min(240, width * 0.35));
-      const legendHeight = legendEntries.length * legendRowHeight + legendPadding * 2 + 4;
-      const legendX = Math.max(5, width - legendWidth - 10);
-      const legendY = Math.max(5, height - legendHeight - 10);
+      const legendItemHeight = Math.min(Math.max(height / 15, 15), 25);
+      const legendFontSize = Math.max(axisFontSize * 0.9, 10);
 
-      const legendGroup = g
-        .append('g')
-        .attr('class', 'legend-card')
-        .attr('transform', `translate(${legendX}, ${legendY})`);
+      Object.entries(this.seriesNames).forEach(([, name], i) => {
+        const legendRow = legend.append('g').attr('transform', `translate(0, ${i * legendItemHeight})`);
 
-      legendGroup
-        .append('rect')
-        .attr('class', 'legend-card-bg')
-        .attr('width', legendWidth)
-        .attr('height', legendHeight)
-        .attr('rx', 12)
-        .attr('ry', 12);
-
-      legendGroup
-        .append('text')
-        .attr('class', 'legend-title')
-        .attr('x', legendPadding)
-        .attr('y', legendPadding + 12)
-        .text('Legend');
-
-      const entriesGroup = legendGroup
-        .append('g')
-        .attr('class', 'legend-items')
-        .attr('transform', `translate(${legendPadding}, ${legendPadding + 18})`);
-
-      legendEntries.forEach((entry, idx) => {
-        const row = entriesGroup
-          .append('g')
-          .attr('class', 'legend-row')
-          .attr('transform', `translate(0, ${idx * legendRowHeight})`)
-          .style('cursor', 'pointer')
-          .on('mouseenter', () => highlightLines(entry.name))
-          .on('mouseleave', () => highlightLines(null));
-
-        row
+        legendRow
           .append('rect')
-          .attr('class', 'legend-swatch')
-          .attr('width', 14)
-          .attr('height', 14)
-          .attr('rx', 3)
-          .attr('fill', entry.color);
+          .attr('width', legendFontSize)
+          .attr('height', legendFontSize * 0.8)
+          .attr('fill', (this.colors.at(i) ?? '#fff') as string);
 
-        row
+        legendRow
           .append('text')
-          .attr('class', 'legend-label')
-          .attr('x', 20)
-          .attr('y', 12)
-          .text(entry.name);
+          .attr('x', legendFontSize * 1.5)
+          .attr('y', legendFontSize * 0.8)
+          .attr('font-size', `${legendFontSize}px`)
+          .attr('fill', '#ddd')
+          .text(name);
       });
     }
   }

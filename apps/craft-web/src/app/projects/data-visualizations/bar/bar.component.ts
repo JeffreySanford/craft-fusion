@@ -8,11 +8,6 @@ interface MetricData {
   value: number;
 }
 
-interface BarLegendItem {
-  label: string;
-  color: string;
-}
-
 @Component({
   selector: 'app-bar-chart',
   templateUrl: './bar.component.html',
@@ -28,11 +23,7 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
 
   colors: string[] = ['#2196F3', '#FF5722', '#4CAF50'];
 
-  legendItems: BarLegendItem[] = [
-    { label: 'GDP Growth', color: '#3C3B6E' },
-    { label: 'Life Expectancy', color: '#B22234' },
-    { label: 'Internet Usage', color: '#3498db' },
-  ];
+  legendItems: string[] = ['GDP Growth', 'Population', 'Industrial Output'];
 
   currentMetric: string = 'gdp';
 
@@ -86,11 +77,7 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
   ngOnInit(): void {
 
     if (!this.legendItems || this.legendItems.length === 0) {
-      this.legendItems = [
-        { label: 'GDP Growth', color: '#3C3B6E' },
-        { label: 'Life Expectancy', color: '#B22234' },
-        { label: 'Internet Usage', color: '#3498db' },
-      ];
+      this.legendItems = ['GDP Growth', 'Life Expectancy', 'Internet Usage'];
     }
   }
 

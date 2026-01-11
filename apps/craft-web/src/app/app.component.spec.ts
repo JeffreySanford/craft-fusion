@@ -1,74 +1,48 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { of } from 'rxjs';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
+import { SidebarComponent } from './pages/sidebar/sidebar.component';
 import { HttpClientModule } from '@angular/common/http';
-import { LoggerService } from './common/services/logger.service';
-import { UserTrackingService } from './common/services/user-tracking.service';
-import { AdminStateService } from './common/services/admin-state.service';
-import { UserActivityService } from './common/services/user-activity.service';
-import { AuthenticationService } from './common/services/authentication.service';
-import { FooterStateService } from './common/services/footer-state.service';
-import { UserStateService } from './common/services/user-state.service';
+import { MaterialIconsComponent } from './pages/landing/material-icons/material-icons.component';
 
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
-
-  const breakpointObserverMock = {
-    observe: jest.fn().mockReturnValue(of({ matches: false, breakpoints: {} })),
-    isMatched: jest.fn().mockReturnValue(false),
-  } as unknown as BreakpointObserver;
-
-  const userTrackingServiceMock = {
-    getCurrentUser: jest.fn().mockReturnValue(of(null)),
-  };
-
-  const adminStateServiceMock = {
-    setAdminStatus: jest.fn(),
-  };
-
-  const userActivityServiceMock = {
-    getActivitySummary: jest.fn().mockReturnValue({ pageViews: 0, clicks: 0, sessionDuration: 0 }),
-  };
-
-  const footerStateServiceMock = {
-    expanded$: of(false),
-  };
-
-  const userStateServiceMock = {
-    user$: of(null),
-  };
-
-  const authServiceMock = {
-    isAdmin$: of(false),
-  };
-
-  const loggerMock = {
-    info: jest.fn(),
-    debug: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
-    registerService: jest.fn(),
-  } as unknown as LoggerService;
+  let mockRouter: jest.Mocked<Router>;
+  let mockActivatedRoute: jest.Mocked<ActivatedRoute>;
+  let mockBreakpointObserver: jest.Mocked<BreakpointObserver>;
 
   beforeEach(async () => {
+    mockRouter = {
+      navigate: jest.fn(),
+      events: of(),
+      url: '/',
+    } as unknown as jest.Mocked<Router>;
+
+    mockActivatedRoute = {
+      snapshot: {
+        paramMap: {
+          get: jest.fn(),
+        },
+      },
+    } as unknown as jest.Mocked<ActivatedRoute>;
+
+    mockBreakpointObserver = {
+      observe: jest.fn().mockReturnValue({
+        subscribe: jest.fn(),
+      }),
+    } as unknown as jest.Mocked<BreakpointObserver>;
+
     await TestBed.configureTestingModule({
-      declarations: [AppComponent],
-      imports: [HttpClientModule, RouterTestingModule.withRoutes([])],
+      declarations: [AppComponent, SidebarComponent, MaterialIconsComponent],
+      imports: [HttpClientModule],
       providers: [
-        { provide: BreakpointObserver, useValue: breakpointObserverMock },
-        { provide: LoggerService, useValue: loggerMock },
-        { provide: UserTrackingService, useValue: userTrackingServiceMock },
-        { provide: AdminStateService, useValue: adminStateServiceMock },
-        { provide: UserActivityService, useValue: userActivityServiceMock },
-        { provide: AuthenticationService, useValue: authServiceMock },
-        { provide: FooterStateService, useValue: footerStateServiceMock },
-        { provide: UserStateService, useValue: userStateServiceMock },
+        { provide: Router, useValue: mockRouter },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: BreakpointObserver, useValue: mockBreakpointObserver },
       ],
-      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });
 

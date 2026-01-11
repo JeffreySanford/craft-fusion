@@ -34,7 +34,6 @@ export class HttpLoggingInterceptor implements NestInterceptor {
             statusCode: response?.statusCode,
             durationMs: Date.now() - startTime,
             result: summarizeForLog(result),
-            suppressConsole: true,
           });
         },
         error: (error) => {

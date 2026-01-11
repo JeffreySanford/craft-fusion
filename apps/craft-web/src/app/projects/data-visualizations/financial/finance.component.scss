@@ -26,8 +26,7 @@
     .legend-container {
       padding: 0.625em 0.75em;
       right: 1.25em;
-      bottom: 1.25em;
-      top: auto;
+      top: 1.25em;
 
       .legend-text {
         font-size: 0.875em;
@@ -97,11 +96,10 @@ svg {
   border-radius: 0.375em;
   box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
   min-width: 7.5em;                                            
-  padding: 0.5em 0.75em;                                                
+  padding: 0.5em 0.75em;                                               
   position: absolute;
   right: 0.625em;
-  bottom: 0.625em;
-  top: auto;
+  top: 0.625em;
   transition: all 0.3s ease;
   z-index: 5;
 

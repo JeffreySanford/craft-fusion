@@ -193,7 +193,6 @@ export class YahooService {
       payload,
       result: summarizeForLog(result),
       durationMs: Date.now() - startTime,
-      suppressConsole: true,
     });
   }
 
@@ -209,7 +208,6 @@ export class YahooService {
       payload,
       error,
       durationMs: Date.now() - startTime,
-      suppressConsole: true,
     });
   }
 

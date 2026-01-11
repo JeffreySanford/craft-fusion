@@ -16,17 +16,7 @@
     </button>
   </div>
 
-  <div class="bar-chart-wrapper">
-    <div class="bar-chart" id="barChart"></div>
-    <div class="bar-chart-legend-overlay" *ngIf="!compact">
-      <div class="bar-chart-legend">
-        <div class="bar-chart-legend-item" *ngFor="let legend of legendItems">
-          <span class="bar-chart-legend-item-color" [style.background]="legend.color"></span>
-          <span class="bar-chart-legend-item-label">{{ legend.label }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="bar-chart" id="barChart"></div>
 
   <div class="patriotic-container">
     <div class="star-bg"></div>
