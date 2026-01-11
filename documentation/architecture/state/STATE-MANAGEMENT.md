@@ -4,10 +4,10 @@ State management in Craft Web utilizes RxJS `BehaviorSubject`s within dedicated 
 
 ## Core Principles
 
-* **Centralized State:** State is held within specific services (e.g., `UserStateService`, `AdminStateService`, `ThemeService`).
-* **Immutability (Implied):** While not strictly enforced by interfaces, updates should ideally treat state as immutable, creating new state objects/values rather than modifying existing ones directly (e.g., using spread syntax `{ ...currentState, ...update }`).
-* **Observable Streams:** State is exposed via RxJS `Observable`s (usually derived from `BehaviorSubject.asObservable()`). Components subscribe to these streams to react to state changes.
-* **Action Methods:** Services provide methods to update the state (e.g., `setAdminStatus`, `setCollapsed`), which in turn emit new values on the observable streams.
+*   **Centralized State:** State is held within specific services (e.g., `UserStateService`, `AdminStateService`, `ThemeService`).
+*   **Immutability (Implied):** While not strictly enforced by interfaces, updates should ideally treat state as immutable, creating new state objects/values rather than modifying existing ones directly (e.g., using spread syntax `{ ...currentState, ...update }`).
+*   **Observable Streams:** State is exposed via RxJS `Observable`s (usually derived from `BehaviorSubject.asObservable()`). Components subscribe to these streams to react to state changes.
+*   **Action Methods:** Services provide methods to update the state (e.g., `setAdminStatus`, `setCollapsed`), which in turn emit new values on the observable streams.
 
 ## Key State Services
 
@@ -17,15 +17,15 @@ State management in Craft Web utilizes RxJS `BehaviorSubject`s within dedicated 
 
 Manages state specific to the logged-in user's session and preferences. *Note: Seems focused on user activity/preferences rather than core user identity, which is in `AuthenticationService`.*
 
-* **State Properties (Internal):**
-  * `openedDocuments`: Array of `Document` objects (`{ name: string, color: string }`).
-  * `loginDateTime`: `Date | null`.
-  * `visitLength`: `number | null`.
-  * `visitedPages`: `string[]`.
-* **Persistence:** Interacts with the backend API (`ApiService` and `HttpClient`) to save and load user state via specific endpoints (`/api/user/saveStateData`, `/api/user/loadStateData`, `/api/user/loadUserState`, `/api/user/setUserState`, `/api/files/saveOpenedDocuments`, `/api/files/getOpenedDocuments`, etc.). Uses `ImportedUserState` interface.
-* **Methods:** Provides methods to get/set opened documents (`setOpenedDocument`, `setOpenedDocuments`, `getOpenedDocuments`), login time (`setLoginDateTime`, `getLoginDateTime`), visit length (`setVisitLength`, `getVisitLength`), and visited pages (`setVisitedPage`, `getVisitedPages`). Also includes `getCurrentUser` and `getAllUsers` methods interacting with `/users` endpoints.
-* **Debouncing:** Uses `debounceTime` (`DEBOUNCE_TIME`) on a `Subject` (`visitLengthSubject`) for saving `visitLength` updates to avoid excessive API calls.
-* **Error Handling:** Basic `catchError` using a private `handleError` method.
+*   **State Properties (Internal):**
+    *   `openedDocuments`: Array of `Document` objects (`{ name: string, color: string }`).
+    *   `loginDateTime`: `Date | null`.
+    *   `visitLength`: `number | null`.
+    *   `visitedPages`: `string[]`.
+*   **Persistence:** Interacts with the backend API (`ApiService` and `HttpClient`) to save and load user state via specific endpoints (`/api/user/saveStateData`, `/api/user/loadStateData`, `/api/user/loadUserState`, `/api/user/setUserState`, `/api/files/saveOpenedDocuments`, `/api/files/getOpenedDocuments`, etc.). Uses `ImportedUserState` interface.
+*   **Methods:** Provides methods to get/set opened documents (`setOpenedDocument`, `setOpenedDocuments`, `getOpenedDocuments`), login time (`setLoginDateTime`, `getLoginDateTime`), visit length (`setVisitLength`, `getVisitLength`), and visited pages (`setVisitedPage`, `getVisitedPages`). Also includes `getCurrentUser` and `getAllUsers` methods interacting with `/users` endpoints.
+*   **Debouncing:** Uses `debounceTime` (`DEBOUNCE_TIME`) on a `Subject` (`visitLengthSubject`) for saving `visitLength` updates to avoid excessive API calls.
+*   **Error Handling:** Basic `catchError` using a private `handleError` method.
 
 ### AdminStateService
 
@@ -33,12 +33,12 @@ Manages state specific to the logged-in user's session and preferences. *Note: S
 
 Manages state related to administrative functions and table performance monitoring.
 
-* **State Properties:**
-  * `isAdmin$`: Observable boolean indicating if the current user has admin privileges (set via `setAdminStatus`).
-  * `tableLoadingState$`: Observable `TableLoadingState` object tracking the progress, record counts, and status of large table data loading operations (updated via `updateTableLoadingState`, `resetTableLoadingState`).
-  * `tableMemoryUsage$`: Observable number tracking estimated memory usage (in MB) for table components (updated via `updateTableMemoryUsage`).
-* **Methods:** Provides methods to get/set admin status (`setAdminStatus`, `getAdminStatus`), get/update/reset table loading state, get/update table memory usage. Includes `prepareTableCleanup` to reset state, intended for use when navigating away from the table component.
-* **Logging:** Integrates with `LoggerService` to log state changes and warnings (e.g., high memory usage).
+*   **State Properties:**
+    *   `isAdmin$`: Observable boolean indicating if the current user has admin privileges (set via `setAdminStatus`).
+    *   `tableLoadingState$`: Observable `TableLoadingState` object tracking the progress, record counts, and status of large table data loading operations (updated via `updateTableLoadingState`, `resetTableLoadingState`).
+    *   `tableMemoryUsage$`: Observable number tracking estimated memory usage (in MB) for table components (updated via `updateTableMemoryUsage`).
+*   **Methods:** Provides methods to get/set admin status (`setAdminStatus`, `getAdminStatus`), get/update/reset table loading state, get/update table memory usage. Includes `prepareTableCleanup` to reset state, intended for use when navigating away from the table component.
+*   **Logging:** Integrates with `LoggerService` to log state changes and warnings (e.g., high memory usage).
 
 ### SidebarStateService
 
@@ -46,8 +46,8 @@ Manages state related to administrative functions and table performance monitori
 
 Manages the collapsed/expanded state of the main sidebar.
 
-* **State Property:** `isCollapsed$`: Observable boolean.
-* **Methods:** `setCollapsed()`, `toggleSidebar()`, `get isCollapsed` (getter).
+*   **State Property:** `isCollapsed$`: Observable boolean.
+*   **Methods:** `setCollapsed()`, `toggleSidebar()`, `get isCollapsed` (getter).
 
 ### FooterStateService
 
@@ -55,8 +55,8 @@ Manages the collapsed/expanded state of the main sidebar.
 
 Manages the expanded/collapsed state of the application footer.
 
-* **State Property:** `expanded$`: Observable boolean.
-* **Method:** `setExpanded()`.
+*   **State Property:** `expanded$`: Observable boolean.
+*   **Method:** `setExpanded()`.
 
 ### ThemeService
 
@@ -64,9 +64,9 @@ Manages the expanded/collapsed state of the application footer.
 
 Manages the application's theme (light/dark).
 
-* **State Property:** `isDarkTheme$`: Observable boolean.
-* **Persistence:** Reads initial theme from `localStorage` ('theme' key) or system preference (`prefers-color-scheme`) and saves changes to `localStorage`.
-* **Method:** `toggleTheme()`. Applies/removes `dark-theme`/`light-theme` classes on `document.body`.
+*   **State Property:** `isDarkTheme$`: Observable boolean.
+*   **Persistence:** Reads initial theme from `localStorage` ('theme' key) or system preference (`prefers-color-scheme`) and saves changes to `localStorage`.
+*   **Method:** `toggleTheme()`. Applies/removes `dark-theme`/`light-theme` classes on `document.body`.
 
 ### UserTrackingService
 
@@ -74,8 +74,8 @@ Manages the application's theme (light/dark).
 
 A simple service to hold the current application user (`AppUser` interface).
 
-* **State Property:** `currentUserSubject`: BehaviorSubject holding `AppUser | null`. Exposed via `getCurrentUser()`.
-* **Method:** `setCurrentUser()`.
+*   **State Property:** `currentUserSubject`: BehaviorSubject holding `AppUser | null`. Exposed via `getCurrentUser()`.
+*   **Method:** `setCurrentUser()`.
 *(Note: Significant overlap with `AuthenticationService.currentUser$`. Consider consolidating or clarifying purpose).*
 
 ## Real-Time State Updates with Socket.IO
@@ -133,10 +133,10 @@ export class DashboardMetricsService {
 
 The following services use socket-based state updates:
 
-* **User Activity Dashboard**: Live user activity metrics
-* **Financial Data Stream**: Real-time financial data
-* **Notification Service**: Push notifications
-* **Logging Console**: Live application logs
+- **User Activity Dashboard**: Live user activity metrics
+- **Financial Data Stream**: Real-time financial data
+- **Notification Service**: Push notifications
+- **Logging Console**: Live application logs
 
 See [SOCKET-SERVICES.md](./SOCKET-SERVICES.md) for detailed implementation.
 
@@ -145,7 +145,7 @@ See [SOCKET-SERVICES.md](./SOCKET-SERVICES.md) for detailed implementation.
 These services could benefit from socket-based updates:
 
 | Service | Current Implementation | Socket Benefit |
-| ------- | ---------------------- | ------------- |
+|---------|------------------------|---------------|
 | Table Component | Toggle between client/server rendering | Real-time updates, progressive loading |
 | Record Updates | Polling API for changes | Immediate push when records change |
 | Data Visualizations | Manual refresh or polling | Live-updating charts and maps |

@@ -7,27 +7,23 @@ The `ApiService` is the central communication layer between the front-end applic
 ## Core Features
 
 ### 1. Standard HTTP Methods
-
 - **GET**, **POST**, **PUT**, and **DELETE** operations with consistent interfaces
 - Strong TypeScript typing for request and response objects
 - Unified error handling and logging
 
 ### 2. Reliability Patterns
-
 - **Circuit Breaker** pattern prevents cascading failures
 - **Retry strategies** with exponential backoff and jitter
 - **Fallback mechanisms** for graceful degradation
 - **Health checks** for service status monitoring
 
 ### 3. Performance Optimizations
-
 - **Request caching** with TTL (Time-To-Live)
 - **Batched requests** for reduced network overhead
 - **Chunked loading** for large datasets
 - **Throttling** to prevent API overload
 
 ### 4. Observability
-
 - **Distributed tracing** via request IDs
 - **Comprehensive logging** with context-aware details
 - **Performance metrics** collection
@@ -36,7 +32,6 @@ The `ApiService` is the central communication layer between the front-end applic
 ## Architectural Patterns
 
 ### Service Registry Pattern
-
 The service dynamically routes requests to microservices using a service registry:
 
 ```typescript
@@ -49,7 +44,6 @@ private initializeServiceRegistry(): void {
 ```
 
 This allows for:
-
 - Service discovery at runtime
 - Flexible routing to different microservices
 - Configuration-driven service endpoints
@@ -69,7 +63,6 @@ When a service begins failing, the circuit "opens" and fails fast for subsequent
 ### Repository Pattern
 
 The service acts as a repository layer between the application and API:
-
 - Abstracts backend communication details
 - Provides a domain-specific interface
 - Handles cross-cutting concerns like caching and error handling
@@ -85,7 +78,6 @@ generateRecordChunk<T>(count: number, offset: number = 0, options?: RequestOptio
 ```
 
 Key features include:
-
 - Adaptive timeouts based on data size
 - Intelligent chunking for large datasets
 - Automatic retries with smaller chunks when large requests fail
@@ -100,7 +92,6 @@ liveResource<T>(resourceEndpoint: string, topic: string, websocketService: any):
 ```
 
 This elegant pattern:
-
 1. Loads initial state via REST
 2. Establishes WebSocket subscription for updates
 3. Merges both data sources into a single Observable stream
