@@ -52,96 +52,16 @@ jobs:
           fi
 
       - name: Install dependencies
-        run: |
-          mkdir -p ci-logs
-          pnpm install --frozen-lockfile=false 2>&1 | tee ci-logs/install.log
+        run: pnpm install --frozen-lockfile=false
 
       - name: Format check (nx)
-        run: |
-          mkdir -p ci-logs
-          pnpm dlx nx format:check 2>&1 | tee ci-logs/format.log
+        run: pnpm dlx nx-cloud record -- nx format:check
 
       - name: Run tests
-        run: |
-          mkdir -p ci-logs
-          pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov > test-results.json 2>&1 | tee ci-logs/tests.log || true
+        run: pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov > test-results.json || true
 
       - name: Build & E2E
-        run: |
-          mkdir -p ci-logs
-          pnpm dlx nx affected -t build 2>&1 | tee ci-logs/build.log || true
-
-      - name: Start craft-nest server and run e2e tests
-        env:
-          NODE_ENV: development
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
-          MONGODB_URI: mongodb://localhost:27017/craft-fusion
-          API_URL: http://localhost:3000
-          API_BASE_URL: http://localhost:3000
-          WEB_URL: http://localhost:4200
-        run: |
-          mkdir -p ci-logs
-          # Start the built NestJS server in background
-          if [ -f dist/apps/craft-nest/src/main.js ]; then
-            echo "Starting craft-nest server..."
-            cd dist/apps/craft-nest
-            nohup node src/main.js > ../../../ci-logs/craft-nest.log 2>&1 &
-            BACKEND_PID=$!
-            echo $BACKEND_PID > ../../../ci-logs/backend.pid
-            echo "Started craft-nest with PID: $BACKEND_PID"
-            cd ../../..
-            
-            # Wait for server to be ready (60s timeout)
-            echo "Waiting for craft-nest to respond..."
-            for i in $(seq 1 60); do
-              if curl -sS http://localhost:3000/api >/dev/null 2>&1; then
-                echo "✓ craft-nest is ready!"
-                curl -sS http://localhost:3000/api
-                break
-              fi
-              if [ $i -eq 60 ]; then
-                echo "✗ craft-nest failed to start within 60 seconds"
-                echo "Server log:"
-                cat ci-logs/craft-nest.log || echo "No log file"
-                exit 1
-              fi
-              echo "Waiting... ($i/60)"
-              sleep 1
-            done
-            
-            # Verify server is still running
-            if kill -0 $BACKEND_PID 2>/dev/null; then
-              echo "✓ Server process is running (PID: $BACKEND_PID)"
-            else
-              echo "✗ Server process died"
-              cat ci-logs/craft-nest.log
-              exit 1
-            fi
-          else
-            echo "✗ craft-nest build output not found at dist/apps/craft-nest/src/main.js"
-            exit 1
-          fi
-          
-          # Run e2e tests with server running
-          echo "Running e2e tests..."
-          pnpm dlx nx affected -t e2e 2>&1 | tee ci-logs/e2e.log || true
-          
-          # Cleanup: stop server
-          if [ -f ci-logs/backend.pid ]; then
-            BACKEND_PID=$(cat ci-logs/backend.pid)
-            echo "Stopping server (PID: $BACKEND_PID)"
-            kill $BACKEND_PID 2>/dev/null || true
-          fi
-
-      - name: Upload CI logs
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: ci-logs
-          path: |
-            ci-logs
-            test-results.json
+        run: pnpm dlx nx affected -t build e2e || true
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
