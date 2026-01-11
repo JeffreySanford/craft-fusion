@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "pnpm dlx nx serve craft-web",
-    "start:all": "pnpm run build:backend && concurrently \"pnpm run serve:nest\" \"pnpm dlx nx serve craft-go\" \"pnpm dlx nx serve craft-web\"",
+    "start:all": "pnpm run build:backend && concurrently \"pnpm run serve:nest\" \"pnpm run serve:go\" \"pnpm dlx nx serve craft-web\"",
     "serve:nest": "cd dist/apps/craft-nest && node src/main.js",
     "serve:go": "cd dist/apps/craft-go && (main.exe || main)",
     "build": "pnpm dlx nx build craft-web",

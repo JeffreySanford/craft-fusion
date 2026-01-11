@@ -586,8 +586,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
     const isDevelopment = window.location.hostname === 'localhost';
     const baseUrl = isDevelopment ? 'http://localhost' : 'https://jeffreysanford.us';
     const port = serverName === 'Nest' ? '3000' : '4000';
-    const swaggerPath = serverName === 'Go' ? '/api-go/swagger' : '/api/api-docs';
-    return `${baseUrl}:${port}${swaggerPath}`;
+    return `${baseUrl}:${port}/api/api-docs`;
   }
 
   private triggerFadeToRed(): void {

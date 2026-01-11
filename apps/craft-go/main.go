@@ -123,30 +123,14 @@ func main() {
 		ginSwagger.DocExpansion("none"),
 		ginSwagger.DefaultModelsExpandDepth(-1),
 	)
-	swaggerIndexQuery := "deepLinking=true&displayRequestDuration=true&docExpansion=none&defaultModelsExpandDepth=-1&supportedSubmitMethods=%5B%5D"
 	// Provide two paths for convenience
 	// Optional: redirect bare /swagger to index with UI options to minimize interactivity
 	router.GET("/swagger", func(c *gin.Context) {
 		// supportedSubmitMethods=[] hides "Try it out" in Swagger UI
-		c.Redirect(302, "/swagger/index.html?"+swaggerIndexQuery)
+		c.Redirect(302, "/swagger/index.html?deepLinking=true&displayRequestDuration=true&docExpansion=none&defaultModelsExpandDepth=-1&supportedSubmitMethods=%5B%5D")
 	})
-	router.GET("/api-go/swagger", func(c *gin.Context) {
-		c.Redirect(302, "/api-go/swagger/index.html?"+swaggerIndexQuery)
-	})
-	router.GET("/swagger/*any", func(c *gin.Context) {
-		if c.Param("any") == "" || c.Param("any") == "/" {
-			c.Redirect(302, "/swagger/index.html?"+swaggerIndexQuery)
-			return
-		}
-		swaggerHandler(c)
-	})
-	router.GET("/api-go/swagger/*any", func(c *gin.Context) {
-		if c.Param("any") == "" || c.Param("any") == "/" {
-			c.Redirect(302, "/api-go/swagger/index.html?"+swaggerIndexQuery)
-			return
-		}
-		swaggerHandler(c)
-	})
+	router.GET("/swagger/*any", swaggerHandler)
+	router.GET("/api-go/swagger/*any", swaggerHandler)
 
 	// Log all registered routes with the resolved port
 	for _, route := range router.Routes() {

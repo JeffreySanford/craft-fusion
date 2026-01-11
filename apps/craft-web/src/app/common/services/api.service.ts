@@ -44,7 +44,7 @@ export class ApiService {
       language: 'Go',
       api: 'api-go',
       port: 4000,
-      swagger: '/api-go/swagger',
+      swagger: '/swagger',
     },
   ];
 
