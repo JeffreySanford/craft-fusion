@@ -33,8 +33,7 @@ body {
 }
 
 /* Create a root stacking context */
-#root,
-#__next {
+#root, #__next {
   isolation: isolate;
 }
 

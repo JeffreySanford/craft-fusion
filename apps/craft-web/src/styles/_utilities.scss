@@ -57,7 +57,11 @@
 }
 
 .text-patriotic {
-  background: linear-gradient(90deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
+  background: linear-gradient(
+    90deg,
+    var(--md-sys-color-primary),
+    var(--md-sys-color-secondary)
+  );
   -webkit-background-clip: text;
   background-clip: text; // Added standard property
   color: transparent;
@@ -90,7 +94,11 @@
 
 // Background styles
 .bg-patriotic-gradient {
-  background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--md-sys-color-primary),
+    var(--md-sys-color-secondary)
+  );
 }
 
 // Border utilities
@@ -253,13 +261,18 @@
   height: 4px;
   background: var(--md-sys-color-surface-variant);
   overflow: hidden;
-
+  
   &::after {
     content: '';
     display: block;
     width: 40%;
     height: 100%;
-    background: linear-gradient(90deg, var(--md-sys-color-primary), var(--md-sys-color-on-primary), var(--md-sys-color-secondary));
+    background: linear-gradient(
+      90deg,
+      var(--md-sys-color-primary),
+      var(--md-sys-color-on-primary),
+      var(--md-sys-color-secondary)
+    );
     animation: loading 1.5s infinite;
   }
 }
@@ -274,20 +287,20 @@
   border-radius: 4px;
   padding: 12px 24px;
   transition: all 0.3s ease;
-
+  
   &:hover {
     background: color-mix(in srgb, var(--md-sys-color-primary) 90%, white);
     transform: translateY(-2px);
     box-shadow: var(--md-sys-elevation-level2);
   }
-
+  
   &:active {
     transform: translateY(0);
   }
-
+  
   &.accent {
     background: var(--md-sys-color-secondary);
-
+    
     &:hover {
       background: color-mix(in srgb, var(--md-sys-color-secondary) 90%, white);
     }
@@ -298,7 +311,7 @@
   &.flag-style {
     border-left: 4px solid var(--md-sys-color-primary);
     border-right: 4px solid var(--md-sys-color-secondary);
-
+    
     &::before {
       content: '';
       position: absolute;
@@ -309,11 +322,11 @@
       background: var(--md-sys-color-on-primary);
     }
   }
-
+  
   &.eagle-style {
     position: relative;
     overflow: hidden;
-
+    
     &::after {
       content: '';
       position: absolute;
@@ -322,7 +335,7 @@
       width: 100%;
       height: 100%;
       border: 1px solid var(--md-sys-color-tertiary);
-      background: linear-gradient(45deg, transparent 45%, rgba(255, 255, 255, 0.1) 50%, transparent 55%);
+      background: linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.1) 50%, transparent 55%);
       transform: rotate(45deg);
       animation: eagleShine 3s infinite;
     }
@@ -336,11 +349,11 @@
   .patriotic-loading {
     display: none;
   }
-
+  
   body {
     color: var(--md-sys-color-on-surface);
   }
-
+  
   .mat-mdc-card {
     box-shadow: none;
     border: 1px solid var(--md-sys-color-outline-variant);
@@ -357,7 +370,7 @@
     padding: 16px;
 
     &.toast-success {
-      border-left: 4px solid #10b981;
+      border-left: 4px solid #10B981;
     }
 
     &.toast-error {
@@ -365,11 +378,11 @@
     }
 
     &.toast-info {
-      border-left: 4px solid #3b82f6;
+      border-left: 4px solid #3B82F6;
     }
 
     &.toast-warning {
-      border-left: 4px solid #f59e0b;
+      border-left: 4px solid #F59E0B;
     }
   }
 }
@@ -384,7 +397,7 @@
     position: relative;
     background-color: rgba(0, 0, 0, 0.4);
     border: none !important; // Remove red border
-
+    
     canvas {
       width: 100% !important;
       height: 100% !important;
@@ -424,9 +437,8 @@
     gap: 1em;
     margin-bottom: 1em;
     width: 100%;
-
-    .dev-logos,
-    .agency-logos {
+    
+    .dev-logos, .agency-logos {
       display: flex;
       align-items: center;
       gap: 1.5em;
@@ -434,7 +446,7 @@
       background: rgba(0, 0, 0, 0.2);
       border-radius: 8px;
       flex-wrap: wrap;
-
+      
       img {
         height: 3.5em;
         width: auto;
@@ -443,7 +455,7 @@
         flex: 0 0 auto;
       }
     }
-
+    
     .agency-logos {
       margin-left: auto;
     }
@@ -463,7 +475,7 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     mat-icon {
       font-size: 14px;
       height: 14px;
@@ -471,17 +483,17 @@
       margin-right: 4px;
       color: inherit;
     }
-
+    
     &.green-text {
       color: #10b981;
       border-color: rgba(16, 185, 129, 0.3);
     }
-
+    
     &.yellow-text {
       color: #f59e0b;
       border-color: rgba(245, 158, 11, 0.3);
     }
-
+    
     &.red-text {
       color: #ef4444;
       border-color: rgba(239, 68, 68, 0.3);
@@ -494,14 +506,14 @@
     display: flex;
     align-items: center;
     background-color: $bg-color;
-
+    
     .nav-item {
       padding: 8px 16px;
       color: $text-color;
       text-decoration: none;
       position: relative;
       transition: color 0.2s ease;
-
+      
       &::after {
         content: '';
         position: absolute;
@@ -513,11 +525,10 @@
         transform: scaleX(0);
         transition: transform 0.3s ease;
       }
-
-      &:hover,
-      &.active {
+      
+      &:hover, &.active {
         color: var(--md-sys-color-primary);
-
+        
         &::after {
           transform: scaleX(1);
         }
@@ -532,22 +543,22 @@
   background-color: rgba(0, 0, 0, $bg-opacity);
   border-radius: 4px;
   z-index: 10;
-
+  
   &.top-left {
     top: 5px;
     left: 5px;
   }
-
+  
   &.top-right {
     top: 5px;
     right: 5px;
   }
-
+  
   &.bottom-left {
     bottom: 5px;
     left: 5px;
   }
-
+  
   &.bottom-right {
     bottom: 5px;
     right: 5px;
@@ -563,7 +574,13 @@
     height: $height;
     margin-bottom: $bottom-margin;
     width: calc(100% - 1em);
-    background: linear-gradient(to right, #002868 0%, /* Darker navy blue */ #2c4f9e 40%, /* Medium blue */ #bf0a30 80%, /* Brighter red */ #8c0624 100% /* Darker red */);
+    background: linear-gradient(
+      to right,
+      #002868 0%, /* Darker navy blue */
+      #2c4f9e 40%, /* Medium blue */
+      #BF0A30 80%, /* Brighter red */
+      #8c0624 100% /* Darker red */
+    );
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -594,10 +611,10 @@
     transition: all 0.3s ease-in-out;
     animation: neonPulse 2s infinite;
     text-shadow: 0 0 10px $primary-color;
-
+    
     &:hover {
       transform: scale(1.1) rotate(15deg);
-      box-shadow:
+      box-shadow: 
         0 0 15px rgba($secondary-color, 0.6),
         0 0 30px rgba($primary-color, 0.4);
     }
@@ -619,9 +636,13 @@
     // Enforce styling on menu panel
     &.mat-mdc-menu-panel,
     .mat-mdc-menu-panel {
-      background: linear-gradient(135deg, rgba(0, 0, 102, 0.95) 0%, rgba(139, 0, 0, 0.95) 50%, rgba(0, 0, 102, 0.95) 100%) !important;
-      border: 2px solid #ffd700 !important;
-      box-shadow:
+      background: linear-gradient(135deg, 
+        rgba(0, 0, 102, 0.95) 0%,
+        rgba(139, 0, 0, 0.95) 50%,
+        rgba(0, 0, 102, 0.95) 100%
+      ) !important;
+      border: 2px solid #FFD700 !important;
+      box-shadow: 
         0 0 25px rgba(255, 255, 255, 0.4),
         inset 0 0 20px rgba(0, 0, 255, 0.3) !important;
       border-radius: $border-radius !important;
@@ -654,14 +675,22 @@
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
         transition: 0.5s;
       }
 
       &:hover {
-        background: linear-gradient(45deg, rgba(255, 0, 0, 0.4) 0%, rgba(0, 0, 255, 0.4) 100%) !important;
+        background: linear-gradient(45deg,
+          rgba(255, 0, 0, 0.4) 0%,
+          rgba(0, 0, 255, 0.4) 100%
+        ) !important;
         transform: translateX(4px);
-        box-shadow:
+        box-shadow: 
           0 0 15px rgba(255, 255, 255, 0.3),
           inset 0 0 10px rgba(255, 0, 0, 0.3);
 
@@ -671,7 +700,7 @@
       }
 
       .mat-icon {
-        color: #ffd700 !important;
+        color: #FFD700 !important;
         margin-right: 12px;
         transition: all 0.3s ease;
         text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
@@ -697,8 +726,8 @@
     left: 0.5em;
     right: 0.5em;
     height: $height;
-    width: auto !important;
-    max-width: none !important;
+    width: auto !important; 
+    max-width: none !important; 
     margin: 0 !important;
     @include patriotic-gradient-background();
     display: flex;
@@ -708,7 +737,7 @@
     border-radius: 0.5em;
     z-index: 100;
     overflow: visible;
-
+    
     .header-content {
       height: calc($height - 0.5em);
       display: flex;
@@ -718,34 +747,33 @@
       position: relative;
       padding: 0 1.5em;
     }
-
-    .header-left,
-    .header-right {
+    
+    .header-left, .header-right {
       display: flex;
       align-items: center;
     }
-
+    
     .header-right {
       margin-left: auto; // Push to the right side
     }
-
+    
     .app-title {
       font-size: 1.6em;
       font-weight: bold;
-      background: linear-gradient(90deg, #ffffff, #ffd700);
+      background: linear-gradient(90deg, #FFFFFF, #FFD700);
       -webkit-background-clip: text;
       color: transparent;
       letter-spacing: 0.05em;
       text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
       margin-left: 3em; // Space for star field
     }
-
+    
     .header-controls {
       display: flex;
       align-items: center;
       gap: 0.75em;
     }
-
+    
     .admin-button {
       background-color: rgba(191, 10, 48, 0.8);
       color: white;
@@ -756,30 +784,34 @@
       align-items: center;
       gap: 0.5em;
       transition: all 0.2s ease;
-
+      
       &:hover {
         background-color: rgba(191, 10, 48, 1);
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       }
-
+      
       mat-icon {
         font-size: 1.2em;
         height: 1.2em;
         width: 1.2em;
       }
     }
-
+    
     .flag-stripe {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       height: 0.3em;
-      background: repeating-linear-gradient(90deg, #bf0a30 0%, #bf0a30 10%, white 10%, white 20%);
+      background: repeating-linear-gradient(
+        90deg,
+        #BF0A30 0%, #BF0A30 10%,
+        white 10%, white 20%
+      );
       opacity: 0.7;
     }
-
+    
     .star-field {
       position: absolute;
       top: 0.5em;
@@ -790,7 +822,7 @@
       border-radius: 4px;
       overflow: hidden;
       box-shadow: 0 0 10px rgba(0, 40, 104, 0.5);
-
+      
       &::before {
         content: '★';
         color: white;
@@ -805,26 +837,37 @@
 }
 
 @mixin patriotic-gradient-background($angle: 135deg) {
-  background: linear-gradient($angle, #001f54 0%, #033277 30%, #792433 70%, #a01c33 100%);
+  background: linear-gradient(
+    $angle,
+    #001f54 0%,
+    #033277 30%,
+    #792433 70%,
+    #a01c33 100%
+  );
 }
 
 @mixin wave-animation-container() {
   position: relative;
   overflow: hidden;
-
+  
   .wave-animation {
     position: absolute;
     top: 0;
     right: 0;
     width: 40%;
     height: 100%;
-    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.03) 50%,
+      transparent 100%
+    );
     animation: flagWave 15s ease-in-out infinite;
     transform-origin: right center;
   }
 }
 
-@mixin user-profile-button($icon-color: #ffd700, $border-color: #ffffff, $icon-size: 1.2em) {
+@mixin user-profile-button($icon-color: #FFD700, $border-color: #FFFFFF, $icon-size: 1.2em) {
   .user-profile-button {
     position: relative;
     overflow: visible;
@@ -834,7 +877,7 @@
     width: 2.25em;
     height: 2.25em;
     padding: 0;
-
+    
     .profile-icon {
       color: $icon-color;
       border: 1.5px solid $border-color;
@@ -845,17 +888,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
-
+      
       &:hover {
         transform: scale(1.1) rotate(10deg);
         box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
       }
-
+      
       &.logged-in {
         color: #10b981;
         border-color: #10b981;
       }
-
+      
       // Fix for mat-icon centering within circular border
       ::ng-deep .mat-icon {
         font-size: $icon-size;
@@ -867,12 +910,12 @@
         justify-content: center;
       }
     }
-
+    
     .notification-badge {
       position: absolute;
       top: -3px;
       right: -3px;
-      background-color: #bf0a30;
+      background-color: #BF0A30;
       color: white;
       border-radius: 50%;
       min-width: 16px;
@@ -894,15 +937,20 @@
     height: $height;
     width: 100%;
     z-index: 2000;
-    background: repeating-linear-gradient(90deg, #bf0a30 0%, #bf0a30 10%, /* Red */ #ffffff 10%, #ffffff 20%, /* White */ #002868 20%, #002868 30% /* Blue */);
+    background: repeating-linear-gradient(
+      90deg,
+      #BF0A30 0%, #BF0A30 10%, /* Red */
+      #FFFFFF 10%, #FFFFFF 20%, /* White */
+      #002868 20%, #002868 30% /* Blue */
+    );
     background-size: 300% 100%;
     animation: patrioticShimmer $animation-duration linear infinite;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-
+    
     &.top {
       top: 0;
     }
-
+    
     &.bottom {
       bottom: 0;
     }

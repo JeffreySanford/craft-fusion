@@ -6,7 +6,13 @@ import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [SpaceVideoComponent],
-  imports: [CommonModule, MaterialModule, RouterModule.forChild([{ path: '', component: SpaceVideoComponent }])],
-  exports: [SpaceVideoComponent],
+  imports: [
+    CommonModule,
+    MaterialModule,
+    RouterModule.forChild([
+      { path: '', component: SpaceVideoComponent }
+    ])
+  ],
+  exports: [SpaceVideoComponent]
 })
-export class SpaceVideoModule {}
+export class SpaceVideoModule { }

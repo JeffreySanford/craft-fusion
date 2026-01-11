@@ -6,7 +6,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-non-d3-chart',
   template: `<canvas #chartCanvas></canvas>`,
-  standalone: true,
+  standalone: true
 })
 export class NonD3ChartComponent implements AfterViewInit {
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
@@ -18,14 +18,16 @@ export class NonD3ChartComponent implements AfterViewInit {
       type: 'bar',
       data: {
         labels: ['Jan', 'Feb', 'Mar'],
-        datasets: [{ label: 'Example', data: [10, 20, 15], backgroundColor: 'blue' }],
+        datasets: [
+          { label: 'Example', data: [10, 20, 15], backgroundColor: 'blue' }
+        ]
       },
       options: {
         responsive: true,
         scales: {
-          y: { beginAtZero: true },
-        },
-      },
+          y: { beginAtZero: true }
+        }
+      }
     });
   }
 
@@ -46,8 +48,8 @@ export class NonD3ChartComponent implements AfterViewInit {
     this.chart.options.scales = {
       y: {
         title: { display: !!label, text: label },
-        beginAtZero: true,
-      },
+        beginAtZero: true
+      }
     };
     this.chart.update();
   }

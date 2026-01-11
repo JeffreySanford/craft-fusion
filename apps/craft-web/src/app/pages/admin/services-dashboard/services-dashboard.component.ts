@@ -21,23 +21,25 @@ export interface ServiceInfo {
   standalone: false,
 })
 export class ServicesDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
+  
   services: ServiceInfo[] = [];
   coreServices: ServiceInfo[] = [];
   featureServices: ServiceInfo[] = [];
   thirdPartyServices: ServiceInfo[] = [];
-
+  
+  
   get activeServicesCount(): number {
     return this.services.filter(s => s.status === 'active').length;
   }
-
+  
   get errorServicesCount(): number {
     return this.services.filter(s => s.status === 'error').length;
   }
-
+  
   get inactiveServicesCount(): number {
     return this.services.filter(s => s.status === 'inactive').length;
   }
-
+  
   displayedColumns: string[] = ['name', 'status', 'lastActivity', 'responseTime', 'endpoints', 'memoryUsage'];
   @ViewChild('serviceMetricsCanvas') serviceMetricsCanvas!: ElementRef<HTMLCanvasElement>;
   private serviceChart: Chart | null = null;
@@ -66,6 +68,7 @@ export class ServicesDashboardComponent implements OnInit, AfterViewInit, OnDest
   }
 
   loadServices(): void {
+    
     this.services = [
       {
         id: '1',
@@ -76,25 +79,22 @@ export class ServicesDashboardComponent implements OnInit, AfterViewInit, OnDest
         responseTime: 120,
         type: 'core',
         endpoints: 6,
-        memoryUsage: 42,
-      },
+        memoryUsage: 42
+      }
     ];
-
+    
+    
     this.coreServices = this.services.filter(s => s.type === 'core');
     this.featureServices = this.services.filter(s => s.type === 'feature');
     this.thirdPartyServices = this.services.filter(s => s.type === 'third-party');
   }
 
   getStatusClass(status: string): string {
-    switch (status) {
-      case 'active':
-        return 'status-active';
-      case 'error':
-        return 'status-error';
-      case 'inactive':
-        return 'status-inactive';
-      default:
-        return '';
+    switch(status) {
+      case 'active': return 'status-active';
+      case 'error': return 'status-error';
+      case 'inactive': return 'status-inactive';
+      default: return '';
     }
   }
 
@@ -120,9 +120,9 @@ export class ServicesDashboardComponent implements OnInit, AfterViewInit, OnDest
           },
           scales: {
             x: { display: true },
-            y: { beginAtZero: true },
-          },
-        },
+            y: { beginAtZero: true }
+          }
+        }
       });
     } catch (e) {
       console.error('Failed to create service metrics chart', e);

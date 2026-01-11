@@ -8,12 +8,12 @@ import { LoggerService, LogEntry, LogLevel } from '../../../common/services/logg
     <div class="logs-dashboard-root">
       <div class="log-statistics">
         <div class="stat-card" *ngFor="let stat of stats">
-          <div class="stat-icon" [appBgColor]="stat.color">
-            <mat-icon>{{ stat.icon }}</mat-icon>
+          <div class="stat-icon" [style.background-color]="stat.color">
+            <mat-icon>{{stat.icon}}</mat-icon>
           </div>
           <div class="stat-content">
-            <div class="stat-value">{{ stat.value }}</div>
-            <div class="stat-label">{{ stat.label }}</div>
+            <div class="stat-value">{{stat.value}}</div>
+            <div class="stat-label">{{stat.label}}</div>
           </div>
         </div>
       </div>
@@ -21,7 +21,7 @@ import { LoggerService, LogEntry, LogLevel } from '../../../common/services/logg
     </div>
   `,
   styles: [``],
-  standalone: false,
+  standalone: false
 })
 export class LogsDashboardComponent implements OnInit, OnDestroy {
   stats: { id: number; icon: string; label: string; value: number; color: string }[] = [];
@@ -49,7 +49,7 @@ export class LogsDashboardComponent implements OnInit, OnDestroy {
     this.stats = [
       { id: 1, icon: 'error', label: 'Errors', value: counts.error, color: 'red' },
       { id: 2, icon: 'warning', label: 'Warnings', value: counts.warn, color: 'orange' },
-      { id: 3, icon: 'info', label: 'Info', value: counts.info, color: 'blue' },
+      { id: 3, icon: 'info', label: 'Info', value: counts.info, color: 'blue' }
     ];
   }
 }

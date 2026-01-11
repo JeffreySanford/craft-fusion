@@ -3,7 +3,7 @@
     <div class="header-content">
       <div class="title-section">
         <div class="usa-flag-container">
-          <img src="./assets/images/bald-eagle-transparent.png" alt="USA Eagle" class="usa-eagle" />
+          <img src="./assets/images/bald-eagle-transparent.png" alt="USA Eagle" class="usa-eagle">
         </div>
         <div class="title-and-subtitle">
           <h1>System Administration</h1>
@@ -12,10 +12,8 @@
       </div>
       <div class="actions-section">
         <div class="simulation-toggle" [class.active]="isSimulatingData">
-          <mat-slide-toggle [checked]="isSimulatingData" (change)="toggleDataSimulation()" [ngClass]="{ 'sim-toggle': isSimulatingData, 'live-toggle': !isSimulatingData }">
-            <span [ngClass]="{ 'sim-label': isSimulatingData, 'live-label': !isSimulatingData }">
-              {{ isSimulatingData ? 'Simulated Data' : 'Live Data' }}
-            </span>
+          <mat-slide-toggle [checked]="isSimulatingData" (change)="toggleDataSimulation()" color="warn">
+            <span class="toggle-label">Simulation Mode</span>
           </mat-slide-toggle>
           <span class="danger-zone">DANGER ZONE</span>
         </div>
@@ -25,9 +23,11 @@
         </button>
       </div>
     </div>
+    
   </div>
-
+  
   <mat-tab-group #tabGroup [(selectedIndex)]="selectedTab" animationDuration="500ms" class="admin-tabs">
+    
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon class="tab-icon">home</mat-icon>
@@ -43,23 +43,23 @@
         <mat-icon class="tab-icon">dashboard</mat-icon>
         Performance
       </ng-template>
-
+      
       <div class="tab-content">
         <app-performance-dashboard></app-performance-dashboard>
       </div>
     </mat-tab>
-
+    
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon class="tab-icon">settings_applications</mat-icon>
         Service Monitoring
       </ng-template>
-
+      
       <div class="tab-content">
         <app-services-dashboard></app-services-dashboard>
       </div>
     </mat-tab>
-
+    
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon class="tab-icon">security</mat-icon>
@@ -85,7 +85,7 @@
             <mat-button-toggle value="warn">Warnings</mat-button-toggle>
             <mat-button-toggle value="info">Info</mat-button-toggle>
           </mat-button-toggle-group>
-
+          
           <div class="logger-actions">
             <div class="clear-logs-container">
               <button class="clear-logs-btn" (click)="clearLogs()">

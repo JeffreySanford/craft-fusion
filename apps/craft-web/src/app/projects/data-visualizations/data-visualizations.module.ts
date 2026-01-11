@@ -25,32 +25,37 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChartLayoutService } from './services/chart-layout.service';
 import { TileLimitDialogComponent } from './dialogs/tile-limit-dialog.component';
 import { FinanceModule } from './financial/finance.module';
-import { ComponentsModule } from '../../common/components/components.module';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { RouterModule, Routes } from '@angular/router';
 
 // Define routes for the data visualizations module
 const dataVisualizationsRoutes: Routes = [
-  {
-    path: '',
-    component: DataVisualizationsComponent,
+  { 
+    path: '', 
+    component: DataVisualizationsComponent 
   },
-  {
-    path: 'bar',
-    component: BarComponent,
+  { 
+    path: 'bar', 
+    component: BarComponent 
   },
-  {
-    path: 'line',
-    component: LineComponent,
+  { 
+    path: 'line', 
+    component: LineComponent 
   },
-  {
-    path: 'finance',
-    component: FinanceComponent,
-  },
+  { 
+    path: 'finance', 
+    component: FinanceComponent 
+  }
 ];
 
 @NgModule({
-  declarations: [DataVisualizationsComponent, BarComponent, LineComponent, FireAlertComponent, TileLimitDialogComponent],
+  declarations: [
+    DataVisualizationsComponent,
+    BarComponent, 
+    LineComponent,
+    FireAlertComponent, 
+    TileLimitDialogComponent
+  ],
   imports: [
     CommonModule,
     RouterModule.forChild(dataVisualizationsRoutes),
@@ -69,10 +74,17 @@ const dataVisualizationsRoutes: Routes = [
     MatGridListModule,
     AnimatedDirectivesModule,
     MatTooltipModule,
-    FinanceModule,
-    ComponentsModule,
+    FinanceModule
   ],
-  exports: [DataVisualizationsComponent, RouterModule],
-  providers: [AlphaVantageService, FlightRadarService, MapboxService, ChartLayoutService],
+  exports: [
+    DataVisualizationsComponent,
+    RouterModule
+  ],
+  providers: [
+    AlphaVantageService, 
+    FlightRadarService, 
+    MapboxService,
+    ChartLayoutService
+  ]
 })
-export class DataVisualizationsModule {}
+export class DataVisualizationsModule { }

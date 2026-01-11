@@ -1,24 +1,30 @@
 <div class="bar-chart-container">
   <h2 class="chart-title">United States Progress Over Time</h2>
-
+  
   <!-- Toggle buttons for different metrics with patriotic design -->
   <div class="metric-toggle">
-    <button class="toggle-btn" [class.active]="currentMetric === 'gdp'" (click)="toggleMetric('gdp', $event)">
+    <button class="toggle-btn" 
+            [class.active]="currentMetric === 'gdp'" 
+            (click)="toggleMetric('gdp', $event)">
       <span class="toggle-icon">$</span>
       GDP
     </button>
-    <button class="toggle-btn" [class.active]="currentMetric === 'lifeExpectancy'" (click)="toggleMetric('lifeExpectancy', $event)">
+    <button class="toggle-btn" 
+            [class.active]="currentMetric === 'lifeExpectancy'" 
+            (click)="toggleMetric('lifeExpectancy', $event)">
       <span class="toggle-icon">♥</span>
       Life Expectancy
     </button>
-    <button class="toggle-btn" [class.active]="currentMetric === 'internet'" (click)="toggleMetric('internet', $event)">
+    <button class="toggle-btn" 
+            [class.active]="currentMetric === 'internet'" 
+            (click)="toggleMetric('internet', $event)">
       <span class="toggle-icon">🌐</span>
       Internet Usage
     </button>
   </div>
-
+  
   <div class="bar-chart" id="barChart"></div>
-
+  
   <!-- Patriotic themed infographics -->
   <div class="patriotic-container">
     <div class="star-bg"></div>

@@ -22,7 +22,7 @@ describe('FireAlertComponent', () => {
     remove: jest.fn(),
     getLayer: jest.fn().mockReturnValue(false),
     getSource: jest.fn().mockReturnValue(false),
-    addLayer: jest.fn(),
+    addLayer: jest.fn()
   };
 
   const mockCities = [
@@ -34,8 +34,8 @@ describe('FireAlertComponent', () => {
       coords: { lat: 34.0522, lng: -118.2437 },
       alerts: [
         { id: 1, name: 'Alert 1', time: '2023-10-01T10:00:00Z', level: 'High Priority' },
-        { id: 2, name: 'Alert 2', time: '2023-10-01T12:00:00Z', level: 'Medium Priority' },
-      ],
+        { id: 2, name: 'Alert 2', time: '2023-10-01T12:00:00Z', level: 'Medium Priority' }
+      ]
     },
     {
       name: 'City B',
@@ -45,9 +45,9 @@ describe('FireAlertComponent', () => {
       coords: { lat: 36.1699, lng: -115.1398 },
       alerts: [
         { id: 3, name: 'Alert 3', time: '2023-10-02T14:00:00Z', level: 'Low Priority' },
-        { id: 4, name: 'Alert 4', time: '2023-10-02T16:00:00Z', level: 'High Priority' },
-      ],
-    },
+        { id: 4, name: 'Alert 4', time: '2023-10-02T16:00:00Z', level: 'High Priority' }
+      ]
+    }
   ];
 
   beforeEach(async () => {
@@ -57,39 +57,37 @@ describe('FireAlertComponent', () => {
       addMarker: jest.fn(),
       resizeMap: jest.fn(),
       destroyMap: jest.fn(),
-      addPolyline: jest.fn(),
+      addPolyline: jest.fn()
     } as unknown as jest.Mocked<MapboxService>;
 
     flightRadarService = {
       getFlightsByBoundingBox: jest.fn().mockReturnValue(of([])),
-      getFlightById: jest.fn().mockReturnValue(
-        of({
-          flight: {
-            callSign: 'TEST123',
-            altitude: 35000,
-            origin: 'LAX',
-            destination: 'JFK',
-            aircraft: {
-              model: 'B737',
-              registration: 'N12345',
-            },
-          },
-        }),
-      ),
+      getFlightById: jest.fn().mockReturnValue(of({ 
+        flight: { 
+          callSign: 'TEST123', 
+          altitude: 35000,
+          origin: 'LAX',
+          destination: 'JFK',
+          aircraft: {
+            model: 'B737',
+            registration: 'N12345'
+          }
+        } 
+      }))
     } as unknown as jest.Mocked<FlightRadarService>;
 
     await TestBed.configureTestingModule({
       declarations: [FireAlertComponent],
       providers: [
         { provide: MapboxService, useValue: mapboxService },
-        { provide: FlightRadarService, useValue: flightRadarService },
-      ],
+        { provide: FlightRadarService, useValue: flightRadarService }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(FireAlertComponent);
     component = fixture.componentInstance;
     component.cities = mockCities;
-
+    
     // Create mock DOM element for map container
     const mapContainer = document.createElement('div');
     mapContainer.id = 'map-1';
@@ -121,10 +119,10 @@ describe('FireAlertComponent', () => {
   it('should handle tab change correctly', () => {
     // Setup
     mapboxService.initializeMap.mockClear();
-
+    
     // Execute
     component.onTabChange({ index: 1 });
-
+    
     // Verify
     expect(component.selectedCity).toBe(mockCities[1]);
     expect(mapboxService.initializeMap).toHaveBeenCalled();

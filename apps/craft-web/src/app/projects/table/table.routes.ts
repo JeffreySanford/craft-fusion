@@ -4,5 +4,5 @@ import { RecordDetailComponent } from './record-detail/record-detail.component';
 
 export const tableRoutes: Routes = [
   { path: '', component: RecordListComponent },
-  { path: ':id', component: RecordDetailComponent },
+  { path: ':id', component: RecordDetailComponent }
 ];

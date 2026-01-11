@@ -8,7 +8,7 @@ import { catchError, map } from 'rxjs/operators';
  * It proxies requests to the server endpoint which reads the key from the server-side .env.
  */
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class OpenAIService {
   private readonly serverEndpoint = '/api/internal/ai/generate';
@@ -22,7 +22,7 @@ export class OpenAIService {
       catchError((error: HttpErrorResponse) => {
         console.error('Error from AI proxy endpoint:', error);
         return throwError(() => error);
-      }),
+      })
     );
   }
 }

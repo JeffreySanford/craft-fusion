@@ -7,43 +7,21 @@
 
 // Font families
 $font-families: (
-  roboto-flex: (
-    'Roboto Flex',
-    sans-serif,
-  ),
-  merriweather: (
-    'Merriweather',
-    serif,
-  ),
-  playfair: (
-    'Playfair Display',
-    serif,
-  ),
-  lora: (
-    'Lora',
-    serif,
-  ),
-  source-sans: (
-    'Source Sans Pro',
-    sans-serif,
-  ),
-  libre-baskerville: (
-    'Libre Baskerville',
-    serif,
-  ),
+  roboto-flex: ('Roboto Flex', sans-serif),
+  merriweather: ('Merriweather', serif),
+  playfair: ('Playfair Display', serif),
+  lora: ('Lora', serif),
+  source-sans: ('Source Sans Pro', sans-serif),
+  libre-baskerville: ('Libre Baskerville', serif)
 );
 
 // Book Application Font Roles
 $book-fonts: (
-  body-text: map.get($font-families, merriweather),
-  // Main text content
-  chapter-heading: map.get($font-families, playfair),
-  // Chapter titles
-  section-heading: map.get($font-families, lora),
-  // Section headings
-  quotes: map.get($font-families, libre-baskerville),
-  // Quotes and callouts
-  footnotes: map.get($font-families, source-sans), // Footnotes, captions
+  body-text: map.get($font-families, merriweather),      // Main text content
+  chapter-heading: map.get($font-families, playfair),    // Chapter titles
+  section-heading: map.get($font-families, lora),        // Section headings
+  quotes: map.get($font-families, libre-baskerville),    // Quotes and callouts
+  footnotes: map.get($font-families, source-sans)        // Footnotes, captions
 );
 
 // MD3 Type Scale
@@ -53,106 +31,106 @@ $type-scale: (
     font-size: 57px,
     line-height: 64px,
     letter-spacing: -0.25px,
-    font-weight: 400,
+    font-weight: 400
   ),
   display-medium: (
     font-family: map.get($font-families, roboto-flex),
     font-size: 45px,
     line-height: 52px,
     letter-spacing: 0px,
-    font-weight: 400,
+    font-weight: 400
   ),
   display-small: (
     font-family: map.get($font-families, roboto-flex),
     font-size: 36px,
     line-height: 44px,
     letter-spacing: 0px,
-    font-weight: 400,
+    font-weight: 400
   ),
   headline-large: (
     font-family: map.get($font-families, roboto-flex),
     font-size: 32px,
     line-height: 40px,
     letter-spacing: 0px,
-    font-weight: 400,
+    font-weight: 400
   ),
   headline-medium: (
     font-family: map.get($font-families, roboto-flex),
     font-size: 28px,
     line-height: 36px,
     letter-spacing: 0px,
-    font-weight: 400,
+    font-weight: 400
   ),
   headline-small: (
     font-family: map.get($font-families, roboto-flex),
     font-size: 24px,
     line-height: 32px,
     letter-spacing: 0px,
-    font-weight: 400,
+    font-weight: 400
   ),
   title-large: (
     font-family: map.get($font-families, roboto-flex),
     font-size: 22px,
     line-height: 28px,
     letter-spacing: 0px,
-    font-weight: 400,
+    font-weight: 400
   ),
   title-medium: (
     font-family: map.get($font-families, roboto-flex),
     font-size: 16px,
     line-height: 24px,
     letter-spacing: 0.15px,
-    font-weight: 500,
+    font-weight: 500
   ),
   title-small: (
     font-family: map.get($font-families, roboto-flex),
     font-size: 14px,
     line-height: 20px,
     letter-spacing: 0.1px,
-    font-weight: 500,
+    font-weight: 500
   ),
   body-large: (
     font-family: map.get($font-families, roboto-flex),
     font-size: 16px,
     line-height: 24px,
     letter-spacing: 0.5px,
-    font-weight: 400,
+    font-weight: 400
   ),
   body-medium: (
     font-family: map.get($font-families, roboto-flex),
     font-size: 14px,
     line-height: 20px,
     letter-spacing: 0.25px,
-    font-weight: 400,
+    font-weight: 400
   ),
   body-small: (
     font-family: map.get($font-families, roboto-flex),
     font-size: 12px,
     line-height: 16px,
     letter-spacing: 0.4px,
-    font-weight: 400,
+    font-weight: 400
   ),
   label-large: (
     font-family: map.get($font-families, roboto-flex),
     font-size: 14px,
     line-height: 20px,
     letter-spacing: 0.1px,
-    font-weight: 500,
+    font-weight: 500
   ),
   label-medium: (
     font-family: map.get($font-families, roboto-flex),
     font-size: 12px,
     line-height: 16px,
     letter-spacing: 0.5px,
-    font-weight: 500,
+    font-weight: 500
   ),
   label-small: (
     font-family: map.get($font-families, roboto-flex),
     font-size: 11px,
     line-height: 16px,
     letter-spacing: 0.5px,
-    font-weight: 500,
-  ),
+    font-weight: 500
+  )
 );
 
 // Generate typography classes from the type scale
@@ -210,8 +188,7 @@ $type-scale: (
 }
 
 // Typography for specific components
-.book-content,
-.chat-content {
+.book-content, .chat-content {
   font-family: map.get($font-families, merriweather);
 }
 
@@ -268,20 +245,19 @@ $type-scale: (
 // Apply different fonts for different content types
 .chapter-content {
   @extend .book-body-text;
-
+  
   h1 {
     @extend .book-chapter-title;
   }
-
-  h2,
-  h3 {
+  
+  h2, h3 {
     @extend .book-section-title;
   }
-
+  
   blockquote {
     @extend .book-quote;
   }
-
+  
   .footnote {
     @extend .book-footnote;
   }
@@ -292,7 +268,7 @@ $type-scale: (
   @each $name, $styles in $type-scale {
     $reduced-size: map.get($styles, font-size) * 0.85;
     $reduced-line-height: map.get($styles, line-height) * 0.9;
-
+    
     .#{$name} {
       font-size: $reduced-size;
       line-height: $reduced-line-height;
@@ -308,10 +284,10 @@ $type-scale: (
   --font-lora: #{map.get($font-families, lora)};
   --font-libre-baskerville: #{map.get($font-families, libre-baskerville)};
   --font-source-sans: #{map.get($font-families, source-sans)};
-  --font-ibm-plex-serif: 'IBM Plex Serif', serif;
-  --font-source-serif-pro: 'Source Serif Pro', serif;
-  --font-eb-garamond: 'EB Garamond', serif;
-  --font-crimson-pro: 'Crimson Pro', serif;
+  --font-ibm-plex-serif: "IBM Plex Serif", serif;
+  --font-source-serif-pro: "Source Serif Pro", serif;
+  --font-eb-garamond: "EB Garamond", serif;
+  --font-crimson-pro: "Crimson Pro", serif;
 }
 
 // Font import URLs - can be updated to use local files if needed
@@ -324,12 +300,16 @@ $font-imports: (
   'source-serif-pro': 'https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap',
   'eb-garamond': 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap',
   'crimson-pro': 'https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap',
-  'ibm-plex-serif': 'https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap',
+  'ibm-plex-serif': 'https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap'
 );
 
 // Custom typography level function (replacement for mat.define-typography-level)
 @function define-typography-level($font-size, $line-height, $font-weight) {
-  @return (font-size: $font-size, line-height: $line-height, font-weight: $font-weight);
+  @return (
+    font-size: $font-size,
+    line-height: $line-height,
+    font-weight: $font-weight
+  );
 }
 
 // Custom typography config function (replacement for mat.define-typography-config)
@@ -444,7 +424,7 @@ $font-imports: (
     overflow-x: auto;
     margin: 1em 0;
   }
-
+  
   .book-verse {
     font-family: map.get($book-fonts, body-text);
     font-size: 1.1em;
@@ -453,13 +433,13 @@ $font-imports: (
     padding-left: 2em;
     text-indent: -2em;
   }
-
+  
   .book-verse-number {
     font-weight: 700;
     color: var(--md-sys-color-primary);
     margin-right: 0.5em;
   }
-
+  
   .myth-section {
     background-color: rgba(var(--md-sys-color-surface-rgb), 0.6);
     border-left: 4px solid var(--md-sys-color-primary);
@@ -467,7 +447,7 @@ $font-imports: (
     margin: 1.5em 0;
     border-radius: 0 4px 4px 0;
   }
-
+  
   .myth-line {
     font-style: italic;
     position: relative;
@@ -482,68 +462,68 @@ $font-imports: (
     font-weight: 700;
     letter-spacing: -0.02em;
   }
-
+  
   .text-h2 {
     font-size: 28px;
     line-height: 36px;
     font-weight: 700;
     letter-spacing: -0.01em;
   }
-
+  
   .text-h3 {
     font-size: 24px;
     line-height: 32px;
     font-weight: 700;
   }
-
+  
   .text-h4 {
     font-size: 20px;
     line-height: 28px;
     font-weight: 700;
   }
-
+  
   .text-h5 {
     font-size: 16px;
     line-height: 24px;
     font-weight: 700;
   }
-
+  
   .text-h6 {
     font-size: 14px;
     line-height: 20px;
     font-weight: 700;
   }
-
+  
   .text-body1 {
     font-size: 14px;
     line-height: 20px;
     font-weight: 400;
   }
-
+  
   .text-body2 {
     font-size: 12px;
     line-height: 18px;
     font-weight: 400;
   }
-
+  
   .text-subtitle1 {
     font-size: 16px;
     line-height: 24px;
     font-weight: 500;
   }
-
+  
   .text-subtitle2 {
     font-size: 14px;
     line-height: 20px;
     font-weight: 500;
   }
-
+  
   .text-caption {
     font-size: 12px;
     line-height: 16px;
     font-weight: 400;
   }
-
+  
   .text-button {
     font-size: 14px;
     line-height: 14px;
@@ -551,134 +531,58 @@ $font-imports: (
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
-
+  
   // Font weights
-  .font-light {
-    font-weight: 300;
-  }
-  .font-regular {
-    font-weight: 400;
-  }
-  .font-medium {
-    font-weight: 500;
-  }
-  .font-semibold {
-    font-weight: 600;
-  }
-  .font-bold {
-    font-weight: 700;
-  }
-
+  .font-light { font-weight: 300; }
+  .font-regular { font-weight: 400; }
+  .font-medium { font-weight: 500; }
+  .font-semibold { font-weight: 600; }
+  .font-bold { font-weight: 700; }
+  
   // Font styles
-  .italic {
-    font-style: italic;
-  }
-  .uppercase {
-    text-transform: uppercase;
-  }
-  .lowercase {
-    text-transform: lowercase;
-  }
-  .capitalize {
-    text-transform: capitalize;
-  }
-
+  .italic { font-style: italic; }
+  .uppercase { text-transform: uppercase; }
+  .lowercase { text-transform: lowercase; }
+  .capitalize { text-transform: capitalize; }
+  
   // Text alignment
-  .text-left {
-    text-align: left;
-  }
-  .text-center {
-    text-align: center;
-  }
-  .text-right {
-    text-align: right;
-  }
-  .text-justify {
-    text-align: justify;
-  }
-
+  .text-left { text-align: left; }
+  .text-center { text-align: center; }
+  .text-right { text-align: right; }
+  .text-justify { text-align: justify; }
+  
   // Text decoration
-  .underline {
-    text-decoration: underline;
-  }
-  .line-through {
-    text-decoration: line-through;
-  }
-  .no-decoration {
-    text-decoration: none;
-  }
-
+  .underline { text-decoration: underline; }
+  .line-through { text-decoration: line-through; }
+  .no-decoration { text-decoration: none; }
+  
   // Letter spacing
-  .tracking-tight {
-    letter-spacing: -0.025em;
-  }
-  .tracking-normal {
-    letter-spacing: 0;
-  }
-  .tracking-wide {
-    letter-spacing: 0.025em;
-  }
-  .tracking-wider {
-    letter-spacing: 0.05em;
-  }
-  .tracking-widest {
-    letter-spacing: 0.1em;
-  }
-
+  .tracking-tight { letter-spacing: -0.025em; }
+  .tracking-normal { letter-spacing: 0; }
+  .tracking-wide { letter-spacing: 0.025em; }
+  .tracking-wider { letter-spacing: 0.05em; }
+  .tracking-widest { letter-spacing: 0.1em; }
+  
   // Line height
-  .leading-none {
-    line-height: 1;
-  }
-  .leading-tight {
-    line-height: 1.25;
-  }
-  .leading-snug {
-    line-height: 1.375;
-  }
-  .leading-normal {
-    line-height: 1.5;
-  }
-  .leading-relaxed {
-    line-height: 1.625;
-  }
-  .leading-loose {
-    line-height: 2;
-  }
-
+  .leading-none { line-height: 1; }
+  .leading-tight { line-height: 1.25; }
+  .leading-snug { line-height: 1.375; }
+  .leading-normal { line-height: 1.5; }
+  .leading-relaxed { line-height: 1.625; }
+  .leading-loose { line-height: 2; }
+  
   // Font families
-  .font-sans {
-    font-family: var(--font-roboto), sans-serif;
-  }
-  .font-serif {
-    font-family: var(--font-merriweather), serif;
-  }
-  .font-mono {
-    font-family: monospace;
-  }
-
+  .font-sans { font-family: var(--font-roboto), sans-serif; }
+  .font-serif { font-family: var(--font-merriweather), serif; }
+  .font-mono { font-family: monospace; }
+  
   // Book-specific font families
-  .font-playfair {
-    font-family: var(--font-playfair);
-  }
-  .font-merriweather {
-    font-family: var(--font-merriweather);
-  }
-  .font-lora {
-    font-family: var(--font-lora);
-  }
-  .font-libre-baskerville {
-    font-family: var(--font-libre-baskerville);
-  }
-  .font-ibm-plex-serif {
-    font-family: var(--font-ibm-plex-serif);
-  }
-  .font-source-serif-pro {
-    font-family: var(--font-source-serif-pro);
-  }
-  .font-eb-garamond {
-    font-family: var(--font-eb-garamond);
-  }
-  .font-crimson-pro {
-    font-family: var(--font-crimson-pro);
-  }
+  .font-playfair { font-family: var(--font-playfair); }
+  .font-merriweather { font-family: var(--font-merriweather); }
+  .font-lora { font-family: var(--font-lora); }
+  .font-libre-baskerville { font-family: var(--font-libre-baskerville); }
+  .font-ibm-plex-serif { font-family: var(--font-ibm-plex-serif); }
+  .font-source-serif-pro { font-family: var(--font-source-serif-pro); }
+  .font-eb-garamond { font-family: var(--font-eb-garamond); }
+  .font-crimson-pro { font-family: var(--font-crimson-pro); }
 }

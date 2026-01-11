@@ -13,57 +13,60 @@ export interface UserActivity {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class UserActivityService {
   private userActivities: UserActivity[] = [];
   private sessionStartTime = Date.now();
   private lastActivityTime = Date.now();
-  private pageViewDurations: { [page: string]: number } = {};
+  private pageViewDurations: {[page: string]: number} = {};
   private currentPage = '';
 
   constructor(
-    private router: Router,
-    private logger: LoggerService,
+    private router: Router, 
+    private logger: LoggerService
   ) {
     this.initRouterTracking();
     this.initUserInteractionTracking();
     this.startTrackingNavigation(); // Start tracking immediately
-
+    
     this.logger.info('User activity tracking initialized');
   }
 
   private initRouterTracking(): void {
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(evt => {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((evt) => {
       const event = evt as NavigationEnd;
       const now = Date.now();
 
       // Calculate duration for previous page
       if (this.currentPage) {
-        this.pageViewDurations[this.currentPage] = (this.pageViewDurations[this.currentPage] || 0) + (now - this.lastActivityTime);
+        this.pageViewDurations[this.currentPage] =
+          (this.pageViewDurations[this.currentPage] || 0) + (now - this.lastActivityTime);
       }
 
       this.lastActivityTime = now;
       this.currentPage = event.urlAfterRedirects;
 
       this.trackActivity('pageview', {
-        page: event.urlAfterRedirects,
+        page: event.urlAfterRedirects
       });
 
       this.logger.info(`User navigated to ${event.urlAfterRedirects}`);
     });
   }
-
+  
   private initUserInteractionTracking(): void {
     // Track clicks
-    document.addEventListener('click', event => {
+    document.addEventListener('click', (event) => {
       const target = event.target as HTMLElement;
       this.trackActivity('click', {
         target: this.getElementDescription(target),
-        page: this.currentPage,
+        page: this.currentPage
       });
     });
-
+    
     // Track scrolls (debounced)
     let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
     document.addEventListener('scroll', () => {
@@ -74,14 +77,14 @@ export class UserActivityService {
       scrollTimeout = setTimeout(() => {
         this.trackActivity('scroll', {
           position: window.scrollY,
-          page: this.currentPage,
+          page: this.currentPage
         });
       }, 300);
     });
-
+    
     // Track form inputs (debounced)
     let inputTimeout: ReturnType<typeof setTimeout> | null = null;
-    document.addEventListener('input', event => {
+    document.addEventListener('input', (event) => {
       if (inputTimeout) {
         clearTimeout(inputTimeout as unknown as number);
       }
@@ -90,15 +93,15 @@ export class UserActivityService {
         const target = event.target as HTMLInputElement | null;
         this.trackActivity('input', {
           target: this.getElementDescription(target),
-          page: this.currentPage,
+          page: this.currentPage
         });
       }, 500);
     });
   }
-
+  
   private getElementDescription(element: HTMLElement | null): string {
     if (!element) return 'unknown';
-
+    
     // Try to get a useful description of the element
     if (element.id) {
       return `#${element.id}`;
@@ -108,52 +111,53 @@ export class UserActivityService {
       return element.tagName.toLowerCase();
     }
   }
-
+  
   trackActivity(type: UserActivity['type'], details: Partial<UserActivity>): void {
     const activity: UserActivity = {
       timestamp: Date.now(),
       type,
-      ...details,
+      ...details
     };
-
+    
     this.userActivities.push(activity);
     this.lastActivityTime = activity.timestamp;
-
+    
     // Limit the array size to prevent memory issues
     if (this.userActivities.length > 100) {
       this.userActivities.shift();
     }
   }
-
+  
   getSessionDuration(): number {
     return Date.now() - this.sessionStartTime;
   }
-
-  getPageViewDurations(): { [page: string]: number } {
+  
+  getPageViewDurations(): {[page: string]: number} {
     // Update the current page duration
     if (this.currentPage) {
-      this.pageViewDurations[this.currentPage] = (this.pageViewDurations[this.currentPage] || 0) + (Date.now() - this.lastActivityTime);
+      this.pageViewDurations[this.currentPage] = 
+        (this.pageViewDurations[this.currentPage] || 0) + (Date.now() - this.lastActivityTime);
       this.lastActivityTime = Date.now();
     }
-
+    
     return this.pageViewDurations;
   }
-
+  
   getActivities(): UserActivity[] {
     return this.userActivities;
   }
-
+  
   getActivitySummary(): unknown {
     const clickCount = this.userActivities.filter(a => a.type === 'click').length;
     const pageViewCount = this.userActivities.filter(a => a.type === 'pageview').length;
     const inputCount = this.userActivities.filter(a => a.type === 'input').length;
-
+    
     return {
       sessionDuration: this.getSessionDuration(),
       pageViews: pageViewCount,
       clicks: clickCount,
       inputs: inputCount,
-      pageViewDurations: this.getPageViewDurations(),
+      pageViewDurations: this.getPageViewDurations()
     };
   }
 

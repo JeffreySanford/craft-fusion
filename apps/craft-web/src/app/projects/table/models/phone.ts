@@ -1,4 +1,4 @@
 export interface Phone {
-  number: string;
-  extension?: string;
+    number: string;
+    extension?: string;
 }

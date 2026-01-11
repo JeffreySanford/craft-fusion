@@ -3,7 +3,7 @@ import * as mammoth from 'mammoth';
 import { TurndownWrapperService } from './turndown-wrapper.service';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class DocParseService {
   private debugMode = true;
@@ -12,28 +12,28 @@ export class DocParseService {
   private mythPatterns = {
     // Match bracketed verse ranges with optional hyperlinks
     bracketedRange: /^\[(?<start>\w+)-(?<end>\w+)\](?:\((?<link>[^\)]+)\))?(?<content>.*)$/,
-
+    
     // Match markdown-style links with verse ranges
     bracketedRangeLink: /^\[(?<verse>\w+(?:-\w+)?)\](?:\((?<link>[^\)]+)\))(?<content>.*)$/,
-
+    
     // Match standard verse ranges 123-456.
     verseRange: /^(?<start>\w+)-(?<end>\w+)\.\s*(?<content>.+)$/,
-
+    
     // Match single verse with brackets and optional hyperlink
     bracketedVerse: /^\[(?<verse>\w+)\](?:\((?<link>[^\)]+)\))?(?<content>.*)$/,
-
+    
     // Match standard verse format "123. Text"
     singleVerse: /^(?<verse>\w+)\.\s*(?<content>.+)$/,
-
+    
     // Match ETCSL reference
     etcslRef: /^ETCSL\s+(?<ref>\d+\.\d+)\s*(?:\((?<link>[^\)]+)\))?\s*(?<content>.+)?$/,
-
+    
     // Match continuation lines
     continuation: /^\s{2,}(?<content>.+)$/,
     // Updated mythSection pattern to handle A-Z ranges
     mythSection: /^(?<verse>\d{1,3}[A-Za-z]+)-(?<endVerse>\d{1,3}[A-Za-z]+)\s*(?<content>[\s\S]*)$/gm,
     // New mythKeywordSection pattern to detect myths based on keywords
-    mythKeywordSection: /^(?<content>.*(?:Enki|Enlil|Anu|Ninhursag|netherworld|shrines|Land|heavens|earth).*)$/ims,
+    mythKeywordSection: /^(?<content>.*(?:Enki|Enlil|Anu|Ninhursag|netherworld|shrines|Land|heavens|earth).*)$/smi
   };
 
   private log(...args: unknown[]) {
@@ -46,12 +46,12 @@ export class DocParseService {
     return typeof obj === 'object' && obj !== null;
   }
 
-  constructor(private readonly turndownWrapper: TurndownWrapperService) {}
+  constructor(private readonly turndownWrapper: TurndownWrapperService) { }
 
   async parseDoc(file: File): Promise<string> {
     console.log('\n=== Starting Document Parse ===');
     console.log(`Processing ${file.name} (${file.size} bytes)`);
-
+    
     const fileArrayBuffer = await file.arrayBuffer();
 
     const options = {
@@ -72,8 +72,8 @@ export class DocParseService {
         // Check for myth section start
         const mythMatch = this.detectMythSection(text);
         if (mythMatch) {
-          const { verse, content } = mythMatch;
-          console.log('Found myth:', { verse, content });
+          const {verse, content} = mythMatch;
+          console.log('Found myth:', {verse, content});
 
           return {
             type: 'html',
@@ -81,12 +81,12 @@ export class DocParseService {
               <div class="myth-section">
                 ${verse} ${content}
               </div>
-            `,
+            `
           };
         }
 
         return element;
-      },
+      }
     };
 
     try {
@@ -103,11 +103,12 @@ export class DocParseService {
             }
           }
           return content;
-        },
+        }
       });
       console.log('=== Parse Complete ===');
       console.log('Output length:', markdown.length);
       return markdown;
+
     } catch (error) {
       console.error('Parse error:', error);
       throw error;
@@ -133,7 +134,7 @@ export class DocParseService {
     // Check basic patterns first
     const simplePattern = /^\d+\./;
     const rangePattern = /^\d+-\d+\./;
-
+    
     return simplePattern.test(text) || rangePattern.test(text);
   }
 
@@ -170,10 +171,7 @@ export class DocParseService {
     const text = element['value'] || '';
     const childTexts = Array.isArray(element['children']) ? element['children'].map((c: unknown) => this.extractFullText(c)) : [];
 
-    return [text, ...childTexts]
-      .filter(t => t)
-      .join(' ')
-      .trim();
+    return [text, ...childTexts].filter(t => t).join(' ').trim();
   }
 
   private extractText(element: unknown): string {
@@ -192,7 +190,7 @@ export class DocParseService {
 
   private transformMythSection(element: unknown) {
     const text = this.extractText(element);
-
+    
     // Try matching different myth patterns
     const rangeMatch = text.match(this.mythPatterns.verseRange);
     const singleMatch = text.match(this.mythPatterns.singleVerse);
@@ -200,13 +198,13 @@ export class DocParseService {
 
     if (rangeMatch || singleMatch || etcslMatch) {
       const [verse, content] = this.parseMythLine(text);
-      this.log('Found myth:', { verse, content });
-
+      this.log('Found myth:', {verse, content});
+      
       return {
         type: 'html',
         value: `<div class="myth-section">
           ${verse} ${content}
-        </div>`,
+        </div>`
       };
     }
 
@@ -229,11 +227,11 @@ export class DocParseService {
           const ref = match.groups['ref'];
           const text = match.groups['content'];
           const url = match.groups['link'];
-
+          
           return {
             verse: book || verseRange || ref || '',
             content: text?.trim() || '',
-            link: url,
+            link: url
           };
         } else {
           this.log(`${patternName} pattern did not match.`);
@@ -267,21 +265,25 @@ export class DocParseService {
   }
 
   private createMythElement(match: RegExpMatchArray) {
-    const verse = match.groups?.['verse'] || `${match.groups?.['start']}-${match.groups?.['end']}` || match.groups?.['ref'] || '';
-
+    const verse = match.groups?.['verse'] || 
+                 `${match.groups?.['start']}-${match.groups?.['end']}` ||
+                 match.groups?.['ref'] || '';
+    
     const content = match.groups?.['content']?.trim() || '';
     const link = match.groups?.['link'];
 
     if (verse) {
       // Move URL link to verse label only
-      const labelPart = link ? `<span class="verse-label darkgreen-label">${verse}<a href="${link}" title="View source">†</a></span>` : `<span class="verse-label">${verse}</span>`;
+      const labelPart = link
+        ? `<span class="verse-label darkgreen-label">${verse}<a href="${link}" title="View source">†</a></span>`
+        : `<span class="verse-label">${verse}</span>`;
 
       return {
         type: 'html',
         value: `<div class="myth-section">
           ${labelPart}
           <div class="myth-content">${content}</div>
-        </div>`,
+        </div>`
       };
     }
 
@@ -290,27 +292,25 @@ export class DocParseService {
 
   private processMythContent(text: string): string {
     const verses = text.split(/(?=\[\d+(?:-\d+)?\]|\d+(?:-\d+)?\.)/);
+    
+    return verses.map(verse => {
+      // Match verse numbers and content
+      const verseMatch = verse.match(/(?:\[(\d+(?:-\d+)?)\]|\b(\d+(?:-\d+)?)\.)(?:\((.*?)\))?\s*(.+)/s);
+      
+      if (verseMatch) {
+        const verseNum = verseMatch[1] || verseMatch[2] || '';
+        const link = verseMatch[3];
+        const content = verseMatch[4]?.trim() || '';
+        const labelPart = link
+          ? `<span class="verse-label darkgreen-label">${verseNum}<a href="${link}" title="View source">†</a></span>`
+          : `<span class="verse-label">${verseNum}</span>`;
 
-    return verses
-      .map(verse => {
-        // Match verse numbers and content
-        const verseMatch = verse.match(/(?:\[(\d+(?:-\d+)?)\]|\b(\d+(?:-\d+)?)\.)(?:\((.*?)\))?\s*(.+)/s);
-
-        if (verseMatch) {
-          const verseNum = verseMatch[1] || verseMatch[2] || '';
-          const link = verseMatch[3];
-          const content = verseMatch[4]?.trim() || '';
-          const labelPart = link
-            ? `<span class="verse-label darkgreen-label">${verseNum}<a href="${link}" title="View source">†</a></span>`
-            : `<span class="verse-label">${verseNum}</span>`;
-
-          return `<div class="myth-section">
+        return `<div class="myth-section">
           ${labelPart}
           <div class="myth-content">${content}</div>
         </div>`;
-        }
-        return verse;
-      })
-      .join('\n');
+      }
+      return verse;
+    }).join('\n');
   }
 }

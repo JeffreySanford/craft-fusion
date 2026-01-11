@@ -7,8 +7,9 @@ describe('RecordListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [RecordListComponent],
-    }).compileComponents();
+      declarations: [ RecordListComponent ]
+    })
+    .compileComponents();
   });
 
   beforeEach(() => {

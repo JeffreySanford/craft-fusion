@@ -63,7 +63,7 @@ import { MatRadioModule } from '@angular/material/radio';
     MatNativeDateModule,
     MatDividerModule,
     MatStepperModule,
-    MatRadioModule,
-  ],
+    MatRadioModule
+  ]
 })
-export class MaterialModule {}
+export class MaterialModule { }

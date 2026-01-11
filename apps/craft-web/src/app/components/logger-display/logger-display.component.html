@@ -1,6 +1,8 @@
 <div class="logger-display">
   <div class="logs-container" #logContainer>
-    <div *ngFor="let log of filterLogs(); trackBy: getLogId" [ngClass]="getLogClass(log)" class="log-entry">
+    <div *ngFor="let log of filterLogs(); trackBy: getLogId" 
+         [ngClass]="getLogClass(log)" 
+         class="log-entry">
       <div class="log-header">
         <div>
           <span class="log-level">
@@ -9,7 +11,7 @@
           </span>
           <span class="log-component" *ngIf="log.component">{{ log.component }}</span>
         </div>
-        <span class="log-timestamp" [matTooltip]="log.timestamp | date: 'medium'">
+        <span class="log-timestamp" [matTooltip]="log.timestamp | date:'medium'">
           {{ getTimeAgo(log) }}
         </span>
       </div>
@@ -18,7 +20,9 @@
         <pre>{{ formatDetails(log.details) }}</pre>
       </div>
     </div>
-
-    <div *ngIf="filterLogs().length === 0" class="no-logs-message">No logs to display</div>
+    
+    <div *ngIf="filterLogs().length === 0" class="no-logs-message">
+      No logs to display
+    </div>
   </div>
 </div>

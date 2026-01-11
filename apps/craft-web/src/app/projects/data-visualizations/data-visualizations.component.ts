@@ -24,7 +24,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   isSidebarCollapsed = false;
   expandedTileIndex: number | null = null;
   fullExpandedTileIndex: number | null = null; // New property for full-screen expansion
-
+  
   // Track displayed and available charts
   displayedCharts: ExtendedChartData[] = [];
   availableCharts: ExtendedChartData[] = [];
@@ -80,8 +80,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [], size: 'large', active: false },
   ];
 
-  public fintechChartData: HistoricalData[] = [];
-  financeData: unknown;
+  public fintechChartData: HistoricalData[] = [];  financeData: unknown;
 
   // New properties to track dimensions
   tileWidth: number = 0;
@@ -92,40 +91,41 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   readonly MAX_TILES = 5;
 
   constructor(
-    private breakpointObserver: BreakpointObserver,
-    private cdr: ChangeDetectorRef,
+    private breakpointObserver: BreakpointObserver, 
+    private cdr: ChangeDetectorRef, 
     private yahooService: YahooService,
     private iconRegistry: MatIconRegistry,
     private sidebarStateService: SidebarStateService,
     private chartLayoutService: ChartLayoutService,
     private dialog: MatDialog,
-    private socketClient: SocketClientService,
+    private socketClient: SocketClientService
   ) {
     console.log('DataVisualizationsComponent instantiated');
     // Register icons - this ensures Material icons are available
     this.registerIcons();
-
+    
     // Initialize available and displayed charts
     this.availableCharts = [...this.allCharts];
-
+    
+    
     this.loadFintechChartData()
       .pipe()
       .subscribe((data: HistoricalData[]) => {
         this.fintechChartData = data;
-
+        
         // Update finance chart data in both arrays
         const financeChartIndex = this.availableCharts.findIndex(c => c.component === 'app-finance-chart');
         if (financeChartIndex !== -1) {
           const chart = this.availableCharts[financeChartIndex];
           if (chart) chart.data = this.fintechChartData as any[];
         }
-
+        
         const displayedFinanceIndex = this.displayedCharts.findIndex(c => c.component === 'app-finance-chart');
         if (displayedFinanceIndex !== -1) {
           const chart = this.displayedCharts[displayedFinanceIndex];
           if (chart) chart.data = this.fintechChartData as any[];
         }
-
+        
         setTimeout(() => this.cdr.detectChanges());
       });
 
@@ -137,10 +137,12 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     });
 
     // Subscribe to sidebar state changes
-    this.sidebarSubscription = this.sidebarStateService.isCollapsed$.subscribe(isCollapsed => {
-      this.isSidebarCollapsed = isCollapsed;
-      setTimeout(() => this.cdr.detectChanges());
-    });
+    this.sidebarSubscription = this.sidebarStateService.isCollapsed$.subscribe(
+      isCollapsed => {
+        this.isSidebarCollapsed = isCollapsed;
+        setTimeout(() => this.cdr.detectChanges());
+      }
+    );
   }
 
   ngOnInit() {
@@ -183,13 +185,13 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     if (this.sidebarSubscription) {
       this.sidebarSubscription.unsubscribe();
     }
-
+    
     // Clean up resize observer
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;
     }
-
+    
     // Ensure body overflow is restored
     document.body.style.overflow = '';
   }
@@ -201,8 +203,9 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
         for (const entry of entries) {
           if (entry.contentBoxSize) {
             // Handle modern browsers
-            const contentBoxSize = Array.isArray(entry.contentBoxSize) ? entry.contentBoxSize[0] : entry.contentBoxSize;
-
+            const contentBoxSize = Array.isArray(entry.contentBoxSize) ? 
+              entry.contentBoxSize[0] : entry.contentBoxSize;
+            
             this.tileWidth = contentBoxSize.inlineSize;
             this.tileHeight = contentBoxSize.blockSize;
           } else {
@@ -225,12 +228,13 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   }
 
   // Calculate dimensions for each tile based on its size property and container size
-  getTileDimensions(chart: ChartData): { width: number; height: number } {
-    const baseHeight = chart.size === 'small' ? 250 : chart.size === 'large' ? 450 : 350;
-
+  getTileDimensions(chart: ChartData): { width: number, height: number } {
+    const baseHeight = chart.size === 'small' ? 250 : 
+                       chart.size === 'large' ? 450 : 350;
+    
     return {
       width: 0, // Will be determined by container
-      height: baseHeight,
+      height: baseHeight
     };
   }
 
@@ -244,13 +248,13 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     if (event) {
       event.stopPropagation();
     }
-
+    
     if (this.isChartActive(chart)) {
       this.removeTile(chart);
     } else {
       this.addTile(chart);
     }
-
+    
     // Update all list items to have proper styling
     setTimeout(() => {
       this.updateListItemStyles();
@@ -268,10 +272,10 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     const largeCount = this.displayedCharts.filter(c => c.size === 'large').length;
     const mediumCount = this.displayedCharts.filter(c => c.size === 'medium').length;
     const smallCount = this.displayedCharts.filter(c => c.size === 'small').length;
-
+    
     console.log(`Checking space - Current tile counts: ${largeCount} large, ${mediumCount} medium, ${smallCount} small`);
     console.log(`Attempting to add: ${newTile.name} (${newTile.size})`);
-
+    
     // Rule 1: Two large tiles maximum and they can't be mixed with other sizes
     if (largeCount > 0) {
       // If we already have large tiles
@@ -285,53 +289,53 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       }
       return true; // Can add a second large tile
     }
-
+    
     // Rule 2: If adding a large tile when other sizes exist
     if (newTile.size === 'large' && (mediumCount > 0 || smallCount > 0)) {
       return false; // Can't add large when medium/small exist
     }
-
+    
     // Rule 3: Medium tile scenarios
     if (newTile.size === 'medium') {
       // Up to 4 medium tiles in a 2x2 grid
       if (mediumCount >= 4) {
         return false;
       }
-
+      
       // Medium + Small combinations
       // Maximum would be 2 medium + 1 small (2*6 + 1*4 = 16 columns across 2 rows)
       if (mediumCount >= 2 && smallCount >= 1) {
         return false;
       }
-
+      
       // Up to 2 medium tiles with 2 small tiles (2*6 + 2*4 = 20 columns < 24 in 2 rows)
       if (smallCount >= 3) {
         return false;
       }
-
+      
       return true;
     }
-
+    
     // Rule 4: Small tile scenarios
     if (newTile.size === 'small') {
       // 6 small tiles max in two rows of 3 (6*4 = 24 columns total)
       if (smallCount >= 6) {
         return false;
       }
-
+      
       // With 2 medium tiles, only allow up to 2 small tiles (2*6 + 2*4 = 20 columns < 24)
       if (mediumCount === 2 && smallCount >= 2) {
         return false;
       }
-
+      
       // With 3 medium tiles, allow 0 small tiles (3*6 = 18 columns, no room for small in 2 rows)
       if (mediumCount >= 3) {
         return false;
       }
-
+      
       return true;
     }
-
+    
     return false; // Default case for unknown sizes
   }
 
@@ -343,30 +347,30 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   // Add tile to the main display with improved grid positioning
   addTile(chart: ChartData): void {
     console.log('Adding tile:', chart.name, chart.size);
-
+    
     // Check if there's room for more tiles
     if (!this.hasRoomForMoreTiles(chart)) {
       // Show dialog that allows for removing tiles
       this.showNoSpaceNotification(chart as ExtendedChartData);
       return;
     }
-
+    
     // Clone the chart to avoid reference issues
     const chartCopy = { ...chart } as ExtendedChartData;
-
+    
     // Pre-calculate the chart class
     chartCopy.chartClass = this.chartLayoutService.calculateChartClass(chartCopy.component);
-
+    
     // Insert large tiles at the beginning for optimal grid layout
     if (chartCopy.size === 'large') {
       this.displayedCharts.unshift(chartCopy);
     } else {
       this.displayedCharts.push(chartCopy);
     }
-
+    
     // Sort charts by size to optimize layout (large first, then medium, then small)
     this.optimizeChartLayout();
-
+    
     setTimeout(() => {
       this.resizeCharts();
     }, 150);
@@ -380,40 +384,40 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       disableClose: true,
       data: {
         currentTiles: this.displayedCharts,
-        newTile: newTile,
-      },
+        newTile: newTile
+      }
     });
-
+  
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.action === 'remove' && result.tiles && result.tiles.length > 0) {
         // Store reference to removed tiles for debugging
         const removedTileNames = result.tiles.map((t: ExtendedChartData) => t.name);
         console.log(`Removing tiles: ${removedTileNames.join(', ')}`);
-
+        
         // Remove the selected tiles one by one
         result.tiles.forEach((tile: ExtendedChartData) => {
           this.removeTile(tile, undefined, false); // Don't trigger resize yet
         });
-
+        
         // Force a complete refresh of the layout
         this.optimizeChartLayout();
         setTimeout(() => this.cdr.detectChanges());
-
+        
         console.log('After removal - checking space again');
         // Log current state for debugging
         const currentState = {
           largeCount: this.displayedCharts.filter(c => c.size === 'large').length,
           mediumCount: this.displayedCharts.filter(c => c.size === 'medium').length,
-          smallCount: this.displayedCharts.filter(c => c.size === 'small').length,
+          smallCount: this.displayedCharts.filter(c => c.size === 'small').length
         };
         console.log(`Current state: ${JSON.stringify(currentState)}`);
-
+        
         // Use a longer timeout to ensure state is fully updated
         setTimeout(() => {
           // Verify there is now enough space before adding
           const hasRoom = this.hasRoomForMoreTiles(newTile);
           console.log(`Has room for new tile? ${hasRoom}`);
-
+          
           if (hasRoom) {
             this.addTile(newTile);
           } else {
@@ -429,13 +433,13 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   // Force add a tile even if space check fails
   private forceAddTile(chart: ExtendedChartData): void {
     console.log('Force adding tile:', chart.name);
-
+    
     // Clone the chart to avoid reference issues
     const chartCopy = { ...chart } as ExtendedChartData;
-
+    
     // Pre-calculate the chart class
     chartCopy.chartClass = this.chartLayoutService.calculateChartClass(chartCopy.component);
-
+    
     // Insert large tiles at the beginning for optimal grid layout
     if (chartCopy.size === 'large') {
       this.displayedCharts.unshift(chartCopy);
@@ -444,7 +448,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       this.displayedCharts.push(chartCopy);
       console.log('Added non-large tile to the end of the array');
     }
-
+    
     // Optimize layout after adding
     this.optimizeChartLayout();
     setTimeout(() => {
@@ -462,13 +466,13 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     if (event) {
       event.stopPropagation();
     }
-
+    
     const index = this.displayedCharts.findIndex(c => c.component === chart.component);
     if (index !== -1) {
       console.log(`Removing tile: ${chart.name}, index: ${index}`);
       this.displayedCharts.splice(index, 1);
       setTimeout(() => this.cdr.detectChanges());
-
+      
       // Optionally skip resize for bulk operations
       if (triggerResize) {
         setTimeout(() => {
@@ -493,7 +497,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   drop(event: CdkDragDrop<ExtendedChartData[]>) {
     moveItemInArray(this.displayedCharts, event.previousIndex, event.currentIndex);
     setTimeout(() => this.cdr.detectChanges());
-
+    
     // Resize charts after reordering
     setTimeout(() => {
       this.resizeCharts();
@@ -503,16 +507,11 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   // Get an appropriate icon for each chart type
   getIconForChart(chart: ChartData): string {
     switch (chart.component) {
-      case 'app-line-chart':
-        return 'show_chart';
-      case 'app-bar-chart':
-        return 'bar_chart';
-      case 'app-finance-chart':
-        return 'trending_up';
-      case 'app-fire-alert':
-        return 'warning';
-      default:
-        return 'widgets';
+      case 'app-line-chart': return 'show_chart';
+      case 'app-bar-chart': return 'bar_chart';
+      case 'app-finance-chart': return 'trending_up';
+      case 'app-fire-alert': return 'warning';
+      default: return 'widgets';
     }
   }
 
@@ -537,16 +536,16 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   private registerIcons(): void {
     // This ensures that Material icons are properly loaded
     this.iconRegistry.setDefaultFontSetClass('material-icons');
-
+    
     // Make sure icons are loaded properly
     const matIconsUrl = 'https://fonts.googleapis.com/icon?family=Material+Icons';
-
+    
     // Register the Material Icons font
     const linkEl = document.createElement('link');
     linkEl.rel = 'stylesheet';
     linkEl.href = matIconsUrl;
     document.head.appendChild(linkEl);
-
+    
     // Ensure the registry knows about the material icons font set
     this.iconRegistry.registerFontClassAlias('material-icons');
   }
@@ -556,7 +555,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     // Use setTimeout to ensure DOM is updated
     setTimeout(() => {
       const listItems = document.querySelectorAll('.visualization-sidebar mat-list-item');
-
+      
       listItems.forEach((item, index) => {
         const chart = this.availableCharts[index];
         if (!chart) return; // Guard against mismatched DOM and data arrays
@@ -565,20 +564,20 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
           // Apply vibrant chart color to the border, text, and icons
           (item as HTMLElement).style.borderLeftColor = c.color;
           (item as HTMLElement).style.color = c.color;
-
+          
           // Add glow effect with the chart color
           (item as HTMLElement).style.boxShadow = `0 0 10px rgba(${this.hexToRgb(c.color)}, 0.3)`;
-
+          
           // Add active class
           item.classList.add('active');
-
+          
           // Find and style all icons in the active item
           const icons = item.querySelectorAll('mat-icon');
           icons.forEach(icon => {
             (icon as HTMLElement).style.color = chart.color;
             (icon as HTMLElement).style.filter = `drop-shadow(0 0 5px ${chart.color})`;
           });
-
+          
           // Style the title text with glow
           const titleText = item.querySelector('[matListItemTitle]');
           if (titleText) {
@@ -591,14 +590,14 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
           (item as HTMLElement).style.borderLeftColor = 'transparent';
           (item as HTMLElement).style.color = '';
           (item as HTMLElement).style.boxShadow = '';
-
+          
           // Reset all icon colors and effects
           const icons = item.querySelectorAll('mat-icon');
           icons.forEach(icon => {
             (icon as HTMLElement).style.color = '';
             (icon as HTMLElement).style.filter = '';
           });
-
+          
           // Reset title text color and glow
           const titleText = item.querySelector('[matListItemTitle]');
           if (titleText) {
@@ -609,7 +608,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       });
     });
   }
-
+  
   // Helper function to convert hex color to RGB
   private hexToRgb(hex: string = '#000000'): string {
     if (!hex || typeof hex !== 'string') hex = '#000000';
@@ -617,13 +616,9 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     const cleaned = hex.startsWith('#') ? hex.slice(1) : hex;
 
     // Handle shorthand hex like 'abc' -> 'aabbcc'
-    const full =
-      cleaned.length === 3
-        ? cleaned
-            .split('')
-            .map(c => c + c)
-            .join('')
-        : cleaned.padEnd(6, '0').slice(0, 6);
+    const full = cleaned.length === 3
+      ? cleaned.split('').map(c => c + c).join('')
+      : cleaned.padEnd(6, '0').slice(0, 6);
 
     // Parse the hex values safely
     const r = parseInt(full.substring(0, 2), 16) || 0;
@@ -632,11 +627,11 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
 
     return `${r}, ${g}, ${b}`;
   }
-
+  
   ngAfterViewInit() {
     // Initialize list item styles after view is initialized
     this.updateListItemStyles();
-
+    
     // Add this to make sure icons render correctly
     setTimeout(() => {
       // Force re-render of icons
@@ -649,7 +644,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   toggleVisualizationSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
     setTimeout(() => this.cdr.detectChanges());
-
+    
     // Ensure proper rendering
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
@@ -660,13 +655,13 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   resizeCharts(): void {
     // Force re-layout first
     this.cdr.detectChanges();
-
+    
     // Then dispatch resize event
     window.dispatchEvent(new Event('resize'));
-
+    
     // Then run another change detection cycle
     this.cdr.detectChanges();
-
+    
     // For components that might need a second resize after initial layout
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
@@ -680,7 +675,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       // If not pre-calculated, calculate it now and cache it
       chart.chartClass = this.chartLayoutService.calculateChartClass(chart.component);
     }
-
+    
     return chart.chartClass;
   }
 
@@ -693,19 +688,19 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   handleTileClick(index: number, event: MouseEvent): void {
     // Ignore if clicking on buttons or interactive elements
     if (
-      (event.target as HTMLElement).closest('button') ||
+      (event.target as HTMLElement).closest('button') || 
       (event.target as HTMLElement).closest('mat-slider') ||
       (event.target as HTMLElement).closest('mat-checkbox') ||
       (event.target as HTMLElement).closest('mat-select')
     ) {
       return;
     }
-
+    
     // If already in full-screen, do nothing (use restore button to exit)
     if (this.fullExpandedTileIndex !== null) {
       return;
     }
-
+    
     // If already partially expanded, go to full-screen
     if (this.expandedTileIndex === index) {
       this.fullExpandedTile(index);
@@ -714,38 +709,38 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       this.openTile(index);
     }
   }
-
+  
   // Expand tile to full-screen
   fullExpandedTile(index: number): void {
     this.fullExpandedTileIndex = index;
-
+    
     // Apply body styles to prevent scrolling of background
     document.body.style.overflow = 'hidden';
-
+    
     // Ensure proper rendering in full-screen mode with more time
     // to allow the transitions to complete before resizing charts
     setTimeout(() => {
       this.resizeCharts();
     }, 300);
   }
-
+  
   // Restore tile from full-screen
   restoreTile(index: number, event?: MouseEvent): void {
     if (event) {
       event.stopPropagation();
     }
-
+    
     this.fullExpandedTileIndex = null;
-
+    
     // Restore body overflow
     document.body.style.overflow = '';
-
+    
     // Ensure proper rendering after restore with more time
     setTimeout(() => {
       this.resizeCharts();
     }, 300);
   }
-
+  
   // Handle clicks on the backdrop to restore from full-screen
   handleBackdropClick(event: MouseEvent): void {
     // Only respond if clicking directly on the backdrop
@@ -757,14 +752,14 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   // Get CSS classes for each tile based on its properties
   getTileClasses(chart: ExtendedChartData, index: number): string {
     const classes = [this.getTileSize(chart.size)];
-
+    
     if (chart.component === 'app-line-chart') classes.push('chart-type-line');
     if (chart.component === 'app-bar-chart') classes.push('chart-type-bar');
     if (chart.component === 'app-finance-chart') classes.push('chart-type-finance');
-
+    
     if (this.expandedTileIndex === index) classes.push('expanded');
     if (this.fullExpandedTileIndex === index) classes.push('full-expanded');
-
+    
     // Add special positioning classes based on size and position
     if (chart.size === 'small') {
       if (chart.position === 0) classes.push('small-tile-first-row');
@@ -772,30 +767,30 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       if (chart.position === 2) classes.push('small-tile-third');
       if (chart.position && chart.position > 2) classes.push('small-tile-other');
     }
-
+    
     // Add special layout classes for large tiles
     if (chart.specialLayout) {
       classes.push(chart.specialLayout);
     }
-
+    
     if (chart.specialPosition) {
       classes.push('special-position');
     }
-
+    
     // Add special row class if present
     if (chart.specialRow) {
       classes.push(chart.specialRow);
     }
-
+    
     return classes.join(' ');
   }
 }
 
 // Update the ChartData interface to include a chartClass property
 export interface ExtendedChartData extends ChartData {
-  chartClass?: string; // Store the pre-calculated chart class
-  position?: number; // Track position in the grid
-  specialPosition?: boolean; // Flag for special positioning
-  specialLayout?: string; // Store special layout class names
-  specialRow?: string; // Track which row the tile belongs to for grid layouts
+  chartClass?: string;        // Store the pre-calculated chart class
+  position?: number;          // Track position in the grid
+  specialPosition?: boolean;  // Flag for special positioning
+  specialLayout?: string;     // Store special layout class names
+  specialRow?: string;        // Track which row the tile belongs to for grid layouts
 }

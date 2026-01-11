@@ -1,7 +1,9 @@
 <!-- recipes.component.html -->
 <div class="recipes-container content">
   <!-- Debug message to verify the component is being rendered and recipes are loaded -->
-  <div *ngIf="loaded" class="debug-info">{{ recipes.length }} recipes loaded</div>
+  <div *ngIf="loaded" class="debug-info">
+    {{ recipes.length }} recipes loaded
+  </div>
 
   <ng-container *ngIf="loaded && recipes.length > 0; else noRecipesOrLoading">
     <ng-container *ngFor="let recipe of paginatedRecipes">

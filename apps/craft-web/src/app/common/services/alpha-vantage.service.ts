@@ -17,7 +17,7 @@ export class AlphaVantageService {
     const url = `${this.baseUrl}?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${this.apiKey}`;
     return this.http.get(url).pipe(
       map(response => response),
-      catchError(this.handleError),
+      catchError(this.handleError)
     );
   }
 
@@ -25,7 +25,7 @@ export class AlphaVantageService {
     const url = `${this.baseUrl}?function=CURRENCY_EXCHANGE_RATE&from_currency=${symbol}&to_currency=USD&apikey=${this.apiKey}`;
     return this.http.get(url).pipe(
       map(response => response),
-      catchError(this.handleError),
+      catchError(this.handleError)
     );
   }
 

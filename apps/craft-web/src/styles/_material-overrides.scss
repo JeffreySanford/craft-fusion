@@ -7,19 +7,23 @@
   &.mat-primary {
     background-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
-
+    
     &:hover {
-      background-color: var(--md-sys-color-primary, #002868);
+      background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
     }
   }
-
+  
   &.mat-accent {
     background-color: var(--md-sys-color-secondary);
     color: var(--md-sys-color-on-secondary);
-
+    
     &:hover {
-      background-color: var(--md-sys-color-secondary, #bf0a30);
+      background-color: color-mix(in srgb, var(--md-sys-color-secondary) 92%, black);
     }
+  }
+
+  &.mat-warn {
+    // Warning button customizations
   }
 }
 
@@ -29,7 +33,7 @@
   overflow: hidden;
   box-shadow: var(--md-sys-elevation-level1);
   transition: box-shadow 0.2s ease;
-
+  
   &:hover {
     box-shadow: var(--md-sys-elevation-level2);
   }
@@ -45,7 +49,7 @@
 
   .mat-mdc-header-row {
     background-color: var(--md-sys-color-primary);
-
+    
     .mat-mdc-header-cell {
       color: var(--md-sys-color-on-primary);
       font-weight: 500;
@@ -58,11 +62,11 @@
     transition: background-color 0.2s ease;
 
     &:hover {
-      background-color: var(--md-sys-color-surface-variant, #e7e0ec);
+      background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 50%, transparent);
     }
 
     &:nth-child(even) {
-      background-color: var(--md-sys-color-surface-variant, #e7e0ec);
+      background-color: color-mix(in srgb, var(--md-sys-color-surface-variant) 30%, transparent);
     }
 
     .mat-mdc-cell {
@@ -102,7 +106,7 @@
       border-radius: 4px;
 
       &:hover {
-        background-color: var(--md-sys-color-on-surface-variant, #cac4d0);
+        background-color: color-mix(in srgb, var(--md-sys-color-on-surface-variant) 8%, transparent);
       }
 
       &.active {
@@ -153,7 +157,7 @@
 // Material Expansion Panel overrides
 .mat-expansion-panel {
   border-radius: 12px !important;
-
+  
   .mat-expansion-panel-header {
     height: 56px;
   }
@@ -168,17 +172,17 @@
   .mat-mdc-tab-header {
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
-
+  
   .mat-mdc-tab {
     .mat-mdc-tab-label-content {
       font-weight: 500;
     }
-
+    
     &.mat-mdc-tab-active {
       color: var(--md-sys-color-primary);
     }
   }
-
+  
   .mat-mdc-ink-bar {
     background-color: var(--md-sys-color-primary);
   }
@@ -188,7 +192,7 @@
 .mat-mdc-chip {
   background-color: var(--md-sys-color-surface-variant) !important;
   color: var(--md-sys-color-on-surface-variant) !important;
-
+  
   &.mat-mdc-chip-selected {
     background-color: var(--md-sys-color-primary) !important;
     color: var(--md-sys-color-on-primary) !important;
@@ -200,7 +204,7 @@
   .mdc-checkbox__background {
     border-color: var(--md-sys-color-outline);
   }
-
+  
   &.mat-mdc-checkbox-checked {
     .mdc-checkbox__background {
       background-color: var(--md-sys-color-primary);
@@ -214,11 +218,11 @@
   .mdc-radio__outer-circle {
     border-color: var(--md-sys-color-outline);
   }
-
+  
   .mdc-radio__inner-circle {
     background-color: var(--md-sys-color-primary);
   }
-
+  
   &.mat-mdc-radio-checked {
     .mdc-radio__outer-circle {
       border-color: var(--md-sys-color-primary);
@@ -231,7 +235,7 @@
   .mdc-slider__track--active {
     background-color: var(--md-sys-color-primary);
   }
-
+  
   .mdc-slider__thumb-knob {
     background-color: var(--md-sys-color-primary);
     border-color: var(--md-sys-color-primary);
@@ -240,96 +244,22 @@
 
 // Material Paginator overrides
 .mat-mdc-paginator {
-  // Expose MDC paginator variables so the component's internal styles
-  // (which use CSS variables) pick up our theme colors.
-  --mat-paginator-container-background-color: var(--md-sys-color-primary);
-  --mat-paginator-container-text-color: var(--md-sys-color-on-primary);
-  --mat-paginator-enabled-icon-color: var(--md-sys-color-on-primary);
-  --mat-paginator-disabled-icon-color: var(--md-sys-color-on-surface, #e5e7eb);
-
-  background-color: var(--mat-paginator-container-background-color);
-
+  background-color: transparent;
+  
   .mat-mdc-paginator-range-label,
   .mat-mdc-paginator-page-size-label {
-    color: var(--mat-paginator-container-text-color);
+    color: var(--md-sys-color-on-surface-variant);
   }
-}
-
-/* Stronger, higher-specificity overrides for paginator to win against component-scoped styles */
-mat-paginator.mat-elevation-z8,
-.mat-elevation-z8.mat-mdc-paginator,
-.mat-mdc-paginator.mat-elevation-z8 {
-  background-color: var(--md-sys-color-primary) !important;
-  color: var(--md-sys-color-on-primary) !important;
-
-  .mat-mdc-paginator-range-label,
-  .mat-mdc-paginator-page-size-label,
-  .mat-mdc-select-value,
-  .mat-mdc-select-trigger {
-    color: var(--md-sys-color-on-primary) !important;
-  }
-
-  .mat-mdc-icon-button,
-  button.mat-icon-button {
-    color: var(--md-sys-color-on-primary) !important;
-  }
-
-  .mat-mdc-paginator-navigation-previous,
-  .mat-mdc-paginator-navigation-next {
-    background: transparent !important;
-  }
-}
-
-/* Extremely targeted overrides to ensure icons and text in the MDC paginator use theme colors. */
-mat-paginator.mat-elevation-z8.mat-mdc-paginator,
-.mat-mdc-paginator.mat-elevation-z8,
-.table-wrapper mat-paginator.mat-elevation-z8 {
-  --mat-paginator-container-background-color: var(--md-sys-color-primary) !important;
-  --mat-paginator-container-text-color: var(--md-sys-color-on-primary) !important;
-  background-color: var(--md-sys-color-primary) !important;
-  color: var(--md-sys-color-on-primary) !important;
-}
-
-.mat-mdc-paginator.mat-elevation-z8 .mat-mdc-select-value,
-.mat-mdc-paginator.mat-elevation-z8 .mat-mdc-select-trigger,
-.mat-mdc-paginator.mat-elevation-z8 .mat-mdc-paginator-range-label,
-.mat-mdc-paginator.mat-elevation-z8 .mat-mdc-paginator-page-size-label {
-  color: var(--md-sys-color-on-primary) !important;
-}
-
-.mat-mdc-paginator.mat-elevation-z8 .mat-mdc-icon-button,
-.mat-mdc-paginator.mat-elevation-z8 button.mat-icon-button,
-.mat-mdc-paginator.mat-elevation-z8 .mat-mdc-paginator-navigation-next,
-.mat-mdc-paginator.mat-elevation-z8 .mat-mdc-paginator-navigation-previous,
-.mat-mdc-paginator.mat-elevation-z8 .mat-mdc-paginator-navigation-first,
-.mat-mdc-paginator.mat-elevation-z8 .mat-mdc-paginator-navigation-last {
-  color: var(--md-sys-color-on-primary) !important;
-}
-
-/* Ensure inline SVG paths inherit the color */
-.mat-mdc-paginator.mat-elevation-z8 svg path,
-.mat-mdc-paginator.mat-elevation-z8 svg circle,
-.mat-mdc-paginator.mat-elevation-z8 svg rect {
-  fill: currentColor !important;
-  stroke: currentColor !important;
-}
-
-/* If a component scoped rule is still forcing a dark background, explicitly reset it at root level */
-:root mat-paginator.mat-elevation-z8,
-:root .mat-mdc-paginator.mat-elevation-z8 {
-  --mat-paginator-container-background-color: var(--md-sys-color-primary);
-  --mat-paginator-container-text-color: var(--md-sys-color-on-primary);
 }
 
 // Material Drawer and Container overrides
-.mat-drawer-container,
-.mat-drawer-content {
+.mat-drawer-container, .mat-drawer-content {
   display: flex;
   flex-direction: column;
   flex: 1;
   height: auto;
   min-height: 100%;
-  overflow: visible;
+  overflow: visible; 
   background-color: var(--md-sys-color-background);
 }
 

@@ -9,7 +9,9 @@
 <div *ngIf="!this.recipe.name" class="error-container">
   <mat-icon color="warn" class="error-icon">error</mat-icon>
   <p class="error-text">{{ error }}</p>
-  <button mat-raised-button color="primary"><mat-icon>arrow_back</mat-icon> Return to Recipes</button>
+  <button mat-raised-button color="primary">
+    <mat-icon>arrow_back</mat-icon> Return to Recipes
+  </button>
 </div>
 
 <!-- Recipe card - only show if we have a recipe and no error -->
@@ -48,6 +50,7 @@
               {{ recipe.servingSize }}
             </div>
           </div>
+
         </div>
         <div class="ingredients">
           <strong>Ingredients:</strong>
@@ -58,17 +61,16 @@
         <div class="directions">
           <strong>Directions:</strong>
           <div *ngFor="let step of recipe.directions; let i = index">
-            <p class="step">
-              <span class="step-number">{{ i + 1 }}</span
-              >{{ step }}
-            </p>
+            <p class="step"><span class="step-number">{{ i + 1 }}</span>{{ step }}</p>
           </div>
         </div>
       </div>
     </mat-card-content>
 
     <mat-card-actions align="end">
-      <button mat-button color="primary"><mat-icon>arrow_back</mat-icon> Back to Recipes</button>
+      <button mat-button color="primary">
+        <mat-icon>arrow_back</mat-icon> Back to Recipes
+      </button>
     </mat-card-actions>
   </mat-card>
 </div>

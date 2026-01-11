@@ -10,16 +10,16 @@ describe('LandingComponent', () => {
     const mockSpeechRecognition = jest.fn().mockImplementation(() => ({
       start: jest.fn(),
       onresult: jest.fn(),
-      lang: '',
+      lang: ''
     }));
     (window as unknown).SpeechRecognition = (window as unknown).SpeechRecognition || mockSpeechRecognition;
 
     TestBed.configureTestingModule({
       declarations: [LandingComponent],
       imports: [],
-      providers: [],
+      providers: []
     }).compileComponents();
-
+  
     fixture = TestBed.createComponent(LandingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

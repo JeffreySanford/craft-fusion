@@ -14,11 +14,11 @@ describe('RecipeComponent', () => {
 
   beforeEach(async () => {
     mockPeasantKitchenService = {
-      getRecipe: jest.fn(),
+      getRecipe: jest.fn()
     } as unknown as jest.Mocked<PeasantKitchenService>;
 
     mockRouter = {
-      navigate: jest.fn(),
+      navigate: jest.fn()
     } as unknown as jest.Mocked<Router>;
 
     await TestBed.configureTestingModule({
@@ -26,8 +26,8 @@ describe('RecipeComponent', () => {
       imports: [RouterTestingModule], // Import RouterTestingModule here
       providers: [
         { provide: PeasantKitchenService, useValue: mockPeasantKitchenService },
-        { provide: Router, useValue: mockRouter },
-      ],
+        { provide: Router, useValue: mockRouter }
+      ]
     }).compileComponents();
   });
 

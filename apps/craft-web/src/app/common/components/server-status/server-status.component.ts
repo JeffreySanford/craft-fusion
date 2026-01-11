@@ -15,87 +15,86 @@ import { environment } from '../../../../environments/environment';
       </div>
     </div>
   `,
-  styles: [
-    `
-      .server-status {
-        position: fixed;
-        bottom: 10px;
-        right: 10px;
-        z-index: 1000;
-      }
-      .status-indicator {
-        padding: 8px 12px;
-        border-radius: 4px;
-        font-size: 12px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .online {
-        background-color: rgba(76, 175, 80, 0.8);
-        color: white;
-      }
-      .offline {
-        background-color: rgba(244, 67, 54, 0.8);
-        color: white;
-      }
-      .status-text {
-        font-weight: 500;
-      }
-    `,
-  ],
-  standalone: false, // Explicitly marking as non-standalone
+  styles: [`
+    .server-status {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      z-index: 1000;
+    }
+    .status-indicator {
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .online {
+      background-color: rgba(76, 175, 80, 0.8);
+      color: white;
+    }
+    .offline {
+      background-color: rgba(244, 67, 54, 0.8);
+      color: white;
+    }
+    .status-text {
+      font-weight: 500;
+    }
+  `],
+  standalone: false // Explicitly marking as non-standalone
 })
 export class ServerStatusComponent implements OnInit, OnDestroy {
   public isServerOnline = false;
   public showStatus = !environment.production;
-
+  
   private destroy$ = new Subject<void>();
   private checkInterval = 30000; // 30 seconds
-
+  
   constructor(
     private apiService: ApiService,
-    private logger: LoggerService,
+    private logger: LoggerService
   ) {
     this.logger.registerService('ServerStatusComponent');
   }
-
+  
   ngOnInit(): void {
     // Only show in non-production environments
     if (!environment.production) {
       this.checkServerStatus();
-
+      
       // Set up periodic checks
       interval(this.checkInterval)
         .pipe(
           takeUntil(this.destroy$),
-          switchMap(() => this.performCheck()),
+          switchMap(() => this.performCheck())
         )
         .subscribe();
     }
   }
-
+  
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
+  
   public checkServerStatus(): void {
     this.performCheck().subscribe();
   }
-
+  
   private performCheck() {
     this.logger.debug('Checking server status');
-
-    return this.apiService.get('health').pipe(
-      catchError(err => {
-        this.isServerOnline = false;
-        this.logger.warn('Backend server is offline', {
-          error: err.message || 'Unknown error',
-          status: err.status || 'unknown',
-        });
-        return [];
-      }),
-    );
+    
+    return this.apiService.get('health')
+      .pipe(
+        catchError(err => {
+          this.isServerOnline = false;
+          this.logger.warn('Backend server is offline', { 
+            error: err.message || 'Unknown error',
+            status: err.status || 'unknown'
+          });
+          return [];
+        })
+      );
   }
 }

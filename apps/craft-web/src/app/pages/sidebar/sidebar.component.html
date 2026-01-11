@@ -1,7 +1,6 @@
 <div class="sidebar-container" [class.collapsed]="isCollapsed">
   <mat-nav-list *ngFor="let item of menuItems" class="sidenav">
-    <button
-      mat-raised-button
+    <button mat-raised-button
       [routerLink]="item.routerLink"
       [ngClass]="{ active: item.active }"
       (click)="onMenuItemClick(item)"

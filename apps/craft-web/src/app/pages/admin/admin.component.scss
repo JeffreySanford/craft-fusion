@@ -41,7 +41,7 @@
 
   &.method-post {
     background-color: rgba(darkgreen, 0.2);
-    color: green;
+    color:green;
   }
 
   &.method-put {
@@ -67,7 +67,7 @@
     border-radius: 3px;
 
     &.duration-fast {
-      background-color: green;
+      background-color:green;
     }
 
     &.duration-medium {
@@ -92,7 +92,7 @@
 
   &.status-success {
     background-color: rgba(darkgreen, 0.2);
-    color: green;
+    color:green;
   }
 
   &.status-redirect {
@@ -137,21 +137,19 @@
 
   // Add subtle animated gradient overlay
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(
-      45deg,
+    background: linear-gradient(45deg,
       rgba(255, 255, 255, 0) 25%,
       rgba(255, 255, 255, 0.02) 25%,
       rgba(255, 255, 255, 0.02) 50%,
       rgba(255, 255, 255, 0) 50%,
       rgba(255, 255, 255, 0) 75%,
-      rgba(255, 255, 255, 0.02) 75%
-    );
+      rgba(255, 255, 255, 0.02) 75%);
     background-size: 8px 8px;
     animation: moveGradient 30s linear infinite;
     opacity: 0.5;
@@ -192,9 +190,7 @@
     height: 300px !important; // Fixed height for better consistency
     max-height: 300px;
     animation: fadeIn 1s ease-out forwards;
-    transition:
-      transform 0.3s ease,
-      opacity 0.3s ease;
+    transition: transform 0.3s ease, opacity 0.3s ease;
   }
 }
 
@@ -210,13 +206,11 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: radial-gradient(circle, rgba(255, 215, 0, 0.2) 1px, transparent 1px), radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
-    background-size:
-      30px 30px,
-      15px 15px;
-    background-position:
-      0 0,
-      15px 15px;
+    background-image:
+      radial-gradient(circle, rgba(255, 215, 0, 0.2) 1px, transparent 1px),
+      radial-gradient(circle, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+    background-size: 30px 30px, 15px 15px;
+    background-position: 0 0, 15px 15px;
     pointer-events: none;
     opacity: 0.3;
     animation: twinkleStars 8s infinite alternate;
@@ -235,9 +229,7 @@
       display: flex;
       align-items: center;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
       animation: fadeIn 0.5s ease-out forwards;
       border: 1px solid rgba(255, 255, 255, 0.1);
 
@@ -407,21 +399,11 @@
 
 // Add missing animations
 @keyframes flag-wave {
-  0% {
-    transform: skewX(0deg);
-  }
-  25% {
-    transform: skewX(-5deg);
-  }
-  50% {
-    transform: skewX(0deg);
-  }
-  75% {
-    transform: skewX(5deg);
-  }
-  100% {
-    transform: skewX(0deg);
-  }
+  0% { transform: skewX(0deg); }
+  25% { transform: skewX(-5deg); }
+  50% { transform: skewX(0deg); }
+  75% { transform: skewX(5deg); }
+  100% { transform: skewX(0deg); }
 }
 
 @keyframes slide-in-top {
@@ -465,46 +447,24 @@
 
 // Add new animations
 @keyframes moveGradient {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 100% 100%;
-  }
+  0% { background-position: 0 0; }
+  100% { background-position: 100% 100%; }
 }
 
 @keyframes twinkleStars {
-  0% {
-    opacity: 0.2;
-  }
-  50% {
-    opacity: 0.3;
-  }
-  100% {
-    opacity: 0.4;
-  }
+  0% { opacity: 0.2; }
+  50% { opacity: 0.3; }
+  100% { opacity: 0.4; }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slide-up {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 // Responsive improvements
@@ -641,7 +601,7 @@ table thead tr {
     padding-bottom: 0.5em;
   }
 
-  .log-entries {
+    .log-entries {
     max-height: 300px;
     overflow-y: auto;
     padding: 0.5em;
@@ -695,7 +655,7 @@ table thead tr {
     background: rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
     min-width: 200px;
-
+    
     &:hover {
       transform: translateY(-2px);
       background: rgba(0, 0, 0, 0.3);
@@ -719,12 +679,12 @@ table thead tr {
       border-radius: 4px;
       font-size: 0.8rem;
       font-weight: 500;
-
+      
       &.active {
         background: rgba(16, 185, 129, 0.2);
         color: #10b981;
       }
-
+      
       &.inactive {
         background: rgba(239, 68, 68, 0.2);
         color: #ef4444;
@@ -735,16 +695,16 @@ table thead tr {
 
 // Service color variables
 :root {
-  --service-api: #ff6b6b;
-  --service-auth: #4ecdc4;
-  --service-user: #45b7d1;
-  --service-session: #96ceb4;
-  --service-busy: #ffeead;
-  --service-notification: #d4a5a5;
-  --service-logger: #9b59b6;
-  --service-chat: #3498db;
-  --service-settings: #ff9f4a;
-  --service-admin: #2ecc71;
+  --service-api: #FF6B6B;
+  --service-auth: #4ECDC4;
+  --service-user: #45B7D1;
+  --service-session: #96CEB4;
+  --service-busy: #FFEEAD;
+  --service-notification: #D4A5A5;
+  --service-logger: #9B59B6;
+  --service-chat: #3498DB;
+  --service-settings: #FF9F4A;
+  --service-admin: #2ECC71;
 }
 
 .services-list {
@@ -761,7 +721,7 @@ table thead tr {
     color: vars.$patriot-white;
   }
 
-  mat-list {
+    mat-list {
     max-height: 400px;
     overflow-y: auto;
     /* Firefox-only properties applied via feature query */
@@ -796,7 +756,7 @@ table thead tr {
 }
 
 // Update tab content to ensure proper containment
-.tab-content {
+  .tab-content {
   height: calc(100vh - 280px); // Reduced from 300px for less top space
   overflow-y: auto;
   padding: 0.5rem 0.75rem; // Reduced padding
@@ -854,19 +814,10 @@ table thead tr {
         display: flex;
         align-items: center;
         justify-content: center;
-
-        &.healthy {
-          background: rgba(46, 213, 115, 0.2);
-          color: #2ed573;
-        }
-        &.warning {
-          background: rgba(255, 171, 0, 0.2);
-          color: #ffab00;
-        }
-        &.critical {
-          background: rgba(255, 71, 87, 0.2);
-          color: #ff4757;
-        }
+        
+        &.healthy { background: rgba(46, 213, 115, 0.2); color: #2ed573; }
+        &.warning { background: rgba(255, 171, 0, 0.2); color: #ffab00; }
+        &.critical { background: rgba(255, 71, 87, 0.2); color: #ff4757; }
       }
 
       .status-info {
@@ -933,7 +884,7 @@ table thead tr {
         display: flex;
         align-items: center;
         justify-content: center;
-
+        
         mat-icon {
           color: white;
         }
@@ -962,27 +913,15 @@ table thead tr {
 
 // Add new animations
 @keyframes pulse-success {
-  0% {
-    box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(46, 213, 115, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(46, 213, 115, 0);
-  }
+  0% { box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(46, 213, 115, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(46, 213, 115, 0); }
 }
 
 @keyframes pulse-warning {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 171, 0, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(255, 171, 0, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 171, 0, 0);
-  }
+  0% { box-shadow: 0 0 0 0 rgba(255, 171, 0, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 171, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 171, 0, 0); }
 }
 
 /* Simulation Mode Toggle Button Styles */
@@ -1003,21 +942,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &.active::before {
     opacity: 1;
   }
@@ -1048,7 +992,7 @@ table thead tr {
   ::ng-deep.mat-checked .mat-slide-toggle-bar {
     background: rgba(239, 68, 68, 0.3) !important;
   }
-
+  
   .toggle-label {
     color: #e5e7eb;
     font-weight: 500;
@@ -1060,7 +1004,7 @@ table thead tr {
     user-select: none;
     z-index: 2;
   }
-
+  
   .danger-zone {
     font-size: 8px;
     color: #ef4444;
@@ -1070,7 +1014,7 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &.active .danger-zone {
     opacity: 1;
   }
@@ -1103,21 +1047,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &.active::before {
     opacity: 1;
   }
@@ -1144,7 +1093,7 @@ table thead tr {
   ::ng-deep.mat-checked .mat-slide-toggle-bar {
     background: rgba(16, 185, 129, 0.3) !important;
   }
-
+  
   .toggle-label {
     color: #e5e7eb;
     font-weight: 500;
@@ -1189,13 +1138,11 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-      background-size:
-        20px 20px,
-        30px 30px;
-      background-position:
-        0 0,
-        15px 15px;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 30px 30px;
+      background-position: 0 0, 15px 15px;
       pointer-events: none;
       opacity: 0.2;
       animation: twinkleStars 8s infinite alternate;
@@ -1206,7 +1153,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-
+      
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -1214,48 +1161,53 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-
+        
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-
+        
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-
+        
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-
-          &[value='all'] {
+          
+          &[value="all"] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-
-          &[value='error'] {
+          
+          &[value="error"] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-
-          &[value='warn'] {
+          
+          &[value="warn"] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-
-          &[value='info'] {
+          
+          &[value="info"] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-
+          
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             animation: shine 2s infinite;
           }
         }
@@ -1282,13 +1234,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-
+        
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-
+        
         &::before {
           content: '';
           position: absolute;
@@ -1296,17 +1248,21 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-
+        
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-
+        
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -1318,24 +1274,14 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 @keyframes rotate-gradient {
-  0% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(390deg);
-  }
+  0% { transform: rotate(30deg); }
+  100% { transform: rotate(390deg); }
 }
 
 /* Add stars animation for log level selector */
@@ -1346,7 +1292,8 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -1354,18 +1301,9 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% {
-    opacity: 0;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.2;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0; background-position: 0 0; }
+  50% { opacity: 0.2; background-position: 5px 5px; }
+  100% { opacity: 0; background-position: 10px 10px; }
 }
 
 /* Mat-Tab styling with patriotic theme */
@@ -1378,19 +1316,25 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, 
+      vars.$usa-red 0%, 
+      vars.$usa-red 33%, 
+      vars.$usa-white 33%, 
+      vars.$usa-white 66%, 
+      vars.$usa-blue 66%, 
+      vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-
+  
   /* Star background effect */
   &::after {
     content: '';
@@ -1405,7 +1349,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-
+  
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -1414,18 +1358,20 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-
+    
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3) 0%, 
+        rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-
+      
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -1434,11 +1380,13 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, 
+          rgba(255, 255, 255, 0.4) 0%, 
+          rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-
+      
       /* Animated border effect */
       &::after {
         content: '';
@@ -1447,20 +1395,22 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
+        background: linear-gradient(to right, 
+          vars.$usa-red, 
+          vars.$usa-white,
+          vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-
+      
       /* Make tab icon and label brighter */
-      .mat-icon,
-      .mdc-tab__text-label {
+      .mat-icon, .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-
+  
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -1469,7 +1419,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-
+  
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -1497,21 +1447,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &:hover::before {
     opacity: 1;
   }
@@ -1530,18 +1485,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-
+    
     &:hover {
       color: #ef4444;
     }
-
+    
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-
+  
   .danger-text {
     position: absolute;
     right: 6px;
@@ -1551,46 +1506,27 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 @keyframes sliding-gradient {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes twinkle-bg {
-  0% {
-    opacity: 0.1;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.3;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0.1;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0.1; background-position: 0 0; }
+  50% { opacity: 0.3; background-position: 5px 5px; }
+  100% { opacity: 0.1; background-position: 10px 10px; }
 }
 
 /* Enhanced tab content indicator */
@@ -1602,30 +1538,26 @@ table thead tr {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(16, 185, 129, 0.7));
+    background: linear-gradient(90deg, 
+      rgba(59, 130, 246, 0.7), 
+      rgba(16, 185, 129, 0.7));
     border-radius: 3px;
     animation: tab-progress 3s ease-in-out infinite;
   }
 }
 
 @keyframes tab-progress {
-  0% {
-    left: -30%;
-  }
-  50% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -30%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
 /* Enhanced logger controls with synchronized styles */
@@ -1651,13 +1583,11 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-      background-size:
-        20px 20px,
-        30px 30px;
-      background-position:
-        0 0,
-        15px 15px;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 30px 30px;
+      background-position: 0 0, 15px 15px;
       pointer-events: none;
       opacity: 0.2;
       animation: twinkleStars 8s infinite alternate;
@@ -1668,7 +1598,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-
+      
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -1676,48 +1606,53 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-
+        
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-
+        
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-
+        
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-
-          &[value='all'] {
+          
+          &[value="all"] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-
-          &[value='error'] {
+          
+          &[value="error"] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-
-          &[value='warn'] {
+          
+          &[value="warn"] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-
-          &[value='info'] {
+          
+          &[value="info"] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-
+          
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             animation: shine 2s infinite;
           }
         }
@@ -1744,13 +1679,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-
+        
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-
+        
         &::before {
           content: '';
           position: absolute;
@@ -1758,17 +1693,21 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-
+        
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-
+        
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -1780,24 +1719,14 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 @keyframes rotate-gradient {
-  0% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(390deg);
-  }
+  0% { transform: rotate(30deg); }
+  100% { transform: rotate(390deg); }
 }
 
 /* Add stars animation for log level selector */
@@ -1808,7 +1737,8 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -1816,18 +1746,9 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% {
-    opacity: 0;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.2;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0; background-position: 0 0; }
+  50% { opacity: 0.2; background-position: 5px 5px; }
+  100% { opacity: 0; background-position: 10px 10px; }
 }
 
 /* Mat-Tab styling with patriotic theme */
@@ -1840,19 +1761,25 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, 
+      vars.$usa-red 0%, 
+      vars.$usa-red 33%, 
+      vars.$usa-white 33%, 
+      vars.$usa-white 66%, 
+      vars.$usa-blue 66%, 
+      vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-
+  
   /* Star background effect */
   &::after {
     content: '';
@@ -1867,7 +1794,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-
+  
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -1876,18 +1803,20 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-
+    
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3) 0%, 
+        rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-
+      
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -1896,11 +1825,13 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, 
+          rgba(255, 255, 255, 0.4) 0%, 
+          rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-
+      
       /* Animated border effect */
       &::after {
         content: '';
@@ -1909,20 +1840,22 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
+        background: linear-gradient(to right, 
+          vars.$usa-red, 
+          vars.$usa-white,
+          vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-
+      
       /* Make tab icon and label brighter */
-      .mat-icon,
-      .mdc-tab__text-label {
+      .mat-icon, .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-
+  
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -1931,7 +1864,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-
+  
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -1959,21 +1892,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &:hover::before {
     opacity: 1;
   }
@@ -1992,18 +1930,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-
+    
     &:hover {
       color: #ef4444;
     }
-
+    
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-
+  
   .danger-text {
     position: absolute;
     right: 6px;
@@ -2013,46 +1951,27 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 @keyframes sliding-gradient {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes twinkle-bg {
-  0% {
-    opacity: 0.1;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.3;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0.1;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0.1; background-position: 0 0; }
+  50% { opacity: 0.3; background-position: 5px 5px; }
+  100% { opacity: 0.1; background-position: 10px 10px; }
 }
 
 /* Enhanced tab content indicator */
@@ -2064,30 +1983,26 @@ table thead tr {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(16, 185, 129, 0.7));
+    background: linear-gradient(90deg, 
+      rgba(59, 130, 246, 0.7), 
+      rgba(16, 185, 129, 0.7));
     border-radius: 3px;
     animation: tab-progress 3s ease-in-out infinite;
   }
 }
 
 @keyframes tab-progress {
-  0% {
-    left: -30%;
-  }
-  50% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -30%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
 /* Enhanced logger controls with synchronized styles */
@@ -2113,13 +2028,11 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-      background-size:
-        20px 20px,
-        30px 30px;
-      background-position:
-        0 0,
-        15px 15px;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 30px 30px;
+      background-position: 0 0, 15px 15px;
       pointer-events: none;
       opacity: 0.2;
       animation: twinkleStars 8s infinite alternate;
@@ -2130,7 +2043,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-
+      
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -2138,48 +2051,53 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-
+        
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-
+        
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-
+        
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-
-          &[value='all'] {
+          
+          &[value="all"] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-
-          &[value='error'] {
+          
+          &[value="error"] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-
-          &[value='warn'] {
+          
+          &[value="warn"] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-
-          &[value='info'] {
+          
+          &[value="info"] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-
+          
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             animation: shine 2s infinite;
           }
         }
@@ -2206,13 +2124,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-
+        
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-
+        
         &::before {
           content: '';
           position: absolute;
@@ -2220,17 +2138,21 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-
+        
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-
+        
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -2242,24 +2164,14 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 @keyframes rotate-gradient {
-  0% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(390deg);
-  }
+  0% { transform: rotate(30deg); }
+  100% { transform: rotate(390deg); }
 }
 
 /* Add stars animation for log level selector */
@@ -2270,7 +2182,8 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -2278,18 +2191,9 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% {
-    opacity: 0;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.2;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0; background-position: 0 0; }
+  50% { opacity: 0.2; background-position: 5px 5px; }
+  100% { opacity: 0; background-position: 10px 10px; }
 }
 
 /* Mat-Tab styling with patriotic theme */
@@ -2302,19 +2206,25 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, 
+      vars.$usa-red 0%, 
+      vars.$usa-red 33%, 
+      vars.$usa-white 33%, 
+      vars.$usa-white 66%, 
+      vars.$usa-blue 66%, 
+      vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-
+  
   /* Star background effect */
   &::after {
     content: '';
@@ -2329,7 +2239,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-
+  
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -2338,18 +2248,20 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-
+    
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3) 0%, 
+        rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-
+      
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -2358,11 +2270,13 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, 
+          rgba(255, 255, 255, 0.4) 0%, 
+          rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-
+      
       /* Animated border effect */
       &::after {
         content: '';
@@ -2371,20 +2285,22 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
+        background: linear-gradient(to right, 
+          vars.$usa-red, 
+          vars.$usa-white,
+          vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-
+      
       /* Make tab icon and label brighter */
-      .mat-icon,
-      .mdc-tab__text-label {
+      .mat-icon, .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-
+  
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -2393,7 +2309,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-
+  
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -2421,21 +2337,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &:hover::before {
     opacity: 1;
   }
@@ -2454,18 +2375,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-
+    
     &:hover {
       color: #ef4444;
     }
-
+    
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-
+  
   .danger-text {
     position: absolute;
     right: 6px;
@@ -2475,46 +2396,27 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 @keyframes sliding-gradient {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes twinkle-bg {
-  0% {
-    opacity: 0.1;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.3;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0.1;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0.1; background-position: 0 0; }
+  50% { opacity: 0.3; background-position: 5px 5px; }
+  100% { opacity: 0.1; background-position: 10px 10px; }
 }
 
 /* Enhanced tab content indicator */
@@ -2526,30 +2428,26 @@ table thead tr {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(16, 185, 129, 0.7));
+    background: linear-gradient(90deg, 
+      rgba(59, 130, 246, 0.7), 
+      rgba(16, 185, 129, 0.7));
     border-radius: 3px;
     animation: tab-progress 3s ease-in-out infinite;
   }
 }
 
 @keyframes tab-progress {
-  0% {
-    left: -30%;
-  }
-  50% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -30%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
 /* Enhanced logger controls with synchronized styles */
@@ -2575,13 +2473,11 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-      background-size:
-        20px 20px,
-        30px 30px;
-      background-position:
-        0 0,
-        15px 15px;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 30px 30px;
+      background-position: 0 0, 15px 15px;
       pointer-events: none;
       opacity: 0.2;
       animation: twinkleStars 8s infinite alternate;
@@ -2592,7 +2488,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-
+      
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -2600,48 +2496,53 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-
+        
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-
+        
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-
+        
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-
-          &[value='all'] {
+          
+          &[value="all"] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-
-          &[value='error'] {
+          
+          &[value="error"] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-
-          &[value='warn'] {
+          
+          &[value="warn"] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-
-          &[value='info'] {
+          
+          &[value="info"] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-
+          
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             animation: shine 2s infinite;
           }
         }
@@ -2668,13 +2569,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-
+        
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-
+        
         &::before {
           content: '';
           position: absolute;
@@ -2682,17 +2583,21 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-
+        
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-
+        
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -2704,24 +2609,14 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 @keyframes rotate-gradient {
-  0% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(390deg);
-  }
+  0% { transform: rotate(30deg); }
+  100% { transform: rotate(390deg); }
 }
 
 /* Add stars animation for log level selector */
@@ -2732,7 +2627,8 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -2740,18 +2636,9 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% {
-    opacity: 0;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.2;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0; background-position: 0 0; }
+  50% { opacity: 0.2; background-position: 5px 5px; }
+  100% { opacity: 0; background-position: 10px 10px; }
 }
 
 /* Mat-Tab styling with patriotic theme */
@@ -2764,19 +2651,25 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, 
+      vars.$usa-red 0%, 
+      vars.$usa-red 33%, 
+      vars.$usa-white 33%, 
+      vars.$usa-white 66%, 
+      vars.$usa-blue 66%, 
+      vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-
+  
   /* Star background effect */
   &::after {
     content: '';
@@ -2791,7 +2684,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-
+  
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -2800,18 +2693,20 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-
+    
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3) 0%, 
+        rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-
+      
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -2820,11 +2715,13 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, 
+          rgba(255, 255, 255, 0.4) 0%, 
+          rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-
+      
       /* Animated border effect */
       &::after {
         content: '';
@@ -2833,20 +2730,22 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
+        background: linear-gradient(to right, 
+          vars.$usa-red, 
+          vars.$usa-white,
+          vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-
+      
       /* Make tab icon and label brighter */
-      .mat-icon,
-      .mdc-tab__text-label {
+      .mat-icon, .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-
+  
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -2855,7 +2754,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-
+  
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -2883,21 +2782,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &:hover::before {
     opacity: 1;
   }
@@ -2916,18 +2820,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-
+    
     &:hover {
       color: #ef4444;
     }
-
+    
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-
+  
   .danger-text {
     position: absolute;
     right: 6px;
@@ -2937,46 +2841,27 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 @keyframes sliding-gradient {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes twinkle-bg {
-  0% {
-    opacity: 0.1;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.3;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0.1;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0.1; background-position: 0 0; }
+  50% { opacity: 0.3; background-position: 5px 5px; }
+  100% { opacity: 0.1; background-position: 10px 10px; }
 }
 
 /* Enhanced tab content indicator */
@@ -2988,30 +2873,26 @@ table thead tr {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(16, 185, 129, 0.7));
+    background: linear-gradient(90deg, 
+      rgba(59, 130, 246, 0.7), 
+      rgba(16, 185, 129, 0.7));
     border-radius: 3px;
     animation: tab-progress 3s ease-in-out infinite;
   }
 }
 
 @keyframes tab-progress {
-  0% {
-    left: -30%;
-  }
-  50% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -30%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
 /* Enhanced logger controls with synchronized styles */
@@ -3037,13 +2918,11 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-      background-size:
-        20px 20px,
-        30px 30px;
-      background-position:
-        0 0,
-        15px 15px;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 30px 30px;
+      background-position: 0 0, 15px 15px;
       pointer-events: none;
       opacity: 0.2;
       animation: twinkleStars 8s infinite alternate;
@@ -3054,7 +2933,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-
+      
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -3062,48 +2941,53 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-
+        
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-
+        
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-
+        
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-
-          &[value='all'] {
+          
+          &[value="all"] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-
-          &[value='error'] {
+          
+          &[value="error"] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-
-          &[value='warn'] {
+          
+          &[value="warn"] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-
-          &[value='info'] {
+          
+          &[value="info"] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-
+          
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             animation: shine 2s infinite;
           }
         }
@@ -3130,13 +3014,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-
+        
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-
+        
         &::before {
           content: '';
           position: absolute;
@@ -3144,17 +3028,21 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-
+        
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-
+        
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -3166,24 +3054,14 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 @keyframes rotate-gradient {
-  0% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(390deg);
-  }
+  0% { transform: rotate(30deg); }
+  100% { transform: rotate(390deg); }
 }
 
 /* Add stars animation for log level selector */
@@ -3194,7 +3072,8 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -3202,18 +3081,9 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% {
-    opacity: 0;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.2;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0; background-position: 0 0; }
+  50% { opacity: 0.2; background-position: 5px 5px; }
+  100% { opacity: 0; background-position: 10px 10px; }
 }
 
 /* Mat-Tab styling with patriotic theme */
@@ -3226,19 +3096,25 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, 
+      vars.$usa-red 0%, 
+      vars.$usa-red 33%, 
+      vars.$usa-white 33%, 
+      vars.$usa-white 66%, 
+      vars.$usa-blue 66%, 
+      vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-
+  
   /* Star background effect */
   &::after {
     content: '';
@@ -3253,7 +3129,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-
+  
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -3262,18 +3138,20 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-
+    
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3) 0%, 
+        rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-
+      
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -3282,11 +3160,13 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, 
+          rgba(255, 255, 255, 0.4) 0%, 
+          rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-
+      
       /* Animated border effect */
       &::after {
         content: '';
@@ -3295,20 +3175,22 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
+        background: linear-gradient(to right, 
+          vars.$usa-red, 
+          vars.$usa-white,
+          vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-
+      
       /* Make tab icon and label brighter */
-      .mat-icon,
-      .mdc-tab__text-label {
+      .mat-icon, .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-
+  
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -3317,7 +3199,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-
+  
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -3345,21 +3227,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &:hover::before {
     opacity: 1;
   }
@@ -3378,18 +3265,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-
+    
     &:hover {
       color: #ef4444;
     }
-
+    
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-
+  
   .danger-text {
     position: absolute;
     right: 6px;
@@ -3399,46 +3286,27 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 @keyframes sliding-gradient {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes twinkle-bg {
-  0% {
-    opacity: 0.1;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.3;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0.1;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0.1; background-position: 0 0; }
+  50% { opacity: 0.3; background-position: 5px 5px; }
+  100% { opacity: 0.1; background-position: 10px 10px; }
 }
 
 /* Enhanced tab content indicator */
@@ -3450,30 +3318,26 @@ table thead tr {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(16, 185, 129, 0.7));
+    background: linear-gradient(90deg, 
+      rgba(59, 130, 246, 0.7), 
+      rgba(16, 185, 129, 0.7));
     border-radius: 3px;
     animation: tab-progress 3s ease-in-out infinite;
   }
 }
 
 @keyframes tab-progress {
-  0% {
-    left: -30%;
-  }
-  50% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -30%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
 /* Enhanced logger controls with synchronized styles */
@@ -3499,13 +3363,11 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-      background-size:
-        20px 20px,
-        30px 30px;
-      background-position:
-        0 0,
-        15px 15px;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 30px 30px;
+      background-position: 0 0, 15px 15px;
       pointer-events: none;
       opacity: 0.2;
       animation: twinkleStars 8s infinite alternate;
@@ -3516,7 +3378,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-
+      
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -3524,48 +3386,53 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-
+        
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-
+        
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-
+        
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-
-          &[value='all'] {
+          
+          &[value="all"] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-
-          &[value='error'] {
+          
+          &[value="error"] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-
-          &[value='warn'] {
+          
+          &[value="warn"] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-
-          &[value='info'] {
+          
+          &[value="info"] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-
+          
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             animation: shine 2s infinite;
           }
         }
@@ -3592,13 +3459,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-
+        
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-
+        
         &::before {
           content: '';
           position: absolute;
@@ -3606,17 +3473,21 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-
+        
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-
+        
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -3628,24 +3499,14 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 @keyframes rotate-gradient {
-  0% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(390deg);
-  }
+  0% { transform: rotate(30deg); }
+  100% { transform: rotate(390deg); }
 }
 
 /* Add stars animation for log level selector */
@@ -3656,7 +3517,8 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -3664,18 +3526,9 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% {
-    opacity: 0;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.2;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0; background-position: 0 0; }
+  50% { opacity: 0.2; background-position: 5px 5px; }
+  100% { opacity: 0; background-position: 10px 10px; }
 }
 
 /* Mat-Tab styling with patriotic theme */
@@ -3688,19 +3541,25 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, 
+      vars.$usa-red 0%, 
+      vars.$usa-red 33%, 
+      vars.$usa-white 33%, 
+      vars.$usa-white 66%, 
+      vars.$usa-blue 66%, 
+      vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-
+  
   /* Star background effect */
   &::after {
     content: '';
@@ -3715,7 +3574,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-
+  
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -3724,18 +3583,20 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-
+    
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3) 0%, 
+        rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-
+      
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -3744,11 +3605,13 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, 
+          rgba(255, 255, 255, 0.4) 0%, 
+          rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-
+      
       /* Animated border effect */
       &::after {
         content: '';
@@ -3757,20 +3620,22 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
+        background: linear-gradient(to right, 
+          vars.$usa-red, 
+          vars.$usa-white,
+          vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-
+      
       /* Make tab icon and label brighter */
-      .mat-icon,
-      .mdc-tab__text-label {
+      .mat-icon, .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-
+  
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -3779,7 +3644,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-
+  
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -3807,21 +3672,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &:hover::before {
     opacity: 1;
   }
@@ -3840,18 +3710,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-
+    
     &:hover {
       color: #ef4444;
     }
-
+    
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-
+  
   .danger-text {
     position: absolute;
     right: 6px;
@@ -3861,46 +3731,27 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 @keyframes sliding-gradient {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes twinkle-bg {
-  0% {
-    opacity: 0.1;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.3;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0.1;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0.1; background-position: 0 0; }
+  50% { opacity: 0.3; background-position: 5px 5px; }
+  100% { opacity: 0.1; background-position: 10px 10px; }
 }
 
 /* Enhanced tab content indicator */
@@ -3912,30 +3763,26 @@ table thead tr {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(16, 185, 129, 0.7));
+    background: linear-gradient(90deg, 
+      rgba(59, 130, 246, 0.7), 
+      rgba(16, 185, 129, 0.7));
     border-radius: 3px;
     animation: tab-progress 3s ease-in-out infinite;
   }
 }
 
 @keyframes tab-progress {
-  0% {
-    left: -30%;
-  }
-  50% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -30%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
 /* Enhanced logger controls with synchronized styles */
@@ -3961,13 +3808,11 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-      background-size:
-        20px 20px,
-        30px 30px;
-      background-position:
-        0 0,
-        15px 15px;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 30px 30px;
+      background-position: 0 0, 15px 15px;
       pointer-events: none;
       opacity: 0.2;
       animation: twinkleStars 8s infinite alternate;
@@ -3978,7 +3823,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-
+      
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -3986,48 +3831,53 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-
+        
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-
+        
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-
+        
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-
-          &[value='all'] {
+          
+          &[value="all"] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-
-          &[value='error'] {
+          
+          &[value="error"] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-
-          &[value='warn'] {
+          
+          &[value="warn"] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-
-          &[value='info'] {
+          
+          &[value="info"] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-
+          
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             animation: shine 2s infinite;
           }
         }
@@ -4054,13 +3904,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-
+        
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-
+        
         &::before {
           content: '';
           position: absolute;
@@ -4068,17 +3918,21 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-
+        
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-
+        
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -4090,24 +3944,14 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 @keyframes rotate-gradient {
-  0% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(390deg);
-  }
+  0% { transform: rotate(30deg); }
+  100% { transform: rotate(390deg); }
 }
 
 /* Add stars animation for log level selector */
@@ -4118,7 +3962,8 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -4126,18 +3971,9 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% {
-    opacity: 0;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.2;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0; background-position: 0 0; }
+  50% { opacity: 0.2; background-position: 5px 5px; }
+  100% { opacity: 0; background-position: 10px 10px; }
 }
 
 /* Mat-Tab styling with patriotic theme */
@@ -4150,19 +3986,25 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, 
+      vars.$usa-red 0%, 
+      vars.$usa-red 33%, 
+      vars.$usa-white 33%, 
+      vars.$usa-white 66%, 
+      vars.$usa-blue 66%, 
+      vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-
+  
   /* Star background effect */
   &::after {
     content: '';
@@ -4177,7 +4019,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-
+  
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -4186,18 +4028,20 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-
+    
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3) 0%, 
+        rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-
+      
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -4206,11 +4050,13 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, 
+          rgba(255, 255, 255, 0.4) 0%, 
+          rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-
+      
       /* Animated border effect */
       &::after {
         content: '';
@@ -4219,20 +4065,22 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
+        background: linear-gradient(to right, 
+          vars.$usa-red, 
+          vars.$usa-white,
+          vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-
+      
       /* Make tab icon and label brighter */
-      .mat-icon,
-      .mdc-tab__text-label {
+      .mat-icon, .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-
+  
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -4241,7 +4089,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-
+  
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -4269,21 +4117,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &:hover::before {
     opacity: 1;
   }
@@ -4302,18 +4155,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-
+    
     &:hover {
       color: #ef4444;
     }
-
+    
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-
+  
   .danger-text {
     position: absolute;
     right: 6px;
@@ -4323,46 +4176,27 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 @keyframes sliding-gradient {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes twinkle-bg {
-  0% {
-    opacity: 0.1;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.3;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0.1;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0.1; background-position: 0 0; }
+  50% { opacity: 0.3; background-position: 5px 5px; }
+  100% { opacity: 0.1; background-position: 10px 10px; }
 }
 
 /* Enhanced tab content indicator */
@@ -4374,30 +4208,26 @@ table thead tr {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(16, 185, 129, 0.7));
+    background: linear-gradient(90deg, 
+      rgba(59, 130, 246, 0.7), 
+      rgba(16, 185, 129, 0.7));
     border-radius: 3px;
     animation: tab-progress 3s ease-in-out infinite;
   }
 }
 
 @keyframes tab-progress {
-  0% {
-    left: -30%;
-  }
-  50% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -30%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
 /* Enhanced logger controls with synchronized styles */
@@ -4423,13 +4253,11 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-      background-size:
-        20px 20px,
-        30px 30px;
-      background-position:
-        0 0,
-        15px 15px;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 30px 30px;
+      background-position: 0 0, 15px 15px;
       pointer-events: none;
       opacity: 0.2;
       animation: twinkleStars 8s infinite alternate;
@@ -4440,7 +4268,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-
+      
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -4448,48 +4276,53 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-
+        
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-
+        
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-
+        
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-
-          &[value='all'] {
+          
+          &[value="all"] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-
-          &[value='error'] {
+          
+          &[value="error"] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-
-          &[value='warn'] {
+          
+          &[value="warn"] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-
-          &[value='info'] {
+          
+          &[value="info"] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-
+          
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             animation: shine 2s infinite;
           }
         }
@@ -4516,13 +4349,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-
+        
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-
+        
         &::before {
           content: '';
           position: absolute;
@@ -4530,17 +4363,21 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-
+        
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-
+        
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -4552,24 +4389,14 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 @keyframes rotate-gradient {
-  0% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(390deg);
-  }
+  0% { transform: rotate(30deg); }
+  100% { transform: rotate(390deg); }
 }
 
 /* Add stars animation for log level selector */
@@ -4580,7 +4407,8 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -4588,18 +4416,9 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% {
-    opacity: 0;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.2;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0; background-position: 0 0; }
+  50% { opacity: 0.2; background-position: 5px 5px; }
+  100% { opacity: 0; background-position: 10px 10px; }
 }
 
 /* Mat-Tab styling with patriotic theme */
@@ -4612,19 +4431,25 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, 
+      vars.$usa-red 0%, 
+      vars.$usa-red 33%, 
+      vars.$usa-white 33%, 
+      vars.$usa-white 66%, 
+      vars.$usa-blue 66%, 
+      vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-
+  
   /* Star background effect */
   &::after {
     content: '';
@@ -4639,7 +4464,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-
+  
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -4648,18 +4473,20 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-
+    
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3) 0%, 
+        rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-
+      
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -4668,11 +4495,13 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, 
+          rgba(255, 255, 255, 0.4) 0%, 
+          rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-
+      
       /* Animated border effect */
       &::after {
         content: '';
@@ -4681,20 +4510,22 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
+        background: linear-gradient(to right, 
+          vars.$usa-red, 
+          vars.$usa-white,
+          vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-
+      
       /* Make tab icon and label brighter */
-      .mat-icon,
-      .mdc-tab__text-label {
+      .mat-icon, .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-
+  
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -4703,7 +4534,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-
+  
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -4731,21 +4562,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &:hover::before {
     opacity: 1;
   }
@@ -4764,18 +4600,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-
+    
     &:hover {
       color: #ef4444;
     }
-
+    
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-
+  
   .danger-text {
     position: absolute;
     right: 6px;
@@ -4785,46 +4621,27 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 @keyframes sliding-gradient {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes twinkle-bg {
-  0% {
-    opacity: 0.1;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.3;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0.1;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0.1; background-position: 0 0; }
+  50% { opacity: 0.3; background-position: 5px 5px; }
+  100% { opacity: 0.1; background-position: 10px 10px; }
 }
 
 /* Enhanced tab content indicator */
@@ -4836,30 +4653,26 @@ table thead tr {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(16, 185, 129, 0.7));
+    background: linear-gradient(90deg, 
+      rgba(59, 130, 246, 0.7), 
+      rgba(16, 185, 129, 0.7));
     border-radius: 3px;
     animation: tab-progress 3s ease-in-out infinite;
   }
 }
 
 @keyframes tab-progress {
-  0% {
-    left: -30%;
-  }
-  50% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -30%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
 /* Enhanced logger controls with synchronized styles */
@@ -4885,13 +4698,11 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-      background-size:
-        20px 20px,
-        30px 30px;
-      background-position:
-        0 0,
-        15px 15px;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 30px 30px;
+      background-position: 0 0, 15px 15px;
       pointer-events: none;
       opacity: 0.2;
       animation: twinkleStars 8s infinite alternate;
@@ -4902,7 +4713,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-
+      
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -4910,48 +4721,53 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-
+        
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-
+        
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-
+        
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-
-          &[value='all'] {
+          
+          &[value="all"] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-
-          &[value='error'] {
+          
+          &[value="error"] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-
-          &[value='warn'] {
+          
+          &[value="warn"] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-
-          &[value='info'] {
+          
+          &[value="info"] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-
+          
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             animation: shine 2s infinite;
           }
         }
@@ -4978,13 +4794,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-
+        
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-
+        
         &::before {
           content: '';
           position: absolute;
@@ -4992,17 +4808,21 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-
+        
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-
+        
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -5014,24 +4834,14 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 @keyframes rotate-gradient {
-  0% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(390deg);
-  }
+  0% { transform: rotate(30deg); }
+  100% { transform: rotate(390deg); }
 }
 
 /* Add stars animation for log level selector */
@@ -5042,7 +4852,8 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -5050,18 +4861,9 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% {
-    opacity: 0;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.2;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0; background-position: 0 0; }
+  50% { opacity: 0.2; background-position: 5px 5px; }
+  100% { opacity: 0; background-position: 10px 10px; }
 }
 
 /* Mat-Tab styling with patriotic theme */
@@ -5074,19 +4876,25 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, 
+      vars.$usa-red 0%, 
+      vars.$usa-red 33%, 
+      vars.$usa-white 33%, 
+      vars.$usa-white 66%, 
+      vars.$usa-blue 66%, 
+      vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-
+  
   /* Star background effect */
   &::after {
     content: '';
@@ -5101,7 +4909,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-
+  
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -5110,18 +4918,20 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-
+    
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3) 0%, 
+        rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-
+      
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -5130,11 +4940,13 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, 
+          rgba(255, 255, 255, 0.4) 0%, 
+          rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-
+      
       /* Animated border effect */
       &::after {
         content: '';
@@ -5143,20 +4955,22 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
+        background: linear-gradient(to right, 
+          vars.$usa-red, 
+          vars.$usa-white,
+          vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-
+      
       /* Make tab icon and label brighter */
-      .mat-icon,
-      .mdc-tab__text-label {
+      .mat-icon, .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-
+  
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -5165,7 +4979,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-
+  
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -5193,21 +5007,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &:hover::before {
     opacity: 1;
   }
@@ -5226,18 +5045,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-
+    
     &:hover {
       color: #ef4444;
     }
-
+    
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-
+  
   .danger-text {
     position: absolute;
     right: 6px;
@@ -5247,46 +5066,27 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 @keyframes sliding-gradient {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes twinkle-bg {
-  0% {
-    opacity: 0.1;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.3;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0.1;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0.1; background-position: 0 0; }
+  50% { opacity: 0.3; background-position: 5px 5px; }
+  100% { opacity: 0.1; background-position: 10px 10px; }
 }
 
 /* Enhanced tab content indicator */
@@ -5298,30 +5098,26 @@ table thead tr {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(16, 185, 129, 0.7));
+    background: linear-gradient(90deg, 
+      rgba(59, 130, 246, 0.7), 
+      rgba(16, 185, 129, 0.7));
     border-radius: 3px;
     animation: tab-progress 3s ease-in-out infinite;
   }
 }
 
 @keyframes tab-progress {
-  0% {
-    left: -30%;
-  }
-  50% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -30%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
 /* Enhanced logger controls with synchronized styles */
@@ -5347,13 +5143,11 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-      background-size:
-        20px 20px,
-        30px 30px;
-      background-position:
-        0 0,
-        15px 15px;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 30px 30px;
+      background-position: 0 0, 15px 15px;
       pointer-events: none;
       opacity: 0.2;
       animation: twinkleStars 8s infinite alternate;
@@ -5364,7 +5158,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-
+      
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -5372,48 +5166,53 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-
+        
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-
+        
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-
+        
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-
-          &[value='all'] {
+          
+          &[value="all"] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-
-          &[value='error'] {
+          
+          &[value="error"] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-
-          &[value='warn'] {
+          
+          &[value="warn"] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-
-          &[value='info'] {
+          
+          &[value="info"] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-
+          
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             animation: shine 2s infinite;
           }
         }
@@ -5440,13 +5239,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-
+        
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-
+        
         &::before {
           content: '';
           position: absolute;
@@ -5454,17 +5253,21 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-
+        
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-
+        
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -5476,24 +5279,14 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 @keyframes rotate-gradient {
-  0% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(390deg);
-  }
+  0% { transform: rotate(30deg); }
+  100% { transform: rotate(390deg); }
 }
 
 /* Add stars animation for log level selector */
@@ -5504,7 +5297,8 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -5512,18 +5306,9 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% {
-    opacity: 0;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.2;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0; background-position: 0 0; }
+  50% { opacity: 0.2; background-position: 5px 5px; }
+  100% { opacity: 0; background-position: 10px 10px; }
 }
 
 /* Mat-Tab styling with patriotic theme */
@@ -5536,19 +5321,25 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, 
+      vars.$usa-red 0%, 
+      vars.$usa-red 33%, 
+      vars.$usa-white 33%, 
+      vars.$usa-white 66%, 
+      vars.$usa-blue 66%, 
+      vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-
+  
   /* Star background effect */
   &::after {
     content: '';
@@ -5563,7 +5354,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-
+  
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -5572,18 +5363,20 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-
+    
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3) 0%, 
+        rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-
+      
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -5592,11 +5385,13 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, 
+          rgba(255, 255, 255, 0.4) 0%, 
+          rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-
+      
       /* Animated border effect */
       &::after {
         content: '';
@@ -5605,20 +5400,22 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
+        background: linear-gradient(to right, 
+          vars.$usa-red, 
+          vars.$usa-white,
+          vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-
+      
       /* Make tab icon and label brighter */
-      .mat-icon,
-      .mdc-tab__text-label {
+      .mat-icon, .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-
+  
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -5627,7 +5424,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-
+  
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -5655,21 +5452,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &:hover::before {
     opacity: 1;
   }
@@ -5688,18 +5490,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-
+    
     &:hover {
       color: #ef4444;
     }
-
+    
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-
+  
   .danger-text {
     position: absolute;
     right: 6px;
@@ -5709,46 +5511,27 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 @keyframes sliding-gradient {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes twinkle-bg {
-  0% {
-    opacity: 0.1;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.3;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0.1;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0.1; background-position: 0 0; }
+  50% { opacity: 0.3; background-position: 5px 5px; }
+  100% { opacity: 0.1; background-position: 10px 10px; }
 }
 
 /* Enhanced tab content indicator */
@@ -5760,30 +5543,26 @@ table thead tr {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(16, 185, 129, 0.7));
+    background: linear-gradient(90deg, 
+      rgba(59, 130, 246, 0.7), 
+      rgba(16, 185, 129, 0.7));
     border-radius: 3px;
     animation: tab-progress 3s ease-in-out infinite;
   }
 }
 
 @keyframes tab-progress {
-  0% {
-    left: -30%;
-  }
-  50% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -30%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
 /* Enhanced logger controls with synchronized styles */
@@ -5809,13 +5588,11 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-      background-size:
-        20px 20px,
-        30px 30px;
-      background-position:
-        0 0,
-        15px 15px;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 30px 30px;
+      background-position: 0 0, 15px 15px;
       pointer-events: none;
       opacity: 0.2;
       animation: twinkleStars 8s infinite alternate;
@@ -5826,7 +5603,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-
+      
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -5834,48 +5611,53 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-
+        
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-
+        
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-
+        
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-
-          &[value='all'] {
+          
+          &[value="all"] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-
-          &[value='error'] {
+          
+          &[value="error"] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-
-          &[value='warn'] {
+          
+          &[value="warn"] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-
-          &[value='info'] {
+          
+          &[value="info"] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-
+          
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             animation: shine 2s infinite;
           }
         }
@@ -5902,13 +5684,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-
+        
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-
+        
         &::before {
           content: '';
           position: absolute;
@@ -5916,17 +5698,21 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-
+        
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-
+        
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -5938,24 +5724,14 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 @keyframes rotate-gradient {
-  0% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(390deg);
-  }
+  0% { transform: rotate(30deg); }
+  100% { transform: rotate(390deg); }
 }
 
 /* Add stars animation for log level selector */
@@ -5966,7 +5742,8 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -5974,18 +5751,9 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% {
-    opacity: 0;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.2;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0; background-position: 0 0; }
+  50% { opacity: 0.2; background-position: 5px 5px; }
+  100% { opacity: 0; background-position: 10px 10px; }
 }
 
 /* Mat-Tab styling with patriotic theme */
@@ -5998,19 +5766,25 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, 
+      vars.$usa-red 0%, 
+      vars.$usa-red 33%, 
+      vars.$usa-white 33%, 
+      vars.$usa-white 66%, 
+      vars.$usa-blue 66%, 
+      vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-
+  
   /* Star background effect */
   &::after {
     content: '';
@@ -6025,7 +5799,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-
+  
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -6034,18 +5808,20 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-
+    
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3) 0%, 
+        rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-
+      
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -6054,11 +5830,13 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, 
+          rgba(255, 255, 255, 0.4) 0%, 
+          rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-
+      
       /* Animated border effect */
       &::after {
         content: '';
@@ -6067,20 +5845,22 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
+        background: linear-gradient(to right, 
+          vars.$usa-red, 
+          vars.$usa-white,
+          vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-
+      
       /* Make tab icon and label brighter */
-      .mat-icon,
-      .mdc-tab__text-label {
+      .mat-icon, .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-
+  
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -6089,7 +5869,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-
+  
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -6117,21 +5897,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &:hover::before {
     opacity: 1;
   }
@@ -6150,18 +5935,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-
+    
     &:hover {
       color: #ef4444;
     }
-
+    
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-
+  
   .danger-text {
     position: absolute;
     right: 6px;
@@ -6171,46 +5956,27 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 @keyframes sliding-gradient {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes twinkle-bg {
-  0% {
-    opacity: 0.1;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.3;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0.1;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0.1; background-position: 0 0; }
+  50% { opacity: 0.3; background-position: 5px 5px; }
+  100% { opacity: 0.1; background-position: 10px 10px; }
 }
 
 /* Enhanced tab content indicator */
@@ -6222,30 +5988,26 @@ table thead tr {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(16, 185, 129, 0.7));
+    background: linear-gradient(90deg, 
+      rgba(59, 130, 246, 0.7), 
+      rgba(16, 185, 129, 0.7));
     border-radius: 3px;
     animation: tab-progress 3s ease-in-out infinite;
   }
 }
 
 @keyframes tab-progress {
-  0% {
-    left: -30%;
-  }
-  50% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -30%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
 /* Enhanced logger controls with synchronized styles */
@@ -6271,13 +6033,11 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-      background-size:
-        20px 20px,
-        30px 30px;
-      background-position:
-        0 0,
-        15px 15px;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 30px 30px;
+      background-position: 0 0, 15px 15px;
       pointer-events: none;
       opacity: 0.2;
       animation: twinkleStars 8s infinite alternate;
@@ -6288,7 +6048,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-
+      
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -6296,48 +6056,53 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-
+        
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-
+        
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-
+        
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-
-          &[value='all'] {
+          
+          &[value="all"] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-
-          &[value='error'] {
+          
+          &[value="error"] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-
-          &[value='warn'] {
+          
+          &[value="warn"] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-
-          &[value='info'] {
+          
+          &[value="info"] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-
+          
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             animation: shine 2s infinite;
           }
         }
@@ -6364,13 +6129,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-
+        
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-
+        
         &::before {
           content: '';
           position: absolute;
@@ -6378,17 +6143,21 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-
+        
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-
+        
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -6400,24 +6169,14 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 @keyframes rotate-gradient {
-  0% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(390deg);
-  }
+  0% { transform: rotate(30deg); }
+  100% { transform: rotate(390deg); }
 }
 
 /* Add stars animation for log level selector */
@@ -6428,7 +6187,8 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -6436,18 +6196,9 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% {
-    opacity: 0;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.2;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0; background-position: 0 0; }
+  50% { opacity: 0.2; background-position: 5px 5px; }
+  100% { opacity: 0; background-position: 10px 10px; }
 }
 
 /* Mat-Tab styling with patriotic theme */
@@ -6460,19 +6211,25 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, 
+      vars.$usa-red 0%, 
+      vars.$usa-red 33%, 
+      vars.$usa-white 33%, 
+      vars.$usa-white 66%, 
+      vars.$usa-blue 66%, 
+      vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-
+  
   /* Star background effect */
   &::after {
     content: '';
@@ -6487,7 +6244,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-
+  
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -6496,18 +6253,20 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-
+    
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3) 0%, 
+        rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-
+      
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -6516,11 +6275,13 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, 
+          rgba(255, 255, 255, 0.4) 0%, 
+          rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-
+      
       /* Animated border effect */
       &::after {
         content: '';
@@ -6529,20 +6290,22 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
+        background: linear-gradient(to right, 
+          vars.$usa-red, 
+          vars.$usa-white,
+          vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-
+      
       /* Make tab icon and label brighter */
-      .mat-icon,
-      .mdc-tab__text-label {
+      .mat-icon, .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-
+  
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -6551,7 +6314,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-
+  
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -6579,21 +6342,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &:hover::before {
     opacity: 1;
   }
@@ -6612,18 +6380,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-
+    
     &:hover {
       color: #ef4444;
     }
-
+    
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-
+  
   .danger-text {
     position: absolute;
     right: 6px;
@@ -6633,46 +6401,27 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 @keyframes sliding-gradient {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes twinkle-bg {
-  0% {
-    opacity: 0.1;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.3;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0.1;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0.1; background-position: 0 0; }
+  50% { opacity: 0.3; background-position: 5px 5px; }
+  100% { opacity: 0.1; background-position: 10px 10px; }
 }
 
 /* Enhanced tab content indicator */
@@ -6684,30 +6433,26 @@ table thead tr {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(16, 185, 129, 0.7));
+    background: linear-gradient(90deg, 
+      rgba(59, 130, 246, 0.7), 
+      rgba(16, 185, 129, 0.7));
     border-radius: 3px;
     animation: tab-progress 3s ease-in-out infinite;
   }
 }
 
 @keyframes tab-progress {
-  0% {
-    left: -30%;
-  }
-  50% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -30%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
 /* Enhanced logger controls with synchronized styles */
@@ -6733,13 +6478,11 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-      background-size:
-        20px 20px,
-        30px 30px;
-      background-position:
-        0 0,
-        15px 15px;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 30px 30px;
+      background-position: 0 0, 15px 15px;
       pointer-events: none;
       opacity: 0.2;
       animation: twinkleStars 8s infinite alternate;
@@ -6750,7 +6493,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-
+      
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -6758,48 +6501,53 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-
+        
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-
+        
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-
+        
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-
-          &[value='all'] {
+          
+          &[value="all"] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-
-          &[value='error'] {
+          
+          &[value="error"] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-
-          &[value='warn'] {
+          
+          &[value="warn"] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-
-          &[value='info'] {
+          
+          &[value="info"] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-
+          
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             animation: shine 2s infinite;
           }
         }
@@ -6826,13 +6574,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-
+        
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-
+        
         &::before {
           content: '';
           position: absolute;
@@ -6840,17 +6588,21 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-
+        
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-
+        
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -6862,24 +6614,14 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 @keyframes rotate-gradient {
-  0% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(390deg);
-  }
+  0% { transform: rotate(30deg); }
+  100% { transform: rotate(390deg); }
 }
 
 /* Add stars animation for log level selector */
@@ -6890,7 +6632,8 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -6898,18 +6641,9 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% {
-    opacity: 0;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.2;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0; background-position: 0 0; }
+  50% { opacity: 0.2; background-position: 5px 5px; }
+  100% { opacity: 0; background-position: 10px 10px; }
 }
 
 /* Mat-Tab styling with patriotic theme */
@@ -6922,19 +6656,25 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, 
+      vars.$usa-red 0%, 
+      vars.$usa-red 33%, 
+      vars.$usa-white 33%, 
+      vars.$usa-white 66%, 
+      vars.$usa-blue 66%, 
+      vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-
+  
   /* Star background effect */
   &::after {
     content: '';
@@ -6949,7 +6689,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-
+  
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -6958,18 +6698,20 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-
+    
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3) 0%, 
+        rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-
+      
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -6978,11 +6720,13 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, 
+          rgba(255, 255, 255, 0.4) 0%, 
+          rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-
+      
       /* Animated border effect */
       &::after {
         content: '';
@@ -6991,20 +6735,22 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
+        background: linear-gradient(to right, 
+          vars.$usa-red, 
+          vars.$usa-white,
+          vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-
+      
       /* Make tab icon and label brighter */
-      .mat-icon,
-      .mdc-tab__text-label {
+      .mat-icon, .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-
+  
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -7013,7 +6759,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-
+  
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -7041,21 +6787,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &:hover::before {
     opacity: 1;
   }
@@ -7074,18 +6825,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-
+    
     &:hover {
       color: #ef4444;
     }
-
+    
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-
+  
   .danger-text {
     position: absolute;
     right: 6px;
@@ -7095,46 +6846,27 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 @keyframes sliding-gradient {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @keyframes twinkle-bg {
-  0% {
-    opacity: 0.1;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.3;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0.1;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0.1; background-position: 0 0; }
+  50% { opacity: 0.3; background-position: 5px 5px; }
+  100% { opacity: 0.1; background-position: 10px 10px; }
 }
 
 /* Enhanced tab content indicator */
@@ -7146,30 +6878,26 @@ table thead tr {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 30%;
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.7), rgba(16, 185, 129, 0.7));
+    background: linear-gradient(90deg, 
+      rgba(59, 130, 246, 0.7), 
+      rgba(16, 185, 129, 0.7));
     border-radius: 3px;
     animation: tab-progress 3s ease-in-out infinite;
   }
 }
 
 @keyframes tab-progress {
-  0% {
-    left: -30%;
-  }
-  50% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -30%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
 }
 
 /* Enhanced logger controls with synchronized styles */
@@ -7195,13 +6923,11 @@ table thead tr {
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
-      background-size:
-        20px 20px,
-        30px 30px;
-      background-position:
-        0 0,
-        15px 15px;
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px, 30px 30px;
+      background-position: 0 0, 15px 15px;
       pointer-events: none;
       opacity: 0.2;
       animation: twinkleStars 8s infinite alternate;
@@ -7212,7 +6938,7 @@ table thead tr {
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       background: transparent;
       z-index: 2;
-
+      
       .mat-button-toggle {
         color: #e5e7eb;
         background: rgba(0, 0, 0, 0.2);
@@ -7220,48 +6946,53 @@ table thead tr {
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
-
+        
         &:not(:first-child) {
           border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
-
+        
         &:hover {
           background: rgba(255, 255, 255, 0.1);
           transform: translateY(-2px);
         }
-
+        
         &.mat-button-toggle-checked {
           color: white;
           font-weight: 500;
-
-          &[value='all'] {
+          
+          &[value="all"] {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
             box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
           }
-
-          &[value='error'] {
+          
+          &[value="error"] {
             background: linear-gradient(135deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
           }
-
-          &[value='warn'] {
+          
+          &[value="warn"] {
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
           }
-
-          &[value='info'] {
+          
+          &[value="info"] {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
           }
-
+          
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              rgba(255, 255, 255, 0) 100%
+            );
             animation: shine 2s infinite;
           }
         }
@@ -7288,13 +7019,13 @@ table thead tr {
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
-
+        
         &:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
           background: linear-gradient(135deg, #b71c1c 0%, #c62828 100%);
         }
-
+        
         &::before {
           content: '';
           position: absolute;
@@ -7302,17 +7033,21 @@ table thead tr {
           left: -50%;
           width: 200%;
           height: 200%;
-          background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+          background: radial-gradient(
+            circle,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0) 60%
+          );
           transform: rotate(30deg);
           opacity: 0;
           transition: opacity 0.3s ease;
         }
-
+        
         &:hover::before {
           opacity: 1;
           animation: rotate-gradient 3s infinite linear;
         }
-
+        
         mat-icon {
           font-size: 18px;
           height: 18px;
@@ -7324,24 +7059,14 @@ table thead tr {
 }
 
 @keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -100%; }
+  20% { left: 100%; }
+  100% { left: 100%; }
 }
 
 @keyframes rotate-gradient {
-  0% {
-    transform: rotate(30deg);
-  }
-  100% {
-    transform: rotate(390deg);
-  }
+  0% { transform: rotate(30deg); }
+  100% { transform: rotate(390deg); }
 }
 
 /* Add stars animation for log level selector */
@@ -7352,7 +7077,8 @@ table thead tr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
   background-size: 15px 15px;
   opacity: 0;
   z-index: -1;
@@ -7360,18 +7086,9 @@ table thead tr {
 }
 
 @keyframes stars-pulse {
-  0% {
-    opacity: 0;
-    background-position: 0 0;
-  }
-  50% {
-    opacity: 0.2;
-    background-position: 5px 5px;
-  }
-  100% {
-    opacity: 0;
-    background-position: 10px 10px;
-  }
+  0% { opacity: 0; background-position: 0 0; }
+  50% { opacity: 0.2; background-position: 5px 5px; }
+  100% { opacity: 0; background-position: 10px 10px; }
 }
 
 /* Mat-Tab styling with patriotic theme */
@@ -7384,19 +7101,25 @@ table thead tr {
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
+    background: linear-gradient(90deg, 
+      vars.$usa-red 0%, 
+      vars.$usa-red 33%, 
+      vars.$usa-white 33%, 
+      vars.$usa-white 66%, 
+      vars.$usa-blue 66%, 
+      vars.$usa-blue 100%);
     opacity: 0.8;
     z-index: 1;
   }
-
+  
   /* Star background effect */
   &::after {
     content: '';
@@ -7411,7 +7134,7 @@ table thead tr {
     pointer-events: none;
     animation: twinkle-bg 8s infinite alternate;
   }
-
+  
   .mat-mdc-tab {
     min-width: 120px;
     height: 60px;
@@ -7420,18 +7143,20 @@ table thead tr {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-
+    
     &:hover {
       opacity: 0.9;
       background-color: rgba(255, 255, 255, 0.05);
     }
-
+    
     &.mdc-tab--active {
       opacity: 1;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(37, 99, 235, 0.8) 100%);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.3) 0%, 
+        rgba(37, 99, 235, 0.8) 100%);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(-2px);
-
+      
       /* Pulse effect for active tab */
       &::before {
         content: '';
@@ -7440,11 +7165,13 @@ table thead tr {
         left: 0;
         right: 0;
         bottom: 0;
-        background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
+        background: radial-gradient(circle at center, 
+          rgba(255, 255, 255, 0.4) 0%, 
+          rgba(255, 255, 255, 0) 60%);
         opacity: 0;
         animation: tab-pulse 2s infinite;
       }
-
+      
       /* Animated border effect */
       &::after {
         content: '';
@@ -7453,20 +7180,22 @@ table thead tr {
         left: 0;
         width: 100%;
         height: 3px;
-        background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
+        background: linear-gradient(to right, 
+          vars.$usa-red, 
+          vars.$usa-white,
+          vars.$usa-blue);
         background-size: 200% 100%;
         animation: sliding-gradient 3s linear infinite;
       }
-
+      
       /* Make tab icon and label brighter */
-      .mat-icon,
-      .mdc-tab__text-label {
+      .mat-icon, .mdc-tab__text-label {
         color: white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
     }
   }
-
+  
   .mat-icon {
     margin-bottom: 4px;
     font-size: 22px;
@@ -7475,7 +7204,7 @@ table thead tr {
     color: rgba(255, 255, 255, 0.9);
     transition: all 0.3s ease;
   }
-
+  
   .mdc-tab__text-label {
     color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
@@ -7503,21 +7232,26 @@ table thead tr {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
-
+  
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
     z-index: 1;
     opacity: 0;
   }
-
+  
   &:hover::before {
     opacity: 1;
   }
@@ -7536,18 +7270,18 @@ table thead tr {
     font-weight: 500;
     letter-spacing: 0.5px;
     z-index: 2;
-
+    
     &:hover {
       color: #ef4444;
     }
-
+    
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
     }
   }
-
+  
   .danger-text {
     position: absolute;
     right: 6px;
@@ -7557,29 +7291,19 @@ table thead tr {
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-
+  
   &:hover .danger-text {
     opacity: 1;
   }
 }
 
 @keyframes tab-pulse {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0; }
 }
 
 @keyframes sliding-gradient {
-  0% {
-    background-position: 0% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }

@@ -8,7 +8,11 @@ import { MaterialModule } from '../../material.module';
 import { RecipeService } from './services/recipe.service';
 
 @NgModule({
-  declarations: [PeasantKitchenComponent, RecipesComponent, RecipeComponent],
+  declarations: [
+    PeasantKitchenComponent,
+    RecipesComponent,
+    RecipeComponent
+  ],
   imports: [
     CommonModule,
     MaterialModule,
@@ -18,11 +22,11 @@ import { RecipeService } from './services/recipe.service';
         component: PeasantKitchenComponent,
         children: [
           { path: '', component: RecipesComponent },
-          { path: 'recipe/:id', component: RecipeComponent },
-        ],
-      },
-    ]),
+          { path: 'recipe/:id', component: RecipeComponent }
+        ]
+      }
+    ])
   ],
   providers: [RecipeService],
 })
-export class PeasantKitchenModule {}
+export class PeasantKitchenModule { }

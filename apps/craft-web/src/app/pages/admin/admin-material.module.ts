@@ -57,7 +57,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     MatInputModule,
     MatNativeDateModule,
     MatListModule,
-    MatPaginatorModule,
-  ],
+    MatPaginatorModule
+  ]
 })
 export class AdminMaterialModule {}

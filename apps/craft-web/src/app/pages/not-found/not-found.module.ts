@@ -10,7 +10,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
-  declarations: [NotFoundComponent],
+  declarations: [
+    NotFoundComponent
+  ],
   imports: [
     CommonModule,
     MaterialModule,
@@ -19,8 +21,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatCardModule,
     MatListModule,
     MatProgressSpinnerModule,
-    RouterModule.forChild([{ path: '', component: NotFoundComponent }]),
+    RouterModule.forChild([
+      { path: '', component: NotFoundComponent }
+    ])
   ],
-  exports: [NotFoundComponent],
+  exports: [
+    NotFoundComponent
+  ]
 })
-export class NotFoundModule {}
+export class NotFoundModule { }

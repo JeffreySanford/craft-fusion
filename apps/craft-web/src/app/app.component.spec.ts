@@ -15,21 +15,21 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     mockRouter = {
-      navigate: jest.fn(),
+      navigate: jest.fn()
     } as unknown as jest.Mocked<Router>;
 
     mockActivatedRoute = {
       snapshot: {
         paramMap: {
-          get: jest.fn(),
-        },
-      },
+          get: jest.fn()
+        }
+      }
     } as unknown as jest.Mocked<ActivatedRoute>;
 
     mockBreakpointObserver = {
       observe: jest.fn().mockReturnValue({
-        subscribe: jest.fn(),
-      }),
+        subscribe: jest.fn()
+      })
     } as unknown as jest.Mocked<BreakpointObserver>;
 
     await TestBed.configureTestingModule({
@@ -38,8 +38,8 @@ describe('AppComponent', () => {
       providers: [
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: BreakpointObserver, useValue: mockBreakpointObserver },
-      ],
+        { provide: BreakpointObserver, useValue: mockBreakpointObserver }
+      ]
     }).compileComponents();
   });
 

@@ -11,15 +11,23 @@ import { RecordService } from '../services/record.service';
   templateUrl: './record-detail.component.html',
   styleUrls: ['./record-detail.component.scss'],
   animations: [
-    trigger('fadeIn', [transition(':enter', [style({ opacity: 0 }), animate('0.6s ease-out', style({ opacity: 1 }))])]),
-    trigger('listAnimation', [
-      transition('* <=> *', [
-        query(':enter', [style({ opacity: 0, transform: 'translateY(15px)' }), stagger('100ms', [animate('0.5s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))])], {
-          optional: true,
-        }),
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('0.6s ease-out', style({ opacity: 1 })),
       ]),
     ]),
-  ],
+    trigger('listAnimation', [
+      transition('* <=> *', [
+        query(':enter', [
+          style({ opacity: 0, transform: 'translateY(15px)' }),
+          stagger('100ms', [
+            animate('0.5s ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+          ]),
+        ], { optional: true }),
+      ]),
+    ]),
+  ]
 })
 export class RecordDetailComponent implements OnChanges, OnInit {
   @Input() user!: Record;
@@ -32,10 +40,7 @@ export class RecordDetailComponent implements OnChanges, OnInit {
   // Array for displaying stars based on salary
   wealthIndicator: number[] = [];
 
-  constructor(
-    private route: ActivatedRoute,
-    private recordService: RecordService,
-  ) {}
+  constructor(private route: ActivatedRoute, private recordService: RecordService) {}
 
   ngOnInit(): void {
     if (!this.user) {
@@ -43,7 +48,7 @@ export class RecordDetailComponent implements OnChanges, OnInit {
       if (id) {
         this.loading = true;
         this.recordService.getRecordByUID(id).subscribe({
-          next: record => {
+          next: (record) => {
             if (record) {
               this.user = record;
               this.loading = false;
@@ -54,7 +59,7 @@ export class RecordDetailComponent implements OnChanges, OnInit {
           },
           error: () => {
             this.loading = false;
-          },
+          }
         });
         return;
       }
@@ -91,7 +96,7 @@ export class RecordDetailComponent implements OnChanges, OnInit {
 
     return total;
   }
-
+  
   public formatPhoneNumber(phoneNumber: string): string {
     if (!phoneNumber) return '';
     // Remove all non-digit characters

@@ -7,8 +7,9 @@ describe('MaterialIconsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MaterialIconsComponent],
-    }).compileComponents();
+      imports: [MaterialIconsComponent]
+    })
+    .compileComponents();
 
     fixture = TestBed.createComponent(MaterialIconsComponent);
     component = fixture.componentInstance;

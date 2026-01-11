@@ -20,7 +20,7 @@ export interface ApiLogEntry {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ApiLoggerService {
   private logSubject = new Subject<ApiLogEntry>();
@@ -36,21 +36,21 @@ export class ApiLoggerService {
    */
   logApiCall(entry: ApiLogEntry): void {
     this.logs.push(entry);
-
+    
     // Trim logs if they exceed the maximum
     if (this.logs.length > this.maxLogs) {
       this.logs.shift();
     }
-
+    
     // Emit the log entry to subscribers
     this.logSubject.next(entry);
-
+    
     // Also log to the general logger for debug purposes
     const status = entry.response?.status;
     const method = entry.request.method;
     const url = entry.request.url;
     const time = entry.responseTime.toFixed(1);
-
+    
     if (typeof status !== 'number' || status >= 400) {
       this.logger.warn(`API ${method} ${url} failed with status ${status ?? 'unknown'} (${time}ms)`);
     } else {
@@ -93,7 +93,7 @@ export class ApiLoggerService {
   getLogStream(): Observable<ApiLogEntry> {
     return this.logSubject.asObservable();
   }
-
+  
   /**
    * Generate a simulated log entry for testing
    */
@@ -102,7 +102,7 @@ export class ApiLoggerService {
     const responseTime = Math.floor(Math.random() * 500) + 5; // 5-505ms
     const statusOptions = [200, 200, 200, 200, 201, 204, 400, 404, 500]; // Weighted to favor success
     const status = statusOptions[Math.floor(Math.random() * statusOptions.length)] ?? 500;
-
+    
     return {
       timestamp,
       request: {
@@ -110,26 +110,23 @@ export class ApiLoggerService {
         method,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer mock-token-xxx',
+          'Authorization': 'Bearer mock-token-xxx'
         },
-        body: method !== 'GET' ? { data: 'Mock request data', timestamp } : undefined,
+        body: method !== 'GET' ? { data: 'Mock request data', timestamp } : undefined
       },
       response: {
         status,
-        body:
-          status < 400
-            ? {
-                success: true,
-                data: { id: Math.floor(Math.random() * 1000), name: 'Mock Response' },
-                timestamp,
-              }
-            : {
-                success: false,
-                error: status === 404 ? 'Resource not found' : 'Internal server error',
-                timestamp,
-              },
+        body: status < 400 ? { 
+          success: true, 
+          data: { id: Math.floor(Math.random() * 1000), name: 'Mock Response' },
+          timestamp
+        } : {
+          success: false,
+          error: status === 404 ? 'Resource not found' : 'Internal server error',
+          timestamp
+        }
       },
-      responseTime,
+      responseTime
     };
   }
 }

@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class FooterStateService {
   private expandedSubject = new BehaviorSubject<boolean>(false);
-
+  
   // Observable that components can subscribe to
   public expanded$: Observable<boolean> = this.expandedSubject.asObservable();
-
+  
   /**
    * Update the footer expansion state
    * @param expanded - Whether the footer is expanded
@@ -18,7 +18,7 @@ export class FooterStateService {
     console.log('Setting footer expanded state:', expanded); // Debug log
     this.expandedSubject.next(expanded);
   }
-
+  
   /**
    * Get the current footer expansion state
    * @returns boolean
@@ -26,7 +26,7 @@ export class FooterStateService {
   isExpanded(): boolean {
     return this.expandedSubject.getValue();
   }
-
+  
   /**
    * Toggle the footer expansion state
    */

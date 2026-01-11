@@ -8,8 +8,9 @@ describe('BarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BarComponent],
-    }).compileComponents();
+      imports: [BarComponent]
+    })
+    .compileComponents();
 
     fixture = TestBed.createComponent(BarComponent);
     component = fixture.componentInstance;
@@ -19,16 +20,16 @@ describe('BarComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
+  
   it('should have showLegend property set to true by default', () => {
     expect(component.showLegend).toBeTruthy();
   });
-
+  
   it('should have legendItems array initialized', () => {
     expect(component.legendItems).toBeDefined();
     expect(Array.isArray(component.legendItems)).toBeTruthy();
   });
-
+  
   it('should toggle legend visibility', () => {
     const initialVisibility = component.showLegend;
     const newVisibility = component.toggleLegend();

@@ -3,7 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoggerService } from './logger.service';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class NotificationService {
   constructor(private snackBar: MatSnackBar, private logger: LoggerService) {
@@ -16,7 +16,7 @@ export class NotificationService {
       duration: 3000,
       horizontalPosition: 'right',
       verticalPosition: 'bottom',
-      panelClass: ['success-snackbar'],
+      panelClass: ['success-snackbar']
     });
     this.logger.endServiceCall(callId, 200);
   }
@@ -33,7 +33,7 @@ export class NotificationService {
       duration: 5000,
       horizontalPosition: 'right',
       verticalPosition: 'bottom',
-      panelClass: ['error-snackbar'],
+      panelClass: ['error-snackbar']
     });
     this.logger.endServiceCall(callId, 200);
   }
@@ -44,7 +44,7 @@ export class NotificationService {
       duration: 4000,
       horizontalPosition: 'right',
       verticalPosition: 'bottom',
-      panelClass: ['warning-snackbar'],
+      panelClass: ['warning-snackbar']
     });
     this.logger.endServiceCall(callId, 200);
   }
@@ -55,7 +55,7 @@ export class NotificationService {
       duration: 3000,
       horizontalPosition: 'right',
       verticalPosition: 'bottom',
-      panelClass: ['info-snackbar'],
+      panelClass: ['info-snackbar']
     });
     this.logger.endServiceCall(callId, 200);
   }

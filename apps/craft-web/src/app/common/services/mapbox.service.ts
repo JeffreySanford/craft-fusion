@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class MapboxService {
   private map: mapboxgl.Map | undefined;
@@ -21,7 +21,7 @@ export class MapboxService {
       container,
       style: 'mapbox://styles/mapbox/streets-v11',
       center,
-      zoom,
+      zoom
     });
     return this.map;
   }
@@ -31,7 +31,7 @@ export class MapboxService {
       console.error('Map is not initialized. Call initializeMap() first.');
       return;
     }
-
+    
     new mapboxgl.Marker()
       .setLngLat(coordinates)
       .setPopup(new mapboxgl.Popup().setHTML(`<h3>${message}</h3>`))
@@ -57,7 +57,7 @@ export class MapboxService {
     if (this.map.getLayer('route')) {
       this.map.removeLayer('route');
     }
-
+    
     if (this.map.getSource('route')) {
       this.map.removeSource('route');
     }

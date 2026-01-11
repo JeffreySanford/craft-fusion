@@ -6,13 +6,20 @@ import { FamilyTimelineComponent } from './family-timeline/family-timeline.compo
 const routes: Routes = [
   {
     path: '',
-    component: FamilyTimelineComponent,
-  },
+    component: FamilyTimelineComponent
+  }
 ];
 
 @NgModule({
-  declarations: [FamilyTimelineComponent],
-  imports: [CommonModule, RouterModule.forChild(routes)],
-  exports: [FamilyTimelineComponent],
+  declarations: [
+    FamilyTimelineComponent
+  ],
+  imports: [
+    CommonModule,
+    RouterModule.forChild(routes)
+  ],
+  exports: [
+    FamilyTimelineComponent
+  ]
 })
-export class FamilyModule {}
+export class FamilyModule { }

@@ -6,16 +6,21 @@ import { RoleGuard } from './common/guards/role.guard';
 const routes: Routes = [
   // ... existing routes
   {
-    path: 'timeline',
+    path: 'family',
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['timeline', 'admin'] },
-    loadChildren: () => import('./projects/timeline/timeline.module').then(m => m.TimelineModule),
+    data: { roles: ['family'] },
+    children: [
+      {
+        path: 'timeline',
+        loadChildren: () => import('./projects/family/memorial-timeline/memorial-timeline.module').then(m => m.MemorialTimelineModule)
+      }
+    ]
   },
   // ... other routes
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

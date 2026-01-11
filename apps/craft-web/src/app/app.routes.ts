@@ -14,9 +14,15 @@ export const appRoutes: Routes = [
     loadChildren: () => import('./projects/data-visualizations/data-visualizations.module').then(m => m.DataVisualizationsModule),
   },
   {
-    path: 'timeline',
-    loadChildren: () => import('./projects/timeline/timeline.module').then(m => m.TimelineModule),
-    canActivate: [AuthGuard, AdminGuard],
+    path: 'book',
+    loadChildren: () => import('./projects/book/book.module').then(m => m.BookModule),
+    canActivate: [AuthGuard, AdminGuard]
+  },
+
+  {
+    path: 'family',
+    loadChildren: () => import('./projects/family/memorial-timeline/memorial-timeline.module').then(m => m.MemorialTimelineModule),
+    canActivate: [AuthGuard, AdminGuard]
   },
   {
     path: 'peasant-kitchen',
@@ -32,7 +38,12 @@ export const appRoutes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('./pages/admin/admin.module').then(m => m.AdminModule),
-    canActivate: [AuthGuard, AdminGuard],
+    canActivate: [AuthGuard, AdminGuard]
+  },
+  {
+    path: 'chat',
+    loadChildren: () => import('./projects/chat/chat.module').then(m => m.ChatModule),
+    canActivate: [AuthGuard, AdminGuard]
   },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/404' },

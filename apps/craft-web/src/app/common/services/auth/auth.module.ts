@@ -6,7 +6,14 @@ import { AuthenticationService } from './authentication.service';
 import { AuthorizationService } from './authorization.service';
 
 @NgModule({
-  imports: [CommonModule, HttpClientModule],
-  providers: [AuthService, AuthenticationService, AuthorizationService],
+  imports: [
+    CommonModule,
+    HttpClientModule
+  ],
+  providers: [
+    AuthService,
+    AuthenticationService,
+    AuthorizationService
+  ]
 })
-export class AuthModule {}
+export class AuthModule { }

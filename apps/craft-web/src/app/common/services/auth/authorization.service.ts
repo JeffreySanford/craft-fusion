@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { LoggerService } from '../logger.service';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuthorizationService {
   constructor(private logger: LoggerService) {

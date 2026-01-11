@@ -40,21 +40,17 @@
 // Animation mixins
 @mixin fade-in($duration: 0.3s) {
   animation: fadeIn $duration ease-in-out;
-
+  
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 }
 
 @mixin slide-in($direction: 'left', $distance: 20px, $duration: 0.3s) {
   $start-x: 0;
   $start-y: 0;
-
+  
   @if $direction == 'left' {
     $start-x: -$distance;
   } @else if $direction == 'right' {
@@ -64,9 +60,9 @@
   } @else if $direction == 'down' {
     $start-y: -$distance;
   }
-
+  
   animation: slideIn $duration ease-out;
-
+  
   @keyframes slideIn {
     from {
       transform: translate($start-x, $start-y);
@@ -167,7 +163,7 @@
 // Responsive mixins
 @mixin respond-to($breakpoint) {
   $value: map.get(vars.$breakpoints, $breakpoint);
-
+  
   @if $value {
     @media (min-width: $value) {
       @content;
@@ -212,7 +208,11 @@
 
 // Patriotic styling mixins
 @mixin patriotic-gradient($angle: 135deg) {
-  background: linear-gradient($angle, var(--md-sys-color-primary) 0%, var(--md-sys-color-secondary) 100%);
+  background: linear-gradient(
+    $angle,
+    var(--md-sys-color-primary) 0%,
+    var(--md-sys-color-secondary) 100%
+  );
   color: var(--md-sys-color-on-primary);
 }
 
@@ -220,7 +220,7 @@
   border-left: $width solid var(--md-sys-color-primary);
   border-right: $width solid var(--md-sys-color-secondary);
   position: relative;
-
+  
   &::before {
     content: '';
     position: absolute;
@@ -239,7 +239,7 @@
 
 @mixin hover-effect($scale: 1.05, $shadow-level: 2) {
   @include animate(transform box-shadow);
-
+  
   &:hover {
     transform: scale($scale);
     box-shadow: var(--md-sys-elevation-level#{$shadow-level});
@@ -253,7 +253,7 @@
   margin-right: auto;
   padding-left: map.get(vars.$spacing, 4);
   padding-right: map.get(vars.$spacing, 4);
-
+  
   @if map.has-key(vars.$container-max-widths, $max-width) {
     max-width: map.get(vars.$container-max-widths, $max-width);
   } @else {

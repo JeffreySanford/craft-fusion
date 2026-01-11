@@ -5,8 +5,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 
-import { TimelineModule } from './timeline/timeline.module';
+import { MemorialTimelineModule } from './family/memorial-timeline/memorial-timeline.module';
 import { DataVisualizationsModule } from './data-visualizations/data-visualizations.module';
+import { BookModule } from './book/book.module';
+import { ChatModule } from './chat/chat.module';
 import { PeasantKitchenModule } from './peasant-kitchen/peasant-kitchen.module';
 import { TableModule } from './table/table.module';
 import { SpaceVideoModule } from './space-video/space-video.module';
@@ -18,13 +20,23 @@ import { SpaceVideoModule } from './space-video/space-video.module';
     MatIconModule,
     MatCardModule,
     MatButtonModule,
-    TimelineModule,
+    MemorialTimelineModule,
     DataVisualizationsModule,
+    BookModule,
+    ChatModule,
     PeasantKitchenModule,
     TableModule,
-    SpaceVideoModule,
+    SpaceVideoModule
   ],
   declarations: [],
-  exports: [TimelineModule, DataVisualizationsModule, PeasantKitchenModule, TableModule, SpaceVideoModule],
+  exports: [
+    MemorialTimelineModule,
+    DataVisualizationsModule,
+    BookModule,
+    ChatModule,
+    PeasantKitchenModule,
+    TableModule,
+    SpaceVideoModule
+  ]
 })
-export class ProjectsModule {}
+export class ProjectsModule { }

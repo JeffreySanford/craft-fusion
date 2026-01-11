@@ -3,10 +3,10 @@ import * as pdfjsLib from 'pdfjs-dist';
 import { TurndownWrapperService } from './turndown-wrapper.service';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class PdfParseService {
-  constructor(private readonly turndownWrapper: TurndownWrapperService) {}
+  constructor(private readonly turndownWrapper: TurndownWrapperService) { }
 
   async parsePdf(file: File): Promise<string> {
     const arrayBuffer = await file.arrayBuffer();

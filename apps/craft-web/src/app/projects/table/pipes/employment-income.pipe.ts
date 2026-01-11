@@ -3,7 +3,7 @@ import { Company } from '@craft-fusion/craft-library';
 
 @Pipe({
   name: 'employmentIncome',
-  standalone: false,
+  standalone: false
 })
 export class EmploymentIncomePipe implements PipeTransform {
   transform(companies: Company[]): number {

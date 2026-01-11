@@ -8,15 +8,19 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { LoggerDisplayComponent } from './logger-display/logger-display.component';
 
 @NgModule({
-  declarations: [LoggerDisplayComponent],
+  declarations: [
+    LoggerDisplayComponent
+  ],
   imports: [
     CommonModule,
     FormsModule,
     MatIconModule,
-    MatTooltipModule,
+    MatTooltipModule
     // Add other imported modules here
   ],
-  exports: [LoggerDisplayComponent],
+  exports: [
+    LoggerDisplayComponent
+  ],
   // schemas: [CUSTOM_ELEMENTS_SCHEMA] // REMOVE THIS LINE
 })
-export class ComponentsModule {}
+export class ComponentsModule { }

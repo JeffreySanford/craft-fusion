@@ -3,12 +3,11 @@ import { Observable } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer } from '@angular/material/sidenav';
-import { MenuItem, MenuGroup } from './sidebar.types';
-import { NavigationEnd, Router } from '@angular/router';
+import { MenuItem, MenuGroup } from './sidebar.types'
+import { Router } from '@angular/router';
 import { SidebarStateService } from '../../common/services/sidebar-state.service';
 import { AdminStateService } from '../../common/services/admin-state.service';
 import { AuthenticationService } from '../../common/services/authentication.service';
-import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sidebar',
@@ -23,19 +22,21 @@ import { filter } from 'rxjs/operators';
     ]),
   ],
   host: {
-    '[class.collapsed]': 'isCollapsed',
+    '[class.collapsed]': 'isCollapsed'
   },
   standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
+
 export class SidebarComponent implements OnInit {
   @Output() sidebarToggle = new EventEmitter<boolean>();
   @Input() isSmallScreen = false;
   @Input() isCollapsed = false;
   @ViewChild('drawer') drawer!: MatDrawer;
   isMobile = false;
-  isAdmin = false;
+  isAdmin = false; // For demonstration, set or derive from user state
 
+  // Observable for admin state - initialized in constructor
   isAdmin$!: Observable<boolean>;
 
   menuGroups: MenuGroup[] = [
@@ -49,23 +50,23 @@ export class SidebarComponent implements OnInit {
         { icon: 'restaurant', label: 'Peasant Kitchen', routerLink: '/peasant-kitchen', active: false },
         { icon: 'movie', label: 'HTML Video', routerLink: '/space-video', active: false },
       ],
-    },
+    }
   ];
   menuItems: MenuItem[] = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
   constructor(
-    private breakpointObserver: BreakpointObserver,
+    private breakpointObserver: BreakpointObserver, 
     private router: Router,
     private sidebarStateService: SidebarStateService,
     private _adminStateService: AdminStateService,
     private authService: AuthenticationService,
     private cdr: ChangeDetectorRef,
     private _renderer: Renderer2,
-    private _el: ElementRef,
+    private _el: ElementRef
   ) {
     console.log('🔧 Sidebar: Constructor called');
-
+    // Initialize the admin observable in constructor
     this.isAdmin$ = this.authService.isAdmin$;
-
+    // Reference unused injected services to avoid 'declared but never read' TS errors
     void this._adminStateService;
     void this._renderer;
     void this._el;
@@ -73,46 +74,55 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit() {
     console.log('🔧 Sidebar: ngOnInit called');
-    this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
-      this.isMobile = result.matches;
-    });
+    this.breakpointObserver.observe([Breakpoints.Handset])
+      .subscribe(result => {
+        this.isMobile = result.matches;
+      });
 
+    // Subscribe to admin state changes for menu updates
     console.log('🔧 Sidebar: Setting up admin state subscription');
     this.isAdmin$.subscribe(isAdmin => {
       console.log('🔧 Sidebar: Admin state changed to:', isAdmin);
       this.isAdmin = isAdmin;
       if (isAdmin) {
+        // Check if the admin item already exists to avoid duplicates
         if (this.menuGroups?.[0]?.items) {
           const adminItemIndex = this.menuGroups[0].items.findIndex(item => item.label === 'Admin');
           if (adminItemIndex === -1) {
             console.log('🔧 Sidebar: Adding admin menu items');
-          this.menuGroups[0].items.push(
-            { icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false, isProtected: true },
-            { icon: 'schedule', label: 'Timeline', routerLink: '/timeline', active: false, isProtected: true },
-          );
+            this.menuGroups[0].items.push(
+              { icon: 'admin_panel_settings', label: 'Admin', routerLink: '/admin', active: false },
+              { icon: 'family_restroom', label: 'Family', routerLink: '/family', active: false },
+              { icon: 'chat_bubble', label: 'Chat', routerLink: '/chat', active: false },
+              { icon: 'book', label: 'Book', routerLink: '/book', active: false }
+            );
           }
         }
       } else {
+        // Remove all admin items if they exist
         if (this.menuGroups?.[0]?.items) {
           console.log('🔧 Sidebar: Removing admin menu items');
-          this.menuGroups[0].items = this.menuGroups[0].items.filter(item => !['Admin', 'Timeline'].includes(item.label));
+          this.menuGroups[0].items = this.menuGroups[0].items.filter(item => 
+            !['Admin', 'Family', 'Chat', 'Book'].includes(item.label)
+          );
         }
       }
-
+      // Create new array reference to trigger change detection
       this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
       console.log('🔧 Sidebar: Menu items updated, length:', this.menuItems.length);
-
-      const adminDebugLabels = ['Admin', 'Timeline', 'Chat', 'Book'];
+      // Log specifically which admin-protected buttons are present for debugging
+      const adminDebugLabels = ['Admin', 'Family', 'Chat'];
       const present = adminDebugLabels.filter(l => this.menuItems.some(m => m.label === l));
       console.log('🔧 Sidebar: Admin-protected buttons present:', present);
-      this.updateActiveState();
       this.cdr.detectChanges();
     });
 
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
-      this.updateActiveState();
+    this.router.events.subscribe(() => {
+      const activeRoute = this.router.url;
+      this.menuItems.forEach(item => {
+        item.active = item.routerLink === activeRoute;
+      });
     });
-    this.updateActiveState();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -120,7 +130,7 @@ export class SidebarComponent implements OnInit {
     const width = (event.target as Window).innerWidth;
     this.isCollapsed = width < 900;
     this.isSmallScreen = width < 900;
-
+  
     this.sidebarToggle.emit(!this.isCollapsed);
     this.sidebarStateService.toggleSidebar(this.isCollapsed);
   }
@@ -132,14 +142,15 @@ export class SidebarComponent implements OnInit {
   }
 
   setActive(item: MenuItem) {
-    this.menuItems.forEach(menuItem => (menuItem.active = false));
+    this.menuItems.forEach(menuItem => menuItem.active = false);
     item.active = true;
   }
 
   onMenuItemClick(item: MenuItem) {
+    // preserve existing behavior
     this.setActive(item);
-
-    if (['Admin', 'Timeline'].includes(item.label)) {
+    // log clicks for admin-protected buttons
+    if (['Admin', 'Family', 'Chat'].includes(item.label)) {
       console.log('🔧 Sidebar: Admin button clicked:', item.label);
     }
   }
@@ -159,19 +170,5 @@ export class SidebarComponent implements OnInit {
 
   get toggleIcon(): string {
     return this.isCollapsed ? 'arrow_forward_ios' : 'menu_open';
-  }
-
-  private updateActiveState(): void {
-    const activeRoute = this.normalizeRoute(this.router.url);
-    this.menuItems.forEach(item => {
-      const itemRoute = this.normalizeRoute(item.routerLink);
-      item.active = activeRoute === itemRoute || (itemRoute !== '/' && activeRoute.startsWith(`${itemRoute}/`));
-    });
-    this.cdr.markForCheck();
-  }
-
-  private normalizeRoute(route: string): string {
-    const base = route.split(/[?#]/)[0] || '/';
-    return base.length > 1 && base.endsWith('/') ? base.slice(0, -1) : base;
   }
 }

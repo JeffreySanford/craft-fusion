@@ -10,8 +10,8 @@
   }
 
   // Ensure proper contrast for interactive elements
-  button,
-  a[role='button'],
+  button, 
+  a[role="button"],
   .mat-button,
   .mat-raised-button,
   .mat-icon-button,
@@ -22,30 +22,27 @@
     border: 1px solid CanvasText;
     color: ButtonText;
     background-color: ButtonFace;
-
-    &:hover,
-    &:focus {
+    
+    &:hover, &:focus {
       outline: 2px solid Highlight;
     }
   }
 
   // Ensure proper contrast for tables
-  table,
-  th,
-  td {
+  table, th, td {
     border-color: CanvasText;
   }
-
+  
   // Make sure cards have visible borders
   .mat-card {
     border: 1px solid CanvasText;
   }
-
+  
   // Ensure icons are visible
   mat-icon {
     color: CanvasText;
   }
-
+  
   // Ensure spinner is visible
   mat-progress-spinner::ng-deep circle {
     stroke: CanvasText !important;
