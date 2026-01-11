@@ -24,6 +24,6 @@ describe('HeaderComponent', () => {
   it('should handle user menu actions', () => {
     spyOn(console, 'log');
     component.handleUserMenuAction('login');
-    expect(console.log).toHaveBeenCalledWith('Logging in with test credentials');
+    expect(console.log).toHaveBeenCalledWith('Login triggered');
   });
 });

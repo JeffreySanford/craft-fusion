@@ -2,24 +2,6 @@
 
 Last updated: 2025-12-30
 
-## Current implementation (2025-12-30)
-
-- Backend: `apps/craft-nest` exposes a timeline API using Mongoose schemas. In development the app will start an in-memory MongoDB (mongodb-memory-server) when no `MONGODB_URI` is configured so seeded events are available locally.
-- Seed file: `apps/craft-nest/src/app/family/timeline/seed-events.json` contains the three curated events (Ray Sanford, Jeffrey Sanford, Gotcha Harness). A dev-only idempotent seeder runs at bootstrap and skips already-present events.
-- Server-side AI proxy: AI generation is proxied through `apps/craft-nest/src/app/ai` endpoints and reads `OPENAI_API_KEY` from server-side `ConfigService` (see `.env.example`). Client no longer holds the API key.
-- UI: `apps/craft-web` uses `TimelineService` (REST + WS) and `memorial-timeline` components were wired to load initial events on startup. Inline styles were moved into component SCSS for linting and consistency.
-- Testing: an e2e spec was added at `apps/craft-nest/test/timeline.e2e-spec.ts` that validates request validation (400 on malformed payloads) and a happy-path create (201). `supertest` is used for HTTP assertions and has been added to devDependencies.
-
-### Dev notes and logs
-
-- When navigating to `/family` locally you may see router lifecycle log entries (Guard checks, ResolveStart/End, Activation events) and auth guard logs such as:
-
-  - `Auth guard: User is authorized to access route {url: '/family'}`
-  - `logger.service.ts:353 [OperatorSubscriber] Admin guard: User has admin permissions {url: '/family'}`
-  - `logger.service.ts:356 [Object] User navigated to /family`
-
-These are produced by runtime debug logging in the Angular app and the server-side guards/gateway code; they help diagnose activation/guard/resolver flows and verify seeded data is presented after the router finishes navigation.
-
 Purpose
 
 - A focused memorial timeline feature that surfaces three curated items: two historical/personal memorials and one developer/AI artifact. Each item includes provenance, privacy metadata, and an optional link to a longer report or documentation.
@@ -27,7 +9,6 @@ Purpose
 What we will ship first
 
 - Three curated tiles visible on the timeline landing page:
-
  1. Ray Sanford — Historical memorial
  2. Jeffrey Sanford — Personal / Developer milestone
  3. Gotcha Harness — AI Probing & Testing Report (developer artifact)

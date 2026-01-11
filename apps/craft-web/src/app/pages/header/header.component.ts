@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../common/services/auth/authentication.service';
 import { LoggerService } from '../../common/services/logger.service';
 import { ThemeService } from '../../common/services/theme.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -100,14 +102,21 @@ export class HeaderComponent implements OnInit {
     this.logger.info('User menu action selected', { action });
     
     if (action === 'login') {
-      this.logger.info('Logging in with test credentials');
-      this.authService.login('test', 'test').subscribe({
-        next: (response) => {
-          this.logger.info('Login successful', { username: response.user.username });
+      this.authService.login(environment.devLogin.username, environment.devLogin.password).subscribe({
+        next: () => {
           this.updateUserMenuItems();
+          this.logger.info('User logged in');
+
+          // If the user is an admin, navigate them to the admin dashboard automatically
+          this.authService.isAdmin$.pipe(take(1)).subscribe(isAdmin => {
+            if (isAdmin) {
+              this.router.navigate(['/admin']);
+            }
+          });
         },
-        error: (error) => {
-          this.logger.error('Login failed', error);
+        error: err => {
+          this.logger.error('Login failed', err);
+          // TODO: show notification or UI feedback
         }
       });
     } else if (action === 'logout') {

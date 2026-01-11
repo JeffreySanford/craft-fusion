@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { RbacGuard } from './rbac.guard';
-import { AuthGateway } from './auth.gateway';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { AuthorizationModule } from './authorization/authorization.module';
 
@@ -9,12 +8,11 @@ import { AuthorizationModule } from './authorization/authorization.module';
     AuthenticationModule,
     AuthorizationModule
   ],
-  providers: [RbacGuard, AuthGateway],
+  providers: [RbacGuard],
   exports: [
-    AuthenticationModule,
+    AuthenticationModule, 
     AuthorizationModule,
-    RbacGuard,
-    AuthGateway
+    RbacGuard
   ],
 })
 export class AuthModule {}
