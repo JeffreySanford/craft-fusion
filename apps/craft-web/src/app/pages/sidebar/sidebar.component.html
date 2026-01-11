@@ -3,7 +3,7 @@
     <button mat-raised-button
       [routerLink]="item.routerLink"
       [ngClass]="{ active: item.active }"
-      (click)="onMenuItemClick(item)"
+      (click)="setActive(item)"
       class="mat-elevation-z10 menu-item"
       [class.mat-elevation-z8]="item.active"
       [class.collapsed]="isCollapsed"

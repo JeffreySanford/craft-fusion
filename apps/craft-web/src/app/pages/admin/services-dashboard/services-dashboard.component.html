@@ -100,8 +100,8 @@
         
         <!-- Other columns -->
         
-        <tr mat-header-row *matHeaderRowDef="['name','status']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['name','status']"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
     </mat-card-content>
   </mat-card>
@@ -128,8 +128,8 @@
         
         <!-- Other columns -->
         
-        <tr mat-header-row *matHeaderRowDef="['name','status']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['name','status']"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
     </mat-card-content>
   </mat-card>
