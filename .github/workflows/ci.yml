@@ -11,6 +11,8 @@ permissions:
 
 jobs:
   main:
+    # Use a GitHub-hosted runner but execute the job steps inside a Fedora container
+    # This provides a reproducible Fedora environment while avoiding a queued self-hosted runner
     runs-on: ubuntu-latest
     
     services:
@@ -28,11 +30,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - uses: actions/setup-node@v3
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: 'npm'
+      # This line enables distribution
+      # The "--stop-agents-after" is optional, but allows idle agents to shut down once the "e2e-ci" targets have been requested
+      # - run: pnpm dlx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
+      - run: pnpm install
 
       - uses: nrwl/nx-set-shas@v4
 
