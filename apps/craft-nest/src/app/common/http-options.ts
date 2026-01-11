@@ -9,10 +9,10 @@
  */
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
-import * as dotenv from 'dotenv';
+import { config } from 'dotenv';
 
 // Load environment variables from .env file
-dotenv.config();
+config();
 
 export function getHttpsOptions() {
   const envPath = join(__dirname, '..', '.env');
