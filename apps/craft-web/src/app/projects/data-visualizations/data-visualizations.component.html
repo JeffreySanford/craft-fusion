@@ -5,7 +5,7 @@
     <div class="empty-state" *ngIf="displayedCharts.length === 0">
       <mat-icon>view_quilt</mat-icon>
       <h3>No Visualizations Selected</h3>
-      <p>Select visualizations from the panel above to get started</p>
+      <p>Select visualizations from the sidebar to get started</p>
     </div>
 
     <div
@@ -21,15 +21,6 @@
             <mat-icon>{{ getIconForChart(chart) }}</mat-icon>
             {{ chart.name }}
           </div>
-          <button
-            mat-icon-button
-            class="expand-button"
-            *ngIf="fullExpandedTileIndex !== i"
-            (click)="openFullScreen(i, $event)"
-            aria-label="Expand visualization"
-          >
-            <mat-icon>fullscreen</mat-icon>
-          </button>
           <button mat-icon-button class="restore-button" *ngIf="fullExpandedTileIndex === i" (click)="restoreTile(i, $event)" aria-label="Restore visualization">
             <mat-icon>fullscreen_exit</mat-icon>
           </button>
@@ -44,13 +35,13 @@
 
             <ng-container [ngSwitch]="chart.component">
 
-              <app-line-chart *ngSwitchCase="'app-line-chart'" [data]="chart.data" [width]="tileWidth" [compact]="fullExpandedTileIndex !== i"> </app-line-chart>
+              <app-line-chart *ngSwitchCase="'app-line-chart'" [data]="chart.data" [width]="tileWidth"> </app-line-chart>
 
-              <app-bar-chart *ngSwitchCase="'app-bar-chart'" [data]="chart.data" [width]="tileWidth" [compact]="fullExpandedTileIndex !== i"> </app-bar-chart>
+              <app-bar-chart *ngSwitchCase="'app-bar-chart'" [data]="chart.data" [width]="tileWidth"> </app-bar-chart>
 
-              <app-finance-chart *ngSwitchCase="'app-finance-chart'" [data]="chart.data" [width]="tileWidth" [compact]="fullExpandedTileIndex !== i"> </app-finance-chart>
+              <app-finance-chart *ngSwitchCase="'app-finance-chart'" [data]="chart.data" [width]="tileWidth"> </app-finance-chart>
 
-              <app-fire-alert *ngSwitchCase="'app-fire-alert'" [width]="tileWidth" [compact]="fullExpandedTileIndex !== i"> </app-fire-alert>
+              <app-fire-alert *ngSwitchCase="'app-fire-alert'" [width]="tileWidth"> </app-fire-alert>
             </ng-container>
           </div>
         </mat-card-content>
@@ -61,28 +52,12 @@
   <div class="visualization-sidebar" [class.collapsed]="isSidebarCollapsed">
     <div class="sidebar-header">
       <h2>Available Visualizations</h2>
-      <div class="sidebar-actions">
-        <button
-          mat-icon-button
-          class="view-toggle"
-          *ngIf="!isSidebarCollapsed"
-          (click)="toggleAvailableChartsView()"
-          [attr.aria-label]="availableChartsView === 'tiles' ? 'Show visualization list' : 'Show visualization tiles'"
-        >
-          <mat-icon>{{ availableChartsView === 'tiles' ? 'view_list' : 'view_module' }}</mat-icon>
-        </button>
-        <button
-          mat-icon-button
-          class="sidebar-toggle"
-          (click)="toggleVisualizationSidebar()"
-          [attr.aria-label]="isSidebarCollapsed ? 'Open visualization controls' : 'Close visualization controls'"
-        >
-          <mat-icon>{{ isSidebarCollapsed ? 'tune' : 'close' }}</mat-icon>
-        </button>
-      </div>
+      <button mat-icon-button class="sidebar-toggle" (click)="toggleVisualizationSidebar()">
+        <mat-icon>{{ isSidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      </button>
     </div>
     <div class="sidebar-content">
-      <mat-list *ngIf="availableChartsView === 'list'">
+      <mat-list>
         <mat-list-item
           *ngFor="let chart of availableCharts"
           (click)="toggleChart(chart)"
@@ -96,23 +71,6 @@
           </mat-icon>
         </mat-list-item>
       </mat-list>
-      <div class="tile-picker" *ngIf="availableChartsView === 'tiles'">
-        <button
-          type="button"
-          class="tile-option"
-          *ngFor="let chart of availableCharts"
-          (click)="toggleChart(chart)"
-          [class.active]="isChartActive(chart)"
-          [style.--tile-color]="chart.color"
-          [attr.aria-pressed]="isChartActive(chart)"
-        >
-          <mat-icon class="tile-icon">{{ getIconForChart(chart) }}</mat-icon>
-          <span class="tile-title">{{ chart.name }}</span>
-          <mat-icon class="tile-status">
-            {{ isChartActive(chart) ? 'check_circle' : 'radio_button_unchecked' }}
-          </mat-icon>
-        </button>
-      </div>
     </div>
   </div>
 </div>

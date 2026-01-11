@@ -19,7 +19,6 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
   @Input() width: number = 0;
   @Input() height: number = 0;
   @Input() showLegend: boolean = false;                        
-  @Input() compact: boolean = false;
 
   colors: string[] = ['#2196F3', '#FF5722', '#4CAF50'];
 
@@ -98,7 +97,7 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
 
   ngOnChanges(changes: SimpleChanges): void {
 
-    if ((changes['width'] || changes['height'] || changes['compact']) && this.el.nativeElement.querySelector('#barChart')) {
+    if ((changes['width'] || changes['height']) && this.el.nativeElement.querySelector('#barChart')) {
       setTimeout(() => this.updateChart(), 150);
     }
   }
@@ -163,13 +162,12 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
     const containerHeight = containerRect.height || 400;                   
 
     const isFullscreen = !!chartElement.closest('.full-expanded');
-    const isCompact = this.compact && !isFullscreen;
 
     const margin = {
-      top: isFullscreen ? 50 : isCompact ? 30 : 40,
-      right: isFullscreen ? 40 : isCompact ? 20 : 20,
-      bottom: isFullscreen ? 80 : isCompact ? 40 : 60,
-      left: isFullscreen ? 80 : isCompact ? 50 : 60,
+      top: isFullscreen ? 50 : 40,
+      right: isFullscreen ? 40 : 20,
+      bottom: isFullscreen ? 80 : 60,
+      left: isFullscreen ? 80 : 60,
     };
 
     const width = Math.max(containerWidth - margin.left - margin.right, 100);
@@ -202,14 +200,14 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
       .attr('transform', `translate(0, ${height})`)
       .call(d3.axisBottom(xScale).tickSize(0))
       .selectAll('text')
-      .style('font-size', isFullscreen ? '16px' : isCompact ? '12px' : '14px')
+      .style('font-size', isFullscreen ? '16px' : '14px')
       .style('fill', '#fff');
 
     svg
       .append('g')
       .call(d3.axisLeft(yScale).ticks(6))
       .selectAll('text')
-      .style('font-size', isFullscreen ? '16px' : isCompact ? '12px' : '14px')
+      .style('font-size', isFullscreen ? '16px' : '14px')
       .style('fill', '#fff');
 
     const barColor = this.metricColors[this.currentMetric] || '#3C3B6E';
@@ -265,26 +263,24 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
         });
     }, 1100);                                          
 
-    if (!isCompact) {
-      svg
-        .append('text')
-        .attr('x', width / 2)
-        .attr('y', height + (isFullscreen ? 50 : 40))
-        .style('text-anchor', 'middle')
-        .style('fill', '#fff')
-        .style('font-size', isFullscreen ? '18px' : '14px')
-        .text('Year');
+    svg
+      .append('text')
+      .attr('x', width / 2)
+      .attr('y', height + (isFullscreen ? 50 : 40))
+      .style('text-anchor', 'middle')
+      .style('fill', '#fff')
+      .style('font-size', isFullscreen ? '18px' : '14px')
+      .text('Year');
 
-      svg
-        .append('text')
-        .attr('transform', 'rotate(-90)')
-        .attr('x', -height / 2)
-        .attr('y', -margin.left + (isFullscreen ? 30 : 20))
-        .style('text-anchor', 'middle')
-        .style('fill', '#fff')
-        .style('font-size', isFullscreen ? '18px' : '14px')
-        .text(this.metricLabels[this.currentMetric] || 'Value');
-    }
+    svg
+      .append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -height / 2)
+      .attr('y', -margin.left + (isFullscreen ? 30 : 20))
+      .style('text-anchor', 'middle')
+      .style('fill', '#fff')
+      .style('font-size', isFullscreen ? '18px' : '14px')
+      .text(this.metricLabels[this.currentMetric] || 'Value');
 
     let title = 'US Progress (1776-2024)';
     if (this.currentMetric === 'gdp') {
@@ -295,17 +291,15 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
       title = 'US Internet Usage (1950-2024)';
     }
 
-    if (!isCompact) {
-      svg
-        .append('text')
-        .attr('x', width / 2)
-        .attr('y', -margin.top / 2)
-        .attr('text-anchor', 'middle')
-        .style('font-size', isFullscreen ? '24px' : '18px')
-        .style('font-weight', 'bold')
-        .style('fill', '#fff')
-        .text(title);
-    }
+    svg
+      .append('text')
+      .attr('x', width / 2)
+      .attr('y', -margin.top / 2)
+      .attr('text-anchor', 'middle')
+      .style('font-size', isFullscreen ? '24px' : '18px')
+      .style('font-weight', 'bold')
+      .style('fill', '#fff')
+      .text(title);
   }
 
   private getCurrentData(): MetricData[] {

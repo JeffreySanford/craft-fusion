@@ -78,8 +78,9 @@ This document serves as the canonical index of all services within the Craft Fus
 | Service              | Purpose           | Location                                                        |
 |---------------------|-------------------|-----------------------------------------------------------------|
 | YahooService        | Financial data    | `/apps/craft-web/src/app/common/services/yahoo.service.ts`      |
+| AlphaVantageService | Stock & forex data| `/apps/craft-web/src/app/common/services/alpha-vantage.service.ts`|
+| FlightRadarService  | Flight data       | `/apps/craft-web/src/app/common/services/flightradar.service.ts`|
 | OpenSkiesService    | Flight & airport  | `/apps/craft-web/src/app/common/services/openskies.service.ts`  |
-| NasaFirmsService    | Fire detections   | `/apps/craft-web/src/app/common/services/nasa-firms.service.ts` |
 | MapboxService       | Map display       | `/apps/craft-web/src/app/common/services/mapbox.service.ts`     |
 | OpenAIService       | AI integration    | `/apps/craft-web/src/app/common/services/openai.service.ts`     |
 | DeepSeekService     | Local AI models   | `/apps/craft-web/src/app/common/services/deepseek-local.service.ts`|

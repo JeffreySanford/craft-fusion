@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, Input, HostBinding, SimpleChanges } from '@angular/core';
 import { MapboxService } from '../../../common/services/mapbox.service';
-import { OpenSkiesService, OpenSkyFlight } from '../../../common/services/openskies.service';
-import { NasaFirmsService, NasaFirmsAlert } from '../../../common/services/nasa-firms.service';
+import { Flight, FlightRadarService } from '../../../common/services/flightradar.service';
 import { interval, Subscription } from 'rxjs';
 import moment from 'moment-timezone';
 
@@ -9,30 +8,9 @@ interface City {
   name: string;
   state: string;
   coords: { lat: number; lng: number };
-  mapId: string;
-  alerts: FireAlert[];
+  alerts: { id: number; name: string; time: string; level: string }[];
   timezoneOffset: number;
   timezone: string;
-  radiusKm?: number;
-}
-
-interface FireAlert {
-  id: string;
-  name: string;
-  time: string;
-  level: string;
-  latitude: number;
-  longitude: number;
-  confidence?: number;
-  frp?: number;
-}
-
-interface FlightInfo {
-  id: string;
-  callSign?: string;
-  altitude?: number;
-  latitude?: number;
-  longitude?: number;
 }
 
 @Component({
@@ -45,14 +23,15 @@ interface FlightInfo {
   },
 })
 export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() alerts: FireAlert[] = [];
+  @Input() alerts: string[] = [];
   @Input() width: number = 0;
   @Input() height: number = 0;
-  @Input() compact: boolean = false;
 
   @HostBinding('class.full-height') fullHeight = true;
 
-  flights: FlightInfo[] = [];
+  fr24Flights: Flight[] = [];
+
+  flights: Flight[] = [];
   currentTime!: string;
   utcTime!: string;
   timeSubscription?: Subscription;
@@ -65,41 +44,42 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       name: 'Los Angeles',
       state: 'California',
       coords: { lat: 34.0522, lng: -118.2437 },
-      mapId: 'los-angeles',
-      alerts: [],
+      alerts: [
+        { id: 1, name: 'Mock Alert', time: '2023-10-01T10:00:00Z', level: 'High Priority' },
+        { id: 2, name: 'Alert 2', time: '2023-10-01T12:00:00Z', level: 'Medium Priority' },
+      ],
       timezoneOffset: -8,
       timezone: 'PDT -08:00',
-      radiusKm: 150,
     },
     {
       name: 'New York',
       state: 'New York',
       coords: { lat: 40.7128, lng: -74.006 },
-      mapId: 'new-york',
-      alerts: [],
+      alerts: [
+        { id: 3, name: 'Alert 3', time: '2023-10-02T14:00:00Z', level: this.getRandomLevel() },
+        { id: 4, name: 'Alert 4', time: '2023-10-02T16:00:00Z', level: this.getRandomLevel() },
+      ],
       timezoneOffset: -5,
       timezone: 'EDT -05:00',
-      radiusKm: 120,
     },
     {
       name: 'Chicago',
       state: 'Illinois',
       coords: { lat: 41.8781, lng: -87.6298 },
-      mapId: 'chicago',
-      alerts: [],
+      alerts: [
+        { id: 5, name: 'Alert 5', time: '2023-10-03T18:00:00Z', level: this.getRandomLevel() },
+        { id: 6, name: 'Alert 6', time: '2023-10-03T20:00:00Z', level: this.getRandomLevel() },
+      ],
       timezoneOffset: -6,
       timezone: 'CDT -06:00',
-      radiusKm: 120,
     },
   ];
   selectedCity!: City;                           
   selectedPriorityLevel: string = 'All';
-  private resizeHandler = this.handleResize.bind(this);
 
   constructor(
     private mapboxService: MapboxService,
-    private openSkiesService: OpenSkiesService,
-    private nasaFirmsService: NasaFirmsService,
+    private flightRadarService: FlightRadarService,
   ) {
     console.log('STEP 1: FireAlertComponent initialized');
   }
@@ -112,50 +92,43 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit(): void {
     console.log('STEP 3: ngAfterViewInit called');
-    if (this.selectedCity) {
-      setTimeout(() => {
-        this.initializeMap(this.selectedCity);
-        this.loadFireAlerts(this.selectedCity);
-        this.fetchFlightData(this.selectedCity);
-      }, 0);
+    if (this.selectedCity && this.selectedCity.alerts && this.selectedCity.alerts[0]) {
+      this.initializeMap(this.selectedCity.name, this.selectedCity.alerts[0].id);                                       
     }
 
-    window.addEventListener('resize', this.resizeHandler);
+    this.fetchFlightData();
+
+    window.addEventListener('resize', this.handleResize.bind(this));
   }
 
   ngOnChanges(changes: SimpleChanges): void {
 
-    if (
-      changes['compact'] ||
-      (changes['width'] && this.lastWidth !== changes['width'].currentValue) ||
-      (changes['height'] && this.lastHeight !== changes['height'].currentValue)
-    ) {
+    if ((changes['width'] && this.lastWidth !== changes['width'].currentValue) || (changes['height'] && this.lastHeight !== changes['height'].currentValue)) {
       this.lastWidth = this.width;
       this.lastHeight = this.height;
 
-      if (this.selectedCity) {
+      if (this.selectedCity && this.selectedCity.alerts && this.selectedCity.alerts.length > 0) {
         setTimeout(() => {
-          this.handleResize();
+          const firstAlert = this.selectedCity.alerts[0];
+          if (firstAlert) this.initializeMap(this.selectedCity.name, firstAlert.id);
         }, 100);
       }
     }
   }
 
-  initializeMap(city: City): void {
-    console.log('STEP 4: Initializing map for city', city.name);
-    const coordinates = city.coords ?? { lat: 34.0522, lng: -118.2437 };
+  initializeMap(city: string, alertId: number): void {
+    console.log('STEP 4: Initializing map for city', city);
+    const cityObj = this.cities.find(c => c.name === city);
+    const coordinates = cityObj ? cityObj.coords : { lat: 34.0522, lng: -118.2437 };
 
-    const mapContainer = document.getElementById(`map-${city.mapId}`);
+    const mapContainer = document.getElementById(`map-${alertId}`);
     if (!mapContainer) {
-      console.error(`Map container for city ${city.name} not found`);
+      console.error(`Map container for alert ${alertId} not found`);
       return;
     }
 
-    this.mapboxService.destroyMap();
-    this.mapboxService.clearMarkers();
-
     const containerHeight = mapContainer.parentElement?.clientHeight || 400;
-    const statusHeight = this.compact ? 0 : 180;
+    const statusHeight = 180;
     const mapHeight = Math.max(200, containerHeight - statusHeight);
 
     if (this.width && this.height) {
@@ -169,11 +142,11 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     try {
-      const map = this.mapboxService.initializeMap(`map-${city.mapId}`, [coordinates.lng, coordinates.lat], 9);
-      this.startCurrentTimeStream(city);
+      const map = this.mapboxService.initializeMap(`map-${alertId}`, [coordinates.lng, coordinates.lat], 12);
+      this.startCurrentTimeStream(this.selectedCity);
 
       map.on('load', () => {
-        console.log(`Map for city ${city.name} loaded`);
+        console.log(`Map for alert ${alertId} in ${city} loaded`);
 
         setTimeout(() => {
           try {
@@ -192,18 +165,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       map.on('click', event => {
         const coords = event.lngLat;
         const alertMessage = `Alert triggered at [${coords.lng}, ${coords.lat}]`;
-        const clickAlert: FireAlert = {
-          id: `${coords.lng}-${coords.lat}-${Date.now()}`,
-          name: 'Manual Alert',
-          time: new Date().toISOString(),
-          level: 'Low Priority',
-          latitude: coords.lat,
-          longitude: coords.lng,
-        };
-        this.alerts.push(clickAlert);
-        if (this.selectedCity) {
-          this.selectedCity.alerts = [clickAlert, ...(this.selectedCity.alerts || [])];
-        }
+        this.alerts.push(alertMessage);
         this.mapboxService.addMarker([coords.lng, coords.lat], alertMessage);
         console.log('STEP 5: Map clicked, alert triggered', alertMessage);
       });
@@ -218,58 +180,53 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.selectedCity = city;
 
-    setTimeout(() => {
-      this.initializeMap(this.selectedCity);
-      this.loadFireAlerts(this.selectedCity);
-      this.fetchFlightData(this.selectedCity);
-      this.startCurrentTimeStream(this.selectedCity);
-    }, 0);
+    if (this.selectedCity && this.selectedCity.alerts && this.selectedCity.alerts.length > 0) {
+      const firstAlert = this.selectedCity.alerts[0];
+      if (firstAlert) {
+        this.initializeMap(this.selectedCity.name, firstAlert.id);
+        this.startCurrentTimeStream(this.selectedCity);
+      }
+    }
 
     setTimeout(() => {
       this.handleResize();
     }, 350);
   }
 
-  fetchFlightData(city: City): void {
-    console.log('STEP 6: Fetching OpenSky flight data');
+  fetchFlightData(): void {
+    console.log('STEP 6: Fetching flight data');
 
-    const radiusKm = city.radiusKm ?? 120;
-    const bounds = this.calculateBoundingBox(city.coords.lat, city.coords.lng, radiusKm);
+    const lat1 = 33.5;
+    const lon1 = -118.5;
+    const lat2 = 34.5;
+    const lon2 = -117.5;
 
-    this.openSkiesService.fetchFlightData().subscribe({
-      next: (data: OpenSkyFlight[]) => {
-        const filtered = this.filterFlightsInBounds(data, bounds);
-        this.flights = filtered.slice(0, 25).map(flight => {
-          const flightInfo: FlightInfo = {
-            id: flight.icao24 || flight.callsign || 'unknown',
-          };
-          const callSign = flight.callsign?.trim();
-          if (callSign) {
-            flightInfo.callSign = callSign;
-          }
-          if (typeof flight.baro_altitude === 'number' && Number.isFinite(flight.baro_altitude)) {
-            flightInfo.altitude = flight.baro_altitude;
-          }
-          if (typeof flight.latitude === 'number' && Number.isFinite(flight.latitude)) {
-            flightInfo.latitude = flight.latitude;
-          }
-          if (typeof flight.longitude === 'number' && Number.isFinite(flight.longitude)) {
-            flightInfo.longitude = flight.longitude;
-          }
-          return flightInfo;
-        });
+    this.flightRadarService.getFlightsByBoundingBox(lat1, lon1, lat2, lon2).subscribe(data => {
+      console.log('STEP 7: Flight data fetched', data);
 
-        this.mapboxService.clearFlightMarkers();
-        this.flights.forEach(flight => {
-          if (flight.latitude !== undefined && flight.longitude !== undefined) {
-            this.mapboxService.addFlightMarker([flight.longitude, flight.latitude], `Flight ${flight.callSign || flight.id}`);
-          }
-        });
-      },
-      error: (error: unknown) => {
-        console.error('Error fetching OpenSky flights', error);
-        this.flights = [];
-      },
+      this.fr24Flights = data;
+
+      this.fr24Flights.forEach((flight: Flight) => {
+
+        const coordinates: [number, number] = [flight.status.currentLocation.longitude, flight.status.currentLocation.latitude];
+
+        this.flightRadarService.getFlightById(flight.aircraft.registration).subscribe(
+          (next: { flight: Flight }) => {
+            console.log('STEP 7.1: Flight data fetched', next);
+
+            const flightInfo: Flight = next.flight;
+            this.flights.push(flightInfo);
+
+            this.mapboxService.addMarker(coordinates, `Flight: ${flightInfo.id} - ${flightInfo.origin.name} to ${flightInfo.destination.name} - ${flightInfo.aircraft.model}`);
+          },
+          (error: any) => {
+            console.error('Error fetching flight by ID', error);
+          },
+          () => {
+            console.log('Flight data fetch completed');
+          },
+        );
+      });
     });
   }
 
@@ -285,13 +242,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  getPriorityClass(item: string | number | undefined): string {
-    if (typeof item === 'number') {
-      if (item >= 80) return 'high';
-      if (item >= 40) return 'medium';
-      return 'low';
-    }
-
+  getPriorityClass(item: string): string {
     switch (item) {
       case 'High Priority':
         return 'high';
@@ -304,22 +255,28 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  focusAlert(alert: FireAlert): void {
+  getRandomLevel(): string {
+    const levels = ['High Priority', 'Medium Priority', 'Low Priority', 'None'];
+    return levels[Math.floor(Math.random() * levels.length)] as string;
+  }
+
+  focusAlert(alert: unknown): void {
     console.log('STEP 10: Focused alert', alert);
-    if (alert.latitude !== undefined && alert.longitude !== undefined) {
-      this.mapboxService.flyTo([alert.longitude, alert.latitude], 10);
-    }
+
   }
 
   handleResize(): void {
 
-    if (this.selectedCity) {
-      const mapContainer = document.getElementById(`map-${this.selectedCity.mapId}`);
+    if (this.selectedCity && this.selectedCity.alerts && this.selectedCity.alerts.length > 0) {
+      const firstAlert = this.selectedCity?.alerts?.[0];
+      if (!firstAlert) return;
+      const alertId = firstAlert.id;
+      const mapContainer = document.getElementById(`map-${alertId}`);
 
       if (mapContainer) {
 
         const containerHeight = mapContainer.parentElement?.clientHeight || 400;
-        const statusHeight = this.compact ? 0 : 180;                                          
+        const statusHeight = 180;                                          
         const mapHeight = Math.max(200, containerHeight - statusHeight);
 
         if (!this.width && !this.height) {
@@ -356,10 +313,10 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       this.timeSubscription.unsubscribe();
     }
     this.mapboxService.destroyMap();
-    window.removeEventListener('resize', this.resizeHandler);
+    window.removeEventListener('resize', this.handleResize.bind(this));
   }
 
-  filteredAlerts(city: City): FireAlert[] {
+  filteredAlerts(city: City): { id: number; name: string; time: string; level: string }[] {
     if (!city.alerts) return [];
 
     if (this.selectedPriorityLevel === 'All') {
@@ -367,117 +324,5 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     return city.alerts.filter(alert => alert.level === this.selectedPriorityLevel);
-  }
-
-  private loadFireAlerts(city: City): void {
-    this.nasaFirmsService
-      .getActiveFires({
-        lat: city.coords.lat,
-        lng: city.coords.lng,
-        radiusKm: city.radiusKm ?? 120,
-        days: 2,
-        limit: 200,
-      })
-      .subscribe({
-        next: (alerts: NasaFirmsAlert[]) => {
-          city.alerts = alerts.map(alert => {
-            const fireAlert: FireAlert = {
-              id: alert.id,
-              name: this.formatAlertName(alert),
-              time: this.formatAlertTime(alert),
-              level: this.mapConfidenceToLevel(alert.confidence),
-              latitude: alert.latitude,
-              longitude: alert.longitude,
-            };
-            if (typeof alert.confidence === 'number' && Number.isFinite(alert.confidence)) {
-              fireAlert.confidence = alert.confidence;
-            }
-            if (typeof alert.frp === 'number' && Number.isFinite(alert.frp)) {
-              fireAlert.frp = alert.frp;
-            }
-            return fireAlert;
-          });
-
-          this.mapboxService.clearMarkers();
-          city.alerts.slice(0, 200).forEach(alert => {
-            this.mapboxService.addMarker(
-              [alert.longitude, alert.latitude],
-              `${alert.name} (${alert.level})`,
-            );
-          });
-
-          const bounds = this.getAlertBounds(city.alerts);
-          if (bounds) {
-            this.mapboxService.fitBounds(bounds, 60);
-          }
-        },
-        error: (error: unknown) => {
-          console.error('Error loading NASA FIRMS alerts', error);
-          city.alerts = [];
-        },
-      });
-  }
-
-  private formatAlertName(alert: NasaFirmsAlert): string {
-    if (alert.frp !== undefined) {
-      return `Fire Radiative Power ${alert.frp.toFixed(1)}`;
-    }
-    if (alert.brightness !== undefined) {
-      return `Thermal Anomaly ${alert.brightness.toFixed(1)}`;
-    }
-    return 'Fire Detection';
-  }
-
-  private formatAlertTime(alert: NasaFirmsAlert): string {
-    const date = alert.acqDate ?? 'Unknown date';
-    if (alert.acqTime) {
-      return `${date} ${this.formatAcqTime(alert.acqTime)}`;
-    }
-    return date;
-  }
-
-  private formatAcqTime(value: string): string {
-    const padded = value.padStart(4, '0');
-    const hours = padded.slice(0, 2);
-    const minutes = padded.slice(2, 4);
-    return `${hours}:${minutes}`;
-  }
-
-  private mapConfidenceToLevel(confidence?: number): string {
-    if (confidence === undefined) return 'Medium Priority';
-    if (confidence >= 80) return 'High Priority';
-    if (confidence >= 40) return 'Medium Priority';
-    return 'Low Priority';
-  }
-
-  private calculateBoundingBox(lat: number, lng: number, radiusKm: number): [number, number, number, number] {
-    const latDelta = radiusKm / 111;
-    const lngDelta = radiusKm / (111 * Math.cos((lat * Math.PI) / 180));
-    const west = lng - lngDelta;
-    const east = lng + lngDelta;
-    const south = lat - latDelta;
-    const north = lat + latDelta;
-    return [west, south, east, north];
-  }
-
-  private filterFlightsInBounds(flights: OpenSkyFlight[], bounds: [number, number, number, number]): OpenSkyFlight[] {
-    const [west, south, east, north] = bounds;
-    return flights.filter(flight => {
-      const lat = flight.latitude;
-      const lng = flight.longitude;
-      if (lat === undefined || lng === undefined) return false;
-      return lat >= south && lat <= north && lng >= west && lng <= east;
-    });
-  }
-
-  private getAlertBounds(alerts: FireAlert[]): [number, number, number, number] | null {
-    if (!alerts.length) return null;
-    const lats = alerts.map(alert => alert.latitude);
-    const lngs = alerts.map(alert => alert.longitude);
-    const west = Math.min(...lngs);
-    const east = Math.max(...lngs);
-    const south = Math.min(...lats);
-    const north = Math.max(...lats);
-    return [west, south, east, north];
   }
 }

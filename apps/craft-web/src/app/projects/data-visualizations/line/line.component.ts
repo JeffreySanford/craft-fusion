@@ -15,7 +15,6 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
   @Input() data: LineChartData[] = [];
   @Input() width: number = 0;
   @Input() height: number = 0;
-  @Input() compact: boolean = false;
 
   @ViewChild('chart') private chartContainer: ElementRef | undefined;
 
@@ -64,7 +63,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((changes['width'] || changes['data'] || changes['height'] || changes['compact']) && this.chartContainer && this.chartContainer.nativeElement) {
+    if ((changes['width'] || changes['data'] || changes['height']) && this.chartContainer && this.chartContainer.nativeElement) {
       setTimeout(() => {
         this.createChart();
       });
@@ -98,7 +97,6 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
     d3.select(element).select('svg').remove();
 
     const isFullscreen = !!element.closest('.full-expanded');
-    const isCompact = this.compact && !isFullscreen;
 
     d3.select(element).selectAll('.line-tooltip').remove();
 
@@ -134,9 +132,9 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
 
     const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
-    const titleFontSize = Math.max(containerWidth * 0.022, isFullscreen ? 22 : isCompact ? 14 : 16);
+    const titleFontSize = Math.max(containerWidth * 0.022, isFullscreen ? 22 : 16);
     const subtitleFontSize = Math.max(containerWidth * 0.016, isFullscreen ? 18 : 14);
-    const axisFontSize = Math.max(containerWidth * 0.011, isFullscreen ? 14 : isCompact ? 10 : 11);
+    const axisFontSize = Math.max(containerWidth * 0.011, isFullscreen ? 14 : 11);
 
     svg
       .append('text')
@@ -150,18 +148,16 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       .style('fill', 'var(--md-sys-color-primary, #B22234)')                                     
       .text(this.chartTitle);
 
-    if (!isCompact) {
-      svg
-        .append('text')
-        .attr('class', 'chart-subtitle')
-        .attr('x', containerWidth / 2)
-        .attr('y', margin.top * 0.8)
-        .attr('text-anchor', 'middle')
-        .attr('dominant-baseline', 'central')
-        .style('font-size', `${subtitleFontSize}px`)
-        .style('fill', 'var(--md-sys-color-on-primary, #FFFFFF)')                             
-        .text(this.chartSubtitle);
-    }
+    svg
+      .append('text')
+      .attr('class', 'chart-subtitle')
+      .attr('x', containerWidth / 2)
+      .attr('y', margin.top * 0.8)
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'central')
+      .style('font-size', `${subtitleFontSize}px`)
+      .style('fill', 'var(--md-sys-color-on-primary, #FFFFFF)')                             
+      .text(this.chartSubtitle);
 
     const x = d3.scaleTime().range([0, width]);
     const y = d3.scaleLinear().range([height, 0]);
@@ -222,26 +218,24 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       .style('font-size', `${axisFontSize}px`)
       .style('fill', 'var(--md-sys-color-surface-variant, #ddd)');
 
-    if (!isCompact) {
-      g.append('text')
-        .attr('class', 'x-axis-label')
-        .attr('x', width / 2)
-        .attr('y', height + margin.bottom * 0.6)                                     
-        .attr('text-anchor', 'middle')
-        .style('font-size', `${axisFontSize * 1.1}px`)
-        .style('fill', 'var(--md-sys-color-on-primary, #FFFFFF)')                             
-        .text('Timeline');
+    g.append('text')
+      .attr('class', 'x-axis-label')
+      .attr('x', width / 2)
+      .attr('y', height + margin.bottom * 0.6)                                     
+      .attr('text-anchor', 'middle')
+      .style('font-size', `${axisFontSize * 1.1}px`)
+      .style('fill', 'var(--md-sys-color-on-primary, #FFFFFF)')                             
+      .text('Timeline');
 
-      g.append('text')
-        .attr('class', 'y-axis-label')
-        .attr('transform', 'rotate(-90)')
-        .attr('y', -margin.left * 0.6)                               
-        .attr('x', -height / 2)
-        .attr('text-anchor', 'middle')
-        .style('font-size', `${axisFontSize * 1.1}px`)
-        .style('fill', 'var(--md-sys-color-on-primary, #FFFFFF)')                             
-        .text('Achievement Metrics');
-    }
+    g.append('text')
+      .attr('class', 'y-axis-label')
+      .attr('transform', 'rotate(-90)')
+      .attr('y', -margin.left * 0.6)                               
+      .attr('x', -height / 2)
+      .attr('text-anchor', 'middle')
+      .style('font-size', `${axisFontSize * 1.1}px`)
+      .style('fill', 'var(--md-sys-color-on-primary, #FFFFFF)')                             
+      .text('Achievement Metrics');
 
     g.append('g')
       .attr('class', 'grid')
@@ -394,32 +388,30 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
     drawLine(line2, this.data, this.colors[1] as string, 1);
     drawLine(line3, this.data, this.colors[2] as string, 2);
 
-    if (!isCompact) {
-      const legendX = width - 150;
-      const legendY = 10;
-      const legend = g.append('g').attr('class', 'legend').attr('transform', `translate(${legendX},${legendY})`);
+    const legendX = width - 150;
+    const legendY = 10;
+    const legend = g.append('g').attr('class', 'legend').attr('transform', `translate(${legendX},${legendY})`);
 
-      const legendItemHeight = Math.min(Math.max(height / 15, 15), 25);
-      const legendFontSize = Math.max(axisFontSize * 0.9, 10);
+    const legendItemHeight = Math.min(Math.max(height / 15, 15), 25);
+    const legendFontSize = Math.max(axisFontSize * 0.9, 10);
 
-      Object.entries(this.seriesNames).forEach(([key, name], i) => {
-        const legendRow = legend.append('g').attr('transform', `translate(0, ${i * legendItemHeight})`);
+    Object.entries(this.seriesNames).forEach(([key, name], i) => {
+      const legendRow = legend.append('g').attr('transform', `translate(0, ${i * legendItemHeight})`);
 
-        legendRow
-          .append('rect')
-          .attr('width', legendFontSize)
-          .attr('height', legendFontSize * 0.8)
-          .attr('fill', this.colors[i] as string);
+      legendRow
+        .append('rect')
+        .attr('width', legendFontSize)
+        .attr('height', legendFontSize * 0.8)
+        .attr('fill', this.colors[i] as string);
 
-        legendRow
-          .append('text')
-          .attr('x', legendFontSize * 1.5)
-          .attr('y', legendFontSize * 0.8)
-          .attr('font-size', `${legendFontSize}px`)
-          .attr('fill', '#ddd')
-          .text(name);
-      });
-    }
+      legendRow
+        .append('text')
+        .attr('x', legendFontSize * 1.5)
+        .attr('y', legendFontSize * 0.8)
+        .attr('font-size', `${legendFontSize}px`)
+        .attr('fill', '#ddd')
+        .text(name);
+    });
   }
 
   private formatYValue = (value: number | { valueOf(): number }): string => {

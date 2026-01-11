@@ -1,9 +1,9 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { YahooService } from './yahoo.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Yahoo Finance')
-@Controller('financial/yahoo')
+@Controller('yahoo')
 export class YahooController {
   constructor(private readonly yahooService: YahooService) {}
 
@@ -22,29 +22,5 @@ export class YahooController {
       range,
       parseInt(limit, 10) || 1000,
     );
-  }
-
-  @Get('quote/:symbol')
-  @ApiOperation({ summary: 'Get stock quote summary' })
-  getStockQuote(@Param('symbol') symbol: string) {
-    return this.yahooService.getStockQuote(symbol);
-  }
-
-  @Get('market-summary')
-  @ApiOperation({ summary: 'Get market summary' })
-  getMarketSummary() {
-    return this.yahooService.getMarketSummary();
-  }
-
-  @Get('trending')
-  @ApiOperation({ summary: 'Get trending symbols by region' })
-  getTrendingSymbols(@Query('region') region: string) {
-    return this.yahooService.getTrendingSymbols(region);
-  }
-
-  @Get('company/:symbol')
-  @ApiOperation({ summary: 'Get company details' })
-  getCompanyDetails(@Param('symbol') symbol: string) {
-    return this.yahooService.getCompanyDetails(symbol);
   }
 }

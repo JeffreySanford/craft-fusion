@@ -147,14 +147,14 @@ $flag-wave-duration: 6s;
     }
 
     &:hover {
-      background-color: var(--md-sys-error, #b00020);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.30);
-      cursor: pointer;
-      transform: translateY(-2px);
 
+      background-color: var(--md-sys-error, #b00020);
       @supports (color: color-mix(in srgb, red 0%, black 0%)) {
         background-color: color-mix(in srgb, var(--md-sys-error) 85%, black);
       }
+      box-shadow: 0 6px 12px rgba(0,0,0,0.30);
+      cursor: pointer;
+      transform: translateY(-2px);
     }
   }
 }

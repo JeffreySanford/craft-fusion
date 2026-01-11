@@ -8,7 +8,6 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
-import { SocketService } from './socket.service';
 
 @WebSocketGateway({
   cors: {
@@ -23,11 +22,8 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   
   private logger = new Logger('SocketGateway');
 
-  constructor(private socketService: SocketService) {}
-
   afterInit() {
     this.logger.log('Socket.IO initialized');
-    this.socketService.setServer(this.server);
   }
 
   handleConnection(client: Socket) {

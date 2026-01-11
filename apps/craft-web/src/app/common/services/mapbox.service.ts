@@ -9,8 +9,6 @@ import { Observable } from 'rxjs';
 })
 export class MapboxService {
   private map: mapboxgl.Map | undefined;
-  private markers: mapboxgl.Marker[] = [];
-  private flightMarkers: mapboxgl.Marker[] = [];
 
   constructor() {
 
@@ -19,9 +17,6 @@ export class MapboxService {
   }
 
   initializeMap(container: string, center: [number, number], zoom: number): mapboxgl.Map {
-    if (this.map) {
-      this.destroyMap();
-    }
     this.map = new mapboxgl.Map({
       container,
       style: 'mapbox://styles/mapbox/streets-v11',
@@ -37,50 +32,10 @@ export class MapboxService {
       return;
     }
 
-    const marker = new mapboxgl.Marker()
+    new mapboxgl.Marker()
       .setLngLat(coordinates)
       .setPopup(new mapboxgl.Popup().setHTML(`<h3>${message}</h3>`))
       .addTo(this.map);
-    this.markers.push(marker);
-  }
-
-  addFlightMarker(coordinates: [number, number], message: string): void {
-    if (!this.map) {
-      return;
-    }
-    const marker = new mapboxgl.Marker({ color: '#1d3557' })
-      .setLngLat(coordinates)
-      .setPopup(new mapboxgl.Popup().setHTML(`<strong>${message}</strong>`))
-      .addTo(this.map);
-    this.flightMarkers.push(marker);
-  }
-
-  clearMarkers(): void {
-    this.markers.forEach(marker => marker.remove());
-    this.markers = [];
-  }
-
-  clearFlightMarkers(): void {
-    this.flightMarkers.forEach(marker => marker.remove());
-    this.flightMarkers = [];
-  }
-
-  fitBounds(bounds: [number, number, number, number], padding: number = 40): void {
-    if (this.map) {
-      this.map.fitBounds(
-        [
-          [bounds[0], bounds[1]],
-          [bounds[2], bounds[3]],
-        ],
-        { padding }
-      );
-    }
-  }
-
-  flyTo(center: [number, number], zoom: number = 10): void {
-    if (this.map) {
-      this.map.flyTo({ center, zoom });
-    }
   }
 
   resizeMap(): void {
@@ -132,8 +87,6 @@ export class MapboxService {
 
   destroyMap(): void {
     if (this.map) {
-      this.clearMarkers();
-      this.clearFlightMarkers();
       this.map.remove();
       this.map = undefined;                                  
     }

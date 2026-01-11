@@ -5,7 +5,6 @@ export interface ChartData {
   data: any[];
   size?: string;                                                               
   active?: boolean;                            
-  displayMode?: 'tile' | 'fullscreen';
 }
 
 export interface BarChartData {
