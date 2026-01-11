@@ -6,7 +6,7 @@ import { SocketService } from '../../socket/socket.service';
 @Injectable()
 export class AlphaVantageService {
   private readonly apiUrl = 'https://www.alphavantage.co/query';
-  private readonly apiKey = process.env['ALPHA_VANTAGE_API_KEY'] || 'demo';
+  private readonly apiKey = process.env.ALPHA_VANTAGE_API_KEY || 'demo';
 
   constructor(
     private httpService: HttpService, 

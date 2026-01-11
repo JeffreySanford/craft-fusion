@@ -30,7 +30,7 @@ export class UserStateInterceptor implements HttpInterceptor {
     this.logger.info('UserStateInterceptor initialized');
   }
 
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Set login time on first request
     if (!this.loginTime) {
       this.loginTime = new Date();

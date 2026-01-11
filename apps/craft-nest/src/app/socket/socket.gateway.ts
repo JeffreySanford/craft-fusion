@@ -22,7 +22,7 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   
   private logger = new Logger('SocketGateway');
 
-  afterInit() {
+  afterInit(server: Server) {
     this.logger.log('Socket.IO initialized');
   }
 
@@ -42,19 +42,19 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   }
 
   @SubscribeMessage('updateLoginTime')
-  handleUpdateLoginTime(_client: Socket, payload: { dateTime: string }): void {
+  handleUpdateLoginTime(client: Socket, payload: { dateTime: string }): void {
     this.logger.log(`Login time updated: ${payload.dateTime}`);
     // Store in database if needed
   }
 
   @SubscribeMessage('updateVisitLength')
-  handleUpdateVisitLength(_client: Socket, payload: { length: number }): void {
+  handleUpdateVisitLength(client: Socket, payload: { length: number }): void {
     this.logger.log(`Visit length updated: ${payload.length}`);
     // Store in database if needed
   }
 
   @SubscribeMessage('updateVisitedPage')
-  handleUpdateVisitedPage(_client: Socket, payload: { page: string }): void {
+  handleUpdateVisitedPage(client: Socket, payload: { page: string }): void {
     this.logger.log(`Visited page updated: ${payload.page}`);
     // Store in database if needed
   }

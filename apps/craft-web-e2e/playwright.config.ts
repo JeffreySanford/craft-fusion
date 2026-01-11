@@ -12,9 +12,9 @@ export default defineConfig({
   },
 
   // Test retry and workers
-  workers: process.env['CI'] ? 1 : undefined,
-  retries: process.env['CI'] ? 2 : 0,
-  fullyParallel: !process.env['CI'],
+  workers: process.env.CI ? 1 : undefined,
+  retries: process.env.CI ? 2 : 0,
+  fullyParallel: !process.env.CI,
 
   use: {
     baseURL: 'localhost:4200',
@@ -32,7 +32,7 @@ export default defineConfig({
   },
 
   webServer: {
-    command: 'pnpm dlx nx run craft-web:serve',
+    command: 'npx nx run craft-web:serve',
     url: 'http://localhost:4200',
     reuseExistingServer: !process.env['CI'],
     timeout: 120000,

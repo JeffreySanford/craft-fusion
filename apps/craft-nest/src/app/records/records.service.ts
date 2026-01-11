@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { CreateRecordDto } from './dto/create-record.dto';
+import { UpdateRecordDto } from './dto/update-record.dto';
 import { Phone, Record, Address } from './entities/record.interface';
 import { faker } from '@faker-js/faker';
 import { Company } from './entities/company.interface';

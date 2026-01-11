@@ -54,7 +54,7 @@ To install a new dependency:
 ```bash
 # Add a dependency for this application
 cd ../../  # Navigate to root
-pnpm add some-package
+npm install some-package --save
 ```
 
 ## Transparency Note

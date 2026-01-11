@@ -12,7 +12,7 @@ describe('LandingComponent', () => {
       onresult: jest.fn(),
       lang: ''
     }));
-    (window as unknown).SpeechRecognition = (window as unknown).SpeechRecognition || mockSpeechRecognition;
+    (window as any).SpeechRecognition = (window as any).SpeechRecognition || mockSpeechRecognition;
 
     TestBed.configureTestingModule({
       declarations: [LandingComponent],

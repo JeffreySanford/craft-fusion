@@ -68,7 +68,7 @@ describe('AppComponent', () => {
   });
 
   it('should handle user interaction', () => {
-    const ensureVideoIsPlayingSpy = jest.spyOn(component as unknown, 'ensureVideoIsPlaying');
+    const ensureVideoIsPlayingSpy = jest.spyOn(component as any, 'ensureVideoIsPlaying');
     component['handleUserInteraction'].call(component);
     expect(ensureVideoIsPlayingSpy).toHaveBeenCalled();
   });

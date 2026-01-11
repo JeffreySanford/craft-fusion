@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, Input, HostBinding, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, Input, HostBinding } from '@angular/core';
 import { MapboxService } from '../../../common/services/mapbox.service';
 import { Flight, FlightRadarService } from '../../../common/services/flightradar.service';
 import { interval, Subscription } from 'rxjs';
 import moment from 'moment-timezone';
+import { FormsModule } from '@angular/forms';
 
 interface City {
   name: string;
@@ -23,15 +24,15 @@ interface City {
   }
 })
 export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
-  @Input() alerts: string[] = [];
+  @Input() alerts: any[] = [];
   @Input() width: number = 0;
   @Input() height: number = 0;
 
   @HostBinding('class.full-height') fullHeight = true;
 
-  fr24Flights: Flight[] = [];
+  fr24Flights: any[] = [];
 
-  flights: Flight[] = [];
+  flights: any[] = [];
   currentTime!: string;
   utcTime!: string;
   timeSubscription?: Subscription;
@@ -40,7 +41,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   private lastWidth: number = 0;
   private lastHeight: number = 0;
 
-  cities: City[] = [
+  cities = [
     {
       name: 'Los Angeles',
       state: 'California',
@@ -75,7 +76,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       timezone: 'CDT -06:00'
     }
   ];
-  selectedCity!: City; // Will be set in ngOnInit
+  selectedCity: City = this.cities[0]; // Default to the first city
   selectedPriorityLevel: string = 'All';
 
   constructor(
@@ -87,16 +88,13 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     console.log('STEP 2: ngOnInit called');
-    this.selectedCity = this.cities[0] as City;
+    this.selectedCity = this.cities[0];
     this.startCurrentTimeStream(this.selectedCity);
   }
 
   ngAfterViewInit(): void {
     console.log('STEP 3: ngAfterViewInit called');
-    if (this.selectedCity && this.selectedCity.alerts && this.selectedCity.alerts[0]) {
-      this.initializeMap(this.selectedCity.name, this.selectedCity.alerts[0].id); // Initialize the first tab by default
-    }
-
+    this.initializeMap(this.selectedCity.name, this.selectedCity.alerts[0].id); // Initialize the first tab by default
     this.fetchFlightData();
     
     // Add resize listener
@@ -104,19 +102,18 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // Add ngOnChanges to handle dimension changes
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(changes: any): void {
     // Check if width or height has changed
-    if ((changes['width'] && this.lastWidth !== changes['width'].currentValue) || 
-        (changes['height'] && this.lastHeight !== changes['height'].currentValue)) {
+    if ((changes.width && this.lastWidth !== changes.width.currentValue) || 
+        (changes.height && this.lastHeight !== changes.height.currentValue)) {
       
       this.lastWidth = this.width;
       this.lastHeight = this.height;
       
       // Re-initialize map with new dimensions if already initialized
-      if (this.selectedCity && this.selectedCity.alerts && this.selectedCity.alerts.length > 0) {
+      if (this.selectedCity) {
         setTimeout(() => {
-          const firstAlert = this.selectedCity.alerts[0];
-          if (firstAlert) this.initializeMap(this.selectedCity.name, firstAlert.id);
+          this.initializeMap(this.selectedCity.name, this.selectedCity.alerts[0].id);
         }, 100);
       }
     }
@@ -184,19 +181,10 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onTabChange(event: any): void {
-    const city = this.cities[event.index];
-    if (!city) return;
-
-    this.selectedCity = city;
-
-    if (this.selectedCity && this.selectedCity.alerts && this.selectedCity.alerts.length > 0) {
-      const firstAlert = this.selectedCity.alerts[0];
-      if (firstAlert) {
-        this.initializeMap(this.selectedCity.name, firstAlert.id);
-        this.startCurrentTimeStream(this.selectedCity);
-      }
-    }
-
+    this.selectedCity = this.cities[event.index];
+    this.initializeMap(this.selectedCity.name, this.selectedCity.alerts[0].id);
+    this.startCurrentTimeStream(this.selectedCity);
+    
     // Add additional resize call after tab animation completes
     setTimeout(() => {
       this.handleResize();
@@ -223,21 +211,20 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
           const coordinates: [number, number] = [flight.status.currentLocation.longitude, flight.status.currentLocation.latitude];
 
           this.flightRadarService.getFlightById(flight.aircraft.registration).subscribe(
-            (next: { flight: Flight }) => {
+            next => {
               console.log('STEP 7.1: Flight data fetched', next);
               // Process and display flight data on the map
-              const flightInfo: Flight = next.flight;
-              this.flights.push(flightInfo);
+                const flight: Flight = next.flight;
+                this.flights.push(flight);
 
-              this.mapboxService.addMarker(coordinates, `Flight: ${flightInfo.id} - ${flightInfo.origin.name} to ${flightInfo.destination.name} - ${flightInfo.aircraft.model}`);
-            },
-            (error: any) => {
-              console.error('Error fetching flight by ID', error);
-            },
-            () => {
-              console.log('Flight data fetch completed');
-            }
-          );
+                this.mapboxService.addMarker(coordinates, `Flight: ${flight} - ${flight.origin} to ${flight.destination} - ${flight.aircraft.model}`);
+              },
+              error => {
+                console.error('Error fetching flight by ID', error);
+              },
+              () => {
+                console.log('Flight data fetch completed');
+              });
         }); 
       },
     );
@@ -270,11 +257,11 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getRandomLevel(): string {
     const levels = ['High Priority', 'Medium Priority', 'Low Priority', 'None'];
-    return levels[Math.floor(Math.random() * levels.length)] as string;
+    return levels[Math.floor(Math.random() * levels.length)];
   }
 
   // Focus on a specific alert
-  focusAlert(alert: unknown): void {
+  focusAlert(alert: any): void {
     console.log('STEP 10: Focused alert', alert);
     // Add logic for focusing/handling the alert
   }
@@ -282,9 +269,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   handleResize(): void {
     // Resize map if already initialized
     if (this.selectedCity && this.selectedCity.alerts && this.selectedCity.alerts.length > 0) {
-      const firstAlert = this.selectedCity?.alerts?.[0];
-      if (!firstAlert) return;
-      const alertId = firstAlert.id;
+      const alertId = this.selectedCity.alerts[0].id;
       const mapContainer = document.getElementById(`map-${alertId}`);
       
       if (mapContainer) {
@@ -332,7 +317,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // Filter alerts based on selected priority level
-  filteredAlerts(city: City): { id: number; name: string; time: string; level: string }[] {
+  filteredAlerts(city: City): any[] {
     if (!city.alerts) return [];
     
     if (this.selectedPriorityLevel === 'All') {

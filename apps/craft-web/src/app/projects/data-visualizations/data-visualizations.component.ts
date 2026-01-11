@@ -1,17 +1,19 @@
 import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { BarChartData, LineChartData, ChartData } from './data-visualizations.interfaces';
+import { BarChartData, LineChartData, MapChartData, ChartData } from './data-visualizations.interfaces';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Observable, Subscription, of } from 'rxjs';
-import { YahooService, HistoricalData } from '../../common/services/yahoo.service';
+import { Observable, Subscription, forkJoin, of } from 'rxjs';
+import { YahooService } from '../../common/services/yahoo.service';
+import moment from 'moment';
 import { catchError } from 'rxjs/operators';
 import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
 import { SidebarStateService } from '../../common/services/sidebar-state.service';
 import { ChartLayoutService } from './services/chart-layout.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TileLimitDialogComponent } from './dialogs/tile-limit-dialog.component';
 import { SocketClientService } from '../../common/services/socket-client.service';
-// import { active } from 'd3'; // unused import removed
+import { active } from 'd3';
 
 @Component({
   selector: 'app-data-visualizations',
@@ -80,7 +82,8 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     { name: 'Fire Alert Chart', component: 'app-fire-alert', color: 'orange', data: [], size: 'large', active: false },
   ];
 
-  public fintechChartData: HistoricalData[] = [];  financeData: unknown;
+  public fintechChartData: any[] = [];
+  financeData: any;
 
   // New properties to track dimensions
   tileWidth: number = 0;
@@ -95,6 +98,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef, 
     private yahooService: YahooService,
     private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer,
     private sidebarStateService: SidebarStateService,
     private chartLayoutService: ChartLayoutService,
     private dialog: MatDialog,
@@ -110,29 +114,27 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     
     this.loadFintechChartData()
       .pipe()
-      .subscribe((data: HistoricalData[]) => {
+      .subscribe(data => {
         this.fintechChartData = data;
         
         // Update finance chart data in both arrays
         const financeChartIndex = this.availableCharts.findIndex(c => c.component === 'app-finance-chart');
         if (financeChartIndex !== -1) {
-          const chart = this.availableCharts[financeChartIndex];
-          if (chart) chart.data = this.fintechChartData as any[];
+          this.availableCharts[financeChartIndex].data = this.fintechChartData;
         }
         
         const displayedFinanceIndex = this.displayedCharts.findIndex(c => c.component === 'app-finance-chart');
         if (displayedFinanceIndex !== -1) {
-          const chart = this.displayedCharts[displayedFinanceIndex];
-          if (chart) chart.data = this.fintechChartData as any[];
+          this.displayedCharts[displayedFinanceIndex].data = this.fintechChartData;
         }
         
         setTimeout(() => this.cdr.detectChanges());
       });
 
     // Listen for real-time updates
-    this.socketClient.on<any>('yahoo:data').subscribe((data: any) => {
-      // Update chart data in real-time (ensure it is an array of HistoricalData)
-      this.fintechChartData = Array.isArray(data) ? (data as HistoricalData[]) : [];
+    this.socketClient.on<any>('yahoo:data').subscribe(data => {
+      // Update chart data in real-time
+      this.fintechChartData = data;
       setTimeout(() => this.cdr.detectChanges());
     });
 
@@ -515,14 +517,15 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  private loadFintechChartData(): Observable<HistoricalData[]> {
+  private loadFintechChartData(): Observable<any> {
     const stockSymbols = ['AAPL', 'GOOGL', 'MSFT']; // Add more stock symbols as needed
-    // date range variables intentionally removed — the Yahoo service receives its own defaults
+    const endDate = moment().format('YYYY-MM-DD');
+    const startDate = moment().subtract(1, 'years').format('YYYY-MM-DD');
 
     return this.yahooService.getHistoricalData(stockSymbols, '1d', '1y').pipe(
       catchError(error => {
         console.error(`Error loading data for ${stockSymbols}:`, error);
-        return of([] as HistoricalData[]);
+        return of([]);
       }),
     );
   }
@@ -558,15 +561,13 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       
       listItems.forEach((item, index) => {
         const chart = this.availableCharts[index];
-        if (!chart) return; // Guard against mismatched DOM and data arrays
         if (this.isChartActive(chart)) {
-          const c = chart as ExtendedChartData;
           // Apply vibrant chart color to the border, text, and icons
-          (item as HTMLElement).style.borderLeftColor = c.color;
-          (item as HTMLElement).style.color = c.color;
+          (item as HTMLElement).style.borderLeftColor = chart.color;
+          (item as HTMLElement).style.color = chart.color;
           
           // Add glow effect with the chart color
-          (item as HTMLElement).style.boxShadow = `0 0 10px rgba(${this.hexToRgb(c.color)}, 0.3)`;
+          (item as HTMLElement).style.boxShadow = `0 0 10px rgba(${this.hexToRgb(chart.color)}, 0.3)`;
           
           // Add active class
           item.classList.add('active');
@@ -610,7 +611,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   }
   
   // Helper function to convert hex color to RGB
-  private hexToRgb(hex: string = '#000000'): string {
+  private hexToRgb(hex: string): string {
     // Remove # if present
     hex = hex.replace('#', '');
     

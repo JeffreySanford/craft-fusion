@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as mammoth from 'mammoth';
-import { TurndownWrapperService } from './turndown-wrapper.service';
+import TurndownService from 'turndown';
 
 @Injectable({
   providedIn: 'root'
@@ -36,13 +36,13 @@ export class DocParseService {
     mythKeywordSection: /^(?<content>.*(?:Enki|Enlil|Anu|Ninhursag|netherworld|shrines|Land|heavens|earth).*)$/smi
   };
 
-  private log(...args: unknown[]) {
+  private log(...args: any[]) {
     if (this.debugMode) {
       console.log('[DocParser]', ...args);
     }
   }
 
-  constructor(private readonly turndownWrapper: TurndownWrapperService) { }
+  constructor() { }
 
   async parseDoc(file: File): Promise<string> {
     console.log('\n=== Starting Document Parse ===');
@@ -55,7 +55,7 @@ export class DocParseService {
         this.log('Starting pre-processing', input.byteLength, 'bytes');
         return input;
       },
-      transformDocument: (element: unknown) => {
+      transformDocument: (element: any) => {
         // Only process paragraphs
         if (element.type !== 'paragraph') {
           return element;
@@ -90,7 +90,7 @@ export class DocParseService {
       const result = await mammoth.convertToHtml({ arrayBuffer: fileArrayBuffer }, options);
       console.log('HTML conversion complete. Length:', result.value.length);
 
-      const markdown = this.turndownWrapper.turndownWithOptions(result.value, {
+      const turndownService = new TurndownService({
         keepReplacement: (content: string, node: Node) => {
           if (node instanceof HTMLElement) {
             if (node.classList?.contains('myth-line')) {
@@ -101,6 +101,8 @@ export class DocParseService {
           return content;
         }
       });
+
+      const markdown = turndownService.turndown(result.value);
       console.log('=== Parse Complete ===');
       console.log('Output length:', markdown.length);
       return markdown;
@@ -111,11 +113,11 @@ export class DocParseService {
     }
   }
 
-  private getParagraphText(element: unknown): string {
+  private getParagraphText(element: any): string {
     if (!element.children) return '';
 
     return element.children
-      .map((child: unknown) => {
+      .map((child: any) => {
         this.log('Child node:', child.type);
         if (child.type === 'text') return child.value;
         if (child.type === 'hyperlink') return this.getParagraphText(child);
@@ -138,50 +140,50 @@ export class DocParseService {
     const rangeMatch = text.match(this.mythPatterns.verseRange);
     if (rangeMatch) {
       const [_, start, end, content] = rangeMatch;
-      return [`${start || ''}-${end || ''}`, content || ''];
+      return [`${start}-${end}`, content];
     }
 
     // Try matching single verse
-    const singleMatch = text.match(this.mythPatterns.singleVerse);
+    const singleMatch = text.match(this.mythPatterns.singleVerse); 
     if (singleMatch) {
       const [_, verse, content] = singleMatch;
-      return [verse || '', content || ''];
+      return [verse, content];
     }
 
     // Try matching ETCSL reference
     const etcslMatch = text.match(this.mythPatterns.etcslRef);
     if (etcslMatch) {
       const [_, ref, content] = etcslMatch;
-      return [ref || '', content || ''];
+      return [ref, content];
     }
 
     return ['', text];
   }
 
-  private extractFullText(element: unknown): string {
+  private extractFullText(element: any): string {
     if (!element) return '';
     if (typeof element === 'string') return element;
     
     const text = element.value || '';
-    const childTexts = element.children?.map((c: unknown) => this.extractFullText(c)) || [];
+    const childTexts = element.children?.map((c: any) => this.extractFullText(c)) || [];
     
     return [text, ...childTexts].filter(t => t).join(' ').trim();
   }
 
-  private extractText(element: unknown): string {
+  private extractText(element: any): string {
     if (!element) return '';
     if (typeof element === 'string') return element;
 
     let text = element.value || '';
     if (element.children) {
-      element.children.forEach((child: unknown) => {
+      element.children.forEach((child: any) => {
         text += this.extractText(child);
       });
     }
     return text.trim();
   }
 
-  private transformMythSection(element: unknown) {
+  private transformMythSection(element: any) {
     const text = this.extractText(element);
     
     // Try matching different myth patterns
@@ -234,7 +236,7 @@ export class DocParseService {
     return null;
   }
 
-  private transformDocument(element: unknown) {
+  private transformDocument(element: any) {
     if (element.type !== 'paragraph') {
       return element;
     }
@@ -291,9 +293,9 @@ export class DocParseService {
       const verseMatch = verse.match(/(?:\[(\d+(?:-\d+)?)\]|\b(\d+(?:-\d+)?)\.)(?:\((.*?)\))?\s*(.+)/s);
       
       if (verseMatch) {
-        const verseNum = verseMatch[1] || verseMatch[2] || '';
+        const verseNum = verseMatch[1] || verseMatch[2];
         const link = verseMatch[3];
-        const content = verseMatch[4]?.trim() || '';
+        const content = verseMatch[4].trim();
         const labelPart = link
           ? `<span class="verse-label darkgreen-label">${verseNum}<a href="${link}" title="View source">†</a></span>`
           : `<span class="verse-label">${verseNum}</span>`;

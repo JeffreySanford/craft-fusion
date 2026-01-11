@@ -49,13 +49,9 @@ export class RecordDetailComponent implements OnChanges, OnInit {
         this.loading = true;
         this.recordService.getRecordByUID(id).subscribe({
           next: (record) => {
-            if (record) {
-              this.user = record;
-              this.loading = false;
-              this.ngOnChanges({ user: { currentValue: record, previousValue: null, firstChange: true, isFirstChange: () => true } });
-            } else {
-              this.loading = false;
-            }
+            this.user = record;
+            this.loading = false;
+            this.ngOnChanges({ user: { currentValue: record, previousValue: null, firstChange: true, isFirstChange: () => true } });
           },
           error: () => {
             this.loading = false;

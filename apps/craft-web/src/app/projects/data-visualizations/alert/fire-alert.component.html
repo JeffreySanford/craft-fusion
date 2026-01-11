@@ -29,7 +29,7 @@
             <div class="tab-content-wrapper">
               <!-- Mapbox Map -->
               <div *ngIf="city.alerts && city.alerts.length > 0" 
-                id="map-{{ city.alerts?.[0]?.id }}" class="map-container"></div>
+                id="map-{{ city.alerts[0].id }}" class="map-container"></div>
               
               <div class="status-container two-columns">
                 <!-- Left Column -->
@@ -39,7 +39,7 @@
                     <h3>Nearby Flights</h3>
                     <ul>
                       <li *ngFor="let flight of flights">
-                        {{ flight.callSign || flight.id }} - Altitude: {{ flight.altitude ?? 'N/A' }}
+                        {{ flight.callSign }} - Altitude: {{ flight.altitude }}
                       </li>
                       <li *ngIf="flights.length === 0">No flights currently in the area</li>
                     </ul>

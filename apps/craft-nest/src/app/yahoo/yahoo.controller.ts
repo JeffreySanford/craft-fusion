@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { YahooService } from './yahoo.service';
+import { YahooService, StockData } from './yahoo.service';
 
 @Controller('yahoo')
 export class YahooController {

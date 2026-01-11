@@ -10,19 +10,19 @@ export class OpenSkiesService {
 
     constructor(private http: HttpClient) {}
 
-    fetchFlightData(): Observable<unknown> {
-        return this.http.get<unknown>(`${this.apiUrl}/fetchflightdata`);
+    fetchFlightData(): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/fetchflightdata`);
     }
 
-    fetchAirportData(): Observable<unknown> {
-        return this.http.get<unknown>(`${this.apiUrl}/airports`);
+    fetchAirportData(): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/airports`);
     }
 
-    fetchFlightDataByAirline(airline: string): Observable<unknown> {
-        return this.http.get<unknown>(`${this.apiUrl}/flights/airline/${airline}`);
+    fetchFlightDataByAirline(airline: string): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/flights/airline/${airline}`);
     }
 
-    fetchFlightDataByAircraft(aircraft: string): Observable<unknown> {
-        return this.http.get<unknown>(`${this.apiUrl}/flights/aircraft/${aircraft}`);
+    fetchFlightDataByAircraft(aircraft: string): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/flights/aircraft/${aircraft}`);
     }
 }

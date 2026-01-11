@@ -22,14 +22,14 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   };
   private performanceSubscription!: Subscription;
   private appStartTime: number;
-  private chart: Chart | null = null;
+  private chart: any;
   private chartInitialized = false;
   private metricsBuffer: Array<{time: string, memory: number, cpu: number, latency: number}> = [];
   isSimulatingData = false; // Try to use actual data by default
   chartBorderColor = 'green'; // Default to green for real data
   frameRateSamples: number[] = [];
   lastFrameTime = 0;
-  frameRateUpdateInterval: number | null = null;
+  frameRateUpdateInterval: any;
   isAdmin = false;
   expanded = false;
 
@@ -167,9 +167,8 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private updatePerformanceMetrics() {
-    const perfAny = performance as any;
-    if (perfAny && perfAny.memory) {
-      const memory = perfAny.memory;
+    if ((performance as any).memory) {
+      const memory = (performance as any).memory;
       const totalJSHeapSize = memory.totalJSHeapSize;
       const usedJSHeapSize = memory.usedJSHeapSize;
       const memoryUsagePercentage = (usedJSHeapSize / totalJSHeapSize) * 100;
@@ -442,17 +441,13 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
       
       // Process any buffered metrics
       if (this.metricsBuffer.length > 0) {
-        const data = (this.chart!.data as any);
-        data.labels = data.labels || [];
-        data.datasets = data.datasets || [ { data: [] }, { data: [] }, { data: [] } ];
-
         this.metricsBuffer.forEach(metric => {
-          (data.labels as any[]).push(metric.time);
-          (data.datasets[0].data as any[]).push(metric.memory);
-          (data.datasets[1].data as any[]).push(metric.cpu);
-          (data.datasets[2].data as any[]).push(metric.latency);
+          this.chart.data.labels.push(metric.time);
+          this.chart.data.datasets[0].data.push(metric.memory);
+          this.chart.data.datasets[1].data.push(metric.cpu);
+          this.chart.data.datasets[2].data.push(metric.latency);
         });
-        this.chart!.update();
+        this.chart.update();
         this.metricsBuffer = [];
       }
     } catch (error) {
@@ -483,20 +478,19 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     
     try {
-      // Add new data (cast to any for Chart.js internals)
-      (this.chart.data.labels as any).push(currentTime);
-      (this.chart.data.datasets as any)[0].data.push(memoryValue);
-      (this.chart.data.datasets as any)[1].data.push(cpuValue);
-      (this.chart.data.datasets as any)[2].data.push(latencyValue);
-
+      // Add new data
+      this.chart.data.labels.push(currentTime);
+      this.chart.data.datasets[0].data.push(memoryValue);
+      this.chart.data.datasets[1].data.push(cpuValue);
+      this.chart.data.datasets[2].data.push(latencyValue);
+      
       // Keep chart readable with limited points
-      if ((this.chart.data.labels as any).length > 10) {
-        (this.chart.data.labels as any).shift();
-        (this.chart.data.datasets as any).forEach((dataset: any) => dataset.data.shift());
+      if (this.chart.data.labels.length > 10) {
+        this.chart.data.labels.shift();
+        this.chart.data.datasets.forEach((dataset: { data: any[]; }) => dataset.data.shift());
       }
-
-      // Use default update to avoid invalid animation mode
-      this.chart.update();
+      
+      this.chart.update('quiet'); // Use quiet mode for better performance
     } catch (error) {
       this.logger.error(`Error updating chart: ${error}`);
     }
@@ -580,20 +574,18 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     const serviceResponseTimes: {[key: string]: {total: number, count: number}} = {};
     
     this.serviceMetrics.forEach(metric => {
-      const svc = metric.serviceName || 'unknown';
       if (metric.duration) {
-        if (!serviceResponseTimes[svc]) {
-          serviceResponseTimes[svc] = { total: 0, count: 0 };
+        if (!serviceResponseTimes[metric.serviceName]) {
+          serviceResponseTimes[metric.serviceName] = { total: 0, count: 0 };
         }
-        serviceResponseTimes[svc].total += metric.duration;
-        serviceResponseTimes[svc].count += 1;
+        serviceResponseTimes[metric.serviceName].total += metric.duration;
+        serviceResponseTimes[metric.serviceName].count += 1;
       }
     });
     
     // Update the third dataset with service response times
     const serviceData = Object.keys(serviceResponseTimes).map(service => {
-      const entry = serviceResponseTimes[service]!;
-      const avg = entry.total / entry.count;
+      const avg = serviceResponseTimes[service].total / serviceResponseTimes[service].count;
       return {
         service,
         avgTime: avg
@@ -618,7 +610,7 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.isSimulatingData) {
       // Force near-zero response times and quicker intervals
       this.performanceMetrics.networkLatency = '1 ms';
-      if (this.chart) this.chart.update();
+      this.chart.update('active');
     }
   }
 

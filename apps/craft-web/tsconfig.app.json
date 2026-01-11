@@ -6,15 +6,6 @@
       "node"
     ]
   },
-
-  // Relax a few strict checks temporarily to allow iterative fixes
-  "angularCompilerOptions": {
-    "strictTemplates": false
-  },
-  "compilerOptionsOverrides": {
-    "noUnusedLocals": false,
-    "noUnusedParameters": false
-  },
   "include": [
     "src/**/*.d.ts"
   ],

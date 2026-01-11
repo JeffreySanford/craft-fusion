@@ -20,8 +20,8 @@ export class WsJwtGuard implements CanActivate {
       
       // Get token from query params or headers
       const token = 
-        client.handshake.query?.['token'] as string || 
-        client.handshake['headers']?.authorization?.split(' ')[1];
+        client.handshake.query.token as string || 
+        client.handshake.headers.authorization?.split(' ')[1];
       
       if (!token) {
         throw new WsException('Unauthorized: No token provided');

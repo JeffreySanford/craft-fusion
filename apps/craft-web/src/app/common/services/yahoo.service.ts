@@ -5,9 +5,6 @@ import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
 
-export interface HistoricalPoint { date: Date; close: number }
-export interface HistoricalData { symbol: string; data: HistoricalPoint[] }
-
 @Injectable({
   providedIn: 'root',
 })
@@ -30,7 +27,7 @@ export class YahooService {
     this.logger.info('YahooService initialized');
   }
 
-  getStockQuote(symbol: string): Observable<unknown> {
+  getStockQuote(symbol: string): Observable<any> {
     const url = `${this.apiUrl}/quoteSummary/${symbol}`;
     const params = { modules: 'defaultKeyStatistics,assetProfile' };
 
@@ -54,7 +51,7 @@ export class YahooService {
     );
   }
 
-  getHistoricalData(symbols: string[], interval: string = '1d', range: string = '1y'): Observable<HistoricalData[]> {
+  getHistoricalData(symbols: string[], interval: string = '1d', range: string = '1y'): Observable<any> {
     const url = `${this.apiUrl}v8/finance/spark/?interval=${interval}&range=${range}&symbols=${symbols.join(',')}`;
   
     this.logger.debug(`Fetching historical data for ${symbols}`, { url });
@@ -63,7 +60,7 @@ export class YahooService {
     return this.http.get(url, this.options).pipe(
       map((response: any) => {
         this.logger.endServiceCall(callId, 200);
-        const parsedData: HistoricalData[] = symbols.map(symbol => {
+        const parsedData = symbols.map(symbol => {
           const data = response[symbol];
           return {
             symbol,
@@ -82,12 +79,12 @@ export class YahooService {
           message: error.message
         });
         this.logger.endServiceCall(callId, error.status || 500);
-        return of([] as HistoricalData[]); // Return an empty array as a fallback
+        return of([]); // Return an empty array as a fallback
       }),
     );
   }
 
-  getMarketSummary(): Observable<unknown> {
+  getMarketSummary(): Observable<any> {
     const url = `${this.apiUrl}/market/get-summary`;
 
     this.logger.debug(`Fetching market summary`, { url });
@@ -96,7 +93,7 @@ export class YahooService {
     return this.http.get(url, this.options).pipe(
       map((response: any) => {
         this.logger.endServiceCall(callId, 200);
-        return response?.marketSummaryResponse?.result;
+        return response.marketSummaryResponse.result;
       }),
       catchError(error => {
         this.logger.error(`Error fetching market summary:`, {
@@ -110,7 +107,7 @@ export class YahooService {
     );
   }
 
-  getTrendingSymbols(region: string): Observable<unknown> {
+  getTrendingSymbols(region: string): Observable<any> {
     const url = `${this.apiUrl}/trending`;
     const params = { region };
 
@@ -120,7 +117,7 @@ export class YahooService {
     return this.http.get(url, { ...this.options, params }).pipe(
       map((response: any) => {
         this.logger.endServiceCall(callId, 200);
-        return response?.finance?.result?.[0]?.quotes || [];
+        return response.finance.result[0].quotes;
       }),
       catchError(error => {
         this.logger.error(`Error fetching trending symbols for region ${region}:`, {
@@ -134,7 +131,7 @@ export class YahooService {
     );
   }
 
-  getCompanyDetails(symbol: string): Observable<unknown> {
+  getCompanyDetails(symbol: string): Observable<any> {
     const url = `${this.apiUrl}/quoteSummary/${symbol}`;
     const params = { modules: 'assetProfile,defaultKeyStatistics' };
 

@@ -51,25 +51,25 @@ Craft-Nest is a robust NestJS backend service that provides API endpoints, real-
 cd c:\repos\craft-fusion
 
 # Add a production dependency
-pnpm add some-package
+npm install some-package
 
 # Add a development dependency
-pnpm add -D some-dev-package
+npm install some-dev-package --save-dev
 ```
 
 **Running Scripts (Examples):**
 ```bash
 # Serve the NestJS app in development mode
-pnpm dlx nx serve craft-nest
+npx nx serve craft-nest
 
 # Build the NestJS app for production
-pnpm dlx nx build craft-nest --configuration=production
+npx nx build craft-nest --configuration=production
 
 # Run tests
-pnpm dlx nx test craft-nest
+npx nx test craft-nest
 
 # Run linting
-pnpm dlx nx lint craft-nest
+npx nx lint craft-nest
 ```
 
 ## Entity Validation

@@ -6,8 +6,6 @@ import { environment } from '../../../environments/environment';
 
 export interface Flight {
     id: string;
-    callSign?: string;
-    altitude?: number;
     aircraft: {
         model: string;
         registration: string;
@@ -123,38 +121,49 @@ export class FlightRadarService {
         });
     }
 
-    getFlightById(flightId: string): Observable<{ flight: Flight }> {
+    getFlightById(flightId: string): Observable<any> {
         console.log('STEP 4: Fetching flight by ID', flightId);
         const url = `${this.baseUrl}/flight-tracks?flight_id=${flightId}`;
 
         const headers = this.getHeaders();
 
-        // Mock Flight object matching the Flight interface
-        const mockFlight: Flight = {
-            id: `flight-${flightId}`,
-            aircraft: {
-                model: `Model ${flightId}`,
-                registration: `Reg${flightId}`
-            },
-            airline: { name: `Airline ${flightId}` },
-            origin: { name: `Origin ${flightId}`, code: `ORG${flightId}` },
-            destination: { name: `Destination ${flightId}`, code: `DST${flightId}` },
-            status: {
-                text: `Status ${flightId}`,
-                currentLocation: {
-                    latitude: 40 + Math.random() * 10,
-                    longitude: -80 + Math.random() * 10
-                }
-            }
-        };
+        // return this.http.get(url, { headers }).pipe(
+        //     catchError((error: HttpErrorResponse) => {
+        //         if (error.status === 404) {
+        //             console.warn('Error fetching flight by ID: Flight not found', flightId);
+        //         } else {
+        //             console.error('Error fetching flight by ID', error);
+        //         }
+        //         return throwError(() => new Error('Failed to fetch flight.'));
+        //     })
+        // );
 
+        // Mock data for a single flight
+        const mockFlight = {
+            flight: `Flight ${flightId}`,
+            ident: `Ident ${flightId}`,
+            r24_id: `R24_ID ${flightId}`,
+            aircraft: {
+            type: `Aircraft Type ${flightId}`,
+            registration: `Aircraft Reg ${flightId}`
+            },
+            origin: `Origin ${flightId}`,
+            destination: `Destination ${flightId}`,
+            altitude: 10000 + Math.random() * 10000,
+            speed: 200 + Math.random() * 200,
+            tracks: Array.from({ length: 10 }, (_, index) => ({
+            lat: 40 + Math.random() * 10,
+            lon: -80 + Math.random() * 10
+            }))
+        };
         return new Observable(observer => {
             observer.next({ flight: mockFlight });
             observer.complete();
         });
+        
     }
 
-    getAirportsByIcao(icao: string): Observable<unknown> {
+    getAirportsByIcao(icao: string): Observable<any> {
         console.log('STEP 5: Fetching airport by ICAO code', icao);
         const url = `${this.baseUrl}/airport/${icao}`;
         const headers = this.getHeaders();

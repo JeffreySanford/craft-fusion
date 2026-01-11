@@ -11,7 +11,7 @@ export class DeepSeekService {
     console.log('DeepSeekService initialized');
   }
 
-  sendMessage(prompt: string, apiUrl: string): Observable<unknown> {
+  sendMessage(prompt: string, apiUrl: string): Observable<any> {
     console.log('Sending message to API:', apiUrl);
     const requestPayload = {
       model: "deepseek-r1:1.5b",
@@ -19,7 +19,7 @@ export class DeepSeekService {
     };
     console.log('Request payload:', requestPayload);
 
-    return this.http.post<unknown>(apiUrl, requestPayload, { responseType: 'text' as 'json' }).pipe(
+    return this.http.post<any>(apiUrl, requestPayload, { responseType: 'text' as 'json' }).pipe(
       map(response => {
         console.log('Received raw response from API:', response);
         const jsonObjects = response.split('\n').filter((line: string) => line.trim() !== '');

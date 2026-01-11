@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 /**
  * UserStateService

@@ -18,7 +18,7 @@ export interface LogEntry {
   level: LogLevel;
   message: string;
   component?: string;
-  details?: unknown;
+  details?: any;
 }
 
 export interface ServiceCallMetric {
@@ -29,7 +29,7 @@ export interface ServiceCallMetric {
   url: string;
   status?: number;
   duration?: number;
-  error?: unknown;
+  error?: any;
   // Additional properties needed by admin component
   errorRate?: number;
   authAttempts?: number;
@@ -64,10 +64,10 @@ export class LoggerService {
   serviceCalls$ = this.serviceCallsSubject.asObservable();
   
   // Hot observables for integration
-  private connectSubject = new Subject<unknown>();
-  private errorSubject = new Subject<unknown>();
-  private infoSubject = new Subject<unknown>();
-  private changelogSubject = new ReplaySubject<unknown>(100);
+  private connectSubject = new Subject<any>();
+  private errorSubject = new Subject<any>();
+  private infoSubject = new Subject<any>();
+  private changelogSubject = new ReplaySubject<any>(100);
 
   connect$ = this.connectSubject.asObservable();
   error$ = this.errorSubject.asObservable();
@@ -89,23 +89,23 @@ export class LoggerService {
     return this.loggerLevel;
   }
 
-  debug(message: string, details?: unknown, component: string = this.getCallerComponent()) {
+  debug(message: string, details?: any, component: string = this.getCallerComponent()) {
     this.log(LogLevel.DEBUG, message, details, component);
   }
 
-  info(message: string, details?: unknown, component: string = this.getCallerComponent()) {
+  info(message: string, details?: any, component: string = this.getCallerComponent()) {
     this.log(LogLevel.INFO, message, details, component);
   }
 
-  warn(message: string, details?: unknown, component: string = this.getCallerComponent()) {
+  warn(message: string, details?: any, component: string = this.getCallerComponent()) {
     this.log(LogLevel.WARN, message, details, component);
   }
 
-  error(message: string, details?: unknown, component: string = this.getCallerComponent()) {
+  error(message: string, details?: any, component: string = this.getCallerComponent()) {
     this.log(LogLevel.ERROR, message, details, component);
   }
   
-  highlight(message: string, details?: unknown, component: string = this.getCallerComponent()) {
+  highlight(message: string, details?: any, component: string = this.getCallerComponent()) {
     this.log(LogLevel.INFO, `⭐ ${message} ⭐`, details, component);
   }
   
@@ -134,7 +134,7 @@ export class LoggerService {
     return callId;
   }
   
-  endServiceCall(callId: string, status: number, error?: unknown): void {
+  endServiceCall(callId: string, status: number, error?: any): void {
     const startMetric = this.serviceCallsInProgress.get(callId);
     
     if (startMetric) {
@@ -185,7 +185,7 @@ export class LoggerService {
     this.info('Service metrics cleared');
   }
 
-  private log(level: LogLevel, message: string, details?: unknown, component?: string) {
+  private log(level: LogLevel, message: string, details?: any, component?: string) {
     // Only log if the level is greater than or equal to the logger level
     if (level >= this.loggerLevel) {
       // If component not provided, try to determine it
@@ -227,7 +227,7 @@ export class LoggerService {
     }
   }
 
-  private outputToConsole(level: LogLevel, message: string, details?: unknown, component: string = '') {
+  private outputToConsole(level: LogLevel, message: string, details?: any, component: string = '') {
     const componentPrefix = component ? `[${component}] ` : '';
     
     // Enhanced color definitions for different log categories
@@ -365,7 +365,7 @@ export class LoggerService {
   }
 
   // Helper methods for categorizing log messages
-  private isSecurityRelated(message: string, component: string = '', details?: unknown): boolean {
+  private isSecurityRelated(message: string, component: string = '', details?: any): boolean {
     const securityTerms = [
       'security', 'permission', 'access', 'credential', 'protect', 'firewall',
       'encrypt', 'decrypt', 'hash', 'salt', 'csrf', 'xss', 'injection', 'vulnerability'
@@ -385,7 +385,7 @@ export class LoggerService {
            (component && ['AuthService', 'LoginComponent', 'AuthGuard'].includes(component)));
   }
 
-  private isPerformanceRelated(message: string, component: string = '', details?: unknown): boolean {
+  private isPerformanceRelated(message: string, component: string = '', details?: any): boolean {
     const perfTerms = [
       'performance', 'latency', 'speed', 'slow', 'fast', 'metrics', 'benchmark',
       'timeout', 'memory', 'cpu', 'load', 'resource', 'optimize', 'render time'
@@ -566,18 +566,18 @@ export class LoggerService {
   }
   
   // Add a log sanitizer helper to avoid sensitive info in logs
-  private sanitizeLogDetails(details: unknown): unknown {
+  private sanitizeLogDetails(details: any): any {
     if (!details) return details;
     
     try {
       // Make a copy to avoid modifying the original object
-      const sanitized = JSON.parse(JSON.stringify(details));
+      let sanitized = JSON.parse(JSON.stringify(details));
       
       // List of sensitive field names to mask
       const sensitiveFields = ['password', 'token', 'secret', 'key', 'authorization', 'auth'];
       
       // Helper to sanitize an object recursively
-      const sanitizeObject = (obj: unknown) => {
+      const sanitizeObject = (obj: any) => {
         if (!obj || typeof obj !== 'object') return;
         
         Object.keys(obj).forEach(key => {
@@ -787,7 +787,7 @@ export class LoggerService {
   }
 
   // Example: emit connect event (call this when appropriate in your app)
-  emitConnectEvent(data: unknown) {
+  emitConnectEvent(data: any) {
     this.connectSubject.next(data);
   }
 }

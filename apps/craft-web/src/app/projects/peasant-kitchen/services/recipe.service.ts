@@ -64,7 +64,7 @@ export class RecipeService {
       timeout(this.REQUEST_TIMEOUT),
       retry({ count: 2, delay: (_, retryCount) => timer(retryCount * 1000) }),
       tap(recipes => console.log(`Retrieved ${recipes.length} recipes`)),
-      catchError((error: unknown) => {
+      catchError((error: any) => {
         console.error('Error fetching recipes:', error);
         this.isOfflineMode = true;
         console.warn('Switching to offline mode with fallback recipes');
@@ -158,7 +158,7 @@ export class RecipeService {
     return this.apiService.post<Recipe, Recipe>(this.endpoint, recipe).pipe(
       timeout(this.REQUEST_TIMEOUT),
       tap(newRecipe => console.log('Created recipe:', newRecipe.id)),
-      catchError((error: unknown) => {
+      catchError((error: any) => {
         console.error('Error creating recipe:', error);
         this.isOfflineMode = true;
         throw error;
@@ -176,7 +176,7 @@ export class RecipeService {
     return this.apiService.put<Recipe>(`${this.endpoint}/${recipe.id}`, recipe).pipe(
       timeout(this.REQUEST_TIMEOUT),
       tap(updatedRecipe => console.log('Updated recipe:', updatedRecipe.id)),
-      catchError((error: unknown) => {
+      catchError((error: any) => {
         console.error('Error updating recipe:', error);
         this.isOfflineMode = true;
         throw error;
@@ -194,7 +194,7 @@ export class RecipeService {
     return this.apiService.delete<void>(`${this.endpoint}/${id}`).pipe(
       timeout(this.REQUEST_TIMEOUT),
       tap(() => console.log('Deleted recipe:', id)),
-      catchError((error: unknown) => {
+      catchError((error: any) => {
         console.error('Error deleting recipe:', error);
         this.isOfflineMode = true;
         throw error;

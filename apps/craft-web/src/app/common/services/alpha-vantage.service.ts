@@ -13,7 +13,7 @@ export class AlphaVantageService {
 
   constructor(private http: HttpClient) {}
 
-  getStockData(symbol: string): Observable<unknown> {
+  getStockData(symbol: string): Observable<any> {
     const url = `${this.baseUrl}?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${this.apiKey}`;
     return this.http.get(url).pipe(
       map(response => response),
@@ -21,7 +21,7 @@ export class AlphaVantageService {
     );
   }
 
-  getForexData(symbol: string): Observable<unknown> {
+  getForexData(symbol: string): Observable<any> {
     const url = `${this.baseUrl}?function=CURRENCY_EXCHANGE_RATE&from_currency=${symbol}&to_currency=USD&apikey=${this.apiKey}`;
     return this.http.get(url).pipe(
       map(response => response),

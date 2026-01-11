@@ -16,7 +16,7 @@ export class UserTrackingService {
     return this.currentUserSubject.asObservable();
   }
 
-  setCurrentUser(user: AppUser | null): void {
+  setCurrentUser(user: AppUser): void {
     this.currentUserSubject.next(user);
   }
 }

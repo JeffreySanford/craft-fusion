@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 // Use HTTP in development to avoid SSL errors
-if (process.env['NODE_ENV'] !== 'production') {
+if (process.env.NODE_ENV !== 'production') {
   axios.defaults.baseURL = 'http://localhost:3000';
 }
 

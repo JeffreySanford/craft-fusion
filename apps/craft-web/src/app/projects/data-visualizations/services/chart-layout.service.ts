@@ -104,11 +104,9 @@ export class ChartLayoutService {
     // Determine optimal layout based on medium chart count
     if (mediumCharts.length === 1) {
       const chart = mediumCharts[0];
-      if (chart) {
-        chart.position = sortedCharts.length;
-        chart.specialLayout = 'medium-tile-full';
-        sortedCharts.push(chart);
-      }
+      chart.position = sortedCharts.length;
+      chart.specialLayout = 'medium-tile-full';
+      sortedCharts.push(chart);
     } else {
       // Multiple medium charts - standard sizing
       mediumCharts.forEach((chart) => {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { LoggerService } from '@craft-web/services/logger.service';
 
 @Component({

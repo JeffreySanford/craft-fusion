@@ -13,7 +13,7 @@ export class SocketClientService implements OnDestroy {
   private backoffDelay = 2000; // Start with 2 seconds
   private reconnecting = false;
   private destroy$ = new Subject<void>();
-  user$ = new BehaviorSubject<unknown>(null);
+  user$: Observable<any>;
 
   constructor(private injector: Injector) {
     this.initializeSocket();
@@ -63,7 +63,7 @@ export class SocketClientService implements OnDestroy {
     });
   }
 
-  private handleSocketError(error: unknown): void {
+  private handleSocketError(error: any): void {
     this.connectionStatus.next(false);
     console.error('Socket error', { error: error?.message || error });
   }
@@ -108,7 +108,7 @@ export class SocketClientService implements OnDestroy {
         return;
       }
       const handler = (data: T) => observer.next(data);
-      const errorHandler = (error: unknown) => observer.error(error);
+      const errorHandler = (error: any) => observer.error(error);
       this.socket.on(event, handler);
       this.socket.on('connect_error', errorHandler);
       // Teardown logic
@@ -126,7 +126,7 @@ export class SocketClientService implements OnDestroy {
     );
   }
 
-  emit(event: string, data?: unknown): void {
+  emit(event: string, data?: any): void {
     if (this.socket && this.connectionStatus.value) {
       this.socket.emit(event, data);
     } else {

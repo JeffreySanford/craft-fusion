@@ -272,7 +272,7 @@ curl -X OPTIONS "http://jeffreysanford.us:3000/health" \
 **Test WebSocket Connection:**
 
 ```bash
-# Install wscat if not available: pnpm add -g wscat
+# Install wscat if not available: npm install -g wscat
 # wscat -c ws://jeffreysanford.us:3000/socket.io/?EIO=4&transport=websocket
 ```
 
@@ -331,7 +331,7 @@ The Angular frontend (`craft-web`) needs to be built and deployed to nginx for s
 rm -rf dist/
 
 # Build Angular app for production
-pnpm dlx nx run craft-web:build --configuration=production
+npx nx run craft-web:build --configuration=production
 ```
 
 #### 2. Deploy to Web Server
@@ -509,7 +509,7 @@ rm -rf dist/
 echo -e "${GREEN}✓ Build directory cleaned${NC}"
 
 echo -e "${BLUE}3. Building Angular application...${NC}"
-pnpm dlx nx run craft-web:build --configuration=production
+npx nx run craft-web:build --configuration=production
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Angular build successful${NC}"
 else
@@ -602,7 +602,7 @@ Add these scripts to `package.json`:
 {
   "scripts": {
     "deploy:frontend": "bash ./scripts/deploy-frontend.sh",
-    "build:prod": "rm -rf dist && pnpm dlx nx run craft-web:build --configuration=production",
+    "build:prod": "rm -rf dist && npx nx run craft-web:build --configuration=production",
     "test:frontend": "curl -I http://jeffreysanford.us && curl -I http://jeffreysanford.us/api/health",
     "nginx:test": "sudo nginx -t",
     "nginx:reload": "sudo nginx -t && sudo nginx -s reload",
@@ -652,7 +652,7 @@ Add these scripts to `package.json`:
 ### Common Issues
 
 1. **Port conflicts**: Make sure ports 3000 and 4000 are available
-2. **Missing builds**: Run `pnpm run pm2:build` before starting
+2. **Missing builds**: Run `npm run pm2:build` before starting
 3. **Permission issues**: Ensure log directories are writable
 4. **Go binary**: Verify the Go app builds correctly for your target platform
 
@@ -694,5 +694,5 @@ The configuration uses these environment variables:
 You can override these by setting them before starting PM2:
 
 ```bash
-PORT=3001 pnpm run pm2:start
+PORT=3001 npm run pm2:start
 ```

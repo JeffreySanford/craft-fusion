@@ -85,7 +85,7 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
     return this.logs.filter(log => log.level === level);
   }
 
-  formatDetails(details: unknown): string {
+  formatDetails(details: any): string {
     if (!details) return '';
     
     if (details instanceof Error) {
@@ -134,7 +134,7 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
     // Check for highlight markers in message
     return log.message.includes('⭐') || 
            log.message.includes('IMPORTANT') ||
-           ((log.details as any)?.highlight === true);
+           (log.details && log.details.highlight === true);
   }
   
   private isSecurityLog(log: LogEntry): boolean {
@@ -149,7 +149,7 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
     const perfTerms = ['performance', 'latency', 'speed', 'slow', 'fast', 'metrics', 'benchmark'];
     return perfTerms.some(term => 
       log.message.toLowerCase().includes(term) || 
-      ((log.details as any) && JSON.stringify(log.details).toLowerCase().includes(term))
+      (log.details && JSON.stringify(log.details).toLowerCase().includes(term))
     );
   }
   

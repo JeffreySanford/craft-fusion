@@ -32,7 +32,7 @@ Craft Fusion is a monorepo using Nx for workspace management. It contains:
 2. Install dependencies:
 
 ```bash
-pnpm install
+npm install
 ```
 
 1. Run a specific application (Nx only):
@@ -49,9 +49,9 @@ Always add dependencies at the root level:
 
 ```bash
 # From the root directory
-pnpm add your-package-name
+npm install your-package-name --save
 # or for dev dependencies
-pnpm add -D your-dev-package
+npm install your-dev-package --save-dev
 ```
 
 ## Making Changes

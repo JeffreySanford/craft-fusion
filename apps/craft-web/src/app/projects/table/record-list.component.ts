@@ -84,7 +84,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
       swagger: this.getSwaggerUrl('Go'),
     },
   ];
-  server: Server = this.servers[0]!;
+  server: Server = this.servers[0];
   apiURL = '';
   fadeToRedClass = false;
   private dataSubject = new BehaviorSubject<Record[]>([]);
@@ -95,9 +95,9 @@ export class RecordListComponent implements OnInit, OnDestroy {
   private connectionAttempts = 0;
   // Maximum number of automatic retry attempts
   private readonly MAX_AUTO_RETRIES = 2; // Reduced from 3
-  private retryTimeoutRef: ReturnType<typeof setTimeout> | null = null;
+  private retryTimeoutRef: any = null;
   creationTime = new Date().getTime();
-  currentUser: unknown;
+  currentUser: any;
 
 
   constructor(
@@ -140,7 +140,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('Lifecycle: ngOnInit called');
     this.resolved = false;
     this.startTime = new Date().getTime();
-    const server = this.servers[0]!;
+    const server = this.servers[0];
     this.server = server;
 
     this.apiURL = this.recordService.setServerResource(server.name);
@@ -305,7 +305,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
           }
           return of([]);
         }),
-        catchError((error: unknown) => {
+        catchError((error: any) => {
           this.resolved = true; // Ensure resolved is set on error
           this.changeDetectorRef.detectChanges();
           console.error('Error: generateNewRecordSet failed:', error);
@@ -362,7 +362,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
                     networkPerformance: this.networkPerformance
                   });
                 } catch (err) {
-                  this.logger.error('Error computing timing labels', err as unknown);
+                  this.logger.error('Error computing timing labels', err as any);
                 }
               })
             );
@@ -579,7 +579,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
     if (!companies || !Array.isArray(companies)) {
       return 0;
     }
-    return companies.reduce((total, company: any) => total + (company?.annualSalary || 0), 0);
+    return companies.reduce((total, company) => total + (company.annualSalary || 0), 0);
   }
 
   private getSwaggerUrl(serverName: string): string {

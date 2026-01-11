@@ -37,10 +37,10 @@ At **Google I/O 2025**, the spotlight was on AI, Android, and revolutionary desi
 #### 1️⃣ **Install the Magic** ✨
 ```bash
 # Core Material packages
-pnpm add @angular/material @angular/cdk
+npm install @angular/material @angular/cdk
 
 # 🧪 Experimental features for cutting-edge MD3
-pnpm add @angular/material-experimental
+npm install @angular/material-experimental
 ```
 
 #### 2️⃣ **Bootstrap Angular Material** 🎯
@@ -117,7 +117,7 @@ Transform your buttons with emotional impact:
 ng build --configuration production
 
 # 🔥 Firebase deployment
-pnpm add -g firebase-tools
+npm install -g firebase-tools
 firebase deploy
 ```
 

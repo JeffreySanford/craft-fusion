@@ -7,16 +7,16 @@ export interface ApiLogEntry {
   request: {
     url: string;
     method: string;
-    headers?: unknown;
-    body?: unknown;
+    headers?: any;
+    body?: any;
   };
   response?: {
     status: number;
-    body?: unknown;
-    headers?: unknown;
+    body?: any;
+    headers?: any;
   };
   responseTime: number;
-  error?: unknown;
+  error?: any;
 }
 
 @Injectable({

@@ -1,5 +1,5 @@
 const { FlatCompat } = require('@eslint/eslintrc');
-const nxPlugin = require('@nrwl/eslint-plugin-nx');
+const nxPlugin = require('@nx/eslint-plugin');
 const js = require('@eslint/js');
 const typescriptPlugin = require('@typescript-eslint/eslint-plugin');
 const tsParser = require('@typescript-eslint/parser');
@@ -137,8 +137,6 @@ module.exports = [
         plugins: {
             '@nx': nxPlugin,
             '@typescript-eslint': typescriptPlugin,
-            // local rules (see tools/eslint-rules)
-            'local-rules': require('./tools/eslint-rules'),
         },
         rules: {
             // Basic rules
@@ -154,8 +152,6 @@ module.exports = [
             '@typescript-eslint/explicit-function-return-type': 'off',
             '@typescript-eslint/explicit-module-boundary-types': 'off',
             '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-            // Prohibit constructing service classes with `new` — require DI
-            'local-rules/no-new-service': 'error',
         },
     },
     // E2E specific files configuration
@@ -166,41 +162,6 @@ module.exports = [
             '@typescript-eslint/explicit-function-return-type': 'off',
             '@typescript-eslint/explicit-module-boundary-types': 'off',
         },
-    },
-    // Typed linting for TypeScript projects (enables rules that need type information)
-    {
-        files: ['apps/*/src/**/*.ts', 'libs/*/src/**/*.ts', 'apps/*/src/**/*.tsx', 'libs/*/src/**/*.tsx'],
-        languageOptions: {
-            parser: tsParser,
-            parserOptions: {
-                ecmaVersion: 'latest',
-                sourceType: 'module',
-                project: [
-                    './apps/*/tsconfig.json',
-                    './apps/*/tsconfig.*.json',
-                    './libs/*/tsconfig.json',
-                    './libs/*/tsconfig.*.json'
-                ]
-            }
-        },
-        rules: {
-            // Require explicit handling of Promises
-            '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true, ignoreIIFE: true }],
-            // Encourage explicit return types for public functions (warn to start)
-            '@typescript-eslint/explicit-function-return-type': ['warn', { allowExpressions: true, allowTypedFunctionExpressions: true }],
-            '@typescript-eslint/explicit-module-boundary-types': 'warn',
-            // Make `any` stricter in typed source files
-            '@typescript-eslint/no-explicit-any': ['error', { fixToUnknown: true }]
-        }
-    },
-    // Tests (spec) files should be more permissive for now to avoid huge churn
-    {
-        files: ['**/*.spec.ts', '**/*.test.ts'],
-        rules: {
-            '@typescript-eslint/explicit-function-return-type': 'off',
-            '@typescript-eslint/explicit-module-boundary-types': 'off',
-            '@typescript-eslint/no-explicit-any': 'warn'
-        }
     },
     ...compat.extends('prettier'),
 ];

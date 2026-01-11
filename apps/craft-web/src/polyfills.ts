@@ -9,7 +9,7 @@ import 'zone.js';  // Included with Angular CLI.
 
 // Modern Array Methods (if targeting very old browsers)
 if (!Array.prototype.includes) {
-  Array.prototype.includes = function (searchElement: unknown, fromIndex?: number): boolean {
+  Array.prototype.includes = function (searchElement: any, fromIndex?: number): boolean {
     return this.indexOf(searchElement, fromIndex) !== -1;
   };
 }

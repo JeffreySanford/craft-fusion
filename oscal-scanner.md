@@ -48,7 +48,7 @@ Place downloaded XML/JSON/SCAP/OSCAL files in your `oscal-analysis/` or `oscal-p
    - Fedora: `sudo dnf install scap-security-guide openscap openscap-scanner`
    - Ubuntu: `sudo apt-get install scap-security-guide openscap-utils`
 2. **Update Puppeteer (for PDF export):**
-   - `pnpm add puppeteer`
+   - `npm install puppeteer`
 3. **Fetch latest profiles:**
    - `curl -fsSL https://raw.githubusercontent.com/jeffreysanford/craft-fusion-profiles/main/oscal-profiles.json -o oscal-profiles.json`
 4. **Run the scanner:**
@@ -71,7 +71,7 @@ Place downloaded XML/JSON/SCAP/OSCAL files in your `oscal-analysis/` or `oscal-p
 
 ## Troubleshooting
 - If you see errors about missing SCAP content, ensure the correct XML files are present (e.g., `/usr/share/xml/scap/ssg/content/ssg-fedora-ds.xml`).
-- For Puppeteer errors, run `pnpm add puppeteer` in your project root.
+- For Puppeteer errors, run `npm install puppeteer` in your project root.
 - For new standards, check the official agency site for the latest content and update your profiles accordingly.
 
 ---

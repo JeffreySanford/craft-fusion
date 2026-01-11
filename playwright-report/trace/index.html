@@ -34,7 +34,7 @@
             return base;
           })();
           const reportLink = document.createElement('div');
-          const command = `pnpm dlx playwright show-report ${reportPath}`;
+          const command = `npx playwright show-report ${reportPath}`;
           reportLink.innerHTML = `You can open the report via <code>${command}</code> from your Playwright project. <button type="button">Copy Command</button>`;
           fallbackErrorDialog.insertBefore(reportLink, fallbackErrorDialog.children[1]);
           reportLink.querySelector('button').addEventListener('click', () => navigator.clipboard.writeText(command));

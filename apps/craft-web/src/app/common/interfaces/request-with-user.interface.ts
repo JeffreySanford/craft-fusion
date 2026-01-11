@@ -4,6 +4,6 @@ export interface RequestWithUser {
     username?: string;
     email?: string;
     roles?: string[];
-    [key: string]: unknown;
+    [key: string]: any;
   };
 }
