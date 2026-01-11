@@ -21,8 +21,7 @@
     "craft-web": "apps/craft-web/project.json",
     "craft-nest": "apps/craft-nest/project.json",
     "craft-go": "apps/craft-go/project.json",
-    "craft-library": "libs/craft-library/project.json",
-    "gotcha-harness": "libs/gotcha-harness/project.json"
+    "craft-library": "libs/craft-library/project.json"
   },
   "npmScope": "craft-fusion",
   "workspaceLayout": {

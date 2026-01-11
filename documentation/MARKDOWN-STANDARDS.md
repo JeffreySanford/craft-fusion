@@ -65,7 +65,8 @@ Use *italic* for emphasis and **bold** for strong emphasis.
 
 ## Project-wide Standards
 
-- Keep documentation direct and avoid placeholder content.
+- All documentation should reference the vibrant, color-coded CLI output where relevant.
+- DRY scripting and system-prep.sh are project-wide standards.
 
 ---
 
