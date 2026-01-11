@@ -12,6 +12,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { NotificationService } from '../../common/services/notification.service';
 import { throwError } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { MatPaginatorIntl } from '@angular/material/paginator';
 import { LoggerService } from '../../common/services/logger.service';
 import { NgxSpinnerService } from 'ngx-spinner';                                    
 
@@ -108,8 +109,8 @@ export class RecordListComponent implements OnInit, OnDestroy {
     private router: Router,
   ) {}
 
-  @HostListener('window:resize')
-  onResize(): void {
+  @HostListener('window:resize', ['$event'])
+  onResize(_event: Event): void {
     console.log('Event: Window resized');
     this.updateDisplayedColumns();
   }
@@ -142,17 +143,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
     this.apiURL = this.recordService.setServerResource(server.name);
     console.log('totalRecords before fetchData:', this.totalRecords);
     this.fetchData(100);
-
-    // If the mock record service exposes synchronous mock data, use it
-    // to ensure unit tests that check for initial rows see data immediately.
-    try {
-      const maybe = (this.recordService as any).getMockRecords?.();
-      if (maybe && Array.isArray(maybe) && maybe.length > 0) {
-        this.dataSource.data = maybe;
-      }
-    } catch {
-      // ignore
-    }
 
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -394,21 +384,18 @@ export class RecordListComponent implements OnInit, OnDestroy {
     console.log('Filter: Cleared');
   }
 
-  expandRow(record?: Record): void {
-    const target = record ?? this.expandedElement;
-    if (!target) return;
-
-    console.log('expandRow method called with record:', target);
+  expandRow(record: Record): void {
+    console.log('expandRow method called with record:', record);
     console.log('Previous expandedElement state:', this.expandedElement ? this.expandedElement.UID : 'null');
 
     debugger;                                             
 
-    if (this.expandedElement?.UID === target.UID) {
+    if (this.expandedElement?.UID === record.UID) {
       console.log('Collapsing row - same record clicked');
       this.expandedElement = null;
     } else {
       console.log('Expanding row with new record');
-      this.expandedElement = target;
+      this.expandedElement = record;
     }
 
     console.log('New expandedElement state:', this.expandedElement ? this.expandedElement.UID : 'null');
@@ -573,20 +560,6 @@ export class RecordListComponent implements OnInit, OnDestroy {
   private clearDataSource(): void {
     this.dataSource.data = [];
     this.changeDetectorRef.detectChanges();
-  }
-
-  // Provide a computed view for the template to avoid calling Array.prototype.slice
-  // directly in the template (AOT/ngtsc type-checker can misinterpret that call).
-  get pagedRecords(): Record[] {
-    try {
-      const filtered = this.dataSource?.filteredData || [];
-      if (!this.paginator) return filtered;
-      const start = (this.paginator.pageIndex || 0) * (this.paginator.pageSize || filtered.length || 0);
-      const end = (this.paginator.pageIndex + 1) * (this.paginator.pageSize || filtered.length || 0);
-      return filtered.slice(start, end);
-    } catch {
-      return this.dataSource?.filteredData || [];
-    }
   }
 
   onSwaggerButtonClick(): void {

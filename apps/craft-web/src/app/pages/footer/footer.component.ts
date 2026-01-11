@@ -634,19 +634,21 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   private updateServiceMetricsChart() {
     if (!this.chart || this.isSimulatingData) return;
 
-    const serviceResponseTimes = new Map<string, { total: number; count: number }>();
+    const serviceResponseTimes: { [key: string]: { total: number; count: number } } = {};
 
     this.serviceMetrics.forEach(metric => {
       const svc = metric.serviceName || 'unknown';
       if (metric.duration) {
-        const entry = serviceResponseTimes.get(svc) ?? { total: 0, count: 0 };
-        entry.total += metric.duration;
-        entry.count += 1;
-        serviceResponseTimes.set(svc, entry);
+        if (!serviceResponseTimes[svc]) {
+          serviceResponseTimes[svc] = { total: 0, count: 0 };
+        }
+        serviceResponseTimes[svc].total += metric.duration;
+        serviceResponseTimes[svc].count += 1;
       }
     });
 
-    const serviceData = Array.from(serviceResponseTimes.entries()).map(([service, entry]) => {
+    const serviceData = Object.keys(serviceResponseTimes).map(service => {
+      const entry = serviceResponseTimes[service]!;
       const avg = entry.total / entry.count;
       return {
         service,
@@ -656,6 +658,8 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (serviceData.length > 0) {
       const avgServiceResponseTime = serviceData.reduce((sum, item) => sum + item.avgTime, 0) / serviceData.length;
+
+      const scaledValue = Math.min(100, (avgServiceResponseTime / 500) * 100);
 
       this.performanceMetrics.networkLatency = `${avgServiceResponseTime.toFixed(2)} ms`;
 

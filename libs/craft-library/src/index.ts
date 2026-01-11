@@ -11,8 +11,8 @@ export interface User {
 export interface Record {
   UID: string;
   name: string;
-  avatar: unknown;
-  flicker: unknown;
+  avatar: any;
+  flicker: any;
   firstName: string;
   lastName: string;
   address: {
@@ -67,7 +67,7 @@ export interface SystemMetrics {
   };
   process: {
     pid: number;
-    memoryUsage: unknown; // NodeJS.MemoryUsage, but keep as any for cross-platform
+    memoryUsage: any; // NodeJS.MemoryUsage, but keep as any for cross-platform
     uptime: number;
   };
   timestamp: number;

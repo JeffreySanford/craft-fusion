@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, of, timer } from 'rxjs';
-import { catchError, timeout, map, concatMap, delay, retryWhen, tap } from 'rxjs/operators';
+import { catchError, retry, timeout, map, concatMap, delay, retryWhen, tap } from 'rxjs/operators';
 import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
 

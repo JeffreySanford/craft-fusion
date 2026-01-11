@@ -7,7 +7,7 @@ describe('MaterialIconsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MaterialIconsComponent],
+      imports: [MaterialIconsComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MaterialIconsComponent);

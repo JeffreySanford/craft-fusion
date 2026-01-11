@@ -30,7 +30,7 @@ describe('ToasterComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [ToasterComponent],
+      declarations: [ToasterComponent],
       providers: [
         { provide: TOAST_CONFIG, useValue: { duration: 5000, position: 'top-right', type: 'default' } },
         { provide: ToastrService, useValue: mockToastrService },

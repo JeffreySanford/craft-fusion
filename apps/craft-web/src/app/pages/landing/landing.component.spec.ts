@@ -12,10 +12,7 @@ describe('LandingComponent', () => {
       onresult: jest.fn(),
       lang: '',
     }));
-    Object.defineProperty(window, 'SpeechRecognition', {
-      writable: true,
-      value: mockSpeechRecognition,
-    });
+    (window as unknown).SpeechRecognition = (window as unknown).SpeechRecognition || mockSpeechRecognition;
 
     TestBed.configureTestingModule({
       declarations: [LandingComponent],

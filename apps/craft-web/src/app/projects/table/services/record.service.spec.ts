@@ -1,28 +1,24 @@
 import { TestBed } from '@angular/core/testing';
 import { RecordService } from './record.service';
+import { HttpClientModule } from '@angular/common/http';
 import { NotificationService } from '../../../common/services/notification.service';
-import { LoggerService } from '../../../common/services/logger.service';
-import { ApiService } from '../../../common/services/api.service';
-import { AuthService } from '../../../common/services/auth';
-import {
-  MockNotificationService,
-  MockLoggerService,
-  MockApiService,
-  MockAuthService,
-} from '../../../testing/test-mocks';
+import { ToastrService } from 'ngx-toastr';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
+const mockNotificationService = {
+
+  showSuccess: jest.fn(),
+  showError: jest.fn(),
+  success: jest.fn(),
+  error: jest.fn(),
+};
 describe('RecordServiceService', () => {
   let service: RecordService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        RecordService,
-        { provide: NotificationService, useClass: MockNotificationService },
-        { provide: LoggerService, useClass: MockLoggerService },
-        { provide: ApiService, useClass: MockApiService },
-        { provide: AuthService, useClass: MockAuthService },
-      ],
+      imports: [HttpClientModule],
+      providers: [RecordService, { provide: NotificationService, useValue: mockNotificationService }, ToastrService, provideHttpClientTesting()],
     });
     service = TestBed.inject(RecordService);
   });

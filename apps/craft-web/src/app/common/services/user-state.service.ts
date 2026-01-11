@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { LoggerService } from './logger.service';
 import { SocketClientService } from './socket-client.service';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root',

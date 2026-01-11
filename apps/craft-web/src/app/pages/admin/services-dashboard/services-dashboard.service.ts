@@ -15,20 +15,20 @@ export interface ServiceMetricsSummary {
 export class ServicesDashboardService {
   private serviceMetricsMap = new Map<string, any>();
   private metricsByService = new Map<string, ServiceCallMetric[]>();
-  private serviceStatistics = new Map<string, ServiceMetricsSummary>();
-  private endpointLogs = new Map<string, ApiEndpointLog>();
-  private serviceIconMap = new Map<string, string>([
-    ['ApiService', 'cloud'],
-    ['AuthenticationService', 'lock'],
-    ['UserStateService', 'person'],
-    ['SessionService', 'timer'],
-    ['BusyService', 'hourglass_top'],
-    ['NotificationService', 'notifications'],
-    ['LoggerService', 'list'],
-    ['ChatService', 'chat'],
-    ['SettingsService', 'settings'],
-    ['AdminStateService', 'admin_panel_settings'],
-  ]);
+  private serviceStatistics: { [key: string]: ServiceMetricsSummary } = {};
+  private endpointLogs: { [key: string]: ApiEndpointLog } = {};
+  private serviceIconMap: { [key: string]: string } = {
+    ApiService: 'cloud',
+    AuthenticationService: 'lock',
+    UserStateService: 'person',
+    SessionService: 'timer',
+    BusyService: 'hourglass_top',
+    NotificationService: 'notifications',
+    LoggerService: 'list',
+    ChatService: 'chat',
+    SettingsService: 'settings',
+    AdminStateService: 'admin_panel_settings',
+  };
   private loggerSubscription: Subscription | undefined;
 
   private metricsSubject = new BehaviorSubject<ServiceCallMetric[]>([]);
@@ -49,18 +49,18 @@ export class ServicesDashboardService {
     { name: 'AdminStateService', description: 'Admin state management', active: true },
   ];
 
-  private serviceColors = new Map<string, string>([
-    ['ApiService', '#FF6B6B'],
-    ['AuthenticationService', '#4ECDC4'],
-    ['UserStateService', '#45B7D1'],
-    ['SessionService', '#96CEB4'],
-    ['BusyService', '#FFEEAD'],
-    ['NotificationService', '#D4A5A5'],
-    ['LoggerService', '#9B59B6'],
-    ['ChatService', '#3498DB'],
-    ['SettingsService', '#FF9F4A'],
-    ['AdminStateService', '#2ECC71'],
-  ]);
+  private serviceColors: { [key: string]: string } = {
+    ApiService: '#FF6B6B',
+    AuthenticationService: '#4ECDC4',
+    UserStateService: '#45B7D1',
+    SessionService: '#96CEB4',
+    BusyService: '#FFEEAD',
+    NotificationService: '#D4A5A5',
+    LoggerService: '#9B59B6',
+    ChatService: '#3498DB',
+    SettingsService: '#FF9F4A',
+    AdminStateService: '#2ECC71',
+  };
 
   constructor(private logger: LoggerService) {}
 
@@ -90,7 +90,7 @@ export class ServicesDashboardService {
   }
 
   getServiceIcon(serviceName: string) {
-    return this.serviceIconMap.get(serviceName) || 'device_hub';
+    return this.serviceIconMap[serviceName] || 'device_hub';
   }
 
   startMonitoring() {
@@ -102,8 +102,8 @@ export class ServicesDashboardService {
       this.setServiceMetrics(metrics);
 
       metrics.forEach(metric => {
-        if (!this.endpointLogs.has(metric.serviceName)) {
-          this.endpointLogs.set(metric.serviceName, {
+        if (!this.endpointLogs[metric.serviceName]) {
+          this.endpointLogs[metric.serviceName] = {
             path: metric.url,
             method: metric.method,
             lastContacted: null,
@@ -115,13 +115,10 @@ export class ServicesDashboardService {
             avgResponseTime: 0,
             firstSeen: new Date(),
             timelineData: [],
-          });
+          };
         }
 
-        const info = this.endpointLogs.get(metric.serviceName);
-        if (!info) {
-          return;
-        }
+        const info = this.endpointLogs[metric.serviceName]!;
         info.lastContacted = new Date(metric.timestamp);
         info.lastPing = new Date();
         info.hitCount++;
@@ -188,8 +185,8 @@ export class ServicesDashboardService {
             this.updateServiceStats(s.name, { avgResponseTime: avgTime, callCount: metrics.length, successRate, lastUpdate: now });
           }
         });
-      } catch {
-        console.error('ServicesDashboardService polling error');
+      } catch (e) {
+        console.error('ServicesDashboardService polling error', e);
       }
     }, intervalMs);
   }
@@ -224,14 +221,14 @@ export class ServicesDashboardService {
   }
 
   getServiceStatistics(serviceName: string) {
-    return this.serviceStatistics.get(serviceName);
+    return this.serviceStatistics[serviceName];
   }
 
   clearAllMetrics() {
     this.metricsByService.clear();
     this.serviceMetricsMap.clear();
-    this.serviceStatistics.clear();
-    this.endpointLogs.clear();
+    this.serviceStatistics = {};
+    this.endpointLogs = {};
 
     try {
 
@@ -239,8 +236,8 @@ export class ServicesDashboardService {
 
         (this.logger as any).clearMetrics();
       }
-    } catch (error) {
-      console.warn('Failed to clear logger metrics', error);
+    } catch (e) {
+      console.warn('Failed to clear logger metrics', e);
     }
 
     this.metricsSubject.next([]);
@@ -253,23 +250,23 @@ export class ServicesDashboardService {
 
         (this.logger as any).clearLogs();
       }
-    } catch (error) {
-      console.warn('Failed to clear logs via LoggerService', error);
+    } catch (e) {
+      console.warn('Failed to clear logs via LoggerService', e);
     }
   }
 
   updateServiceStats(serviceName: string, stats: Partial<ServiceMetricsSummary> & { lastUpdate?: number }) {
-    const prev = this.serviceStatistics.get(serviceName) || ({} as ServiceMetricsSummary);
-    this.serviceStatistics.set(serviceName, {
+    const prev = this.serviceStatistics[serviceName] || ({} as ServiceMetricsSummary);
+    this.serviceStatistics[serviceName] = {
       avgResponseTime: stats.avgResponseTime ?? prev.avgResponseTime ?? 0,
       callCount: stats.callCount ?? prev.callCount ?? 0,
       successRate: stats.successRate ?? prev.successRate ?? 100,
       lastUpdate: stats.lastUpdate ?? Date.now(),
-    });
+    };
   }
 
   getServiceColor(serviceName: string): string {
-    return this.serviceColors.get(serviceName) || '#808080';
+    return this.serviceColors[serviceName] || '#808080';
   }
 
   toggleServiceActive(serviceName: string): void {
@@ -351,7 +348,7 @@ export class ServicesDashboardService {
       datasets: [
         {
           label: 'Response Time (ms)',
-          data: active.map(s => stats.get(s.name)?.avgResponseTime || 0),
+          data: active.map(s => stats[s.name]?.avgResponseTime || 0),
           backgroundColor: active.map(s => this.getServiceColor(s.name)),
           borderWidth: 1,
           yAxisID: 'y',
@@ -398,18 +395,16 @@ export class ServicesDashboardService {
     const mapping = axes.datasetAxisIds || [];
     (systemChart.data.datasets as any[]).forEach((dataset: any, index: number) => {
 
-      const metricForIndex = selectedMetrics.at(index) || '';
-      const axisForIndex = mapping.at(index);
-      const shouldFilter = mapping.length === 0 || Boolean(axisForIndex);
-      dataset.hidden = !(shouldFilter ? selectedMetrics.includes(metricForIndex) : true);
-      if (axisForIndex) {
-        dataset.yAxisID = axisForIndex;
+      const metricForIndex = selectedMetrics[index] || '';
+      dataset.hidden = !(mapping.length === 0 || mapping[index] ? selectedMetrics.includes(metricForIndex) : true);
+      if (mapping && mapping[index]) {
+        dataset.yAxisID = mapping[index];
       }
     });
 
     try {
       systemChart.update();
-    } catch {
+    } catch (e) {
 
     }
   }

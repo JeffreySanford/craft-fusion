@@ -34,13 +34,7 @@ export class UserActivityService {
   }
 
   private initRouterTracking(): void {
-    const events = (this.router as any)?.events;
-    if (!events || typeof events.pipe !== 'function') {
-      this.logger.debug('Router events not available; skipping router tracking in tests.');
-      return;
-    }
-
-    events.pipe(filter((event: unknown) => event instanceof NavigationEnd)).subscribe((evt: unknown) => {
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(evt => {
       const event = evt as NavigationEnd;
       const now = Date.now();
 

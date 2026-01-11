@@ -148,7 +148,7 @@ export class AdminComponent implements OnInit {
         this.serviceMetricsChart.data = this.servicesDashboard.buildChartDataForServices();
         this.serviceMetricsChart.update();
         return;
-      } catch {}
+      } catch (e) {}
     }
     this.serviceMetricsChart = this.servicesDashboard.createServiceMetricsChart(ctx);
   }

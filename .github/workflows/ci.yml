@@ -2,30 +2,18 @@ name: CI
 on:
   push:
     branches:
+      # Change this if your primary branch is not main
       - master
   pull_request:
 
+# Needed for nx-set-shas when run on the main branch
 permissions:
   actions: read
   contents: read
 
 jobs:
   main:
-    # Use a GitHub-hosted runner but execute the job steps inside a Fedora container
-    # This provides a reproducible Fedora environment while avoiding a queued self-hosted runner
-    runs-on: ubuntu-latest
-    
-    services:
-      mongodb:
-        image: mongo:5.0
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })' --quiet"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    
+    runs-on: fedora-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,37 +25,17 @@ jobs:
       # This line enables distribution
       # The "--stop-agents-after" is optional, but allows idle agents to shut down once the "e2e-ci" targets have been requested
       # - run: pnpm dlx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
-      - run: pnpm install
+      - run: npm ci
 
       - uses: nrwl/nx-set-shas@v4
 
-      - name: Ensure pnpm
-        run: |
-          set -euxo pipefail
-          corepack enable
-          corepack prepare pnpm@latest --activate
-
-      - name: Prepare .env
-        run: |
-          set -euxo pipefail
-          if [ -f .env.example ]; then
-            cp .env.example .env
-          else
-            echo 'NODE_ENV=production' > .env
-          fi
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile=false
-
-      - name: Format check (nx)
-        run: pnpm dlx nx-cloud record -- nx format:check
-
-      - name: Run tests
-        run: pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov > test-results.json || true
-
-      - name: Build & E2E
-        run: pnpm dlx nx affected -t build e2e || true
-
+      - run: pnpm dlx nx-cloud record -- nx format:check
+      
+      # Run tests with result reporting
+      - name: Run Tests
+      - run: pnpm dlx nx affected -t test --configuration=ci --json --coverageReporters=text-summary,lcov > test-results.json
+      
+      # Upload test results
       - name: Test Report
         uses: dorny/test-reporter@v1
         if: success() || failure()
@@ -77,9 +45,13 @@ jobs:
           reporter: jest-json
           fail-on-error: false
 
+      # Upload coverage reports
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
         with:
           files: ./coverage/lcov.info
           fail_ci_if_error: false
           verbose: true
+
+      # Continue with remaining steps
+      - run: pnpm dlx nx affected -t build e2e-ci

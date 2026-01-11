@@ -14,7 +14,7 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
   @ViewChild('logContainer') logContainer!: ElementRef;
 
   logs: LogEntry[] = [];
-  logTimes = new Map<string, string>();                            
+  logTimes: { [id: string]: string } = {};                            
   private logSubscription!: Subscription;
   private timeUpdateSubscription!: Subscription;
 
@@ -34,7 +34,7 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
       this.logs.unshift(log);                              
 
       const logId = this.getLogId(0, log);
-      this.logTimes.set(logId, this.computeTimeAgo(log.timestamp));
+      this.logTimes[logId] = this.computeTimeAgo(log.timestamp);
 
       if (this.autoScroll) {
         this.scrollToTop();
@@ -87,7 +87,7 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
 
     try {
       return JSON.stringify(details, null, 2);
-    } catch {
+    } catch (error) {
       return String(details);
     }
   }
@@ -234,7 +234,7 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
   private updateAllLogTimes(): void {
     this.logs.forEach(log => {
       const logId = this.getLogId(0, log);
-      this.logTimes.set(logId, this.computeTimeAgo(log.timestamp));
+      this.logTimes[logId] = this.computeTimeAgo(log.timestamp);
     });
   }
 
@@ -255,6 +255,6 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
 
   getTimeAgo(log: LogEntry): string {
     const logId = this.getLogId(0, log);
-    return this.logTimes.get(logId) || this.computeTimeAgo(log.timestamp);
+    return this.logTimes[logId] || this.computeTimeAgo(log.timestamp);
   }
 }

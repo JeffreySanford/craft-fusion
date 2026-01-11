@@ -8,7 +8,7 @@ describe('BarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [BarComponent],
+      imports: [BarComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BarComponent);
@@ -20,8 +20,8 @@ describe('BarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have showLegend property set to false by default', () => {
-    expect(component.showLegend).toBeFalsy();
+  it('should have showLegend property set to true by default', () => {
+    expect(component.showLegend).toBeTruthy();
   });
 
   it('should have legendItems array initialized', () => {
@@ -37,9 +37,8 @@ describe('BarComponent', () => {
   });
 
   it('should have data starting from US inception in 1776', () => {
+
     const gdpData = component['gdpData'];
-    expect(gdpData?.length).toBeGreaterThan(0);
-    const firstEntry = gdpData?.[0];
-    expect(firstEntry?.year).toEqual(1776);
+    expect(gdpData[0].year).toEqual(1776);
   });
 });

@@ -95,13 +95,13 @@ export class ApiService {
 
       if (typeof (headers as any).forEach === 'function') {
         const h = headers as Headers;
-        const entries: [string, string][] = [];
+        const obj: Record<string, string> = {};
         h.forEach((value: string, key: string) => {
-          entries.push([key, value]);
+          obj[key] = value;
         });
-        return new HttpHeaders(Object.fromEntries(entries));
+        return new HttpHeaders(obj);
       }
-    } catch {
+    } catch (e) {
 
     }
 
@@ -159,7 +159,7 @@ export class ApiService {
     });
 
     return this.http.get<T>(url, httpOptions).pipe(
-      tap(() => {
+      tap(response => {
         this.logger.endServiceCall(callId, 200);
         this.logger.debug(`GET ${endpoint} succeeded`, {
           responseReceived: true,
@@ -211,7 +211,7 @@ export class ApiService {
     httpOptions.headers = this.getTracingHeaders();
 
     return this.http.put<T>(url, body, httpOptions).pipe(
-      tap(() => {
+      tap(response => {
         this.logger.endServiceCall(callId, 200);
         this.logger.debug(`PUT ${endpoint} succeeded`);
       }),
@@ -237,7 +237,7 @@ export class ApiService {
     httpOptions.headers = this.getTracingHeaders();
 
     return this.http.delete<T>(url, httpOptions).pipe(
-      tap(() => {
+      tap(response => {
         this.logger.endServiceCall(callId, 200);
         this.logger.debug(`DELETE ${endpoint} succeeded`);
       }),

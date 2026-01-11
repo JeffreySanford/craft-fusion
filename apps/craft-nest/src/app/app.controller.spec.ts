@@ -1,22 +1,21 @@
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 describe('AppController', () => {
-  let appController: AppController;
+  let app: TestingModule;
 
-  beforeEach(async () => {
-    const module = await Test.createTestingModule({
+  beforeAll(async () => {
+    app = await Test.createTestingModule({
       controllers: [AppController],
       providers: [AppService],
     }).compile();
-
-    appController = module.get<AppController>(AppController);
   });
 
-  describe('getHello', () => {
-    it('should return welcome message', () => {
-      expect(appController.getHello()).toBe('Welcome to Craft Fusion API!');
+  describe('getData', () => {
+    it('should return "Hello API"', () => {
+      const appController = app.get<AppController>(AppController);
+      expect(appController.getData()).toEqual({ message: 'Hello API' });
     });
   });
 });

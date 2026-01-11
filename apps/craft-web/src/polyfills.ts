@@ -14,7 +14,7 @@ if (!('localStorage' in window)) {
       setItem: (key: string, value: string) => storage.set(key, value),
       removeItem: (key: string) => storage.delete(key),
       clear: () => storage.clear(),
-      key: (index: number) => Array.from(storage.keys()).at(index) || null,
+      key: (index: number) => Array.from(storage.keys())[index] || null,
       length: storage.size,
     },
     writable: false,

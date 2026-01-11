@@ -61,30 +61,19 @@ export class YahooService {
     return this.http.get(url, { params }).pipe(
       map((response: any) => {
         this.logger.endServiceCall(callId, 200);
-        // eslint-disable-next-line security/detect-object-injection
-        const responseMap = new Map(Object.entries(response || {}));
         const parsedData: HistoricalData[] = symbols.map(symbol => {
-          // Sanitize symbol to avoid untrusted object property access and potential injection
-          const safeSymbol = String(symbol || '').trim();
-          if (!/^[A-Za-z0-9.\-]+$/.test(safeSymbol)) {
-            return { symbol, data: [] };
-          }
-          // Accessing response object by dynamic key is controlled (symbol sanitized above)
-          // eslint-disable-next-line security/detect-object-injection
-          const data = responseMap.get(safeSymbol) as { timestamp?: number[]; close?: number[] } | undefined;
-          if (!data?.timestamp?.length || !data?.close?.length) {
+          const data = response?.[symbol];
+          if (!data || !Array.isArray(data.timestamp) || !Array.isArray(data.close)) {
             return {
               symbol,
               data: [],
             };
           }
-          // eslint-disable-next-line security/detect-object-injection
           return {
             symbol,
             data: data.timestamp.map((timestamp: number, index: number) => ({
               date: new Date(timestamp * 1000),
-              // eslint-disable-next-line security/detect-object-injection
-              close: data.close?.[index] ?? 0,
+              close: data.close[index],
             })),
           };
         });

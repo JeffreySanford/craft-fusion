@@ -1,0 +1,103 @@
+[
+  {
+    "page": "/",
+    "selector": "body",
+    "contrast": 21,
+    "threshold": 4.5,
+    "pass": true,
+    "color": "rgb(0, 0, 0)",
+    "bg": "rgb(255,255,255)",
+    "snippet": {
+      "text": "person\nhome\nHome\ntable_chart\nTable\nbar_chart\nData Visualizat",
+      "html": "<body class=\"mat-typography vibrant-theme\">\n    <app-root ng-version=\"19.2.13\" _nghost-ng-c1146046737=\"\"><div _ngcontent-ng-c1146046737=\"\" class=\"app-container flex-col\"><header _ngcontent-ng-c1146046"
+    }
+  },
+  {
+    "page": "/",
+    "selector": "h1, h2, h3, h4, h5, h6",
+    "contrast": 14.97,
+    "threshold": 3,
+    "pass": true,
+    "color": "rgb(255, 215, 0)",
+    "bg": "rgba(0, 0, 0, 0.3)",
+    "snippet": {
+      "text": "J\ne\nf\nf\nr\ne\ny\nS\na\nn\nf\no\nr\nd",
+      "html": "<h1 _ngcontent-ng-c4159835775=\"\" aria-label=\"Jeffrey Sanford\" class=\"title\"><span _ngcontent-ng-c4159835775=\"\" class=\"word\"><span _ngcontent-ng-c4159835775=\"\" class=\"word-text\"><span _ngcontent-ng-c41"
+    }
+  },
+  {
+    "page": "/",
+    "selector": ".mat-button, button, .btn, .primary",
+    "contrast": 21,
+    "threshold": 4.5,
+    "pass": true,
+    "color": "rgb(0, 0, 0)",
+    "bg": "rgb(255,255,255)",
+    "snippet": {
+      "text": "person",
+      "html": "<button _ngcontent-ng-c2929994150=\"\" mat-icon-button=\"\" class=\"mat-mdc-menu-trigger user-profile-button mdc-icon-button mat-mdc-icon-button mat-unthemed mat-mdc-button-base\" mat-ripple-loader-uninitia"
+    }
+  },
+  {
+    "page": "/",
+    "selector": ".mat-button, button, .btn, .primary",
+    "contrast": 10.6,
+    "threshold": 4.5,
+    "pass": true,
+    "color": "rgb(255, 255, 255)",
+    "bg": "rgb(0, 51, 160)",
+    "snippet": {
+      "text": "home\nHome",
+      "html": "<button _ngcontent-ng-c3563390232=\"\" mat-raised-button=\"\" class=\"mat-elevation-z10 menu-item mdc-button mdc-button--raised mat-mdc-raised-button mat-unthemed mat-mdc-button-base mat-elevation-z8 activ"
+    }
+  },
+  {
+    "page": "/",
+    "selector": ".mat-button, button, .btn, .primary",
+    "contrast": 10.6,
+    "threshold": 4.5,
+    "pass": true,
+    "color": "rgb(255, 255, 255)",
+    "bg": "rgb(0, 51, 160)",
+    "snippet": {
+      "text": "table_chart\nTable",
+      "html": "<button _ngcontent-ng-c3563390232=\"\" mat-raised-button=\"\" class=\"mat-elevation-z10 menu-item mdc-button mdc-button--raised mat-mdc-raised-button mat-unthemed mat-mdc-button-base\" mat-ripple-loader-uni"
+    }
+  },
+  {
+    "page": "/",
+    "selector": ".mat-button, button, .btn, .primary",
+    "contrast": 10.6,
+    "threshold": 4.5,
+    "pass": true,
+    "color": "rgb(255, 255, 255)",
+    "bg": "rgb(0, 51, 160)",
+    "snippet": {
+      "text": "bar_chart\nData Visualizations",
+      "html": "<button _ngcontent-ng-c3563390232=\"\" mat-raised-button=\"\" class=\"mat-elevation-z10 menu-item mdc-button mdc-button--raised mat-mdc-raised-button mat-unthemed mat-mdc-button-base\" mat-ripple-loader-uni"
+    }
+  },
+  {
+    "page": "/",
+    "selector": ".mat-button, button, .btn, .primary",
+    "contrast": 10.6,
+    "threshold": 4.5,
+    "pass": true,
+    "color": "rgb(255, 255, 255)",
+    "bg": "rgb(0, 51, 160)",
+    "snippet": {
+      "text": "restaurant\nPeasant Kitchen",
+      "html": "<button _ngcontent-ng-c3563390232=\"\" mat-raised-button=\"\" class=\"mat-elevation-z10 menu-item mdc-button mdc-button--raised mat-mdc-raised-button mat-unthemed mat-mdc-button-base\" mat-ripple-loader-uni"
+    }
+  },
+  {
+    "page": "/",
+    "selector": "table, td, th",
+    "result": "missing"
+  },
+  {
+    "page": "/",
+    "selector": ".chip, .badge, .icon",
+    "result": "missing"
+  }
+]

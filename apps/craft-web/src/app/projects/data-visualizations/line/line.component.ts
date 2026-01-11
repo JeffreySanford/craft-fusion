@@ -84,7 +84,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
   private setupResizeObserver(): void {
     if (typeof ResizeObserver !== 'undefined' && this.chartContainer) {
       const container = this.chartContainer.nativeElement;
-      this.resizeObserver = new ResizeObserver(() => {
+      this.resizeObserver = new ResizeObserver(entries => {
         this.createChart();
       });
       this.resizeObserver.observe(container);
@@ -194,7 +194,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
     const xAxis = d3
       .axisBottom(x)
       .ticks(tickCount)
-      .tickFormat((d: Date | NumberValue) => {
+      .tickFormat((d: Date | NumberValue, i: number) => {
         const date = d as Date;
 
         return width < 500
@@ -345,7 +345,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
         .attr('r', pointSize);
 
       circles
-        .on('mouseover', (event: MouseEvent) => {
+        .on('mouseover', (event: MouseEvent, d: LineChartData) => {
           const target = event.target as SVGCircleElement;
           const data = d3.select(target).datum() as any;
 
@@ -402,14 +402,14 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       const legendItemHeight = Math.min(Math.max(height / 15, 15), 25);
       const legendFontSize = Math.max(axisFontSize * 0.9, 10);
 
-      Object.entries(this.seriesNames).forEach(([, name], i) => {
+      Object.entries(this.seriesNames).forEach(([key, name], i) => {
         const legendRow = legend.append('g').attr('transform', `translate(0, ${i * legendItemHeight})`);
 
         legendRow
           .append('rect')
           .attr('width', legendFontSize)
           .attr('height', legendFontSize * 0.8)
-          .attr('fill', (this.colors.at(i) ?? '#fff') as string);
+          .attr('fill', this.colors[i] as string);
 
         legendRow
           .append('text')

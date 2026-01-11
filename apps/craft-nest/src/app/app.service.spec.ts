@@ -6,16 +6,16 @@ describe('AppService', () => {
   let service: AppService;
 
   beforeAll(async () => {
-    const module = await Test.createTestingModule({
+    const app = await Test.createTestingModule({
       providers: [AppService],
     }).compile();
 
-    service = module.get<AppService>(AppService);
+    service = app.get<AppService>(AppService);
   });
 
-  describe('getHello', () => {
-    it('should return welcome message', () => {
-      expect(service.getHello()).toBe('Welcome to Craft Fusion API!');
+  describe('getData', () => {
+    it('should return "Hello API"', () => {
+      expect(service.getData()).toEqual({ message: 'Hello API' });
     });
   });
 });

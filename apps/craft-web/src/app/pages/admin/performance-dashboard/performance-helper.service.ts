@@ -74,14 +74,13 @@ export class PerformanceHelperService {
   updateChartData(chart: any, labels: string[], data: number[], colors?: string[]) {
     if (!chart) return;
     chart.data.labels = labels;
-    const dataset = Array.isArray(chart.data.datasets) ? chart.data.datasets.find((_: unknown, idx: number) => idx === 0) : undefined;
-    if (dataset) {
-      dataset.data = data;
-      if (colors) dataset.backgroundColor = colors;
+    if (chart.data.datasets && chart.data.datasets[0]) {
+      chart.data.datasets[0].data = data;
+      if (colors) chart.data.datasets[0].backgroundColor = colors;
     }
     try {
       chart.update();
-    } catch {
+    } catch (e) {
 
     }
   }
@@ -156,7 +155,7 @@ export class PerformanceHelperService {
     timelineData.forEach((d, index) => {
       const x = padding + (innerWidth * (d.timestamp.getTime() - minTime)) / (maxTime - minTime);
       const y = height - padding - (innerHeight * (d.responseTime - minResponse)) / (maxResponse - minResponse);
-      const status = statuses.at(index);
+      const status = statuses[index];
       const statusNum = typeof status === 'number' ? status : Number(status);
       let dotColor = 'var(--craft-live-color, #10B981)';
       if (statusNum >= 400) dotColor = 'var(--md-sys-color-error, #EF4444)';

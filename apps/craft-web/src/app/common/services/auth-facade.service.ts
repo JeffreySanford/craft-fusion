@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { AuthenticationService } from './authentication.service';
 import { AuthorizationService } from './authorization.service';
 import { User, AuthResponse } from '../interfaces/user.interface';

@@ -3,12 +3,9 @@ import { Document } from 'mongoose';
 
 export enum TimelineEventType {
   PERSONAL = 'personal',
-  TIMELINE = 'timeline',
+  FAMILY = 'family',
   HISTORICAL = 'historical',
-  ANNIVERSARY = 'anniversary',
-  PROJECT = 'project',
-  PROFESSIONAL = 'professional',
-  EDUCATION = 'education',
+  ANNIVERSARY = 'anniversary'
 }
 
 @Schema({ timestamps: true })

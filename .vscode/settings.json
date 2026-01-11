@@ -9,7 +9,7 @@
     "**/Thumbs.db": true,
     "**/node_modules": true, // Exclude node_modules
     "**/dist": true,         // Exclude build output
-    "**/.nx/**": true,       // Exclude NX cache and generated artifacts
+    "**/.nx/cache": true,   // Exclude NX cache
     "apps/craft-web/src/assets/shapefiles": true, // Optionally exclude large assets if not actively editing them
     "apps/training/models": true, // Optionally exclude generated models
     "apps/training/training_data": true // Optionally exclude large training data
@@ -22,7 +22,7 @@
     "**/bower_components": true,
     "**/*.code-search": true,
     "**/dist": true,
-    "**/.nx/**": true,
+    "**/.nx/cache": true,
     "apps/craft-web/src/assets/shapefiles": true,
     "apps/training/models": true,
     "apps/training/training_data": true,
@@ -33,7 +33,7 @@
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
     "**/node_modules/*/**": true,
-    "**/.nx/**": true,
+    "**/.nx/cache/**": true,
     "**/dist/**": true,
     "apps/craft-web/src/assets/shapefiles/**": true,
     "apps/training/models/**": true,
@@ -44,7 +44,6 @@
   },
   // Hide diagnostics from Problems for these generated folders
   "problems.exclude": {
-    "**/.nx/**": true,
     "**/tmp/**": true,
     "**/playwright-report/**": true
   },

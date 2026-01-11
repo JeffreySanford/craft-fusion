@@ -28,7 +28,7 @@ export class DeepSeekService {
           .map((json: string) => {
             try {
               return JSON.parse(json).response;
-            } catch {
+            } catch (e) {
               return '';
             }
           })

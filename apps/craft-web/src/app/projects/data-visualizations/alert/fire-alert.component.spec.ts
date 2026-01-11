@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { FireAlertComponent } from './fire-alert.component';
 import { MapboxService } from '../../../common/services/mapbox.service';
 import { OpenSkiesService } from '../../../common/services/openskies.service';
@@ -16,7 +16,7 @@ describe('FireAlertComponent', () => {
   const mockMap = {
     on: jest.fn().mockImplementation((event, callback) => {
       if (event === 'load') {
-        callback();
+        setTimeout(() => callback(), 0);
       }
       return mockMap;
     }),
@@ -86,17 +86,12 @@ describe('FireAlertComponent', () => {
     fixture = TestBed.createComponent(FireAlertComponent);
     component = fixture.componentInstance;
     component.cities = mockCities;
-    component.ngOnInit();
 
     const mapContainer = document.createElement('div');
     mapContainer.id = 'map-los-angeles';
     document.body.appendChild(mapContainer);
 
-    const mapContainerB = document.createElement('div');
-    mapContainerB.id = 'map-city-b';
-    document.body.appendChild(mapContainerB);
-
-    // Don't call detectChanges here
+    fixture.detectChanges();
   });
 
   afterEach(() => {
@@ -104,41 +99,35 @@ describe('FireAlertComponent', () => {
     if (mapContainer) {
       document.body.removeChild(mapContainer);
     }
-    const mapContainerB = document.getElementById('map-city-b');
-    if (mapContainerB) {
-      document.body.removeChild(mapContainerB);
-    }
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  // it('should initialize the map', fakeAsync(() => {
-  //   fixture.detectChanges();
-  //   document.body.appendChild(fixture.nativeElement);
-  //   fixture.detectChanges();
-  //   component.ngAfterViewInit();
-  //   tick(0);
-  //   expect(mapboxService.initializeMap).toHaveBeenCalled();
-  // }));
+  it('should initialize the map', fakeAsync(() => {
+    tick(0);
+    expect(mapboxService.initializeMap).toHaveBeenCalled();
+  }));
 
-  // it('should resize the map when handleResize is called', fakeAsync(() => {
-  //   component.handleResize();
-  //   tick(300);
-  //   expect(mapboxService.resizeMap).toHaveBeenCalled();
-  // }));
+  it('should resize the map when handleResize is called', () => {
+    component.handleResize();
+    expect(mapboxService.resizeMap).toHaveBeenCalled();
+  });
 
-  // it('should handle tab change correctly', fakeAsync(() => {
-  //   mapboxService.initializeMap.mockClear();
-  //   component.onTabChange({ index: 1 });
-  //   tick(0);
-  //   expect(component.selectedCity).toBe(mockCities[1]);
-  //   expect(mapboxService.initializeMap).toHaveBeenCalled();
-  // }));
+  it('should handle tab change correctly', fakeAsync(() => {
 
-  // it('should clean up resources on destroy', () => {
-  //   component.ngOnDestroy();
-  //   expect(mapboxService.destroyMap).toHaveBeenCalled();
-  // });
+    mapboxService.initializeMap.mockClear();
+
+    component.onTabChange({ index: 1 });
+    tick(0);
+
+    expect(component.selectedCity).toBe(mockCities[1]);
+    expect(mapboxService.initializeMap).toHaveBeenCalled();
+  }));
+
+  it('should clean up resources on destroy', () => {
+    component.ngOnDestroy();
+    expect(mapboxService.destroyMap).toHaveBeenCalled();
+  });
 });

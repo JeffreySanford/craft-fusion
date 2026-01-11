@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, OnChanges, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, Input, OnChanges, Renderer2, SimpleChanges } from '@angular/core';
 
 @Directive({ selector: '[appTextColor]', standalone: true })
 export class TextColorDirective implements OnChanges {
@@ -9,7 +9,7 @@ export class TextColorDirective implements OnChanges {
     private renderer: Renderer2,
   ) {}
 
-  ngOnChanges(): void {
+  ngOnChanges(_: SimpleChanges) {
     if (this.color) {
       this.renderer.setStyle(this.el.nativeElement, 'color', this.color);
     } else {

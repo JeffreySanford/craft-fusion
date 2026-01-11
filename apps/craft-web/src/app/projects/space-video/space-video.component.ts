@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, Renderer2, OnInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, Renderer2, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-space-video',
