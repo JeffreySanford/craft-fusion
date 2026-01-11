@@ -67,9 +67,10 @@ jobs:
           mkdir -p ci-logs
           pnpm dlx nx affected -t test --json --coverageReporters=text-summary,lcov > test-results.json 2>&1 | tee ci-logs/tests.log || true
 
-      - name: Build affected projects
+      - name: Build & E2E
         run: |
           mkdir -p ci-logs
+<<<<<<< HEAD
           pnpm dlx nx affected -t build 2>&1 | tee ci-logs/build.log || true
 
       - name: Start craft-nest server and run e2e tests
