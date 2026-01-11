@@ -50,13 +50,13 @@ export class ServicesDashboardService {
   }
 
   setServiceMetrics(metrics: ServiceCallMetric[]) {
-
+    // Store recent metrics per service
     metrics.forEach(m => {
       const arr = this.metricsByService.get(m.serviceName) || [];
       arr.push(m);
-
+      // Keep only last 200 metrics per service
       this.metricsByService.set(m.serviceName, arr.slice(-200));
-
+      // Update quick-access map with latest
       this.serviceMetricsMap.set(m.serviceName, m);
     });
   }
@@ -77,7 +77,8 @@ export class ServicesDashboardService {
           }
         });
       } catch (e) {
-
+        // swallow - diagnostics within admin UI
+        // eslint-disable-next-line no-console
         console.error('ServicesDashboardService polling error', e);
       }
     }, intervalMs);
@@ -94,7 +95,7 @@ export class ServicesDashboardService {
     this.stopSimulation();
     this.simulationIntervalId = window.setInterval(
       () => {
-
+        // Create simulated stats for registered services
         this.getRegisteredServices().forEach(s => {
           const avg = Math.random() * 200 + 20;
           const calls = Math.floor(Math.random() * 50);
@@ -131,6 +132,7 @@ export class ServicesDashboardService {
     return this.serviceColors[serviceName] || '#808080';
   }
 
+  // Minimal chart data builder to be consumed by AdminComponent
   buildChartDataForServices(limit = 6) {
     const active = this.getRegisteredServices().slice(0, limit);
     const stats = this.serviceStatistics;

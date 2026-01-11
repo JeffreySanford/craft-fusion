@@ -3,6 +3,10 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
+/**
+ * Client-side OpenAI service no longer contains an API key.
+ * It proxies requests to the server endpoint which reads the key from the server-side .env.
+ */
 @Injectable({
   providedIn: 'root',
 })

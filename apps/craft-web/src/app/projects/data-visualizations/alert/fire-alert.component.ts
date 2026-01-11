@@ -19,7 +19,7 @@ interface City {
   styleUrls: ['./fire-alert.component.scss'],
   standalone: false,
   host: {
-    class: 'grid-tile large-tile',                             
+    class: 'grid-tile large-tile', // Add grid-specific classes
   },
 })
 export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -36,6 +36,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   utcTime!: string;
   timeSubscription?: Subscription;
 
+  // Track if dimensions have changed
   private lastWidth: number = 0;
   private lastHeight: number = 0;
 
@@ -74,7 +75,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       timezone: 'CDT -06:00',
     },
   ];
-  selectedCity!: City;                           
+  selectedCity!: City; // Will be set in ngOnInit
   selectedPriorityLevel: string = 'All';
 
   constructor(
@@ -93,20 +94,23 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit(): void {
     console.log('STEP 3: ngAfterViewInit called');
     if (this.selectedCity && this.selectedCity.alerts && this.selectedCity.alerts[0]) {
-      this.initializeMap(this.selectedCity.name, this.selectedCity.alerts[0].id);                                       
+      this.initializeMap(this.selectedCity.name, this.selectedCity.alerts[0].id); // Initialize the first tab by default
     }
 
     this.fetchFlightData();
 
+    // Add resize listener
     window.addEventListener('resize', this.handleResize.bind(this));
   }
 
+  // Add ngOnChanges to handle dimension changes
   ngOnChanges(changes: SimpleChanges): void {
-
+    // Check if width or height has changed
     if ((changes['width'] && this.lastWidth !== changes['width'].currentValue) || (changes['height'] && this.lastHeight !== changes['height'].currentValue)) {
       this.lastWidth = this.width;
       this.lastHeight = this.height;
 
+      // Re-initialize map with new dimensions if already initialized
       if (this.selectedCity && this.selectedCity.alerts && this.selectedCity.alerts.length > 0) {
         setTimeout(() => {
           const firstAlert = this.selectedCity.alerts[0];
@@ -116,17 +120,20 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  // Improve map initialization to handle resize better
   initializeMap(city: string, alertId: number): void {
     console.log('STEP 4: Initializing map for city', city);
     const cityObj = this.cities.find(c => c.name === city);
     const coordinates = cityObj ? cityObj.coords : { lat: 34.0522, lng: -118.2437 };
 
+    // Use container heights/widths from inputs if provided, otherwise let CSS handle it
     const mapContainer = document.getElementById(`map-${alertId}`);
     if (!mapContainer) {
       console.error(`Map container for alert ${alertId} not found`);
       return;
     }
 
+    // Calculate available height for the map based on container size
     const containerHeight = mapContainer.parentElement?.clientHeight || 400;
     const statusHeight = 180;
     const mapHeight = Math.max(200, containerHeight - statusHeight);
@@ -135,9 +142,9 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       mapContainer.style.width = `${this.width}px`;
       mapContainer.style.height = `${this.height}px`;
     } else {
-
+      // Set a reasonable height based on container size
       mapContainer.style.height = `${mapHeight}px`;
-
+      // Ensure width is 100% for responsive behavior
       mapContainer.style.width = '100%';
     }
 
@@ -147,13 +154,13 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
 
       map.on('load', () => {
         console.log(`Map for alert ${alertId} in ${city} loaded`);
-
+        // Force map resize with a longer delay to ensure container is fully rendered
         setTimeout(() => {
           try {
             if (typeof this.mapboxService.resizeMap === 'function') {
               this.mapboxService.resizeMap();
             } else {
-
+              // Fallback - trigger native resize if service method is unavailable
               map.resize();
             }
           } catch (e) {
@@ -188,6 +195,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
 
+    // Add additional resize call after tab animation completes
     setTimeout(() => {
       this.handleResize();
     }, 350);
@@ -195,7 +203,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
 
   fetchFlightData(): void {
     console.log('STEP 6: Fetching flight data');
-
+    // Example bounding box coordinates for Los Angeles area
     const lat1 = 33.5;
     const lon1 = -118.5;
     const lat2 = 34.5;
@@ -204,16 +212,17 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     this.flightRadarService.getFlightsByBoundingBox(lat1, lon1, lat2, lon2).subscribe(data => {
       console.log('STEP 7: Flight data fetched', data);
 
+      // Process and display flight data on the map
       this.fr24Flights = data;
 
       this.fr24Flights.forEach((flight: Flight) => {
-
+        // for each flight, look up the information for the flight and include it on the addMarker report
         const coordinates: [number, number] = [flight.status.currentLocation.longitude, flight.status.currentLocation.latitude];
 
         this.flightRadarService.getFlightById(flight.aircraft.registration).subscribe(
           (next: { flight: Flight }) => {
             console.log('STEP 7.1: Flight data fetched', next);
-
+            // Process and display flight data on the map
             const flightInfo: Flight = next.flight;
             this.flights.push(flightInfo);
 
@@ -260,13 +269,14 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     return levels[Math.floor(Math.random() * levels.length)] as string;
   }
 
+  // Focus on a specific alert
   focusAlert(alert: unknown): void {
     console.log('STEP 10: Focused alert', alert);
-
+    // Add logic for focusing/handling the alert
   }
 
   handleResize(): void {
-
+    // Resize map if already initialized
     if (this.selectedCity && this.selectedCity.alerts && this.selectedCity.alerts.length > 0) {
       const firstAlert = this.selectedCity?.alerts?.[0];
       if (!firstAlert) return;
@@ -274,26 +284,27 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
       const mapContainer = document.getElementById(`map-${alertId}`);
 
       if (mapContainer) {
-
+        // Adjust map size based on current container dimensions
         const containerHeight = mapContainer.parentElement?.clientHeight || 400;
-        const statusHeight = 180;                                          
+        const statusHeight = 180; // Approximate height of status container
         const mapHeight = Math.max(200, containerHeight - statusHeight);
 
         if (!this.width && !this.height) {
-
+          // Only adjust height if not explicitly set by inputs
           mapContainer.style.height = `${mapHeight}px`;
         }
       }
 
+      // Important: Use a short delay to ensure DOM is updated before resizing map
       setTimeout(() => {
         try {
-
+          // Make sure we're using the correct service instance
           if (this.mapboxService && typeof this.mapboxService.resizeMap === 'function') {
             this.mapboxService.resizeMap();
             console.log('Map resized successfully');
           } else {
             console.error('MapboxService resizeMap method not available', this.mapboxService);
-
+            // Fallback option if possible
             const mapElement = document.querySelector('.mapboxgl-map');
             if (mapElement && (mapElement as any)._map) {
               (mapElement as any)._map.resize();
@@ -316,6 +327,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
     window.removeEventListener('resize', this.handleResize.bind(this));
   }
 
+  // Filter alerts based on selected priority level
   filteredAlerts(city: City): { id: number; name: string; time: string; level: string }[] {
     if (!city.alerts) return [];
 

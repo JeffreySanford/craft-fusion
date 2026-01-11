@@ -1,105 +1,109 @@
 :root {
-  --color-aapl: #e63946;                  
-  --color-googl: #1d3557;                
-  --color-msft: #457b9d;                  
+  --color-aapl: #e63946; /* Vibrant red */
+  --color-googl: #1d3557; /* Deep blue */
+  --color-msft: #457b9d; /* Medium blue */
 }
 
 .fintech-chart-container {
-  background: linear-gradient(180deg, rgb(241 250 238 / 90%) 0%, rgb(230 240 240 / 70%) 100%);                                            
-  border-radius: 0.375em;                                              
-  box-shadow: inset 0 0 8px rgb(0 0 0 / 10%);                               
+  background: linear-gradient(180deg, rgb(241 250 238 / 90%) 0%, rgb(230 240 240 / 70%) 100%); /* Increased opacity for better contrast */
+  border-radius: 6px; /* Reduced border radius to maximize space */
+  box-shadow: inset 0 0 8px rgb(0 0 0 / 10%); /* Increased shadow opacity */
   display: flex;
   flex-direction: column;
-  height: 100%;                         
-  margin: 0;                                      
-  min-height: 15.625em;                                        
+  height: 100%; /* Ensure full height */
+  margin: 0; /* Remove margin to maximize space */
+  min-height: 250px; /* Slightly increased minimum height */
   overflow: hidden;
-  padding: 0;                                       
+  padding: 0; /* Remove padding to maximize space */
   position: relative;
-  width: 100%;                        
+  width: 100%; /* Ensure full width */
 
+  // Full height when in overlay mode
   &.in-overlay {
-    border-radius: 0;                                   
+    border-radius: 0; // Remove border radius in overlay
     height: 100%;
-    min-height: 25em;                                      
+    min-height: 400px; // Ensure a minimum height in overlay
 
     .legend-container {
-      padding: 0.625em 0.75em;
-      right: 1.25em;
-      top: 1.25em;
+      padding: 10px 12px;
+      right: 20px;
+      top: 20px;
 
       .legend-text {
-        font-size: 0.875em;
+        font-size: 14px;
       }
     }
 
     .tooltip {
-      font-size: 0.875em;
-      max-width: 16.25em;
-      padding: 0.9375em;
+      font-size: 14px;
+      max-width: 260px;
+      padding: 15px;
 
       .tooltip-header {
-        font-size: 1em;
+        font-size: 16px;
       }
     }
 
+    // Make axis labels larger in overlay mode
     .axis text {
-      font-size: 0.75em;
+      font-size: 12px;
     }
 
     .stock-symbol-label {
-      font-size: 0.875em;
+      font-size: 14px;
     }
 
     .data-point {
-      r: 6;                                 
+      r: 6; // Larger data points in overlay
     }
 
     .stock-status-box {
-      bottom: 0.9375em;
-      left: 0.9375em;
+      bottom: 15px;
+      left: 15px;
 
       .stock-status-symbol {
-        font-size: 1em;
+        font-size: 16px;
       }
 
       .stock-status-price {
-        font-size: 0.875em;
+        font-size: 14px;
       }
 
       .stock-status-date {
-        font-size: 0.75em;
+        font-size: 12px;
       }
     }
   }
 }
 
 .fintech-chart {
-  flex: 1;                                          
+  flex: 1; // Ensure chart takes all available space
   height: 100%;
-  margin: 0;                                      
-  overflow: visible;                                   
-  padding: 0;                                       
-  position: relative;                                                
+  margin: 0; /* Remove margin to maximize space */
+  overflow: visible; // Allow SVG to overflow if needed
+  padding: 0; /* Remove padding to maximize space */
+  position: relative; // Needed for proper positioning of SVG content
   width: 100%;
 }
 
+// Make sure SVG uses full available space
 svg {
-  display: block;                            
+  display: block; // Remove any extra spacing
   height: 100% !important;
-  overflow: visible;                                               
+  overflow: visible; // Allow drawing outside boundaries for labels
   width: 100% !important;
 }
 
+/* Enhanced legend with price information */
 .legend-container {
-  background-color: rgb(255 255 255 / 90%);                                           
-  border-radius: 0.375em;
+  background-color: rgb(255 255 255 / 90%); /* Slightly more opaque for readability */
+  border-radius: 6px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
-  min-width: 7.5em;                                            
-  padding: 0.5em 0.75em;                                               
+  min-width: 120px; /* Ensure enough space for price display */
+  padding: 8px 12px; /* Increased padding for better readability */
   position: absolute;
-  right: 0.625em;
-  top: 0.625em;
+  right: 10px;
+  top: 10px;
   transition: all 0.3s ease;
   z-index: 5;
 
@@ -112,10 +116,10 @@ svg {
   .legend-footer {
     border-top: 1px solid rgb(0 0 0 / 10%);
     color: #333;
-    font-size: 0.625em;
+    font-size: 10px;
     line-height: 1.2;
-    margin-top: 0.5em;
-    padding-top: 0.5em;
+    margin-top: 8px;
+    padding-top: 8px;
 
     .legend-date,
     .legend-source {
@@ -135,11 +139,11 @@ svg {
 
 .legend-item {
   align-items: center;
-  border-radius: 0.25em;
+  border-radius: 4px;
   cursor: pointer;
   display: flex;
-  margin-bottom: 0.5em;                                            
-  padding: 0.1875em 0.375em;                                                   
+  margin-bottom: 8px; /* Increased from 6px for better spacing */
+  padding: 3px 6px; /* Increased from 2px 4px for better tap target */
   transition: all 0.2s ease;
 
   &:last-child {
@@ -157,51 +161,52 @@ svg {
 }
 
 .legend-color {
-  border-radius: 0.1875em;
+  border-radius: 3px;
   box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
-  height: 0.875em;
-  margin-right: 0.5em;
-  width: 0.875em;
+  height: 14px;
+  margin-right: 8px;
+  width: 14px;
 }
 
 .legend-text {
-  color: #333;                                      
-  font-size: 0.75em;
+  color: #333; /* Darker text for better contrast */
+  font-size: 12px;
   font-weight: 600;
-  text-shadow: 0 1px 0 rgb(255 255 255 / 50%);                                         
-  white-space: nowrap;                       
+  text-shadow: 0 1px 0 rgb(255 255 255 / 50%); /* Subtle text shadow for readability */
+  white-space: nowrap; /* Keep on one line */
 }
 
+/* Fix tooltip positioning and appearance */
 tooltip {
-  -webkit-backdrop-filter: blur(2px);                      
-  backdrop-filter: blur(2px);                                                      
-  background: rgb(255 255 255 / 98%);                                        
+  -webkit-backdrop-filter: blur(2px); /* Safari fallback */
+  backdrop-filter: blur(2px); /* Blur background slightly for better readability */
+  background: rgb(255 255 255 / 98%); /* More opaque for better visibility */
   border: 1px solid #a8dadc;
-  border: 2px solid rgb(29 53 87 / 50%);                      
-  border-radius: 0.375em;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 25%);                      
-  color: #1d3557;                             
-  font: 12px/1.4 sans-serif;                           
-  max-width: 13.75em;
-  padding: 0.75em;
+  border: 2px solid rgb(29 53 87 / 50%); /* Stronger border */
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 25%); /* Stronger shadow */
+  color: #1d3557; /* Dark text for contrast */
+  font: 12px/1.4 sans-serif; /* Improved line height */
+  max-width: 220px;
+  padding: 12px;
   pointer-events: none;
   position: absolute;
-  text-align: left;                                             
+  text-align: left; /* Left-align text for better readability */
   transform-origin: center bottom;
   transition:
     opacity 0.2s ease,
-    transform 0.2s ease;                        
+    transform 0.2s ease; /* Faster transition */
 
-  z-index: 1500 !important;                                             
+  z-index: 1500 !important; /* Higher z-index to appear above overlay */
 }
 
 .tooltip-header {
   border-bottom: 1px solid #a8dadc;
   color: #1d3557;
-  font-size: 0.8125em;
+  font-size: 13px;
   font-weight: bold;
-  margin-bottom: 0.375em;
-  padding-bottom: 0.25em;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
 }
 
 .bar.stock-aapl,
@@ -225,6 +230,7 @@ tooltip {
   stroke: var(--color-msft);
 }
 
+/* Lines and points */
 .line {
   filter: drop-shadow(0 1px 2px rgb(0 0 0 / 30%));
   stroke-width: 3;
@@ -251,8 +257,9 @@ tooltip {
   transition: all 0.2s ease;
 }
 
+/* Stock Symbol labels */
 .stock-symbol-label {
-  font-size: 0.75em;
+  font-size: 12px;
   font-weight: 600;
   text-shadow:
     0 0 4px white,
@@ -260,24 +267,29 @@ tooltip {
     0 0 4px white;
 }
 
+/* Enhanced Stock Symbol labels with contrasting background box */
 .stock-symbol-label {
   dominant-baseline: middle;
-  font-size: 0.75em;
+  font-size: 12px;
   font-weight: 600;
   text-anchor: middle;
-  text-shadow: 0 0 2px white;                                                      
+  text-shadow: 0 0 2px white; /* Reduced shadow for cleaner look with background */
 }
 
 .stock-label-background {
-  fill: rgb(255 255 255 / 85%);                                        
+  fill: rgb(255 255 255 / 85%); /* Semi-transparent white background */
   filter: drop-shadow(0 1px 2px rgb(0 0 0 / 15%));
-
-  stroke: rgb(0 0 0 / 15%);                                  
+  /* Use clip-path fallback for browsers that don't support SVG `rx`/`ry` when set via CSS. */
+  stroke: rgb(0 0 0 / 15%); /* Light border for definition */
   stroke-width: 0.5;
   -webkit-clip-path: inset(0 round 4px);
   clip-path: inset(0 round 4px);
 }
 
+/* Some browsers (old Safari) don't accept SVG presentation attributes like `rx`/`ry` when set via CSS.
+   Keep `rx`/`ry` for engines that accept it, and add a clip-path fallback for others. */
+
+/* Stock label group with hover effect */
 .stock-label-group {
   cursor: pointer;
   transition: transform 0.2s ease;
@@ -292,6 +304,7 @@ tooltip {
   }
 }
 
+/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -333,15 +346,16 @@ tooltip {
 
 .axis path,
 .axis line {
-  stroke: rgb(0 0 0 / 25%);                                        
+  stroke: rgb(0 0 0 / 25%); /* Increased contrast for axis lines */
 }
 
 .axis text {
-  fill: #333;                                       
+  fill: #333; /* Dark text for better readability */
 }
 
+/* Grid styling */
 .grid line {
-  stroke: rgb(0 0 0 / 8%);                                            
+  stroke: rgb(0 0 0 / 8%); /* Increased opacity for better contrast */
   stroke-dasharray: 3, 3;
 }
 
@@ -349,68 +363,71 @@ tooltip {
   stroke-width: 0;
 }
 
+/* Fix for empty boxes */
 .legend-container:empty,
 .legend-item:empty {
   display: none;
 }
 
+/* Stock status box in bottom left */
 .stock-status-box {
-  -webkit-backdrop-filter: blur(2px);                      
-  backdrop-filter: blur(2px);                                                      
-  background-color: rgb(255 255 255 / 98%);                  
-  border: 2px solid #1d3557;                     
-  border-radius: 0.25em;                       
-  bottom: 1.25em;                                               
-  box-shadow: 0 2px 8px rgb(0 0 0 / 25%);                      
-  left: 1.25em;
+  -webkit-backdrop-filter: blur(2px); /* Safari fallback */
+  backdrop-filter: blur(2px); /* Blur background slightly for better readability */
+  background-color: rgb(255 255 255 / 98%); /* More opaque */
+  border: 2px solid #1d3557; /* Thicker border */
+  border-radius: 4px; /* Reduced from 6px */
+  bottom: 20px; /* Positioned at the bottom of the viewport */
+  box-shadow: 0 2px 8px rgb(0 0 0 / 25%); /* Stronger shadow */
+  left: 20px;
   opacity: 0;
-  padding: 0.375em 0.625em;
+  padding: 6px 10px;
   pointer-events: none;
-  position: absolute;                                    
-  transform: translateY(10px);                                 
+  position: absolute; /* Change from fixed to absolute */
+  transform: translateY(10px); /* Reduced animation distance */
   transition:
     opacity 0.2s ease,
-    transform 0.2s ease;                        
+    transform 0.2s ease; /* Faster transition */
 
-  z-index: 1600 !important;                                        
+  z-index: 1600 !important; /* Even higher z-index than tooltips */
 
   &.visible {
     opacity: 1;
-    transform: translateY(0);                                     
+    transform: translateY(0); /* Only move up to final position */
   }
 
   .stock-status-symbol {
     color: #d62828;
-    font-size: 0.75em;                        
+    font-size: 12px; /* Reduced from 14px */
     font-weight: 700;
-    margin-bottom: 0.0625em;                       
+    margin-bottom: 1px; /* Reduced from 2px */
   }
 
   .stock-status-price {
     color: #1d3557;
-    font-size: 0.6875em;                        
+    font-size: 11px; /* Reduced from 13px */
     font-weight: 600;
   }
 
   .stock-status-date {
     color: #666;
-    font-size: 0.5625em;                        
-    margin-top: 0.0625em;                       
+    font-size: 9px; /* Reduced from 11px */
+    margin-top: 1px; /* Reduced from 2px */
   }
 }
 
+/* Status box with consistent sizing and proper z-index */
 .stock-status-box {
   -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
   background-color: rgb(255 255 255 / 98%);
   border: 2px solid #1d3557;
-  border-radius: 0.25em;
-  bottom: 1.25em;
+  border-radius: 4px;
+  bottom: 20px;
   box-shadow: 0 3px 10px rgb(0 0 0 / 30%);
-  left: 1.25em;
-  min-height: 3.75em;
+  left: 20px;
+  min-height: 60px;
   opacity: 0;
-  padding: 0.5em 0.75em;
+  padding: 8px 12px;
   pointer-events: none;
   position: absolute;
   transform: translateY(10px);
@@ -418,8 +435,9 @@ tooltip {
     opacity 0.2s ease,
     transform 0.2s ease;
 
-  width: 8.75em;
-  z-index: 2000 !important;                                                 
+  /* Fixed dimensions for consistency */
+  width: 140px;
+  z-index: 2000 !important; /* Highest z-index to appear above everything */
 
   &.visible {
     opacity: 1;
@@ -428,9 +446,9 @@ tooltip {
 
   .stock-status-symbol {
     color: #d62828;
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 700;
-    margin-bottom: 0.125em;
+    margin-bottom: 2px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -438,25 +456,27 @@ tooltip {
 
   .stock-status-price {
     color: #1d3557;
-    font-size: 0.75em;
+    font-size: 12px;
     font-weight: 600;
-    margin-bottom: 0.125em;
+    margin-bottom: 2px;
   }
 
   .stock-status-date {
     color: #666;
-    font-size: 0.625em;
+    font-size: 10px;
   }
 }
 
+/* Ensure tooltips don't interfere with status box */
 .tooltip,
 .gantt-tooltip {
-  z-index: 1800 !important;                                     
-
+  z-index: 1800 !important; /* High but lower than status box */
+  // ...existing tooltip properties...
 }
 
+/* Market phase styling */
 .market-phase {
-  pointer-events: none;                                           
+  pointer-events: none; // Let events pass through to lines/points
   transition: opacity 0.3s ease;
 
   &:hover {
@@ -468,7 +488,7 @@ tooltip {
   font-weight: 500;
   font-weight: 600;
   letter-spacing: 0.02em;
-  max-width: 90%;                                              
+  max-width: 90%; /* Ensure label doesn't exceed phase width */
   overflow: hidden;
   pointer-events: none;
   text-overflow: ellipsis;
@@ -480,15 +500,16 @@ tooltip {
   user-select: none;
 }
 
+/* Chart controls */
 .chart-controls {
   background-color: rgb(255 255 255 / 85%);
-  border-radius: 0.375em;
+  border-radius: 6px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
-  display: block;                            
-  left: 0.625em;
-  padding: 0.5em 0.75em;
+  display: block; /* Ensure it's displayed */
+  left: 10px;
+  padding: 8px 12px;
   position: absolute;
-  top: 0.625em;
+  top: 10px;
   transition: all 0.3s ease;
   z-index: 5;
 
@@ -505,33 +526,34 @@ tooltip {
     user-select: none;
 
     input {
-      margin-right: 0.375em;
+      margin-right: 6px;
     }
 
     span {
       color: #333;
-      font-size: 0.75em;
+      font-size: 12px;
       font-weight: 600;
     }
   }
 }
 
 .in-overlay .chart-controls {
-  padding: 0.625em 0.9375em;
+  padding: 10px 15px;
 
   .control-toggle span {
-    font-size: 0.875em;
+    font-size: 14px;
   }
 }
 
+/* Chart controls with Material toggle */
 .chart-controls {
   background-color: rgb(255 255 255 / 85%);
-  border-radius: 0.375em;
+  border-radius: 6px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
-  left: 0.625em;
-  padding: 0.5em 0.75em;
+  left: 10px;
+  padding: 8px 12px;
   position: absolute;
-  top: 0.625em;
+  top: 10px;
   transition: all 0.3s ease;
   z-index: 5;
 
@@ -542,7 +564,7 @@ tooltip {
 
   .market-phases-toggle {
     color: #333;
-    font-size: 0.75em;
+    font-size: 12px;
     font-weight: 600;
 
     ::ng-deep .mat-slide-toggle-label {
@@ -551,10 +573,11 @@ tooltip {
   }
 }
 
+/* Enhanced Gantt chart styling */
 .gantt-chart {
   .market-phase {
     cursor: pointer;
-    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 20%));                     
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 20%)); // Add subtle shadow
     transition: opacity 0.3s ease;
 
     &:hover {
@@ -564,12 +587,12 @@ tooltip {
   }
 
   .phase-label {
-    font-weight: 600;                                          
-    letter-spacing: 0.02em;                                               
+    font-weight: 600; // Increased from 500 for better contrast
+    letter-spacing: 0.02em; // Slight letter spacing for better legibility
     pointer-events: none;
     text-shadow:
       0 0 4px rgb(255 255 255 / 90%),
-      0 0 4px rgb(255 255 255 / 90%);                             
+      0 0 4px rgb(255 255 255 / 90%); // Double shadow for clarity
 
     -webkit-user-select: none;
     user-select: none;
@@ -577,7 +600,7 @@ tooltip {
 
   .gantt-title {
     fill: #555;
-    font-size: 0.625em;
+    font-size: 10px;
     font-weight: bold;
     text-shadow: 0 0 2px rgb(255 255 255 / 80%);
   }
@@ -585,70 +608,71 @@ tooltip {
   .gantt-main-title {
     font-family: Arial, sans-serif;
     font-weight: bold;
-    letter-spacing: 0.02em;                                               
+    letter-spacing: 0.02em; // Slight letter spacing for better legibility
     text-shadow: 0 1px 0 rgb(255 255 255 / 80%);
   }
 }
 
 .gantt-tooltip {
-  -webkit-backdrop-filter: blur(2px);                      
-  backdrop-filter: blur(2px);                                                      
-  background-color: rgb(255 255 255 / 99%);                                              
-  border: 2px solid rgb(29 53 87 / 70%);                                                   
-  border-radius: 0.25em;                                                    
-  box-shadow: 0 4px 12px rgb(0 0 0 / 40%);                                                   
-  font-size: 0.75em;
+  -webkit-backdrop-filter: blur(2px); /* Safari fallback */
+  backdrop-filter: blur(2px); /* Blur background slightly for better readability */
+  background-color: rgb(255 255 255 / 99%); /* Almost fully opaque for better contrast */
+  border: 2px solid rgb(29 53 87 / 70%); /* Increased border opacity for better contrast */
+  border-radius: 4px; /* Reduced border radius to match overall design */
+  box-shadow: 0 4px 12px rgb(0 0 0 / 40%); /* Increased shadow opacity for better contrast */
+  font-size: 12px;
   line-height: 1.4;
-  max-width: 18.75em;
-  padding: 0.75em 0.9375em;
+  max-width: 300px;
+  padding: 12px 15px;
   pointer-events: none;
-  z-index: 1500 !important;                                             
+  z-index: 1500 !important; /* Higher z-index to appear above overlay */
 
   strong {
-    color: #003049;                                       
+    color: #003049; /* Darker color for better contrast */
     display: block;
-    font-size: 0.8125em;
+    font-size: 13px;
     font-weight: bold;
-    margin-bottom: 0.3125em;
+    margin-bottom: 5px;
   }
 
   .stock-performance {
-    border-top: 1px solid #a8dadc;                                 
-    margin-top: 0.625em;
-    padding-top: 0.3125em;
+    border-top: 1px solid #a8dadc; /* Match tooltip border color */
+    margin-top: 10px;
+    padding-top: 5px;
   }
 
   .stock-perf-item {
     align-items: center;
     display: flex;
-    gap: 0.3125em;
-    margin: 0.25em 0;
+    gap: 5px;
+    margin: 4px 0;
   }
 
   .perf-positive {
-    color: #137752;                                       
+    color: #137752; /* Darker green for better contrast */
     font-weight: bold;
   }
 
   .perf-negative {
-    color: #d62828;                                           
+    color: #d62828; /* More vibrant red for better contrast */
     font-weight: bold;
   }
 }
 
 .stock-mini-line {
-  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 20%));                                          
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 20%)); // Increased shadow for better visibility
   pointer-events: none;
 }
 
 .trend-indicator {
-  letter-spacing: 0.01em;                                               
+  letter-spacing: 0.01em; // Slight letter spacing for better legibility
   pointer-events: none;
-  text-shadow: 0 0 4px rgb(255 255 255 / 100%);                                        
+  text-shadow: 0 0 4px rgb(255 255 255 / 100%); // Increased shadow for better contrast
   -webkit-user-select: none;
   user-select: none;
 }
 
+/* Enhanced Gantt chart styling */
 .gantt-chart {
   .market-phase {
     cursor: pointer;
@@ -678,32 +702,33 @@ tooltip {
   }
 }
 
+/* Enhanced Gantt chart styling with container design */
 .gantt-container {
-  background-color: rgb(255 255 255 / 90%);                                            
-  border-radius: 0.375em;                                              
-  box-shadow: 0 3px 12px rgb(0 0 0 / 15%);                               
-  margin-left: -0.625em;                                           
-  margin-top: 0.3125em;                                       
-  padding: 0.5em;                                        
-  width: calc(100% + 1.25em);                                                    
+  background-color: rgb(255 255 255 / 90%); /* Increased opacity for better contrast */
+  border-radius: 6px; /* Reduced border radius to maximize space */
+  box-shadow: 0 3px 12px rgb(0 0 0 / 15%); /* Increased shadow opacity */
+  margin-left: -10px; /* Offset to account for extended width */
+  margin-top: 5px; /* Reduced margin to maximize space */
+  padding: 8px; /* Reduced padding to maximize space */
+  width: calc(100% + 20px); /* Extend width to compensate for parent padding */
 
   .gantt-header {
     align-items: center;
     border-bottom: 1px solid rgb(0 0 0 / 10%);
     display: flex;
     justify-content: space-between;
-    margin-bottom: 0.625em;
-    padding-bottom: 0.5em;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
 
     .gantt-title {
       color: #1d3557;
-      font-size: 0.875em;
+      font-size: 14px;
       font-weight: bold;
     }
 
     .gantt-subtitle {
       color: #666;
-      font-size: 0.75em;
+      font-size: 12px;
     }
   }
 }
@@ -727,18 +752,18 @@ tooltip {
 
   .phase-row-header {
     fill: #1d3557;
-    font-size: 0.8125em;
-    font-weight: 700;                                             
+    font-size: 13px;
+    font-weight: 700; /* Increased from 600 for better contrast */
     text-shadow: 0 1px 1px rgb(255 255 255 / 100%);
   }
 
   .phase-label {
-    font-weight: 700;                                             
+    font-weight: 700; /* Increased from 600 for better contrast */
     letter-spacing: 0.02em;
     pointer-events: none;
     text-shadow:
       0 0 5px rgb(255 255 255 / 100%),
-      0 0 5px rgb(255 255 255 / 100%);                                          
+      0 0 5px rgb(255 255 255 / 100%); /* Stronger shadow for better contrast */
 
     -webkit-user-select: none;
     user-select: none;
@@ -757,7 +782,7 @@ tooltip {
   }
 
   .stock-indicator {
-    font-size: 0.625em;
+    font-size: 10px;
     font-weight: 500;
   }
 
@@ -792,9 +817,9 @@ tooltip {
 
   .stock-legend {
     background-color: rgb(255 255 255 / 80%);
-    border-radius: 0.25em;
+    border-radius: 4px;
     box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
-    padding: 0.3125em 0.625em;
+    padding: 5px 10px;
   }
 
   .stock-mini-line {
@@ -803,48 +828,49 @@ tooltip {
   }
 }
 
+// Enhance tooltip for Gantt chart
 .gantt-tooltip {
   -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
   background-color: rgb(255 255 255 / 98%);
   border: 2px solid rgb(29 53 87 / 50%);
-  border-radius: 0.375em;
+  border-radius: 6px;
   box-shadow: 0 3px 10px rgb(0 0 0 / 30%);
-  font-size: 0.75em;
+  font-size: 12px;
   line-height: 1.5;
-  max-width: 18.75em;
-  padding: 0.75em 0.9375em;
+  max-width: 300px;
+  padding: 12px 15px;
   pointer-events: none;
   z-index: 1500 !important;
 
   strong {
     color: #1d3557;
     display: block;
-    font-size: 0.8125em;
+    font-size: 13px;
     font-weight: bold;
-    margin-bottom: 0.3125em;
+    margin-bottom: 5px;
   }
 
   .stock-performance {
     border-top: 1px solid #a8dadc;
-    margin-top: 0.625em;
-    padding-top: 0.3125em;
+    margin-top: 10px;
+    padding-top: 5px;
   }
 
   .stock-perf-item {
     align-items: center;
     display: flex;
-    gap: 0.3125em;
-    margin: 0.25em 0;
+    gap: 5px;
+    margin: 4px 0;
   }
 
   .perf-positive {
-    color: #137752;                                       
+    color: #137752; /* Darker green for better contrast */
     font-weight: bold;
   }
 
   .perf-negative {
-    color: #d62828;                                           
+    color: #d62828; /* More vibrant red for better contrast */
     font-weight: bold;
   }
 }
@@ -858,25 +884,26 @@ tooltip {
   user-select: none;
 }
 
+/* Enhanced Gantt chart styling with better visual pop */
 .chart-background-container {
   filter: drop-shadow(0 4px 12px rgb(0 0 0 / 15%));
 }
 
 .gantt-container {
   background: linear-gradient(180deg, rgb(255 255 255 / 95%) 0%, rgb(248 249 250 / 90%) 100%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   overflow: visible;
   position: relative;
 
   .gantt-header {
     background-color: rgb(29 53 87 / 90%);
-    border-radius: 0.5em 0.5em 0 0;
+    border-radius: 8px 8px 0 0;
     box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
     color: white;
-    padding: 0.625em 0.9375em;
+    padding: 10px 15px;
 
     .gantt-title {
-      font-size: 1em;
+      font-size: 16px;
       font-weight: bold;
       margin: 0;
     }
@@ -884,7 +911,7 @@ tooltip {
 }
 
 .gantt-content {
-  padding: 0.625em;
+  padding: 10px;
 }
 
 .phases-container {
@@ -900,6 +927,7 @@ tooltip {
   }
 }
 
+/* Phase styling by type */
 .phase-bull {
   .phase-label {
     color: #2a9d8f;
@@ -918,20 +946,21 @@ tooltip {
   }
 }
 
+/* Enhanced tooltip styling with headers for different phase types */
 .gantt-tooltip {
   background: rgb(255 255 255 / 98%);
   border: none;
-  border-radius: 0.375em;
+  border-radius: 6px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 20%);
-  max-width: 20em;
-  padding: 0.75em 0.9375em;
+  max-width: 320px;
+  padding: 12px 15px;
 
   .tooltip-header {
     border-bottom: 1px solid rgb(0 0 0 / 10%);
-    font-size: 0.9375em;
+    font-size: 15px;
     font-weight: 700;
-    margin-bottom: 0.5em;
-    padding-bottom: 0.5em;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
 
     &.bull-header {
       border-bottom-color: #a8e6cf;
@@ -952,16 +981,17 @@ tooltip {
   .tooltip-period,
   .tooltip-duration,
   .tooltip-type {
-    font-size: 0.75em;
-    margin-bottom: 0.3125em;
+    font-size: 12px;
+    margin-bottom: 5px;
 
     strong {
       font-weight: 600;
-      margin-right: 0.25em;
+      margin-right: 4px;
     }
   }
 }
 
+/* Stock performance overlay styling */
 .stock-performance-overlay {
   pointer-events: none;
 
@@ -974,16 +1004,19 @@ tooltip {
   }
 }
 
+/* Remove the redundant stock overlay legend styles */
 .stock-overlay-legend {
-  display: none;                                                  
+  display: none; /* Hide it completely since we're not using it */
 }
 
+/* Ensure the main legend is more visible in Gantt mode */
 .in-overlay .legend-container {
-  box-shadow: 0 3px 12px rgb(0 0 0 / 25%);                                          
+  box-shadow: 0 3px 12px rgb(0 0 0 / 25%); /* Stronger shadow for better contrast */
   opacity: 1;
-  z-index: 2100;                                          
+  z-index: 2100; /* Higher z-index to ensure visibility */
 }
 
+/* Time period styling */
 .quarters-container {
   .quarter-band {
     transition: opacity 0.2s ease;
@@ -994,44 +1027,47 @@ tooltip {
 
     .quarter-label {
       fill: #666;
-      font-size: 0.75em;
+      font-size: 12px;
       font-weight: 600;
     }
   }
 }
 
+/* Responsive adjustments for small screens */
 @media (max-width: 768px) {
   .gantt-tooltip {
-    font-size: 0.6875em;
-    max-width: 16.25em;
+    font-size: 11px;
+    max-width: 260px;
 
     .tooltip-header {
-      font-size: 0.8125em;
+      font-size: 13px;
     }
   }
 }
 
+/* Improved styling for stock performance overlay with reduced prominence */
 .stock-performance-overlay {
-  opacity: 0.6;                                            
+  opacity: 0.6; /* Reduced from 1.0 to be less prominent */
   pointer-events: none;
 
   .stock-line {
-    filter: none;                                                 
-    stroke-opacity: 50%;                                    
+    filter: none; /* Remove shadow to make lines less prominent */
+    stroke-opacity: 50%; /* Reduced from 0.8 for subtlety */
     transition: opacity 0.3s ease;
   }
 
   .stock-point {
-    opacity: 0.6;                              
-    r: 3;                     
+    opacity: 0.6; /* More transparent points */
+    r: 3; /* Smaller points */
     transition: all 0.3s ease;
   }
 
   &:hover {
-    opacity: 0.8;                                     
+    opacity: 0.8; /* Slightly more visible on hover */
   }
 }
 
+/* Enhanced phase styling with gradient transitions */
 .phase-type-container {
   position: relative;
   transition: all 0.3s ease;
@@ -1040,13 +1076,14 @@ tooltip {
     filter: brightness(1.03);
   }
 
+  /* Gradient overlays for smoother phase transitions */
   .phase-gradient-left {
     height: 100%;
     left: 0;
     pointer-events: none;
     position: absolute;
     top: 0;
-    width: 1.25em;
+    width: 20px;
   }
 
   .phase-gradient-right {
@@ -1055,10 +1092,11 @@ tooltip {
     position: absolute;
     right: 0;
     top: 0;
-    width: 1.25em;
+    width: 20px;
   }
 }
 
+/* Enhanced phase background colors */
 .phase-bull {
   background: linear-gradient(to right, rgb(235 251 238 / 40%), rgb(235 251 238 / 70%), rgb(235 251 238 / 40%));
 }
@@ -1071,10 +1109,11 @@ tooltip {
   background: linear-gradient(to right, rgb(252 248 232 / 40%), rgb(252 248 232 / 70%), rgb(252 248 232 / 40%));
 }
 
+/* Custom styling for clearer market phase divisions */
 .market-phase {
   cursor: pointer;
-  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 10%));                     
-  max-width: calc(100% - 0.25em);                                            
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 10%)); /* Lighter shadow */
+  max-width: calc(100% - 4px); /* Slight padding to avoid edge touching */
   overflow: visible;
   transition: all 0.3s ease;
 
@@ -1084,11 +1123,11 @@ tooltip {
   }
 
   &:hover {
-    max-width: 100%;                                
+    max-width: 100%; /* Allow full width on hover */
   }
 }
 
 .phase-group {
-  max-width: 100%;                                           
+  max-width: 100%; /* Ensure groups don't exceed container */
   overflow: visible;
 }

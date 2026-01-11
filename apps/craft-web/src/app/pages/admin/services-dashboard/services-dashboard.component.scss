@@ -1,25 +1,25 @@
 .services-dashboard {
-  padding: 1.25em;
+  padding: 20px;
 }
 
 .dashboard-header {
-  margin-bottom: 1.5em;
+  margin-bottom: 24px;
 }
 
 .summary-cards {
   display: flex;
-  gap: 1em;
-  margin-top: 1em;
+  gap: 16px;
+  margin-top: 16px;
 }
 
 .summary-card {
   background-color: #f5f5f5;
-  border-radius: 0.5em;
+  border-radius: 8px;
   border-top: 3px solid #4caf50;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   flex: 1;
-  min-width: 7.5em;
-  padding: 1em;
+  min-width: 120px;
+  padding: 16px;
 
   &.error {
     border-top-color: #f44336;
@@ -31,22 +31,22 @@
 }
 
 .card-value {
-  font-size: 1.5em;
+  font-size: 24px;
   font-weight: bold;
 }
 
 .card-label {
   color: #757575;
-  font-size: 0.875em;
-  margin-top: 0.25em;
+  font-size: 14px;
+  margin-top: 4px;
 }
 
 .services-section {
-  margin-bottom: 2em;
+  margin-bottom: 32px;
 
   h3 {
     font-weight: 500;
-    margin-bottom: 1em;
+    margin-bottom: 16px;
   }
 }
 
@@ -59,16 +59,16 @@ table {
 
   .service-desc {
     color: #757575;
-    font-size: 0.75em;
+    font-size: 12px;
   }
 }
 
 .status-indicator {
   border-radius: 50%;
   display: inline-block;
-  height: 0.75em;
-  margin-right: 0.5em;
-  width: 0.75em;
+  height: 12px;
+  margin-right: 8px;
+  width: 12px;
 
   &.status-active {
     background-color: #4caf50;

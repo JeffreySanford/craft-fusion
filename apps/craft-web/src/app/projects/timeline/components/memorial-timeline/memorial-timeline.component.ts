@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   selector: 'app-memorial-timeline',
   templateUrl: './memorial-timeline.component.html',
   styleUrls: ['./memorial-timeline.component.scss'],
-  standalone: false,                                      
+  standalone: false, // Explicitly set standalone to false
 })
 export class MemorialTimelineComponent implements OnInit {
   timelineEvents$: Observable<TimelineEvent[]>;
@@ -33,7 +33,7 @@ export class MemorialTimelineComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    // Load initial events from API (including seeded events in dev)
     this.timelineService.loadInitialEvents().subscribe(() => {
       this.timelineService.connect();
       this.loading = false;
@@ -42,7 +42,7 @@ export class MemorialTimelineComponent implements OnInit {
 
   onFilterChange(value: string) {
     if (value === 'jeffrey-ai') {
-
+      // Navigate to the dedicated AI route
       this.router.navigate(['projects', 'family', 'memorial-timeline', 'jeffrey-ai']);
     } else {
       this.filter$.next(value);

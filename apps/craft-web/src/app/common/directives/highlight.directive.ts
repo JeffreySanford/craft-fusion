@@ -2,7 +2,7 @@ import { Directive, ElementRef, HostListener, Input, Renderer2 } from '@angular/
 
 @Directive({
   selector: '[appHighlight]',
-  standalone: false,                                                            
+  standalone: false, // Make sure standalone is false since we're using NgModule
 })
 export class HighlightDirective {
   @Input() highlightColor = 'rgba(191, 10, 48, 0.1)';

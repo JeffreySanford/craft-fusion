@@ -1,26 +1,26 @@
 .jeffrey-ai-container {
-  padding: 1em;
+  padding: 16px;
 }
 
 h2 {
-  margin-bottom: 0.5em;
+  margin-bottom: 8px;
 }
 
 .jeffrey-ai-header {
   align-items: center;
   display: flex;
-  gap: 0.75em;
+  gap: 12px;
 }
 
 .cards {
   display: grid;
-  gap: 0.75em;
-  grid-template-columns: repeat(auto-fill, minmax(20em, 1fr));
-  margin-top: 0.75em;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  margin-top: 12px;
 }
 
 .jeffrey-card {
-  padding: 0.5em;
+  padding: 8px;
 }
 
 .ai-narrative {
@@ -29,5 +29,5 @@ h2 {
 }
 
 .jeffrey-action-row {
-  margin-top: 0.5em;
+  margin-top: 8px;
 }

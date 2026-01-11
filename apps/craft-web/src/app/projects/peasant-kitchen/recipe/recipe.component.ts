@@ -10,7 +10,7 @@ import { of } from 'rxjs';
   encapsulation: ViewEncapsulation.None,
   templateUrl: './recipe.component.html',
   styleUrls: ['./recipe.component.scss'],
-  standalone: false,                                                                       
+  standalone: false, // CRITICAL: Must always be explicitly set to false for all components
 })
 export class RecipeComponent implements OnInit {
   recipe: Recipe | null = null;
@@ -41,7 +41,7 @@ export class RecipeComponent implements OnInit {
           console.error('Error loading recipe:', err);
           this.error = 'Recipe not found. Please select a recipe from the list.';
           this.loading = false;
-
+          // Create a placeholder recipe after a short delay, then redirect
           setTimeout(() => {
             this.router.navigate(['/peasant-kitchen']);
           }, 3000);
@@ -65,6 +65,9 @@ export class RecipeComponent implements OnInit {
       });
   }
 
+  /**
+   * Public getter for the recipe service
+   */
   public get service(): RecipeService {
     return this.recipeService;
   }

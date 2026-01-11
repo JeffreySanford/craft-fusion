@@ -1,3 +1,6 @@
+// Core animations for the application
+
+// Fade in animation
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -8,6 +11,7 @@
   }
 }
 
+// Slide in from left
 @keyframes slide-in-left {
   from {
     opacity: 0;
@@ -20,6 +24,7 @@
   }
 }
 
+// Slide in from right
 @keyframes slide-in-right {
   from {
     opacity: 0;
@@ -32,6 +37,7 @@
   }
 }
 
+// Pulse animation
 @keyframes pulse {
   0% {
     box-shadow: 0 0 0 0 rgb(191 10 48 / 70%);
@@ -46,6 +52,7 @@
   }
 }
 
+// Twinkle animation
 @keyframes twinkle {
   0% {
     opacity: 0.7;
@@ -58,6 +65,7 @@
   }
 }
 
+// Shine animation for elements
 @keyframes shine {
   0% {
     transform: translateX(-100%) skewX(-15deg);
@@ -69,6 +77,7 @@
   }
 }
 
+// Wave animation
 @keyframes wave {
   0%,
   100% {
@@ -80,6 +89,7 @@
   }
 }
 
+// Footer shine animation
 @keyframes shine-footer {
   0% {
     left: -100%;
@@ -90,6 +100,7 @@
   }
 }
 
+// Flag wave animation
 @keyframes flag-wave {
   0% {
     transform: rotate(-1deg);

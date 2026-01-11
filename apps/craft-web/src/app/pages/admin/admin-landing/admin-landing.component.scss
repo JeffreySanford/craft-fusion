@@ -1,21 +1,21 @@
 .admin-landing {
-  padding: 0.5em;
+  padding: 8px;
 }
 
 .metrics-summary {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5em;
+  gap: 8px;
 }
 
 .metric-card {
   background: #111827;
-  border-radius: 0.25em;
+  border-radius: 4px;
   color: #e5e7eb;
-  padding: 0.5em 0.75em;
+  padding: 8px 12px;
 }
 
 .note {
   color: #9ca3af;
-  margin-top: 0.75em;
+  margin-top: 12px;
 }

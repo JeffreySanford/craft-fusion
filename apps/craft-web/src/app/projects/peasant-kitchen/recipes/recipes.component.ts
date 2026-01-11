@@ -18,10 +18,10 @@ export class RecipesComponent implements OnInit, OnDestroy {
   recipeSubscription!: Subscription;
   recipe!: Recipe;
   allRecipes = true;
-  currentPage = 1;                     
+  currentPage = 1; // Start with page 1
   pageSize = 4;
-  paginatedRecipes: Recipe[] = [];                                                  
-  totalPages: number = 0;                                                           
+  paginatedRecipes: Recipe[] = []; // Array to hold the recipes for the current page
+  totalPages: number = 0; // Total number of pages based on the recipes array length
 
   constructor(
     private RecipeService: RecipeService,
@@ -55,6 +55,7 @@ export class RecipesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     console.log('Recipes component initialized');
 
+    // Add some dummy recipes if service doesn't return any (for testing)
     setTimeout(() => {
       if (!this.loaded || this.recipes.length === 0) {
         console.log('Adding fallback recipes for testing');

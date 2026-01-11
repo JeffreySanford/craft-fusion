@@ -4,7 +4,7 @@
 .logger-display {
   background: var(--cf-logger-bg, rgb(23 33 43 / 80%));
   border: 1px solid rgb(var(--md-sys-color-on-surface-rgb, 255, 255, 255) / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   flex-direction: column;
@@ -15,13 +15,13 @@
     color: var(--md-sys-color-on-surface, #d1d5db);
     flex: 1;
     font-family: "Courier New", monospace;
-    font-size: 0.875em;
+    font-size: 14px;
     overflow-y: auto;
-    padding: 0.625em;
+    padding: 10px;
 
     &::-webkit-scrollbar {
-      height: 0.5em;
-      width: 0.5em;
+      height: 8px;
+      width: 8px;
     }
 
     &::-webkit-scrollbar-track {
@@ -30,40 +30,40 @@
 
     &::-webkit-scrollbar-thumb {
       background-color: rgb(255 255 255 / 20%);
-      border-radius: 0.25em;
+      border-radius: 4px;
     }
   }
 
   .log-entry {
     align-items: flex-start;
     background: rgb(0 0 0 / 20%);
-    border-radius: 0.25em;
+    border-radius: 4px;
     display: flex;
     flex-wrap: wrap;
-    margin-bottom: 0.3125em;
-    padding: 0.375em 0.625em;
+    margin-bottom: 5px;
+    padding: 6px 10px;
 
     .log-time {
       color: var(--md-sys-color-on-surface, #9ca3af);
       font-size: 0.85em;
-      margin-right: 0.625em;
+      margin-right: 10px;
       white-space: nowrap;
     }
 
     .log-level {
       align-items: center;
-      border-radius: 0.25em;
+      border-radius: 4px;
       display: flex;
       font-size: 0.85em;
       font-weight: 500;
-      gap: 0.25em;
-      margin-right: 0.625em;
-      padding: 0.125em 0.375em;
+      gap: 4px;
+      margin-right: 10px;
+      padding: 2px 6px;
 
       mat-icon {
-        font-size: 1em;
-        height: 1em;
-        width: 1em;
+        font-size: 16px;
+        height: 16px;
+        width: 16px;
       }
 
       &.error {
@@ -91,7 +91,7 @@
       color: var(--md-sys-color-on-surface, #e5e7eb);
       flex: 1;
       line-height: 1.6;
-      padding: 0.125em 0;
+      padding: 2px 0;
       word-break: break-word;
     }
 
@@ -117,20 +117,20 @@
     color: var(--md-sys-color-on-surface, #9ca3af);
     display: flex;
     flex-direction: column;
-    gap: 0.9375em;
+    gap: 15px;
     justify-content: center;
-    padding: 2.5em;
+    padding: 40px;
     text-align: center;
 
     mat-icon {
-      font-size: 3em;
-      height: 3em;
+      font-size: 48px;
+      height: 48px;
       opacity: 0.5;
-      width: 3em;
+      width: 48px;
     }
 
     span {
-      font-size: 1em;
+      font-size: 16px;
       font-weight: 500;
     }
   }
@@ -141,11 +141,12 @@
     padding: 0.5rem;
 
     .log-entry {
-
+      // Vibrant entry animations
       animation: fadeInEntry 0.3s ease-out forwards;
 
+      // Add left border accent for visual distinction
       border-left: 4px solid;
-      border-radius: 0.25em;
+      border-radius: 4px;
       box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
       font-family: monospace;
       margin-bottom: 0.5rem;
@@ -172,7 +173,7 @@
         }
 
         .log-level {
-          border-radius: 0.75em;
+          border-radius: 12px;
           font-size: 0.75rem;
           font-weight: bold;
           margin-right: 0.5rem;
@@ -182,7 +183,7 @@
 
         .log-component {
           background-color: rgb(var(--md-sys-color-on-surface-rgb, 255, 255, 255) / 10%);
-          border-radius: 0.25em;
+          border-radius: 4px;
           color: var(--md-sys-color-on-surface, #d9d9d9);
           font-size: 0.75rem;
           font-weight: 500;
@@ -199,9 +200,9 @@
 
       .log-details {
         background-color: rgb(0 0 0 / 30%);
-        border-radius: 0.25em;
+        border-radius: 4px;
         margin-top: 0.25rem;
-        max-height: 12.5em;
+        max-height: 200px;
         overflow: auto;
 
         pre {
@@ -214,6 +215,7 @@
       }
     }
 
+    // Vibrant color schemes for different log levels
     .log-level-debug {
       background-color: rgb(var(--md-sys-color-tertiary-rgb, 16, 185, 129) / 15%);
       border-left-color: var(--md-sys-color-tertiary, #10b981);
@@ -270,6 +272,7 @@
       }
     }
 
+    // Special styling for highlighted logs
     .log-highlighted {
       animation: pulseHighlight 2s infinite;
       background-color: rgb(var(--md-sys-color-secondary-rgb, 255, 215, 0) / 15%);
@@ -288,6 +291,7 @@
       }
     }
 
+    // Special styling for security-related logs
     .log-security {
       background-color: rgb(var(--md-sys-color-error-rgb, 239, 68, 68) / 20%);
       border-left-color: var(--md-sys-color-error, #ef4444);
@@ -302,6 +306,7 @@
       }
     }
 
+    // Special styling for performance-related logs
     .log-performance {
       background-color: rgb(var(--md-sys-color-primary-rgb, 0, 31, 84) / 15%);
       border-left-color: var(--md-sys-color-primary, #001f54);
@@ -316,6 +321,7 @@
       }
     }
 
+    // Special styling for user-related logs
     .log-user {
       background: linear-gradient(135deg, rgb(191 10 48 / 10%) 0%, rgb(0 82 180 / 10%) 100%);
       border-image: linear-gradient(to bottom, var(--md-sys-color-error, #bf0a30), var(--md-sys-color-primary, #002868)) 1;
@@ -331,6 +337,7 @@
       }
     }
 
+    // USA Patriotic theme special logs
     .log-usa {
       background: linear-gradient(135deg, rgb(191 10 48 / 20%), rgb(0 82 180 / 20%));
       border-image: linear-gradient(to bottom, var(--md-sys-color-error, #bf0a30), var(--md-sys-color-primary, #002868), var(--md-sys-color-on-surface, #fff)) 1;
@@ -369,36 +376,39 @@
 .log-container {
   flex: 1;
   overflow-y: auto;
-  padding: 0.375em;                   
+  padding: 6px; // Reduced padding
 
   @supports (scrollbar-color: auto) {
     scrollbar-color: rgb(255 255 255 / 20%) transparent;
 
+    /* Scrollbar styling */
     scrollbar-width: thin;
   }
 
+  /* WebKit fallback for browsers without scrollbar-color/width support */
   &::-webkit-scrollbar {
-    height: 0.5em;
-    width: 0.5em;
+    height: 8px;
+    width: 8px;
   }
 
   &::-webkit-scrollbar-thumb {
     background-color: rgb(255 255 255 / 20%);
-    border-radius: 0.375em;
+    border-radius: 6px;
   }
 
   &::-webkit-scrollbar-track {
     background: transparent;
   }
 
+  /* Two-column grid layout for when all log types are shown */
   &.grid-layout {
     display: grid;
-    gap: 0.5em;               
-    grid-template-columns: 40% 60%;                                     
+    gap: 8px; // Reduced gap
+    grid-template-columns: 40% 60%; // Left column 40%, right column 60%
 
     .info-column {
       border: 1px solid rgb(255 255 255 / 8%);
-      border-radius: 0.5em;
+      border-radius: 8px;
       box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
       display: flex;
       flex-direction: column;
@@ -410,14 +420,14 @@
         color: #d1d5db;
         flex: 1;
         font-family: "Courier New", monospace;
-        font-size: 0.875em;
+        font-size: 14px;
         max-height: none;
         overflow-y: auto;
-        padding: 0.625em;
+        padding: 10px;
 
         &::-webkit-scrollbar {
-          height: 0.5em;
-          width: 0.5em;
+          height: 8px;
+          width: 8px;
         }
 
         &::-webkit-scrollbar-track {
@@ -426,7 +436,7 @@
 
         &::-webkit-scrollbar-thumb {
           background-color: rgb(255 255 255 / 20%);
-          border-radius: 0.25em;
+          border-radius: 4px;
         }
       }
 
@@ -442,12 +452,12 @@
     .right-column {
       display: flex;
       flex-direction: column;
-      gap: 0.5em;                                       
+      gap: 8px; // Reduced gap between vertical panels
       height: 100%;
 
       .log-category {
         border: 1px solid rgb(255 255 255 / 8%);
-        border-radius: 0.5em;
+        border-radius: 8px;
         box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
         display: flex;
         flex: 1;
@@ -459,7 +469,7 @@
           flex: 1;
           max-height: none;
           overflow-y: auto;
-          padding: 0 0.5em;                   
+          padding: 0 8px; // Reduced padding
         }
 
         .empty-logs {
@@ -473,19 +483,20 @@
     }
   }
 
+  /* Single layout for when filtered to one type */
   &.single-layout {
     .log-category {
       animation: fadeIn 0.3s ease-in-out;
       margin-bottom: 0;
 
       .log-entries {
-        padding: 0 0.5em;                   
+        padding: 0 8px; // Reduced padding
       }
     }
   }
 
   &::-webkit-scrollbar {
-    width: 0.375em;                     
+    width: 6px; // Thinner scrollbar
   }
 
   &::-webkit-scrollbar-track {
@@ -499,6 +510,7 @@
   font-style: italic;
 }
 
+/* Animation for fade-in effect when switching layouts */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -511,17 +523,19 @@
   }
 }
 
+/* Media query for small screens to fall back to single column */
 @media (max-width: 992px) {
   .log-container.grid-layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
 
     .right-column {
-      gap: 0.5em;
+      gap: 8px;
     }
   }
 }
 
+// Add a pulsing animation for highlighted logs
 @keyframes pulseHighlight {
   0% {
     box-shadow: 0 0 5px rgb(var(--md-sys-color-secondary-rgb, 255, 215, 0) 0.5);

@@ -21,12 +21,16 @@ describe('RecordListComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  // it('should have a defined title', () => {
+  //   expect(component.title).toBeDefined();
+  // });
+
   it('should have a non-empty record list', () => {
     expect(component.records.length).toBeGreaterThan(0);
   });
 
   it('should render records in a table', () => {
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelectorAll('table tr').length).toBe(component.records.length + 1);                     
+    expect(compiled.querySelectorAll('table tr').length).toBe(component.records.length + 1); // +1 for header row
   });
 });

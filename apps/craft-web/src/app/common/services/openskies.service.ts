@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class OpenSkiesService {
-  private apiUrl = 'http://localhost:3000/openskies';                                        
+  private apiUrl = 'http://localhost:3000/openskies'; // Replace with your NestJS backend URL
 
   constructor(private http: HttpClient) {}
 

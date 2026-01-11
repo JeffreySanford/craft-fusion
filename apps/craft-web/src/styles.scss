@@ -1,13 +1,19 @@
+// Main styles entry point for Craft Fusion
+
+// Import global variables and settings with explicit namespaces
 @use "variables" as vars;
 @use "themes" as themes;
 @use "typography" as type;
 @use "transition-variables" as trans;
 
+// Reset and base styles
 @use "reset" as reset;
 @use "scrollbar" as scrollbar;
 
+// Layout and utility styles
 @use "layout" as layout;
 @use "responsive" as resp;
 @use "utilities" as util;
 
+// MD3 token overrides (light/dark theme classes)
 @use "md3-tokens-overrides" as md3Overrides;

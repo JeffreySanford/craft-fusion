@@ -11,6 +11,7 @@
       <span class="legend-text">{{ stock.symbol }} ({{ stock.currentPrice | currency }})</span>
     </div>
 
+    <!-- Add date and source information -->
     <div class="legend-footer" *ngIf="latestDataDate">
       <span class="legend-date">Last updated: {{ latestDataDate | date: 'mediumDate' }}</span>
       <span class="legend-source">Source: Alpha Vantage API</span>
@@ -21,6 +22,7 @@
   </div>
   <div class="fintech-chart" #chart></div>
 
+  <!-- Stock status box moved inside the chart container to keep positioning relative -->
   <div class="stock-status-box" [class.visible]="showStatusBox">
     <div class="stock-status-symbol">{{ statusStock }}</div>
     <div class="stock-status-price">${{ statusPrice }}</div>

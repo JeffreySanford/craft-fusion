@@ -1,35 +1,39 @@
+/* Both class names to ensure it works with either structure */
 .recipes-container,
 .content {
-  align-content: start;                                                   
+  align-content: start; /* Keep items at the top but let container grow */
   background-color: rgb(240 240 255 / 70%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 8px 16px rgb(0 0 0 / 15%);
   display: grid !important;
-  flex: 1 1 auto;                           
+  flex: 1 1 auto; /* Improved flex growth */
   font-family: "Crimson Text", Georgia, serif;
-  gap: 0.5em;                                              
-  grid-auto-rows: minmax(11em, auto);                                 
-  grid-template-columns: repeat(2, 1fr);                      
+  gap: 1em; /* 1em gutters vertically and horizontally */
+  grid-auto-rows: minmax(15em, auto); /* Adjust tile height to 15em */
+  grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
   height: auto;
-  margin: 0.5em auto 0.25em auto;
-  max-height: none;
-  max-width: calc(100% - 2.5em);
+  margin: 0;
+  max-height: 70vh;
+  max-width: calc(100% - 5em);
   overflow: visible;
+  overflow: auto;
   position: relative;
 
+  /* Make sure this container is visible */
   visibility: visible !important;
-  width: calc(100% - 2.5em);
-  z-index: 80;
+  width: calc(100% - 5em);
+  z-index: 25;
 
+  /* Debug info style */
   .debug-info {
     background-color: rgb(255 255 255 / 70%);
-    border-radius: 0.25em;
+    border-radius: 4px;
     color: #333;
     font-size: 0.8em;
-    left: 0.625em;
-    padding: 0.1875em 0.5em;
+    left: 10px;
+    padding: 3px 8px;
     position: absolute;
-    top: -1.875em;
+    top: -30px;
     z-index: 20;
   }
 
@@ -37,23 +41,23 @@
     background-attachment: fixed;
     background-image: url("../../../../assets/patterns/patriotic-pattern.svg");
     background-size: 100px 100px;
-    border-radius: 0.625em;
+    border-radius: 10px;
     content: "";
     height: 100%;
     left: 0;
     opacity: 0.7;
-    pointer-events: none;
     position: absolute;
     top: 0;
     width: 100%;
     z-index: -1;
   }
 
+  /* Add a subtle texture overlay */
   &::after {
     background-attachment: fixed;
     background-image: url("../../../../assets/patterns/patriotic-pattern.svg");
     background-size: 100px 100px;
-    border-radius: 0.625em;
+    border-radius: 10px;
     content: "";
     height: 100%;
     left: 0;
@@ -66,6 +70,7 @@
     z-index: 1;
   }
 
+  /* Make corner decorations more visible with new SVG */
   .celtic-corner {
     display: none;
   }
@@ -75,25 +80,25 @@
     background: linear-gradient(135deg, #fff 0%, #f0f8ff 100%);
     background-color: rgb(255 255 255 / 95%);
     border: none;
-    border-radius: 0.75em;
+    border-radius: 12px;
     box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
     cursor: pointer;
     display: flex;
     flex-direction: column;
     height: auto;
     justify-content: space-between;
-    min-height: 10.5em;                                    
-    padding: 0.5em 0.7em;                                    
+    min-height: 15em; /* Adjust minimum height to 15em */
+    padding: 1.5em; /* Adjust padding to fit content */
     position: relative;
     text-align: left;
     transform-origin: center;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    width: 92%;                          
+    width: 94%; /* Adjust width to 94% */
     z-index: 30;
 
     &::before {
       background: radial-gradient(circle at top right, rgb(255 255 255 / 80%), transparent);
-      border-radius: 0.75em;
+      border-radius: 12px;
       content: "";
       height: 100%;
       left: 0;
@@ -105,12 +110,13 @@
       z-index: -1;
     }
 
+    /* Add subtle celtic knot corner to each card */
     &::after {
       background: linear-gradient(to right, #b22234, #fff, #3c3b6e);
-      border-radius: 0 0 0.75em 0.75em;
+      border-radius: 0 0 12px 12px;
       bottom: 0;
       content: "";
-      height: 0.25em;
+      height: 4px;
       left: 0;
       position: absolute;
       right: 0;
@@ -145,14 +151,14 @@
       color: #3c3b6e;
       display: -webkit-box;
       font-family: "Playfair Display", "Crimson Text", serif;
-      font-size: 1.2em;                       
+      font-size: 1.2em; /* Adjust font size */
       font-weight: 600;
-      letter-spacing: 0.0313em;
+      letter-spacing: 0.5px;
       -webkit-line-clamp: 3;
-      line-height: 1.4;                         
-      margin-bottom: 0.35em;
+      line-height: 1.4; /* Adjust line height */
+      margin-bottom: 0.5em;
       overflow: hidden;
-      padding: 0.3em 0;
+      padding: 0.5em 0;
       text-align: left;
       text-overflow: ellipsis;
       transition:
@@ -168,11 +174,11 @@
       display: -webkit-box;
       flex-grow: 1;
       font-family: var(--recipe-body-font, "Crimson Text", "Georgia", serif);
-      font-size: 1em;                       
+      font-size: 1em; /* Adjust font size */
       font-style: italic;
-      -webkit-line-clamp: 3;                         
+      -webkit-line-clamp: 3; /* Adjust line height */
       line-height: 1.4;
-      margin-bottom: 0.35em;
+      margin-bottom: 0.5em;
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -180,30 +186,30 @@
     .recipe-origin {
       background-color: rgb(60 59 110 / 10%);
       border-left: 3px solid #3c3b6e;
-      border-radius: 0.25em;
+      border-radius: 4px;
       bottom: 1em;
       color: #444;
-      font-size: 0.9em;                       
+      font-size: 0.9em; /* Adjust font size */
       font-style: italic;
       left: 1em;
-      line-height: 1.2;                         
+      line-height: 1.2; /* Adjust line height */
       margin-bottom: 0.5em;
-      padding: 0.25em 0.625em;
+      padding: 4px 10px;
       position: absolute;
       transition: all 0.3s ease;
 
       small {
         font-family: "Crimson Text", Georgia, serif;
-        letter-spacing: 0.0313em;
+        letter-spacing: 0.5px;
       }
     }
 
     .recipe-button {
       background-color: #3c3b6e;
-      bottom: 0.5em;                      
+      bottom: 0.5em; /* Adjust position */
       box-shadow: 0 2px 5px rgb(0 0 0 / 20%);
       position: absolute;
-      right: 0.5em;                      
+      right: 0.5em; /* Adjust position */
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
       &:hover {
@@ -232,7 +238,7 @@
     font-family: "Playfair Display", "Crimson Text", serif;
     font-size: 1.3em;
     font-weight: 600;
-    letter-spacing: 0.0313em;
+    letter-spacing: 0.5px;
     -webkit-line-clamp: 3;
     line-height: 1.3;
     margin-bottom: 0.5em;
@@ -254,8 +260,6 @@
     box-shadow: 0 2px 5px rgb(0 0 0 / 20%);
     position: absolute;
     right: 1em;
-    pointer-events: auto;
-    z-index: 5;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
     &:hover {
@@ -264,25 +268,27 @@
     }
   }
 
+  /* Enhanced origin tag */
   .recipe-origin {
     background-color: rgb(60 59 110 / 10%);
     border-left: 3px solid #3c3b6e;
-    border-radius: 0.25em;
+    border-radius: 4px;
     bottom: 1em;
     color: #444;
     font-size: 0.9em;
     font-style: italic;
     left: 1em;
-    padding: 0.25em 0.625em;
+    padding: 4px 10px;
     position: absolute;
     transition: all 0.3s ease;
 
     small {
       font-family: "Crimson Text", Georgia, serif;
-      letter-spacing: 0.0313em;
+      letter-spacing: 0.5px;
     }
   }
 
+  /* Add recipe description preview */
   .recipe-description {
     -webkit-box-orient: vertical;
     color: #555;
@@ -303,17 +309,18 @@
   align-items: center;
   background-color: rgb(255 255 255 / 80%);
   border: 2px solid #3c3b6e;
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 6px 12px rgb(0 0 0 / 15%);
   display: flex;
   flex-direction: column;
   padding: 2em;
 }
 
+/* Loading and No Recipes styles */
 p {
   animation: fadeIn 1s ease;
   background-color: rgb(255 255 255 / 80%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 2px 5px rgb(0 0 0 / 10%);
   color: #3c3b6e;
   font-family: "Crimson Text", Georgia, serif;
@@ -324,6 +331,7 @@ p {
   width: 100%;
 }
 
+/* Animations */
 @keyframes pulse {
   0% {
     transform: scale(1);
@@ -376,6 +384,7 @@ p {
   }
 }
 
+/* Enhanced animation for corner knots with more dramatic effects */
 @keyframes knotGlow {
   0% {
     filter: drop-shadow(0 0 4px rgb(0 0 0 / 20%));
@@ -401,11 +410,13 @@ p {
   }
 }
 
+/* Apply animations to cards */
 .recipe-card {
   animation: fadeInUp 0.6s ease-out;
   animation-fill-mode: both;
 }
 
+/* More dramatic staggered animation for cards */
 .recipe-card:nth-child(1) {
   animation-delay: 0.1s;
 }
@@ -426,11 +437,12 @@ p {
   animation-delay: 0.7s;
 }
 
+/* Added loading container styles */
 .loading-container {
   align-items: center;
   display: flex;
   flex-direction: column;
-  height: 12.5em;
+  height: 200px;
   justify-content: center;
   width: 100%;
 }
@@ -440,10 +452,11 @@ p {
   margin-top: 1em;
 }
 
+/* Pagination styles */
 .pagination-container {
   align-items: center;
   background-color: rgb(255 255 255 / 80%);
-  border-radius: 0 0 0.5em 0.5em;
+  border-radius: 0 0 8px 8px;
   bottom: 0;
   box-shadow: 0 -2px 5px rgb(0 0 0 / 10%);
   display: flex;
@@ -455,7 +468,7 @@ p {
   z-index: 40;
 
   .pagination-info {
-    color: #3c3b6e;                             
+    color: #3c3b6e; /* Dark blue for contrast */
     font-weight: 600;
     margin-right: 1em;
   }
@@ -464,7 +477,7 @@ p {
 .pagination-button {
   background-color: #3c3b6e;
   border: none;
-  border-radius: 0.25em;
+  border-radius: 4px;
   color: white;
   cursor: pointer;
   margin: 0 0.5em;

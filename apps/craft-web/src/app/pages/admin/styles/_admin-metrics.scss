@@ -4,7 +4,7 @@
   display: flex;
   gap: 2%;
   justify-content: space-between;
-  min-height: 7.5em;
+  min-height: 120px;
   width: 100%;
 
   .metric-card {
@@ -13,11 +13,11 @@
     animation-delay: calc(var(--i, 0) * 0.1s);
     background: rgb(255 255 255 / 10%);
     border-left: 5px solid;
-    border-radius: 0.625em;
+    border-radius: 10px;
     display: flex;
     flex: 1;
     max-width: calc(25% - 2%);
-    min-width: 12.5em;
+    min-width: 200px;
     padding: 1.5rem;
     transition: all 0.3s ease;
 
@@ -55,10 +55,10 @@
       border-radius: 50%;
       display: flex;
       flex: 0 0 50px;
-      height: 3.125em;
+      height: 50px;
       justify-content: center;
       margin-right: 1rem;
-      width: 3.125em;
+      width: 50px;
     }
 
     .metric-info {
@@ -71,13 +71,13 @@
 @media (max-width: 1200px) {
   .metrics-summary {
     flex-wrap: wrap;
-    gap: 1.25em 2%;
-    row-gap: 1.875em;
+    gap: 20px 2%;
+    row-gap: 30px;
 
     .metric-card {
       flex: 1 1 calc(50% - 2%);
       max-width: calc(50% - 2%);
-      min-height: 6.25em;
+      min-height: 100px;
     }
   }
 }

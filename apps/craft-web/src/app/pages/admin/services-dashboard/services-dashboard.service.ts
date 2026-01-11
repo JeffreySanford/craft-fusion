@@ -135,6 +135,7 @@ export class ServicesDashboardService {
         if (info.timelineData.length > 50) info.timelineData = info.timelineData.slice(-50);
       });
 
+      // update lite stats for UI
       this.updateLiteStats();
     });
   }
@@ -164,7 +165,7 @@ export class ServicesDashboardService {
         const successRate = arr.length ? (successCount / arr.length) * 100 : 100;
         this.updateServiceStats(service.name, { avgResponseTime: avgTime, callCount: arr.length, successRate, lastUpdate: now });
       } else {
-
+        // simulation fallback handled elsewhere
       }
     });
     this.emitFlattenedMetrics();
@@ -224,30 +225,33 @@ export class ServicesDashboardService {
     return this.serviceStatistics[serviceName];
   }
 
+  /** Clear all collected metrics and endpoint logs, and notify subscribers */
   clearAllMetrics() {
     this.metricsByService.clear();
     this.serviceMetricsMap.clear();
     this.serviceStatistics = {};
     this.endpointLogs = {};
-
+    // Ask logger to clear its stored metrics as well when available
     try {
-
+      // logger may expose clearMetrics
+      // @ts-ignore
       if (this.logger && typeof (this.logger as any).clearMetrics === 'function') {
-
+        // Clear logger internal metrics
         (this.logger as any).clearMetrics();
       }
     } catch (e) {
       console.warn('Failed to clear logger metrics', e);
     }
-
+    // Emit empty metrics to subscribers
     this.metricsSubject.next([]);
   }
 
+  /** Delegate clearing of application logs to LoggerService */
   clearLogs() {
     try {
-
+      // @ts-ignore
       if (this.logger && typeof (this.logger as any).clearLogs === 'function') {
-
+        // Clear logger stored logs
         (this.logger as any).clearLogs();
       }
     } catch (e) {
@@ -269,6 +273,7 @@ export class ServicesDashboardService {
     return this.serviceColors[serviceName] || '#808080';
   }
 
+  /** Toggle active flag for a registered service by name */
   toggleServiceActive(serviceName: string): void {
     const svc = this.DEFAULT_SERVICES.find(s => s.name === serviceName);
     if (svc) {
@@ -276,8 +281,13 @@ export class ServicesDashboardService {
     }
   }
 
+  /**
+   * Return axis configurations and dataset axis mapping for a given set of metrics.
+   * The component applies the returned axis objects onto the chart options and assigns
+   * dataset yAxisIDs using the datasetAxisIds array.
+   */
   getAxesConfig(metrics: string[]): { y: any; y1: any; datasetAxisIds: string[] } {
-
+    // defaults
     const y = { display: false, title: { text: '', color: '#e5e7eb' }, ticks: { color: '#e5e7eb' } };
     const y1 = { display: false, title: { text: '', color: '#e5e7eb' }, ticks: { color: '#e5e7eb' } };
     const datasetAxisIds: string[] = [];
@@ -295,7 +305,7 @@ export class ServicesDashboardService {
       y.title.text = metric === 'network' ? 'Physical Response Time (ms)' : metric === 'memory' ? 'Memory Usage (%)' : 'CPU Load (%)';
       y.title.color = color;
       y.ticks.color = color;
-
+      // all datasets map to 'y'
       datasetAxisIds.push('y', 'y', 'y');
       return { y, y1, datasetAxisIds };
     }
@@ -328,6 +338,7 @@ export class ServicesDashboardService {
       return { y, y1, datasetAxisIds };
     }
 
+    // 3 metrics
     y.display = true;
     y1.display = true;
     y.title.text = 'CPU & Memory Usage (%)';
@@ -376,6 +387,7 @@ export class ServicesDashboardService {
     });
   }
 
+  // Toggle metric in a centralized place. Returns updated metrics array (mutating caller is fine too).
   toggleMetric(selectedMetrics: string[], metric: string): string[] {
     const idx = selectedMetrics.indexOf(metric);
     if (idx > -1 && selectedMetrics.length > 1) {
@@ -386,6 +398,7 @@ export class ServicesDashboardService {
     return selectedMetrics;
   }
 
+  // Apply axes/dataset mapping to an existing Chart instance based on selected metrics
   applyAxesToChart(systemChart: any, selectedMetrics: string[]): void {
     if (!systemChart) return;
     const axes = this.getAxesConfig(selectedMetrics);
@@ -394,7 +407,7 @@ export class ServicesDashboardService {
 
     const mapping = axes.datasetAxisIds || [];
     (systemChart.data.datasets as any[]).forEach((dataset: any, index: number) => {
-
+      // determine hidden/visible based on mapping and selected metrics
       const metricForIndex = selectedMetrics[index] || '';
       dataset.hidden = !(mapping.length === 0 || mapping[index] ? selectedMetrics.includes(metricForIndex) : true);
       if (mapping && mapping[index]) {
@@ -405,7 +418,7 @@ export class ServicesDashboardService {
     try {
       systemChart.update();
     } catch (e) {
-
+      // swallow chart update errors in service
     }
   }
 }

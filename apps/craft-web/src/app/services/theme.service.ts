@@ -26,7 +26,7 @@ export class ThemeService {
     try {
       localStorage.setItem('app-theme', theme);
     } catch (e) {
-
+      // ignore storage errors
     }
   }
 

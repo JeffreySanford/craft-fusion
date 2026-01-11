@@ -5,6 +5,7 @@
   </div>
 </ng-template>
 
+<!-- Offline state banner -->
 <div *ngIf="isOffline" class="offline-banner mat-elevation-z4" [@fly-in]>
   <div class="offline-content">
     <mat-icon class="offline-icon">cloud_off</mat-icon>
@@ -69,20 +70,24 @@
     </mat-card-content>
   </mat-card>
 
+  <!-- Table and other elements -->
   <div class="scrollable-container" [hidden]="!resolved">
     <div class="table-wrapper">
       <div class="flex-table mat-elevation-z8" [@fly-in]>
-
+        <!-- Header Row with responsive columns -->
         <div class="flex-header-row">
-
+          <!-- Always shown -->
           <div class="flex-header-cell" (click)="sortData({ active: 'userID', direction: sort.direction === 'asc' ? 'desc' : 'asc' })">User ID</div>
 
+          <!-- Only hidden on smallest screens -->
           <div class="flex-header-cell" (click)="sortData({ active: 'name', direction: sort.direction === 'asc' ? 'desc' : 'asc' })" *ngIf="!showMinimalColumns">Name</div>
 
+          <!-- Only shown on large screens -->
           <div class="flex-header-cell address-column" (click)="sortData({ active: 'address', direction: sort.direction === 'asc' ? 'desc' : 'asc' })" *ngIf="showAddressColumns">
             Address
           </div>
 
+          <!-- Shown on medium and large screens -->
           <div
             class="flex-header-cell"
             (click)="sortData({ active: 'city', direction: sort.direction === 'asc' ? 'desc' : 'asc' })"
@@ -101,26 +106,34 @@
             Zip
           </div>
 
+          <!-- Only shown on largest screens -->
           <div class="flex-header-cell" (click)="sortData({ active: 'phone', direction: sort.direction === 'asc' ? 'desc' : 'asc' })" *ngIf="showAddressColumns">Phone</div>
 
+          <!-- Always shown -->
           <div class="flex-header-cell flex-right">Actions</div>
         </div>
 
+        <!-- Data Rows with responsive columns -->
         <ng-container *ngFor="let record of dataSource.filteredData | slice: paginator.pageIndex * paginator.pageSize : (paginator.pageIndex + 1) * paginator.pageSize">
           <div class="flex-row" [class.selected]="expandedElement === record" (click)="expandRow(record)">
-
+            <!-- Always shown -->
             <div class="flex-cell">{{ record.UID }}</div>
 
+            <!-- Only hidden on smallest screens -->
             <div class="flex-cell" *ngIf="!showMinimalColumns">{{ record.firstName }}&nbsp;{{ record.lastName }}</div>
 
+            <!-- Only shown on large screens -->
             <div class="flex-cell address-column" *ngIf="showAddressColumns" title="{{ record.address.street }}">{{ record.address.street }}</div>
 
+            <!-- Shown on medium and large screens -->
             <div class="flex-cell" *ngIf="showMediumColumns || showAddressColumns">{{ record.address.city }}</div>
             <div class="flex-cell" *ngIf="showMediumColumns || showAddressColumns">{{ record.address.state }}</div>
             <div class="flex-cell" *ngIf="showMediumColumns || showAddressColumns">{{ record.address.zipcode }}</div>
 
+            <!-- Only shown on largest screens -->
             <div class="flex-cell" *ngIf="showAddressColumns">{{ record.phone.number }}</div>
 
+            <!-- Always shown -->
             <div class="flex-cell flex-right">
               <button mat-icon-button (click)="showDetailView(record); $event.stopPropagation()" title="view record">
                 <mat-icon>person</mat-icon>
@@ -129,15 +142,16 @@
           </div>
         </ng-container>
 
+        <!-- Create a separate container for the modal overlay with fixed positioning -->
         <div class="modal-container" *ngIf="expandedElement">
-
+          <!-- Backdrop with pointer events to close on click -->
           <div class="expanded-backdrop" (click)="expandRow(expandedElement); $event.stopPropagation()"></div>
-
+          <!-- Modal content with absolute fixed positioning -->
           <div class="expand-element-detail">
             <button class="close-overlay-btn" (click)="expandRow(expandedElement); $event.stopPropagation()">
               <mat-icon>close</mat-icon>
             </button>
-
+            <!-- Use the RecordDetailComponent here -->
             <app-record-detail [user]="expandedElement"></app-record-detail>
           </div>
         </div>
@@ -153,6 +167,7 @@
   <ng-container *ngTemplateOutlet="noData"></ng-container>
 </div>
 
+<!-- Show no records message when online but no records available -->
 <div *ngIf="resolved && dataSource.data.length === 0 && !isOffline" class="no-records-container mat-elevation-z2">
   <mat-icon>warning</mat-icon>
   <h3>No Records Available</h3>

@@ -17,7 +17,7 @@ export class PeasantKitchenComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.routerSubscription = this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-
+        // Show back button only if we're on a specific recipe route
         this.showBackButton = event.url.includes('peasant-kitchen/recipe/');
       }
     });
@@ -29,6 +29,9 @@ export class PeasantKitchenComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Navigate back to the recipes list
+   */
   goBackToRecipes(): void {
     console.log('Back button pressed, returning to parent container.');
     this.router.navigate(['peasant-kitchen']);

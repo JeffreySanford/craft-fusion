@@ -1,53 +1,12 @@
+/* Admin SCSS has been split into focused partials.
+   This file now imports those partials. The original large stylesheet
+   was moved into smaller files under the same folder.
+*/
+/* stylelint-disable selector-class-pattern */
 @use "variables" as vars;
 @use "./styles/index";
 
-// Hero KPI Bar
-.admin-hero-bar {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0.75rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(to bottom, rgba(0, 26, 58, 0.05), transparent);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(8px);
-  animation: slide-down 400ms ease-out;
-
-  @media (max-width: 1400px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 0.75rem;
-    gap: 0.5rem;
-  }
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-@keyframes slide-down {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// Reduced motion fallback
-@media (prefers-reduced-motion: reduce) {
-  .admin-hero-bar {
-    animation: none;
-  }
-}
-
+/* Keep this file intentionally small. Split further as needed. */
 .api-table td {
   border-bottom: 1px solid rgb(255 255 255 / 10%);
   padding: 0.75em;
@@ -68,9 +27,9 @@
 }
 
 .method-badge {
-  border-radius: 0.25em;
+  border-radius: 4px;
   font-size: 0.8em;
-  padding: 0.1875em 0.5em;
+  padding: 3px 8px;
 
   &.method-get {
     background-color: rgba(vars.$usa-blue, 0.2);
@@ -99,8 +58,8 @@
   position: relative;
 
   .duration-bar {
-    border-radius: 0.1875em;
-    height: 0.375em;
+    border-radius: 3px;
+    height: 6px;
     left: 0;
     position: absolute;
 
@@ -118,15 +77,15 @@
   }
 
   span {
-    margin-left: 0.3125em;
+    margin-left: 5px;
   }
 }
 
 .status-badge {
-  border-radius: 0.25em;
+  border-radius: 4px;
   display: inline-block;
   font-size: 0.8em;
-  padding: 0.1875em 0.5em;
+  padding: 3px 8px;
 
   &.status-success {
     background-color: rgba(darkgreen, 0.2);
@@ -160,18 +119,20 @@
   }
 }
 
+// Add advanced chart styling
 .chart-container {
   animation: slide-up 0.6s ease-out forwards;
   background: linear-gradient(135deg, rgb(23 33 43 / 80%) 0%, rgb(18 26 46 / 95%) 100%);
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.75em;
+  border-radius: 12px;
   box-shadow: 0 10px 20px rgb(0 0 0 / 30%);
-  margin-bottom: 0.9375em;                  
+  margin-bottom: 15px; // Reduced margin
   overflow: hidden;
-  padding: 0.9375em;                   
+  padding: 15px; // Reduced padding
   position: relative;
-  width: 100%;                     
+  width: 100%; // Ensure full width
 
+  // Add subtle animated gradient overlay
   &::before {
     animation: moveGradient 30s linear infinite;
     background:
@@ -206,18 +167,18 @@
   h2 {
     color: vars.$patriot-white;
     display: inline-block;
-    font-size: 1.4em;                    
-    margin-bottom: 0.9375em;                     
+    font-size: 1.4em; // Slightly smaller
+    margin-bottom: 15px; // Reduced from 20px
     margin-top: 0;
-    padding-bottom: 0.625em;                     
+    padding-bottom: 10px; // Reduced from 12px
     position: relative;
 
     &::after {
       background: linear-gradient(90deg, vars.$usa-red, vars.$usa-blue, vars.$usa-white);
-      border-radius: 0.125em;
+      border-radius: 2px;
       bottom: 0;
       content: "";
-      height: 0.1875em;
+      height: 3px;
       left: 0;
       position: absolute;
       width: 100%;
@@ -226,8 +187,8 @@
 
   canvas {
     animation: fadeIn 1s ease-out forwards;
-    height: 18.75em !important;                                       
-    max-height: 18.75em;
+    height: 300px !important; // Fixed height for better consistency
+    max-height: 300px;
     transition:
       transform 0.3s ease,
       opacity 0.3s ease;
@@ -235,6 +196,7 @@
   }
 }
 
+// Star-spangled background effect for selected containers
 .security-container {
   overflow: hidden;
   position: relative;
@@ -260,19 +222,19 @@
 
   .security-stats {
     display: grid;
-    gap: 1.25em;
-    grid-template-columns: repeat(auto-fill, minmax(15.625em, 1fr));
-    margin-bottom: 1.875em;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    margin-bottom: 30px;
 
     .stat-card {
       align-items: center;
       animation: fadeIn 0.5s ease-out forwards;
       background: linear-gradient(135deg, rgb(30 41 59 / 70%) 0%, rgb(17 24 39 / 90%) 100%);
       border: 1px solid rgb(255 255 255 / 10%);
-      border-radius: 0.625em;
+      border-radius: 10px;
       box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
       display: flex;
-      padding: 1.25em;
+      padding: 20px;
       transition:
         transform 0.3s ease,
         box-shadow 0.3s ease;
@@ -286,10 +248,10 @@
         align-items: center;
         border-radius: 50%;
         display: flex;
-        height: 3.75em;
+        height: 60px;
         justify-content: center;
-        margin-right: 1.25em;
-        width: 3.75em;
+        margin-right: 20px;
+        width: 60px;
 
         &.secure {
           background: linear-gradient(135deg, rgb(16 185 129 / 20%), rgb(16 185 129 / 10%));
@@ -307,9 +269,9 @@
         }
 
         mat-icon {
-          font-size: 1.875em;
-          height: 1.875em;
-          width: 1.875em;
+          font-size: 30px;
+          height: 30px;
+          width: 30px;
         }
       }
 
@@ -318,12 +280,12 @@
 
         h3 {
           color: vars.$patriot-white;
-          font-size: 1em;
-          margin: 0 0 0.5em;
+          font-size: 16px;
+          margin: 0 0 8px;
         }
 
         .stat-value {
-          font-size: 1.375em;
+          font-size: 22px;
           font-weight: 500;
 
           &.secure {
@@ -342,17 +304,17 @@
     h3 {
       color: vars.$patriot-white;
       display: inline-block;
-      font-size: 1.125em;
-      margin: 0 0 1.25em;
-      padding-bottom: 0.625em;
+      font-size: 18px;
+      margin: 0 0 20px;
+      padding-bottom: 10px;
       position: relative;
 
       &::after {
         background: vars.$usa-red;
-        border-radius: 0.125em;
+        border-radius: 2px;
         bottom: 0;
         content: "";
-        height: 0.125em;
+        height: 2px;
         left: 0;
         position: absolute;
         width: 100%;
@@ -361,19 +323,19 @@
 
     .feature-grid {
       display: grid;
-      gap: 1.25em;
-      grid-template-columns: repeat(auto-fill, minmax(11.25em, 1fr));
+      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
 
       .feature-card {
         align-items: center;
         animation: fadeIn 0.5s ease-out forwards;
         background: rgb(30 41 59 / 50%);
         border: 1px solid rgb(255 255 255 / 5%);
-        border-radius: 0.5em;
+        border-radius: 8px;
         box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
         display: flex;
         flex-direction: column;
-        padding: 1.25em;
+        padding: 20px;
         text-align: center;
         transition: all 0.3s ease;
 
@@ -384,22 +346,22 @@
 
         mat-icon {
           color: vars.$usa-gold;
-          font-size: 1.875em;
-          height: 1.875em;
-          margin-bottom: 0.9375em;
-          width: 1.875em;
+          font-size: 30px;
+          height: 30px;
+          margin-bottom: 15px;
+          width: 30px;
         }
 
         h4 {
           color: vars.$patriot-white;
-          font-size: 1em;
-          margin: 0 0 0.625em;
+          font-size: 16px;
+          margin: 0 0 10px;
         }
 
         .feature-status {
-          border-radius: 1.25em;
-          font-size: 0.875em;
-          padding: 0.25em 0.625em;
+          border-radius: 20px;
+          font-size: 14px;
+          padding: 4px 10px;
 
           &.active {
             background-color: rgb(16 185 129 / 20%);
@@ -416,12 +378,13 @@
   }
 }
 
+// Update the admin footer (now without the eagle)
 .admin-footer {
   border-top: 1px solid rgb(255 255 255 / 10%);
   display: flex;
   justify-content: center;
-  margin-top: 1.25em;
-  padding: 0.9375em 0;
+  margin-top: 20px;
+  padding: 15px 0;
   text-align: center;
 
   .footer-text {
@@ -433,13 +396,14 @@
       &.usa-motto {
         color: vars.$usa-gold;
         font-weight: 500;
-        letter-spacing: 0.0625em;
-        margin-top: 0.3125em;
+        letter-spacing: 1px;
+        margin-top: 5px;
       }
     }
   }
 }
 
+// Add missing animations
 @keyframes flag-wave {
   0% {
     transform: skewX(0deg);
@@ -486,6 +450,7 @@
   }
 }
 
+// Pulse animation for alerts
 @keyframes pulse-animation {
   0% {
     box-shadow: 0 0 0 0 rgb(255 0 0 / 70%);
@@ -504,6 +469,7 @@
   animation: pulse-animation 1.5s infinite;
 }
 
+// Add new animations
 @keyframes moveGradient {
   0% {
     background-position: 0 0;
@@ -552,17 +518,18 @@
   }
 }
 
+// Responsive improvements
 @media (max-width: 1200px) {
   .metrics-summary {
     flex-wrap: wrap;
-    gap: 1.25em 2%;
-    row-gap: 1.875em;                              
+    gap: 20px 2%;
+    row-gap: 30px; // Increased gap between rows
 
     .metric-card {
       flex: 1 1 calc(50% - 2%);
-      margin-bottom: 0;                                                   
+      margin-bottom: 0; // Remove default margin to let gap handle spacing
       max-width: calc(50% - 2%);
-      min-height: 6.25em;                  
+      min-height: 100px; // Reduced height
     }
   }
 }
@@ -587,13 +554,13 @@
       .metric-card {
         flex: 1;
         max-width: 100%;
-        min-height: 5em;                  
+        min-height: 80px; // Reduced height
         padding: 1rem;
 
         .metric-icon {
           flex: 0 0 40px;
-          height: 2.5em;
-          width: 2.5em;
+          height: 40px;
+          width: 40px;
         }
 
         .metric-info {
@@ -655,6 +622,7 @@
   }
 }
 
+// Similar red pulse or any extra styling
 .pulse-red {
   animation: pulse-animation 1.2s infinite;
 }
@@ -669,10 +637,11 @@ table thead tr {
   color: #fff;
 }
 
+/* Styles for the LoggerDisplayComponent */
 .logger-display {
   background: rgb(30 41 59 / 50%);
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 0.5em 1em rgb(0 0 0 / 20%);
   margin-top: 1em;
   overflow: hidden;
@@ -688,17 +657,19 @@ table thead tr {
   }
 
   .log-entries {
-    max-height: 18.75em;
+    max-height: 300px;
     overflow-y: auto;
     padding: 0.5em;
 
+    /* Firefox-only properties: apply only when supported */
     @supports (scrollbar-color: auto) {
-      scrollbar-color: rgb(255 255 255 / 20%) transparent;                            
-      scrollbar-width: thin;                       
+      scrollbar-color: rgb(255 255 255 / 20%) transparent; /* thumb and track color */
+      scrollbar-width: thin; /* "auto" or "thin" */
     }
 
+    /* WebKit-based browsers */
     &::-webkit-scrollbar {
-      width: 0.5em;
+      width: 8px;
     }
 
     &::-webkit-scrollbar-track {
@@ -707,7 +678,7 @@ table thead tr {
 
     &::-webkit-scrollbar-thumb {
       background-color: rgb(255 255 255 / 20%);
-      border-radius: 0.25em;
+      border-radius: 4px;
     }
   }
 
@@ -720,10 +691,11 @@ table thead tr {
   }
 }
 
+// Service monitoring legend
 .service-monitoring-legend {
   background: rgb(255 255 255 / 5%);
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
@@ -733,10 +705,10 @@ table thead tr {
   .legend-item {
     align-items: center;
     background: rgb(0 0 0 / 20%);
-    border-radius: 0.375em;
+    border-radius: 6px;
     display: flex;
     gap: 0.5rem;
-    min-width: 12.5em;
+    min-width: 200px;
     padding: 0.5rem 1rem;
     transition: all 0.3s ease;
 
@@ -748,8 +720,8 @@ table thead tr {
     .color-indicator {
       border: 2px solid rgb(255 255 255 / 20%);
       border-radius: 50%;
-      height: 0.75em;
-      width: 0.75em;
+      height: 12px;
+      width: 12px;
     }
 
     .service-name {
@@ -759,7 +731,7 @@ table thead tr {
     }
 
     .service-status {
-      border-radius: 0.25em;
+      border-radius: 4px;
       font-size: 0.8rem;
       font-weight: 500;
       padding: 0.2rem 0.5rem;
@@ -777,6 +749,7 @@ table thead tr {
   }
 }
 
+// Service color variables
 :root {
   --service-api: #ff6b6b;
   --service-auth: #4ecdc4;
@@ -793,7 +766,7 @@ table thead tr {
 .services-list {
   background: rgb(30 41 59 / 50%);
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   margin-top: 1.5rem;
   overflow: hidden;
 
@@ -805,16 +778,17 @@ table thead tr {
   }
 
   mat-list {
-    max-height: 25em;
+    max-height: 400px;
     overflow-y: auto;
 
+    /* Firefox-only properties applied via feature query */
     @supports (scrollbar-color: auto) {
       scrollbar-color: rgb(255 255 255 / 20%) transparent;
       scrollbar-width: thin;
     }
 
     &::-webkit-scrollbar {
-      width: 0.5em;
+      width: 8px;
     }
 
     &::-webkit-scrollbar-track {
@@ -823,7 +797,7 @@ table thead tr {
 
     &::-webkit-scrollbar-thumb {
       background-color: rgb(255 255 255 / 20%);
-      border-radius: 0.25em;
+      border-radius: 4px;
     }
   }
 
@@ -838,20 +812,22 @@ table thead tr {
   }
 }
 
+// Update tab content to ensure proper containment
 .tab-content {
-  height: calc(100vh - 17.5em);                                         
-  margin: 0;                     
+  height: calc(100vh - 280px); // Reduced from 300px for less top space
+  margin: 0; // Remove any margin
   overflow-y: auto;
-  padding: 0.5rem 0.75rem;                   
-  width: 100%;                     
+  padding: 0.5rem 0.75rem; // Reduced padding
+  width: 100%; // Ensure full width
 
+  /* Firefox-only scrollbar styling */
   @supports (scrollbar-color: auto) {
     scrollbar-color: rgb(255 255 255 / 20%) transparent;
     scrollbar-width: thin;
   }
 
   &::-webkit-scrollbar {
-    width: 0.5em;
+    width: 8px;
   }
 
   &::-webkit-scrollbar-track {
@@ -860,7 +836,7 @@ table thead tr {
 
   &::-webkit-scrollbar-thumb {
     background-color: rgb(255 255 255 / 20%);
-    border-radius: 0.25em;
+    border-radius: 4px;
   }
 }
 
@@ -872,13 +848,13 @@ table thead tr {
   .service-status-cards {
     display: grid;
     gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(18.75em, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 
     .status-card {
       align-items: center;
       background: rgb(255 255 255 / 5%);
       border: 1px solid rgb(255 255 255 / 10%);
-      border-radius: 0.625em;
+      border-radius: 10px;
       display: flex;
       gap: 1rem;
       padding: 1rem;
@@ -893,9 +869,9 @@ table thead tr {
         align-items: center;
         border-radius: 50%;
         display: flex;
-        height: 3em;
+        height: 48px;
         justify-content: center;
-        width: 3em;
+        width: 48px;
 
         &.healthy {
           background: rgb(46 213 115 / 20%);
@@ -935,9 +911,9 @@ table thead tr {
             gap: 0.25rem;
 
             mat-icon {
-              font-size: 1em;
-              height: 1em;
-              width: 1em;
+              font-size: 16px;
+              height: 16px;
+              width: 16px;
             }
           }
         }
@@ -951,20 +927,20 @@ table thead tr {
     align-items: center;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 0.625em;                       
-    padding: 0.5rem;                   
+    margin-bottom: 10px; // Reduced from 1.5rem
+    padding: 0.5rem; // Reduced padding
   }
 
   .log-statistics {
     display: grid;
     gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(15.625em, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     margin-top: 1.5rem;
 
     .stat-card {
       align-items: center;
       background: rgb(30 41 59 / 50%);
-      border-radius: 0.625em;
+      border-radius: 10px;
       display: grid;
       gap: 1rem;
       grid-template-columns: auto 1fr auto;
@@ -972,11 +948,11 @@ table thead tr {
 
       .stat-icon {
         align-items: center;
-        border-radius: 0.5em;
+        border-radius: 8px;
         display: flex;
-        height: 2.5em;
+        height: 40px;
         justify-content: center;
-        width: 2.5em;
+        width: 40px;
 
         mat-icon {
           color: white;
@@ -997,13 +973,14 @@ table thead tr {
       }
 
       .stat-chart {
-        height: 1.875em;
-        width: 3.75em;
+        height: 30px;
+        width: 60px;
       }
     }
   }
 }
 
+// Add new animations
 @keyframes pulse-success {
   0% {
     box-shadow: 0 0 0 0 rgb(46 213 115 / 40%);
@@ -1032,16 +1009,17 @@ table thead tr {
   }
 }
 
+/* Simulation Mode Toggle Button Styles */
 .simulation-toggle {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
-  margin-right: 0.625em;
+  margin-right: 10px;
   overflow: hidden;
-  padding: 0.25em 0.75em 0.25em 0.25em;
+  padding: 4px 12px 4px 4px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -1073,7 +1051,7 @@ table thead tr {
   }
 
   ::ng-deep.mat-slide-toggle-label {
-    margin-left: 0.5em;
+    margin-left: 8px;
   }
 
   ::ng-deep .mat-slide-toggle-bar {
@@ -1098,8 +1076,8 @@ table thead tr {
   .toggle-label {
     color: #e5e7eb;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-left: 0.5em;
+    letter-spacing: 0.5px;
+    margin-left: 8px;
     -webkit-user-select: none;
     user-select: none;
     z-index: 2;
@@ -1107,11 +1085,11 @@ table thead tr {
 
   .danger-zone {
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.5em;
-    top: 0.125em;
+    right: 8px;
+    top: 2px;
     transition: opacity 0.3s ease;
   }
 
@@ -1130,16 +1108,17 @@ table thead tr {
   }
 }
 
+/* Auto-scroll Toggle Button Styles */
 .autoscroll-toggle {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
-  margin-left: 0.625em;
+  margin-left: 10px;
   overflow: hidden;
-  padding: 0.25em 0.75em 0.25em 0.25em;
+  padding: 4px 12px 4px 4px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -1167,7 +1146,7 @@ table thead tr {
   }
 
   ::ng-deep .mat-slide-toggle-label {
-    margin-left: 0.5em;
+    margin-left: 8px;
   }
 
   ::ng-deep .mat-slide-toggle-bar {
@@ -1192,8 +1171,8 @@ table thead tr {
   .toggle-label {
     color: #e5e7eb;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-left: 0.5em;
+    letter-spacing: 0.5px;
+    margin-left: 8px;
     -webkit-user-select: none;
     user-select: none;
     z-index: 2;
@@ -1215,7 +1194,7 @@ table thead tr {
     align-items: center;
     background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 0.625em;
+    border-radius: 10px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
     display: flex;
     justify-content: space-between;
@@ -1224,6 +1203,7 @@ table thead tr {
     padding: 1rem;
     position: relative;
 
+    /* Add star background effect */
     &::before {
       animation: twinkleStars 8s infinite alternate;
       background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px), radial-gradient(circle, rgb(255 215 0 / 5%) 1px, transparent 1px);
@@ -1314,12 +1294,12 @@ table thead tr {
         align-items: center;
         background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
         border: none;
-        border-radius: 0.25em;
+        border-radius: 4px;
         box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: white;
         display: flex;
-        gap: 0.5em;
-        height: 2.25em;
+        gap: 8px;
+        height: 36px;
         overflow: hidden;
         padding: 0 1rem;
         position: relative;
@@ -1350,9 +1330,9 @@ table thead tr {
         }
 
         mat-icon {
-          font-size: 1.125em;
-          height: 1.125em;
-          width: 1.125em;
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
         }
       }
     }
@@ -1383,6 +1363,7 @@ table thead tr {
   }
 }
 
+/* Add stars animation for log level selector */
 .mat-button-toggle-group::after {
   animation: stars-pulse 4s infinite;
   background-image: radial-gradient(circle, rgb(255 255 255 / 30%) 1px, transparent 1px);
@@ -1414,20 +1395,21 @@ table thead tr {
   }
 }
 
+/* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
   background: linear-gradient(135deg, rgb(30 41 59 / 90%), rgb(17 24 39 / 100%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 25%);
-  margin-bottom: 0.625em !important;                     
+  margin-bottom: 10px !important; // Reduced from 15px
   overflow: hidden;
-  padding: 0.375em;
+  padding: 6px;
   position: relative;
 
   &::before {
     background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     content: "";
-    height: 0.1875em;
+    height: 3px;
     left: 0;
     opacity: 0.8;
     position: absolute;
@@ -1436,6 +1418,7 @@ table thead tr {
     z-index: 1;
   }
 
+  /* Star background effect */
   &::after {
     animation: twinkle-bg 8s infinite alternate;
     background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px);
@@ -1451,9 +1434,9 @@ table thead tr {
   }
 
   .mat-mdc-tab {
-    border-radius: 0.5em;
-    height: 3.75em;
-    min-width: 7.5em;
+    border-radius: 8px;
+    height: 60px;
+    min-width: 120px;
     opacity: 0.7;
     overflow: hidden;
     position: relative;
@@ -1470,6 +1453,7 @@ table thead tr {
       opacity: 1;
       transform: translateY(-2px);
 
+      /* Pulse effect for active tab */
       &::before {
         animation: tab-pulse 2s infinite;
         background: radial-gradient(circle at center, rgb(255 255 255 / 40%) 0%, rgb(255 255 255 / 0%) 60%);
@@ -1482,18 +1466,20 @@ table thead tr {
         top: 0;
       }
 
+      /* Animated border effect */
       &::after {
         animation: sliding-gradient 3s linear infinite;
         background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         bottom: 0;
         content: "";
-        height: 0.1875em;
+        height: 3px;
         left: 0;
         position: absolute;
         width: 100%;
       }
 
+      /* Make tab icon and label brighter */
       .mat-icon,
       .mdc-tab__text-label {
         color: white;
@@ -1504,32 +1490,33 @@ table thead tr {
 
   .mat-icon {
     color: rgb(255 255 255 / 90%);
-    font-size: 1.375em;
-    height: 1.375em;
-    margin-bottom: 0.25em;
+    font-size: 22px;
+    height: 22px;
+    margin-bottom: 4px;
     transition: all 0.3s ease;
-    width: 1.375em;
+    width: 22px;
   }
 
   .mdc-tab__text-label {
     color: rgb(255 255 255 / 90%);
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-top: 0.125em;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
     transition: all 0.3s ease;
   }
 }
 
+/* Clear logs button styled like toggles */
 .clear-logs-container {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   overflow: hidden;
-  padding: 0.25em 0.75em;
+  padding: 4px 12px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -1564,10 +1551,10 @@ table thead tr {
     cursor: pointer;
     display: flex;
     font-weight: 500;
-    gap: 0.5em;
-    height: 2.25em;
-    letter-spacing: 0.0313em;
-    padding: 0 0.5em;
+    gap: 8px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
     transition: all 0.3s ease;
     z-index: 2;
 
@@ -1576,19 +1563,19 @@ table thead tr {
     }
 
     mat-icon {
-      font-size: 1.125em;
-      height: 1.125em;
-      width: 1.125em;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .danger-text {
-    bottom: 0.125em;
+    bottom: 2px;
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.375em;
+    right: 6px;
     transition: opacity 0.3s ease;
   }
 
@@ -1638,11 +1625,12 @@ table thead tr {
   }
 }
 
+/* Enhanced tab content indicator */
 .tab-indicator {
   background: rgb(255 255 255 / 10%);
-  border-radius: 0.1875em;
-  height: 0.1875em;
-  margin-bottom: 0.9375em;
+  border-radius: 3px;
+  height: 3px;
+  margin-bottom: 15px;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -1650,7 +1638,7 @@ table thead tr {
   &::before {
     animation: tab-progress 3s ease-in-out infinite;
     background: linear-gradient(90deg, rgb(59 130 246 / 70%), rgb(16 185 129 / 70%));
-    border-radius: 0.1875em;
+    border-radius: 3px;
     content: "";
     height: 100%;
     left: 0;
@@ -1674,12 +1662,13 @@ table thead tr {
   }
 }
 
+/* Enhanced logger controls with synchronized styles */
 .logger-tab {
   .logger-controls {
     align-items: center;
     background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 0.625em;
+    border-radius: 10px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
     display: flex;
     justify-content: space-between;
@@ -1688,6 +1677,7 @@ table thead tr {
     padding: 1rem;
     position: relative;
 
+    /* Add star background effect */
     &::before {
       animation: twinkleStars 8s infinite alternate;
       background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px), radial-gradient(circle, rgb(255 215 0 / 5%) 1px, transparent 1px);
@@ -1778,12 +1768,12 @@ table thead tr {
         align-items: center;
         background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
         border: none;
-        border-radius: 0.25em;
+        border-radius: 4px;
         box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: white;
         display: flex;
-        gap: 0.5em;
-        height: 2.25em;
+        gap: 8px;
+        height: 36px;
         overflow: hidden;
         padding: 0 1rem;
         position: relative;
@@ -1814,9 +1804,9 @@ table thead tr {
         }
 
         mat-icon {
-          font-size: 1.125em;
-          height: 1.125em;
-          width: 1.125em;
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
         }
       }
     }
@@ -1847,6 +1837,7 @@ table thead tr {
   }
 }
 
+/* Add stars animation for log level selector */
 .mat-button-toggle-group::after {
   animation: stars-pulse 4s infinite;
   background-image: radial-gradient(circle, rgb(255 255 255 / 30%) 1px, transparent 1px);
@@ -1878,20 +1869,21 @@ table thead tr {
   }
 }
 
+/* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
   background: linear-gradient(135deg, rgb(30 41 59 / 90%), rgb(17 24 39 / 100%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 25%);
-  margin-bottom: 0.625em !important;                     
+  margin-bottom: 10px !important; // Reduced from 15px
   overflow: hidden;
-  padding: 0.375em;
+  padding: 6px;
   position: relative;
 
   &::before {
     background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     content: "";
-    height: 0.1875em;
+    height: 3px;
     left: 0;
     opacity: 0.8;
     position: absolute;
@@ -1900,6 +1892,7 @@ table thead tr {
     z-index: 1;
   }
 
+  /* Star background effect */
   &::after {
     animation: twinkle-bg 8s infinite alternate;
     background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px);
@@ -1915,9 +1908,9 @@ table thead tr {
   }
 
   .mat-mdc-tab {
-    border-radius: 0.5em;
-    height: 3.75em;
-    min-width: 7.5em;
+    border-radius: 8px;
+    height: 60px;
+    min-width: 120px;
     opacity: 0.7;
     overflow: hidden;
     position: relative;
@@ -1934,6 +1927,7 @@ table thead tr {
       opacity: 1;
       transform: translateY(-2px);
 
+      /* Pulse effect for active tab */
       &::before {
         animation: tab-pulse 2s infinite;
         background: radial-gradient(circle at center, rgb(255 255 255 / 40%) 0%, rgb(255 255 255 / 0%) 60%);
@@ -1946,18 +1940,20 @@ table thead tr {
         top: 0;
       }
 
+      /* Animated border effect */
       &::after {
         animation: sliding-gradient 3s linear infinite;
         background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         bottom: 0;
         content: "";
-        height: 0.1875em;
+        height: 3px;
         left: 0;
         position: absolute;
         width: 100%;
       }
 
+      /* Make tab icon and label brighter */
       .mat-icon,
       .mdc-tab__text-label {
         color: white;
@@ -1968,32 +1964,33 @@ table thead tr {
 
   .mat-icon {
     color: rgb(255 255 255 / 90%);
-    font-size: 1.375em;
-    height: 1.375em;
-    margin-bottom: 0.25em;
+    font-size: 22px;
+    height: 22px;
+    margin-bottom: 4px;
     transition: all 0.3s ease;
-    width: 1.375em;
+    width: 22px;
   }
 
   .mdc-tab__text-label {
     color: rgb(255 255 255 / 90%);
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-top: 0.125em;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
     transition: all 0.3s ease;
   }
 }
 
+/* Clear logs button styled like toggles */
 .clear-logs-container {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   overflow: hidden;
-  padding: 0.25em 0.75em;
+  padding: 4px 12px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -2028,10 +2025,10 @@ table thead tr {
     cursor: pointer;
     display: flex;
     font-weight: 500;
-    gap: 0.5em;
-    height: 2.25em;
-    letter-spacing: 0.0313em;
-    padding: 0 0.5em;
+    gap: 8px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
     transition: all 0.3s ease;
     z-index: 2;
 
@@ -2040,19 +2037,19 @@ table thead tr {
     }
 
     mat-icon {
-      font-size: 1.125em;
-      height: 1.125em;
-      width: 1.125em;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .danger-text {
-    bottom: 0.125em;
+    bottom: 2px;
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.375em;
+    right: 6px;
     transition: opacity 0.3s ease;
   }
 
@@ -2102,11 +2099,12 @@ table thead tr {
   }
 }
 
+/* Enhanced tab content indicator */
 .tab-indicator {
   background: rgb(255 255 255 / 10%);
-  border-radius: 0.1875em;
-  height: 0.1875em;
-  margin-bottom: 0.9375em;
+  border-radius: 3px;
+  height: 3px;
+  margin-bottom: 15px;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -2114,7 +2112,7 @@ table thead tr {
   &::before {
     animation: tab-progress 3s ease-in-out infinite;
     background: linear-gradient(90deg, rgb(59 130 246 / 70%), rgb(16 185 129 / 70%));
-    border-radius: 0.1875em;
+    border-radius: 3px;
     content: "";
     height: 100%;
     left: 0;
@@ -2138,12 +2136,13 @@ table thead tr {
   }
 }
 
+/* Enhanced logger controls with synchronized styles */
 .logger-tab {
   .logger-controls {
     align-items: center;
     background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 0.625em;
+    border-radius: 10px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
     display: flex;
     justify-content: space-between;
@@ -2152,6 +2151,7 @@ table thead tr {
     padding: 1rem;
     position: relative;
 
+    /* Add star background effect */
     &::before {
       animation: twinkleStars 8s infinite alternate;
       background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px), radial-gradient(circle, rgb(255 215 0 / 5%) 1px, transparent 1px);
@@ -2242,12 +2242,12 @@ table thead tr {
         align-items: center;
         background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
         border: none;
-        border-radius: 0.25em;
+        border-radius: 4px;
         box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: white;
         display: flex;
-        gap: 0.5em;
-        height: 2.25em;
+        gap: 8px;
+        height: 36px;
         overflow: hidden;
         padding: 0 1rem;
         position: relative;
@@ -2278,9 +2278,9 @@ table thead tr {
         }
 
         mat-icon {
-          font-size: 1.125em;
-          height: 1.125em;
-          width: 1.125em;
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
         }
       }
     }
@@ -2311,6 +2311,7 @@ table thead tr {
   }
 }
 
+/* Add stars animation for log level selector */
 .mat-button-toggle-group::after {
   animation: stars-pulse 4s infinite;
   background-image: radial-gradient(circle, rgb(255 255 255 / 30%) 1px, transparent 1px);
@@ -2342,20 +2343,21 @@ table thead tr {
   }
 }
 
+/* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
   background: linear-gradient(135deg, rgb(30 41 59 / 90%), rgb(17 24 39 / 100%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 25%);
-  margin-bottom: 0.625em !important;                     
+  margin-bottom: 10px !important; // Reduced from 15px
   overflow: hidden;
-  padding: 0.375em;
+  padding: 6px;
   position: relative;
 
   &::before {
     background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     content: "";
-    height: 0.1875em;
+    height: 3px;
     left: 0;
     opacity: 0.8;
     position: absolute;
@@ -2364,6 +2366,7 @@ table thead tr {
     z-index: 1;
   }
 
+  /* Star background effect */
   &::after {
     animation: twinkle-bg 8s infinite alternate;
     background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px);
@@ -2379,9 +2382,9 @@ table thead tr {
   }
 
   .mat-mdc-tab {
-    border-radius: 0.5em;
-    height: 3.75em;
-    min-width: 7.5em;
+    border-radius: 8px;
+    height: 60px;
+    min-width: 120px;
     opacity: 0.7;
     overflow: hidden;
     position: relative;
@@ -2398,6 +2401,7 @@ table thead tr {
       opacity: 1;
       transform: translateY(-2px);
 
+      /* Pulse effect for active tab */
       &::before {
         animation: tab-pulse 2s infinite;
         background: radial-gradient(circle at center, rgb(255 255 255 / 40%) 0%, rgb(255 255 255 / 0%) 60%);
@@ -2410,18 +2414,20 @@ table thead tr {
         top: 0;
       }
 
+      /* Animated border effect */
       &::after {
         animation: sliding-gradient 3s linear infinite;
         background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         bottom: 0;
         content: "";
-        height: 0.1875em;
+        height: 3px;
         left: 0;
         position: absolute;
         width: 100%;
       }
 
+      /* Make tab icon and label brighter */
       .mat-icon,
       .mdc-tab__text-label {
         color: white;
@@ -2432,32 +2438,33 @@ table thead tr {
 
   .mat-icon {
     color: rgb(255 255 255 / 90%);
-    font-size: 1.375em;
-    height: 1.375em;
-    margin-bottom: 0.25em;
+    font-size: 22px;
+    height: 22px;
+    margin-bottom: 4px;
     transition: all 0.3s ease;
-    width: 1.375em;
+    width: 22px;
   }
 
   .mdc-tab__text-label {
     color: rgb(255 255 255 / 90%);
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-top: 0.125em;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
     transition: all 0.3s ease;
   }
 }
 
+/* Clear logs button styled like toggles */
 .clear-logs-container {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   overflow: hidden;
-  padding: 0.25em 0.75em;
+  padding: 4px 12px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -2492,10 +2499,10 @@ table thead tr {
     cursor: pointer;
     display: flex;
     font-weight: 500;
-    gap: 0.5em;
-    height: 2.25em;
-    letter-spacing: 0.0313em;
-    padding: 0 0.5em;
+    gap: 8px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
     transition: all 0.3s ease;
     z-index: 2;
 
@@ -2504,19 +2511,19 @@ table thead tr {
     }
 
     mat-icon {
-      font-size: 1.125em;
-      height: 1.125em;
-      width: 1.125em;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .danger-text {
-    bottom: 0.125em;
+    bottom: 2px;
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.375em;
+    right: 6px;
     transition: opacity 0.3s ease;
   }
 
@@ -2566,11 +2573,12 @@ table thead tr {
   }
 }
 
+/* Enhanced tab content indicator */
 .tab-indicator {
   background: rgb(255 255 255 / 10%);
-  border-radius: 0.1875em;
-  height: 0.1875em;
-  margin-bottom: 0.9375em;
+  border-radius: 3px;
+  height: 3px;
+  margin-bottom: 15px;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -2578,7 +2586,7 @@ table thead tr {
   &::before {
     animation: tab-progress 3s ease-in-out infinite;
     background: linear-gradient(90deg, rgb(59 130 246 / 70%), rgb(16 185 129 / 70%));
-    border-radius: 0.1875em;
+    border-radius: 3px;
     content: "";
     height: 100%;
     left: 0;
@@ -2602,12 +2610,13 @@ table thead tr {
   }
 }
 
+/* Enhanced logger controls with synchronized styles */
 .logger-tab {
   .logger-controls {
     align-items: center;
     background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 0.625em;
+    border-radius: 10px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
     display: flex;
     justify-content: space-between;
@@ -2616,6 +2625,7 @@ table thead tr {
     padding: 1rem;
     position: relative;
 
+    /* Add star background effect */
     &::before {
       animation: twinkleStars 8s infinite alternate;
       background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px), radial-gradient(circle, rgb(255 215 0 / 5%) 1px, transparent 1px);
@@ -2706,12 +2716,12 @@ table thead tr {
         align-items: center;
         background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
         border: none;
-        border-radius: 0.25em;
+        border-radius: 4px;
         box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: white;
         display: flex;
-        gap: 0.5em;
-        height: 2.25em;
+        gap: 8px;
+        height: 36px;
         overflow: hidden;
         padding: 0 1rem;
         position: relative;
@@ -2742,9 +2752,9 @@ table thead tr {
         }
 
         mat-icon {
-          font-size: 1.125em;
-          height: 1.125em;
-          width: 1.125em;
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
         }
       }
     }
@@ -2775,6 +2785,7 @@ table thead tr {
   }
 }
 
+/* Add stars animation for log level selector */
 .mat-button-toggle-group::after {
   animation: stars-pulse 4s infinite;
   background-image: radial-gradient(circle, rgb(255 255 255 / 30%) 1px, transparent 1px);
@@ -2806,20 +2817,21 @@ table thead tr {
   }
 }
 
+/* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
   background: linear-gradient(135deg, rgb(30 41 59 / 90%), rgb(17 24 39 / 100%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 25%);
-  margin-bottom: 0.625em !important;                     
+  margin-bottom: 10px !important; // Reduced from 15px
   overflow: hidden;
-  padding: 0.375em;
+  padding: 6px;
   position: relative;
 
   &::before {
     background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     content: "";
-    height: 0.1875em;
+    height: 3px;
     left: 0;
     opacity: 0.8;
     position: absolute;
@@ -2828,6 +2840,7 @@ table thead tr {
     z-index: 1;
   }
 
+  /* Star background effect */
   &::after {
     animation: twinkle-bg 8s infinite alternate;
     background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px);
@@ -2843,9 +2856,9 @@ table thead tr {
   }
 
   .mat-mdc-tab {
-    border-radius: 0.5em;
-    height: 3.75em;
-    min-width: 7.5em;
+    border-radius: 8px;
+    height: 60px;
+    min-width: 120px;
     opacity: 0.7;
     overflow: hidden;
     position: relative;
@@ -2862,6 +2875,7 @@ table thead tr {
       opacity: 1;
       transform: translateY(-2px);
 
+      /* Pulse effect for active tab */
       &::before {
         animation: tab-pulse 2s infinite;
         background: radial-gradient(circle at center, rgb(255 255 255 / 40%) 0%, rgb(255 255 255 / 0%) 60%);
@@ -2874,18 +2888,20 @@ table thead tr {
         top: 0;
       }
 
+      /* Animated border effect */
       &::after {
         animation: sliding-gradient 3s linear infinite;
         background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         bottom: 0;
         content: "";
-        height: 0.1875em;
+        height: 3px;
         left: 0;
         position: absolute;
         width: 100%;
       }
 
+      /* Make tab icon and label brighter */
       .mat-icon,
       .mdc-tab__text-label {
         color: white;
@@ -2896,32 +2912,33 @@ table thead tr {
 
   .mat-icon {
     color: rgb(255 255 255 / 90%);
-    font-size: 1.375em;
-    height: 1.375em;
-    margin-bottom: 0.25em;
+    font-size: 22px;
+    height: 22px;
+    margin-bottom: 4px;
     transition: all 0.3s ease;
-    width: 1.375em;
+    width: 22px;
   }
 
   .mdc-tab__text-label {
     color: rgb(255 255 255 / 90%);
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-top: 0.125em;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
     transition: all 0.3s ease;
   }
 }
 
+/* Clear logs button styled like toggles */
 .clear-logs-container {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   overflow: hidden;
-  padding: 0.25em 0.75em;
+  padding: 4px 12px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -2956,10 +2973,10 @@ table thead tr {
     cursor: pointer;
     display: flex;
     font-weight: 500;
-    gap: 0.5em;
-    height: 2.25em;
-    letter-spacing: 0.0313em;
-    padding: 0 0.5em;
+    gap: 8px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
     transition: all 0.3s ease;
     z-index: 2;
 
@@ -2968,19 +2985,19 @@ table thead tr {
     }
 
     mat-icon {
-      font-size: 1.125em;
-      height: 1.125em;
-      width: 1.125em;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .danger-text {
-    bottom: 0.125em;
+    bottom: 2px;
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.375em;
+    right: 6px;
     transition: opacity 0.3s ease;
   }
 
@@ -3030,11 +3047,12 @@ table thead tr {
   }
 }
 
+/* Enhanced tab content indicator */
 .tab-indicator {
   background: rgb(255 255 255 / 10%);
-  border-radius: 0.1875em;
-  height: 0.1875em;
-  margin-bottom: 0.9375em;
+  border-radius: 3px;
+  height: 3px;
+  margin-bottom: 15px;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -3042,7 +3060,7 @@ table thead tr {
   &::before {
     animation: tab-progress 3s ease-in-out infinite;
     background: linear-gradient(90deg, rgb(59 130 246 / 70%), rgb(16 185 129 / 70%));
-    border-radius: 0.1875em;
+    border-radius: 3px;
     content: "";
     height: 100%;
     left: 0;
@@ -3066,12 +3084,13 @@ table thead tr {
   }
 }
 
+/* Enhanced logger controls with synchronized styles */
 .logger-tab {
   .logger-controls {
     align-items: center;
     background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 0.625em;
+    border-radius: 10px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
     display: flex;
     justify-content: space-between;
@@ -3080,6 +3099,7 @@ table thead tr {
     padding: 1rem;
     position: relative;
 
+    /* Add star background effect */
     &::before {
       animation: twinkleStars 8s infinite alternate;
       background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px), radial-gradient(circle, rgb(255 215 0 / 5%) 1px, transparent 1px);
@@ -3170,12 +3190,12 @@ table thead tr {
         align-items: center;
         background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
         border: none;
-        border-radius: 0.25em;
+        border-radius: 4px;
         box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: white;
         display: flex;
-        gap: 0.5em;
-        height: 2.25em;
+        gap: 8px;
+        height: 36px;
         overflow: hidden;
         padding: 0 1rem;
         position: relative;
@@ -3206,9 +3226,9 @@ table thead tr {
         }
 
         mat-icon {
-          font-size: 1.125em;
-          height: 1.125em;
-          width: 1.125em;
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
         }
       }
     }
@@ -3239,6 +3259,7 @@ table thead tr {
   }
 }
 
+/* Add stars animation for log level selector */
 .mat-button-toggle-group::after {
   animation: stars-pulse 4s infinite;
   background-image: radial-gradient(circle, rgb(255 255 255 / 30%) 1px, transparent 1px);
@@ -3270,20 +3291,21 @@ table thead tr {
   }
 }
 
+/* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
   background: linear-gradient(135deg, rgb(30 41 59 / 90%), rgb(17 24 39 / 100%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 25%);
-  margin-bottom: 0.625em !important;                     
+  margin-bottom: 10px !important; // Reduced from 15px
   overflow: hidden;
-  padding: 0.375em;
+  padding: 6px;
   position: relative;
 
   &::before {
     background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     content: "";
-    height: 0.1875em;
+    height: 3px;
     left: 0;
     opacity: 0.8;
     position: absolute;
@@ -3292,6 +3314,7 @@ table thead tr {
     z-index: 1;
   }
 
+  /* Star background effect */
   &::after {
     animation: twinkle-bg 8s infinite alternate;
     background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px);
@@ -3307,9 +3330,9 @@ table thead tr {
   }
 
   .mat-mdc-tab {
-    border-radius: 0.5em;
-    height: 3.75em;
-    min-width: 7.5em;
+    border-radius: 8px;
+    height: 60px;
+    min-width: 120px;
     opacity: 0.7;
     overflow: hidden;
     position: relative;
@@ -3326,6 +3349,7 @@ table thead tr {
       opacity: 1;
       transform: translateY(-2px);
 
+      /* Pulse effect for active tab */
       &::before {
         animation: tab-pulse 2s infinite;
         background: radial-gradient(circle at center, rgb(255 255 255 / 40%) 0%, rgb(255 255 255 / 0%) 60%);
@@ -3338,18 +3362,20 @@ table thead tr {
         top: 0;
       }
 
+      /* Animated border effect */
       &::after {
         animation: sliding-gradient 3s linear infinite;
         background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         bottom: 0;
         content: "";
-        height: 0.1875em;
+        height: 3px;
         left: 0;
         position: absolute;
         width: 100%;
       }
 
+      /* Make tab icon and label brighter */
       .mat-icon,
       .mdc-tab__text-label {
         color: white;
@@ -3360,32 +3386,33 @@ table thead tr {
 
   .mat-icon {
     color: rgb(255 255 255 / 90%);
-    font-size: 1.375em;
-    height: 1.375em;
-    margin-bottom: 0.25em;
+    font-size: 22px;
+    height: 22px;
+    margin-bottom: 4px;
     transition: all 0.3s ease;
-    width: 1.375em;
+    width: 22px;
   }
 
   .mdc-tab__text-label {
     color: rgb(255 255 255 / 90%);
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-top: 0.125em;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
     transition: all 0.3s ease;
   }
 }
 
+/* Clear logs button styled like toggles */
 .clear-logs-container {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   overflow: hidden;
-  padding: 0.25em 0.75em;
+  padding: 4px 12px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -3420,10 +3447,10 @@ table thead tr {
     cursor: pointer;
     display: flex;
     font-weight: 500;
-    gap: 0.5em;
-    height: 2.25em;
-    letter-spacing: 0.0313em;
-    padding: 0 0.5em;
+    gap: 8px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
     transition: all 0.3s ease;
     z-index: 2;
 
@@ -3432,19 +3459,19 @@ table thead tr {
     }
 
     mat-icon {
-      font-size: 1.125em;
-      height: 1.125em;
-      width: 1.125em;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .danger-text {
-    bottom: 0.125em;
+    bottom: 2px;
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.375em;
+    right: 6px;
     transition: opacity 0.3s ease;
   }
 
@@ -3494,11 +3521,12 @@ table thead tr {
   }
 }
 
+/* Enhanced tab content indicator */
 .tab-indicator {
   background: rgb(255 255 255 / 10%);
-  border-radius: 0.1875em;
-  height: 0.1875em;
-  margin-bottom: 0.9375em;
+  border-radius: 3px;
+  height: 3px;
+  margin-bottom: 15px;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -3506,7 +3534,7 @@ table thead tr {
   &::before {
     animation: tab-progress 3s ease-in-out infinite;
     background: linear-gradient(90deg, rgb(59 130 246 / 70%), rgb(16 185 129 / 70%));
-    border-radius: 0.1875em;
+    border-radius: 3px;
     content: "";
     height: 100%;
     left: 0;
@@ -3530,12 +3558,13 @@ table thead tr {
   }
 }
 
+/* Enhanced logger controls with synchronized styles */
 .logger-tab {
   .logger-controls {
     align-items: center;
     background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 0.625em;
+    border-radius: 10px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
     display: flex;
     justify-content: space-between;
@@ -3544,6 +3573,7 @@ table thead tr {
     padding: 1rem;
     position: relative;
 
+    /* Add star background effect */
     &::before {
       animation: twinkleStars 8s infinite alternate;
       background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px), radial-gradient(circle, rgb(255 215 0 / 5%) 1px, transparent 1px);
@@ -3634,12 +3664,12 @@ table thead tr {
         align-items: center;
         background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
         border: none;
-        border-radius: 0.25em;
+        border-radius: 4px;
         box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: white;
         display: flex;
-        gap: 0.5em;
-        height: 2.25em;
+        gap: 8px;
+        height: 36px;
         overflow: hidden;
         padding: 0 1rem;
         position: relative;
@@ -3670,9 +3700,9 @@ table thead tr {
         }
 
         mat-icon {
-          font-size: 1.125em;
-          height: 1.125em;
-          width: 1.125em;
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
         }
       }
     }
@@ -3703,6 +3733,7 @@ table thead tr {
   }
 }
 
+/* Add stars animation for log level selector */
 .mat-button-toggle-group::after {
   animation: stars-pulse 4s infinite;
   background-image: radial-gradient(circle, rgb(255 255 255 / 30%) 1px, transparent 1px);
@@ -3734,20 +3765,21 @@ table thead tr {
   }
 }
 
+/* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
   background: linear-gradient(135deg, rgb(30 41 59 / 90%), rgb(17 24 39 / 100%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 25%);
-  margin-bottom: 0.625em !important;                     
+  margin-bottom: 10px !important; // Reduced from 15px
   overflow: hidden;
-  padding: 0.375em;
+  padding: 6px;
   position: relative;
 
   &::before {
     background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     content: "";
-    height: 0.1875em;
+    height: 3px;
     left: 0;
     opacity: 0.8;
     position: absolute;
@@ -3756,6 +3788,7 @@ table thead tr {
     z-index: 1;
   }
 
+  /* Star background effect */
   &::after {
     animation: twinkle-bg 8s infinite alternate;
     background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px);
@@ -3771,9 +3804,9 @@ table thead tr {
   }
 
   .mat-mdc-tab {
-    border-radius: 0.5em;
-    height: 3.75em;
-    min-width: 7.5em;
+    border-radius: 8px;
+    height: 60px;
+    min-width: 120px;
     opacity: 0.7;
     overflow: hidden;
     position: relative;
@@ -3790,6 +3823,7 @@ table thead tr {
       opacity: 1;
       transform: translateY(-2px);
 
+      /* Pulse effect for active tab */
       &::before {
         animation: tab-pulse 2s infinite;
         background: radial-gradient(circle at center, rgb(255 255 255 / 40%) 0%, rgb(255 255 255 / 0%) 60%);
@@ -3802,18 +3836,20 @@ table thead tr {
         top: 0;
       }
 
+      /* Animated border effect */
       &::after {
         animation: sliding-gradient 3s linear infinite;
         background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         bottom: 0;
         content: "";
-        height: 0.1875em;
+        height: 3px;
         left: 0;
         position: absolute;
         width: 100%;
       }
 
+      /* Make tab icon and label brighter */
       .mat-icon,
       .mdc-tab__text-label {
         color: white;
@@ -3824,32 +3860,33 @@ table thead tr {
 
   .mat-icon {
     color: rgb(255 255 255 / 90%);
-    font-size: 1.375em;
-    height: 1.375em;
-    margin-bottom: 0.25em;
+    font-size: 22px;
+    height: 22px;
+    margin-bottom: 4px;
     transition: all 0.3s ease;
-    width: 1.375em;
+    width: 22px;
   }
 
   .mdc-tab__text-label {
     color: rgb(255 255 255 / 90%);
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-top: 0.125em;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
     transition: all 0.3s ease;
   }
 }
 
+/* Clear logs button styled like toggles */
 .clear-logs-container {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   overflow: hidden;
-  padding: 0.25em 0.75em;
+  padding: 4px 12px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -3884,10 +3921,10 @@ table thead tr {
     cursor: pointer;
     display: flex;
     font-weight: 500;
-    gap: 0.5em;
-    height: 2.25em;
-    letter-spacing: 0.0313em;
-    padding: 0 0.5em;
+    gap: 8px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
     transition: all 0.3s ease;
     z-index: 2;
 
@@ -3896,19 +3933,19 @@ table thead tr {
     }
 
     mat-icon {
-      font-size: 1.125em;
-      height: 1.125em;
-      width: 1.125em;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .danger-text {
-    bottom: 0.125em;
+    bottom: 2px;
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.375em;
+    right: 6px;
     transition: opacity 0.3s ease;
   }
 
@@ -3958,11 +3995,12 @@ table thead tr {
   }
 }
 
+/* Enhanced tab content indicator */
 .tab-indicator {
   background: rgb(255 255 255 / 10%);
-  border-radius: 0.1875em;
-  height: 0.1875em;
-  margin-bottom: 0.9375em;
+  border-radius: 3px;
+  height: 3px;
+  margin-bottom: 15px;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -3970,7 +4008,7 @@ table thead tr {
   &::before {
     animation: tab-progress 3s ease-in-out infinite;
     background: linear-gradient(90deg, rgb(59 130 246 / 70%), rgb(16 185 129 / 70%));
-    border-radius: 0.1875em;
+    border-radius: 3px;
     content: "";
     height: 100%;
     left: 0;
@@ -3994,12 +4032,13 @@ table thead tr {
   }
 }
 
+/* Enhanced logger controls with synchronized styles */
 .logger-tab {
   .logger-controls {
     align-items: center;
     background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 0.625em;
+    border-radius: 10px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
     display: flex;
     justify-content: space-between;
@@ -4008,6 +4047,7 @@ table thead tr {
     padding: 1rem;
     position: relative;
 
+    /* Add star background effect */
     &::before {
       animation: twinkleStars 8s infinite alternate;
       background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px), radial-gradient(circle, rgb(255 215 0 / 5%) 1px, transparent 1px);
@@ -4098,12 +4138,12 @@ table thead tr {
         align-items: center;
         background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
         border: none;
-        border-radius: 0.25em;
+        border-radius: 4px;
         box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: white;
         display: flex;
-        gap: 0.5em;
-        height: 2.25em;
+        gap: 8px;
+        height: 36px;
         overflow: hidden;
         padding: 0 1rem;
         position: relative;
@@ -4134,9 +4174,9 @@ table thead tr {
         }
 
         mat-icon {
-          font-size: 1.125em;
-          height: 1.125em;
-          width: 1.125em;
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
         }
       }
     }
@@ -4167,6 +4207,7 @@ table thead tr {
   }
 }
 
+/* Add stars animation for log level selector */
 .mat-button-toggle-group::after {
   animation: stars-pulse 4s infinite;
   background-image: radial-gradient(circle, rgb(255 255 255 / 30%) 1px, transparent 1px);
@@ -4198,20 +4239,21 @@ table thead tr {
   }
 }
 
+/* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
   background: linear-gradient(135deg, rgb(30 41 59 / 90%), rgb(17 24 39 / 100%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 25%);
-  margin-bottom: 0.625em !important;                     
+  margin-bottom: 10px !important; // Reduced from 15px
   overflow: hidden;
-  padding: 0.375em;
+  padding: 6px;
   position: relative;
 
   &::before {
     background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     content: "";
-    height: 0.1875em;
+    height: 3px;
     left: 0;
     opacity: 0.8;
     position: absolute;
@@ -4220,6 +4262,7 @@ table thead tr {
     z-index: 1;
   }
 
+  /* Star background effect */
   &::after {
     animation: twinkle-bg 8s infinite alternate;
     background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px);
@@ -4235,9 +4278,9 @@ table thead tr {
   }
 
   .mat-mdc-tab {
-    border-radius: 0.5em;
-    height: 3.75em;
-    min-width: 7.5em;
+    border-radius: 8px;
+    height: 60px;
+    min-width: 120px;
     opacity: 0.7;
     overflow: hidden;
     position: relative;
@@ -4254,6 +4297,7 @@ table thead tr {
       opacity: 1;
       transform: translateY(-2px);
 
+      /* Pulse effect for active tab */
       &::before {
         animation: tab-pulse 2s infinite;
         background: radial-gradient(circle at center, rgb(255 255 255 / 40%) 0%, rgb(255 255 255 / 0%) 60%);
@@ -4266,18 +4310,20 @@ table thead tr {
         top: 0;
       }
 
+      /* Animated border effect */
       &::after {
         animation: sliding-gradient 3s linear infinite;
         background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         bottom: 0;
         content: "";
-        height: 0.1875em;
+        height: 3px;
         left: 0;
         position: absolute;
         width: 100%;
       }
 
+      /* Make tab icon and label brighter */
       .mat-icon,
       .mdc-tab__text-label {
         color: white;
@@ -4288,32 +4334,33 @@ table thead tr {
 
   .mat-icon {
     color: rgb(255 255 255 / 90%);
-    font-size: 1.375em;
-    height: 1.375em;
-    margin-bottom: 0.25em;
+    font-size: 22px;
+    height: 22px;
+    margin-bottom: 4px;
     transition: all 0.3s ease;
-    width: 1.375em;
+    width: 22px;
   }
 
   .mdc-tab__text-label {
     color: rgb(255 255 255 / 90%);
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-top: 0.125em;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
     transition: all 0.3s ease;
   }
 }
 
+/* Clear logs button styled like toggles */
 .clear-logs-container {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   overflow: hidden;
-  padding: 0.25em 0.75em;
+  padding: 4px 12px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -4348,10 +4395,10 @@ table thead tr {
     cursor: pointer;
     display: flex;
     font-weight: 500;
-    gap: 0.5em;
-    height: 2.25em;
-    letter-spacing: 0.0313em;
-    padding: 0 0.5em;
+    gap: 8px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
     transition: all 0.3s ease;
     z-index: 2;
 
@@ -4360,19 +4407,19 @@ table thead tr {
     }
 
     mat-icon {
-      font-size: 1.125em;
-      height: 1.125em;
-      width: 1.125em;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .danger-text {
-    bottom: 0.125em;
+    bottom: 2px;
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.375em;
+    right: 6px;
     transition: opacity 0.3s ease;
   }
 
@@ -4422,11 +4469,12 @@ table thead tr {
   }
 }
 
+/* Enhanced tab content indicator */
 .tab-indicator {
   background: rgb(255 255 255 / 10%);
-  border-radius: 0.1875em;
-  height: 0.1875em;
-  margin-bottom: 0.9375em;
+  border-radius: 3px;
+  height: 3px;
+  margin-bottom: 15px;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -4434,7 +4482,7 @@ table thead tr {
   &::before {
     animation: tab-progress 3s ease-in-out infinite;
     background: linear-gradient(90deg, rgb(59 130 246 / 70%), rgb(16 185 129 / 70%));
-    border-radius: 0.1875em;
+    border-radius: 3px;
     content: "";
     height: 100%;
     left: 0;
@@ -4458,12 +4506,13 @@ table thead tr {
   }
 }
 
+/* Enhanced logger controls with synchronized styles */
 .logger-tab {
   .logger-controls {
     align-items: center;
     background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 0.625em;
+    border-radius: 10px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
     display: flex;
     justify-content: space-between;
@@ -4472,6 +4521,7 @@ table thead tr {
     padding: 1rem;
     position: relative;
 
+    /* Add star background effect */
     &::before {
       animation: twinkleStars 8s infinite alternate;
       background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px), radial-gradient(circle, rgb(255 215 0 / 5%) 1px, transparent 1px);
@@ -4562,12 +4612,12 @@ table thead tr {
         align-items: center;
         background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
         border: none;
-        border-radius: 0.25em;
+        border-radius: 4px;
         box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: white;
         display: flex;
-        gap: 0.5em;
-        height: 2.25em;
+        gap: 8px;
+        height: 36px;
         overflow: hidden;
         padding: 0 1rem;
         position: relative;
@@ -4598,9 +4648,9 @@ table thead tr {
         }
 
         mat-icon {
-          font-size: 1.125em;
-          height: 1.125em;
-          width: 1.125em;
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
         }
       }
     }
@@ -4631,6 +4681,7 @@ table thead tr {
   }
 }
 
+/* Add stars animation for log level selector */
 .mat-button-toggle-group::after {
   animation: stars-pulse 4s infinite;
   background-image: radial-gradient(circle, rgb(255 255 255 / 30%) 1px, transparent 1px);
@@ -4662,20 +4713,21 @@ table thead tr {
   }
 }
 
+/* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
   background: linear-gradient(135deg, rgb(30 41 59 / 90%), rgb(17 24 39 / 100%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 25%);
-  margin-bottom: 0.625em !important;                     
+  margin-bottom: 10px !important; // Reduced from 15px
   overflow: hidden;
-  padding: 0.375em;
+  padding: 6px;
   position: relative;
 
   &::before {
     background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     content: "";
-    height: 0.1875em;
+    height: 3px;
     left: 0;
     opacity: 0.8;
     position: absolute;
@@ -4684,6 +4736,7 @@ table thead tr {
     z-index: 1;
   }
 
+  /* Star background effect */
   &::after {
     animation: twinkle-bg 8s infinite alternate;
     background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px);
@@ -4699,9 +4752,9 @@ table thead tr {
   }
 
   .mat-mdc-tab {
-    border-radius: 0.5em;
-    height: 3.75em;
-    min-width: 7.5em;
+    border-radius: 8px;
+    height: 60px;
+    min-width: 120px;
     opacity: 0.7;
     overflow: hidden;
     position: relative;
@@ -4718,6 +4771,7 @@ table thead tr {
       opacity: 1;
       transform: translateY(-2px);
 
+      /* Pulse effect for active tab */
       &::before {
         animation: tab-pulse 2s infinite;
         background: radial-gradient(circle at center, rgb(255 255 255 / 40%) 0%, rgb(255 255 255 / 0%) 60%);
@@ -4730,18 +4784,20 @@ table thead tr {
         top: 0;
       }
 
+      /* Animated border effect */
       &::after {
         animation: sliding-gradient 3s linear infinite;
         background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         bottom: 0;
         content: "";
-        height: 0.1875em;
+        height: 3px;
         left: 0;
         position: absolute;
         width: 100%;
       }
 
+      /* Make tab icon and label brighter */
       .mat-icon,
       .mdc-tab__text-label {
         color: white;
@@ -4752,32 +4808,33 @@ table thead tr {
 
   .mat-icon {
     color: rgb(255 255 255 / 90%);
-    font-size: 1.375em;
-    height: 1.375em;
-    margin-bottom: 0.25em;
+    font-size: 22px;
+    height: 22px;
+    margin-bottom: 4px;
     transition: all 0.3s ease;
-    width: 1.375em;
+    width: 22px;
   }
 
   .mdc-tab__text-label {
     color: rgb(255 255 255 / 90%);
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-top: 0.125em;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
     transition: all 0.3s ease;
   }
 }
 
+/* Clear logs button styled like toggles */
 .clear-logs-container {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   overflow: hidden;
-  padding: 0.25em 0.75em;
+  padding: 4px 12px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -4812,10 +4869,10 @@ table thead tr {
     cursor: pointer;
     display: flex;
     font-weight: 500;
-    gap: 0.5em;
-    height: 2.25em;
-    letter-spacing: 0.0313em;
-    padding: 0 0.5em;
+    gap: 8px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
     transition: all 0.3s ease;
     z-index: 2;
 
@@ -4824,19 +4881,19 @@ table thead tr {
     }
 
     mat-icon {
-      font-size: 1.125em;
-      height: 1.125em;
-      width: 1.125em;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .danger-text {
-    bottom: 0.125em;
+    bottom: 2px;
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.375em;
+    right: 6px;
     transition: opacity 0.3s ease;
   }
 
@@ -4886,11 +4943,12 @@ table thead tr {
   }
 }
 
+/* Enhanced tab content indicator */
 .tab-indicator {
   background: rgb(255 255 255 / 10%);
-  border-radius: 0.1875em;
-  height: 0.1875em;
-  margin-bottom: 0.9375em;
+  border-radius: 3px;
+  height: 3px;
+  margin-bottom: 15px;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -4898,7 +4956,7 @@ table thead tr {
   &::before {
     animation: tab-progress 3s ease-in-out infinite;
     background: linear-gradient(90deg, rgb(59 130 246 / 70%), rgb(16 185 129 / 70%));
-    border-radius: 0.1875em;
+    border-radius: 3px;
     content: "";
     height: 100%;
     left: 0;
@@ -4922,12 +4980,13 @@ table thead tr {
   }
 }
 
+/* Enhanced logger controls with synchronized styles */
 .logger-tab {
   .logger-controls {
     align-items: center;
     background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 0.625em;
+    border-radius: 10px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
     display: flex;
     justify-content: space-between;
@@ -4936,6 +4995,7 @@ table thead tr {
     padding: 1rem;
     position: relative;
 
+    /* Add star background effect */
     &::before {
       animation: twinkleStars 8s infinite alternate;
       background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px), radial-gradient(circle, rgb(255 215 0 / 5%) 1px, transparent 1px);
@@ -5026,12 +5086,12 @@ table thead tr {
         align-items: center;
         background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
         border: none;
-        border-radius: 0.25em;
+        border-radius: 4px;
         box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: white;
         display: flex;
-        gap: 0.5em;
-        height: 2.25em;
+        gap: 8px;
+        height: 36px;
         overflow: hidden;
         padding: 0 1rem;
         position: relative;
@@ -5062,9 +5122,9 @@ table thead tr {
         }
 
         mat-icon {
-          font-size: 1.125em;
-          height: 1.125em;
-          width: 1.125em;
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
         }
       }
     }
@@ -5095,6 +5155,7 @@ table thead tr {
   }
 }
 
+/* Add stars animation for log level selector */
 .mat-button-toggle-group::after {
   animation: stars-pulse 4s infinite;
   background-image: radial-gradient(circle, rgb(255 255 255 / 30%) 1px, transparent 1px);
@@ -5126,20 +5187,21 @@ table thead tr {
   }
 }
 
+/* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
   background: linear-gradient(135deg, rgb(30 41 59 / 90%), rgb(17 24 39 / 100%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 25%);
-  margin-bottom: 0.625em !important;                     
+  margin-bottom: 10px !important; // Reduced from 15px
   overflow: hidden;
-  padding: 0.375em;
+  padding: 6px;
   position: relative;
 
   &::before {
     background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     content: "";
-    height: 0.1875em;
+    height: 3px;
     left: 0;
     opacity: 0.8;
     position: absolute;
@@ -5148,6 +5210,7 @@ table thead tr {
     z-index: 1;
   }
 
+  /* Star background effect */
   &::after {
     animation: twinkle-bg 8s infinite alternate;
     background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px);
@@ -5163,9 +5226,9 @@ table thead tr {
   }
 
   .mat-mdc-tab {
-    border-radius: 0.5em;
-    height: 3.75em;
-    min-width: 7.5em;
+    border-radius: 8px;
+    height: 60px;
+    min-width: 120px;
     opacity: 0.7;
     overflow: hidden;
     position: relative;
@@ -5182,6 +5245,7 @@ table thead tr {
       opacity: 1;
       transform: translateY(-2px);
 
+      /* Pulse effect for active tab */
       &::before {
         animation: tab-pulse 2s infinite;
         background: radial-gradient(circle at center, rgb(255 255 255 / 40%) 0%, rgb(255 255 255 / 0%) 60%);
@@ -5194,18 +5258,20 @@ table thead tr {
         top: 0;
       }
 
+      /* Animated border effect */
       &::after {
         animation: sliding-gradient 3s linear infinite;
         background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         bottom: 0;
         content: "";
-        height: 0.1875em;
+        height: 3px;
         left: 0;
         position: absolute;
         width: 100%;
       }
 
+      /* Make tab icon and label brighter */
       .mat-icon,
       .mdc-tab__text-label {
         color: white;
@@ -5216,32 +5282,33 @@ table thead tr {
 
   .mat-icon {
     color: rgb(255 255 255 / 90%);
-    font-size: 1.375em;
-    height: 1.375em;
-    margin-bottom: 0.25em;
+    font-size: 22px;
+    height: 22px;
+    margin-bottom: 4px;
     transition: all 0.3s ease;
-    width: 1.375em;
+    width: 22px;
   }
 
   .mdc-tab__text-label {
     color: rgb(255 255 255 / 90%);
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-top: 0.125em;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
     transition: all 0.3s ease;
   }
 }
 
+/* Clear logs button styled like toggles */
 .clear-logs-container {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   overflow: hidden;
-  padding: 0.25em 0.75em;
+  padding: 4px 12px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -5276,10 +5343,10 @@ table thead tr {
     cursor: pointer;
     display: flex;
     font-weight: 500;
-    gap: 0.5em;
-    height: 2.25em;
-    letter-spacing: 0.0313em;
-    padding: 0 0.5em;
+    gap: 8px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
     transition: all 0.3s ease;
     z-index: 2;
 
@@ -5288,19 +5355,19 @@ table thead tr {
     }
 
     mat-icon {
-      font-size: 1.125em;
-      height: 1.125em;
-      width: 1.125em;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .danger-text {
-    bottom: 0.125em;
+    bottom: 2px;
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.375em;
+    right: 6px;
     transition: opacity 0.3s ease;
   }
 
@@ -5350,11 +5417,12 @@ table thead tr {
   }
 }
 
+/* Enhanced tab content indicator */
 .tab-indicator {
   background: rgb(255 255 255 / 10%);
-  border-radius: 0.1875em;
-  height: 0.1875em;
-  margin-bottom: 0.9375em;
+  border-radius: 3px;
+  height: 3px;
+  margin-bottom: 15px;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -5362,7 +5430,7 @@ table thead tr {
   &::before {
     animation: tab-progress 3s ease-in-out infinite;
     background: linear-gradient(90deg, rgb(59 130 246 / 70%), rgb(16 185 129 / 70%));
-    border-radius: 0.1875em;
+    border-radius: 3px;
     content: "";
     height: 100%;
     left: 0;
@@ -5386,12 +5454,13 @@ table thead tr {
   }
 }
 
+/* Enhanced logger controls with synchronized styles */
 .logger-tab {
   .logger-controls {
     align-items: center;
     background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 0.625em;
+    border-radius: 10px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
     display: flex;
     justify-content: space-between;
@@ -5400,6 +5469,7 @@ table thead tr {
     padding: 1rem;
     position: relative;
 
+    /* Add star background effect */
     &::before {
       animation: twinkleStars 8s infinite alternate;
       background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px), radial-gradient(circle, rgb(255 215 0 / 5%) 1px, transparent 1px);
@@ -5490,12 +5560,12 @@ table thead tr {
         align-items: center;
         background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
         border: none;
-        border-radius: 0.25em;
+        border-radius: 4px;
         box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: white;
         display: flex;
-        gap: 0.5em;
-        height: 2.25em;
+        gap: 8px;
+        height: 36px;
         overflow: hidden;
         padding: 0 1rem;
         position: relative;
@@ -5526,9 +5596,9 @@ table thead tr {
         }
 
         mat-icon {
-          font-size: 1.125em;
-          height: 1.125em;
-          width: 1.125em;
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
         }
       }
     }
@@ -5559,6 +5629,7 @@ table thead tr {
   }
 }
 
+/* Add stars animation for log level selector */
 .mat-button-toggle-group::after {
   animation: stars-pulse 4s infinite;
   background-image: radial-gradient(circle, rgb(255 255 255 / 30%) 1px, transparent 1px);
@@ -5590,20 +5661,21 @@ table thead tr {
   }
 }
 
+/* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
   background: linear-gradient(135deg, rgb(30 41 59 / 90%), rgb(17 24 39 / 100%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 25%);
-  margin-bottom: 0.625em !important;                     
+  margin-bottom: 10px !important; // Reduced from 15px
   overflow: hidden;
-  padding: 0.375em;
+  padding: 6px;
   position: relative;
 
   &::before {
     background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     content: "";
-    height: 0.1875em;
+    height: 3px;
     left: 0;
     opacity: 0.8;
     position: absolute;
@@ -5612,6 +5684,7 @@ table thead tr {
     z-index: 1;
   }
 
+  /* Star background effect */
   &::after {
     animation: twinkle-bg 8s infinite alternate;
     background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px);
@@ -5627,9 +5700,9 @@ table thead tr {
   }
 
   .mat-mdc-tab {
-    border-radius: 0.5em;
-    height: 3.75em;
-    min-width: 7.5em;
+    border-radius: 8px;
+    height: 60px;
+    min-width: 120px;
     opacity: 0.7;
     overflow: hidden;
     position: relative;
@@ -5646,6 +5719,7 @@ table thead tr {
       opacity: 1;
       transform: translateY(-2px);
 
+      /* Pulse effect for active tab */
       &::before {
         animation: tab-pulse 2s infinite;
         background: radial-gradient(circle at center, rgb(255 255 255 / 40%) 0%, rgb(255 255 255 / 0%) 60%);
@@ -5658,18 +5732,20 @@ table thead tr {
         top: 0;
       }
 
+      /* Animated border effect */
       &::after {
         animation: sliding-gradient 3s linear infinite;
         background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         bottom: 0;
         content: "";
-        height: 0.1875em;
+        height: 3px;
         left: 0;
         position: absolute;
         width: 100%;
       }
 
+      /* Make tab icon and label brighter */
       .mat-icon,
       .mdc-tab__text-label {
         color: white;
@@ -5680,32 +5756,33 @@ table thead tr {
 
   .mat-icon {
     color: rgb(255 255 255 / 90%);
-    font-size: 1.375em;
-    height: 1.375em;
-    margin-bottom: 0.25em;
+    font-size: 22px;
+    height: 22px;
+    margin-bottom: 4px;
     transition: all 0.3s ease;
-    width: 1.375em;
+    width: 22px;
   }
 
   .mdc-tab__text-label {
     color: rgb(255 255 255 / 90%);
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-top: 0.125em;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
     transition: all 0.3s ease;
   }
 }
 
+/* Clear logs button styled like toggles */
 .clear-logs-container {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   overflow: hidden;
-  padding: 0.25em 0.75em;
+  padding: 4px 12px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -5740,10 +5817,10 @@ table thead tr {
     cursor: pointer;
     display: flex;
     font-weight: 500;
-    gap: 0.5em;
-    height: 2.25em;
-    letter-spacing: 0.0313em;
-    padding: 0 0.5em;
+    gap: 8px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
     transition: all 0.3s ease;
     z-index: 2;
 
@@ -5752,19 +5829,19 @@ table thead tr {
     }
 
     mat-icon {
-      font-size: 1.125em;
-      height: 1.125em;
-      width: 1.125em;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .danger-text {
-    bottom: 0.125em;
+    bottom: 2px;
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.375em;
+    right: 6px;
     transition: opacity 0.3s ease;
   }
 
@@ -5814,11 +5891,12 @@ table thead tr {
   }
 }
 
+/* Enhanced tab content indicator */
 .tab-indicator {
   background: rgb(255 255 255 / 10%);
-  border-radius: 0.1875em;
-  height: 0.1875em;
-  margin-bottom: 0.9375em;
+  border-radius: 3px;
+  height: 3px;
+  margin-bottom: 15px;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -5826,7 +5904,7 @@ table thead tr {
   &::before {
     animation: tab-progress 3s ease-in-out infinite;
     background: linear-gradient(90deg, rgb(59 130 246 / 70%), rgb(16 185 129 / 70%));
-    border-radius: 0.1875em;
+    border-radius: 3px;
     content: "";
     height: 100%;
     left: 0;
@@ -5850,12 +5928,13 @@ table thead tr {
   }
 }
 
+/* Enhanced logger controls with synchronized styles */
 .logger-tab {
   .logger-controls {
     align-items: center;
     background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 0.625em;
+    border-radius: 10px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
     display: flex;
     justify-content: space-between;
@@ -5864,6 +5943,7 @@ table thead tr {
     padding: 1rem;
     position: relative;
 
+    /* Add star background effect */
     &::before {
       animation: twinkleStars 8s infinite alternate;
       background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px), radial-gradient(circle, rgb(255 215 0 / 5%) 1px, transparent 1px);
@@ -5954,12 +6034,12 @@ table thead tr {
         align-items: center;
         background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
         border: none;
-        border-radius: 0.25em;
+        border-radius: 4px;
         box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: white;
         display: flex;
-        gap: 0.5em;
-        height: 2.25em;
+        gap: 8px;
+        height: 36px;
         overflow: hidden;
         padding: 0 1rem;
         position: relative;
@@ -5990,9 +6070,9 @@ table thead tr {
         }
 
         mat-icon {
-          font-size: 1.125em;
-          height: 1.125em;
-          width: 1.125em;
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
         }
       }
     }
@@ -6023,6 +6103,7 @@ table thead tr {
   }
 }
 
+/* Add stars animation for log level selector */
 .mat-button-toggle-group::after {
   animation: stars-pulse 4s infinite;
   background-image: radial-gradient(circle, rgb(255 255 255 / 30%) 1px, transparent 1px);
@@ -6054,20 +6135,21 @@ table thead tr {
   }
 }
 
+/* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
   background: linear-gradient(135deg, rgb(30 41 59 / 90%), rgb(17 24 39 / 100%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 25%);
-  margin-bottom: 0.625em !important;                     
+  margin-bottom: 10px !important; // Reduced from 15px
   overflow: hidden;
-  padding: 0.375em;
+  padding: 6px;
   position: relative;
 
   &::before {
     background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     content: "";
-    height: 0.1875em;
+    height: 3px;
     left: 0;
     opacity: 0.8;
     position: absolute;
@@ -6076,6 +6158,7 @@ table thead tr {
     z-index: 1;
   }
 
+  /* Star background effect */
   &::after {
     animation: twinkle-bg 8s infinite alternate;
     background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px);
@@ -6091,9 +6174,9 @@ table thead tr {
   }
 
   .mat-mdc-tab {
-    border-radius: 0.5em;
-    height: 3.75em;
-    min-width: 7.5em;
+    border-radius: 8px;
+    height: 60px;
+    min-width: 120px;
     opacity: 0.7;
     overflow: hidden;
     position: relative;
@@ -6110,6 +6193,7 @@ table thead tr {
       opacity: 1;
       transform: translateY(-2px);
 
+      /* Pulse effect for active tab */
       &::before {
         animation: tab-pulse 2s infinite;
         background: radial-gradient(circle at center, rgb(255 255 255 / 40%) 0%, rgb(255 255 255 / 0%) 60%);
@@ -6122,18 +6206,20 @@ table thead tr {
         top: 0;
       }
 
+      /* Animated border effect */
       &::after {
         animation: sliding-gradient 3s linear infinite;
         background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         bottom: 0;
         content: "";
-        height: 0.1875em;
+        height: 3px;
         left: 0;
         position: absolute;
         width: 100%;
       }
 
+      /* Make tab icon and label brighter */
       .mat-icon,
       .mdc-tab__text-label {
         color: white;
@@ -6144,32 +6230,33 @@ table thead tr {
 
   .mat-icon {
     color: rgb(255 255 255 / 90%);
-    font-size: 1.375em;
-    height: 1.375em;
-    margin-bottom: 0.25em;
+    font-size: 22px;
+    height: 22px;
+    margin-bottom: 4px;
     transition: all 0.3s ease;
-    width: 1.375em;
+    width: 22px;
   }
 
   .mdc-tab__text-label {
     color: rgb(255 255 255 / 90%);
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-top: 0.125em;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
     transition: all 0.3s ease;
   }
 }
 
+/* Clear logs button styled like toggles */
 .clear-logs-container {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   overflow: hidden;
-  padding: 0.25em 0.75em;
+  padding: 4px 12px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -6204,10 +6291,10 @@ table thead tr {
     cursor: pointer;
     display: flex;
     font-weight: 500;
-    gap: 0.5em;
-    height: 2.25em;
-    letter-spacing: 0.0313em;
-    padding: 0 0.5em;
+    gap: 8px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
     transition: all 0.3s ease;
     z-index: 2;
 
@@ -6216,19 +6303,19 @@ table thead tr {
     }
 
     mat-icon {
-      font-size: 1.125em;
-      height: 1.125em;
-      width: 1.125em;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .danger-text {
-    bottom: 0.125em;
+    bottom: 2px;
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.375em;
+    right: 6px;
     transition: opacity 0.3s ease;
   }
 
@@ -6278,11 +6365,12 @@ table thead tr {
   }
 }
 
+/* Enhanced tab content indicator */
 .tab-indicator {
   background: rgb(255 255 255 / 10%);
-  border-radius: 0.1875em;
-  height: 0.1875em;
-  margin-bottom: 0.9375em;
+  border-radius: 3px;
+  height: 3px;
+  margin-bottom: 15px;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -6290,7 +6378,7 @@ table thead tr {
   &::before {
     animation: tab-progress 3s ease-in-out infinite;
     background: linear-gradient(90deg, rgb(59 130 246 / 70%), rgb(16 185 129 / 70%));
-    border-radius: 0.1875em;
+    border-radius: 3px;
     content: "";
     height: 100%;
     left: 0;
@@ -6314,12 +6402,13 @@ table thead tr {
   }
 }
 
+/* Enhanced logger controls with synchronized styles */
 .logger-tab {
   .logger-controls {
     align-items: center;
     background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 0.625em;
+    border-radius: 10px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
     display: flex;
     justify-content: space-between;
@@ -6328,6 +6417,7 @@ table thead tr {
     padding: 1rem;
     position: relative;
 
+    /* Add star background effect */
     &::before {
       animation: twinkleStars 8s infinite alternate;
       background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px), radial-gradient(circle, rgb(255 215 0 / 5%) 1px, transparent 1px);
@@ -6418,12 +6508,12 @@ table thead tr {
         align-items: center;
         background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
         border: none;
-        border-radius: 0.25em;
+        border-radius: 4px;
         box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: white;
         display: flex;
-        gap: 0.5em;
-        height: 2.25em;
+        gap: 8px;
+        height: 36px;
         overflow: hidden;
         padding: 0 1rem;
         position: relative;
@@ -6454,9 +6544,9 @@ table thead tr {
         }
 
         mat-icon {
-          font-size: 1.125em;
-          height: 1.125em;
-          width: 1.125em;
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
         }
       }
     }
@@ -6487,6 +6577,7 @@ table thead tr {
   }
 }
 
+/* Add stars animation for log level selector */
 .mat-button-toggle-group::after {
   animation: stars-pulse 4s infinite;
   background-image: radial-gradient(circle, rgb(255 255 255 / 30%) 1px, transparent 1px);
@@ -6518,20 +6609,21 @@ table thead tr {
   }
 }
 
+/* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
   background: linear-gradient(135deg, rgb(30 41 59 / 90%), rgb(17 24 39 / 100%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 25%);
-  margin-bottom: 0.625em !important;                     
+  margin-bottom: 10px !important; // Reduced from 15px
   overflow: hidden;
-  padding: 0.375em;
+  padding: 6px;
   position: relative;
 
   &::before {
     background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     content: "";
-    height: 0.1875em;
+    height: 3px;
     left: 0;
     opacity: 0.8;
     position: absolute;
@@ -6540,6 +6632,7 @@ table thead tr {
     z-index: 1;
   }
 
+  /* Star background effect */
   &::after {
     animation: twinkle-bg 8s infinite alternate;
     background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px);
@@ -6555,9 +6648,9 @@ table thead tr {
   }
 
   .mat-mdc-tab {
-    border-radius: 0.5em;
-    height: 3.75em;
-    min-width: 7.5em;
+    border-radius: 8px;
+    height: 60px;
+    min-width: 120px;
     opacity: 0.7;
     overflow: hidden;
     position: relative;
@@ -6574,6 +6667,7 @@ table thead tr {
       opacity: 1;
       transform: translateY(-2px);
 
+      /* Pulse effect for active tab */
       &::before {
         animation: tab-pulse 2s infinite;
         background: radial-gradient(circle at center, rgb(255 255 255 / 40%) 0%, rgb(255 255 255 / 0%) 60%);
@@ -6586,18 +6680,20 @@ table thead tr {
         top: 0;
       }
 
+      /* Animated border effect */
       &::after {
         animation: sliding-gradient 3s linear infinite;
         background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         bottom: 0;
         content: "";
-        height: 0.1875em;
+        height: 3px;
         left: 0;
         position: absolute;
         width: 100%;
       }
 
+      /* Make tab icon and label brighter */
       .mat-icon,
       .mdc-tab__text-label {
         color: white;
@@ -6608,32 +6704,33 @@ table thead tr {
 
   .mat-icon {
     color: rgb(255 255 255 / 90%);
-    font-size: 1.375em;
-    height: 1.375em;
-    margin-bottom: 0.25em;
+    font-size: 22px;
+    height: 22px;
+    margin-bottom: 4px;
     transition: all 0.3s ease;
-    width: 1.375em;
+    width: 22px;
   }
 
   .mdc-tab__text-label {
     color: rgb(255 255 255 / 90%);
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-top: 0.125em;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
     transition: all 0.3s ease;
   }
 }
 
+/* Clear logs button styled like toggles */
 .clear-logs-container {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   overflow: hidden;
-  padding: 0.25em 0.75em;
+  padding: 4px 12px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -6668,10 +6765,10 @@ table thead tr {
     cursor: pointer;
     display: flex;
     font-weight: 500;
-    gap: 0.5em;
-    height: 2.25em;
-    letter-spacing: 0.0313em;
-    padding: 0 0.5em;
+    gap: 8px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
     transition: all 0.3s ease;
     z-index: 2;
 
@@ -6680,19 +6777,19 @@ table thead tr {
     }
 
     mat-icon {
-      font-size: 1.125em;
-      height: 1.125em;
-      width: 1.125em;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .danger-text {
-    bottom: 0.125em;
+    bottom: 2px;
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.375em;
+    right: 6px;
     transition: opacity 0.3s ease;
   }
 
@@ -6742,11 +6839,12 @@ table thead tr {
   }
 }
 
+/* Enhanced tab content indicator */
 .tab-indicator {
   background: rgb(255 255 255 / 10%);
-  border-radius: 0.1875em;
-  height: 0.1875em;
-  margin-bottom: 0.9375em;
+  border-radius: 3px;
+  height: 3px;
+  margin-bottom: 15px;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -6754,7 +6852,7 @@ table thead tr {
   &::before {
     animation: tab-progress 3s ease-in-out infinite;
     background: linear-gradient(90deg, rgb(59 130 246 / 70%), rgb(16 185 129 / 70%));
-    border-radius: 0.1875em;
+    border-radius: 3px;
     content: "";
     height: 100%;
     left: 0;
@@ -6778,12 +6876,13 @@ table thead tr {
   }
 }
 
+/* Enhanced logger controls with synchronized styles */
 .logger-tab {
   .logger-controls {
     align-items: center;
     background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 0.625em;
+    border-radius: 10px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
     display: flex;
     justify-content: space-between;
@@ -6792,6 +6891,7 @@ table thead tr {
     padding: 1rem;
     position: relative;
 
+    /* Add star background effect */
     &::before {
       animation: twinkleStars 8s infinite alternate;
       background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px), radial-gradient(circle, rgb(255 215 0 / 5%) 1px, transparent 1px);
@@ -6882,12 +6982,12 @@ table thead tr {
         align-items: center;
         background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
         border: none;
-        border-radius: 0.25em;
+        border-radius: 4px;
         box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: white;
         display: flex;
-        gap: 0.5em;
-        height: 2.25em;
+        gap: 8px;
+        height: 36px;
         overflow: hidden;
         padding: 0 1rem;
         position: relative;
@@ -6918,9 +7018,9 @@ table thead tr {
         }
 
         mat-icon {
-          font-size: 1.125em;
-          height: 1.125em;
-          width: 1.125em;
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
         }
       }
     }
@@ -6951,6 +7051,7 @@ table thead tr {
   }
 }
 
+/* Add stars animation for log level selector */
 .mat-button-toggle-group::after {
   animation: stars-pulse 4s infinite;
   background-image: radial-gradient(circle, rgb(255 255 255 / 30%) 1px, transparent 1px);
@@ -6982,20 +7083,21 @@ table thead tr {
   }
 }
 
+/* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
   background: linear-gradient(135deg, rgb(30 41 59 / 90%), rgb(17 24 39 / 100%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 25%);
-  margin-bottom: 0.625em !important;                     
+  margin-bottom: 10px !important; // Reduced from 15px
   overflow: hidden;
-  padding: 0.375em;
+  padding: 6px;
   position: relative;
 
   &::before {
     background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     content: "";
-    height: 0.1875em;
+    height: 3px;
     left: 0;
     opacity: 0.8;
     position: absolute;
@@ -7004,6 +7106,7 @@ table thead tr {
     z-index: 1;
   }
 
+  /* Star background effect */
   &::after {
     animation: twinkle-bg 8s infinite alternate;
     background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px);
@@ -7019,9 +7122,9 @@ table thead tr {
   }
 
   .mat-mdc-tab {
-    border-radius: 0.5em;
-    height: 3.75em;
-    min-width: 7.5em;
+    border-radius: 8px;
+    height: 60px;
+    min-width: 120px;
     opacity: 0.7;
     overflow: hidden;
     position: relative;
@@ -7038,6 +7141,7 @@ table thead tr {
       opacity: 1;
       transform: translateY(-2px);
 
+      /* Pulse effect for active tab */
       &::before {
         animation: tab-pulse 2s infinite;
         background: radial-gradient(circle at center, rgb(255 255 255 / 40%) 0%, rgb(255 255 255 / 0%) 60%);
@@ -7050,18 +7154,20 @@ table thead tr {
         top: 0;
       }
 
+      /* Animated border effect */
       &::after {
         animation: sliding-gradient 3s linear infinite;
         background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         bottom: 0;
         content: "";
-        height: 0.1875em;
+        height: 3px;
         left: 0;
         position: absolute;
         width: 100%;
       }
 
+      /* Make tab icon and label brighter */
       .mat-icon,
       .mdc-tab__text-label {
         color: white;
@@ -7072,32 +7178,33 @@ table thead tr {
 
   .mat-icon {
     color: rgb(255 255 255 / 90%);
-    font-size: 1.375em;
-    height: 1.375em;
-    margin-bottom: 0.25em;
+    font-size: 22px;
+    height: 22px;
+    margin-bottom: 4px;
     transition: all 0.3s ease;
-    width: 1.375em;
+    width: 22px;
   }
 
   .mdc-tab__text-label {
     color: rgb(255 255 255 / 90%);
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-top: 0.125em;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
     transition: all 0.3s ease;
   }
 }
 
+/* Clear logs button styled like toggles */
 .clear-logs-container {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   overflow: hidden;
-  padding: 0.25em 0.75em;
+  padding: 4px 12px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -7132,10 +7239,10 @@ table thead tr {
     cursor: pointer;
     display: flex;
     font-weight: 500;
-    gap: 0.5em;
-    height: 2.25em;
-    letter-spacing: 0.0313em;
-    padding: 0 0.5em;
+    gap: 8px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
     transition: all 0.3s ease;
     z-index: 2;
 
@@ -7144,19 +7251,19 @@ table thead tr {
     }
 
     mat-icon {
-      font-size: 1.125em;
-      height: 1.125em;
-      width: 1.125em;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .danger-text {
-    bottom: 0.125em;
+    bottom: 2px;
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.375em;
+    right: 6px;
     transition: opacity 0.3s ease;
   }
 
@@ -7206,11 +7313,12 @@ table thead tr {
   }
 }
 
+/* Enhanced tab content indicator */
 .tab-indicator {
   background: rgb(255 255 255 / 10%);
-  border-radius: 0.1875em;
-  height: 0.1875em;
-  margin-bottom: 0.9375em;
+  border-radius: 3px;
+  height: 3px;
+  margin-bottom: 15px;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -7218,7 +7326,7 @@ table thead tr {
   &::before {
     animation: tab-progress 3s ease-in-out infinite;
     background: linear-gradient(90deg, rgb(59 130 246 / 70%), rgb(16 185 129 / 70%));
-    border-radius: 0.1875em;
+    border-radius: 3px;
     content: "";
     height: 100%;
     left: 0;
@@ -7242,12 +7350,13 @@ table thead tr {
   }
 }
 
+/* Enhanced logger controls with synchronized styles */
 .logger-tab {
   .logger-controls {
     align-items: center;
     background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 0.625em;
+    border-radius: 10px;
     box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
     display: flex;
     justify-content: space-between;
@@ -7256,6 +7365,7 @@ table thead tr {
     padding: 1rem;
     position: relative;
 
+    /* Add star background effect */
     &::before {
       animation: twinkleStars 8s infinite alternate;
       background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px), radial-gradient(circle, rgb(255 215 0 / 5%) 1px, transparent 1px);
@@ -7346,12 +7456,12 @@ table thead tr {
         align-items: center;
         background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
         border: none;
-        border-radius: 0.25em;
+        border-radius: 4px;
         box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: white;
         display: flex;
-        gap: 0.5em;
-        height: 2.25em;
+        gap: 8px;
+        height: 36px;
         overflow: hidden;
         padding: 0 1rem;
         position: relative;
@@ -7382,9 +7492,9 @@ table thead tr {
         }
 
         mat-icon {
-          font-size: 1.125em;
-          height: 1.125em;
-          width: 1.125em;
+          font-size: 18px;
+          height: 18px;
+          width: 18px;
         }
       }
     }
@@ -7415,6 +7525,7 @@ table thead tr {
   }
 }
 
+/* Add stars animation for log level selector */
 .mat-button-toggle-group::after {
   animation: stars-pulse 4s infinite;
   background-image: radial-gradient(circle, rgb(255 255 255 / 30%) 1px, transparent 1px);
@@ -7446,20 +7557,21 @@ table thead tr {
   }
 }
 
+/* Mat-Tab styling with patriotic theme */
 ::ng-deep .mat-mdc-tab-header {
   background: linear-gradient(135deg, rgb(30 41 59 / 90%), rgb(17 24 39 / 100%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.625em;
+  border-radius: 10px;
   box-shadow: 0 4px 15px rgb(0 0 0 / 25%);
-  margin-bottom: 0.625em !important;                     
+  margin-bottom: 10px !important; // Reduced from 15px
   overflow: hidden;
-  padding: 0.375em;
+  padding: 6px;
   position: relative;
 
   &::before {
     background: linear-gradient(90deg, vars.$usa-red 0%, vars.$usa-red 33%, vars.$usa-white 33%, vars.$usa-white 66%, vars.$usa-blue 66%, vars.$usa-blue 100%);
     content: "";
-    height: 0.1875em;
+    height: 3px;
     left: 0;
     opacity: 0.8;
     position: absolute;
@@ -7468,6 +7580,7 @@ table thead tr {
     z-index: 1;
   }
 
+  /* Star background effect */
   &::after {
     animation: twinkle-bg 8s infinite alternate;
     background-image: radial-gradient(circle, rgb(255 255 255 / 10%) 1px, transparent 1px);
@@ -7483,9 +7596,9 @@ table thead tr {
   }
 
   .mat-mdc-tab {
-    border-radius: 0.5em;
-    height: 3.75em;
-    min-width: 7.5em;
+    border-radius: 8px;
+    height: 60px;
+    min-width: 120px;
     opacity: 0.7;
     overflow: hidden;
     position: relative;
@@ -7502,6 +7615,7 @@ table thead tr {
       opacity: 1;
       transform: translateY(-2px);
 
+      /* Pulse effect for active tab */
       &::before {
         animation: tab-pulse 2s infinite;
         background: radial-gradient(circle at center, rgb(255 255 255 / 40%) 0%, rgb(255 255 255 / 0%) 60%);
@@ -7514,18 +7628,20 @@ table thead tr {
         top: 0;
       }
 
+      /* Animated border effect */
       &::after {
         animation: sliding-gradient 3s linear infinite;
         background: linear-gradient(to right, vars.$usa-red, vars.$usa-white, vars.$usa-blue);
         background-size: 200% 100%;
         bottom: 0;
         content: "";
-        height: 0.1875em;
+        height: 3px;
         left: 0;
         position: absolute;
         width: 100%;
       }
 
+      /* Make tab icon and label brighter */
       .mat-icon,
       .mdc-tab__text-label {
         color: white;
@@ -7536,32 +7652,33 @@ table thead tr {
 
   .mat-icon {
     color: rgb(255 255 255 / 90%);
-    font-size: 1.375em;
-    height: 1.375em;
-    margin-bottom: 0.25em;
+    font-size: 22px;
+    height: 22px;
+    margin-bottom: 4px;
     transition: all 0.3s ease;
-    width: 1.375em;
+    width: 22px;
   }
 
   .mdc-tab__text-label {
     color: rgb(255 255 255 / 90%);
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.0313em;
-    margin-top: 0.125em;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
     transition: all 0.3s ease;
   }
 }
 
+/* Clear logs button styled like toggles */
 .clear-logs-container {
   align-items: center;
   background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.5em;
+  border-radius: 8px;
   box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
   display: flex;
   overflow: hidden;
-  padding: 0.25em 0.75em;
+  padding: 4px 12px;
   position: relative;
   transition: all 0.3s ease;
 
@@ -7596,10 +7713,10 @@ table thead tr {
     cursor: pointer;
     display: flex;
     font-weight: 500;
-    gap: 0.5em;
-    height: 2.25em;
-    letter-spacing: 0.0313em;
-    padding: 0 0.5em;
+    gap: 8px;
+    height: 36px;
+    letter-spacing: 0.5px;
+    padding: 0 8px;
     transition: all 0.3s ease;
     z-index: 2;
 
@@ -7608,19 +7725,19 @@ table thead tr {
     }
 
     mat-icon {
-      font-size: 1.125em;
-      height: 1.125em;
-      width: 1.125em;
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
     }
   }
 
   .danger-text {
-    bottom: 0.125em;
+    bottom: 2px;
     color: #ef4444;
-    font-size: 0.5em;
+    font-size: 8px;
     opacity: 0;
     position: absolute;
-    right: 0.375em;
+    right: 6px;
     transition: opacity 0.3s ease;
   }
 

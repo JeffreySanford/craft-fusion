@@ -23,7 +23,7 @@ describe('RecipeComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [RecipeComponent],
-      imports: [RouterTestingModule],                                   
+      imports: [RouterTestingModule], // Import RouterTestingModule here
       providers: [
         { provide: PeasantKitchenService, useValue: mockPeasantKitchenService },
         { provide: Router, useValue: mockRouter },

@@ -12,7 +12,7 @@ import { StyleDirective } from '../directives/style.directive';
 
 @NgModule({
   declarations: [
-    ServerStatusComponent,                                                        
+    ServerStatusComponent, // Component must be non-standalone to be declared here
   ],
   imports: [
     CommonModule,
@@ -21,7 +21,7 @@ import { StyleDirective } from '../directives/style.directive';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-
+    // standalone directives imported so they can be re-exported
     BgColorDirective,
     TextColorDirective,
     StyleDirective,

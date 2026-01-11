@@ -33,6 +33,7 @@ export class AdminComponent implements OnInit {
   public autoScroll = true;
   public navigator = window.navigator;
 
+  // logStats moved to LogsDashboard; handled by logs component/service
   public selectedMetrics: string[] = ['memory', 'cpu', 'network'];
   public isSimulatingData = false;
   public selectedApiCall: ServiceCallMetric | null = null;
@@ -86,14 +87,17 @@ export class AdminComponent implements OnInit {
       }
     });
 
+    // Start centralized monitoring in ServicesDashboardService
     this.servicesDashboard.startMonitoring();
     this.servicesDashboard.startStatisticsPolling(this.METRICS_UPDATE_INTERVAL);
 
+    // subscribe to flattened metrics for table/chart updates
     this.serviceMetricsSubscription = this.servicesDashboard.metrics$.subscribe(metrics => {
       this.dataSource.data = metrics.slice(-50).reverse();
       this.updateServiceMetricsChart();
     });
 
+    // Subscribe to shared simulation state
     this.dataSimulationService.isSimulating$.subscribe(isSim => {
       this.isSimulatingData = isSim;
       if (this.isSimulatingData && this.isTabActive) {
@@ -102,6 +106,8 @@ export class AdminComponent implements OnInit {
         this.servicesDashboard.stopSimulation();
       }
     });
+
+    // logStats moved to LogsDashboard
 
     this.tabGroup?.selectedIndexChange.subscribe((index: number) => {
       console.debug('Tab changed to:', index);
@@ -166,7 +172,7 @@ export class AdminComponent implements OnInit {
   }
 
   toggleDataSimulation(): void {
-
+    // Delegate to centralized DataSimulationService so footer and admin share state
     this.dataSimulationService.toggleSimulating();
     const next = !this.isSimulatingData;
     this.logger.info(`Admin dashboard: ${next ? 'Enabled' : 'Disabled'} data simulation`);
@@ -177,20 +183,20 @@ export class AdminComponent implements OnInit {
   }
 
   toggleServiceStatus(service: any): void {
-
+    // Delegate toggling to the service for centralized state
     this.servicesDashboard.toggleServiceActive(service.name);
     this.logger.info(`Toggled service ${service.name} active state`);
   }
 
   clearMetrics(): void {
-
+    // Centralize clearing behavior in ServicesDashboardService
     this.servicesDashboard.clearAllMetrics();
-
+    // metrics$ subscription will update the table/chart when metricsSubject emits []
     this.logger.info('Requested clear of all service metrics');
   }
 
   clearLogs() {
-
+    // Delegate log clearing to the dashboard (which calls LoggerService)
     this.servicesDashboard.clearLogs();
     this.logger.info('Requested clear of application logs');
   }
@@ -204,6 +210,8 @@ export class AdminComponent implements OnInit {
     this.logger.info(`Toggled metric ${metric}`);
     this.servicesDashboard.applyAxesToChart(this.systemMetricsChart, this.selectedMetrics);
   }
+
+  // Chart legend handling moved to ServicesDashboardService
 
   selectApiCall(call: ServiceCallMetric): void {
     this.selectedApiCall = call;
@@ -219,4 +227,7 @@ export class AdminComponent implements OnInit {
     return 'healthy';
   }
 
+  // monitoring moved to ServicesDashboardService
+
+  // updateServiceStatsLite moved to ServicesDashboardService
 }

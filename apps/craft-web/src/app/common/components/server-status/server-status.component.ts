@@ -44,14 +44,14 @@ import { environment } from '../../../../environments/environment';
       }
     `,
   ],
-  standalone: false,                                        
+  standalone: false, // Explicitly marking as non-standalone
 })
 export class ServerStatusComponent implements OnInit, OnDestroy {
   public isServerOnline = false;
   public showStatus = !environment.production;
 
   private destroy$ = new Subject<void>();
-  private checkInterval = 30000;              
+  private checkInterval = 30000; // 30 seconds
 
   constructor(
     private apiService: ApiService,
@@ -61,10 +61,11 @@ export class ServerStatusComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
+    // Only show in non-production environments
     if (!environment.production) {
       this.checkServerStatus();
 
+      // Set up periodic checks
       interval(this.checkInterval)
         .pipe(
           takeUntil(this.destroy$),

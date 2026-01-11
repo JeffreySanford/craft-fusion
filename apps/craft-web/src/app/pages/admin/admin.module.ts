@@ -34,7 +34,7 @@ import { AuthService } from '../../common/services/auth/auth.service';
     FormsModule,
     ReactiveFormsModule,
     AdminMaterialModule,
-    ComponentsModule,                                                            
+    ComponentsModule, // Import ComponentsModule to access LoggerDisplayComponent
 
     RouterModule.forChild([{ path: '', component: AdminComponent }]),
   ],

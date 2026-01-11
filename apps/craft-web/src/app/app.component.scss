@@ -1,3 +1,4 @@
+/* Prevent horizontal overflow on html and body */
 html,
 body {
   height: 100vh;
@@ -6,42 +7,45 @@ body {
   width: 100%;
 }
 
+/* Root app container: full viewport, column layout */
 .app-container {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   height: calc(100vh - 0.75em);
 
+  /* Remove max-width and margin-right to prevent overflow */
   overflow: hidden;
   position: relative;
   width: 100%;
 }
 
+/* Header always at the top */
 app-header {
   box-sizing: border-box;
   flex-shrink: 0;
   width: 100%;
 }
 
+/* Main layout: sidebar + main-stage in a flex row */
 .layout-container {
   align-items: stretch;
   box-sizing: border-box;
-  column-gap: 1em;                                             
+  column-gap: 1em; // 1em gutter between sidebar and main-stage
   display: flex;
   flex: 1 1 0;
   flex-direction: row;
   max-height: 100%;
   min-height: 0;
   min-width: 0;
-  padding-left: 1em;
-  padding-right: 1em;
   width: 100%;
 }
 
+/* Sidebar: fixed width, full height of layout-container */
 .sidebar {
   box-sizing: border-box;
   display: flex;
-  flex: 0 0 15.5em;
+  flex: 0 0 18em;
   flex-direction: column;
   height: 75% !important;
   max-height: 75vh !important;
@@ -51,15 +55,16 @@ app-header {
 }
 
 .sidebar.collapsed {
-  flex-basis: 7em !important;
-  max-width: 7em !important;
-  min-width: 7em !important;
+  flex-basis: 0 !important;
   margin: 0 !important;
+  max-width: 0 !important;
+  min-width: 0 !important;
   overflow: hidden;
   padding: 0 !important;
-  width: 7em !important;
+  width: 0 !important;
 }
 
+/* Main-stage: fills remaining space, full height of layout-container */
 .main-stage,
 .router-content-wrapper {
   background: transparent;
@@ -82,10 +87,17 @@ app-header {
   width: 100% !important;
 }
 
-.router-content-wrapper.footer-expanded {
-  padding-bottom: var(--footer-expanded-effective-height);
+.router-content-wrapper {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  height: 100%;
+
+  // Remove width/max-width to allow main-stage to fully expand
 }
 
+/* Footer always at the bottom, styled like header */
 app-footer {
   box-sizing: border-box;
   flex-shrink: 0;
@@ -105,18 +117,25 @@ app-footer {
   z-index: -1;
 }
 
+// Define variables for clarity when footer is expanded.
+// These can be defined on :root or a more specific common ancestor like .app-container.
 :root {
-  --footer-expanded-effective-height: 10em;
-  --main-content-target-vh-when-footer-expanded: 100vh;
+  --footer-expanded-effective-height: 15em; /* This variable now represents the "size of the footer expanded height" you asked about. */
+  --main-content-target-vh-when-footer-expanded: 70vh;
   --calculated-layout-height-footer-expanded: calc(var(--main-content-target-vh-when-footer-expanded) - var(--footer-expanded-effective-height));
 }
 
+// This rule provides a base lime border.
+// The border for .layout-container.footer-expanded will be overridden by the more specific rule below.
 .main-stage.footer-expanded,
-.layout-container.footer-expanded,
+.layout-container.footer-expanded, /* Will have its border overridden by the pink one below */
 .router-content-wrapper.footer-expanded {
-  max-height: calc(100vh - var(--footer-expanded-effective-height)) !important;
+  max-height: calc(85vh - 15em) !important;
 }
 
+// Control the height of the layout-container when the footer is expanded.
+// .main-stage and .router-content-wrapper will adjust their height automatically
+// due to their `height: 100%` style, inheriting the new constrained height.
 .layout-container.footer-expanded {
   height: var(--calculated-layout-height-footer-expanded) !important;
   max-height: var(--calculated-layout-height-footer-expanded) !important;

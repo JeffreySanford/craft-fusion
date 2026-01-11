@@ -32,10 +32,10 @@ export class AlphaVantageService {
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'Unknown error!';
     if (error.error instanceof ErrorEvent) {
-
+      // Client-side or network error
       errorMessage = `Client-side error: ${error.error.message}`;
     } else {
-
+      // Backend error
       errorMessage = `Server-side error: ${error.status} ${error.message}`;
       if (error.error) {
         errorMessage += ` - ${JSON.stringify(error.error)}`;

@@ -71,6 +71,7 @@
       </div>
     </mat-tab>
 
+    <!-- Logger Tab -->
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon class="tab-icon">receipt_long</mat-icon>
@@ -103,10 +104,12 @@
 
         <app-logs-dashboard></app-logs-dashboard>
 
+        <!-- Log statistics moved into LogsDashboardComponent -->
       </div>
     </mat-tab>
   </mat-tab-group>
 
+  <!-- Footer with American-themed text only -->
   <div class="admin-footer">
     <div class="footer-text">
       <p>Secured & Monitored by <strong>CraftFusion Admin</strong></p>

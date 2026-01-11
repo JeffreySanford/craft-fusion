@@ -23,7 +23,6 @@ export class HeaderComponent implements OnInit {
 
   userMenuItems: { label: string; icon: string; action: string; active?: boolean }[] = [];
   isLoggedIn$: Observable<boolean>;
-  isAdmin$: Observable<boolean>;
   isDarkTheme = false;
 
   themeOptions: { name: ThemeName; label: string }[] = [
@@ -39,7 +38,6 @@ export class HeaderComponent implements OnInit {
     private router: Router,
   ) {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
-    this.isAdmin$ = this.authService.isAdmin$;
   }
 
   ngOnInit(): void {
@@ -50,6 +48,7 @@ export class HeaderComponent implements OnInit {
       this.logger.debug('Auth state changed', { isLoggedIn });
     });
 
+    // Track theme changes (derive dark boolean)
     this.themeService.theme$.subscribe(theme => {
       this.isDarkTheme = theme === 'dark';
       this.logger.debug('Theme changed in header', { theme });

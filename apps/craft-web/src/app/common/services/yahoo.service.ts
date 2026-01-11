@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';                   
+import { Observable, of } from 'rxjs'; // Add 'of' import
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
@@ -55,7 +55,7 @@ export class YahooService {
           message: error.message,
         });
         this.logger.endServiceCall(callId, error.status || 500);
-        return of(null);                                
+        return of(null); // Now works with proper import
       }),
     );
   }
@@ -88,7 +88,7 @@ export class YahooService {
           message: error.message,
         });
         this.logger.endServiceCall(callId, error.status || 500);
-        return of([] as HistoricalData[]);                                       
+        return of([] as HistoricalData[]); // Return an empty array as a fallback
       }),
     );
   }
@@ -111,7 +111,7 @@ export class YahooService {
           message: error.message,
         });
         this.logger.endServiceCall(callId, error.status || 500);
-        return of([]);                                       
+        return of([]); // Return an empty array as a fallback
       }),
     );
   }
@@ -135,7 +135,7 @@ export class YahooService {
           message: error.message,
         });
         this.logger.endServiceCall(callId, error.status || 500);
-        return of([]);                                       
+        return of([]); // Return an empty array as a fallback
       }),
     );
   }
@@ -159,7 +159,7 @@ export class YahooService {
           message: error.message,
         });
         this.logger.endServiceCall(callId, error.status || 500);
-        return of(null);                                
+        return of(null); // Now works with proper import
       }),
     );
   }

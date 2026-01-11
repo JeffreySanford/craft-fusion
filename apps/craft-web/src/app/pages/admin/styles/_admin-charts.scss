@@ -2,11 +2,11 @@
   animation: slide-up 0.6s ease-out forwards;
   background: linear-gradient(135deg, rgb(23 33 43 / 80%) 0%, rgb(18 26 46 / 95%) 100%);
   border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 0.75em;
+  border-radius: 12px;
   box-shadow: 0 10px 20px rgb(0 0 0 / 30%);
-  margin-bottom: 0.9375em;
+  margin-bottom: 15px;
   overflow: hidden;
-  padding: 0.9375em;
+  padding: 15px;
   position: relative;
 
   &::before {
@@ -24,8 +24,8 @@
   }
 
   canvas {
-    height: 18.75em !important;
-    max-height: 18.75em;
+    height: 300px !important;
+    max-height: 300px;
     width: 100% !important;
   }
 }

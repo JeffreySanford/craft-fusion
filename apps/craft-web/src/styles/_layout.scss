@@ -1,6 +1,7 @@
 @use "variables" as vars;
 @use "sass:map";
 
+// Basic layout containers
 .container-wrapper {
   display: flex;
   flex-direction: column;
@@ -14,15 +15,16 @@
 
 .responsive-container {
   margin: 0 auto;
-  max-width: 75em;
-  padding: 1.5em;
+  max-width: 1200px;
+  padding: 24px;
   width: 100%;
 
   @media (max-width: map.get(vars.$breakpoints, md)) {
-    padding: 1em;
+    padding: 16px;
   }
 }
 
+// Root element styles
 app-root {
   display: flex;
   flex-direction: column;
@@ -33,6 +35,7 @@ app-root {
   width: 100%;
 }
 
+// Nested layout containers
 .recipe-content-wrapper {
   display: flex;
   flex: 1;
@@ -42,6 +45,7 @@ app-root {
   overflow: visible;
 }
 
+// Flex utilities
 .flex {
   display: flex;
 }
@@ -104,17 +108,19 @@ app-root {
   align-items: stretch;
 }
 
+// Grid utilities
 .grid {
   display: grid;
 }
 
 .card-grid {
   display: grid;
-  gap: 1.5em;
-  grid-template-columns: repeat(auto-fill, minmax(18.75em, 1fr));
-  padding: 1.5em;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  padding: 24px;
 }
 
+// Spacing utilities
 @each $key, $value in vars.$spacing {
   .p-#{$key} {
     padding: $value;
@@ -181,6 +187,7 @@ app-root {
   }
 }
 
+// Responsive utilities
 @each $bp-name, $bp-value in vars.$breakpoints {
   @media (min-width: $bp-value) {
     .#{$bp-name}:flex {
@@ -201,6 +208,7 @@ app-root {
   }
 }
 
+// Scrollable container
 .scrollable {
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
@@ -211,17 +219,18 @@ app-root {
   overflow-x: auto;
 }
 
+// Dashboard layout components
 .dashboard-widget {
   background: var(--md-sys-color-surface);
-  border-radius: 0.75em;
+  border-radius: 12px;
   box-shadow: var(--md-sys-elevation-level1);
-  padding: 1em;
+  padding: 16px;
 
   .widget-header {
     align-items: center;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 1em;
+    margin-bottom: 16px;
 
     h3 {
       color: var(--md-sys-color-on-surface);
@@ -234,17 +243,18 @@ app-root {
 
     .metric-value {
       color: var(--md-sys-color-primary);
-      font-size: 2.25em;
+      font-size: 36px;
       font-weight: 500;
     }
 
     .metric-label {
       color: var(--md-sys-color-on-surface-variant);
-      font-size: 0.875em;
+      font-size: 14px;
     }
   }
 }
 
+// Position utilities
 .relative {
   position: relative;
 }
@@ -301,6 +311,7 @@ app-root {
   z-index: 50;
 }
 
+// Size utilities
 .w-full {
   width: 100%;
 }
@@ -313,6 +324,7 @@ app-root {
   min-height: 100vh;
 }
 
+// Background video styles
 #background-video {
   filter: grayscale(50%) blur(0.2em);
   height: auto;

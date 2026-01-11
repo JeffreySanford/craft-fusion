@@ -2,6 +2,11 @@
 @use "sass:meta";
 @use "variables" as vars;
 
+// Google Fonts are loaded from index.html to satisfy Sass @use ordering and stylelint.
+
+// @use '@angular/material' as mat;
+
+// Font families
 $font-families: (
   roboto-flex: (
     "Roboto Flex",
@@ -29,114 +34,129 @@ $font-families: (
   ),
 );
 
+// Book Application Font Roles
+$book-fonts: (
+  body-text: map.get($font-families, merriweather),
+  // Main text content
+  chapter-heading: map.get($font-families, playfair),
+  // Chapter titles
+  section-heading: map.get($font-families, lora),
+  // Section headings
+  quotes: map.get($font-families, libre-baskerville),
+  // Quotes and callouts
+  footnotes: map.get($font-families, source-sans), // Footnotes, captions
+);
+
+// MD3 Type Scale
 $type-scale: (
   display-large: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 3.5625em,
-    line-height: 4em,
-    letter-spacing: -0.0156em,
+    font-size: 57px,
+    line-height: 64px,
+    letter-spacing: -0.25px,
     font-weight: 400,
   ),
   display-medium: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 2.8125em,
-    line-height: 3.25em,
+    font-size: 45px,
+    line-height: 52px,
     letter-spacing: 0,
     font-weight: 400,
   ),
   display-small: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 2.25em,
-    line-height: 2.75em,
+    font-size: 36px,
+    line-height: 44px,
     letter-spacing: 0,
     font-weight: 400,
   ),
   headline-large: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 2em,
-    line-height: 2.5em,
+    font-size: 32px,
+    line-height: 40px,
     letter-spacing: 0,
     font-weight: 400,
   ),
   headline-medium: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 1.75em,
-    line-height: 2.25em,
+    font-size: 28px,
+    line-height: 36px,
     letter-spacing: 0,
     font-weight: 400,
   ),
   headline-small: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 1.5em,
-    line-height: 2em,
+    font-size: 24px,
+    line-height: 32px,
     letter-spacing: 0,
     font-weight: 400,
   ),
   title-large: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 1.375em,
-    line-height: 1.75em,
+    font-size: 22px,
+    line-height: 28px,
     letter-spacing: 0,
     font-weight: 400,
   ),
   title-medium: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 1em,
-    line-height: 1.5em,
-    letter-spacing: 0.0094em,
+    font-size: 16px,
+    line-height: 24px,
+    letter-spacing: 0.15px,
     font-weight: 500,
   ),
   title-small: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 0.875em,
-    line-height: 1.25em,
-    letter-spacing: 0.0063em,
+    font-size: 14px,
+    line-height: 20px,
+    letter-spacing: 0.1px,
     font-weight: 500,
   ),
   body-large: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 1em,
-    line-height: 1.5em,
-    letter-spacing: 0.0313em,
+    font-size: 16px,
+    line-height: 24px,
+    letter-spacing: 0.5px,
     font-weight: 400,
   ),
   body-medium: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 0.875em,
-    line-height: 1.25em,
-    letter-spacing: 0.0156em,
+    font-size: 14px,
+    line-height: 20px,
+    letter-spacing: 0.25px,
     font-weight: 400,
   ),
   body-small: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 0.75em,
-    line-height: 1em,
-    letter-spacing: 0.025em,
+    font-size: 12px,
+    line-height: 16px,
+    letter-spacing: 0.4px,
     font-weight: 400,
   ),
   label-large: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 0.875em,
-    line-height: 1.25em,
-    letter-spacing: 0.0063em,
+    font-size: 14px,
+    line-height: 20px,
+    letter-spacing: 0.1px,
     font-weight: 500,
   ),
   label-medium: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 0.75em,
-    line-height: 1em,
-    letter-spacing: 0.0313em,
+    font-size: 12px,
+    line-height: 16px,
+    letter-spacing: 0.5px,
     font-weight: 500,
   ),
   label-small: (
     font-family: map.get($font-families, roboto-flex),
-    font-size: 0.6875em,
-    line-height: 1em,
-    letter-spacing: 0.0313em,
+    font-size: 11px,
+    line-height: 16px,
+    letter-spacing: 0.5px,
     font-weight: 500,
   ),
 );
 
+// Generate typography classes from the type scale
 @each $name, $styles in $type-scale {
   .#{$name} {
     font-family: map.get($styles, font-family);
@@ -147,6 +167,152 @@ $type-scale: (
   }
 }
 
+// Legacy typography classes (for backward compatibility)
+.headline-1 {
+  font-family: map.get($font-families, playfair);
+  font-size: 96px;
+  font-weight: 300;
+  line-height: 96px;
+}
+
+.headline-2 {
+  font-family: map.get($font-families, merriweather);
+  font-size: 60px;
+  font-weight: 300;
+  line-height: 60px;
+}
+
+.headline-3 {
+  font-family: map.get($font-families, lora);
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 48px;
+}
+
+.headline-4 {
+  font-family: map.get($font-families, source-sans);
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 40px;
+}
+
+.headline-5 {
+  font-family: map.get($font-families, open-sans);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 32px;
+}
+
+.headline-6 {
+  font-family: map.get($font-families, roboto);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 32px;
+}
+
+// Typography for specific components
+.book-content,
+.chat-content {
+  font-family: map.get($font-families, merriweather);
+}
+
+.table-data {
+  font-family: map.get($font-families, roboto);
+}
+
+// Book-specific typography classes
+%book-body-text {
+  font-family: map.get($book-fonts, body-text);
+  font-size: 1.125em;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.7;
+}
+
+.book-body-text {
+  @extend %book-body-text;
+}
+
+%book-chapter-title {
+  font-family: map.get($book-fonts, chapter-heading);
+  font-size: 2.5em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 1em;
+}
+
+.book-chapter-title {
+  @extend %book-chapter-title;
+}
+
+%book-section-title {
+  font-family: map.get($book-fonts, section-heading);
+  font-size: 1.75em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin-bottom: 0.75em;
+  margin-top: 1.5em;
+}
+
+.book-section-title {
+  @extend %book-section-title;
+}
+
+%book-quote {
+  /* Fallback for browsers that don't support color-mix */
+  background-color: var(--md-sys-color-tertiary, transparent);
+  @supports (background-color: color-mix(in srgb, var(--md-sys-color-tertiary) 10%, transparent)) {
+    background-color: color-mix(in srgb, var(--md-sys-color-tertiary) 10%, transparent);
+  }
+  border-left: 4px solid var(--md-sys-color-tertiary);
+  font-family: map.get($book-fonts, quotes);
+  font-size: 1.25em;
+  font-style: italic;
+  letter-spacing: 0;
+  line-height: 1.6;
+  padding: 1em 2em;
+}
+
+.book-quote {
+  @extend %book-quote;
+}
+
+%book-footnote {
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: map.get($book-fonts, footnotes);
+  font-size: 0.875em;
+  line-height: 1.5;
+}
+
+.book-footnote {
+  @extend %book-footnote;
+}
+
+// Apply different fonts for different content types
+.chapter-content {
+  @extend %book-body-text;
+
+  h1 {
+    @extend %book-chapter-title;
+  }
+
+  h2,
+  h3 {
+    @extend %book-section-title;
+  }
+
+  blockquote {
+    @extend %book-quote;
+  }
+
+  .footnote {
+    @extend %book-footnote;
+  }
+}
+
+// Responsive typography
 @media (max-width: map.get(vars.$breakpoints, md)) {
   @each $name, $styles in $type-scale {
     $reduced-size: map.get($styles, font-size) * 0.85;
@@ -157,8 +323,9 @@ $type-scale: (
       line-height: $reduced-line-height;
     }
   }
-}
+} // Add closing brace for @media query
 
+// Define CSS variables for font families
 :root {
   --font-roboto: #{map.get($font-families, roboto-flex)};
   --font-merriweather: #{map.get($font-families, merriweather)};
@@ -172,125 +339,245 @@ $type-scale: (
   --font-crimson-pro: "Crimson Pro", serif;
 }
 
-.headline-1 {
-  font-family: map.get($font-families, playfair);
-  font-size: 6em;
-  font-weight: 300;
-  line-height: 6em;
+// Font import URLs - can be updated to use local files if needed
+$font-imports: (
+  "Lora": "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap",
+  "IBM Plex Serif": "https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap",
+  "Libre Baskerville": "https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap",
+  "playfair": "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap",
+  "merriweather": "https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap",
+  "source-serif-pro": "https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap",
+  "eb-garamond": "https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap",
+  "crimson-pro": "https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap",
+  "ibm-plex-serif": "https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap",
+);
+
+// Custom typography level function (replacement for mat.define-typography-level)
+@function define-typography-level($font-size, $line-height, $font-weight) {
+  @return (font-size: $font-size, line-height: $line-height, font-weight: $font-weight);
 }
 
-.headline-2 {
-  font-family: map.get($font-families, merriweather);
-  font-size: 3.75em;
-  font-weight: 300;
-  line-height: 3.75em;
+// Custom typography config function (replacement for mat.define-typography-config)
+@function define-typography-config(
+  $font-family,
+  $headline-1,
+  $headline-2,
+  $headline-3,
+  $headline-4,
+  $headline-5,
+  $headline-6,
+  $body-1,
+  $body-2,
+  $subtitle-1,
+  $subtitle-2,
+  $caption,
+  $button
+) {
+  @return (
+    font-family: $font-family,
+    headline-1: $headline-1,
+    headline-2: $headline-2,
+    headline-3: $headline-3,
+    headline-4: $headline-4,
+    headline-5: $headline-5,
+    headline-6: $headline-6,
+    body-1: $body-1,
+    body-2: $body-2,
+    subtitle-1: $subtitle-1,
+    subtitle-2: $subtitle-2,
+    caption: $caption,
+    button: $button
+  );
 }
 
-.headline-3 {
-  font-family: map.get($font-families, lora);
-  font-size: 3em;
-  font-weight: 400;
-  line-height: 3em;
-}
+// ===== Typography Mixins =====
 
-.headline-4 {
-  font-family: map.get($font-families, source-sans);
-  font-size: 2.125em;
-  font-weight: 400;
-  line-height: 2.5em;
-}
+// Book typography mixin
+@mixin book-typography {
+  .book-body-text {
+    font-family: map.get($book-fonts, body-text);
+    font-size: 1.125em;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.7;
+  }
 
-.headline-5 {
-  font-family: map.get($font-families, open-sans);
-  font-size: 1.5em;
-  font-weight: 400;
-  line-height: 2em;
-}
+  .book-chapter-title {
+    font-family: map.get($book-fonts, chapter-title);
+    font-size: 2.5em;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1em;
+    margin-top: 2em;
+    text-align: center;
+  }
 
-.headline-6 {
-  font-family: map.get($font-families, roboto);
-  font-size: 1.25em;
-  font-weight: 500;
-  line-height: 2em;
-}
+  .book-section-title {
+    font-family: map.get($book-fonts, section-title);
+    font-size: 1.75em;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0.75em;
+    margin-top: 1.5em;
+  }
 
+  .book-subsection-title {
+    font-family: map.get($book-fonts, section-title);
+    font-size: 1.35em;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 0.5em;
+    margin-top: 1.25em;
+  }
+
+  .book-quote {
+    border-left: 3px solid var(--md-sys-color-primary);
+    font-family: map.get($book-fonts, quote);
+    font-size: 1.1em;
+    font-style: italic;
+    line-height: 1.6;
+    margin: 1.5em 2em;
+    padding-left: 1em;
+  }
+
+  .book-footnote {
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    color: var(--md-sys-color-on-surface-variant);
+    font-family: map.get($book-fonts, footnote);
+    font-size: 0.85em;
+    line-height: 1.4;
+    margin-top: 0.5em;
+    padding-top: 0.5em;
+  }
+
+  .book-caption {
+    color: var(--md-sys-color-on-surface-variant);
+    font-family: map.get($book-fonts, caption);
+    font-size: 0.9em;
+    font-style: italic;
+    line-height: 1.4;
+    margin-top: 0.5em;
+    text-align: center;
+  }
+
+  .book-code-block {
+    background-color: var(--md-sys-color-surface-variant);
+    border-radius: 4px;
+    font-family: map.get($book-fonts, code);
+    font-size: 0.95em;
+    margin: 1em 0;
+    overflow-x: auto;
+    padding: 1em;
+  }
+
+  .book-verse {
+    font-family: map.get($book-fonts, body-text);
+    font-size: 1.1em;
+    line-height: 1.7;
+    margin-bottom: 0.75em;
+    padding-left: 2em;
+    text-indent: -2em;
+  }
+
+  .book-verse-number {
+    color: var(--md-sys-color-primary);
+    font-weight: 700;
+    margin-right: 0.5em;
+  }
+
+  .myth-section {
+    background-color: rgb(var(--md-sys-color-surface-rgb) 0.6);
+    border-left: 4px solid var(--md-sys-color-primary);
+    border-radius: 0 4px 4px 0;
+    margin: 1.5em 0;
+    padding: 1em 1.5em;
+  }
+
+  .myth-line {
+    font-style: italic;
+    position: relative;
+  }
+} // Add closing brace for book-typography mixin
+
+// Typography utilities mixin
 @mixin typography-utilities {
   .text-h1 {
-    font-size: 2em;
+    font-size: 32px;
     font-weight: 700;
     letter-spacing: -0.02em;
-    line-height: 2.5em;
+    line-height: 40px;
   }
 
   .text-h2 {
-    font-size: 1.75em;
+    font-size: 28px;
     font-weight: 700;
     letter-spacing: -0.01em;
-    line-height: 2.25em;
+    line-height: 36px;
   }
 
   .text-h3 {
-    font-size: 1.5em;
+    font-size: 24px;
     font-weight: 700;
-    line-height: 2em;
+    line-height: 32px;
   }
 
   .text-h4 {
-    font-size: 1.25em;
+    font-size: 20px;
     font-weight: 700;
-    line-height: 1.75em;
+    line-height: 28px;
   }
 
   .text-h5 {
-    font-size: 1em;
+    font-size: 16px;
     font-weight: 700;
-    line-height: 1.5em;
+    line-height: 24px;
   }
 
   .text-h6 {
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 700;
-    line-height: 1.25em;
+    line-height: 20px;
   }
 
   .text-body1 {
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 400;
-    line-height: 1.25em;
+    line-height: 20px;
   }
 
   .text-body2 {
-    font-size: 0.75em;
+    font-size: 12px;
     font-weight: 400;
-    line-height: 1.125em;
+    line-height: 18px;
   }
 
   .text-subtitle1 {
-    font-size: 1em;
+    font-size: 16px;
     font-weight: 500;
-    line-height: 1.5em;
+    line-height: 24px;
   }
 
   .text-subtitle2 {
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
-    line-height: 1.25em;
+    line-height: 20px;
   }
 
   .text-caption {
-    font-size: 0.75em;
+    font-size: 12px;
     font-weight: 400;
-    line-height: 1em;
+    line-height: 16px;
   }
 
   .text-button {
-    font-size: 0.875em;
+    font-size: 14px;
     font-weight: 500;
     letter-spacing: 0.05em;
-    line-height: 0.875em;
+    line-height: 14px;
     text-transform: uppercase;
   }
 
+  // Font weights
   .font-light {
     font-weight: 300;
   }
@@ -311,6 +598,7 @@ $type-scale: (
     font-weight: 700;
   }
 
+  // Font styles
   .italic {
     font-style: italic;
   }
@@ -327,6 +615,7 @@ $type-scale: (
     text-transform: capitalize;
   }
 
+  // Text alignment
   .text-left {
     text-align: left;
   }
@@ -343,6 +632,7 @@ $type-scale: (
     text-align: justify;
   }
 
+  // Text decoration
   .underline {
     text-decoration: underline;
   }
@@ -355,6 +645,7 @@ $type-scale: (
     text-decoration: none;
   }
 
+  // Letter spacing
   .tracking-tight {
     letter-spacing: -0.025em;
   }
@@ -375,6 +666,7 @@ $type-scale: (
     letter-spacing: 0.1em;
   }
 
+  // Line height
   .leading-none {
     line-height: 1;
   }
@@ -399,6 +691,7 @@ $type-scale: (
     line-height: 2;
   }
 
+  // Font families
   .font-sans {
     font-family: var(--font-roboto), sans-serif;
   }
@@ -411,6 +704,7 @@ $type-scale: (
     font-family: monospace;
   }
 
+  // Book-specific font families
   .font-playfair {
     font-family: var(--font-playfair);
   }

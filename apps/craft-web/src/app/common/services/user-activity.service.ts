@@ -28,7 +28,7 @@ export class UserActivityService {
   ) {
     this.initRouterTracking();
     this.initUserInteractionTracking();
-    this.startTrackingNavigation();                              
+    this.startTrackingNavigation(); // Start tracking immediately
 
     this.logger.info('User activity tracking initialized');
   }
@@ -38,6 +38,7 @@ export class UserActivityService {
       const event = evt as NavigationEnd;
       const now = Date.now();
 
+      // Calculate duration for previous page
       if (this.currentPage) {
         this.pageViewDurations[this.currentPage] = (this.pageViewDurations[this.currentPage] || 0) + (now - this.lastActivityTime);
       }
@@ -54,7 +55,7 @@ export class UserActivityService {
   }
 
   private initUserInteractionTracking(): void {
-
+    // Track clicks
     document.addEventListener('click', event => {
       const target = event.target as HTMLElement;
       this.trackActivity('click', {
@@ -63,6 +64,7 @@ export class UserActivityService {
       });
     });
 
+    // Track scrolls (debounced)
     let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
     document.addEventListener('scroll', () => {
       if (scrollTimeout) {
@@ -77,6 +79,7 @@ export class UserActivityService {
       }, 300);
     });
 
+    // Track form inputs (debounced)
     let inputTimeout: ReturnType<typeof setTimeout> | null = null;
     document.addEventListener('input', event => {
       if (inputTimeout) {
@@ -96,6 +99,7 @@ export class UserActivityService {
   private getElementDescription(element: HTMLElement | null): string {
     if (!element) return 'unknown';
 
+    // Try to get a useful description of the element
     if (element.id) {
       return `#${element.id}`;
     } else if (element.classList && element.classList.length) {
@@ -115,6 +119,7 @@ export class UserActivityService {
     this.userActivities.push(activity);
     this.lastActivityTime = activity.timestamp;
 
+    // Limit the array size to prevent memory issues
     if (this.userActivities.length > 100) {
       this.userActivities.shift();
     }
@@ -125,7 +130,7 @@ export class UserActivityService {
   }
 
   getPageViewDurations(): { [page: string]: number } {
-
+    // Update the current page duration
     if (this.currentPage) {
       this.pageViewDurations[this.currentPage] = (this.pageViewDurations[this.currentPage] || 0) + (Date.now() - this.lastActivityTime);
       this.lastActivityTime = Date.now();
@@ -153,6 +158,6 @@ export class UserActivityService {
   }
 
   private startTrackingNavigation(): void {
-
+    // Remove any checks that require the user to be logged in
   }
 }

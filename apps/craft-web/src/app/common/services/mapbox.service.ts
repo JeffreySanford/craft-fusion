@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';                           
+import { environment } from '../../../environments/environment'; // Corrected relative path
 import * as mapboxgl from 'mapbox-gl';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -11,7 +11,7 @@ export class MapboxService {
   private map: mapboxgl.Map | undefined;
 
   constructor() {
-
+    // Set Mapbox access token using Object.assign to avoid esbuild import mutation
     const token = (environment as any)?.mapboxToken ?? '';
     Object.assign(mapboxgl, { accessToken: token });
   }
@@ -38,6 +38,7 @@ export class MapboxService {
       .addTo(this.map);
   }
 
+  // Add resizeMap method (was missing from this service)
   resizeMap(): void {
     if (this.map) {
       this.map.resize();
@@ -52,6 +53,7 @@ export class MapboxService {
       return;
     }
 
+    // Check if layer already exists, remove it first to prevent duplicates
     if (this.map.getLayer('route')) {
       this.map.removeLayer('route');
     }
@@ -88,7 +90,7 @@ export class MapboxService {
   destroyMap(): void {
     if (this.map) {
       this.map.remove();
-      this.map = undefined;                                  
+      this.map = undefined; // Clear reference after removing
     }
   }
 }

@@ -37,7 +37,8 @@ describe('BarComponent', () => {
   });
 
   it('should have data starting from US inception in 1776', () => {
-
+    // Check via reflection that internal data starts from 1776
+    // @ts-ignore - accessing private property
     const gdpData = component['gdpData'];
     expect(gdpData[0].year).toEqual(1776);
   });

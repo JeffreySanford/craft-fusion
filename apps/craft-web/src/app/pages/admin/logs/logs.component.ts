@@ -7,16 +7,16 @@ import { LoggerService, LogEntry, LogLevel } from '../../../common/services/logg
   selector: 'app-logs',
   templateUrl: './logs.component.html',
   styleUrls: ['./logs.component.scss'],
-
+  // component is declared in AdminModule rather than standalone to satisfy AOT and project conventions
   standalone: false,
 })
 export class LogsComponent implements OnInit, OnDestroy {
   logs: LogEntry[] = [];
   filteredLogs: LogEntry[] = [];
   filterForm: FormGroup;
-
+  
   displayedColumns: string[] = ['timestamp', 'level', 'component', 'message', 'details'];
-
+  
   logLevels = [
     { value: LogLevel.DEBUG, viewValue: 'Debug' },
     { value: LogLevel.INFO, viewValue: 'Info' },
@@ -26,7 +26,7 @@ export class LogsComponent implements OnInit, OnDestroy {
   componentOptions: string[] = [];
   refreshSubscription?: Subscription;
   autoRefresh = true;
-
+  
   constructor(
     private loggerService: LoggerService,
     private fb: FormBuilder
@@ -43,37 +43,37 @@ export class LogsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.fetchLogs();
-
+    
     this.refreshSubscription = interval(5000).subscribe(() => {
       if (this.autoRefresh) {
         this.fetchLogs();
       }
     });
-
+    
     this.filterForm.valueChanges.subscribe(() => {
       this.autoRefresh = this.filterForm.get('autoRefresh')?.value;
       this.applyFilters();
     });
-
+    
     this.loggerService.logAdded$.subscribe(() => {
       if (this.autoRefresh) {
         this.fetchLogs();
       }
     });
   }
-
+  
   ngOnDestroy() {
     if (this.refreshSubscription) {
       this.refreshSubscription.unsubscribe();
     }
   }
-
+  
   fetchLogs() {
     this.logs = this.loggerService.getLogs();
     this.updateComponentOptions();
     this.applyFilters();
   }
-
+  
   updateComponentOptions() {
     const componentSet = new Set<string>();
     this.logs.forEach(log => {
@@ -83,32 +83,35 @@ export class LogsComponent implements OnInit, OnDestroy {
     });
     this.componentOptions = Array.from(componentSet);
   }
-
+  
   applyFilters() {
     const filters = this.filterForm.value;
-
+    
     this.filteredLogs = this.logs.filter(log => {
-
+      
       if (filters.level && log.level !== filters.level) {
         return false;
       }
-
+      
+      
       if (filters.component && log.component !== filters.component) {
         return false;
       }
-
+      
+      
       if (filters.message && 
           !log.message.toLowerCase().includes(filters.message.toLowerCase())) {
         return false;
       }
-
+      
+      
       if (filters.startDate) {
         const startDate = new Date(filters.startDate);
         if (log.timestamp < startDate) {
           return false;
         }
       }
-
+      
       if (filters.endDate) {
         const endDate = new Date(filters.endDate);
         endDate.setHours(23, 59, 59, 999);
@@ -116,14 +119,14 @@ export class LogsComponent implements OnInit, OnDestroy {
           return false;
         }
       }
-
+      
       return true;
     });
-
+    
     this.filteredLogs.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
     this.filteredLogs.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   }
-
+  
   clearFilters() {
     this.filterForm.patchValue({
       level: '',
@@ -133,11 +136,11 @@ export class LogsComponent implements OnInit, OnDestroy {
       endDate: ''
     });
   }
-
+  
   getLevelClass(level: LogLevel): string {
     return this.getLogLevelClass(level);
   }
-
+  
   getLogLevelClass(level: LogLevel): string {
     switch (level) {
       case LogLevel.DEBUG: return 'log-level-debug';
@@ -147,7 +150,7 @@ export class LogsComponent implements OnInit, OnDestroy {
       default: return '';
     }
   }
-
+  
   getLevelName(level: LogLevel): string {
     switch (level) {
       case LogLevel.DEBUG: return 'DEBUG';
@@ -157,17 +160,17 @@ export class LogsComponent implements OnInit, OnDestroy {
       default: return 'UNKNOWN';
     }
   }
-
+  
   toggleAutoRefresh() {
     this.autoRefresh = !this.autoRefresh;
     this.filterForm.patchValue({ autoRefresh: this.autoRefresh }, { emitEvent: false });
   }
-
+  
   clearLogs() {
     this.loggerService.clearLogs();
     this.fetchLogs();
   }
-
+  
   formatDetails(details: unknown): string {
     if (!details) return '';
     try {

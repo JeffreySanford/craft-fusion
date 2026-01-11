@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
 
+// Material Modules
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
@@ -23,11 +24,14 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 
+// CDK Modules
 import { CdkTableModule } from '@angular/cdk/table';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
+// Third-party Modules
 import { NgxSpinnerModule } from 'ngx-spinner';
 
+// Components
 import { RecordListComponent } from './record-list.component';
 import { RecordDetailComponent } from './record-detail/record-detail.component';
 import { tableRoutes } from './table.routes';
@@ -40,6 +44,7 @@ import { tableRoutes } from './table.routes';
     ReactiveFormsModule,
     RouterModule.forChild(tableRoutes),
 
+    // Material Modules
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
@@ -59,17 +64,22 @@ import { tableRoutes } from './table.routes';
     MatDatepickerModule,
     MatNativeDateModule,
 
+    // CDK Modules
     CdkTableModule,
     ScrollingModule,
 
+    // Third-party Modules
     NgxSpinnerModule,
 
+    // Shared Modules
+    // SharedDirectivesModule, // Commented out due to import error
+    // SharedPipesModule // Commented out due to import error
   ],
   exports: [
-    RecordListComponent,                              
+    RecordListComponent, // Export if needed elsewhere
   ],
   providers: [
-    CurrencyPipe,                                                   
+    CurrencyPipe, // Provides CurrencyPipe for use in the components
   ],
 })
 export class TableModule {}

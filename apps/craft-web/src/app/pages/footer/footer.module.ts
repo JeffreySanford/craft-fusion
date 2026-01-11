@@ -9,7 +9,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
   imports: [
     CommonModule,
     MaterialModule,
-    MatSlideToggleModule,                                 
+    MatSlideToggleModule, // Add MatSlideToggleModule here
   ],
   exports: [FooterComponent],
 })

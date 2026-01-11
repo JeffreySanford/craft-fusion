@@ -17,7 +17,7 @@ export interface ServiceInfo {
   selector: 'app-services-dashboard',
   templateUrl: './services-dashboard.component.html',
   styleUrls: ['./services-dashboard.component.scss'],
-
+  // This component is part of the Admin NgModule (AOT requires non-standalone here)
   standalone: false,
 })
 export class ServicesDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
