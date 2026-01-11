@@ -6,11 +6,11 @@ import { LandingComponent } from './landing.component';
 import { MaterialButtonsComponent } from './material-buttons/material-buttons.component';
 import { MaterialIconsComponent } from './material-icons/material-icons.component';
 import { MaterialModule } from '../../material.module';
-import { ComponentsModule } from '../../common/components/components.module';
+import { StyleDirective } from '../../common/directives/style.directive';
 
 @NgModule({
   declarations: [LandingComponent, MaterialButtonsComponent, MaterialIconsComponent],
-  imports: [CommonModule, MaterialModule, ComponentsModule, RouterModule.forChild([{ path: '', component: LandingComponent }])],
+  imports: [CommonModule, MaterialModule, StyleDirective, RouterModule.forChild([{ path: '', component: LandingComponent }])],
   exports: [LandingComponent, MaterialButtonsComponent, MaterialIconsComponent],
   providers: [],
 })
