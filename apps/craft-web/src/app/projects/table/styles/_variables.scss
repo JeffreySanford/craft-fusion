@@ -1,17 +1,17 @@
-@use "sass:map";
-@use "sass:color";
-@use "../../../../styles/md3-mapping" as md3;
+@use 'sass:map';
+@use 'sass:color';
+@use '../../../../styles/md3-mapping' as md3;
 
 $table-theme: (
   dark-blue: #00008b,
   primary-white: md3.$md-on-primary,
   teal: #008080,
-  blue: #00f,
+  blue: #0000ff,
   red: #ef4444,
   patriotic-blue: #6750a4,
   patriotic-red: #ef4444,
-  patriotic-blue-light: rgb(0 40 104 / 8%),
-  patriotic-red-light: rgb(191 10 48 / 8%),
+  patriotic-blue-light: rgba(0, 40, 104, 0.08),
+  patriotic-red-light: rgba(191, 10, 48, 0.08),
   gold: #f59e0b,
   stars-blue: #3c3b6e,
   silver: #c0c0c0,

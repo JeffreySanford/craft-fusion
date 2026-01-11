@@ -1,87 +1,83 @@
-@use "sass:map";
-@use "./variables" as vars;
+@use 'sass:map';
+@use './variables' as vars;
 
 .table-wrapper {
   /* Space control for paginator offset (increased by 1em) */
   --paginator-offset: 3.5em;
-
   display: flex !important;
-  flex: 1 1 auto !important;
   flex-direction: column !important;
-  margin: 0 !important;
-  min-height: 0 !important;
-  padding: 0 !important;
   position: relative !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 
   &::-webkit-scrollbar {
-    height: 12px;
     width: 12px;
+    height: 12px;
   }
 
   &::-webkit-scrollbar-thumb {
     background: linear-gradient(to bottom, map.get(vars.$table-theme, patriotic-red), map.get(vars.$table-theme, primary-white), map.get(vars.$table-theme, patriotic-blue));
-    background-clip: content-box;
-    border: 3px solid rgb(0 40 104 / 50%);
     border-radius: 16px;
+    border: 3px solid rgba(0, 40, 104, 0.5);
+    background-clip: content-box;
   }
 
   &::-webkit-scrollbar-track {
-    background:
-      linear-gradient(
-        to bottom,
-        rgba(map.get(vars.$table-theme, patriotic-red), 0.1),
-        rgba(map.get(vars.$table-theme, primary-white), 0.1),
-        rgba(map.get(vars.$table-theme, patriotic-blue), 0.1)
-      );
+    background: linear-gradient(
+      to bottom,
+      rgba(map.get(vars.$table-theme, patriotic-red), 0.1),
+      rgba(map.get(vars.$table-theme, primary-white), 0.1),
+      rgba(map.get(vars.$table-theme, patriotic-blue), 0.1)
+    );
   }
 
   &::-webkit-scrollbar-button:vertical:start:decrement {
     background-color: transparent;
     height: 24px;
-    position: relative;
     width: 100%;
+    position: relative;
 
     &::after {
-      color: map.get(vars.$table-theme, gold);
-      content: "★";
-      font-size: 1.2em;
-      left: 50%;
+      content: '★';
       position: absolute;
       top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%);
+      color: map.get(vars.$table-theme, gold);
+      font-size: 1.2em;
     }
   }
 
   &::-webkit-scrollbar-button:vertical:end:increment {
     background-color: transparent;
     height: 24px;
-    position: relative;
     width: 100%;
+    position: relative;
 
     &::after {
-      background: repeating-linear-gradient(0deg, transparent, transparent 10%, map.get(vars.$table-theme, patriotic-red) 10%, map.get(vars.$table-theme, patriotic-red) 20%);
-      content: "";
-      height: 70%;
-      left: 50%;
+      content: '';
       position: absolute;
       top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%);
       width: 70%;
+      height: 70%;
+      background: repeating-linear-gradient(0deg, transparent, transparent 10%, map.get(vars.$table-theme, patriotic-red) 10%, map.get(vars.$table-theme, patriotic-red) 20%);
     }
   }
 
   table {
-    border-collapse: collapse;
+    width: 100%;
+
     display: table !important;
-    max-height: calc(100% - 2em);
-    overflow-y: auto;
-    width: 100% !important;
 
     thead {
-      display: table-header-group !important;
       position: sticky;
       top: 0;
       z-index: 10;
+      display: table-header-group !important;
     }
 
     tbody {
@@ -94,37 +90,41 @@
     }
 
     th.mat-header-cell {
-      background: linear-gradient(180deg, var(--md-sys-color-primary, #6750a4), var(--md-sys-color-primary, #6750a4));
       position: sticky;
       top: 0;
+
+      background: linear-gradient(180deg, var(--md-sys-color-primary, #6750a4), var(--md-sys-color-primary, #6750a4));
       z-index: 9;
     }
 
+    max-height: calc(100% - 2em);
+    overflow-y: auto;
+    border-collapse: collapse;
+    width: 100% !important;
+
     td.mat-cell mat-icon {
       font-size: 1.1rem;
+      width: 1.1rem;
       height: 1.1rem;
       line-height: 1.1rem;
-      width: 1.1rem;
     }
 
     tr.mat-row:nth-child(odd) {
-      background:
-        linear-gradient(
-          to right,
-          rgba(map.get(vars.$table-theme, patriotic-blue), 0.03) 0%,
-          rgba(map.get(vars.$table-theme, patriotic-blue), 0.05) 50%,
-          rgba(map.get(vars.$table-theme, patriotic-blue), 0.03) 100%
-        );
+      background: linear-gradient(
+        to right,
+        rgba(map.get(vars.$table-theme, patriotic-blue), 0.03) 0%,
+        rgba(map.get(vars.$table-theme, patriotic-blue), 0.05) 50%,
+        rgba(map.get(vars.$table-theme, patriotic-blue), 0.03) 100%
+      );
     }
 
     tr.mat-row:nth-child(even) {
-      background:
-        linear-gradient(
-          to right,
-          rgba(map.get(vars.$table-theme, patriotic-red), 0.03) 0%,
-          rgba(map.get(vars.$table-theme, patriotic-red), 0.05) 50%,
-          rgba(map.get(vars.$table-theme, patriotic-red), 0.03) 100%
-        );
+      background: linear-gradient(
+        to right,
+        rgba(map.get(vars.$table-theme, patriotic-red), 0.03) 0%,
+        rgba(map.get(vars.$table-theme, patriotic-red), 0.05) 50%,
+        rgba(map.get(vars.$table-theme, patriotic-red), 0.03) 100%
+      );
     }
 
     tr.mat-row:hover {
@@ -143,14 +143,14 @@
 
     td.mat-cell {
       border-bottom: 0.0625em solid rgba(map.get(vars.$table-theme, silver), 0.3);
-      overflow: hidden;
-      text-overflow: ellipsis;
       transition: all 0.2s ease-in-out;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
       &:first-child {
-        color: map.get(vars.$table-theme, patriotic-blue);
         font-weight: 500;
+        color: map.get(vars.$table-theme, patriotic-blue);
       }
     }
   }
@@ -158,30 +158,30 @@
   thead,
   tbody tr {
     display: table;
-    margin: 0;
-    table-layout: fixed;
     width: 100%;
+    table-layout: fixed;
+    margin: 0;
   }
 
   th,
   td {
-    box-sizing: border-box;
     width: auto;
+    box-sizing: border-box;
   }
 
   table.mat-table {
     min-width: 100% !important;
-    table-layout: fixed;
     width: 100% !important;
+    table-layout: fixed;
 
     .mat-header-cell,
     .mat-cell {
-      box-sizing: border-box;
-      justify-content: flex-start !important;
       overflow: hidden;
-      text-align: left !important;
       text-overflow: ellipsis;
       white-space: nowrap;
+      box-sizing: border-box;
+      text-align: left !important;
+      justify-content: flex-start !important;
     }
   }
 

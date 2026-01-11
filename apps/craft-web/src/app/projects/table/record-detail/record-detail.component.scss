@@ -1,4 +1,4 @@
-@use "sass:map";
+@use 'sass:map';
 
 $md3-primary: #6750a4;
 $md3-secondary: #625b71;
@@ -8,21 +8,20 @@ $md3-outline: #cac4d0;
 $md3-on-primary: #fff;
 $md3-on-surface: #1c1b1f;
 $md3-expressive: #ffb300;
-$md3-shadow: rgb(103 80 164 / 8%);
+$md3-shadow: rgba(103, 80, 164, 0.08);
 
 .detail-container {
-  align-items: flex-start;
-  background: $md3-background;
-  border-radius: 28px;
-  box-shadow: 0 4px 32px $md3-shadow;
   display: flex;
   flex-direction: row;
   gap: 2.5rem;
+  background: $md3-background;
+  border-radius: 28px;
+  box-shadow: 0 4px 32px $md3-shadow;
+  padding: 2.5rem 2rem;
   margin: 2rem auto;
   max-width: 1100px;
   min-height: 480px;
-  padding: 2.5rem 2rem;
-
+  align-items: flex-start;
   @media (max-width: 900px) {
     flex-direction: column;
     gap: 1.5rem;
@@ -38,41 +37,41 @@ $md3-shadow: rgb(103 80 164 / 8%);
 
 mat-card.address-card,
 mat-card.company-card {
-  background: $md3-surface;
-  border: 1.5px solid $md3-outline;
   border-radius: 24px;
+  background: $md3-surface;
   box-shadow: 0 2px 12px $md3-shadow;
+  padding: 1.5rem 1.25rem 1.25rem 1.25rem;
+  border: 1.5px solid $md3-outline;
   margin-bottom: 1.5rem;
-  padding: 1.5rem 1.25rem 1.25rem;
 }
 
 mat-card-header .header-content {
-  align-items: center;
   display: flex;
+  align-items: center;
   gap: 0.75rem;
 }
 
 .user-name {
-  color: $md3-primary;
   font-size: 2.1rem;
   font-weight: 700;
+  color: $md3-primary;
   letter-spacing: -0.5px;
   margin: 0;
 }
 
 mat-card-title {
-  color: $md3-secondary;
   font-size: 1.2rem;
   font-weight: 600;
+  color: $md3-secondary;
   margin-bottom: 0.5rem;
 }
 
 .detail-item {
-  align-items: center;
-  color: $md3-on-surface;
   display: flex;
-  font-size: 1.08rem;
+  align-items: center;
   gap: 0.7rem;
+  font-size: 1.08rem;
+  color: $md3-on-surface;
   margin-bottom: 0.4rem;
 }
 
@@ -82,32 +81,32 @@ mat-card-title {
 }
 
 .wealth-indicator {
-  align-items: center;
   display: flex;
+  align-items: center;
   gap: 0.15rem;
-  margin-bottom: 0.5rem;
   margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .wealth-indicator mat-icon {
   color: $md3-expressive;
-  filter: drop-shadow(0 1px 2px rgb(255 179 0 / 12%));
   font-size: 2.1rem;
+  filter: drop-shadow(0 1px 2px rgba(255, 179, 0, 0.12));
 }
 
 mat-table {
+  width: 100%;
   background: transparent;
   border-radius: 18px;
-  box-shadow: 0 1px 8px $md3-shadow;
-  margin-top: 0.5rem;
   overflow: hidden;
-  width: 100%;
+  margin-top: 0.5rem;
+  box-shadow: 0 1px 8px $md3-shadow;
 }
 
 th.mat-header-cell,
 td.mat-cell {
-  color: $md3-on-surface;
   font-size: 1.05rem;
+  color: $md3-on-surface;
   padding: 0.7rem 0.5rem;
 }
 
@@ -124,53 +123,51 @@ td.mat-cell {
 
 tr.mat-footer-row td {
   background: $md3-background;
-  border-top: 1.5px solid $md3-outline;
+  font-weight: 600;
   color: $md3-primary;
   font-size: 1.1rem;
-  font-weight: 600;
+  border-top: 1.5px solid $md3-outline;
 }
 
 .loading-container {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  min-height: 320px;
   background: $md3-background;
   border-radius: 18px;
   box-shadow: 0 2px 12px $md3-shadow;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   margin: 2rem auto;
   max-width: 600px;
-  min-height: 320px;
 }
 
 mat-progress-spinner {
-  margin: 2.5rem auto 1.5rem;
+  margin: 2.5rem auto 1.5rem auto;
 }
 
 .expressive {
-  background: linear-gradient(90deg, #ffe082 0%, #ffd54f 100%);
-  border-radius: 8px;
-  box-shadow: 0 1px 4px rgb(255 179 0 / 8%);
   color: $md3-expressive;
   font-weight: 700;
   letter-spacing: 0.02em;
+  background: linear-gradient(90deg, #ffe082 0%, #ffd54f 100%);
+  border-radius: 8px;
   padding: 0.1em 0.5em;
+  box-shadow: 0 1px 4px rgba(255, 179, 0, 0.08);
 }
 
 @media (max-width: 600px) {
   .detail-container {
-    gap: 0.5rem;
     padding: 0.5rem 0.1rem;
+    gap: 0.5rem;
   }
-
   .left-column,
   .right-column {
     min-width: 0;
   }
-
   mat-card.address-card,
   mat-card.company-card {
-    padding: 0.7rem 0.3rem;
+    padding: 0.7rem 0.3rem 0.7rem 0.3rem;
   }
 }
 
@@ -181,8 +178,8 @@ mat-progress-spinner {
 }
 
 .inline-center {
-  align-items: center;
   display: flex;
+  align-items: center;
 }
 
 .justify-end {

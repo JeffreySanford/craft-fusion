@@ -1,81 +1,78 @@
 .landing-page {
-  align-items: center;
-  animation: backgroundAnimation 10s infinite alternate;
-  background-color: rgb(0 0 0 / 30%);
-  border-radius: 0.25em;
   display: flex;
-  flex: 1;
   flex-direction: column;
-  height: 71vh;
+  align-items: center;
   justify-content: center;
-  overflow: visible;
+  flex: 1;
   padding: 2em;
+  background-color: rgba(0, 0, 0, 0.3);
   width: 100%;
+  height: 71vh;
+  overflow: visible;
+  animation: backgroundAnimation 10s infinite alternate;
+  border-radius: 0.25em;
 
   .landing-content {
-    align-items: center;
-    animation: fadeIn 2s ease-out forwards;
-    background-color: rgba(red, 0.3);
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
+    width: 100%;
     max-width: 75em;
     text-align: center;
-    width: 100%;
+    background-color: rgba(red, 0.3);
+    animation: fadeIn 2s ease-out forwards;
   }
 
   .highlight-section {
-    animation: fadeIn 2s ease-out forwards;
     font-size: 1.5vw;
-    margin-bottom: 3em;
     position: relative;
+    margin-bottom: 3em;
+    animation: fadeIn 2s ease-out forwards;
   }
 
   .animated-section {
-    align-items: center;
-    animation: fadeIn 2s ease-out forwards;
-    display: flex;
     font-size: 2vw;
-    gap: 0; // Use star margins for spacing to center the star
+    display: flex;
     justify-content: center;
+    align-items: center;
+    gap: 0; // Use star margins for spacing to center the star
+    animation: fadeIn 2s ease-out forwards;
 
     .animated-item {
-      align-items: center;
-
+      font-size: 1em;
+      color: red; // start red
+      opacity: 0;
+      transform: translateY(2em);
       // Run fade-in and color transition together
       animation:
         fadeInUp 2s ease-out forwards,
         itemColorChange 2s ease-out forwards;
-      color: red; // start red
       display: inline-flex;
-      font-size: 1em;
+      align-items: center;
       line-height: 1;
-      opacity: 0;
-      transform: translateY(2em);
 
       // Add a gold animated star between words (except after the last)
       &:not(:last-child)::after {
+        content: '★';
+        display: inline-block;
+        margin: 0 0.75em; // balanced spacing on both sides
+        color: gold;
+        text-shadow:
+          0 0 6px rgba(255, 215, 0, 0.6),
+          0 0 12px rgba(255, 215, 0, 0.3);
         // Animate for ~4.8s (3 x 1.6s) and then stop, keeping the final state
         animation: starTwinkle 1.6s ease-in-out 0s 3 forwards;
-        color: gold;
-        content: "★";
-        display: inline-block;
-        font-size: 1em;
-        margin: 0 0.75em; // balanced spacing on both sides
-        text-shadow:
-          0 0 6px rgb(255 215 0 / 60%),
-          0 0 12px rgb(255 215 0 / 30%);
         transform-origin: 50% 50%;
+        font-size: 1em;
       }
 
       &:nth-child(1) {
         animation-delay: 0s;
       }
-
       &:nth-child(2) {
         animation-delay: 0.5s;
       }
-
       &:nth-child(3) {
         animation-delay: 1s;
       }
@@ -83,27 +80,25 @@
   }
 
   .title {
-    animation: textShadow 3s infinite alternate;
-    color: red;
-    display: flex;
     font-size: 400%;
-    gap: 0.5em;
-    justify-content: center;
-    position: relative;
+    color: red;
     text-align: center;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    gap: 0.5em;
+    animation: textShadow 3s infinite alternate;
 
     .word {
-      animation: colorChange 3s ease-out forwards;
       position: relative;
+      animation: colorChange 3s ease-out forwards;
 
       &:nth-child(1) {
         animation-delay: 0s;
       }
-
       &:nth-child(2) {
         animation-delay: 2s;
       }
-
       &:nth-child(3) {
         animation-delay: 4s;
       }
@@ -113,32 +108,32 @@
     .sparkle-1,
     .sparkle-2,
     .sparkle-3 {
-      font-size: 0.025em;
-      font-size: 0;
-      opacity: 1;
       position: absolute;
-      right: -1em;
+      font-size: 0.025em;
       top: -0.5em;
+      right: -1em;
+      font-size: 0em;
+      opacity: 1;
     }
 
     .sparkle {
-      animation: sparkle 0.5s ease-out 5s forwards;
       color: gold;
+      animation: sparkle 0.5s ease-out 5s forwards;
     }
 
     .sparkle-1 {
-      animation: sparkle-1 0.4s ease-out 5s forwards;
       color: orange;
+      animation: sparkle-1 0.4s ease-out 5s forwards;
     }
 
     .sparkle-2 {
-      animation: sparkle-2 0.3s ease-out 5s forwards;
       color: green;
+      animation: sparkle-2 0.3s ease-out 5s forwards;
     }
 
     .sparkle-3 {
-      animation: sparkle-3 0.6s ease-out 5s forwards;
       color: purple;
+      animation: sparkle-3 0.6s ease-out 5s forwards;
     }
 
     .word:nth-child(1) .sparkle {
@@ -146,8 +141,8 @@
     }
 
     .word:nth-child(2) .sparkle {
-      animation-delay: 5s;
       margin-top: -1.5em;
+      animation-delay: 5s;
     }
 
     .word:nth-child(1) .sparkle-1 {
@@ -156,48 +151,44 @@
     }
 
     .word:nth-child(2) .sparkle-2 {
-      animation-delay: 5s;
       color: blue;
       margin-top: -1.5em;
+      animation-delay: 5s;
     }
 
     .word:nth-child(3) .sparkle-3 {
-      animation-delay: 7s;
       color: violet;
       margin-top: -2em;
+      animation-delay: 7s;
     }
   }
 }
 
 @keyframes starTwinkle {
   0% {
-    filter: drop-shadow(0 0 2px rgb(255 215 0 / 70%));
     opacity: 0.85;
     transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.7));
   }
-
   25% {
-    filter: drop-shadow(0 0 6px rgb(255 215 0 / 90%));
     opacity: 1;
     transform: scale(1.15) rotate(8deg);
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.9));
   }
-
   50% {
-    filter: drop-shadow(0 0 4px rgb(255 215 0 / 80%));
     opacity: 0.9;
     transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.8));
   }
-
   75% {
-    filter: drop-shadow(0 0 6px rgb(255 215 0 / 95%));
     opacity: 1;
     transform: scale(1.12) rotate(-8deg);
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.95));
   }
-
   100% {
-    filter: drop-shadow(0 0 2px rgb(255 215 0 / 70%));
     opacity: 0.85;
     transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.7));
   }
 }
 
@@ -206,7 +197,6 @@
     opacity: 0;
     transform: translateY(1.25em);
   }
-
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -215,36 +205,32 @@
 
 @keyframes sparkle {
   0% {
-    color: black;
-    font-size: 0.1em;
     opacity: 1;
     transform: translateY(-1.4em);
+    font-size: 0.1em;
+    color: black;
   }
-
   25% {
-    color: blue;
-    font-size: 0.15em;
     opacity: 0.75;
     transform: translateY(-1.3em);
+    font-size: 0.15em;
+    color: blue;
   }
-
   50% {
-    color: green;
-    font-size: 0.2em;
     opacity: 0.25;
     transform: translateY(-1.2em);
+    font-size: 0.2em;
+    color: green;
   }
-
   75% {
-    font-size: 0.25em;
     opacity: 0.1;
     transform: translateY(-1.1em);
+    font-size: 0.25em;
   }
-
   100% {
-    font-size: 0.3em;
     opacity: 0;
     transform: translateX(-1em);
+    font-size: 0.3em;
   }
 }
 
@@ -252,12 +238,10 @@
   0% {
     color: red;
   }
-
   50% {
     color: orange;
     transform: scale(1.25);
   }
-
   100% {
     color: gold;
     text-outline: red;
@@ -267,44 +251,39 @@
 @for $i from 1 through 3 {
   @keyframes sparkle-#{$i} {
     0% {
-      font-size: 0.1em;
       opacity: 1;
       transform: translateY(-1.4em) translateX(0);
+      font-size: 0.1em;
     }
-
     25% {
-      font-size: 0.15em;
       opacity: 0.75;
       transform: translateY(-1.3em) translateX(0.5em * $i);
+      font-size: 0.15em;
     }
-
     50% {
-      font-size: 0.2em;
       opacity: 0.25;
       transform: translateY(-1.2em) translateX(1em * $i);
+      font-size: 0.2em;
     }
-
     75% {
-      font-size: 0.25em;
       opacity: 0.1;
       transform: translateY(-1.1em) translateX(1.5em * $i);
+      font-size: 0.25em;
     }
-
     100% {
-      font-size: 0.3em;
       opacity: 0;
       transform: translateY(-1em) translateX(2em * $i);
+      font-size: 0.3em;
     }
   }
 }
 
 @keyframes backgroundAnimation {
   0% {
-    background-color: rgb(0 0 0 / 30%);
+    background-color: rgba(0, 0, 0, 0.3);
   }
-
   100% {
-    background-color: rgb(0 0 0 / 50%);
+    background-color: rgba(0, 0, 0, 0.5);
   }
 }
 
@@ -312,7 +291,6 @@
   0% {
     opacity: 0;
   }
-
   100% {
     opacity: 1;
   }
@@ -322,10 +300,9 @@
   0% {
     text-shadow: 0 0 10px gold;
   }
-
   100% {
-    text-outline: 0.25em solid red;
     text-shadow: 0 0 20px red;
+    text-outline: 0.25em solid red;
   }
 }
 
@@ -334,7 +311,6 @@
   0% {
     color: red;
   }
-
   100% {
     color: gold;
   }
@@ -342,9 +318,9 @@
 
 @media (max-width: 900px) {
   .title {
+    font-size: 200%;
     color: blue;
     flex-direction: column;
-    font-size: 200%;
     gap: 0.2em;
 
     .word {
@@ -370,8 +346,8 @@
 
     .landing-buttons {
       button {
-        font-size: 0.75em;
         padding: 0.25em 0.5em;
+        font-size: 0.75em;
       }
     }
   }

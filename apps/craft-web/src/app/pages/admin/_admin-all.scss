@@ -1,109 +1,109 @@
-@use "variables" as vars;
-@use "sass:color";
+@use 'variables' as vars;
+@use 'sass:color';
 
 $flag-wave-duration: 6s;
 $flag-stars-twinkle: 2s;
 
 .admin-container {
-  background: linear-gradient(135deg, var(--md-sys-color-primary) 0%, var(--md-sys-color-secondary) 50%, var(--md-sys-color-tertiary) 100%);
-  color: white;
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow-y: auto;
+  color: white;
+  background: linear-gradient(135deg, var(--md-sys-color-primary) 0%, var(--md-sys-color-secondary) 50%, var(--md-sys-color-tertiary) 100%);
   padding: 20px;
   position: relative;
+  overflow-y: auto;
 
   &.usa-theme {
     &::before {
-      background: repeating-linear-gradient(90deg, vars.$usa-red, vars.$usa-red 50px, vars.$usa-white 50px, vars.$usa-white 100px);
-      box-shadow: 0 2px 10px rgb(0 0 0 / 50%);
-      content: "";
-      height: 10px;
-      left: 0;
+      content: '';
       position: absolute;
-      right: 0;
       top: 0;
+      left: 0;
+      right: 0;
+      height: 10px;
+      background: repeating-linear-gradient(90deg, vars.$usa-red, vars.$usa-red 50px, vars.$usa-white 50px, vars.$usa-white 100px);
       z-index: 10;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
 
     &::after {
-      background: repeating-linear-gradient(90deg, vars.$usa-red, vars.$usa-red 50px, vars.$usa-white 50px, vars.$usa-white 100px);
-      bottom: 0;
-      box-shadow: 0 -2px 10px rgb(0 0 0 / 50%);
-      content: "";
-      height: 10px;
-      left: 0;
+      content: '';
       position: absolute;
+      bottom: 0;
+      left: 0;
       right: 0;
+      height: 10px;
+      background: repeating-linear-gradient(90deg, vars.$usa-red, vars.$usa-red 50px, vars.$usa-white 50px, vars.$usa-white 100px);
       z-index: 10;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
     }
   }
 }
 
 // Patriotic Header
 .admin-header {
-  animation: slide-in-top 0.5s ease-out forwards;
-  background: vars.$usa-blue;
-  border-radius: 10px;
-  box-shadow: 0 6px 10px rgb(0 0 0 / 30%);
   margin-bottom: 20px;
   padding: 15px 20px;
+  background: vars.$usa-blue;
+  border-radius: 10px;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+  animation: slide-in-top 0.5s ease-out forwards;
 
   .header-content {
-    align-items: center;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
 
     .title-section {
-      align-items: center;
       display: flex;
+      align-items: center;
 
       .usa-flag-container {
-        align-items: center;
-        border-radius: 3px;
-        box-shadow: 0 0 10px rgb(255 255 255 / 50%);
-        display: flex;
-        height: 40px;
-        justify-content: center;
-        margin-right: 20px;
-        overflow: hidden;
-        position: relative;
         width: 60px;
+        height: 40px;
+        margin-right: 20px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 3px;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-        &::before {
-          background: linear-gradient(135deg, rgb(255 255 255 / 30%), rgb(255 255 255 / 0%) 60%);
-          bottom: 0;
-          content: "";
-          left: 0;
+        &:before {
+          content: '';
           position: absolute;
-          right: 0;
           top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 60%);
           z-index: 3;
         }
 
         .usa-flag-image {
-          animation: flag-wave $flag-wave-duration ease-in-out infinite;
-          filter: drop-shadow(0 0 2px rgb(0 0 0 / 30%));
+          width: 100%;
           height: auto;
           object-fit: contain;
-          width: 100%;
+          filter: drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.3));
+          animation: flag-wave $flag-wave-duration ease-in-out infinite;
         }
 
         .usa-eagle {
-          border-radius: 50%;
-          filter: drop-shadow(0 2px 4px rgb(0 0 0 / 40%));
+          width: 80%;
           height: 80%;
           object-fit: contain;
-          padding: 2px;
+          filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.4));
           transition: all 0.3s ease;
-          width: 80%;
           z-index: 2;
+          border-radius: 50%;
+          padding: 2px;
 
           &:hover {
-            filter: drop-shadow(0 3px 6px rgb(0 0 0 / 60%));
             transform: scale(1.05);
+            filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.6));
           }
         }
       }
@@ -111,48 +111,48 @@ $flag-stars-twinkle: 2s;
       .title-and-subtitle {
         display: flex;
         flex-direction: column;
-        height: 40px; // Match the flag container height
         justify-content: center;
+        height: 40px; // Match the flag container height
 
         h1 {
-          color: vars.$usa-white;
-          font-size: 1.6em; // Reduced font size
-          line-height: 1.2; // Adjust line height
           margin: 0;
-          text-shadow: 2px 2px 4px rgb(0 0 0 / 40%);
+          font-size: 1.6em; // Reduced font size
+          color: vars.$usa-white;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+          line-height: 1.2; // Adjust line height
         }
 
         .subtitle {
-          color: vars.$usa-gold;
-          font-size: 0.9em; // Reduced font size
-          line-height: 1.2; // Adjust line height
           margin: 0;
+          font-size: 0.9em; // Reduced font size
+          color: vars.$usa-gold;
+          line-height: 1.2; // Adjust line height
         }
       }
     }
 
     .actions-section {
-      align-items: center;
       display: flex;
+      align-items: center;
       gap: 15px;
 
       .toggle-label {
-        color: vars.$patriot-white;
         margin-left: 5px;
+        color: vars.$patriot-white;
       }
 
       .action-button {
         background-color: vars.$usa-red;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgb(0 0 0 / 30%);
         color: vars.$patriot-white;
         padding: 0 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         transition: all 0.3s ease;
 
         &:hover {
-          background-color: color.adjust(vars.$usa-red, $lightness: -5%);
-          box-shadow: 0 4px 8px rgb(0 0 0 / 50%);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
           transform: translateY(-2px);
+          background-color: color.adjust(vars.$usa-red, $lightness: -5%);
         }
       }
     }
@@ -160,110 +160,106 @@ $flag-stars-twinkle: 2s;
 
   // USA Flag Animation
   .usa-flag-container {
-    align-items: center;
-    border-radius: 3px;
-    box-shadow: 0 0 10px rgb(255 255 255 / 50%);
-    display: flex;
-    height: 40px;
-    justify-content: center;
-    margin-right: 20px;
-    overflow: hidden;
-    position: relative;
     width: 60px;
+    height: 40px;
+    margin-right: 20px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    &::before {
-      background: linear-gradient(135deg, rgb(255 255 255 / 30%), rgb(255 255 255 / 0%) 60%);
-      bottom: 0;
-      content: "";
-      left: 0;
+    &:before {
+      content: '';
       position: absolute;
-      right: 0;
       top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 60%);
       z-index: 3;
     }
 
     .usa-flag-image {
-      animation: flag-wave $flag-wave-duration ease-in-out infinite;
-      filter: drop-shadow(0 0 2px rgb(0 0 0 / 30%));
+      width: 100%;
       height: auto;
       object-fit: contain;
-      width: 100%;
+      filter: drop-shadow(0px 0px 2px rgba(0, 0, 0, 0.3));
+      animation: flag-wave $flag-wave-duration ease-in-out infinite;
     }
 
     .usa-eagle {
-      filter: drop-shadow(0 2px 4px rgb(0 0 0 / 40%));
+      width: 100%;
       height: 100%;
       object-fit: contain;
+      filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.4));
       transition: all 0.3s ease;
-      width: 100%;
       z-index: 2;
 
       &:hover {
-        filter: drop-shadow(0 3px 6px rgb(0 0 0 / 60%));
         transform: scale(1.1);
+        filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.6));
       }
     }
   }
 
   .metrics-summary {
     display: flex;
-    gap: 2%;
     justify-content: space-between;
-    min-height: 120px;
+    gap: 2%;
     width: 100%;
+    min-height: 120px;
 
     .metric-card {
+      flex: 1;
+      min-width: 200px;
+      max-width: calc(25% - 2%);
+      display: flex;
       align-items: center;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      border-left: 5px solid;
       animation: slide-in-left 0.5s ease-out forwards;
       animation-delay: calc(var(--i, 0) * 0.1s);
-      background: rgb(255 255 255 / 10%);
-      border-left: 5px solid;
-      border-radius: 10px;
-      display: flex;
-      flex: 1;
-      max-width: calc(25% - 2%);
-      min-width: 200px;
-      padding: 1.5rem;
-      transition: all 0.3s ease;
 
       &:hover {
-        box-shadow: 0 5px 15px rgb(0 0 0 / 20%);
         transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
       }
 
       &.memory {
         border-color: vars.$usa-blue;
-
         --i: 1;
       }
 
       &.cpu {
         border-color: vars.$usa-gold;
-
         --i: 2;
       }
 
       &.uptime {
         border-color: limegreen;
-
         --i: 3;
       }
 
       &.network {
         border-color: vars.$usa-red;
-
         --i: 4;
       }
 
       .metric-icon {
+        flex: 0 0 50px;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        justify-content: center;
         align-items: center;
         border-radius: 50%;
-        display: flex;
-        flex: 0 0 50px;
-        height: 50px;
-        justify-content: center;
         margin-right: 1rem;
-        width: 50px;
 
         mat-icon {
           font-size: min(28px, 2vw);
@@ -277,20 +273,20 @@ $flag-stars-twinkle: 2s;
         min-width: 0; // Prevents flex items from overflowing
 
         .metric-label {
-          color: silver;
           font-size: clamp(0.8rem, 1vw, 1rem);
+          color: silver;
           margin-bottom: 0.3em;
+          white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
         }
 
         .metric-value {
           font-size: clamp(1.2rem, 1.5vw, 1.5rem);
           font-weight: 500;
+          white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
         }
       }
     }
@@ -310,42 +306,42 @@ $flag-stars-twinkle: 2s;
 }
 
 .api-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
+  border-radius: 0.5em;
+  overflow: hidden;
+  box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.05);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  background-color: rgb(255 255 255 / 5%);
-  border: 1px solid rgb(255 255 255 / 10%);
-  border-collapse: collapse;
-  border-radius: 0.5em;
-  box-shadow: 0 0.5em 1em rgb(0 0 0 / 20%);
-  margin-top: 1em;
-  overflow: hidden;
-  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .api-table th,
 .api-table td {
-  border-bottom: 1px solid rgb(255 255 255 / 10%);
   padding: 0.75em;
   text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .api-table th {
-  background-color: rgb(0 0 0 / 20%);
+  background-color: rgba(0, 0, 0, 0.2);
   color: vars.$patriot-white;
   font-weight: 600;
-  letter-spacing: 0.05em;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .api-table tbody tr:hover {
-  background-color: rgb(255 255 255 / 10%);
+  background-color: rgba(255, 255, 255, 0.1);
   transition: background-color 0.3s ease;
 }
 
 .method-badge {
+  padding: 3px 8px;
   border-radius: 4px;
   font-size: 0.8em;
-  padding: 3px 8px;
 
   &.method-get {
     background-color: rgba(vars.$usa-blue, 0.2);
@@ -369,14 +365,14 @@ $flag-stars-twinkle: 2s;
 }
 
 .duration-cell {
-  align-items: center;
-  display: flex;
   position: relative;
+  display: flex;
+  align-items: center;
 
   .duration-bar {
-    border-radius: 3px;
-    height: 6px;
-    left: 0;
     position: absolute;
+    left: 0;
+    height: 6px;
+    border-radius: 3px;
   }
 }

@@ -2,38 +2,38 @@
 
 // Light Theme
 $light-theme: (
-  primary: #fff,
+  primary: #ffffff,
   secondary: #f0f0f0,
   accent: #007bff,
-  text: #000,
-  background: #fff,
+  text: #000000,
+  background: #ffffff,
 );
 
 // Dark Theme
 $dark-theme: (
-  primary: #000,
-  secondary: #333,
+  primary: #000000,
+  secondary: #333333,
   accent: #ff4081,
-  text: #fff,
-  background: #000,
+  text: #ffffff,
+  background: #000000,
 );
 
 // Patriotic Theme
 $patriotic-theme: (
-  primary: #fff,
-  secondary: #f00,
-  accent: #00f,
-  text: #000,
-  background: #fff,
+  primary: #ffffff,
+  secondary: #ff0000,
+  accent: #0000ff,
+  text: #000000,
+  background: #ffffff,
 );
 
 // Hoorah Levels Theme
 $hoorah-theme: (
-  primary: #fc0,
-  secondary: #f60,
-  accent: #c00,
-  text: #000,
-  background: #fff,
+  primary: #ffcc00,
+  secondary: #ff6600,
+  accent: #cc0000,
+  text: #000000,
+  background: #ffffff,
 );
 
 // Mixin to apply theme
@@ -45,8 +45,8 @@ $hoorah-theme: (
   $background: map-get($theme, background);
 
   body {
-    background-color: $background;
     color: $text;
+    background-color: $background;
   }
 
   .primary {

@@ -1,124 +1,122 @@
-@use "variables" as vars;
-@use "sass:color";
-@use "../../../styles/md3-mapping" as md3;
+@use 'variables' as vars;
+@use 'sass:color';
+@use '../../../styles/md3-mapping' as md3;
 
 $flag-wave-duration: 6s;
 
 .admin-container {
-  background: linear-gradient(135deg, var(--md-sys-color-primary) 0%, var(--md-sys-color-secondary) 50%, var(--md-sys-color-tertiary) 100%);
-  color: white;
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow-y: auto;
+  color: white;
+  background: linear-gradient(135deg, var(--md-sys-color-primary) 0%, var(--md-sys-color-secondary) 50%, var(--md-sys-color-tertiary) 100%);
   padding: 20px;
   position: relative;
+  overflow-y: auto;
 
   &.usa-theme {
     &::before {
-      background: repeating-linear-gradient(90deg, vars.$usa-red, vars.$usa-red 50px, vars.$usa-white 50px, vars.$usa-white 100px);
-      box-shadow: 0 2px 10px rgb(0 0 0 / 50%);
-      content: "";
-      height: 10px;
-      left: 0;
+      content: '';
       position: absolute;
-      right: 0;
       top: 0;
+      left: 0;
+      right: 0;
+      height: 10px;
+      background: repeating-linear-gradient(90deg, vars.$usa-red, vars.$usa-red 50px, vars.$usa-white 50px, vars.$usa-white 100px);
       z-index: 10;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
 
     &::after {
-      background: repeating-linear-gradient(90deg, vars.$usa-red, vars.$usa-red 50px, vars.$usa-white 50px, vars.$usa-white 100px);
-      bottom: 0;
-      box-shadow: 0 -2px 10px rgb(0 0 0 / 50%);
-      content: "";
-      height: 10px;
-      left: 0;
+      content: '';
       position: absolute;
+      bottom: 0;
+      left: 0;
       right: 0;
+      height: 10px;
+      background: repeating-linear-gradient(90deg, vars.$usa-red, vars.$usa-red 50px, vars.$usa-white 50px, vars.$usa-white 100px);
       z-index: 10;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
     }
   }
 }
 
 // Patriotic Header
 .admin-header {
-  animation: slide-in-top 0.5s ease-out forwards;
-  background: vars.$usa-blue;
-  border-radius: 10px;
-  box-shadow: 0 6px 10px rgb(0 0 0 / 30%);
   margin-bottom: 20px;
   padding: 15px 20px;
+  background: vars.$usa-blue;
+  border-radius: 10px;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+  animation: slide-in-top 0.5s ease-out forwards;
 
   .header-content {
-    align-items: center;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
 
     .title-section {
-      align-items: center;
       display: flex;
+      align-items: center;
 
       .usa-flag-container {
-        align-items: center;
-        border-radius: 3px;
-        box-shadow: 0 0 10px rgb(255 255 255 / 50%);
-        display: flex;
-        height: 40px;
-        justify-content: center;
-        margin-right: 20px;
-        overflow: hidden;
-        position: relative;
         width: 60px;
+        height: 40px;
+        margin-right: 20px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 3px;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-        &::before {
-          background: linear-gradient(135deg, rgb(255 255 255 / 30%), rgb(255 255 255 / 0%) 60%);
-          bottom: 0;
-          content: "";
-          left: 0;
+        &:before {
+          content: '';
           position: absolute;
-          right: 0;
           top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 60%);
           z-index: 3;
         }
 
         .usa-flag-image {
+          width: 100%;
           height: auto;
           object-fit: contain;
-          width: 100%;
         }
-
         .usa-eagle {
+          width: 80%;
           height: 80%;
           object-fit: contain;
-          width: 80%;
         }
       }
 
       .title-and-subtitle {
         display: flex;
         flex-direction: column;
-        height: 40px;
         justify-content: center;
+        height: 40px;
 
         h1 {
-          color: vars.$usa-white;
+          margin: 0;
           font-size: 1.6em;
-          margin: 0;
+          color: vars.$usa-white;
         }
-
         .subtitle {
-          color: vars.$usa-gold;
-          font-size: 0.9em;
           margin: 0;
+          font-size: 0.9em;
+          color: vars.$usa-gold;
         }
       }
     }
 
     .actions-section {
-      align-items: center;
       display: flex;
+      align-items: center;
       gap: 15px;
     }
   }
@@ -127,32 +125,32 @@ $flag-wave-duration: 6s;
 // Compact action button style to match footer warn button
 .actions-section {
   .action-button {
-    align-items: center;
-    background-color: rgb(220 53 69 / 90%);
-    border-radius: 0.25em;
-    box-shadow: 0 2px 6px rgb(0 0 0 / 25%);
-    color: white;
-    display: inline-flex;
-    font-size: 0.9em;
-    gap: 0.4em;
     padding: 0.25em 0.5em;
+    background-color: rgba(220, 53, 69, 0.9);
+    color: white;
+    border-radius: 0.25em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font-size: 0.9em;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
     transition:
       transform 0.15s ease,
       box-shadow 0.15s ease,
       background-color 0.15s ease;
 
     mat-icon {
-      color: white;
       font-size: 1.1em;
       height: 1.1em;
       width: 1.1em;
+      color: white;
     }
 
     &:hover {
-      background-color: rgb(220 53 69 / 100%);
-      box-shadow: 0 6px 12px rgb(0 0 0 / 30%);
-      cursor: pointer;
       transform: translateY(-2px);
+      background-color: rgba(220, 53, 69, 1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
     }
   }
 }
@@ -161,19 +159,15 @@ $flag-wave-duration: 6s;
   0% {
     transform: skewX(0deg);
   }
-
   25% {
     transform: skewX(-5deg);
   }
-
   50% {
     transform: skewX(0deg);
   }
-
   75% {
     transform: skewX(5deg);
   }
-
   100% {
     transform: skewX(0deg);
   }
@@ -183,9 +177,9 @@ $flag-wave-duration: 6s;
 .actions-section {
   .simulation-toggle {
     mat-slide-toggle {
-      align-items: center;
-      display: inline-flex;
       font-size: 0.9em;
+      display: inline-flex;
+      align-items: center;
     }
 
     .live-label {
@@ -205,15 +199,12 @@ $flag-wave-duration: 6s;
   .simulation-toggle .live-toggle ::ng-deep .mat-slide-toggle-thumb {
     background-color: md3.$md-live !important;
   }
-
   .simulation-toggle .live-toggle ::ng-deep .mat-slide-toggle-bar {
     background-color: rgba(#{md3.$md-live}, 0.25) !important;
   }
-
   .simulation-toggle .sim-toggle ::ng-deep .mat-slide-toggle-thumb {
     background-color: md3.$md-sim !important;
   }
-
   .simulation-toggle .sim-toggle ::ng-deep .mat-slide-toggle-bar {
     background-color: rgba(#{md3.$md-sim}, 0.25) !important;
   }
@@ -224,19 +215,16 @@ $flag-wave-duration: 6s;
     background-color: md3.$md-live !important;
     box-shadow: none !important;
   }
-
   .simulation-toggle .live-toggle ::ng-deep .mat-slide-toggle-bar {
-    background-color: rgb(76 175 80 / 25%) !important;
+    background-color: rgba(76, 175, 80, 0.25) !important;
   }
-
   .simulation-toggle .sim-toggle.mat-checked ::ng-deep .mat-slide-toggle-thumb,
   .simulation-toggle .sim-toggle.mat-checked ::ng-deep .mat-slide-toggle-thumb::after {
     background-color: md3.$md-sim !important;
     box-shadow: none !important;
   }
-
   .simulation-toggle .sim-toggle ::ng-deep .mat-slide-toggle-bar {
-    background-color: rgb(255 165 0 / 25%) !important;
+    background-color: rgba(255, 165, 0, 0.25) !important;
   }
 
   /* Broaden selectors to ensure Material internals are targeted */
@@ -247,11 +235,9 @@ $flag-wave-duration: 6s;
     background-color: md3.$md-live !important;
     box-shadow: none !important;
   }
-
   .simulation-toggle .live-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-bar {
     background-color: rgba(#{md3.$md-live}, 0.25) !important;
   }
-
   .simulation-toggle .sim-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-thumb,
   .simulation-toggle .sim-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-thumb::after,
   .simulation-toggle .sim-toggle.mat-slide-toggle.mat-checked ::ng-deep .mat-slide-toggle-thumb,
@@ -259,7 +245,6 @@ $flag-wave-duration: 6s;
     background-color: md3.$md-sim !important;
     box-shadow: none !important;
   }
-
   .simulation-toggle .sim-toggle.mat-slide-toggle ::ng-deep .mat-slide-toggle-bar {
     background-color: rgba(#{md3.$md-sim}, 0.25) !important;
   }

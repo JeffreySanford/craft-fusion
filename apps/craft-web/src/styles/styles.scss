@@ -1,71 +1,68 @@
 // Main styles entry point for Craft Fusion
 
 // Import global variables and settings
-@use "variables" as *;
-@use "themes" as *;
-@use "typography" as *;
-@use "_transition-variables" as *;
+@use 'variables' as *;
+@use 'themes' as *;
+@use 'typography' as *;
+@use '_transition-variables' as *;
 
 // Reset and base styles
-@use "reset" as *;
-@use "scrollbar" as *;
+@use 'reset' as *;
+@use 'scrollbar' as *;
 
 // Layout and utility styles
-@use "layout" as *;
-@use "responsive" as *;
-@use "utilities" as *;
-@use "accessibility" as *; // Added new accessibility styles with forced-colors
+@use 'layout' as *;
+@use 'responsive' as *;
+@use 'utilities' as *;
+@use 'accessibility' as *; // Added new accessibility styles with forced-colors
 
 // Component-specific styles
-@use "md3-tokens" as *;
-@use "md3-components" as *;
-@use "material-overrides" as *;
-@use "patriotic-overrides" as *;
-@use "md3-mapping" as md3;
+@use 'md3-tokens' as *;
+@use 'md3-components' as *;
+@use 'material-overrides' as *;
+@use 'patriotic-overrides' as *;
+@use 'md3-mapping' as md3;
 
 // Import animations last
-@use "animations" as *;
+@use 'animations' as *;
 
 // Global styles
 body {
-  box-sizing: border-box;
   font-family: var(--md-sys-typescale-body-medium-font-family-name);
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 /* SVG sparkline stop colors moved from inline styles to CSS classes */
 .sparkline .spark-stop-a {
   stop-color: #3b82f6;
-  stop-opacity: 80%;
+  stop-opacity: 0.8;
 }
-
 .sparkline .spark-stop-b {
   stop-color: #10b981;
-  stop-opacity: 80%;
+  stop-opacity: 0.8;
 }
-
 .sparkline .spark-stop-c {
   stop-color: #ef4444;
-  stop-opacity: 80%;
+  stop-opacity: 0.8;
 }
 
 .sparkline-detailed .spark-stop-a {
   stop-color: #3b82f6;
-  stop-opacity: 50%;
+  stop-opacity: 0.5;
 }
-
 .sparkline-detailed .spark-stop-b {
-  stop-color: rgb(59 130 246 / 25%);
-  stop-opacity: 25%;
+  stop-color: rgba(59, 130, 246, 0.25);
+  stop-opacity: 0.25;
 }
 
 html,
 body {
+  width: 100%;
   height: 98vh;
-  max-height: 98vh;
   min-height: 98vh;
+  max-height: 98vh;
   overflow-x: hidden;
   overflow-y: hidden;
-  width: 100%;
 }

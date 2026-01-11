@@ -1,10 +1,10 @@
-@use "sass:map";
-@use "sass:color";
-@use "./variables" as vars;
+@use 'sass:map';
+@use 'sass:color';
+@use './variables' as vars;
 
 ::-webkit-scrollbar {
-  height: 0.5em;
   width: 0.5em;
+  height: 0.5em;
 }
 
 ::-webkit-scrollbar-track {
@@ -17,11 +17,10 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background:
-    linear-gradient(
-      to bottom,
-      color.adjust(map.get(vars.$table-theme, patriotic-red), $lightness: -10%),
-      map.get(vars.$table-theme, primary-white),
-      color.adjust(map.get(vars.$table-theme, patriotic-blue), $lightness: -10%)
-    );
+  background: linear-gradient(
+    to bottom,
+    color.adjust(map.get(vars.$table-theme, patriotic-red), $lightness: -10%),
+    map.get(vars.$table-theme, primary-white),
+    color.adjust(map.get(vars.$table-theme, patriotic-blue), $lightness: -10%)
+  );
 }

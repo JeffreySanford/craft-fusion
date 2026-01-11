@@ -1,28 +1,28 @@
-@use "variables" as vars;
-@use "sass:map";
+@use 'variables' as vars;
+@use 'sass:map';
 
 // MD3 Button styles
 .md3-button {
+  height: 40px;
+  padding: 0 24px;
   border-radius: 20px;
-  cursor: pointer;
-  font-family: "Roboto Flex", sans-serif;
+  font-family: 'Roboto Flex', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  height: 40px;
   letter-spacing: 0.1px;
-  padding: 0 24px;
   text-transform: capitalize;
   transition: all 0.2s ease;
+  cursor: pointer;
 
   &.filled {
     background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
     border: none;
     box-shadow: var(--md-sys-elevation-level1);
-    color: var(--md-sys-color-on-primary);
 
     &:hover {
-      background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
       box-shadow: var(--md-sys-elevation-level2);
+      background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
     }
 
     &:active {
@@ -32,8 +32,8 @@
 
   &.tonal {
     background-color: var(--md-sys-color-secondary-container);
-    border: none;
     color: var(--md-sys-color-on-secondary-container);
+    border: none;
 
     &:hover {
       background-color: color-mix(in srgb, var(--md-sys-color-secondary-container) 92%, black);
@@ -46,8 +46,8 @@
 
   &.outlined {
     background-color: transparent;
-    border: 1px solid var(--md-sys-color-outline);
     color: var(--md-sys-color-primary);
+    border: 1px solid var(--md-sys-color-outline);
 
     &:hover {
       background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
@@ -60,8 +60,8 @@
 
   &.text {
     background-color: transparent;
-    border: none;
     color: var(--md-sys-color-primary);
+    border: none;
     padding: 0 12px;
 
     &:hover {
@@ -74,12 +74,12 @@
   }
 
   &.icon {
-    align-items: center;
-    display: inline-flex;
-    height: 40px;
-    justify-content: center;
-    padding: 0;
     width: 40px;
+    height: 40px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   &:disabled {
@@ -93,9 +93,9 @@
   background-color: var(--md-sys-color-surface);
   border-radius: 12px;
   box-shadow: var(--md-sys-elevation-level1);
-  overflow: hidden;
   padding: 16px;
   transition: box-shadow 0.2s ease;
+  overflow: hidden;
 
   &:hover {
     box-shadow: var(--md-sys-elevation-level2);
@@ -106,7 +106,7 @@
 
     .md3-card-title {
       color: var(--md-sys-color-on-surface);
-      margin: 0 0 4px;
+      margin: 0 0 4px 0;
     }
 
     .md3-card-subtitle {
@@ -121,9 +121,9 @@
 
   .md3-card-actions {
     display: flex;
-    gap: 8px;
-    justify-content: flex-end;
     padding-top: 16px;
+    justify-content: flex-end;
+    gap: 8px;
   }
 
   &.elevated {
@@ -137,22 +137,22 @@
 
   &.outlined {
     background-color: var(--md-sys-color-surface);
-    border: 1px solid var(--md-sys-color-outline-variant);
     box-shadow: none;
+    border: 1px solid var(--md-sys-color-outline-variant);
   }
 }
 
 // MD3 Chip styles
 .md3-chip {
-  align-items: center;
+  height: 32px;
   border-radius: 8px;
-  cursor: pointer;
+  padding: 0 12px;
   display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: 14px;
   font-weight: 500;
-  gap: 8px;
-  height: 32px;
-  padding: 0 12px;
+  cursor: pointer;
 
   &.assist {
     background-color: var(--md-sys-color-surface-variant);
@@ -169,13 +169,13 @@
 
   &.filter {
     background-color: var(--md-sys-color-surface-variant);
-    border: 1px solid var(--md-sys-color-outline);
     color: var(--md-sys-color-on-surface-variant);
+    border: 1px solid var(--md-sys-color-outline);
 
     &.selected {
       background-color: var(--md-sys-color-secondary-container);
-      border: none;
       color: var(--md-sys-color-on-secondary-container);
+      border: none;
     }
   }
 
@@ -204,18 +204,18 @@
 
 // MD3 Navigation Rail
 .md3-nav-rail {
+  width: 80px;
   background-color: var(--md-sys-color-surface);
   box-shadow: var(--md-sys-elevation-level1);
   padding: 12px 0;
-  width: 80px;
 
   .md3-nav-item {
-    align-items: center;
-    color: var(--md-sys-color-on-surface-variant);
-    cursor: pointer;
     display: flex;
     flex-direction: column;
+    align-items: center;
     padding: 12px 0;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
     transition: all 0.2s ease;
 
     &.active {
@@ -240,13 +240,13 @@
 
 // MD3 Top App Bar
 .md3-top-app-bar {
-  align-items: center;
-  background-color: var(--md-sys-color-surface);
-  box-shadow: var(--md-sys-elevation-level2);
-  color: var(--md-sys-color-on-surface);
-  display: flex;
   height: 64px;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  box-shadow: var(--md-sys-elevation-level2);
   padding: 0 16px;
+  display: flex;
+  align-items: center;
 
   .md3-top-app-bar-title {
     font-size: 22px;
@@ -272,12 +272,12 @@
   padding: 8px 0;
 
   .md3-list-item {
+    height: 56px;
+    padding: 0 16px;
+    display: flex;
     align-items: center;
     color: var(--md-sys-color-on-surface);
     cursor: pointer;
-    display: flex;
-    height: 56px;
-    padding: 0 16px;
 
     &:hover {
       background-color: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
@@ -298,30 +298,30 @@
   }
 
   .md3-list-divider {
-    background-color: var(--md-sys-color-outline-variant);
     height: 1px;
+    background-color: var(--md-sys-color-outline-variant);
     margin: 8px 0;
   }
 }
 
 // MD3 Switch
 .md3-switch {
-  display: inline-block;
-  height: 32px;
   position: relative;
+  display: inline-block;
   width: 52px;
+  height: 32px;
 
   input {
-    height: 0;
     opacity: 0;
     width: 0;
+    height: 0;
 
     &:checked + .md3-switch-track {
       background-color: var(--md-sys-color-primary);
 
       .md3-switch-thumb {
-        background-color: var(--md-sys-color-on-primary);
         transform: translateX(20px);
+        background-color: var(--md-sys-color-on-primary);
       }
     }
 
@@ -332,70 +332,70 @@
     }
 
     &:disabled + .md3-switch-track {
-      cursor: not-allowed;
       opacity: 0.38;
+      cursor: not-allowed;
     }
   }
 
   .md3-switch-track {
-    background-color: var(--md-sys-color-surface-variant);
-    border-radius: 16px;
-    bottom: 0;
-    cursor: pointer;
-    left: 0;
     position: absolute;
-    right: 0;
+    cursor: pointer;
     top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--md-sys-color-surface-variant);
     transition: 0.2s;
+    border-radius: 16px;
 
     .md3-switch-thumb {
-      background-color: var(--md-sys-color-outline);
-      border-radius: 50%;
-      bottom: 8px;
-      height: 16px;
-      left: 8px;
       position: absolute;
-      transition: 0.2s;
+      height: 16px;
       width: 16px;
+      left: 8px;
+      bottom: 8px;
+      background-color: var(--md-sys-color-outline);
+      transition: 0.2s;
+      border-radius: 50%;
     }
   }
 }
 
 // MD3 FAB (Floating Action Button)
 .md3-fab {
-  align-items: center;
-  background-color: var(--md-sys-color-primary);
-  border: none;
-  border-radius: 16px;
-  box-shadow: var(--md-sys-elevation-level3);
-  color: var(--md-sys-color-on-primary);
-  cursor: pointer;
-  display: flex;
-  height: 56px;
-  justify-content: center;
-  transition: all 0.2s ease;
   width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--md-sys-elevation-level3);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
 
   &:hover {
-    background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
     box-shadow: var(--md-sys-elevation-level4);
+    background-color: color-mix(in srgb, var(--md-sys-color-primary) 92%, black);
   }
 
   &:active {
-    background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, black);
     box-shadow: var(--md-sys-elevation-level2);
+    background-color: color-mix(in srgb, var(--md-sys-color-primary) 88%, black);
   }
 
   &.small {
-    border-radius: 12px;
-    height: 40px;
     width: 40px;
+    height: 40px;
+    border-radius: 12px;
   }
 
   &.large {
-    border-radius: 28px;
-    height: 96px;
     width: 96px;
+    height: 96px;
+    border-radius: 28px;
   }
 
   .material-icons {
@@ -405,34 +405,34 @@
 
 // MD3 Tabs
 .md3-tabs {
-  background-color: var(--md-sys-color-surface);
   display: flex;
-  height: 48px;
   width: 100%;
+  height: 48px;
+  background-color: var(--md-sys-color-surface);
 
   .md3-tab {
-    align-items: center;
-    color: var(--md-sys-color-on-surface-variant);
-    cursor: pointer;
-    display: flex;
     flex: 1;
     height: 100%;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    position: relative;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
     transition: all 0.2s ease;
+    position: relative;
 
     &.active {
       color: var(--md-sys-color-primary);
 
       &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 16px;
+        right: 16px;
+        height: 3px;
         background-color: var(--md-sys-color-primary);
         border-radius: 3px 3px 0 0;
-        bottom: 0;
-        content: "";
-        height: 3px;
-        left: 16px;
-        position: absolute;
-        right: 16px;
       }
     }
 

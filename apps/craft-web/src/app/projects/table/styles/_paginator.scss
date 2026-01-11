@@ -4,28 +4,28 @@
 
 .mat-paginator,
 .mat-mdc-paginator {
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
   background-color: var(--mat-paginator-container-background-color, var(--md-sys-color-primary));
-  border-top: 1px solid var(--md-sys-color-outline-variant, rgb(0 0 0 / 8%));
-  bottom: var(--paginator-offset, 2.5em);
-  box-shadow: 0 -0.25em 0.5em 0 rgb(0 0 0 / 12%);
   color: var(--mat-paginator-container-text-color, var(--md-sys-color-on-primary));
   font-size: 1em;
-  height: 3em;
-  left: 0;
-  padding: 0.15em;
-  position: sticky;
-  right: 0;
   text-align: left;
+  padding: 0.15em;
+  border-top: 1px solid var(--md-sys-color-outline-variant, rgba(0, 0, 0, 0.08));
+  position: sticky;
+  bottom: var(--paginator-offset, 2.5em);
+  left: 0;
+  right: 0;
   width: 100%;
+  height: 3em;
+  box-shadow: 0 -0.25em 0.5em 0 rgba(0, 0, 0, 0.12);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   z-index: 1101; /* sit above the fixed footer (z-index:1000) */
 }
 
 .mat-mdc-paginator .mat-mdc-paginator-container,
 .mat-paginator .mat-mdc-paginator-container {
-  background-color: transparent;
   padding: 0.3em;
+  background-color: transparent;
 }
 
 .mat-mdc-paginator .mat-mdc-paginator-range-label,
@@ -33,8 +33,8 @@
 .mat-paginator .mat-mdc-paginator-range-label,
 .mat-paginator .mat-mdc-paginator-page-size-label {
   color: var(--mat-paginator-container-text-color, var(--md-sys-color-on-primary));
-  font-size: 1em;
   font-weight: 400;
+  font-size: 1em;
 }
 
 .mat-mdc-paginator .mat-mdc-icon-button,

@@ -1,8 +1,7 @@
-@use "sass:map";
-@use "sass:meta";
-
+@use 'sass:map';
+@use 'sass:meta';
 // @use '@angular/material/theming' as mat;
-@use "./variables" as vars;
+@use './variables' as vars;
 
 // Light theme color scheme
 $light-theme-colors: (
@@ -75,7 +74,7 @@ $dark-theme-colors: (
 );
 
 // Generate CSS variables for both themes
-@mixin generate-theme-variables($colors, $prefix: "") {
+@mixin generate-theme-variables($colors, $prefix: '') {
   @each $name, $value in $colors {
     #{$prefix}--md-sys-color-#{$name}: #{$value};
   }
@@ -85,42 +84,42 @@ $dark-theme-colors: (
   // Light theme variables
   :root,
   .light-theme,
-  [data-theme="light"] {
+  [data-theme='light'] {
     // Generate light theme variables
     @include generate-theme-variables($light-theme-colors);
 
     // Material-specific tokens
-    --md-sys-elevation-level1: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
-    --md-sys-elevation-level2: 0 3px 6px rgb(0 0 0 / 15%), 0 2px 4px rgb(0 0 0 / 12%);
-    --md-sys-elevation-level3: 0 10px 20px rgb(0 0 0 / 15%), 0 3px 6px rgb(0 0 0 / 10%);
-    --md-sys-elevation-level4: 0 14px 28px rgb(0 0 0 / 20%), 0 10px 10px rgb(0 0 0 / 15%);
-    --md-sys-elevation-level5: 0 19px 38px rgb(0 0 0 / 25%), 0 15px 12px rgb(0 0 0 / 18%);
+    --md-sys-elevation-level1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    --md-sys-elevation-level2: 0 3px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+    --md-sys-elevation-level3: 0 10px 20px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.1);
+    --md-sys-elevation-level4: 0 14px 28px rgba(0, 0, 0, 0.2), 0 10px 10px rgba(0, 0, 0, 0.15);
+    --md-sys-elevation-level5: 0 19px 38px rgba(0, 0, 0, 0.25), 0 15px 12px rgba(0, 0, 0, 0.18);
 
     // Header gradients
     --header-gradient: linear-gradient(135deg, #001f54 0%, #033277 30%, #792433 70%, #a01c33 100%);
 
     // Menu gradients
-    --menu-gradient: linear-gradient(135deg, rgb(0 0 102 / 95%) 0%, rgb(139 0 0 / 95%) 50%, rgb(0 0 102 / 95%) 100%);
+    --menu-gradient: linear-gradient(135deg, rgba(0, 0, 102, 0.95) 0%, rgba(139, 0, 0, 0.95) 50%, rgba(0, 0, 102, 0.95) 100%);
   }
 
   // Dark theme variables
   .dark-theme,
-  [data-theme="dark"] {
+  [data-theme='dark'] {
     // Generate dark theme variables
     @include generate-theme-variables($dark-theme-colors);
 
     // Material-specific tokens
-    --md-sys-elevation-level1: 0 1px 3px rgb(0 0 0 / 24%), 0 1px 2px rgb(0 0 0 / 36%);
-    --md-sys-elevation-level2: 0 3px 6px rgb(0 0 0 / 26%), 0 2px 4px rgb(0 0 0 / 34%);
-    --md-sys-elevation-level3: 0 10px 20px rgb(0 0 0 / 29%), 0 3px 6px rgb(0 0 0 / 23%);
-    --md-sys-elevation-level4: 0 14px 28px rgb(0 0 0 / 35%), 0 10px 10px rgb(0 0 0 / 28%);
-    --md-sys-elevation-level5: 0 19px 38px rgb(0 0 0 / 40%), 0 15px 12px rgb(0 0 0 / 32%);
+    --md-sys-elevation-level1: 0 1px 3px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.36);
+    --md-sys-elevation-level2: 0 3px 6px rgba(0, 0, 0, 0.26), 0 2px 4px rgba(0, 0, 0, 0.34);
+    --md-sys-elevation-level3: 0 10px 20px rgba(0, 0, 0, 0.29), 0 3px 6px rgba(0, 0, 0, 0.23);
+    --md-sys-elevation-level4: 0 14px 28px rgba(0, 0, 0, 0.35), 0 10px 10px rgba(0, 0, 0, 0.28);
+    --md-sys-elevation-level5: 0 19px 38px rgba(0, 0, 0, 0.4), 0 15px 12px rgba(0, 0, 0, 0.32);
 
     // Header gradients - darker for dark theme
     --header-gradient: linear-gradient(135deg, #000d24 0%, #001f54 30%, #4a0f1d 70%, #6a0f21 100%);
 
     // Menu gradients - darker for dark theme
-    --menu-gradient: linear-gradient(135deg, rgb(0 0 60 / 95%) 0%, rgb(90 0 0 / 95%) 50%, rgb(0 0 60 / 95%) 100%);
+    --menu-gradient: linear-gradient(135deg, rgba(0, 0, 60, 0.95) 0%, rgba(90, 0, 0, 0.95) 50%, rgba(0, 0, 60, 0.95) 100%);
   }
 }
 
