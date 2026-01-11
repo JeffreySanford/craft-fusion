@@ -11,41 +11,23 @@
 }
 
 .dashboard-layout {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);                                 
   display: flex;
-  min-height: calc(100vh - 8rem);
-  max-height: calc(100vh - 8rem);
-  height: auto;
+  height: calc(100vh - 3em);                                      
   overflow: hidden;
   position: relative;
-  width: 100%;
-  align-items: stretch;
 }
 
 .visualization-container {
-  background-color: rgb(0 0 0 / 20%);
+  background-color: rgb(0 0 0 / 20%);                                 
   display: grid;
   flex: 1;
-  gap: 1.25em;
-  grid-auto-rows: minmax(0, min-content);
-  grid-template-columns: repeat(12, 1fr);
-  max-height: calc(100vh - 12rem);
-  overflow-y: hidden;
+  gap: 1.25em;                                     
+  grid-auto-rows: min-content;                                                       
+  grid-template-columns: repeat(12, 1fr);                    
+  overflow-y: auto;
   padding: 1.25em;
-  position: relative;
-  min-height: 0;
-  transition: max-height 0.3s ease;
-
-  &:empty {
-    max-height: calc(100vh - 1rem);
-    overflow-y: hidden;
-    padding-bottom: 0.75em;
-    gap: 0.75em;
-  }
-}
-
-.dashboard-layout.sidebar-collapsed .visualization-container {
-  padding-right: 0.75em;
+  position: relative;                                  
 }
 
 .empty-state {
@@ -101,14 +83,12 @@
     overflow: visible;
     top: auto;
     bottom: 1em;
-    left: 1em;
-    right: auto;
+    right: 1em;
     width: auto;
     max-height: none;
     height: 3rem;
     min-height: 3rem;
     border-radius: 999px;
-    transform: none;
 
     .sidebar-actions {
       gap: 0.25em;
@@ -119,16 +99,14 @@
       border-bottom: none;
       box-shadow: none;
       justify-content: flex-end;
-      padding: 0 0.25em;
-      min-height: 3rem;
+      padding: 0;
 
       h2 {
-        font-size: 0.875rem;
+        display: none;
       }
     }
 
     .sidebar-content {
-      padding: 0.4rem 0.5rem;
       display: none;
     }
 
@@ -144,10 +122,10 @@
     }
   }
 
-    .sidebar-header {
-      align-items: center;
-      background-color: rgb(0 0 0 / 45%);                     
-      border-bottom: 1px solid rgb(0 217 255 / 30%);               
+  .sidebar-header {
+    align-items: center;
+    background-color: rgb(0 0 0 / 45%);                     
+    border-bottom: 1px solid rgb(0 217 255 / 30%);               
     box-shadow: 0 4px 8px rgb(0 0 0 / 30%);                   
     display: flex;
     justify-content: space-between;
@@ -178,13 +156,6 @@
         background-color: rgb(0 217 255 / 20%);
         transform: scale(1.1);                               
       }
-    }
-
-    .sidebar-actions button.mat-icon-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.4em;
     }
   }
 
@@ -313,82 +284,74 @@
 }
 
 .visualization-item {
-  display: block;
-  height: auto;
-  margin: 0;
+  display: block;                     
+  height: auto;                                                
+  margin: 0;                     
   position: relative;
   transition: all 0.3s ease;
-  min-height: 4rem;
 
   &.size-small {
-    grid-column: span 4;
+    grid-column: span 4;                        
     grid-row: span 1;
-    margin-bottom: 0;
-    min-height: 4rem;
+    margin-bottom: 0;                                                       
+    min-height: 15.625em;                         
   }
 
   &.size-medium {
-    grid-column: span 6;
+    grid-column: span 6;                      
     grid-row: span 1;
-    margin-bottom: 0;
-    min-height: 5rem;
+    margin-bottom: 0;                       
+    min-height: 17.5em;                          
   }
 
   &.size-large {
-    grid-column: span 8;
+    grid-column: span 8;                       
     grid-row: span 2;
-    margin-bottom: 0;
-    min-height: 6rem;
+    margin-bottom: 0;                       
+    min-height: 23.75em;                          
   }
 
   &.small-tile-full {
     grid-column: span 12 !important;              
-    min-height: 9em;
+    min-height: 18.75em;
   }
 
   &.small-tile-half {
     grid-column: span 6 !important;                          
-    min-height: 9em;
+    min-height: 17.5em;
   }
 
   &.small-tile-third {
     grid-column: span 4 !important;                           
-    min-height: 8.5em;
+    min-height: 16.25em;
   }
 
   &.small-tile-fourth {
     grid-column: span 3 !important;                             
-    min-height: 8em;
+    min-height: 15em;
   }
 
   &.medium-tile-full {
     grid-column: span 12 !important;              
-    min-height: 11em;
+    min-height: 21.875em;
   }
 
   &.medium-tile-standard {
     grid-column: span 6 !important;                  
-    min-height: 11em;
+    min-height: 20em;
   }
 
   &.size-large-single {
     grid-column: span 12 !important;                         
     grid-row: span 2;
-    min-height: 14em;
-  }
-
-  &.peasant-kitchen {
-    min-height: 11em;
-    padding: 0.4em;
-    .chart-card {
-      min-height: 10em;
-    }
+    min-height: 28.125em;
   }
 
   &.size-large-half {
     grid-column: span 6 !important;                          
     grid-row: span 2;
     margin-bottom: 1em;
+    min-height: 31.25em;                                             
 
     .chart-card {
       height: 100%;
@@ -402,13 +365,13 @@
   &.size-large-standard {
     grid-column: span 8 !important;                                     
     grid-row: span 2;
-    min-height: 13rem;
+    min-height: 23.75em;
   }
 
   &.medium-with-small {
     grid-column: span 8 !important;                       
     grid-row: span 1;
-    min-height: 15em;
+    min-height: 17.5em;
   }
 
   &.small-with-medium {
@@ -496,38 +459,6 @@
   .visualization-item.size-small:nth-child(3):not(:first-child) {
     grid-column-start: 1;                                                               
   }
-}
-
-.visualization-item.chart-type-bar {
-  min-height: 10rem;
-
-  .chart-card {
-    min-height: 10rem;
-    max-height: calc(100vh - 13rem);
-  }
-}
-
-.visualization-item.chart-type-map {
-  min-height: 11rem;
-
-  .chart-card {
-    min-height: 11rem;
-    max-height: calc(100vh - 13rem);
-  }
-}
-
-.visualization-item.grapes {
-  overflow: visible;
-  z-index: 5;
-
-  .chart-card {
-    overflow: visible;
-    min-height: 10rem;
-  }
-}
-
-.chart-card {
-  max-height: calc(100vh - 13rem);
 }
 
 .small-tile-full {
@@ -1015,6 +946,40 @@
       }
     }
   }
+}
+
+.size-large-single {
+  grid-column: span 12;
+  grid-row: span 2;
+}
+
+.size-large-single {
+  grid-column: span 12 !important;                         
+  grid-row: span 2;
+  margin-bottom: 0;                       
+  min-height: 31.25em;
+
+  .chart-card {
+    height: 100%;
+  }
+}
+
+.size-large-half {
+  grid-column: span 6 !important;                          
+  grid-row: span 2;
+  height: 100%;
+  margin-bottom: 0;                       
+  min-height: 31.25em;
+
+  .chart-card {
+    height: 100%;
+  }
+}
+
+.size-large-half {
+  grid-column: span 6;                                      
+  grid-row: span 2;                                    
+  height: 100%;                                  
 }
 
 @media (min-width: 1201px) {

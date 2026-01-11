@@ -116,15 +116,6 @@ $dark-gold-glow: #ffdc4e;
     flex-direction: column;
   }
 
-  .layout-container.sidebar-collapsed .main-stage {
-    flex: 1 1 100% !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-left: 0 !important;
-    padding-left: 1em;
-    padding-right: 1em;
-  }
-
   .main-stage .router-content-wrapper {
     display: block !important;
     flex: 1;

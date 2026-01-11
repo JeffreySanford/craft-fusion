@@ -1,15 +1,15 @@
-import { Component, OnInit, OnDestroy, Inject, inject } from '@angular/core';
-import { combineLatest } from 'rxjs';
+import { Component, OnInit, Inject, ElementRef, ViewChild, inject } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { LoggerService, ServiceCallMetric } from '../../common/services/logger.service';
 import { DataSimulationService } from '../../common/services/data-simulation.service';
 import { ServicesDashboardService } from './services-dashboard/services-dashboard.service';
-import { AuthService } from '../../common/services/auth/auth.service';
+import { AdminHelperService } from './admin-shared/admin-helper.service';
+import { AuthenticationService } from '../../common/services/authentication.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { SocketClientService } from '../../common/services/socket-client.service';
-import { MatTabChangeEvent } from '@angular/material/tabs';
-import { AdminHeroService, HeroMetrics } from './admin-shared/admin-hero.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-admin',
@@ -24,27 +24,51 @@ import { Observable } from 'rxjs';
     ]),
   ],
 })
-export class AdminComponent implements OnInit, OnDestroy {
+export class AdminComponent implements OnInit {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild('serviceMetricsChart') serviceMetricsChartRef?: ElementRef;
+  @ViewChild('systemMetricsChart') systemMetricsChartRef?: ElementRef;
+  @ViewChild('tabGroup') tabGroup: any;
+
   public autoScroll = true;
+  public navigator = window.navigator;
+
+  public selectedMetrics: string[] = ['memory', 'cpu', 'network'];
   public isSimulatingData = false;
+  public selectedApiCall: ServiceCallMetric | null = null;
   public selectedTab = 0;
   public selectedLogLevel = 'all';
-  public heroMetrics$: Observable<HeroMetrics>;
+  public dataSource = new MatTableDataSource<ServiceCallMetric>([]);
+  public displayedColumns: string[] = ['service', 'method', 'url', 'duration', 'status'];
 
+  private serviceMetricsSubscription!: Subscription;
+
+  private statisticsInterval: number | undefined;
+  private systemMetricsChart: any;
+  private serviceMetricsChart: any;
+  private isTabActive = true;
+
+  protected serviceStatistics: { [key: string]: any } = {};
   private readonly METRICS_UPDATE_INTERVAL = 15000;
+
+  public expandedEndpoint: string | null = null;
+  public timestampFormat = 'shortTime';
+
+  get registeredServices() {
+    return this.servicesDashboard.getRegisteredServices();
+  }
 
   private socketClient = inject(SocketClientService);
   private router = inject(Router);
   private servicesDashboard = inject(ServicesDashboardService);
-  private adminHero = inject(AdminHeroService);
+
+  private adminHelper = inject(AdminHelperService);
 
   constructor(
-    @Inject('AuthService') private authService: AuthService,
+    @Inject('AuthService') private authService: AuthenticationService,
     private logger: LoggerService,
     private dataSimulationService: DataSimulationService,
   ) {
-    this.heroMetrics$ = this.adminHero.heroMetrics$;
-
     this.socketClient.on<ServiceCallMetric>('metrics:update').subscribe(metric => {
       this.logger.info('Received real-time metric', metric);
     });
@@ -54,59 +78,145 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.authService.initializeAuthentication();
-    combineLatest([this.authService.isLoggedIn$, this.authService.isAdmin$]).subscribe(([isLoggedIn, isAdmin]) => {
-      if (isLoggedIn && !isAdmin) {
+    this.authService.isAdmin$.subscribe((isAdmin: boolean) => {
+      if (!isAdmin) {
         this.logger.warn('Admin component: User does not have admin permissions, redirecting');
         this.router.navigate(['/home']);
+        return;
       }
     });
 
+    this.servicesDashboard.startMonitoring();
     this.servicesDashboard.startStatisticsPolling(this.METRICS_UPDATE_INTERVAL);
+
+    this.serviceMetricsSubscription = this.servicesDashboard.metrics$.subscribe(metrics => {
+      this.dataSource.data = metrics.slice(-50).reverse();
+      this.updateServiceMetricsChart();
+    });
 
     this.dataSimulationService.isSimulating$.subscribe(isSim => {
       this.isSimulatingData = isSim;
-      this.isSimulatingData
-        ? this.servicesDashboard.startSimulation()
-        : this.servicesDashboard.stopSimulation();
+      if (this.isSimulatingData && this.isTabActive) {
+        this.servicesDashboard.startSimulation();
+      } else {
+        this.servicesDashboard.stopSimulation();
+      }
     });
+
+    this.tabGroup?.selectedIndexChange.subscribe((index: number) => {
+      console.debug('Tab changed to:', index);
+      if (index === 1) {
+        console.debug('Entering Service Monitoring tab');
+        if (!this.isTabActive) {
+          this.isTabActive = true;
+          this.servicesDashboard.startMonitoring();
+        }
+      } else {
+        this.isTabActive = false;
+        this.pauseSimulation();
+        this.servicesDashboard.stopMonitoring();
+      }
     });
   }
 
-  navigateToTab(tabIndex: number): void {
-    this.selectedTab = tabIndex;
-  }
-
-  onTabChange(_event: MatTabChangeEvent): void {
-    void _event;
-    // No tab-specific monitoring; tabs share the same shell now.
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
   }
 
   ngOnDestroy(): void {
+    if (this.serviceMetricsSubscription) {
+      this.serviceMetricsSubscription.unsubscribe();
+    }
+    if (this.statisticsInterval !== undefined) {
+      clearInterval(this.statisticsInterval);
+    }
     this.pauseSimulation();
-    this.adminHero.stopMonitoring();
     this.servicesDashboard.stopSimulation();
-    this.servicesDashboard.stopStatisticsPolling();
+
+    this.servicesDashboard.stopMonitoring();
+  }
+  getKeys(obj: any): string[] {
+    return Object.keys(obj || {});
+  }
+
+  private updateServiceMetricsChart(): void {
+    if (!this.serviceMetricsChartRef?.nativeElement) return;
+    const ctx = this.serviceMetricsChartRef.nativeElement.getContext('2d');
+    if (!ctx) return;
+    if (this.serviceMetricsChart) {
+      try {
+        this.serviceMetricsChart.data = this.servicesDashboard.buildChartDataForServices();
+        this.serviceMetricsChart.update();
+        return;
+      } catch {}
+    }
+    this.serviceMetricsChart = this.servicesDashboard.createServiceMetricsChart(ctx);
+  }
+
+  protected getSuccessRateColor(rate: number): string {
+    return this.adminHelper.getSuccessRateColor(rate);
+  }
+
+  getServiceStatistics(serviceName: string) {
+    return this.servicesDashboard.getServiceStatistics(serviceName);
+  }
+
+  getServiceColor(serviceName: string): string {
+    return this.servicesDashboard.getServiceColor(serviceName);
   }
 
   toggleDataSimulation(): void {
+
     this.dataSimulationService.toggleSimulating();
     const next = !this.isSimulatingData;
     this.logger.info(`Admin dashboard: ${next ? 'Enabled' : 'Disabled'} data simulation`);
   }
 
-  clearMetrics(): void {
-    this.servicesDashboard.clearAllMetrics();
-    this.logger.info('Requested clear of all service metrics');
-  }
-
-  clearLogs(): void {
-    this.servicesDashboard.clearLogs();
-    this.logger.clearLogs();
-    this.logger.info('Requested clear of application logs');
-  }
-
   private pauseSimulation(): void {
     this.servicesDashboard.stopSimulation();
   }
+
+  toggleServiceStatus(service: any): void {
+
+    this.servicesDashboard.toggleServiceActive(service.name);
+    this.logger.info(`Toggled service ${service.name} active state`);
+  }
+
+  clearMetrics(): void {
+
+    this.servicesDashboard.clearAllMetrics();
+
+    this.logger.info('Requested clear of all service metrics');
+  }
+
+  clearLogs() {
+
+    this.servicesDashboard.clearLogs();
+    this.logger.info('Requested clear of application logs');
+  }
+
+  parseFloat(value: string): number {
+    return parseFloat(value) || 0;
+  }
+
+  toggleMetric(metric: string): void {
+    this.servicesDashboard.toggleMetric(this.selectedMetrics, metric);
+    this.logger.info(`Toggled metric ${metric}`);
+    this.servicesDashboard.applyAxesToChart(this.systemMetricsChart, this.selectedMetrics);
+  }
+
+  selectApiCall(call: ServiceCallMetric): void {
+    this.selectedApiCall = call;
+  }
+
+  getServiceHealth(serviceName: string): string {
+    const stats = this.servicesDashboard.getServiceStatistics(serviceName) as any;
+    if (!stats) return 'unknown';
+
+    const successRate = stats.successRate ?? 100;
+    if (successRate < 60) return 'critical';
+    if (successRate < 85) return 'warning';
+    return 'healthy';
+  }
+
 }

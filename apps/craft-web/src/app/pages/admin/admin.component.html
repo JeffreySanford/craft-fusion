@@ -27,56 +27,7 @@
     </div>
   </div>
 
-  <!-- Hero KPI Bar -->
-  <div class="admin-hero-bar" *ngIf="heroMetrics$ | async as metrics">
-    <app-hero-tile
-      [label]="'Active Services'"
-      [value]="metrics.activeServices.current + '/' + metrics.activeServices.total"
-      [subLabel]="'Updated ' + (metrics.lastUpdate | date:'short')"
-      [icon]="'cloud_done'"
-      [status]="metrics.activeServices.current === metrics.activeServices.total ? 'ok' : 'warning'"
-      [delta]="metrics.activeServices.delta">
-    </app-hero-tile>
-
-    <app-hero-tile
-      [label]="'Success Rate'"
-      [value]="(metrics.successRate.value | number:'1.0-0') + '%'"
-      [subLabel]="metrics.successRate.flaggedCount > 0 ? metrics.successRate.flaggedCount + ' flagged' : 'All healthy'"
-      [icon]="'thumb_up'"
-      [status]="metrics.successRate.value >= 95 ? 'ok' : metrics.successRate.value >= 85 ? 'warning' : 'critical'"
-      [delta]="metrics.successRate.delta">
-    </app-hero-tile>
-
-    <app-hero-tile
-      [label]="'Errors'"
-      [value]="metrics.errors.count.toString()"
-      [subLabel]="metrics.errors.warnings + ' warnings'"
-      [detail]="metrics.errors.lastError ? 'Last: ' + (metrics.errors.lastError | date:'short') : ''"
-      [icon]="'error_outline'"
-      [status]="metrics.errors.count > 0 ? 'critical' : metrics.errors.warnings > 0 ? 'warning' : 'ok'"
-      [showPulse]="metrics.errors.count > 0"
-      [clickable]="true"
-      (tileClick)="navigateToTab(5)">
-    </app-hero-tile>
-
-    <app-hero-tile
-      [label]="'Data Mode'"
-      [value]="metrics.dataMode.isSimulating ? 'Simulated' : 'Live'"
-      [subLabel]="metrics.dataMode.isSimulating ? metrics.dataMode.simulatingMetrics.join(', ') : 'Real-time streaming'"
-      [icon]="metrics.dataMode.isSimulating ? 'science' : 'wifi'"
-      [status]="metrics.dataMode.isSimulating ? 'warning' : 'ok'">
-    </app-hero-tile>
-
-    <app-hero-tile
-      [label]="'Response Time'"
-      [value]="(metrics.responseTime.avg | number:'1.0-0') + 'ms'"
-      [subLabel]="'P95: ' + (metrics.responseTime.p95 | number:'1.0-0') + 'ms'"
-      [icon]="'speed'"
-      [status]="metrics.responseTime.avg < 200 ? 'ok' : metrics.responseTime.avg < 500 ? 'warning' : 'critical'">
-    </app-hero-tile>
-  </div>
-
-  <mat-tab-group #tabGroup [(selectedIndex)]="selectedTab" animationDuration="500ms" class="admin-tabs" (selectedTabChange)="onTabChange($event)">
+  <mat-tab-group #tabGroup [(selectedIndex)]="selectedTab" animationDuration="500ms" class="admin-tabs">
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon class="tab-icon">home</mat-icon>
@@ -89,11 +40,23 @@
 
     <mat-tab>
       <ng-template mat-tab-label>
-        <mat-icon class="tab-icon">bar_chart</mat-icon>
+        <mat-icon class="tab-icon">dashboard</mat-icon>
         Performance
       </ng-template>
-      <div class="tab-content performance-tab">
+
+      <div class="tab-content">
         <app-performance-dashboard></app-performance-dashboard>
+      </div>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">settings_applications</mat-icon>
+        Service Monitoring
+      </ng-template>
+
+      <div class="tab-content">
+        <app-services-dashboard></app-services-dashboard>
       </div>
     </mat-tab>
 

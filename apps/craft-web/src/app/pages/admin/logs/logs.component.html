@@ -1,17 +1,9 @@
 <div class="logs-container">
   <h2 class="logs-title">System Logs</h2>
 
-  <div class="log-summary">
-    <article class="log-card" *ngFor="let tile of summaryTiles" [ngClass]="tile.variant">
-      <div class="card-label">{{ tile.label }}</div>
-      <div class="card-value">{{ tile.value }}</div>
-      <div class="card-meta">{{ tile.meta }}</div>
-    </article>
-  </div>
-
-  <div class="filter-panel mat-elevation-z2">
+  <div class="filter-panel mat-elevation-z1">
     <form [formGroup]="filterForm" class="filter-form">
-      <div class="filter-line">
+      <div class="filter-grid">
         <mat-form-field appearance="outline">
           <mat-label>Log Level</mat-label>
           <mat-select formControlName="level">
@@ -32,13 +24,11 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="wide">
+        <mat-form-field appearance="outline">
           <mat-label>Message Contains</mat-label>
           <input matInput formControlName="message" placeholder="Filter by message text">
         </mat-form-field>
-      </div>
 
-      <div class="filter-line">
         <mat-form-field appearance="outline">
           <mat-label>From Date</mat-label>
           <input matInput [matDatepicker]="startPicker" formControlName="startDate" placeholder="Start date">
@@ -54,24 +44,19 @@
           <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
           <mat-datepicker #endPicker></mat-datepicker>
         </mat-form-field>
+      </div>
 
-        <div class="filter-actions">
-          <mat-checkbox formControlName="autoRefresh" color="primary">Auto Refresh</mat-checkbox>
-          <div class="action-buttons">
-            <button mat-flat-button color="primary" type="button" (click)="fetchLogs()">
-              <mat-icon>refresh</mat-icon>
-              Refresh
-            </button>
-            <button mat-stroked-button color="warn" type="button" (click)="clearFilters()">
-              <mat-icon>filter_list_off</mat-icon>
-              Clear Filters
-            </button>
-            <button mat-stroked-button color="warn" type="button" (click)="clearLogs()">
-              <mat-icon>delete</mat-icon>
-              Clear Logs
-            </button>
-          </div>
-        </div>
+      <div class="filter-actions">
+        <mat-checkbox formControlName="autoRefresh" color="primary">Auto Refresh</mat-checkbox>
+        <button mat-flat-button color="primary" type="button" (click)="fetchLogs()">
+          <mat-icon>refresh</mat-icon> Refresh
+        </button>
+        <button mat-stroked-button color="warn" type="button" (click)="clearFilters()">
+          <mat-icon>filter_list_off</mat-icon> Clear Filters
+        </button>
+        <button mat-stroked-button color="warn" type="button" (click)="clearLogs()">
+          <mat-icon>delete</mat-icon> Clear Logs
+        </button>
       </div>
     </form>
   </div>

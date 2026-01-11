@@ -2,10 +2,11 @@ import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { BarChartData, LineChartData, ChartData } from './data-visualizations.interfaces';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Observable, of } from 'rxjs';
+import { Observable, Subscription, of } from 'rxjs';
 import { YahooService, HistoricalData } from '../../common/services/yahoo.service';
 import { catchError } from 'rxjs/operators';
 import { MatIconRegistry } from '@angular/material/icon';
+import { SidebarStateService } from '../../common/services/sidebar-state.service';
 import { ChartLayoutService } from './services/chart-layout.service';
 import { SocketClientService } from '../../common/services/socket-client.service';
 import { LoggerService } from '../../common/services/logger.service';
@@ -25,6 +26,8 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
 
   displayedCharts: ExtendedChartData[] = [];
   availableCharts: ExtendedChartData[] = [];
+  private sidebarSubscription: Subscription;
+
   public barChartData: BarChartData[] = [
     {
       month: 'January',
@@ -86,6 +89,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private yahooService: YahooService,
     private iconRegistry: MatIconRegistry,
+    private sidebarStateService: SidebarStateService,
     private chartLayoutService: ChartLayoutService,
     private socketClient: SocketClientService,
     private logger: LoggerService,
@@ -122,6 +126,10 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
       setTimeout(() => this.cdr.detectChanges());
     });
 
+    this.sidebarSubscription = this.sidebarStateService.isCollapsed$.subscribe(isCollapsed => {
+      this.isSidebarCollapsed = isCollapsed;
+      setTimeout(() => this.cdr.detectChanges());
+    });
   }
 
   ngOnInit() {
@@ -163,6 +171,10 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.sidebarSubscription) {
+      this.sidebarSubscription.unsubscribe();
+    }
+
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;

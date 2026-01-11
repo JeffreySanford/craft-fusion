@@ -1,15 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { LogEntry, LogLevel } from '../../../common/services/logger.service';
-import { LogBridgeService } from './log-bridge.service';
-
-interface SummaryTile {
-  label: string;
-  value: number;
-  meta: string;
-  variant: 'error' | 'warn' | 'info' | 'debug';
-}
+import { Subscription, interval } from 'rxjs';
+import { LoggerService, LogEntry, LogLevel } from '../../../common/services/logger.service';
 
 @Component({
   selector: 'app-logs',
@@ -32,14 +24,11 @@ export class LogsComponent implements OnInit, OnDestroy {
     { value: LogLevel.ERROR, viewValue: 'Error' }
   ];
   componentOptions: string[] = [];
+  refreshSubscription?: Subscription;
   autoRefresh = true;
-  summaryTiles: SummaryTile[] = [];
-
-  private logsSubscription?: Subscription;
-  private filterSubscription?: Subscription;
 
   constructor(
-    private logBridge: LogBridgeService,
+    private loggerService: LoggerService,
     private fb: FormBuilder
   ) {
     this.filterForm = this.fb.group({
@@ -53,29 +42,35 @@ export class LogsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.filterSubscription = this.filterForm.valueChanges.subscribe(() => {
-      this.autoRefresh = Boolean(this.filterForm.get('autoRefresh')?.value);
+    this.fetchLogs();
+
+    this.refreshSubscription = interval(5000).subscribe(() => {
+      if (this.autoRefresh) {
+        this.fetchLogs();
+      }
+    });
+
+    this.filterForm.valueChanges.subscribe(() => {
+      this.autoRefresh = this.filterForm.get('autoRefresh')?.value;
       this.applyFilters();
     });
 
-    this.logBridge.startMonitoring();
-    this.logsSubscription = this.logBridge.logs$.subscribe(logs => {
-      this.logs = logs;
-      this.updateComponentOptions();
+    this.loggerService.logAdded$.subscribe(() => {
       if (this.autoRefresh) {
-        this.applyFilters();
+        this.fetchLogs();
       }
     });
   }
 
   ngOnDestroy() {
-    this.logsSubscription?.unsubscribe();
-    this.filterSubscription?.unsubscribe();
-    this.logBridge.stopMonitoring();
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
   }
 
   fetchLogs() {
-    this.logBridge.refresh();
+    this.logs = this.loggerService.getLogs();
+    this.updateComponentOptions();
     this.applyFilters();
   }
 
@@ -93,6 +88,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     const filters = this.filterForm.value;
 
     this.filteredLogs = this.logs.filter(log => {
+
       if (filters.level && log.level !== filters.level) {
         return false;
       }
@@ -101,7 +97,7 @@ export class LogsComponent implements OnInit, OnDestroy {
         return false;
       }
 
-      if (filters.message &&
+      if (filters.message && 
           !log.message.toLowerCase().includes(filters.message.toLowerCase())) {
         return false;
       }
@@ -125,7 +121,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     });
 
     this.filteredLogs.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-    this.updateLogSummary(this.filteredLogs);
+    this.filteredLogs.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   }
 
   clearFilters() {
@@ -165,22 +161,11 @@ export class LogsComponent implements OnInit, OnDestroy {
   toggleAutoRefresh() {
     this.autoRefresh = !this.autoRefresh;
     this.filterForm.patchValue({ autoRefresh: this.autoRefresh }, { emitEvent: false });
-    this.applyFilters();
   }
 
   clearLogs() {
-    this.logBridge.clear();
-    this.logs = [];
-    this.filteredLogs = [];
-    this.summaryTiles = [];
-    this.componentOptions = [];
-    this.filterForm.patchValue({
-      level: '',
-      component: '',
-      message: '',
-      startDate: '',
-      endDate: ''
-    }, { emitEvent: false });
+    this.loggerService.clearLogs();
+    this.fetchLogs();
   }
 
   formatDetails(details: unknown): string {
@@ -190,34 +175,5 @@ export class LogsComponent implements OnInit, OnDestroy {
     } catch {
       return String(details);
     }
-  }
-
-  private updateLogSummary(logs: LogEntry[]) {
-    const counts = logs.reduce(
-      (acc, log) => {
-        switch (log.level) {
-          case LogLevel.ERROR:
-            acc.error += 1;
-            break;
-          case LogLevel.WARN:
-            acc.warn += 1;
-            break;
-          case LogLevel.INFO:
-            acc.info += 1;
-            break;
-          case LogLevel.DEBUG:
-            acc.debug += 1;
-            break;
-        }
-        return acc;
-      },
-      { error: 0, warn: 0, info: 0, debug: 0 }
-    );
-    this.summaryTiles = [
-      { label: 'Errors', value: counts.error, meta: 'Critical issues', variant: 'error' },
-      { label: 'Warnings', value: counts.warn, meta: 'Needs attention', variant: 'warn' },
-      { label: 'Info', value: counts.info, meta: 'System chatter', variant: 'info' },
-      { label: 'Debug', value: counts.debug, meta: 'Development traces', variant: 'debug' },
-    ];
   }
 }

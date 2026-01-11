@@ -1,367 +1,84 @@
-<div class="security-dashboard">
-  <header class="section-header">
-    <div>
-      <p class="eyebrow">Zero-trust posture</p>
-      <h3>Security & Access</h3>
-      <p class="subtitle">Session integrity, transport hardening, and access controls at a glance.</p>
+<div class="security-container">
+  <div class="security-stats">
+    <div class="stat-card">
+      <div class="stat-icon secure">
+        <mat-icon>verified_user</mat-icon>
+      </div>
+      <div class="stat-info">
+        <h3>Session Security</h3>
+        <div class="stat-value">Protected</div>
+      </div>
     </div>
-    <span class="pill secure">Shielded</span>
-  </header>
 
-  <mat-tab-group class="security-tabs" disableRipple>
-    <mat-tab label="Overview">
-      <div class="tab-pane">
-        <div class="shield-grid">
-          <article class="shield-card" [ngClass]="sessionSecurityStatus.type">
-            <div class="shield-icon"><mat-icon>verified_user</mat-icon></div>
-            <div class="shield-body">
-              <p class="label">{{ sessionSecurityStatus.label }}</p>
-              <div class="value">{{ sessionSecurityStatus.value }}</div>
-              <p class="hint">{{ sessionSecurityStatus.hint }}</p>
-            </div>
-          </article>
-
-          <article class="shield-card" [ngClass]="activeUsersCount.type">
-            <div class="shield-icon"><mat-icon>people</mat-icon></div>
-            <div class="shield-body">
-              <p class="label">{{ activeUsersCount.label }}</p>
-              <div class="value">{{ activeUsersCount.value }}</div>
-              <p class="hint">{{ activeUsersCount.hint }}</p>
-            </div>
-          </article>
-
-          <article class="shield-card" [ngClass]="tlsStatus.type">
-            <div class="shield-icon"><mat-icon>https</mat-icon></div>
-            <div class="shield-body">
-              <p class="label">{{ tlsStatus.label }}</p>
-              <div class="value">{{ tlsStatus.value }}</div>
-              <p class="hint">{{ tlsStatus.hint }}</p>
-            </div>
-          </article>
-
-          <article class="shield-card" [ngClass]="pendingPermissions.type">
-            <div class="shield-icon"><mat-icon>gpp_maybe</mat-icon></div>
-            <div class="shield-body">
-              <p class="label">{{ pendingPermissions.label }}</p>
-              <div class="value">{{ pendingPermissions.value }}</div>
-              <p class="hint">{{ pendingPermissions.hint }}</p>
-            </div>
-          </article>
-        </div>
-
-        <div class="feature-panel">
-          <div class="panel-head">
-            <div>
-              <p class="eyebrow">Controls</p>
-              <h4>Hardening checklist</h4>
-            </div>
-          </div>
-          <div class="feature-grid">
-            <article class="feature-card" *ngFor="let control of hardeningControls" [ngClass]="{ 'active': control.active, 'inactive': !control.active }">
-              <mat-icon>{{ control.icon }}</mat-icon>
-              <div>
-                <p class="label">{{ control.label }}</p>
-                <p class="hint">{{ control.hint }}</p>
-              </div>
-              <span class="badge">{{ control.badge }}</span>
-            </article>
-          </div>
-        </div>
+    <div class="stat-card">
+      <div class="stat-icon neutral">
+        <mat-icon>people</mat-icon>
       </div>
-    </mat-tab>
-
-    <mat-tab label="OSCAL Scans">
-      <div class="tab-pane">
-        <div class="status-message" *ngIf="oscalProfilesLoading">Loading OSCAL profiles...</div>
-        <div class="status-message error" *ngIf="oscalProfilesError">{{ oscalProfilesError }}</div>
-        <div class="empty-state" *ngIf="!oscalProfilesLoading && !oscalProfilesError && oscalProfiles.length === 0">
-          No OSCAL profiles available.
-        </div>
-
-        <div class="oscal-update-panel" *ngIf="oscalUpdateStatus; else updateStatusPlaceholder">
-          <div class="update-meta">
-            <p class="eyebrow">Catalog sync</p>
-            <div class="meta-row">
-              <p class="label">Last updated</p>
-              <p class="value">{{ oscalUpdateStatus.lastUpdated ? (oscalUpdateStatus.lastUpdated | date: 'medium') : '—' }}</p>
-            </div>
-            <div class="update-sources">
-              <article class="update-source">
-                <p class="source-title">FedRAMP</p>
-                <p class="source-version">{{ oscalUpdateStatus.sources?.fedramp?.version || 'Rev 5' }}</p>
-                <p class="source-status" [ngClass]="oscalUpdateStatus.sources?.fedramp?.status">
-                  {{ (oscalUpdateStatus.sources?.fedramp?.status || 'pending') | titlecase }} •
-                  <span class="source-time" *ngIf="oscalUpdateStatus.sources?.fedramp?.lastChecked">{{ oscalUpdateStatus.sources?.fedramp?.lastChecked | date: 'short' }}</span>
-                </p>
-              </article>
-              <article class="update-source">
-                <p class="source-title">NIST RMF</p>
-                <p class="source-version">{{ oscalUpdateStatus.sources?.nist?.version || 'SP 800-37 Rev 2' }}</p>
-                <p class="source-status" [ngClass]="oscalUpdateStatus.sources?.nist?.status">
-                  {{ (oscalUpdateStatus.sources?.nist?.status || 'pending') | titlecase }} •
-                  <span class="source-time" *ngIf="oscalUpdateStatus.sources?.nist?.lastChecked">{{ oscalUpdateStatus.sources?.nist?.lastChecked | date: 'short' }}</span>
-                </p>
-              </article>
-            </div>
-          </div>
-          <div class="update-actions">
-            <mat-progress-bar
-              [mode]="oscalUpdateStatus.progress?.status === 'in-progress' ? 'indeterminate' : 'determinate'"
-              [value]="oscalUpdateStatus.progress?.value || 0">
-            </mat-progress-bar>
-            <p class="update-progress-note">{{ oscalUpdateStatus.progress?.message }}</p>
-            <button mat-stroked-button color="accent" class="update-button" (click)="refreshOscalUpdates()"
-              [disabled]="oscalUpdateLoading || oscalUpdateRefreshing">
-              <mat-icon>update</mat-icon>
-              {{ oscalUpdateRefreshing ? 'Updating catalogs…' : 'Refresh catalogs' }}
-            </button>
-          </div>
-        </div>
-        <ng-template #updateStatusPlaceholder>
-          <div class="oscal-update-panel placeholder">
-            <p class="status-message" *ngIf="oscalUpdateLoading">Checking OSCAL catalogs for updates...</p>
-            <p class="status-message error" *ngIf="oscalUpdateError">{{ oscalUpdateError }}</p>
-            <div class="update-actions">
-              <mat-progress-bar mode="indeterminate" value="100"></mat-progress-bar>
-              <button mat-stroked-button color="accent" (click)="refreshOscalUpdates()"
-                [disabled]="oscalUpdateRefreshing">
-                <mat-icon>update</mat-icon>
-                {{ oscalUpdateRefreshing ? 'Updating catalogs…' : 'Refresh catalogs' }}
-              </button>
-            </div>
-          </div>
-        </ng-template>
-
-        <div class="oscal-grid" *ngIf="oscalProfiles.length > 0">
-          <article class="oscal-card" *ngFor="let profile of oscalProfiles">
-            <div class="oscal-head">
-              <h4>{{ profile.name }}</h4>
-              <span class="status" [ngClass]="profile.status">{{ profile.status | titlecase }}</span>
-            </div>
-            <div class="oscal-meta">
-              <div>
-                <p class="label">Last run</p>
-                <p class="value">
-                  <span>{{ profile.lastRun ? (profile.lastRun | date: 'shortDate') : 'Not run' }}</span>
-                  <span *ngIf="profile.lastRun" class="time">{{ profile.lastRun | date: 'shortTime' }}</span>
-                </p>
-              </div>
-              <div>
-                <p class="label">Pass / Fail</p>
-                <p class="value">{{ profile.pass }} / {{ profile.fail }}</p>
-              </div>
-              <div>
-                <p class="label">Duration</p>
-                <p class="value">{{ profile.duration }}</p>
-              </div>
-            </div>
-            <div class="oscal-actions">
-              <button mat-stroked-button color="primary" (click)="runOscalScan(profile)" [disabled]="isOscalRunning(profile)">
-                <mat-icon *ngIf="isOscalRunning(profile)" class="spin">sync</mat-icon>
-                {{ isOscalRunning(profile) ? 'Scanning...' : 'Run scan' }}
-              </button>
-              <div class="progress-info" *ngIf="isOscalRunning(profile) && getOscalProgress(profile) as progress">
-                <div class="progress-bar">
-                  <div class="progress-fill" [style.width.%]="progress.progress"></div>
-                </div>
-                <p class="progress-text">{{ progress.progress }}%<span *ngIf="progress.eta"> • ETA: {{ progress.eta }}</span></p>
-                <p class="progress-message" *ngIf="progress.message">{{ progress.message }}</p>
-              </div>
-              <button mat-button color="accent" (click)="viewOscalReport(profile)" *ngIf="hasOscalReport(profile) && !isOscalRunning(profile)">
-                <mat-icon>visibility</mat-icon>
-                View Report
-              </button>
-            </div>
-          </article>
-        </div>
+      <div class="stat-info">
+        <h3>Active Users</h3>
+        <div class="stat-value">1</div>
       </div>
-    </mat-tab>
+    </div>
 
-    <mat-tab label="SCA Top 10">
-      <div class="tab-pane">
-        <div class="status-message" *ngIf="scaItemsLoading">Loading SCA items...</div>
-        <div class="status-message error" *ngIf="scaItemsError">{{ scaItemsError }}</div>
-        <div class="empty-state" *ngIf="!scaItemsLoading && !scaItemsError && scaItems.length === 0">
-          No SCA items available.
-        </div>
-
-        <div class="sca-grid" *ngIf="scaItems.length > 0">
-          <article class="sca-item" *ngFor="let item of scaItems">
-            <mat-icon class="sca-icon" [ngClass]="item.status">
-              {{ item.status === 'pass' ? 'check_circle' : item.status === 'warn' ? 'error_outline' : 'schedule' }}
-            </mat-icon>
-            <div class="sca-body">
-              <p class="label">{{ item.label }}</p>
-              <span class="badge" [ngClass]="item.status">{{ item.status | titlecase }}</span>
-            </div>
-            <button 
-              mat-icon-button 
-              class="sca-view-btn" 
-              (click)="viewScaItemReport(item)"
-              matTooltip="View detailed report"
-              color="primary">
-              <mat-icon>visibility</mat-icon>
-            </button>
-          </article>
-        </div>
+    <div class="stat-card">
+      <div class="stat-icon secure">
+        <mat-icon>https</mat-icon>
       </div>
-    </mat-tab>
-
-    <mat-tab label="SBOMs">
-      <div class="tab-pane">
-        <div class="status-message" *ngIf="sbomsLoading">Loading SBOMs...</div>
-        <div class="status-message error" *ngIf="sbomsError">{{ sbomsError }}</div>
-        <div class="empty-state" *ngIf="!sbomsLoading && !sbomsError && sboms.length === 0">
-          No SBOMs available.
-        </div>
-
-        <div class="sbom-grid" *ngIf="sboms.length > 0">
-          <article class="sbom-card" *ngFor="let sbom of sboms">
-            <div class="sbom-head">
-              <h4>{{ sbom.name }}</h4>
-              <span class="badge ready">{{ sbom.status }}</span>
-            </div>
-            <p class="hint">Format: {{ sbom.format }}</p>
-            <p class="hint">Created: {{ sbom.created | date: 'medium' }}</p>
-            <p class="hint">Delta: {{ sbom.delta }}</p>
-            <p class="hint" *ngIf="sbom.components">Components: {{ sbom.components }}</p>
-            <p class="hint" *ngIf="sbom.vulnerabilities !== undefined">Vulnerabilities: {{ sbom.vulnerabilities }}</p>
-            <div class="sbom-actions">
-              <button mat-button color="primary" (click)="viewSbomReport(sbom)">
-                <mat-icon>visibility</mat-icon>
-                View Report
-              </button>
-              <button mat-button color="accent" (click)="compareSbom(sbom)" disabled>
-                <mat-icon>compare_arrows</mat-icon>
-                Compare
-              </button>
-            </div>
-          </article>
-        </div>
+      <div class="stat-info">
+        <h3>Connection</h3>
+        <div class="stat-value">Secure</div>
       </div>
-    </mat-tab>
+    </div>
 
-    <mat-tab label="Real-Time Tests">
-      <div class="tab-pane">
-        <div class="status-message" *ngIf="realtimeChecksLoading">Loading realtime checks...</div>
-        <div class="status-message error" *ngIf="realtimeChecksError">{{ realtimeChecksError }}</div>
-        <div class="empty-state" *ngIf="!realtimeChecksLoading && !realtimeChecksError && realtimeChecks.length === 0">
-          No realtime checks available.
-        </div>
-
-        <div class="realtime-grid" *ngIf="realtimeChecks.length > 0">
-          <article class="realtime-card" *ngFor="let check of realtimeChecks" 
-                   [class.running]="isRealtimeCheckRunning(check)">
-            <div>
-              <p class="label">
-                <mat-icon *ngIf="isRealtimeCheckRunning(check)" class="spin">sync</mat-icon>
-                {{ check.name }}
-              </p>
-              <p class="hint">Duration: {{ check.duration }}</p>
-              <p class="hint" *ngIf="check.endpoint">Endpoint: {{ check.endpoint }}</p>
-            </div>
-            <span class="badge" [ngClass]="check.status">{{ check.status | titlecase }}</span>
-            <div class="realtime-actions">
-              <button mat-stroked-button color="primary" (click)="runRealtimeCheck(check)" [disabled]="isRealtimeCheckRunning(check)">
-                <mat-icon *ngIf="isRealtimeCheckRunning(check)" class="spin">sync</mat-icon>
-                {{ isRealtimeCheckRunning(check) ? 'Running...' : 'Run check' }}
-              </button>
-              <div class="progress-info" *ngIf="isRealtimeCheckRunning(check) && getRealtimeProgress(check) as progress">
-                <div class="progress-bar">
-                  <div class="progress-fill" [style.width.%]="progress.progress"></div>
-                </div>
-                <p class="progress-text">{{ progress.progress }}%<span *ngIf="progress.eta"> • ETA: {{ progress.eta }}</span></p>
-                <p class="progress-message" *ngIf="progress.message">{{ progress.message }}</p>
-              </div>
-              <button mat-button color="accent" (click)="viewRealtimeReport(check)" *ngIf="hasRealtimeReport(check) && !isRealtimeCheckRunning(check)">
-                <mat-icon>visibility</mat-icon>
-                View Report
-              </button>
-            </div>
-          </article>
-        </div>
+    <div class="stat-card">
+      <div class="stat-icon warning">
+        <mat-icon>gpp_maybe</mat-icon>
       </div>
-    </mat-tab>
-
-    <mat-tab label="Findings">
-      <div class="tab-pane">
-        <div class="feature-panel">
-          <div class="panel-head">
-            <div>
-              <p class="eyebrow">Findings</p>
-              <h4>Actionable security insights</h4>
-            </div>
-            <button mat-stroked-button color="primary" (click)="exportFindings()" [disabled]="findings.length === 0">
-              <mat-icon>visibility</mat-icon>
-              View/Export Report
-            </button>
-          </div>
-
-          <div class="status-message" *ngIf="findingsLoading">Loading findings...</div>
-          <div class="status-message error" *ngIf="findingsError">{{ findingsError }}</div>
-          <div class="empty-state" *ngIf="!findingsLoading && !findingsError && findings.length === 0">
-            No findings yet. Run a scan to populate this view.
-          </div>
-
-          <div class="findings-grid" *ngIf="findings.length > 0">
-            <article class="finding-card" *ngFor="let finding of findings">
-              <div class="finding-head">
-                <div>
-                  <p class="label">Source</p>
-                  <p class="hint">{{ finding.source || 'Unknown' }}</p>
-                </div>
-                <span class="badge" [ngClass]="getSeverityClass(finding.severity)">{{ finding.severity || 'Unknown' }}</span>
-              </div>
-              <h4>{{ finding.title || 'Untitled finding' }}</h4>
-              <div class="meta-row">
-                <span class="meta">Component: {{ finding.component || 'Unspecified' }}</span>
-                <span class="badge" [ngClass]="getFindingStatusClass(finding.status)">{{ finding.status || 'Open' }}</span>
-              </div>
-              <p class="hint" *ngIf="finding.createdAt">Observed: {{ finding.createdAt | date: 'mediumDate' }}</p>
-            </article>
-          </div>
-        </div>
+      <div class="stat-info">
+        <h3>Permission Requests</h3>
+        <div class="stat-value">3 Pending</div>
       </div>
-    </mat-tab>
+    </div>
+  </div>
 
-    <mat-tab label="Evidence">
-      <div class="tab-pane">
-        <div class="feature-panel">
-          <div class="panel-head">
-            <div>
-              <p class="eyebrow">Evidence</p>
-              <h4>Artifacts and provenance</h4>
-            </div>
-            <button mat-stroked-button color="primary" (click)="downloadEvidenceBundle()" [disabled]="evidence.length === 0">
-              <mat-icon>visibility</mat-icon>
-              View/Download Bundle
-            </button>
-          </div>
-
-          <div class="status-message" *ngIf="evidenceLoading">Loading evidence...</div>
-          <div class="status-message error" *ngIf="evidenceError">{{ evidenceError }}</div>
-          <div class="empty-state" *ngIf="!evidenceLoading && !evidenceError && evidence.length === 0">
-            No evidence captured yet. Trigger a scan to generate artifacts.
-          </div>
-
-          <div class="evidence-grid" *ngIf="evidence.length > 0">
-            <article class="evidence-card" *ngFor="let artifact of evidence">
-              <div class="evidence-head">
-                <div>
-                  <p class="label">{{ artifact.name || 'Evidence artifact' }}</p>
-                  <p class="hint">Type: {{ artifact.type || 'Unknown' }}</p>
-                </div>
-                <span class="badge" [ngClass]="getEvidenceStatusClass(artifact.status)">{{ artifact.status || 'Pending' }}</span>
-              </div>
-              <div class="meta-row">
-                <span class="meta">Created: {{ artifact.createdAt ? (artifact.createdAt | date: 'mediumDate') : 'Unknown' }}</span>
-                <span class="meta" *ngIf="artifact.createdBy">By: {{ artifact.createdBy }}</span>
-              </div>
-              <p class="hash" *ngIf="artifact.hash">Hash: {{ artifact.hash }}</p>
-            </article>
-          </div>
-        </div>
+  <div class="security-features">
+    <h3>Security Features</h3>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <mat-icon>filter_list</mat-icon>
+        <h4>Request Filtering</h4>
+        <div class="feature-status active">Active</div>
       </div>
-    </mat-tab>
-  </mat-tab-group>
+
+      <div class="feature-card">
+        <mat-icon>lock_clock</mat-icon>
+        <h4>Session Timeout</h4>
+        <div class="feature-status active">30 min</div>
+      </div>
+
+      <div class="feature-card">
+        <mat-icon>security</mat-icon>
+        <h4>SSL Protection</h4>
+        <div class="feature-status active">TLS 1.3</div>
+      </div>
+
+      <div class="feature-card">
+        <mat-icon>fingerprint</mat-icon>
+        <h4>2FA</h4>
+        <div class="feature-status inactive">Not Configured</div>
+      </div>
+
+      <div class="feature-card">
+        <mat-icon>vpn_lock</mat-icon>
+        <h4>IP Filtering</h4>
+        <div class="feature-status inactive">Disabled</div>
+      </div>
+
+      <div class="feature-card">
+        <mat-icon>privacy_tip</mat-icon>
+        <h4>Data Encryption</h4>
+        <div class="feature-status active">AES-256</div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -36,12 +36,6 @@ app-header {
   padding-left: 1em;
   padding-right: 1em;
   width: 100%;
-
-  &.sidebar-collapsed {
-    justify-content: flex-start;
-    column-gap: 0;
-    padding-right: 1em;
-  }
 }
 
 .sidebar {
@@ -86,9 +80,6 @@ app-header {
   flex: 1 1 100%;
   max-width: 100% !important;
   width: 100% !important;
-  padding-left: 1em;
-  padding-right: 1em;
-  margin-left: 1em;
 }
 
 .router-content-wrapper.footer-expanded {

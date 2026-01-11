@@ -1,119 +1,21 @@
 .admin-landing {
+  padding: 0.5em;
+}
+
+.metrics-summary {
   display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  padding: 0.5rem 0;
+  flex-wrap: wrap;
+  gap: 0.5em;
 }
 
-.hero-header {
-  align-items: flex-end;
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-
-  h2 {
-    font-size: 1.8rem;
-    margin: 0;
-  }
-}
-
-.hero-eyebrow {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.75rem;
-  letter-spacing: 0.3em;
-  margin: 0 0 0.25rem;
-  text-transform: uppercase;
-}
-
-.hero-subtitle {
-  color: rgba(255, 255, 255, 0.7);
-  margin: 0.25rem 0 0;
-}
-
-.hero-badge {
-  background: linear-gradient(135deg, #1f2937, #3b82f6);
-  border-radius: 999px;
-  color: #fff;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  padding: 0.35rem 0.9rem;
-  text-transform: uppercase;
-}
-
-.hero-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 1rem;
-}
-
-.hero-card {
-  align-items: center;
-  background: linear-gradient(135deg, rgba(2, 6, 23, 0.9), rgba(15, 23, 42, 0.95));
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
-  color: #fff;
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
-  }
-
-  &.warning {
-    background: linear-gradient(135deg, #78350f, #dc2626);
-  }
-
-  &.critical {
-    background: linear-gradient(135deg, #7c2d12, #b91c1c);
-  }
-
-  mat-icon {
-    font-size: 1.7rem;
-    height: 1.7rem;
-    width: 1.7rem;
-  }
-}
-
-.hero-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.hero-label {
-  font-size: 0.85rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.hero-value {
-  font-size: 1.6rem;
-  font-weight: 600;
-}
-
-.hero-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.hero-detail {
-  color: #cbd5f5;
-  font-size: 0.8rem;
-}
-
-.hero-sub {
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 0.78rem;
+.metric-card {
+  background: #111827;
+  border-radius: 0.25em;
+  color: #e5e7eb;
+  padding: 0.5em 0.75em;
 }
 
 .note {
-  color: rgba(255, 255, 255, 0.65);
-  margin: 0;
+  color: #9ca3af;
+  margin-top: 0.75em;
 }

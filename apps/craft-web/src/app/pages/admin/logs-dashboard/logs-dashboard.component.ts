@@ -4,12 +4,27 @@ import { LoggerService, LogEntry, LogLevel } from '../../../common/services/logg
 
 @Component({
   selector: 'app-logs-dashboard',
-  templateUrl: './logs-dashboard.component.html',
-  styleUrls: ['./logs-dashboard.component.scss'],
+  template: `
+    <div class="logs-dashboard-root">
+      <div class="log-statistics">
+        <div class="stat-card" *ngFor="let stat of stats">
+          <div class="stat-icon" [appBgColor]="stat.color">
+            <mat-icon>{{ stat.icon }}</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ stat.value }}</div>
+            <div class="stat-label">{{ stat.label }}</div>
+          </div>
+        </div>
+      </div>
+      <app-logs></app-logs>
+    </div>
+  `,
+  styles: [``],
   standalone: false,
 })
 export class LogsDashboardComponent implements OnInit, OnDestroy {
-  stats: { id: number; icon: string; label: string; value: number; accent: string; hint: string }[] = [];
+  stats: { id: number; icon: string; label: string; value: number; color: string }[] = [];
   private sub?: Subscription;
 
   constructor(private logger: LoggerService) {}
@@ -31,12 +46,10 @@ export class LogsDashboardComponent implements OnInit, OnDestroy {
       else if (l.level === LogLevel.WARN) counts.warn++;
       else if (l.level === LogLevel.INFO) counts.info++;
     });
-    const total = logs.length;
     this.stats = [
-      { id: 1, icon: 'error', label: 'Errors', value: counts.error, accent: 'error', hint: 'Action required' },
-      { id: 2, icon: 'warning', label: 'Warnings', value: counts.warn, accent: 'warn', hint: 'Investigate soon' },
-      { id: 3, icon: 'info', label: 'Info', value: counts.info, accent: 'info', hint: 'Informational' },
-      { id: 4, icon: 'timeline', label: 'Total events', value: total, accent: 'total', hint: 'In memory' },
+      { id: 1, icon: 'error', label: 'Errors', value: counts.error, color: 'red' },
+      { id: 2, icon: 'warning', label: 'Warnings', value: counts.warn, color: 'orange' },
+      { id: 3, icon: 'info', label: 'Info', value: counts.info, color: 'blue' },
     ];
   }
 }

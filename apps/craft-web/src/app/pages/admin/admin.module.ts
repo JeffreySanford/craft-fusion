@@ -8,6 +8,7 @@ import { LogsDashboardComponent } from './logs-dashboard/logs-dashboard.componen
 import { AdminComponent } from './admin.component';
 import { AdminLandingComponent } from './admin-landing/admin-landing.component';
 import { SecurityDashboardComponent } from './security-dashboard/security-dashboard.component';
+import { SystemPerformanceComponent } from './system-performance/system-performance.component';
 import { PerformanceDashboardComponent } from './performance-dashboard/performance-dashboard.component';
 import { HeroTileComponent } from './admin-shared/hero-tile/hero-tile.component';
 
@@ -24,6 +25,7 @@ import { AuthService } from '../../common/services/auth/auth.service';
     LogsDashboardComponent,
     AdminLandingComponent,
     SecurityDashboardComponent,
+    SystemPerformanceComponent,
     PerformanceDashboardComponent,
     HeroTileComponent,
   ],

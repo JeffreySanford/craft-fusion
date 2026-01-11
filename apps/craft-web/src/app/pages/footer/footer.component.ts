@@ -6,7 +6,6 @@ import { LoggerService, ServiceCallMetric } from '../../common/services/logger.s
 import { ThemeService } from '../../services/theme.service';
 import { DataSimulationService } from '../../common/services/data-simulation.service';
 import { FooterStateService } from '../../common/services/footer-state.service';
-import { ServiceMetricsBridgeService } from '../admin/services-dashboard/service-metrics-bridge.service';
 
 @Component({
   selector: 'app-footer',
@@ -83,7 +82,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     private dataSimulationService: DataSimulationService,
     private footerStateService: FooterStateService,
     private themeService: ThemeService,
-    private metricsBridge: ServiceMetricsBridgeService,
   ) {
     this.appStartTime = performance.now();
     this.logger.info('Footer component initialized');
@@ -93,10 +91,7 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     this.startPerformanceMonitoring();
     this.collectNavigatorInfo();
     this.startFrameRateMonitoring();
-    this.metricUpdateSubscription = this.metricsBridge.metrics$.subscribe(metrics => {
-      this.serviceMetrics = metrics.slice(-20);
-      this.updateServiceMetricsChart();
-    });
+    this.startServiceMetricsMonitoring();
 
     this.dataSimulationService.isSimulating$.subscribe(isSim => {
       this.isSimulatingData = isSim;
@@ -624,6 +619,16 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   toggleDataSimulation() {
 
     this.dataSimulationService.toggleSimulating();
+  }
+
+  private startServiceMetricsMonitoring() {
+    this.metricUpdateSubscription = this.logger.serviceCalls$.subscribe(metrics => {
+      this.serviceMetrics = metrics.slice(-20);                      
+
+      if (this.chartInitialized) {
+        this.updateServiceMetricsChart();
+      }
+    });
   }
 
   private updateServiceMetricsChart() {
