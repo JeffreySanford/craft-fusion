@@ -29,7 +29,7 @@ export class UserStateGuard implements CanActivate {
   
   private getOrCreateGuestId(request: Request): string {
     // Check for existing guest ID in cookies
-    const guestId = request.cookies?.guestId;
+    const guestId = request.cookies?.['guestId'];
     
     // If no guest ID exists, we'd normally create and set one
     // This simplified version just returns a placeholder

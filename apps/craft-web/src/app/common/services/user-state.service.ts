@@ -119,7 +119,11 @@ export class UserStateService implements OnDestroy {
   setVisitLength(length: number): Observable<void> {
     this.visitLengthSubject.next(length);
 
-    this.socketClient.emit('updateVisitLength', { length });
+    this.socketClient.isConnected$.pipe(takeUntil(this.destroy$)).subscribe(connected => {
+      if (connected) {
+        this.socketClient.emit('updateVisitLength', { length });
+      }
+    });
 
     return of(void 0);
   }
@@ -134,7 +138,11 @@ export class UserStateService implements OnDestroy {
       const updatedPages = [...currentPages, page];
       this.visitedPagesSubject.next(updatedPages);
 
-      this.socketClient.emit('updateVisitedPage', { page });
+      this.socketClient.isConnected$.pipe(takeUntil(this.destroy$)).subscribe(connected => {
+        if (connected) {
+          this.socketClient.emit('updateVisitedPage', { page });
+        }
+      });
 
       return of(void 0);
     }

@@ -96,6 +96,7 @@ The real-time updates are implemented with WebSockets using Socket.IO:
    - Events accumulated with RxJS scan operator
 
 3. **Observable Pattern**:
+
    ```typescript
    // Hot observable stream of timeline events
    events$ = this.eventsSubject.asObservable().pipe(shareReplay(1));

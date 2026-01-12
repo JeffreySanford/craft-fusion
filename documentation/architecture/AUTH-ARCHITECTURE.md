@@ -9,4 +9,3 @@ The authentication and authorization architecture in Craft Fusion provides a com
 ### Authentication Layer
 
 The authentication layer handles user identity verification:
-

@@ -26,7 +26,7 @@ export class AlphaVantageService {
         this.socketService.emitToAll('alpha-vantage:stock-update', { symbol, data });
       }),
       catchError(error => {
-        throw `Error fetching stock data: ${error.message}`;
+        throw new Error(`Error fetching stock data: ${error.message}`);
       })
     );
   }
@@ -44,7 +44,7 @@ export class AlphaVantageService {
         this.socketService.emitToAll('alpha-vantage:forex-update', { fromCurrency, toCurrency, data });
       }),
       catchError(error => {
-        throw `Error fetching forex data: ${error.message}`;
+        throw new Error(`Error fetching forex data: ${error.message}`);
       })
     );
   }
@@ -62,7 +62,7 @@ export class AlphaVantageService {
         this.socketService.emitToAll('alpha-vantage:crypto-update', { symbol, market, data });
       }),
       catchError(error => {
-        throw `Error fetching crypto data: ${error.message}`;
+        throw new Error(`Error fetching crypto data: ${error.message}`);
       })
     );
   }

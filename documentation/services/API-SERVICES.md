@@ -273,29 +273,29 @@ export class ApiInterceptor implements HttpInterceptor {
 ### Authentication Integration
 
 The API services integrate with the authentication system:
-- ApiInterceptor adds authentication tokens to requests
-- ApiService provides methods for token management
-- Unauthorized responses (401) trigger authentication workflows
+* ApiInterceptor adds authentication tokens to requests
+* ApiService provides methods for token management
+* Unauthorized responses (401) trigger authentication workflows
 
 ### WebSocket Integration
 
 The ApiService provides a hybrid approach for REST+WebSocket data:
-- Initial data loading via REST API
-- Real-time updates via WebSockets
-- Seamless combination into a single Observable stream
+* Initial data loading via REST API
+* Real-time updates via WebSockets
+* Seamless combination into a single Observable stream
 
 ### Logging Integration
 
 API services provide comprehensive logging:
-- Request/response logging in ApiLoggerService
-- Integration with the main LoggerService for consolidated logs
-- Performance metrics tracking for monitoring
+* Request/response logging in ApiLoggerService
+* Integration with the main LoggerService for consolidated logs
+* Performance metrics tracking for monitoring
 
 ## References
 
-- [API Architecture](../architecture/API-ARCHITECTURE.md) - Detailed architecture information
-- [API Integration](./API-INTEGRATION.md) - Integration patterns and techniques
-- [WebSocket Services](./SOCKET-SERVICES.md) - WebSocket integration details
-- [Authentication](../AUTHENTICATION.md) - Authentication system details
+* [API Architecture](../architecture/API-ARCHITECTURE.md) - Detailed architecture information
+* [API Integration](./API-INTEGRATION.md) - Integration patterns and techniques
+* [WebSocket Services](./SOCKET-SERVICES.md) - WebSocket integration details
+* [Authentication](../AUTHENTICATION.md) - Authentication system details
 
 Last Updated: 2025-03-28

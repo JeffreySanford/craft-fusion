@@ -35,7 +35,8 @@ Craft Fusion is a monorepo using Nx for workspace management. It contains:
 npm install
 ```
 
-3. Run a specific application:
+1. Run a specific application:
+
 ```bash
 nx serve craft-web
 # or
@@ -59,4 +60,5 @@ npm install your-dev-package --save-dev
 <!-- Added "Last Updated" -->
 
 Last Updated: 2025-03-25
+
 ```

@@ -81,18 +81,22 @@ The Craft Fusion platform utilizes dual backend services, providing flexibility 
 ### Performance Benchmarks
 
 **Small Dataset (100 records)**
+
 - NestJS: 500ms generation, 120ms delivery
 - Go: 150ms generation, 30ms delivery
 
 **Medium Dataset (10,000 records)**
+
 - NestJS: 3200ms generation, 850ms delivery
 - Go: 800ms generation, 250ms delivery
 
 **Large Dataset (100,000 records)**
+
 - NestJS: 28000ms generation, chunked delivery
 - Go: 5500ms generation, chunked delivery
 
 **Very Large Dataset (1,000,000 records)**
+
 - NestJS: Not recommended
 - Go: 52000ms generation, chunked delivery
 
@@ -125,29 +129,36 @@ The table system implements optimized memory management with the following strat
 7. **Virtual Scrolling**: For datasets exceeding 1,000 records
 8. **Deferred Loading**: Non-essential data fields load only when needed
 9. **Component Lifecycle Management**: Resources are properly disposed during component destruction
+
 ## Memory Management System
 
 Default memory estimates:
+
 - Small record set (<1,000): ~5MB
 - Medium record set (1,000-10,000): ~50MB
 - Large record set (10,000-100,000): ~300MB+
 - Extremely large record set (100,000-1,000,000): ~1.5GB+
 - Breaking record set (Javascript limitations: >3M): Exceeds browser memory limits (3GB+)
+
 ## Future Enhancement: Server-Side Data Processing
 
 ### Overview
+
 To address the challenges of datasets too large for efficient client-side handling (typically >50,000 records), a server-side data processing system is planned for Q3 2025. This approach will eliminate the need to transfer complete datasets to the client, significantly improving performance and user experience.
 
 ### Technical Implementation
 
 #### Backend Architecture
+
 - **Streaming Data Pipeline**: Implement Observable/BehaviorSubject pattern to stream only required data chunks
 - **Server-Side Table Operations**: Move sorting, filtering, and aggregation operations to the server
 - **Data Snapshot Management**: Maintain server-side state of user's current view
 - **WebSocket Real-Time Updates**: Push filtered/sorted data changes to connected clients
 
 #### Frontend-Backend Communication
+
 - **Request Parameters Schema**:
+
     ```typescript
     interface TableStateRequest {
         pageIndex: number;
@@ -171,11 +182,11 @@ To address the challenges of datasets too large for efficient client-side handli
 ### Real-Time Progress Visualization
 
 - Replace traditional progress spinners with information-rich progress UI:
-    - Record count processed/total
-    - Current memory utilization
-    - Time remaining estimation
-    - Processing phases (data fetching, filtering, sorting, rendering)
-    - Preview of initial records while processing continues
+  - Record count processed/total
+  - Current memory utilization
+  - Time remaining estimation
+  - Processing phases (data fetching, filtering, sorting, rendering)
+  - Preview of initial records while processing continues
 
 ### Impact on Current Table System
 
@@ -194,6 +205,7 @@ To address the challenges of datasets too large for efficient client-side handli
 | Filter Application | 2-4 seconds | 200-400ms | 400-600ms |
 | Page Navigation | 100-200ms | 100-200ms | 100-200ms |
 | Memory Usage | 300MB+ | 10-20MB | 10-20MB |
+
 ## Working with Large Datasets
 
 For optimal performance with large datasets (>10,000 records):

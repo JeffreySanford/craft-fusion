@@ -75,7 +75,7 @@ apps/craft-nest/src/cert/* # Explicitly ignore certs in source
 /build
 /artifacts
 **/dist/
-**/dist-*/ 
+**/dist-*/
 **/.dist/
 **/.out/
 **/.compiled/
@@ -133,3 +133,8 @@ playwright/.tmp/
 # Playwright test output
 apps/craft-web-e2e/playwright/test-results/
 playwright-report/
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md

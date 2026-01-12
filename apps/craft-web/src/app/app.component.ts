@@ -253,12 +253,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onRouterActivate(event: unknown) {
+  onRouterActivate() {
     const fallback = document.getElementById('debug-router-fallback');
     if (fallback) fallback.style.display = 'none';
   }
 
-  onRouterDeactivate(event: unknown) {
+  onRouterDeactivate() {
     setTimeout(() => {
       const fallback = document.getElementById('debug-router-fallback');
       if (fallback) fallback.style.display = 'block';

@@ -5,6 +5,7 @@ This guide covers how to test all aspects of Craft Fusion on your local developm
 ## 1. Basic Application Testing
 
 ### Start the applications separately
+
 ```bash
 # Start the Angular frontend
 nx serve craft-web
@@ -16,14 +17,16 @@ nx serve craft-nest
 nx serve craft-go
 ```
 
-### Verify services are running:
-- Angular: http://localhost:4200
-- NestJS: http://localhost:3000/api
-- Go: http://localhost:4000/api-go
+### Verify services are running
+
+- Angular: <http://localhost:4200>
+- NestJS: <http://localhost:3000/api>
+- Go: <http://localhost:4000/api-go>
 
 ## 2. Testing AI Integration Locally
 
 ### Start Ollama locally
+
 ```bash
 # Navigate to project root
 cd craft-fusion
@@ -36,9 +39,10 @@ chmod +x scripts/ollama-manager.sh
 ./scripts/ollama-manager.sh pull
 ```
 
-### Test AI endpoints:
-- NestJS AI health: http://localhost:3000/api/ai/health
-- Go AI health: http://localhost:4000/ai/health
+### Test AI endpoints
+
+- NestJS AI health: <http://localhost:3000/api/ai/health>
+- Go AI health: <http://localhost:4000/ai/health>
 
 ## 3. Testing Docker Setup
 
@@ -76,7 +80,7 @@ python finetune-mistral-lora.py --data sample-data.json --output ./test-output -
 
 Once all services are running:
 
-1. Navigate to http://localhost:4200
+1. Navigate to <http://localhost:4200>
 2. Test authentication features
 3. Test data visualization components
 4. Test AI-powered features (chat, analysis)

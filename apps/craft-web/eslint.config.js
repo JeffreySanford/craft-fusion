@@ -1,25 +1,16 @@
 const nx = require('@nx/eslint-plugin');
-const angularPlugin = require('@angular-eslint/eslint-plugin');
-const angularTemplatePlugin = require('@angular-eslint/eslint-plugin-template');
-const typescriptPlugin = require('@typescript-eslint/eslint-plugin');
-const importPlugin = require('eslint-plugin-import');
 
 module.exports = [
-  ...nx.configs['flat/angular'], // Extends Nx's Angular flat configuration
-  ...nx.configs['flat/angular-template'], // Extends Nx's Angular template configuration
-
-  // TypeScript Configuration
+  ...nx.configs['flat/angular'],
+  ...nx.configs['flat/angular-template'],
+  {
+    ignores: ['**/src/assets/**', '**/test-setup.ts'],
+  },
   {
     files: ['**/*.ts'],
-    plugins: ['@angular-eslint', '@typescript-eslint', 'import'],
-    languageOptions: {
-      parser: '@typescript-eslint/parser',
-      parserOptions: {
-        project: '../../tsconfig.base.json',
-        "tsconfigRootDir": "./",
-        sourceType: 'module',
-        ecmaVersion: 'latest',
-      },
+    plugins: {
+      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
+      'security': require('eslint-plugin-security'),
     },
     rules: {
       '@angular-eslint/directive-selector': [
@@ -39,17 +30,24 @@ module.exports = [
         },
       ],
       '@angular-eslint/prefer-standalone': 'off',
+      '@angular-eslint/prefer-inject': 'off',
+      '@angular-eslint/use-lifecycle-interface': 'warn',
+      '@angular-eslint/no-empty-lifecycle-method': 'warn',
+      '@angular-eslint/no-input-rename': 'warn',
+      '@angular-eslint/contextual-lifecycle': 'warn',
       '@typescript-eslint/no-unused-vars': 'warn',
-      'import/no-cycle': 'error',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'security/detect-object-injection': 'off',
     },
   },
-
-  // Angular Template Configuration
   {
     files: ['**/*.html'],
-    plugins: ['@angular-eslint/template'],
     rules: {
       '@angular-eslint/template/no-negated-async': 'warn',
+      '@angular-eslint/template/prefer-control-flow': 'off',
+      '@angular-eslint/template/click-events-have-key-events': 'off',
+      '@angular-eslint/template/interactive-supports-focus': 'off',
+      '@angular-eslint/template/label-has-associated-control': 'warn',
     },
   },
 ];

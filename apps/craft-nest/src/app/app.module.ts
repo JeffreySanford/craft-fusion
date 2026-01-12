@@ -5,13 +5,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-import { FileModule } from './documents/file.module';
 import { SocketGatewayModule } from './socket/socket.module';
 import { AuthModule } from './auth/auth.module';
 import { UserStateModule } from './user-state/user-state.module';
 import { RecordsModule } from './records/records.module';
 import { RecipesModule } from './recipes/recipes.module';
-import { AiModule } from './ai/ai.module';
 import { TimelineModule } from './timeline/timeline/timeline.module';
 import { YahooModule as FinancialYahooModule } from './financial/yahoo/yahoo.module';
 import { FirmsModule } from './firms/firms.module';
@@ -89,14 +87,12 @@ import { SecurityModule } from './security/security.module';
         return { uri: 'mongodb://localhost:27017/craft-fusion' } as any;
       },
     }),
-    FileModule,  // Add FileModule import to make FileService available
     UserModule,
     SocketGatewayModule,
     AuthModule,
     UserStateModule,
     RecordsModule,
     RecipesModule, // <-- Register RecipesModule
-    AiModule,
     TimelineModule,
     FinancialYahooModule,
     FirmsModule,

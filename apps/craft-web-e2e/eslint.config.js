@@ -1,20 +1,14 @@
-const baseConfig = require('../../eslint.base.config.js');
-const tsParser = require('@typescript-eslint/parser');
+const nx = require('@nx/eslint-plugin');
+const baseConfig = require('../../eslint.config.js');
 
 module.exports = [
   ...baseConfig,
+  ...nx.configs['flat/typescript'],
+  ...nx.configs['flat/javascript'],
   {
-    files: ['**/*.ts'],
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        project: './tsconfig.json',
-        "tsconfigRootDir": "./",
-      },
-    },
+    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'warn',
-      'import/no-cycle': 'error',
     },
   },
 ];

@@ -58,15 +58,17 @@ The Angular dev server uses `apps/craft-web/src/proxy.config.json` to route `/ap
 
 ## Current Status (2026-01-08)
 
-- **Authentication:** HttpOnly cookie-based JWT with logout-on-refresh implemented
-- **Build:** Angular 19.2.13 compiling successfully
-- **Tests:** Lint and unit tests passing; Firefox e2e has rendering issues
-- **Priority:** File upload pipeline, pagination, XSS sanitization
+- **Infrastructure:** Migrated to Nx 21.1.0 and NestJS 11.
+- **Authentication:** HttpOnly cookie-based JWT with logout-on-refresh and Double-Submit Cookie CSRF protection.
+- **Security:** Strict CSP via Helmet; removed legacy AI/DeepSeek services and CKEditor dependencies.
+- **Cleanup:** Entirely removed "Chat" and "Book" modules to reduce code surface.
+- **Build:** Angular 19.2.18 (Application Builder) and NestJS 11 compiling successfully.
+- **Priority:** File upload pipeline, pagination, XSS sanitization.
 
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->
 
-# General Guidelines for working with Nx
+## General Guidelines for working with Nx
 
 - When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
 - You have access to the Nx MCP server and its tools, use them to help the user

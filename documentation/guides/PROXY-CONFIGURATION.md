@@ -7,6 +7,7 @@ This document provides comprehensive guidance for configuring the proxy settings
 ## Current Configuration
 
 The Angular development server uses a proxy configuration file located at:
+
 ```
 apps/craft-web/src/proxy.config.json
 ```
@@ -66,11 +67,13 @@ Socket.IO requires specific proxy settings:
 **Problem**: Frontend receives 504 Gateway Timeout errors when connecting to backend APIs or WebSockets.
 
 **Causes**:
+
 - Insufficient timeout values in proxy configuration
 - Backend server not running or inaccessible
 - Connection issues between frontend and backend
 
 **Solutions**:
+
 1. **Increase timeout values** in proxy.config.json (as implemented above)
 2. Ensure backend services are running (`nx run craft-nest:serve`)
 3. Configure proper transport options in Socket.IO client:
@@ -89,11 +92,13 @@ this.socket = io(this.socketUrl, {
 **Problem**: WebSocket connections fail to establish or disconnect frequently.
 
 **Causes**:
+
 - Incorrect proxy configuration for WebSockets
 - Missing transport fallback options
 - Network restrictions or firewalls blocking WebSocket traffic
 
 **Solutions**:
+
 1. Enable WebSocket support with `"ws": true` in proxy config
 2. Use multiple transport options (`['websocket', 'polling']`)
 3. Set appropriate timeout values
@@ -149,6 +154,7 @@ For production environments, use `proxy.config.prod.json` with appropriate produ
 ## How to Test Proxy Configuration
 
 1. **Verify Backend Services**: Ensure backend services are running
+
    ```bash
    # Terminal 1 - Start NestJS backend
    npx nx run craft-nest:serve
@@ -158,6 +164,7 @@ For production environments, use `proxy.config.prod.json` with appropriate produ
    ```
 
 2. **Check Health Endpoints**:
+
    ```bash
    # Test NestJS API
    curl http://localhost:3000/api/health
@@ -167,6 +174,7 @@ For production environments, use `proxy.config.prod.json` with appropriate produ
    ```
 
 3. **Test Frontend Proxy**:
+
    ```bash
    # Start frontend with verbose output
    npx nx run craft-web:serve --verbose

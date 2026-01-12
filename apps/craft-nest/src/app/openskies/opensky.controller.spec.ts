@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OpenSkyController } from './opensky.controller';
 import { OpenSkyService } from './opensky.service';
 import { HttpModule } from '@nestjs/axios';
+import { LoggingService } from '../logging/logging.service';
 class MockHttpService {}
+class MockLoggingService {
+  logServiceCall = jest.fn();
+}
 
 describe('OpenskyController', () => {
   let controller: OpenSkyController;
@@ -13,6 +17,10 @@ describe('OpenskyController', () => {
       controllers: [OpenSkyController],
       providers: [
         OpenSkyService,
+        {
+          provide: LoggingService,
+          useClass: MockLoggingService,
+        },
         {
           provide: MockHttpService,
           useClass: MockHttpService,

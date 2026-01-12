@@ -17,7 +17,7 @@ export default defineConfig({
   fullyParallel: !process.env.CI,
 
   use: {
-    baseURL: 'localhost:4200',
+    baseURL: 'http://localhost:4200',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',

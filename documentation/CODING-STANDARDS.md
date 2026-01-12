@@ -5,9 +5,12 @@
 These standards apply to Angular 19 with Nx 20 workspace management.
 
 - **NEVER use standalone components** - They introduce many errors and compatibility issues. All components must be part of an NgModule.
+- **NEVER use Angular Signals** - We strictly adhere to the Observable pattern for all reactive state management. The loss of explicit control and the "black box" nature of signal-based change detection is incompatible with our architectural requirements for predictable data flow.
+- **NEVER use Zoneless Angular** - We rely on `Zone.js` for robust application-wide change detection and task tracking. Maintaining the zone provides superior observability and control over the execution context.
 - Always use NgModule-based architecture for all components.
 - Always maintain `standalone: false` for all components. This is the required configuration.
 - Components must always be declared within their respective NgModules.
+- **Hot Observables** are the standard for state management. Prefer shared, multi-cast observables (via `shareReplay`) to manage application state over one-shot Promises or implicit signal state.
 - **Never use CUSTOM_ELEMENTS_SCHEMA** - Always properly import required Angular Material modules in the NgModule.
 - Leverage Angular dependency injection for services.
 - Implement lazy loading for all feature modules.

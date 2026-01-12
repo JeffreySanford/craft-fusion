@@ -5,6 +5,7 @@ This guide covers how to test all aspects of Craft Fusion on your local developm
 ## 1. Basic Application Testing
 
 ### Start the applications separately
+
 ```bash
 # Start the Angular frontend
 nx serve craft-web
@@ -16,31 +17,13 @@ nx serve craft-nest
 nx serve craft-go
 ```
 
-### Verify services are running:
-- Angular: http://localhost:4200
-- NestJS: http://localhost:3000/api
-- Go: http://localhost:4000/api-go
+### Verify services are running
 
-## 2. Testing AI Integration Locally
+- Angular: <http://localhost:4200>
+- NestJS: <http://localhost:3000/api>
+- Go: <http://localhost:4000/api-go>
 
-### Start Ollama locally
-```bash
-# Navigate to project root
-cd craft-fusion
-
-# Run the Ollama manager script
-chmod +x scripts/ollama-manager.sh
-./scripts/ollama-manager.sh start
-
-# Pull the required models
-./scripts/ollama-manager.sh pull
-```
-
-### Test AI endpoints:
-- NestJS AI health: http://localhost:3000/api/ai/health
-- Go AI health: http://localhost:4000/ai/health
-
-## 3. Testing Docker Setup
+## 2. Testing Docker Setup
 
 Test the full Docker configuration locally:
 
@@ -61,51 +44,36 @@ docker-compose logs -f
 # - Go API: http://localhost/api/go
 ```
 
-## 4. Testing Training Environment
-
-```bash
-# Install Python dependencies
-cd apps/training
-pip install -r requirements.txt
-
-# Run a simple test using a small dataset
-python finetune-mistral-lora.py --data sample-data.json --output ./test-output --epochs 1
-```
-
-## 5. End-to-End Testing
+## 3. End-to-End Testing
 
 Once all services are running:
 
-1. Navigate to http://localhost:4200
+1. Navigate to <http://localhost:4200>
 2. Test authentication features
 3. Test data visualization components
-4. Test AI-powered features (chat, analysis)
-5. Test file uploads and processing
+4. Test file uploads and processing
 
-## 6. Monitoring Local Resources
+## 4. Monitoring Local Resources
 
 ```bash
 # Monitor Docker resources
 docker stats
-
-# Check disk space for models
-df -h
 
 # Check system resources
 htop
 ```
 
 ## Project-wide Standards
+
 - All scripts use DRY system prep via `system-prep.sh`.
 - Vibrant, color-coded output is standard for all CLI tools.
 
-Last Updated: 2025-05-25
+Last Updated: 2026-01-08
 
 ## Troubleshooting
 
 ### Common Issues and Solutions
 
-- **Ports already in use**: Kill the process using `kill $(lsof -t -i:<port_number>)`
-- **Ollama not responding**: Check Ollama logs with `./scripts/ollama-manager.sh logs`
-- **Missing models**: Pull models manually with the script
-- **Angular CORS issues**: Ensure proxy configuration is properly set in your `proxy.configjson`
+- **Ports already in use**: Kill the process using `kill $(lsof -t -i:<port_number>)`.
+- **Angular CORS issues**: Ensure proxy configuration is properly set in your `proxy.config.json`.
+- **WebSocket connection issues**: Check if the NestJS backend is running and the proxy is routing correctly.

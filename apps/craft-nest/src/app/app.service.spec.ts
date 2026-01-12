@@ -13,9 +13,9 @@ describe('AppService', () => {
     service = app.get<AppService>(AppService);
   });
 
-  describe('getData', () => {
-    it('should return "Hello API"', () => {
-      expect(service.getData()).toEqual({ message: 'Hello API' });
+  describe('getHello', () => {
+    it('should return "Welcome to Craft Fusion API!"', () => {
+      expect(service.getHello()).toEqual('Welcome to Craft Fusion API!');
     });
   });
 });

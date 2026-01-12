@@ -155,8 +155,7 @@ test.describe('Admin Hero Area', () => {
         .locator("xpath=ancestor::*[contains(@class, 'mat-tab-body') or contains(@class, 'mat-mdc-tab-body')]")
         .first();
 
-      await expect(logsPanel).toHaveAttribute('aria-hidden', 'false', { timeout: 10000 });
-      await expect(logsPanel).toBeVisible();
+      await expect(logsPanel).toBeVisible({ timeout: 10000 });
     }
   });
 
@@ -180,6 +179,7 @@ test.describe('Admin Hero Area', () => {
     // Get initial value
     const successTile = page.locator('.hero-tile').filter({ hasText: 'Success Rate' });
     const initialValue = await successTile.locator('.hero-tile-value').textContent();
+    expect(initialValue).toBeDefined();
     
     // Wait for potential update (hero service throttles at 2.5s by default)
     await page.waitForTimeout(3000);

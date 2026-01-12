@@ -150,8 +150,8 @@ export class LoggerService {
 
       this.serviceCallsSubject.next([...this.serviceMetrics]);
 
-      if (status >= 200 && status < 300) {
-        this.debug(`Service call completed: ${startMetric.serviceName}`, { method: startMetric.method, url: startMetric.url, status, duration: `${duration}ms` });
+      if (status >= 200 && status < 300 || status === 401) {
+        this.debug(`Service call ${status === 401 ? 'unauthorized' : 'completed'}: ${startMetric.serviceName}`, { method: startMetric.method, url: startMetric.url, status, duration: `${duration}ms` });
       } else {
         this.error(`Service call failed: ${startMetric.serviceName}`, { method: startMetric.method, url: startMetric.url, status, duration: `${duration}ms`, error });
       }

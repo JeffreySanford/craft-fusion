@@ -208,15 +208,18 @@ The application includes Socket.IO Admin UI for monitoring and debugging:
 - Room/namespace management
 
 Access the admin UI at `https://admin.socket.io` with credentials:
+
 - Username: admin
 - Password: password
 
 ## Candidates for Socket Implementation
 
 ### Finance Dashboard
+
 The financial data visualizations would greatly benefit from socket delivery to show live price updates without polling the API repeatedly.
 
 ### Record Generation Status
+
 For large dataset generation, sockets could provide progress updates rather than waiting for the entire operation to complete.
 
 ### Table Component Analysis
@@ -224,16 +227,19 @@ For large dataset generation, sockets could provide progress updates rather than
 The table component currently uses a toggle between client-side and server-side rendering. While this approach works well for initial data loading:
 
 #### Current Implementation
+
 - Toggle determines if sorting/filtering happens on client or server
 - Initial data load is always from server
 - Changes to filters/sorts may trigger new API calls in server mode
 
 #### Potential Socket Benefits
+
 - Real-time updates to table data without full reload
 - Push-based notifications when records are added or modified
 - Streaming approach for very large datasets
 
 #### Considerations
+
 - Socket implementation would complement rather than replace current toggle
 - Would require state synchronization between connected clients
 - Most beneficial for collaborative scenarios where multiple users work on the same data

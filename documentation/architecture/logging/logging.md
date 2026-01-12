@@ -6,7 +6,7 @@ Craft Fusion implements a comprehensive logging system across both frontend and 
 
 The logging system consists of several complementary components:
 
-1. **Frontend Logging**: 
+1. **Frontend Logging**:
    - `LoggerService` for Angular application logging
    - `ApiLoggerService` for API request/response logging
 
@@ -25,13 +25,13 @@ Located at `c:\repos\craft-fusion\apps\craft-nest\src\app\logging\logging.servic
 
 #### Features
 
-* **Standard Log Levels**: `debug`, `info`, `warn`, `error` methods with consistent API
-* **Structured Logging**: All logs include metadata as objects rather than string interpolation
-* **Log Storage**: Logs are stored in memory with configurable retention limits
-* **Console Interception**: Intercepts and enhances console methods to ensure all output is captured
-* **Query Capability**: Retrieve logs filtered by level, timestamp, and other criteria
-* **Performance Tracking**: Special annotations for slow operations and performance bottlenecks
-* **Context Preservation**: Maintains context across asynchronous operations
+- **Standard Log Levels**: `debug`, `info`, `warn`, `error` methods with consistent API
+- **Structured Logging**: All logs include metadata as objects rather than string interpolation
+- **Log Storage**: Logs are stored in memory with configurable retention limits
+- **Console Interception**: Intercepts and enhances console methods to ensure all output is captured
+- **Query Capability**: Retrieve logs filtered by level, timestamp, and other criteria
+- **Performance Tracking**: Special annotations for slow operations and performance bottlenecks
+- **Context Preservation**: Maintains context across asynchronous operations
 
 #### Usage
 
@@ -64,6 +64,7 @@ The custom `LoggingService` replaces the built-in NestJS `Logger` to provide:
 5. **Performance metrics** for monitoring slow operations
 
 **Before:**
+
 ```typescript
 private readonly logger = new Logger(ServiceName);
 
@@ -72,6 +73,7 @@ this.logger.error(`Failed to create record: ${error.message}`);
 ```
 
 **After:**
+
 ```typescript
 constructor(private logger: LoggingService) {}
 
@@ -148,13 +150,13 @@ logs$: Observable<LogEntry[]> = this.loggingService.getLogs('error', 100);
 Located at `c:\repos\craft-fusion\apps\craft-web\src\app\common\services\logger.service.ts`
 
 #### Features
-* **Log Levels**: Supports standard log levels (`DEBUG`, `INFO`, `WARN`, `ERROR`)
-* **Structured Logs**: Stores logs as objects with timestamp, level, message, component, and details
-* **Real-time Streams**: Exposes RxJS Observables for log monitoring
-* **Console Enhancement**: Enhanced console output with color coding and categorization
-* **Service Call Tracking**: Measures API call performance
-* **Log Sanitization**: Automatically redacts sensitive information
-* **Automatic Context Detection**: Determines the calling component automatically
+- **Log Levels**: Supports standard log levels (`DEBUG`, `INFO`, `WARN`, `ERROR`)
+- **Structured Logs**: Stores logs as objects with timestamp, level, message, component, and details
+- **Real-time Streams**: Exposes RxJS Observables for log monitoring
+- **Console Enhancement**: Enhanced console output with color coding and categorization
+- **Service Call Tracking**: Measures API call performance
+- **Log Sanitization**: Automatically redacts sensitive information
+- **Automatic Context Detection**: Determines the calling component automatically
 
 #### Usage
 
@@ -179,10 +181,10 @@ this.logger.endServiceCall(callId, 500, error); // Error
 Located at `c:\repos\craft-web\src\app\common\services\api-logger.service.ts`
 
 Specializes in detailed logging of HTTP requests and responses, providing:
-* Complete request/response details including headers and body
-* Response time measurement
-* Filtering capabilities by endpoint
-* Integration with the main LoggerService
+- Complete request/response details including headers and body
+- Response time measurement
+- Filtering capabilities by endpoint
+- Integration with the main LoggerService
 
 ## Best Practices
 
@@ -200,38 +202,39 @@ this.logger.info('User updated profile', { userId, values });
 
 ### 2. Appropriate Log Levels
 
-* **DEBUG**: Detailed information useful during development and troubleshooting
-* **INFO**: General application events that document normal operation
-* **WARN**: Unexpected situations that don't prevent operation but may indicate problems
-* **ERROR**: Failures that prevent normal operation or feature functionality
+- **DEBUG**: Detailed information useful during development and troubleshooting
+- **INFO**: General application events that document normal operation
+- **WARN**: Unexpected situations that don't prevent operation but may indicate problems
+- **ERROR**: Failures that prevent normal operation or feature functionality
 
 ### 3. Include Relevant Context
 
 Always include relevant identifiers and context information:
-* Record IDs
-* User IDs (never PII)
-* Request IDs for correlation
-* Operation timing for performance monitoring
+- Record IDs
+- User IDs (never PII)
+- Request IDs for correlation
+- Operation timing for performance monitoring
 
 ### 4. Performance Monitoring
 
 For operations that may impact performance:
-* Log start and completion with duration
-* Identify slow operations explicitly
-* Include resource metrics where relevant (memory, record count, etc.)
+- Log start and completion with duration
+- Identify slow operations explicitly
+- Include resource metrics where relevant (memory, record count, etc.)
 
 ### 5. Error Logging
 
 When logging errors:
-* Include the error object directly in metadata
-* Provide context about the operation that failed
-* Include relevant IDs and parameters (sanitized)
+- Include the error object directly in metadata
+- Provide context about the operation that failed
+- Include relevant IDs and parameters (sanitized)
 
 ## Implementation Guidelines
 
 ### Backend Services
 
 All NestJS services and controllers should:
+
 1. Inject `LoggingService` instead of using NestJS `Logger`
 2. Use structured logging with message + metadata object
 3. Log all significant operations (creation, updates, deletions, errors)
@@ -240,6 +243,7 @@ All NestJS services and controllers should:
 ### Frontend Services
 
 All Angular services should:
+
 1. Inject `LoggerService` for general logging
 2. Use `ApiLoggerService` for detailed API logging when needed
 3. Register services via `registerService()` method
@@ -249,12 +253,14 @@ All Angular services should:
 ## Evolution and Future Improvements
 
 The logging system has evolved from:
+
 1. Basic console logging
 2. Built-in framework loggers (NestJS Logger)
 3. Custom structured logging services
 4. Integration with monitoring and alerting systems
 
 Planned improvements include:
+
 1. Centralized log storage in database
 2. Log rotation and archiving policies
 3. Enhanced log visualization in admin dashboard

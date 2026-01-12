@@ -22,7 +22,7 @@
     "composite": true // Added for composite project support
   },
   "include": [
-    "src/**/*.ts", 
+    "**/*.ts", 
     "src/**/*.json"
   ],
   "exclude": ["node_modules", "dist"]

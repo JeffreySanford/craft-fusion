@@ -59,7 +59,7 @@ export class HealthService {
   private readonly systemMetrics$ = interval(5000).pipe(
     startWith(0),
     map(() => this.getSystemMetrics()),
-    shareReplay(1)
+    shareReplay({ bufferSize: 1, refCount: true })
   );
   
   // Create a hot observable for health status that combines services and uptime
@@ -84,7 +84,7 @@ export class HealthService {
         version: process.env['npm_package_version'] || '1.0.0'
       };
     }),
-    shareReplay(1)
+    shareReplay({ bufferSize: 1, refCount: true })
   );
 
   constructor() {
@@ -100,7 +100,7 @@ export class HealthService {
         ...health,
         metrics
       })),
-      shareReplay(1)
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
@@ -159,7 +159,7 @@ export class HealthService {
     return interval(intervalMs).pipe(
       startWith(0),
       map(() => this.getSystemMetrics()),
-      shareReplay(1)
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
   

@@ -6,7 +6,7 @@
 ## Core Services
 
 | Service | Path | Description |
-|---------|------|-------------|
+| :--- | :--- | :--- |
 | ApiService | `apps/craft-web/src/app/common/services/api.service.ts` | Handles communication with backend API endpoints |
 | AuthenticationService | `apps/craft-web/src/app/common/services/auth/authentication.service.ts` | Manages user authentication and token handling |
 | AuthorizationService | `apps/craft-web/src/app/common/services/auth/authorization.service.ts` | Handles user permissions and access control |
@@ -16,7 +16,7 @@
 ## State Management Services
 
 | Service | Path | Description |
-|---------|------|-------------|
+| :--- | :--- | :--- |
 | UserStateService | `apps/craft-web/src/app/common/services/user-state.service.ts` | Manages user-specific state and preferences |
 | AdminStateService | `apps/craft-web/src/app/common/services/admin-state.service.ts` | Handles admin-related state and table performance monitoring |
 | SidebarStateService | `apps/craft-web/src/app/common/services/sidebar-state.service.ts` | Controls sidebar collapsed/expanded state |
@@ -26,10 +26,8 @@
 ## Utility Services
 
 | Service | Path | Description |
-|---------|------|-------------|
+| :--- | :--- | :--- |
 | FileUploadService | `apps/craft-web/src/app/common/services/file-upload.service.ts` | Handles file uploading to the backend |
-| DocParseService | `apps/craft-web/src/app/common/services/doc-parse.service.ts` | Parses .docx files and extracts structured content |
-| PdfParseService | `apps/craft-web/src/app/common/services/pdf-parse.service.ts` | Parses .pdf files and converts to Markdown |
 | NotificationService | `apps/craft-web/src/app/common/services/notification.service.ts` | Displays toast notifications to users |
 | BusyService | `apps/craft-web/src/app/common/services/busy.service.ts` | Indicates background activity or loading states |
 | ChartLayoutService | `apps/craft-web/src/app/common/services/chart-layout.service.ts` | Provides layout logic for chart components |
@@ -39,19 +37,17 @@
 ## Third-Party Integration Services
 
 | Service | Path | Description |
-|---------|------|-------------|
+| :--- | :--- | :--- |
 | YahooService | `apps/craft-web/src/app/common/services/yahoo.service.ts` | Fetches financial historical data |
 | AlphaVantageService | `apps/craft-web/src/app/common/services/alpha-vantage.service.ts` | Fetches stock and forex data |
 | FlightRadarService | `apps/craft-web/src/app/common/services/flightradar.service.ts` | Fetches live flight data |
 | OpenSkiesService | `apps/craft-web/src/app/common/services/openskies.service.ts` | Fetches flight and airport data |
 | MapboxService | `apps/craft-web/src/app/common/services/mapbox.service.ts` | Integrates with Mapbox GL JS for maps |
-| OpenAIService | `apps/craft-web/src/app/common/services/openai.service.ts` | Sends prompts to OpenAI models |
-| DeepSeekService | `apps/craft-web/src/app/common/services/deepseek-local.service.ts` | Integrates with locally running DeepSeek models |
 
 ## Monitoring and Diagnostics Services
 
 | Service | Path | Description |
-|---------|------|-------------|
+| :--- | :--- | :--- |
 | ApiLoggerService | `apps/craft-web/src/app/common/services/api-logger.service.ts` | Logs API requests and responses |
 | ApiDiagnosticsService | `apps/craft-web/src/app/common/services/api-diagnostics.service.ts` | Monitors API connectivity and provides diagnostics |
 | PerformanceMonitorService | `apps/craft-web/src/app/common/services/performance-monitor.service.ts` | Monitors application performance metrics |

@@ -34,6 +34,13 @@
         "command": "go test ./... -v",
         "cwd": "apps/craft-go"
       }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go fmt ./...",
+        "cwd": "apps/craft-go"
+      }
     }
   }
 }

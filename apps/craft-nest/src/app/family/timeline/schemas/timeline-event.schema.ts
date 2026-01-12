@@ -10,6 +10,8 @@ export enum TimelineEventType {
 
 @Schema({ timestamps: true })
 export class TimelineEvent extends Document {
+  id!: string;
+
   @Prop({ required: true })
   title: string = '';
 

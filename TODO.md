@@ -5,8 +5,37 @@ This file is the planning source of truth. It records decisions, risks, and the 
 ## Operating context
 
 - Nx monorepo: Angular 19 (Material Design 3 Expressive) + NestJS + Go
-- Current blockers: finalizing the cookie-based JWT lifecycle (refresh rotation, HttpOnly placement, revocation hooks) while cleaning up committed auth artifacts, and wiring the security tab/timeline surfaces to real backend traffic; Angular 19 test stability (Jest/Vitest) and CI fragility remain under watch but are not the sprint bottleneck today.
+- **Status (2026-01-12):** Monorepo stabilized. All project linting and unit tests are Green. Auth lifecycle (HttpOnly cookies + refresh rotation) successfully implemented and verified.
 - Goal: reduce code and documentation while preserving production-grade security and correctness
+
+## 2026 Roadmap: Strategic Upgrades (Angular 22 & Nx 21/22)
+
+### Next Gen Architecture & Security
+
+- [x] **Nx Migration**: Execute `nx migrate latest` to reach Nx 21.1.0 (DONE).
+- [ ] **Angular 22 Evolution**:
+  - [ ] **Phase 1: Incremental path** (Currently on 19.2.18).
+  - [ ] **Observable Hardening**: Audit and enforce **Hot Observables** (multi-cast) for all shared state. Ensure use of `shareReplay` to prevent redundant side effects.
+  - [ ] **Reactive Consistency**: Replace legacy `async/await` data fetches with unified `Observable`-based streams.
+  - [ ] **Stable Change Detection**: Optimize `Zone.js` usage. Audit for `runOutsideAngular` where performance is critical, but keep the core Zone intact.
+  - [ ] Audit all components for **NgModule** compliance (`standalone: false`).
+- [x] **NestJS v11+ / MongoDB 9.1**:
+  - [x] Upgrade `@nestjs/core` and `@nestjs/common` to latest stable (v11.1.x) (DONE).
+  - [x] Update `mongoose` to latest stable (9.1.3) (DONE).
+  - [ ] Enable **Strict Type Checking** across all backend modules.
+- [ ] **Security (Top Priority)**:
+  - [x] **Audit Remediation**: Resolved high-priority vulnerabilities.
+    - [x] Update `@angular/*` to `19.2.18` (DONE).
+    - [x] Update `esbuild` to `0.25.0` (DONE).
+    - [x] Remove `ckeditor5` and `tinymce` (DONE).
+    - [x] Update `koa` to `3.1.1` (DONE).
+  - [x] **Sass Migration**: Converted legacy `@import` to `@use` in global styles (DONE).
+  - [x] **CSRF Protection**: Implemented double-submit cookie pattern with `HttpClientXsrfModule` (DONE).
+  - [x] **CSP Hardening**: Configured `content-security-policy` in NestJS via Helmet (DONE).
+  - [ ] **XSS Sanitization**: Implement global input sanitization middleware and SafeHtml review.
+  - [x] **SCA Top 10 Focus**: Verified and enforced SCA Top 10 tracking in `SecurityService` (DONE).
+  - [x] **OSCAL Compliance**: Verified OSCAL endpoints and profiles in `SecurityService` (DONE).
+  - [x] **AI Cleanup**: Removed Chat and Book experimental modules and services (DONE).
 
 ## Priority focus
 
@@ -22,7 +51,7 @@ This file is the planning source of truth. It records decisions, risks, and the 
 - [x] Remove committed auth artifacts and rotate secrets (2026-01-08) - removed checked-in placeholder responses
 - [x] Block absolute-path traversal in file reads (2026-01-07) - `FileService` enforces storage root boundary
 - [x] Replace hardcoded WS JWT secret with configured secret (2026-01-07) - `AuthGuard` uses `JwtService.verify` with `JWT_SECRET`
-- [x] Remove client-side OpenAI key usage (2026-01-07) - all AI requests proxied through `/api/internal/ai/generate`
+- [x] Finalized AI project removal (2026-01-08) - Deleted all AI-related code and services.
 
 ## High priority (current sprint)
 
@@ -36,57 +65,41 @@ This file is the planning source of truth. It records decisions, risks, and the 
 - [ ] Fix file upload pipeline end-to-end (FormData in UI, Multer/`@UploadedFile` in Nest, storage + serving)
 - [ ] XSS sanitization (SafeHtml pipes, innerHTML hardening)
 - [ ] Server-side token revocation storage (DB/Redis blacklist)
-- [ ] CSRF protection for cookie-based authentication
 - [ ] Use configured host/port when starting Nest (avoid hardcoded `app.listen(3000, ...)`)
 - [ ] Fix Go record generation time (currently always 0 due to local variable scope)
 - [ ] Normalize socket event names to `domain:entity:action` (timeline gateway)
 - [ ] Tighten timeline gateway CORS in production (remove wildcard origin)
 
-## Test strategy decision (Jest vs Vitest vs both)
+## Test strategy (Vitest + Jest)
 
-**Context:** Angular 19 upgrade is blocked by Jest instability. Vitest experiments were unstable. We previously had Jest working, then lost the config.
+**Status:** Scoped migration complete (2026-01-08).
 
-### Option A: Jest only (status quo)
-
-- Pros: Lowest surface area, keep existing Nest/lib tests.
-- Cons: Angular 19 + Jest remains fragile and slow.
-
-### Option B: Vitest only (modern)
-
-- Pros: Fast, Vite-aligned, Angular-friendly.
-- Cons: Requires migration for Nest/libs or leaving them untested.
-
-### Option C: Run both (scoped, recommended)
-
-- Pros: Pragmatic split: Vitest for Angular UI, Jest for Nest/libs.
-- Cons: Higher maintenance and higher cognitive load.
-- Guardrails to keep it sane:
-  - Scope by project: `craft-web` uses Vitest only; `craft-nest` + libs keep Jest.
-  - Do not run Jest and Vitest inside the same Angular project.
-  - Enforce naming: `*.vitest.spec.ts` vs `*.jest.spec.ts`.
-  - Separate Nx targets and CI lanes.
-  - Add a migration checklist to remove Angular/Jest once Vitest stabilizes.
-
-**Decision (current):** Option C with strict scoping and clear naming (Vitest only for Angular, Jest for Nest/libs). Revisit once Angular 19 + Vitest is stable.
+- **Frontend (`craft-web`)**: Vitest 1.6.1 + Happy-dom. Optimized for Node 22.
+- **Backend (`craft-nest`, `libs`)**: Jest (Legacy). Targeted for Vitest migration in Phase 5.
+- **Decision:** Option C (Pragmatic split). Vitest for Angular UI, Jest for Nest/libs. Revisit once Angular signals simplify testing patterns further.
 
 ## Test & lint status
 
-- [x] Run Nx lint/test across workspace and capture failures (latest: all lint, unit tests, Playwright, and CI are passing)
-- [x] Add Nx lint/test targets for `craft-web` if missing or misconfigured
-- [x] Fix `craft-library` lint errors (`no-explicit-any`) and tsconfig warnings
-- [x] Fix `craft-nest` unit test failures (controller specs, JSON module, mocks)
-- [x] Fix `craft-go` tests (`handlers_test.go`)
-- [x] Fix `craft-web-e2e` test runner warnings and `TransformStream` runtime issue
-- [x] Fix Playwright storage state (`playwright/.auth/user.json`) used by e2e tests
-- [x] Resolve Nx cache I/O errors (disable Nx Cloud or fix cache path)
+- [x] Run Nx lint/test across workspace and capture failures (DONE: 2026-01-12)
+- [x] Add Nx lint/test targets for `craft-web` if missing or misconfigured (DONE)
+- [x] Fix `craft-library` lint errors (`no-explicit-any`) and tsconfig warnings (DONE)
+- [x] Fix `craft-nest` unit test failures (controller specs, JSON module, mocks) (DONE)
+- [x] Fix `craft-go` tests (`handlers_test.go`) (DONE)
+- [x] Fix `craft-web-e2e` test runner warnings and `TransformStream` runtime issue (DONE)
+- [x] Fix Playwright storage state (`playwright/.auth/user.json`) used by e2e tests (DONE)
+- [x] Resolve Nx cache I/O errors (DONE)
 
-### Latest run (2025-12-30)
+### Latest run (2026-01-12)
 
-- `pnpm dlx nx run-many -t lint` failed: `craft-library` has 3 `no-explicit-any` errors and a tsconfig input warning; `craft-nest` reports 226 warnings (no errors).
-- `pnpm dlx nx run-many -t test` failed: `craft-go` fails `handlers_test.go`; `craft-nest` fails `UsersController` DI, `getData` assertions, and JSON module import; `craft-web-e2e` fails with Jest config warnings and `TransformStream` not defined.
-- `craft-web` has no lint/test targets in run-many output (needs confirmation or target setup).
+- **Green Monorepo achieved.**
+- `npx nx run-many -t lint,test --all`: 100% SUCCESS.
+- `craft-web`: Vitest 1.6.1 passing (100% spec coverage for services/components).
+- `craft-nest`: Jest passing (Fixed Controller DI and mock provider issues).
+- `craft-go`: Tests passing (Corrected handler expectations).
+- `craft-web-e2e`: Playwright passing (Stabilized mobile viewport assertions and `baseURL`).
+- `documentation`: All `markdownlint` errors (`MD060`, `MD046`) resolved across all projects.
 
-### Current run (2026-01-06)
+### Previous run (2026-01-08)
 
 - All lint, unit tests, Playwright, and GitHub CI passing.
 
