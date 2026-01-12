@@ -19,6 +19,15 @@ SCRIPT_DIR_DEPLOY_ALL="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT_DEPLOY_ALL="$(cd "$SCRIPT_DIR_DEPLOY_ALL/.." && pwd)"
 OSCAL_DIR="$PROJECT_ROOT_DEPLOY_ALL/oscal-analysis"
 
+# Helper to use sudo only if not root
+maybe_sudo() {
+    if [ "$(id -u)" -eq 0 ]; then
+        "$@"
+    else
+        sudo "$@"
+    fi
+}
+
 # Function to display available OSCAL profiles
 display_available_oscal_profiles() {
     printf "${BOLD}${MAGENTA}\n╔══════════════════════════════════════════════════════════════════════════╗\n"
@@ -71,6 +80,14 @@ printf "${BLUE}CPU Cores:   ${GREEN}$CPU_CORES${NC}   ${BLUE}Memory: ${GREEN}${M
 printf "${BLUE}Network:     ${CYAN}$NET_IFACE${NC} (${GREEN}$NET_IP${NC})   ${BLUE}Ping: ${CYAN}${PING_TIME}ms${NC}\n"
 printf "${BLUE}Auditd:      ${CYAN}$AUDITD_STATUS${NC}\n"
 printf "${BLUE}Date:        ${WHITE}$(date)${NC}\n\n"
+
+# --- Initial State & Captures ---
+deployment_start_time=$(date +%s)
+unit_test_status=-1
+e2e_test_status=-1
+site_verif_status=-1
+backend_status=-1
+frontend_status=-1
 
 # --- Progress Function ---
 # Usage: print_progress "Title" ESTIMATED_SECONDS PHASE_START_EPOCH & pid=$!
@@ -301,8 +318,8 @@ if [ "$do_full_clean" = true ]; then
       exit 1
     fi
   fi
-  kill "$progress_pid" &>/dev/null || true # Ignore error if kill fails (e.g., process already dead)
-  wait "$progress_pid" &>/dev/null || true   # Ignore error from wait (e.g., process killed, or already reaped)
+  [ -n "${progress_pid:-}" ] && kill "$progress_pid" &>/dev/null || true # Ignore error if kill fails (e.g., process already dead)
+  [ -n "${progress_pid:-}" ] && wait "$progress_pid" &>/dev/null || true   # Ignore error from wait (e.g., process killed, or already reaped)
   cleanup_progress_line
   echo -e "${GREEN}✓ Full clean completed successfully${NC}"
 else
@@ -319,8 +336,8 @@ else
   fi
   CLEAN_STATUS=0 # For summary, non-full clean's build output cleaning is considered "attempted" or non-blocking.
 
-  kill "$progress_pid" &>/dev/null || true
-  wait "$progress_pid" &>/dev/null || true
+  [ -n "${progress_pid:-}" ] && kill "$progress_pid" &>/dev/null || true
+  [ -n "${progress_pid:-}" ] && wait "$progress_pid" &>/dev/null || true
   cleanup_progress_line
   echo -e "${GREEN}✓ Build outputs cleaned${NC}"
 fi
@@ -366,8 +383,8 @@ handle_nx_post_install() {
   post_install_status_nx=${PIPESTATUS[0]}
   set +x
 
-  kill "$progress_pid_nx" &>/dev/null || true
-  wait "$progress_pid_nx" &>/dev/null || true
+  [ -n "${progress_pid_nx:-}" ] && kill "$progress_pid_nx" &>/dev/null || true
+  [ -n "${progress_pid_nx:-}" ] && wait "$progress_pid_nx" &>/dev/null || true
   cleanup_progress_line
 
   if [ $post_install_status_nx -eq 0 ]; then
@@ -443,6 +460,11 @@ if [ "$needs_install" = true ]; then
   print_progress "$PKG_MANAGER Install" "$INSTALL_ESTIMATE_SECONDS" "$phase_start_time" &
   progress_pid=$!
 
+  # Kill any lingering Nx daemon to prevent "unexpected went wrong" errors
+  echo -e "${YELLOW}Resetting Nx daemon...${NC}"
+  pnpm exec nx reset 2>/dev/null || npx nx reset 2>/dev/null || true
+  maybe_sudo pkill -f "nx-daemon" 2>/dev/null || true
+  
   if [ "$PKG_MANAGER" = "pnpm" ]; then
       export COREPACK_HOME="${HOME}/.corepack"
       mkdir -p "$COREPACK_HOME"
@@ -461,8 +483,8 @@ if [ "$needs_install" = true ]; then
       install_status=$?
   fi
 
-  kill "$progress_pid" &>/dev/null || true
-  wait "$progress_pid" &>/dev/null || true
+  [ -n "${progress_pid:-}" ] && kill "$progress_pid" &>/dev/null || true
+  [ -n "${progress_pid:-}" ] && wait "$progress_pid" &>/dev/null || true
   cleanup_progress_line
 
   if [ $install_status -eq 0 ]; then
@@ -552,10 +574,8 @@ else
 fi
 backend_status=$?
 
-kill "$progress_pid" &>/dev/null || true
-wait "$progress_pid" &>/dev/null || true
-cleanup_progress_line
-
+  [ -n "${progress_pid:-}" ] && kill "$progress_pid" &>/dev/null || true
+  [ -n "${progress_pid:-}" ] && wait "$progress_pid" &>/dev/null || true
 if [ $backend_status -eq 0 ]; then
     echo -e "${GREEN}✓ Backend deployed successfully${NC}"
     
@@ -630,10 +650,8 @@ if [ $backend_status -eq 0 ]; then
         fi
     frontend_status=$?
 
-    kill "$progress_pid" &>/dev/null || true
-    wait "$progress_pid" &>/dev/null || true
-    cleanup_progress_line
-
+    [ -n "${progress_pid:-}" ] && kill "$progress_pid" &>/dev/null || true
+    [ -n "${progress_pid:-}" ] && wait "$progress_pid" &>/dev/null || true
     if [ $frontend_status -eq 0 ]; then
         echo -e "${GREEN}✓ Frontend deployed successfully${NC}"
         
@@ -766,8 +784,8 @@ else
     npx nx run-many -t test --parallel=2 --maxParallel=2
 fi
 unit_test_status=$?
-kill "$progress_pid_tests" &>/dev/null || true
-wait "$progress_pid_tests" &>/dev/null || true
+[ -n "${progress_pid_tests:-}" ] && kill "$progress_pid_tests" &>/dev/null || true
+[ -n "${progress_pid_tests:-}" ] && wait "$progress_pid_tests" &>/dev/null || true
 cleanup_progress_line
 
 if [ $unit_test_status -eq 0 ]; then
@@ -789,8 +807,8 @@ else
 fi
 e2e_test_status=$?
 
-kill "$progress_pid_e2e" &>/dev/null || true
-wait "$progress_pid_e2e" &>/dev/null || true
+[ -n "${progress_pid_e2e:-}" ] && kill "$progress_pid_e2e" &>/dev/null || true
+[ -n "${progress_pid_e2e:-}" ] && wait "$progress_pid_e2e" &>/dev/null || true
 cleanup_progress_line
 
 if [ $e2e_test_status -eq 0 ]; then
@@ -845,8 +863,8 @@ else
     echo -e "${YELLOW}⚠ wscat not installed - install with: sudo pnpm install -g wscat${NC}"
 fi
 
-kill "$progress_pid" &>/dev/null || true
-wait "$progress_pid" &>/dev/null || true
+[ -n "${progress_pid:-}" ] && kill "$progress_pid" &>/dev/null || true
+[ -n "${progress_pid:-}" ] && wait "$progress_pid" &>/dev/null || true
 cleanup_progress_line
 echo -e "${GREEN}✓ System tests completed.${NC}"
 
@@ -1202,6 +1220,21 @@ if [ "${frontend_status:-1}" -eq 0 ] && [ "${backend_status:-1}" -eq 0 ]; then
     fi
     
     echo
+    # --- Quality Assurance Summary ---
+    echo -e "${BOLD}${CYAN}📊 Quality Assurance Summary:${NC}"
+    if [ "${unit_test_status:-1}" -eq 0 ]; then
+        echo -e "  • ${WHITE}Unit Tests:${NC}  ${GREEN}PASS${NC}"
+    else
+        echo -e "  • ${WHITE}Unit Tests:${NC}  ${RED}FAIL/SKIPPED${NC}"
+    fi
+
+    if [ "${e2e_test_status:-1}" -eq 0 ]; then
+        echo -e "  • ${WHITE}E2E Tests:${NC}   ${GREEN}PASS${NC}"
+    else
+        echo -e "  • ${WHITE}E2E Tests:${NC}   ${RED}FAIL/SKIPPED${NC}"
+    fi
+    echo
+    
     echo -e "${BOLD}${CYAN}🔗 Live Production URLs:${NC}"
     echo -e "  ${BLUE}Main Site:${NC} https://jeffreysanford.us"
     echo -e "  ${BLUE}NestJS API:${NC} https://jeffreysanford.us/api/health"

@@ -23,13 +23,13 @@ case "$ID_LIKE" in
   *fedora*|*rhel*)
     PKG="dnf -y"
     PKG_UPDATE="$SUDO dnf -y makecache"
-    DEV_PKGS="git curl wget tar gzip unzip xz make gcc gcc-c++ python3 python3-pip openssl openssl-devel bash ca-certificates lsof"
+    DEV_PKGS="git curl rsync wget tar gzip unzip xz make gcc gcc-c++ python3 python3-pip openssl openssl-devel bash ca-certificates lsof"
   EXTRA_PKGS="nginx"
     ;;
   *ubuntu*|*debian*)
     PKG="apt-get -y"
     PKG_UPDATE="$SUDO apt-get update"
-    DEV_PKGS="git curl wget tar gzip unzip xz-utils build-essential python3 python3-pip pkg-config libssl-dev bash ca-certificates lsof"
+    DEV_PKGS="git curl rsync wget tar gzip unzip xz-utils build-essential python3 python3-pip pkg-config libssl-dev bash ca-certificates lsof"
   EXTRA_PKGS="nginx"
     ;;
   *)

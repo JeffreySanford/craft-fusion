@@ -204,17 +204,30 @@ if maybe_sudo pgrep -f "$APP_DIR/dist/apps/craft-go/main" > /dev/null; then
     sleep 1
     echo -e "${GREEN}✓ Go process in $APP_DIR killed${NC}"
 fi
-# Copy built applications
-maybe_sudo cp -r dist/ "$APP_DIR"/
-maybe_sudo cp ecosystem.config.js "$APP_DIR"/
-maybe_sudo cp package.json "$APP_DIR"/
 
-# Copy node_modules for NestJS app
-maybe_sudo cp -r node_modules/ "$APP_DIR"/
+# Clean target directories to avoid "cannot overwrite directory with non-directory" errors (common with pnpm symlinks)
+echo -e "${YELLOW}Cleaning target directories in $APP_DIR...${NC}"
+maybe_sudo rm -rf "$APP_DIR/dist"
+maybe_sudo rm -rf "$APP_DIR/node_modules"
+
+# Copy built applications
+if command -v rsync >/dev/null 2>&1; then
+    echo -e "${BLUE}Using rsync for application files...${NC}"
+    maybe_sudo rsync -av --links dist/ "$APP_DIR/dist/"
+    maybe_sudo rsync -av --links node_modules/ "$APP_DIR/node_modules/"
+    maybe_sudo cp ecosystem.config.js "$APP_DIR"/
+    maybe_sudo cp package.json "$APP_DIR"/
+else
+    echo -e "${YELLOW}rsync not found, using cp...${NC}"
+    maybe_sudo cp -r dist/ "$APP_DIR"/
+    maybe_sudo cp ecosystem.config.js "$APP_DIR"/
+    maybe_sudo cp package.json "$APP_DIR"/
+    # Copy node_modules for NestJS app
+    maybe_sudo cp -r node_modules/ "$APP_DIR"/
+fi
 
 # Set executable permissions for Go binary
 maybe_sudo chmod +x "$APP_DIR/dist/apps/craft-go/main"
-
 echo -e "${GREEN}✓ Application files copied${NC}"
 
 echo -e "${BLUE}9. Setting ownership and permissions...${NC}"
