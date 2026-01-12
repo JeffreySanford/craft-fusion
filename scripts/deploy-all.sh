@@ -223,17 +223,19 @@ chmod +x scripts/*.sh
 # --- System Prep: Clean up lingering processes and free memory ---
 SYS_PREP_SCRIPT="$(dirname "$0")/system/system-prep.sh"
 if [ -f "$SYS_PREP_SCRIPT" ]; then
+    echo -e "${BLUE}Running system preparation...${NC}"
     if [ "$POWER_MODE" = true ]; then
-        # --power is passed to system-prep.sh, which will pass it to system-optimize.sh if present
-        source "$SYS_PREP_SCRIPT" --power
+        # Run as a separate script to avoid environment pollution (set -e etc.)
+        bash "$SYS_PREP_SCRIPT" --power || { echo -e "${RED}✗ System prep failed${NC}"; exit 1; }
     else
-        source "$SYS_PREP_SCRIPT"
+        bash "$SYS_PREP_SCRIPT" || { echo -e "${RED}✗ System prep failed${NC}"; exit 1; }
     fi
+    echo -e "${GREEN}✓ System preparation complete${NC}"
 else
     echo -e "${YELLOW}⚠ System prep script not found at $SYS_PREP_SCRIPT — continuing without it.${NC}"
 fi
 
-# After sourcing system-prep.sh, print a clear, modernized summary of available tools
+# After running system-prep.sh, print a clear, modernized summary of available tools
 printf "${CYAN}Available Tools:${NC}\n  Check resources: ${YELLOW}scripts/tools/memory-monitor.sh${NC}\n  System prep: ${YELLOW}scripts/system/system-prep.sh${NC}\n  Manual memory cleanup: ${YELLOW}sudo sysctl vm.drop_caches=3${NC}\n"
 printf "${WHITE}For more info, see scripts/PRODUCTION-SCRIPTS.md${NC}\n"
 

@@ -61,25 +61,39 @@ fi
 NVM_DIR="${HOME}/.nvm"
 if [[ ! -s "$NVM_DIR/nvm.sh" ]]; then
   info "Installing NVM..."
-  curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash || warn "NVM installation failed"
   ok "NVM installed."
 fi
+
 # shellcheck source=/dev/null
 export NVM_DIR="$NVM_DIR"
-[[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh"
+if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+  # Sourcing nvm can sometimes return non-zero in certain environments
+  . "$NVM_DIR/nvm.sh" || true
+fi
 
 NODE_MAJOR_LTS=20
 if ! command -v node >/dev/null 2>&1; then
-  info "Installing Node.js LTS (v${NODE_MAJOR_LTS})..."
-  nvm install "${NODE_MAJOR_LTS}"
-  nvm alias default "${NODE_MAJOR_LTS}"
-else
-  CURRENT_NODE="$(node -v | sed 's/v\([0-9]\+\).*/\1/')"
-  if (( CURRENT_NODE < NODE_MAJOR_LTS )); then
-    info "Upgrading Node to LTS (v${NODE_MAJOR_LTS})..."
+  if command -v nvm >/dev/null 2>&1; then
+    info "Installing Node.js LTS (v${NODE_MAJOR_LTS})..."
     nvm install "${NODE_MAJOR_LTS}"
     nvm alias default "${NODE_MAJOR_LTS}"
-  else ok "Node $(node -v) is sufficient."; fi
+  else
+    warn "Node.js not found and NVM not available. Please install Node.js manually."
+  fi
+else
+  CURRENT_NODE=$(node -v | sed 's/v\([0-9]\+\).*/\1/' || echo "0")
+  if [[ "$CURRENT_NODE" -lt "$NODE_MAJOR_LTS" ]]; then
+    if command -v nvm >/dev/null 2>&1; then
+      info "Upgrading Node to LTS (v${NODE_MAJOR_LTS})..."
+      nvm install "${NODE_MAJOR_LTS}"
+      nvm alias default "${NODE_MAJOR_LTS}"
+    else
+      warn "Node version $CURRENT_NODE is below $NODE_MAJOR_LTS and NVM not available."
+    fi
+  else 
+    ok "Node $(node -v) is sufficient."
+  fi
 fi
 
 # Ensure .nvm init in shells
