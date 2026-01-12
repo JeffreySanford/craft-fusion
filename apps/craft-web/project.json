@@ -145,13 +145,10 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "executor": "@nx/vite:test",
+      "outputs": ["{workspaceRoot}/coverage/apps/craft-web"],
       "options": {
-        "jestConfig": "apps/craft-web/jest.config.ts",
-        "passWithNoTests": true
+        "configFile": "apps/craft-web/vite.config.mts"
       }
     }
   }
