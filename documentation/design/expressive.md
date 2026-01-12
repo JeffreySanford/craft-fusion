@@ -7,12 +7,15 @@
 At **Google I/O 2025**, the spotlight was on AI, Android, and revolutionary design updates! Here's what caught our attention:
 
 ### 🅰️ **Angular Updates**
+
 - 📝 Featured in "Novedades de Angular" sessions
 - 🔧 Enhanced developer experience and performance improvements
 - ⚡ Performance optimizations across the board
 
 ### 🎭 **Material Design 3 Expressive** ⭐
+
 **THE GAME CHANGER!** Google's future of UX design featuring:
+
 - 💫 **Emotional design patterns** that connect with users
 - 🎨 **Enhanced color theming** for Wear OS
 - 🔘 **Improved button designs** for better usability
@@ -20,6 +23,7 @@ At **Google I/O 2025**, the spotlight was on AI, Android, and revolutionary desi
 - 🧪 **Alpha code available** for early adopters
 
 ### 🔧 **NestJS & Nx**
+
 - 📭 No specific announcements (focus was on Google's ecosystem)
 - 🏗️ Conference prioritized Google's proprietary tools
 
@@ -28,6 +32,7 @@ At **Google I/O 2025**, the spotlight was on AI, Android, and revolutionary desi
 ## 🏗️ Integrating MD3 Expressive into `jeffreysanford.us`
 
 ### 🔥 **Prerequisites Checklist**
+
 - ✅ **Node.js** (v18+) & Angular CLI
 - ✅ **Angular Material** with MD3 support
 - ✅ **craft-fusion repository** cloned and running
@@ -35,6 +40,7 @@ At **Google I/O 2025**, the spotlight was on AI, Android, and revolutionary desi
 ### 🚀 **Step-by-Step Integration**
 
 #### 1️⃣ **Install the Magic** ✨
+
 ```bash
 # Core Material packages
 npm install @angular/material @angular/cdk
@@ -44,13 +50,16 @@ npm install @angular/material-experimental
 ```
 
 #### 2️⃣ **Bootstrap Angular Material** 🎯
+
 ```bash
 ng add @angular/material
 ```
+
 - 🎨 Choose custom theming for maximum flexibility
 - 📝 Select SCSS for advanced styling options
 
 #### 3️⃣ **Create Your Expressive Theme** 🌈
+
 ```scss
 @use '@angular/material' as mat;
 
@@ -73,7 +82,9 @@ html {
 ```
 
 #### 4️⃣ **Expressive Components** 🎪
+
 Transform your buttons with emotional impact:
+
 ```html
 <button mat-raised-button color="primary" class="expressive-button">
     🚀 Send with Style!
@@ -89,6 +100,7 @@ Transform your buttons with emotional impact:
 ```
 
 #### 5️⃣ **Design Token Power** ⚡
+
 ```scss
 :root {
     --mdc-sys-color-primary: #3f51b5; // 🎨 Your brand color
@@ -97,6 +109,7 @@ Transform your buttons with emotional impact:
 ```
 
 #### 6️⃣ **Expressive Layouts** 🏛️
+
 ```html
 <mat-sidenav-container>
     <mat-sidenav mode="side" opened>
@@ -112,6 +125,7 @@ Transform your buttons with emotional impact:
 ```
 
 ### 🚀 **Deployment Pipeline**
+
 ```bash
 # 🏗️ Production build
 ng build --configuration production
@@ -126,16 +140,19 @@ firebase deploy
 ## ⚠️ **Important Notes & Challenges**
 
 ### 🎯 **craft-fusion Specifics**
+
 - 📦 Check existing Angular Material dependencies in `package.json`
 - 🔄 Ensure version compatibility (@angular/material@^17.2.0+)
 - 🧩 Wrap custom components with Angular Material CDK
 
 ### 🚧 **Current Limitations**
+
 - 📚 **Limited documentation** for Angular (compared to Flutter)
 - 🧪 **Experimental features** may change
 - 🌐 **Browser testing** essential for mobile optimization
 
 ### ⚡ **Pro Tips**
+
 - 🎯 Use `@angular/material` (not `@material/web`)
 - 📱 Test extensively on mobile devices
 - 🔍 Monitor experimental package updates
@@ -153,8 +170,8 @@ firebase deploy
 
 ---
 
-> **🎉 Ready to create emotionally engaging experiences?** 
-> 
+> **🎉 Ready to create emotionally engaging experiences?**
+>
 > Follow this guide to transform `jeffreysanford.us` with MD3 Expressive's vibrant, research-backed design system!
 
 **💡 Need help with specific components?** Drop us the details about your craft-fusion structure!

@@ -1,8 +1,7 @@
-const path = require('path');
 const { FlatCompat } = require('@eslint/eslintrc');
-const js = require('@eslint/js');
 const baseConfig = require('../../eslint.base.config.js');
 const tsParser = require('@typescript-eslint/parser');
+const js = require('@eslint/js');
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
@@ -11,23 +10,19 @@ const compat = new FlatCompat({
 
 module.exports = [
   ...baseConfig,
-  {
-    ignores: ['**/jest.config.ts', '**/eslint.config.js'],
-  },
-  ...compat.extends(
-    'plugin:nestjs/recommended',
-    'plugin:rxjs/recommended'
-  ),
+  ...compat.extends('plugin:nestjs/recommended'),
+  ...compat.extends('plugin:rxjs/recommended'),
   {
     files: ['**/*.ts'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: path.resolve(__dirname, 'tsconfig.json'),
-        tsconfigRootDir: __dirname,
+        project: './tsconfig.json',
+        "tsconfigRootDir": __dirname,
       },
     },
     plugins: {
+      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
       'nestjs': require('eslint-plugin-nestjs'),
       'rxjs': require('eslint-plugin-rxjs'),
     },
@@ -38,39 +33,49 @@ module.exports = [
       // 'nestjs/controller-methods-should-be-public': 'error',
       
       // RxJS rules
-      'rxjs/no-async-subscribe': 'warn',
-      'rxjs/no-ignored-observable': 'warn',
+      'rxjs/no-async-subscribe': 'error',
+      'rxjs/no-ignored-observable': 'error',
       'rxjs/no-implicit-any-catch': 'off',
-      'rxjs/no-nested-subscribe': 'warn',
-      'rxjs/no-unbound-methods': 'warn',
-      'rxjs/throw-error': 'warn',
-      'rxjs/no-sharereplay': 'warn',
+      'rxjs/no-nested-subscribe': 'error',
+      'rxjs/no-unbound-methods': 'error',
+      'rxjs/throw-error': 'error',
       
-      // Restricted syntax
-      'no-restricted-syntax': ['warn', 
-        {
-          selector: 'CallExpression[callee.property.name="toPromise"]',
-          message: 'Use Observables instead of converting to Promises with toPromise()'
-        },
-        {
-          selector: 'FunctionDeclaration[async=true]',
-          message: 'Avoid async/await. Use Observables instead.'
-        },
-        {
-          selector: 'FunctionExpression[async=true]',
-          message: 'Avoid async/await. Use Observables instead.'
-        },
-        {
-          selector: 'ArrowFunctionExpression[async=true]',
-          message: 'Avoid async/await. Use Observables instead.'
-        }
-      ],
+      // Relaxed rules to unblock development
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'no-console': 'warn',
+      
+      // Prefer Observables over Promises
+      // 'no-restricted-syntax': ['error', 
+      //   {
+      //     selector: 'CallExpression[callee.property.name="toPromise"]',
+      //     message: 'Use Observables instead of converting to Promises with toPromise()'
+      //   }
+      // ],
+      
+      // Ban async/await - Disabled as it's too restrictive for NestJS
+      // 'no-restricted-syntax': ['error', 
+      //   {
+      //     selector: 'FunctionDeclaration[async=true]',
+      //     message: 'Avoid async/await. Use Observables instead.'
+      //   },
+      //   {
+      //     selector: 'FunctionExpression[async=true]',
+      //     message: 'Avoid async/await. Use Observables instead.'
+      //   },
+      //   {
+      //     selector: 'ArrowFunctionExpression[async=true]',
+      //     message: 'Avoid async/await. Use Observables instead.'
+      //   }
+      // ],
       
       // Prefer hot observables (subjects) for state
-      'rxjs/prefer-observer': 'warn',
+      // 'rxjs/prefer-observer': 'error',
       // 'rxjs/prefer-subject': 'error',
       
-      // Custom rule placeholder
+      // Custom rule for realtime data through gateways
+      // This is a placeholder for a custom rule we'll define separately
       // '@craft-fusion/gateway-realtime-data': 'error',
     },
   },

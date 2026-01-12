@@ -97,7 +97,7 @@ export class SidebarComponent implements OnInit {
       this.menuItems = this.menuGroups.reduce((acc: MenuItem[], group) => acc.concat(group.items), []);
       console.log('🔧 Sidebar: Menu items updated, length:', this.menuItems.length);
 
-      const adminDebugLabels = ['Admin', 'Timeline', 'Chat', 'Book'];
+      const adminDebugLabels = ['Admin', 'Timeline'];
       const present = adminDebugLabels.filter(l => this.menuItems.some(m => m.label === l));
       console.log('🔧 Sidebar: Admin-protected buttons present:', present);
       this.updateActiveState();

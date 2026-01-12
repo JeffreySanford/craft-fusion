@@ -15,7 +15,7 @@ describe('AppService', () => {
 
   describe('getHello', () => {
     it('should return "Welcome to Craft Fusion API!"', () => {
-      expect(service.getHello()).toBe('Welcome to Craft Fusion API!');
+      expect(service.getHello()).toEqual('Welcome to Craft Fusion API!');
     });
   });
 });

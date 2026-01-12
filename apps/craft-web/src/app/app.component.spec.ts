@@ -2,47 +2,54 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { SidebarComponent } from './pages/sidebar/sidebar.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MaterialIconsComponent } from './pages/landing/material-icons/material-icons.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { AdminStateService } from './common/services/admin-state.service';
+import { UserActivityService } from './common/services/user-activity.service';
+import { LoggerService } from './common/services/logger.service';
 import { AuthService } from './common/services/auth/auth.service';
-import { DeepSeekService } from './common/services/deepseek-local.service';
-import { RecordService } from './projects/table/services/record.service';
+import { FooterStateService } from './common/services/footer-state.service';
+import { SidebarStateService } from './common/services/sidebar-state.service';
+import { UserStateService } from './common/services/user-state.service';
+import { 
+  MockAdminStateService, 
+  MockUserActivityService, 
+  MockLoggerService, 
+  MockAuthService, 
+  MockAuthenticationService,
+  MockFooterStateService, 
+  MockSidebarStateService, 
+  MockUserStateService,
+  mockRouter,
+  mockActivatedRoute,
+  MockBreakpointObserver
+} from './testing/test-mocks';
 import { AuthenticationService } from './common/services/authentication.service';
-import { MockAuthService, MockDeepSeekService, MockRecordService, MockAuthenticationService, MockBreakpointObserver } from './testing/test-mocks';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
-  let mockRouter: jest.Mocked<Router>;
-  let mockActivatedRoute: jest.Mocked<ActivatedRoute>;
 
   beforeEach(async () => {
-    mockRouter = {
-      navigate: jest.fn(),
-      events: { subscribe: jest.fn() }
-    } as unknown as jest.Mocked<Router>;
-
-    mockActivatedRoute = {
-      snapshot: {
-        paramMap: {
-          get: jest.fn()
-        }
-      }
-    } as unknown as jest.Mocked<ActivatedRoute>;
-
     await TestBed.configureTestingModule({
-      declarations: [AppComponent],
-      imports: [HttpClientModule],
+      declarations: [AppComponent, SidebarComponent, MaterialIconsComponent],
+      imports: [HttpClientTestingModule],
       providers: [
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: BreakpointObserver, useClass: MockBreakpointObserver },
+        { provide: AdminStateService, useClass: MockAdminStateService },
+        { provide: UserActivityService, useClass: MockUserActivityService },
+        { provide: LoggerService, useClass: MockLoggerService },
         { provide: AuthService, useClass: MockAuthService },
-        { provide: DeepSeekService, useClass: MockDeepSeekService },
-        { provide: RecordService, useClass: MockRecordService },
-        { provide: AuthenticationService, useClass: MockAuthenticationService }
+        { provide: AuthenticationService, useClass: MockAuthenticationService },
+        { provide: FooterStateService, useClass: MockFooterStateService },
+        { provide: SidebarStateService, useClass: MockSidebarStateService },
+        { provide: UserStateService, useClass: MockUserStateService },
       ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   });
 

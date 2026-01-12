@@ -10,7 +10,6 @@ import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
 import { User, AuthResponse } from '../interfaces/user.interface';
 import { environment } from '../../../environments/environment';
-import { io, Socket } from 'socket.io-client';
 
 export interface LoginRequest {
   username: string;
@@ -31,7 +30,6 @@ export class AuthenticationService {
   private readonly AUTH_TIMEOUT = 15000;
   private readonly TOKEN_REFRESH_THRESHOLD = 300;
 
-  private socket: Socket | null = null;
   private socketDestroy$ = new Subject<void>();
   private authInitialized = new BehaviorSubject<boolean>(false);
   private authInitializationInProgress = false;
@@ -173,7 +171,6 @@ export class AuthenticationService {
           });
           const expiresAt = response.expiresIn ? Date.now() + response.expiresIn * 1000 : undefined;
           this.handleSuccessfulLogin(response);
-          this.initializeAuthSocket();
           if (expiresAt) {
             this.scheduleTokenRefresh(expiresAt);
           }
@@ -217,7 +214,6 @@ export class AuthenticationService {
           accessExpiresIn: response.expiresIn,
         });
           this.handleSuccessfulLogin(response);
-        this.initializeAuthSocket();
         if (expiresAt) {
           this.scheduleTokenRefresh(expiresAt);
         }
@@ -531,65 +527,7 @@ export class AuthenticationService {
     }, timeUntilRefresh);
   }
 
-  private initializeAuthSocket(): void {
-
-    this.closeAuthSocket();
-
-    if (this._isOfflineMode || !this.isAuthenticated) {
-      return;
-    }
-
-    const socketUrl = environment.socket.url;
-    this.logger.debug(`Initializing auth WebSocket connection to ${socketUrl}`);
-
-    try {
-      this.socket = io(`${socketUrl}/auth`, {
-        transports: ['websocket', 'polling'],
-        withCredentials: true,
-      });
-
-      this.socket.on('connect', () => {
-        this.logger.debug('Auth WebSocket connection established');
-      });
-
-      this.socket.on('session_expired', () => {
-        this.notificationService.showWarning('Your session has expired. Please log in again.', 'Session Expired');
-        this.logout();
-      });
-
-      this.socket.on('permissions_updated', () => {
-        this.logger.debug('User permissions updated, refreshing user details');
-        this.fetchUserDetails();
-      });
-
-      this.socket.on('force_logout', (data: any) => {
-        this.notificationService.showWarning(data.message || 'You have been logged out by an administrator.', 'Signed Out');
-        this.logout();
-      });
-
-      this.socket.on('disconnect', reason => {
-        this.logger.debug('Auth WebSocket disconnected', { reason });
-        if (reason === 'io server disconnect') {
-
-          setTimeout(() => this.initializeAuthSocket(), 1000);
-        }
-      });
-
-      this.socket.on('connect_error', error => {
-        this.logger.warn('Auth WebSocket connection error', error);
-      });
-    } catch (error) {
-      this.logger.error('Failed to initialize auth WebSocket', error);
-    }
-  }
-
   private closeAuthSocket(): void {
-    if (this.socket) {
-      this.logger.debug('Closing auth WebSocket connection');
-      this.socket.disconnect();
-      this.socket = null;
-    }
-
     this.socketDestroy$.next();
   }
 

@@ -166,21 +166,30 @@ export class ApiService {
       }),
       catchError(error => {
         this.releaseRequest(url);
-        this.logger.endServiceCall(callId, error.status || 500);
-        this.logger.error(`GET ${endpoint} failed`, {
-          status: error.status,
-          message: error.message,
-          url,
-          timestamp: new Date().toISOString(),
-          errorObject: JSON.stringify(error),
-        });
+        const status = error.status || 500;
+        this.logger.endServiceCall(callId, status);
 
-        console.error(`API Error Details:`, {
-          url,
-          status: error.status,
-          message: error.message,
-          error,
-        });
+        // Don't log 401 as an error for user check (initial load)
+        const isInitialAuthCheck = endpoint === 'auth/user' && status === 401;
+
+        if (isInitialAuthCheck) {
+          this.logger.debug(`No active session found (expected when not logged in)`);
+        } else {
+          this.logger.error(`GET ${endpoint} failed`, {
+            status,
+            message: error.message,
+            url,
+            timestamp: new Date().toISOString(),
+            errorObject: JSON.stringify(error),
+          });
+
+          console.error(`API Error Details:`, {
+            url,
+            status,
+            message: error.message,
+            error,
+          });
+        }
 
         if (error.status === 504 || error.status === 0) {
 

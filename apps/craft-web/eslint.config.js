@@ -1,41 +1,20 @@
-const path = require('path');
 const nx = require('@nx/eslint-plugin');
-const baseConfig = require('../../eslint.base.config.js');
-const angularPlugin = require('@angular-eslint/eslint-plugin');
-const angularTemplatePlugin = require('@angular-eslint/eslint-plugin-template');
-const typescriptPlugin = require('@typescript-eslint/eslint-plugin');
-const importPlugin = require('eslint-plugin-import');
-
-const typescriptParser = require('@typescript-eslint/parser');
 
 module.exports = [
-  ...baseConfig,
+  ...nx.configs['flat/angular'],
+  ...nx.configs['flat/angular-template'],
   {
-    ignores: ['**/jest.config.ts', '**/eslint.config.js', '**/src/test-setup.ts'],
+    ignores: ['**/src/assets/**', '**/test-setup.ts'],
   },
-  ...nx.configs['flat/angular'], // Extends Nx's Angular flat configuration
-  ...nx.configs['flat/angular-template'], // Extends Nx's Angular template configuration
-
-  // TypeScript Configuration
   {
     files: ['**/*.ts'],
     plugins: {
-      'import': importPlugin,
-    },
-    languageOptions: {
-      parser: typescriptParser,
-      parserOptions: {
-        project: path.resolve(__dirname, '../../tsconfig.base.json'),
-        tsconfigRootDir: __dirname,
-        sourceType: 'module',
-        ecmaVersion: 'latest',
-      },
+      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
+      'security': require('eslint-plugin-security'),
     },
     rules: {
-      '@angular-eslint/no-empty-lifecycle-method': 'warn',
-      '@angular-eslint/contextual-lifecycle': 'warn',
       '@angular-eslint/directive-selector': [
-        'warn',
+        'error',
         {
           type: 'attribute',
           prefix: 'app',
@@ -43,7 +22,7 @@ module.exports = [
         },
       ],
       '@angular-eslint/component-selector': [
-        'warn',
+        'error',
         {
           type: 'element',
           prefix: 'app',
@@ -51,18 +30,23 @@ module.exports = [
         },
       ],
       '@angular-eslint/prefer-standalone': 'off',
+      '@angular-eslint/prefer-inject': 'off',
+      '@angular-eslint/use-lifecycle-interface': 'warn',
+      '@angular-eslint/no-empty-lifecycle-method': 'warn',
+      '@angular-eslint/no-input-rename': 'warn',
+      '@angular-eslint/contextual-lifecycle': 'warn',
       '@typescript-eslint/no-unused-vars': 'warn',
-      'import/no-cycle': 'warn',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'security/detect-object-injection': 'off',
     },
   },
-
-  // Angular Template Configuration
   {
     files: ['**/*.html'],
     rules: {
       '@angular-eslint/template/no-negated-async': 'warn',
-      '@angular-eslint/template/click-events-have-key-events': 'warn',
-      '@angular-eslint/template/interactive-supports-focus': 'warn',
+      '@angular-eslint/template/prefer-control-flow': 'off',
+      '@angular-eslint/template/click-events-have-key-events': 'off',
+      '@angular-eslint/template/interactive-supports-focus': 'off',
       '@angular-eslint/template/label-has-associated-control': 'warn',
     },
   },

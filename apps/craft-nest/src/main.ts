@@ -2,9 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import * as bcrypt from 'bcryptjs';
 import { Logger, ValidationPipe } from '@nestjs/common';
-// JwtService and randomUUID were used for earlier token generation; not needed now
 import { SwaggerModule, DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response, NextFunction } from 'express';
@@ -19,9 +19,39 @@ import { LoggingService } from './app/logging/logging.service';
 // Import shared types from craft-library
 // import { User } from '@craft-fusion/craft-library';
 
-// Type guard to safely handle errors
-function isError(error: unknown): error is Error {
+const isError = (error: unknown): error is Error => {
   return error instanceof Error || (typeof error === 'object' && error !== null && 'message' in error);
+};
+
+// CSRF double-submit cookie middleware
+function csrfMiddleware(req: Request, res: Response, next: NextFunction) {
+  const xsrfToken = req.cookies?.['XSRF-TOKEN'] || Math.random().toString(36).substring(2);
+  
+  // Set the cookie for the client to read
+  res.cookie('XSRF-TOKEN', xsrfToken, {
+    httpOnly: false, // Must be readable by Angular
+    secure: process.env['NODE_ENV'] === 'production',
+    sameSite: 'lax',
+    path: '/',
+  });
+
+  // Verify token for state-changing methods
+  const methodsToProtect = ['POST', 'PUT', 'DELETE', 'PATCH'];
+  if (methodsToProtect.includes(req.method)) {
+    const headerToken = req.headers['x-xsrf-token'];
+    const cookieToken = req.cookies?.['XSRF-TOKEN'];
+    
+    // Skip if it's an internal login or if tokens match
+    if (req.path.includes('/auth/login') || req.path.includes('/auth/refresh')) {
+      return next();
+    }
+
+    if (!headerToken || !cookieToken || headerToken !== cookieToken) {
+      Logger.warn(`CSRF validation failed for ${req.method} ${req.path}`);
+      return res.status(403).json({ message: 'Invalid CSRF token' });
+    }
+  }
+  next();
 }
 
 async function bootstrap() {
@@ -58,6 +88,8 @@ async function bootstrap() {
 
   // Create app with optimized settings
   const configService = app.get(ConfigService);
+  app.use(cookieParser());
+  app.use(csrfMiddleware);
   const connection = app.get<Connection>(getConnectionToken());
   const loggingService = app.get(LoggingService);
 
@@ -84,7 +116,7 @@ async function bootstrap() {
 
   // Configure CORS
   app.enableCors({
-    origin: (origin, callback) => {
+    origin: (origin: string | undefined, callback: (err: Error | null, origin?: boolean) => void) => {
       const allowedOrigins = ['http://localhost:4200', 'https://jeffreysanford.us', 'https://www.jeffreysanford.us'];
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
@@ -105,8 +137,19 @@ async function bootstrap() {
   // Configure Helmet
   app.use(
     helmet({
-      contentSecurityPolicy: false,
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // unsafe-inline needed for some Angular dev tools and CKEditor
+          styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+          fontSrc: ["'self'", "https://fonts.gstatic.com"],
+          imgSrc: ["'self'", "data:", "https:", "blob:"],
+          connectSrc: ["'self'", "wss:", "https://api.mapbox.com"],
+          upgradeInsecureRequests: [],
+        },
+      },
       crossOriginEmbedderPolicy: false,
+      hsts: isProduction,
     }),
   );
 

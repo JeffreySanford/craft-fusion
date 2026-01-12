@@ -108,4 +108,5 @@ Socket events should use a namespaced approach with colon separators:
 - `domain:entity:action` - e.g., `finance:stock:update`, `admin:logs:new`
 
 See [SOCKET-SERVICES.md](./SOCKET-SERVICES.md) for more detailed implementation guidelines.
+
 ```

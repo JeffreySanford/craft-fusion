@@ -6,8 +6,9 @@ This is the Go implementation of the Craft Fusion API.
 
 ### Package Management
 
-> **Important**: This application follows monorepo architecture principles. 
-> - While Go uses go.mod for dependencies, JavaScript/TypeScript dependencies 
+> **Important**: This application follows monorepo architecture principles.
+>
+> - While Go uses go.mod for dependencies, JavaScript/TypeScript dependencies
 >   should only be managed at the root of the monorepo
 > - **DO NOT** create a package.json file in this directory
 > - Any Node.js tooling needed for this application must be added to the root package.json
@@ -49,4 +50,3 @@ Craft-Go is a high-performance Go backend service designed to deliver exceptiona
 ## Application Structure
 
 The application follows a clean, domain-driven architecture:
-

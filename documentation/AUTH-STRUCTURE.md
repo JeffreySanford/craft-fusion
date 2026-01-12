@@ -27,11 +27,13 @@ c:\repos\craft-fusion\apps\craft-web\src\app\common\services\
 ## Services
 
 ### AuthenticationService
+
 (`c:\repos\craft-fusion\apps\craft-web\src\app\common\services\auth\authentication.service.ts`)
 
 This service handles user authentication operations including login, logout, registration, password reset, and token management.
 
-#### Key Methods:
+#### Key Methods
+
 - `login(credentials: Credentials): Observable<User>`
 - `logout(): void`
 - `register(userData: UserRegistration): Observable<User>`
@@ -42,11 +44,13 @@ This service handles user authentication operations including login, logout, reg
 - `getCurrentUser(): Observable<User>`
 
 ### AuthorizationService
+
 (`c:\repos\craft-fusion\apps\craft-web\src\app\common\services\auth\authorization.service.ts`)
 
 This service manages user permissions and access control throughout the application.
 
-#### Key Methods:
+#### Key Methods
+
 - `hasPermission(permission: string): boolean`
 - `hasRole(role: string | string[]): boolean`
 - `getUserRoles(): string[]`
@@ -83,7 +87,7 @@ export class LoginComponent {
 ```
 
 ## Additional Resources
+
 - See [API-SERVICE.md](./API-SERVICE.md) for details on secure API communication
 - See [STATE-MANAGEMENT.md](./STATE-MANAGEMENT.md) for details on user state management
 - See [CODING-STANDARDS.md](./CODING-STANDARDS.md) for authentication and authorization coding guidelines
-

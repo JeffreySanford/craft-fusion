@@ -9,6 +9,7 @@ Purpose
 What we will ship first
 
 - Three curated tiles visible on the timeline landing page:
+
  1. Ray Sanford — Historical memorial
  2. Jeffrey Sanford — Personal / Developer milestone
  3. Gotcha Harness — AI Probing & Testing Report (developer artifact)

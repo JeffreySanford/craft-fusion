@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
 import { AdminHeroService } from './admin-hero.service';
 import { LoggerService, LogLevel } from '../../../common/services/logger.service';
 import { ServicesDashboardService } from '../services-dashboard/services-dashboard.service';
@@ -44,22 +45,20 @@ describe('AdminHeroService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should emit initial metrics on creation', (done) => {
-    service.heroMetrics$.subscribe(metrics => {
-      expect(metrics).toBeDefined();
-      expect(metrics.activeServices).toBeDefined();
-      expect(metrics.successRate).toBeDefined();
-      expect(metrics.errors).toBeDefined();
-      expect(metrics.health).toBeDefined();
-      expect(metrics.responseTime).toBeDefined();
-      expect(metrics.alerts).toBeDefined();
-      expect(metrics.dataMode).toBeDefined();
-      expect(metrics.dataMode.isSimulating).toBe(false);
-      done();
-    });
+  it('should emit initial metrics on creation', async () => {
+    const metrics = await firstValueFrom(service.heroMetrics$);
+    expect(metrics).toBeDefined();
+    expect(metrics.activeServices).toBeDefined();
+    expect(metrics.successRate).toBeDefined();
+    expect(metrics.errors).toBeDefined();
+    expect(metrics.health).toBeDefined();
+    expect(metrics.responseTime).toBeDefined();
+    expect(metrics.alerts).toBeDefined();
+    expect(metrics.dataMode).toBeDefined();
+    expect(metrics.dataMode.isSimulating).toBe(false);
   });
 
-  it('should compute active services correctly', (done) => {
+  it('should compute active services correctly', async () => {
     servicesDashboard.getRegisteredServices.mockReturnValue([
       { name: 'Service1', description: 'Test', active: true },
       { name: 'Service2', description: 'Test', active: true },
@@ -68,16 +67,14 @@ describe('AdminHeroService', () => {
 
     service.startMonitoring(100);
 
-    setTimeout(() => {
-      service.heroMetrics$.subscribe(metrics => {
-        expect(metrics.activeServices.current).toBe(2);
-        expect(metrics.activeServices.total).toBe(3);
-        done();
-      });
-    }, 150);
+    await new Promise(resolve => setTimeout(resolve, 150));
+    
+    const metrics = await firstValueFrom(service.heroMetrics$);
+    expect(metrics.activeServices.current).toBe(2);
+    expect(metrics.activeServices.total).toBe(3);
   });
 
-  it('should compute success rate with delta', (done) => {
+  it('should compute success rate with delta', async () => {
     servicesDashboard.getRegisteredServices.mockReturnValue([
       { name: 'Service1', description: 'Test', active: true },
     ]);
@@ -90,16 +87,14 @@ describe('AdminHeroService', () => {
 
     service.startMonitoring(100);
 
-    setTimeout(() => {
-      service.heroMetrics$.subscribe(metrics => {
-        expect(metrics.successRate.value).toBe(95);
-        expect(metrics.successRate.delta).toBeDefined();
-        done();
-      });
-    }, 150);
+    await new Promise(resolve => setTimeout(resolve, 150));
+    
+    const metrics = await firstValueFrom(service.heroMetrics$);
+    expect(metrics.successRate.value).toBe(95);
+    expect(metrics.successRate.delta).toBeDefined();
   });
 
-  it('should count errors and warnings correctly', (done) => {
+  it('should count errors and warnings correctly', async () => {
     loggerService.getLogs.mockReturnValue([
       { timestamp: new Date(), level: LogLevel.ERROR, message: 'Error 1' },
       { timestamp: new Date(), level: LogLevel.ERROR, message: 'Error 2' },
@@ -108,17 +103,15 @@ describe('AdminHeroService', () => {
 
     service.startMonitoring(100);
 
-    setTimeout(() => {
-      service.heroMetrics$.subscribe(metrics => {
-        expect(metrics.errors.count).toBe(2);
-        expect(metrics.errors.warnings).toBe(1);
-        expect(metrics.errors.lastError).toBeDefined();
-        done();
-      });
-    }, 150);
+    await new Promise(resolve => setTimeout(resolve, 150));
+    
+    const metrics = await firstValueFrom(service.heroMetrics$);
+    expect(metrics.errors.count).toBe(2);
+    expect(metrics.errors.warnings).toBe(1);
+    expect(metrics.errors.lastError).toBeDefined();
   });
 
-  it('should compute response time metrics', (done) => {
+  it('should compute response time metrics', async () => {
     servicesDashboard.getLatestServiceMetrics.mockReturnValue([
       { id: '1', timestamp: new Date(), serviceName: 'Test', method: 'GET', url: '/test', duration: 100 },
       { id: '2', timestamp: new Date(), serviceName: 'Test', method: 'GET', url: '/test', duration: 200 },
@@ -127,13 +120,11 @@ describe('AdminHeroService', () => {
 
     service.startMonitoring(100);
 
-    setTimeout(() => {
-      service.heroMetrics$.subscribe(metrics => {
-        expect(metrics.responseTime.avg).toBeCloseTo(200, 0);
-        expect(metrics.responseTime.p95).toBeGreaterThan(0);
-        done();
-      });
-    }, 150);
+    await new Promise(resolve => setTimeout(resolve, 150));
+    
+    const metrics = await firstValueFrom(service.heroMetrics$);
+    expect(metrics.responseTime.avg).toBeCloseTo(200, 0);
+    expect(metrics.responseTime.p95).toBeGreaterThan(0);
   });
 
   it('should stop monitoring and clean up subscriptions', () => {
@@ -150,25 +141,21 @@ describe('AdminHeroService', () => {
     expect(service.stopMonitoring).toHaveBeenCalled();
   });
 
-  it('should update simulation mode correctly', (done) => {
+  it('should update simulation mode correctly', async () => {
     service.setSimulationMode(true);
 
-    service.heroMetrics$.subscribe(metrics => {
-      expect(metrics.dataMode.isSimulating).toBe(true);
-      expect(metrics.dataMode.simulatingMetrics.length).toBeGreaterThan(0);
-      expect(metrics.dataMode.simulatingMetrics).toContain('Service Calls');
-      done();
-    });
+    const metrics = await firstValueFrom(service.heroMetrics$);
+    expect(metrics.dataMode.isSimulating).toBe(true);
+    expect(metrics.dataMode.simulatingMetrics.length).toBeGreaterThan(0);
+    expect(metrics.dataMode.simulatingMetrics).toContain('Service Calls');
   });
 
-  it('should clear simulation metrics when switching to live mode', (done) => {
+  it('should clear simulation metrics when switching to live mode', async () => {
     service.setSimulationMode(true);
     service.setSimulationMode(false);
 
-    service.heroMetrics$.subscribe(metrics => {
-      expect(metrics.dataMode.isSimulating).toBe(false);
-      expect(metrics.dataMode.simulatingMetrics.length).toBe(0);
-      done();
-    });
+    const metrics = await firstValueFrom(service.heroMetrics$);
+    expect(metrics.dataMode.isSimulating).toBe(false);
+    expect(metrics.dataMode.simulatingMetrics.length).toBe(0);
   });
 });

@@ -13,6 +13,7 @@
 ### Frontend (Angular)
 
 1. **Connection Attempt**: The client-side Socket.IO client attempts to connect to the server when initialized:
+
    ```typescript
    this.socket = io('http://localhost:3000/user-state', {
      transports: ['websocket', 'polling'],
@@ -22,6 +23,7 @@
    ```
 
 2. **Connection Event**: When the connection is established, the `connect` event fires:
+
    ```typescript
    this.socket.on('connect', () => {
     this.logger.debug('Socket connected to user-state namespace', { 
@@ -34,6 +36,7 @@
    ```
 
 3. **Authentication Integration**: The socket connection now properly integrates with the authentication system:
+
    ```typescript
    // Authenticate socket connection with current auth token
    const token = this.authService.getAuthToken();
@@ -81,6 +84,7 @@ this.socket = io(this.socketUrl, {
 
 - NestJS logs WebSocket connections when they occur using the `handleConnection()` method
 - Socket connections will appear in logs with messages like:
+
   ```
   [YahooGateway] Client connected: socketId123
   ```
@@ -89,6 +93,7 @@ this.socket = io(this.socketUrl, {
 
 - Socket event handling is logged when configured in the gateway
 - Messages are logged using the NestJS Logger:
+
   ```typescript
   this.logger.log(`Client ${client.id} subscribed to Yahoo data: ${symbols.join(',')}`);
   ```
@@ -131,7 +136,7 @@ this.socket.on('disconnect', () => {
    - Use Socket.IO Admin UI (accessible at `https://admin.socket.io`)
    - Add explicit logging on both client and server for socket lifecycle events
    - Monitor network traffic using browser DevTools
-   
+
 4. **Gateway Timeout Errors**:
    - Check if the backend server is running and accessible
    - Verify proxy configuration is correct for API endpoints

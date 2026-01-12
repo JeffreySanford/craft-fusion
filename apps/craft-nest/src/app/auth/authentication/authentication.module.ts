@@ -27,7 +27,7 @@ function normalizeExpiry(raw: string | undefined): string {
         const expiry = normalizeExpiry(config.get<string>('JWT_EXPIRATION'));
         return {
           secret,
-          signOptions: { expiresIn: expiry },
+          signOptions: { expiresIn: expiry as any },
         };
       },
       inject: [ConfigService],

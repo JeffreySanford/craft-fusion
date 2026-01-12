@@ -41,11 +41,13 @@ Craft-Nest is a robust NestJS backend service that provides API endpoints, real-
 ### Package Management
 
 > **Important**: This application is part of an Nx monorepo.
+>
 > - **DO NOT** create a `package.json` file within the `apps/craft-nest` directory.
 > - All dependencies **MUST** be managed through the root-level `package.json` located at `c:\repos\craft-fusion\package.json`.
 > - Use Nx commands run from the workspace root (`c:\repos\craft-fusion`) for managing dependencies and running scripts.
 
 **Adding a Dependency:**
+
 ```bash
 # Navigate to the workspace root directory
 cd c:\repos\craft-fusion
@@ -58,6 +60,7 @@ npm install some-dev-package --save-dev
 ```
 
 **Running Scripts (Examples):**
+
 ```bash
 # Serve the NestJS app in development mode
 npx nx serve craft-nest
@@ -91,4 +94,3 @@ validateRecord(data: unknown): data is Record { // Use unknown and type predicat
 All fields in the Record entity are required to ensure data consistency. Consider using `class-validator` decorators on DTOs for robust validation at API boundaries.
 
 <!-- Add sections for Data Access, API Design, Real-time, Auth, Testing etc. -->
-

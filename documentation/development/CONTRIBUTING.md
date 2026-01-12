@@ -30,11 +30,13 @@ Craft Fusion is a monorepo using Nx for workspace management. It contains:
 
 1. Clone the repository
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
-3. Run a specific application:
+1. Run a specific application:
+
 ```bash
 nx serve craft-web
 # or
@@ -55,11 +57,13 @@ npm install your-dev-package --save-dev
 ## Development Workflow
 
 1. **Feature Branches**: Create a branch for your feature or bugfix
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
 2. **Commit Often**: Make small, focused commits with clear messages
+
    ```bash
    git commit -m "feat: add new chart component"
    ```
@@ -75,6 +79,7 @@ npm install your-dev-package --save-dev
    - `chore:` for build process or tooling changes
 
 4. **Testing**: Always include tests for your changes
+
    ```bash
    nx test craft-web --testFile=path/to/your/test.spec.ts
    ```
@@ -90,6 +95,7 @@ npm install your-dev-package --save-dev
 - Follow the [Coding Standards](./CODING-STANDARDS.md) for the project
 - Use ESLint and Prettier for code formatting
 - Ensure your code passes all linting rules
+
   ```bash
   nx lint craft-web
   ```
@@ -119,6 +125,7 @@ npm install your-dev-package --save-dev
 - Use Nx commands to interact with the repository
 - Leverage Nx's caching capabilities for faster builds
 - Use affected commands to only run tests for affected code:
+
   ```bash
   nx affected:test
   nx affected:lint
@@ -127,6 +134,7 @@ npm install your-dev-package --save-dev
 ## Getting Help
 
 If you need assistance or have questions:
+
 - Check the existing documentation first
 - Review the [Troubleshooting Guide](./TROUBLESHOOTING.md)
 - Reach out to the team via the project communication channels

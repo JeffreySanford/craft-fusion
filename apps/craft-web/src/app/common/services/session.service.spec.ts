@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
 import { SessionService } from './session.service';
 import { LoggerService } from './logger.service';
 import { User } from './user.interface';
@@ -44,25 +45,17 @@ describe('SessionService', () => {
     expect(sessionMetrics.length).toBeGreaterThan(0);
   });
 
-  it('should track metrics for validateToken', (done) => {
+  it('should track metrics for validateToken', async () => {
     sessionStorage.setItem('username', 'testtoken');
     
-    const subscription = service.validateToken('testtoken').subscribe({
-      next: (isValid) => {
-        expect(isValid).toBe(true);
-        
-        // Give a small delay for metrics to be recorded
-        setTimeout(() => {
-          const metrics = logger.getServiceMetrics();
-          const validateMetrics = metrics.filter(m => m.serviceName === 'SessionService');
-          expect(validateMetrics.length).toBeGreaterThan(0);
-          subscription.unsubscribe();
-          done();
-        }, 10);
-      },
-      error: (err) => {
-        done.fail(err);
-      }
-    });
+    const isValid = await firstValueFrom(service.validateToken('testtoken'));
+    expect(isValid).toBe(true);
+    
+    // Give a small delay for metrics to be recorded
+    await new Promise(resolve => setTimeout(resolve, 10));
+    
+    const metrics = logger.getServiceMetrics();
+    const validateMetrics = metrics.filter(m => m.serviceName === 'SessionService');
+    expect(validateMetrics.length).toBeGreaterThan(0);
   });
 });

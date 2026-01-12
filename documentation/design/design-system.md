@@ -120,7 +120,7 @@ Tokens are required; do not hard-code values.
 
 ## File structure
 
-```
+```text
 apps/craft-web/src/styles/
   README.md
   _variables.scss

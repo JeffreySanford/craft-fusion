@@ -15,7 +15,7 @@ describe('AppController', () => {
   describe('getHello', () => {
     it('should return "Welcome to Craft Fusion API!"', () => {
       const appController = app.get<AppController>(AppController);
-      expect(appController.getHello()).toBe('Welcome to Craft Fusion API!');
+      expect(appController.getHello()).toEqual('Welcome to Craft Fusion API!');
     });
   });
 });

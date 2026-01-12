@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
 import { RouterModule, Router, NavigationStart, NavigationCancel, NavigationEnd, NavigationError } from '@angular/router';
 import { filter, take } from 'rxjs/operators';
 import { AppComponent } from './app.component';
@@ -57,6 +57,10 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
     CommonModule,
     FormsModule,
     HttpClientModule,
+    HttpClientXsrfModule.withOptions({
+      cookieName: 'XSRF-TOKEN',
+      headerName: 'X-XSRF-TOKEN',
+    }),
     RouterModule.forRoot(appRoutes, {
       scrollPositionRestoration: 'enabled',                                         
       anchorScrolling: 'enabled',                           

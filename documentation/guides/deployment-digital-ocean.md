@@ -17,13 +17,16 @@ ssh root@my-droplet-ip
 ```
 
 <span style="color:red; font-weight:bold;">**Switch to a non-root user**</span> (for safer operations):
+
 ```bash
 su - jeffrey
 ```
+
 <span style="color:#177245;">Now you can proceed as a regular user and follow the installation scripts. Junior developers: make sure you have the right permissions!</span>
 
 <!-- Vibrant Data Visualization Reminder -->
 Here’s a quick <span style="color:#E64B4B;">infographic</span> approach for resource usage:
+
 1. CPU & RAM → <span style="color:#3F51B5;">htop</span>
 2. Disk I/O → <span style="color:#FFA500;">iostat</span>
 3. Docker logs → <span style="color:#9C27B0;">docker-compose logs</span>
@@ -34,7 +37,7 @@ Here’s a quick <span style="color:#E64B4B;">infographic</span> approach for re
 2. Click "Create" and select "Droplets"
 3. Choose the following configuration:
    - **Distribution**: Fedora 40 x64
-   - **Plan**: 
+   - **Plan**:
      - Basic Shared CPU
      - At least 8GB RAM / 4 vCPUs ($40/month) recommended for AI features
      - At least 80GB SSD for AI models and application data
@@ -312,7 +315,7 @@ htop
 
 If your backend APIs are not properly exposed in production mode, check the following:
 
-### 1. Verify Backend Binding:
+### 1. Verify Backend Binding
 
 For NestJS backend, check main.ts:
 
@@ -345,7 +348,7 @@ func main() {
 }
 ```
 
-### 2. Check Network Accessibility:
+### 2. Check Network Accessibility
 
 ```bash
 # Check if backends are accessible from other machines
@@ -358,7 +361,7 @@ sudo ss -tulpn | grep -E ':(3000|4000)'
 # Should show 0.0.0.0:3000 and 0.0.0.0:4000, not 127.0.0.1:3000
 ```
 
-### 3. Verify Nginx Configuration:
+### 3. Verify Nginx Configuration
 
 ```bash
 # Test Nginx configuration
@@ -372,7 +375,7 @@ curl -v http://localhost/api/health
 curl -v http://localhost/api-go/health
 ```
 
-### 4. Environment Variables:
+### 4. Environment Variables
 
 For more persistent environment configuration, add these to your .env file:
 
@@ -487,18 +490,23 @@ chmod +x /opt/craft-fusion/backup.sh
    - A CNAME record for 'www' pointing to '@'
 
 ## Quick Deployment
+
 Simply run:
+
 ```
 scripts/deploy-digitalocean.sh
 ```
+
 This script handles system updates, firewall setup, Docker installation, Nginx, and Docker Compose launch.
 
 ## Environment Selection
 
 When running the deployment script, you’ll be prompted to choose an environment (development, staging, or production).  
+
 - **development**: Installs all dev tools, no SSL by default.  
 - **staging**: Similar to production but with partial test config or staging domains.  
 - **production**: Activates all production services and attempts to renew Let’s Encrypt certificates:
+
   ```
   certbot renew --nginx
   ```
@@ -522,7 +530,7 @@ When running the deployment script, you'll be prompted to choose which component
    - All required components and AI services
    - Python environment with PyTorch, Transformers, and other ML libraries
    - Training scripts and utilities for fine-tuning AI models
-   
+
 4. **All components**:
    - Everything above plus monitoring tools
    - Prometheus and Grafana for system monitoring
@@ -550,6 +558,7 @@ python finetune-deepseek-lora.py --data your_data.json --output-dir ./models
 The training environment includes all necessary libraries for model fine-tuning and evaluation.
 
 ## Design Pattern Checks
+
 - Confirm environment variables are set
 - Ensure logs are collected for debugging
 - Watch memory usage: AI models can be large
@@ -559,6 +568,7 @@ The training environment includes all necessary libraries for model fine-tuning 
 ### Application Not Accessible
 
 Check if services are running:
+
 ```bash
 docker compose ps
 # or if using PM2
@@ -566,6 +576,7 @@ pm2 status
 ```
 
 Check Nginx configuration:
+
 ```bash
 nginx -t
 
@@ -580,11 +591,13 @@ curl -v http://localhost/api-go/health
 ### AI Models Issues
 
 Check Ollama status:
+
 ```bash
 curl http://localhost:11434/api/health
 ```
 
 View Ollama logs:
+
 ```bash
 docker compose logs ollama
 # or
@@ -592,6 +605,7 @@ docker compose logs ollama
 ```
 
 Pull models manually:
+
 ```bash
 curl -X POST http://localhost:11434/api/pull -d '{"name":"deepseek:latest"}'
 curl -X POST http://localhost:11434/api/pull -d '{"name":"mistral:latest"}'
@@ -602,11 +616,13 @@ curl -X POST http://localhost:11434/api/pull -d '{"name":"mistral:latest"}'
 If you're experiencing performance issues:
 
 1. Check system resources:
+
    ```bash
    htop
    ```
 
 2. Check disk usage:
+
    ```bash
    df -h
    ```
@@ -651,29 +667,38 @@ For high-traffic deployments, consider:
 3. Implementing container orchestration with Kubernetes
 
 ## Additional Fedora Software Setup
+
 Besides the basic utilities (git, curl, wget, nano, htop, tmux, firewalld), ensure you install the following:
+
 - Development tools (dnf groupinstall "Development Tools") if you plan to compile additional libraries
 - Node.js, Go, Docker, and NGINX as outlined in prior steps
 
 ## Graph XL: Pros and Cons
+
 While it offers large-scale graph capabilities, deploying Graph XL requires extra resources and specialized data store integration (e.g., AWS Neptune or an on-premises graph DB). Consider:
+
 - Pros: Efficient large-graph queries, good for relationships across many entities
 - Cons: Extra overhead, potential licensing or hosting costs, more dev complexity
 
 ## Strongly Typed Mongoose DTO
+
 If using MongoDB, adopting Mongoose with TypeScript interfaces (DTO) encourages clear data models and reduces runtime errors. Mongoose can be integrated into the NestJS layer, ensuring consistent validation and type safety.
 
 ## Long-Term Blockchain Storage
+
 For an immutable ledger of transactions or data states, you could integrate a blockchain layer. This is optional but can provide permanent, tamper-resistant records. Keep in mind:
+
 - Potentially high storage costs or throughput limits
 - Slower writes depending on the chain’s consensus mechanism
 
 ## In-Memory Mongo Note
-Deployment to Digital Ocean still relies on ephemeral data in the in-memory Mongo server. 
-If you need persistent data, switch to a dedicated MongoDB instance. 
+
+Deployment to Digital Ocean still relies on ephemeral data in the in-memory Mongo server.
+If you need persistent data, switch to a dedicated MongoDB instance.
 In-memory mode is useful for proofs of concept or short-lived data scenarios.
 
 # Patriotic MEGA Data Handling
+
 <u style="color:red;">**MongoDB Integration**</u>  
 In local or production environments, you can use an in-memory MongoDB for quick setups or switch to a full MongoDB instance for persistent data.  
 
@@ -688,4 +713,5 @@ Add an immutable blockchain layer to store critical records in a tamper-proof le
 ```
 
 Use your favorite <span style="font-weight:bold; color:red;">patriotic chart</span> libraries or other <span style="font-weight:bold; color:blue;">data visualization</span> solutions to ensure real-time monitoring of these layers.
+
 ```

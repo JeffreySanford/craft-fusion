@@ -30,14 +30,14 @@ Natural Earth, however, is more than just a collection of pretty lines. The data
 
 # Versioning
 
-The 2.0 release in 2012 marked the project's shift from so-called marketing versions to [semantic versioning](http://semver.org/). 
+The 2.0 release in 2012 marked the project's shift from so-called marketing versions to [semantic versioning](http://semver.org/).
 
-Natural Earth is a big project with hundreds of files that depend on each other and the total weighs in at several gigabytes. SemVer is a simple set of rules and requirements around version numbers. For our project, the data layout is the API. 
+Natural Earth is a big project with hundreds of files that depend on each other and the total weighs in at several gigabytes. SemVer is a simple set of rules and requirements around version numbers. For our project, the data layout is the API.
 
-* **Version format of X.Y.Z** (Major.Minor.Patch). 
+* **Version format of X.Y.Z** (Major.Minor.Patch).
 * **Backwards incompatible** changes, increment the major version X.
 * **Backwards compatible** additions/changes, increment the minor version Y
-* **Bug fixes** not affecting the file and field names, patch version Z will be incremented. 
+* **Bug fixes** not affecting the file and field names, patch version Z will be incremented.
 
 Major version increments:
 

@@ -1,6 +1,7 @@
 # API Service Architecture & Enterprise Scalability Guide
 
 ## Table of Contents
+
 - [Overview](#overview)
 - [Architecture](#architecture)
 - [Enterprise Scalability Considerations](#enterprise-scalability-considerations)
@@ -44,6 +45,7 @@ The `ApiService` is the central communication layer between the frontend applica
 **Challenge**: Enterprise applications often interface with multiple microservices.
 
 **Solution**:
+
 - Implement service registry pattern for dynamic endpoint discovery
 - Add support for multiple base URLs targeting different microservices
 - Consider implementing API gateway pattern for unified access
@@ -70,6 +72,7 @@ public getServiceUrl(serviceName: string, endpoint: string): string {
 **Challenge**: Load balancing across multiple API instances.
 
 **Solution**:
+
 - Implement sticky sessions where needed (for stateful operations)
 - Support distributed tracing headers (X-Request-ID)
 - Consider server affinity when needed for certain operations
@@ -89,6 +92,7 @@ private getTracingHeaders(): HttpHeaders {
 **Challenge**: Prevent API abuse and ensure fair resource usage.
 
 **Solution**:
+
 - Implement client-side throttling for aggressive operations
 - Handle 429 Too Many Requests with exponential backoff
 - Queue and batch requests when appropriate
@@ -123,12 +127,12 @@ For enterprise applications, every API request should follow a consistent pipeli
    - Add authentication headers
    - Add correlation IDs for tracing
    - Format request body if needed
-   
+
 2. **Request Interception**:
    - Implement request caching where appropriate
    - Support for offline mode operation
    - Request deduplication for duplicate calls
-   
+
 3. **Response Processing**:
    - Type conversion and validation
    - Error classification and handling
@@ -183,11 +187,11 @@ Enterprise systems need sophisticated error handling:
 
 1. **Transient Errors**: Network issues, temporary service unavailability
    - Automatic retry with exponential backoff
-   
+
 2. **Client Errors**: Invalid requests, authentication issues (4xx status)
    - Clear error messages to user
    - Automatic logout for 401 errors
-   
+
 3. **Server Errors**: Backend failures (5xx status)
    - Graceful degradation
    - Alerting to monitoring systems

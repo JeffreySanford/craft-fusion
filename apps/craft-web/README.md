@@ -45,12 +45,14 @@ Craft-Web is an Angular application built with Material Design 3 principles and 
 
 ### Package Management
 
-> **Important**: This application follows monorepo architecture principles. 
+> **Important**: This application follows monorepo architecture principles.
+>
 > - **DO NOT** create a package.json file in this directory
 > - All dependencies must be managed through the root-level package.json
 > - Use `nx run craft-web:command` format for operations
 
 To install a new dependency:
+
 ```bash
 # Add a dependency for this application
 cd ../../  # Navigate to root
@@ -58,6 +60,7 @@ npm install some-package --save
 ```
 
 ## Transparency Note
+
 This README now reflects our ongoing MD3 migration. Some updates were guided by automated suggestions to streamline the process.
 
 ## Data Validation
@@ -90,5 +93,5 @@ if (isValidPartialRecord(formData)) {
 ```
 
 ## Additional Documentation
-Add or revise any instructions for setting up this app.
 
+Add or revise any instructions for setting up this app.

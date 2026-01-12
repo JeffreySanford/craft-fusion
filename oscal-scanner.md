@@ -22,21 +22,24 @@ This document lists all supported OSCAL/SCAP profiles, provides download links f
 ## Downloading and Installing Official Content
 
 ### Fedora/RedHat: Install SCAP Security Guide and OpenSCAP
+
 ```bash
 sudo dnf install scap-security-guide openscap openscap-scanner
 ```
 
 ### Ubuntu/Debian: Install SCAP Security Guide and OpenSCAP
+
 ```bash
 sudo apt-get install scap-security-guide openscap-utils
 ```
 
 ### Download/Update Official Content (Manual)
-- NIST: https://pages.nist.gov/OSCAL/
-- PCI: https://www.pcisecuritystandards.org/document_library
-- BSI OSPP: https://www.bsi.bund.de/EN/Topics/Certification/ITProductsProtectionProfiles/itproductsprotectionprofiles_node.html
-- Fedora: https://docs.fedoraproject.org/en-US/security-guide/
-- FedRAMP: https://www.fedramp.gov/
+
+- NIST: <https://pages.nist.gov/OSCAL/>
+- PCI: <https://www.pcisecuritystandards.org/document_library>
+- BSI OSPP: <https://www.bsi.bund.de/EN/Topics/Certification/ITProductsProtectionProfiles/itproductsprotectionprofiles_node.html>
+- Fedora: <https://docs.fedoraproject.org/en-US/security-guide/>
+- FedRAMP: <https://www.fedramp.gov/>
 
 Place downloaded XML/JSON/SCAP/OSCAL files in your `oscal-analysis/` or `oscal-profiles.json` as needed.
 
@@ -70,6 +73,7 @@ Place downloaded XML/JSON/SCAP/OSCAL files in your `oscal-analysis/` or `oscal-p
 ---
 
 ## Troubleshooting
+
 - If you see errors about missing SCAP content, ensure the correct XML files are present (e.g., `/usr/share/xml/scap/ssg/content/ssg-fedora-ds.xml`).
 - For Puppeteer errors, run `npm install puppeteer` in your project root.
 - For new standards, check the official agency site for the latest content and update your profiles accordingly.

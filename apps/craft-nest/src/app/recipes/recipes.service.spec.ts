@@ -12,13 +12,13 @@ describe('RecipesService', () => {
         {
           provide: LoggingService,
           useValue: {
-            log: jest.fn(),
-            error: jest.fn(),
+            logServiceCall: jest.fn(),
+            info: jest.fn(),
             warn: jest.fn(),
             debug: jest.fn(),
-            info: jest.fn()
-          }
-        }
+            error: jest.fn(),
+          },
+        },
       ],
     }).compile();
 

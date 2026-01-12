@@ -16,6 +16,7 @@ go version
 ```
 
 ### Node.js Installation
+
 ```bash
 # Windows (using Chocolatey)
 choco install nodejs-lts
@@ -87,6 +88,7 @@ npm start
 ## 🎯 Common Issues
 
 ### Node.js Version Mismatch
+
 ```bash
 # If you need to switch Node versions, use nvm
 nvm install 20
@@ -94,6 +96,7 @@ nvm use 20
 ```
 
 ### Go Module Issues
+
 ```bash
 # Reset Go modules
 go clean -modcache
@@ -101,6 +104,7 @@ go mod tidy
 ```
 
 ### Angular/NX Cache Issues
+
 ```bash
 # Clear Angular cache
 ng cache clean
@@ -234,4 +238,5 @@ npm run affected:libs     # Check affected libs
 Remember: The only bad question is the one that breaks the build. 🛠️
 
 *May your builds be green and your coffee be strong!* ☕
+
 ```

@@ -58,17 +58,20 @@ The Angular dev server uses `apps/craft-web/src/proxy.config.json` to route `/ap
 
 ## Current Status (2026-01-12)
 
-- **Authentication:** HttpOnly cookie-based JWT with logout-on-refresh remains stable.
-- **Build:** Angular 19.2.13 and NestJS compiling successfully.
-- **Tests:** All unit tests (Go, Nest, Angular) are 100% green.
-- **E2E:** Playwright suite stabilized (90%+ pass rate); baseURL and auth configuration fixed.
+- **Infrastructure:** Migrated to Nx 21.1.0 and NestJS 11.
+- **Authentication:** HttpOnly cookie-based JWT with logout-on-refresh and Double-Submit Cookie CSRF protection.
+- **Security:** Strict CSP via Helmet; removed legacy AI/DeepSeek services and CKEditor dependencies.
+- **Cleanup:** Entirely removed "Chat" and "Book" modules to reduce code surface.
+- **Build:** Angular 19.2.18 (Application Builder) and NestJS 11 compiling successfully.
+- **Tests:** All unit tests (Go, Nest, Angular) and linting are 100% Green.
+- **E2E:** Playwright suite stabilized; baseURL and auth configuration fixed.
 - **Mocking:** Standardized mocks implemented in `test-mocks.ts` to satisfy Angular 19 test requirements.
-- **Priority:** File upload pipeline, pagination, XSS sanitization
+- **Priority:** File upload pipeline, pagination, XSS sanitization.
 
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->
 
-# General Guidelines for working with Nx
+## General Guidelines for working with Nx
 
 - When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
 - You have access to the Nx MCP server and its tools, use them to help the user

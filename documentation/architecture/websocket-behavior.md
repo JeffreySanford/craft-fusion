@@ -13,11 +13,13 @@
 ### Frontend (Angular)
 
 1. **Connection Attempt**: The client-side Socket.IO client attempts to connect to the server when initialized:
+
    ```typescript
    this.socket = io('http://localhost:3000/user-state');
    ```
 
 2. **Connection Event**: When the connection is established, the `connect` event fires:
+
    ```typescript
    this.socket.on('connect', () => {
     this.logger.debug('Socket connected to user-state namespace');
@@ -31,6 +33,7 @@
 
 - NestJS logs WebSocket connections when they occur using the `handleConnection()` method
 - Socket connections will appear in logs with messages like:
+
   ```
   [YahooGateway] Client connected: socketId123
   ```
@@ -39,6 +42,7 @@
 
 - Socket event handling is logged when configured in the gateway
 - Messages are logged using the NestJS Logger:
+
   ```typescript
   this.logger.log(`Client ${client.id} subscribed to Yahoo data: ${symbols.join(',')}`);
   ```
