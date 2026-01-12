@@ -2,6 +2,10 @@
 # deploy-frontend.sh - Complete frontend deployment script
 # Builds and deploys Angular frontend without creating archive files
 
+# RUN AS: Regular user (e.g., jeffrey). Sudo is used internally for restricted paths.
+# AUTH: Secrets from .env are injected during the build phase.
+# BRIDGE: Nginx acts as the reverse proxy for authentication requests (/api).
+
 # Source common functions for progress bar (optional)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -59,6 +63,12 @@ done
 WEB_ROOT="/var/www/jeffreysanford.us"
 BACKUP_DIR="/var/backups/jeffreysanford.us"
 NODEJS_VERSION="20" # Recommended Node.js version for Angular builds
+
+# --- Web Server Configuration (Nginx) ---
+WEB_SERVER_TYPE="nginx"
+WEB_SERVER_USER="nginx"
+WEB_SERVER_RELOAD="sudo nginx -s reload"
+WEB_SERVER_TEST="sudo nginx -t"
 
 # Check if running on server or local machine
 if [ "$server_build" = true ]; then
@@ -219,10 +229,13 @@ echo -e "${BLUE}6. Deploying to web server...${NC}"
 sudo mkdir -p "$WEB_ROOT"
 
 # Remove old deployment (but keep backup)
-echo -e "${BLUE}6. Synchronizing files to production...${NC}"
+echo -e "${BLUE}6. Preparing production directory...${NC}"
+echo -e "${YELLOW}🗑  Emptying web root: $WEB_ROOT...${NC}"
+sudo find "$WEB_ROOT" -mindepth 1 -delete
 
-# Use rsync for better file synchronization and to avoid cache issues
-sudo rsync -avz --delete --no-perms --no-owner --no-group dist/apps/craft-web/ "$WEB_ROOT"/
+# Use rsync for better file synchronization
+echo -e "${BLUE}6. Synchronizing files to production...${NC}"
+sudo rsync -avz --no-perms --no-owner --no-group dist/apps/craft-web/ "$WEB_ROOT"/
 deploy_status=$?
 if [ $deploy_status -ne 0 ]; then
     echo -e "${RED}✗ Failed to sync files to web root${NC}"
@@ -231,7 +244,7 @@ fi
 echo -e "${GREEN}✓ Files synchronized to $WEB_ROOT${NC}"
 
 echo -e "${BLUE}7. Setting permissions and SELinux contexts...${NC}"
-sudo chown -R nginx:nginx "$WEB_ROOT"/
+sudo chown -R $WEB_SERVER_USER:$WEB_SERVER_USER "$WEB_ROOT"/
 sudo chmod -R 755 "$WEB_ROOT"/
 
 # Restore SELinux contexts if SELinux is enforcing
@@ -247,57 +260,31 @@ DEPLOYED_FILES=$(sudo find "$WEB_ROOT" -type f | wc -l)
 echo -e "${GREEN}✓ Deployed $DEPLOYED_FILES files${NC}"
 
 # Verify critical files
-if [ -f "$WEB_ROOT/index.html" ]; then
-    index_size=$(stat -f%z "$WEB_ROOT/index.html" 2>/dev/null || stat -c%s "$WEB_ROOT/index.html" 2>/dev/null || echo "unknown")
-    echo -e "${GREEN}✓ index.html found ($index_size bytes)${NC}"
-else
+if [ ! -f "$WEB_ROOT/index.html" ]; then
     echo -e "${RED}✗ index.html missing from web root${NC}"
     exit 1
 fi
 
-# Check for main JS bundle
-main_js_count=$(find "$WEB_ROOT" -name "main.*.js" | wc -l)
-if [ "$main_js_count" -gt 0 ]; then
-    echo -e "${GREEN}✓ Main JavaScript bundle found${NC}"
+echo -e "${BLUE}9. Testing $WEB_SERVER_TYPE configuration...${NC}"
+if $WEB_SERVER_TEST > /dev/null 2>&1; then
+    echo -e "${GREEN}✓ $WEB_SERVER_TYPE configuration valid${NC}"
+    
+    echo -e "${BLUE}10. Reloading $WEB_SERVER_TYPE...${NC}"
+    if $WEB_SERVER_RELOAD; then
+        echo -e "${GREEN}✓ $WEB_SERVER_TYPE reloaded${NC}"
+    else
+        echo -e "${YELLOW}⚠ $WEB_SERVER_TYPE reload failed, attempting restart...${NC}"
+        if sudo systemctl restart nginx; then
+            echo -e "${GREEN}✓ $WEB_SERVER_TYPE restarted successfully${NC}"
+        else
+            echo -e "${RED}✗ $WEB_SERVER_TYPE restart failed${NC}"
+        fi
+    fi
 else
-    echo -e "${YELLOW}⚠ Main JavaScript bundle not found (this might be normal for some builds)${NC}"
-fi
-
-echo -e "${BLUE}5. Deploying to web server...${NC}"
-# Create web root if it doesn't exist
-sudo mkdir -p "$WEB_ROOT"
-
-# Synchronize new build using rsync for better handling
-echo -e "${BLUE}5. Synchronizing files...${NC}"
-sudo rsync -avz --delete --no-perms --no-owner --no-group dist/apps/craft-web/ "$WEB_ROOT"/
-echo -e "${GREEN}✓ Files synchronized to $WEB_ROOT${NC}"
-
-echo -e "${BLUE}6. Setting permissions...${NC}"
-sudo chown -R nginx:nginx "$WEB_ROOT"/
-sudo chmod -R 755 "$WEB_ROOT"/
-echo -e "${GREEN}✓ Permissions set${NC}"
-
-echo -e "${BLUE}7. Verifying deployment...${NC}"
-DEPLOYED_FILES=$(sudo find "$WEB_ROOT" -type f | wc -l)
-echo -e "${GREEN}✓ Deployed $DEPLOYED_FILES files${NC}"
-
-# Check for index.html
-if [ -f "$WEB_ROOT/index.html" ]; then
-    echo -e "${GREEN}✓ index.html found${NC}"
-else
-    echo -e "${RED}✗ index.html missing${NC}"
+    echo -e "${RED}✗ $WEB_SERVER_TYPE configuration test failed${NC}"
+    $WEB_SERVER_TEST
     exit 1
 fi
-
-echo -e "${BLUE}9. Testing nginx configuration...${NC}"
-if sudo nginx -t; then
-    echo -e "${GREEN}✓ Nginx configuration valid${NC}"
-    
-    echo -e "${BLUE}10. Reloading nginx...${NC}"
-    sudo nginx -s reload
-    reload_status=$?
-    if [ $reload_status -eq 0 ]; then
-        echo -e "${GREEN}✓ Nginx reloaded${NC}"
     else
         echo -e "${RED}✗ Nginx reload failed${NC}"
         echo -e "${YELLOW}Check nginx logs: sudo journalctl -u nginx -f${NC}"

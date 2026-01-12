@@ -98,6 +98,27 @@ print_progress() {
 
         local filled_width=$((percent_done * progress_bar_width / 100))
         local empty_width=$((progress_bar_width - filled_width))
+        printf "\r${BOLD}${WHITE}%-22s${NC} [" "$title:"
+        for i in $(seq 1 $filled_width); do printf "#"; done
+        for i in $(seq 1 $empty_width); do printf "."; done
+        printf "] ${GREEN}%3d%%${NC} (${CYAN}%ds remaining${NC})" "$percent_done" "$remaining_seconds"
+        [ "$percent_done" -ge 100 ] && break
+        sleep 5
+    done
+}
+
+cleanup_progress_line() {
+    if [ -t 1 ]; then printf "\r\033[K"; fi
+}
+
+# --- Web Server Configuration (Nginx) ---
+WEB_SERVER_TYPE="nginx"
+WEB_SERVER_USER="nginx"
+WEB_SERVER_RELOAD="sudo nginx -s reload"
+WEB_SERVER_TEST="sudo nginx -t"
+WEB_ROOT="/var/www/jeffreysanford.us"
+
+# --- Main Script ---
 
         local bar=""
         for ((i=0; i<filled_width; i++)); do bar+="█"; done
@@ -128,7 +149,7 @@ show_usage() {
     echo -e "${BOLD}${CYAN}Craft Fusion Complete Deployment Script${NC}"
     echo
     echo -e "${BOLD}USAGE:${NC}"
-    echo -e "  sudo ./scripts/deploy-all.sh [OPTIONS]"
+    echo -e "  ./scripts/deploy-all.sh [OPTIONS]"
     echo
     echo -e "${BOLD}OPTIONS:${NC}"
     echo -e "  ${YELLOW}--full-clean${NC}     Clean node_modules, .nx cache, and rebuild everything"
@@ -137,12 +158,15 @@ show_usage() {
     echo -e "  ${YELLOW}--skip-ssl${NC}       Skip SSL setup (use HTTP only)"
     echo -e "  ${YELLOW}--help${NC}           Show this help message"
     echo
+    echo -e "${BOLD}NOTE:${NC}"
+    echo -e "  Run this as a regular user (e.g., jeffrey). Internal commands will prompt for sudo."
+    echo
     echo -e "${BOLD}EXAMPLES:${NC}"
     echo -e "  ${CYAN}# Standard deployment (incremental builds)${NC}"
-    echo -e "  sudo ./scripts/deploy-all.sh"
+    echo -e "  ./scripts/deploy-all.sh"
     echo
     echo -e "  ${CYAN}# Force complete rebuild (recommended for production)${NC}"
-    echo -e "  sudo ./scripts/deploy-all.sh --full-clean"
+    echo -e "  ./scripts/deploy-all.sh --full-clean"
     echo
     echo -e "  ${CYAN}# Power deployment with clean rebuild${NC}"
     echo -e "  sudo ./scripts/deploy-all.sh --full-clean --power"
@@ -557,45 +581,51 @@ if [ $backend_status -eq 0 ]; then
         # === PRODUCTION DEPLOYMENT STEPS ===
         echo -e "${BOLD}${CYAN}🚀 Deploying to production...${NC}"
         
-        # Step 1: Copy frontend files to /var/www
-        echo -e "${CYAN}📁 Copying frontend files to /var/www/jeffreysanford.us...${NC}"
+        # Step 1: Clean and copy frontend files to /var/www
+        echo -e "${CYAN}📁 Preparing /var/www/jeffreysanford.us...${NC}"
         if [ -d "dist/apps/craft-web" ]; then
             sudo mkdir -p /var/www/jeffreysanford.us
-            sudo rsync -avz --delete dist/apps/craft-web/ /var/www/jeffreysanford.us/ || {
+            
+            # Remove all files from directory prior to putting new build file there
+            echo -e "${YELLOW}🗑  Emptying web root: /var/www/jeffreysanford.us...${NC}"
+            sudo find /var/www/jeffreysanford.us -mindepth 1 -delete
+            
+            echo -e "${CYAN}📥 Copying new frontend files...${NC}"
+            sudo rsync -avz dist/apps/craft-web/ /var/www/jeffreysanford.us/ || {
                 echo -e "${RED}✗ Failed to copy frontend files${NC}"
                 frontend_status=1
             }
             
-            # Set proper permissions
-            sudo chown -R nginx:nginx /var/www/jeffreysanford.us
+            # Set proper permissions using detected user
+            sudo chown -R $WEB_SERVER_USER:$WEB_SERVER_USER /var/www/jeffreysanford.us
             sudo chmod -R 755 /var/www/jeffreysanford.us
-            echo -e "${GREEN}✓ Frontend files copied successfully${NC}"
+            echo -e "${GREEN}✓ Frontend files deployed successfully${NC}"
         else
             echo -e "${RED}✗ Frontend build directory not found: dist/apps/craft-web${NC}"
             frontend_status=1
         fi
         
-        # Step 2: Test nginx configuration
-        echo -e "${CYAN}🔧 Testing nginx configuration...${NC}"
-        if sudo nginx -t > /dev/null 2>&1; then
-            echo -e "${GREEN}✓ Nginx configuration is valid${NC}"
+        # Step 2: Test configuration
+        echo -e "${CYAN}🔧 Testing $WEB_SERVER_TYPE configuration...${NC}"
+        if $WEB_SERVER_TEST > /dev/null 2>&1; then
+            echo -e "${GREEN}✓ $WEB_SERVER_TYPE configuration is valid${NC}"
             
-            # Step 3: Reload nginx
-            echo -e "${CYAN}🔄 Reloading nginx...${NC}"
-            if sudo nginx -s reload; then
-                echo -e "${GREEN}✓ Nginx reloaded successfully${NC}"
+            # Step 3: Reload web server
+            echo -e "${CYAN}🔄 Reloading $WEB_SERVER_TYPE...${NC}"
+            if $WEB_SERVER_RELOAD; then
+                echo -e "${GREEN}✓ $WEB_SERVER_TYPE reloaded successfully${NC}"
             else
-                echo -e "${YELLOW}⚠ Nginx reload failed, attempting restart...${NC}"
+                echo -e "${YELLOW}⚠ $WEB_SERVER_TYPE reload failed, attempting restart...${NC}"
                 if sudo systemctl restart nginx; then
-                    echo -e "${GREEN}✓ Nginx restarted successfully${NC}"
+                    echo -e "${GREEN}✓ $WEB_SERVER_TYPE restarted successfully${NC}"
                 else
-                    echo -e "${RED}✗ Nginx restart failed${NC}"
+                    echo -e "${RED}✗ $WEB_SERVER_TYPE restart failed${NC}"
                     frontend_status=1
                 fi
             fi
         else
-            echo -e "${RED}✗ Nginx configuration test failed${NC}"
-            sudo nginx -t
+            echo -e "${RED}✗ $WEB_SERVER_TYPE configuration test failed${NC}"
+            $WEB_SERVER_TEST
             frontend_status=1
         fi
         
@@ -871,9 +901,9 @@ echo -e "  📡 NestJS API: ${GREEN}/api/*${NC}"
 echo -e "  🚀 Go API: ${GREEN}/api-go/*${NC}"
 
 echo -e "${BLUE}Management Commands:${NC}"
-echo -e "  View all logs: ${YELLOW}sudo tail -f /var/log/nginx/access.log /var/log/craft-fusion/*/out.log${NC}"
+echo -e "  View all logs: ${YELLOW}sudo tail -f /var/log/$WEB_SERVER_TYPE/access.log /var/log/craft-fusion/*/out.log${NC}"
 echo -e "  PM2 dashboard: ${YELLOW}sudo -u craft-fusion pm2 monit${NC}"
-echo -e "  Restart all: ${YELLOW}sudo -u craft-fusion pm2 restart all && sudo nginx -s reload${NC}"
+echo -e "  Restart all: ${YELLOW}sudo -u craft-fusion pm2 restart all && $WEB_SERVER_RELOAD${NC}"
 
 # After your system tests and before the summary, add the OSCAL Compliance Report phase:
 step_header "Phase F: OSCAL Compliance Report"
@@ -1071,6 +1101,21 @@ if [ "${frontend_status:-1}" -eq 0 ] && [ "${backend_status:-1}" -eq 0 ]; then
     
     echo
     echo -e "${BOLD}${GREEN}🚀 Your application is now live in production!${NC}"
+    
+    # --- Authentication Bridge & Security Info ---
+    echo
+    echo -e "${BOLD}${CYAN}🔐 Authentication & Security Bridge:${NC}"
+    echo -e "  • ${WHITE}Backend (Nest/Go):${NC} Reads .env from $(pwd) at startup."
+    echo -e "  • ${WHITE}Frontend (Angular):${NC} Static files in /var/www; secrets injected at build-time."
+    echo -e "  • ${WHITE}Secrets Privacy:${NC} .env remains private in home dir; never copied to web root."
+    echo
+    echo -e "${BOLD}${YELLOW}📋 Recommended Nginx Proxy Configuration:${NC}"
+    echo -e "  If you haven't configured your proxy rules, ensure /etc/nginx/conf.d/jeffreysanford.us.conf contains:"
+    echo -e "  ${BLUE}------------------------------------------------------------${NC}"
+    echo -e "  location / { try_files \$uri \$uri/ /index.html; }"
+    echo -e "  location /api/ { proxy_pass http://localhost:3000/api/; }"
+    echo -e "  location /api-go/ { proxy_pass http://localhost:4000/; }"
+    echo -e "  ${BLUE}------------------------------------------------------------${NC}"
     
 else
     echo -e "${BOLD}${RED}═══════════════════════════════════════════════════════════════════════════${NC}"
