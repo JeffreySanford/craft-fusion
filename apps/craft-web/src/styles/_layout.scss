@@ -1,51 +1,47 @@
-@use 'variables' as vars;
-@use 'sass:map';
+@use "variables" as vars;
+@use "sass:map";
 
-// Basic layout containers
 .container-wrapper {
-  min-height: 100vh;
-  height: 100%;
-  width: 100%;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  position: relative;
+  height: 100%;
+  min-height: 100vh;
   overflow: visible;
+  position: relative;
+  width: 100%;
 }
 
 .responsive-container {
-  padding: 24px;
   margin: 0 auto;
+  max-width: 75em;
+  padding: 1.5em;
   width: 100%;
-  max-width: 1200px;
-  
+
   @media (max-width: map.get(vars.$breakpoints, md)) {
-    padding: 16px;
+    padding: 1em;
   }
 }
 
-// Root element styles
 app-root {
-  overflow: visible;
-  position: relative;
   display: flex;
   flex-direction: column;
-  width: 100%;
   height: 100vh;
   min-height: 100%;
+  overflow: visible;
+  position: relative;
+  width: 100%;
 }
 
-// Nested layout containers
 .recipe-content-wrapper {
   display: flex;
-  flex-direction: column;
   flex: 1;
+  flex-direction: column;
   height: 100%;
   min-height: 100vh;
   overflow: visible;
 }
 
-// Flex utilities
 .flex {
   display: flex;
 }
@@ -108,153 +104,147 @@ app-root {
   align-items: stretch;
 }
 
-// Grid utilities
 .grid {
   display: grid;
 }
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
-  padding: 24px;
+  gap: 1.5em;
+  grid-template-columns: repeat(auto-fill, minmax(18.75em, 1fr));
+  padding: 1.5em;
 }
 
-// Spacing utilities
 @each $key, $value in vars.$spacing {
   .p-#{$key} {
     padding: $value;
   }
-  
+
   .pt-#{$key} {
     padding-top: $value;
   }
-  
+
   .pr-#{$key} {
     padding-right: $value;
   }
-  
+
   .pb-#{$key} {
     padding-bottom: $value;
   }
-  
+
   .pl-#{$key} {
     padding-left: $value;
   }
-  
+
   .px-#{$key} {
     padding-left: $value;
     padding-right: $value;
   }
-  
+
   .py-#{$key} {
-    padding-top: $value;
     padding-bottom: $value;
+    padding-top: $value;
   }
-  
+
   .m-#{$key} {
     margin: $value;
   }
-  
+
   .mt-#{$key} {
     margin-top: $value;
   }
-  
+
   .mr-#{$key} {
     margin-right: $value;
   }
-  
+
   .mb-#{$key} {
     margin-bottom: $value;
   }
-  
+
   .ml-#{$key} {
     margin-left: $value;
   }
-  
+
   .mx-#{$key} {
     margin-left: $value;
     margin-right: $value;
   }
-  
+
   .my-#{$key} {
-    margin-top: $value;
     margin-bottom: $value;
+    margin-top: $value;
   }
-  
+
   .gap-#{$key} {
     gap: $value;
   }
 }
 
-// Responsive utilities
 @each $bp-name, $bp-value in vars.$breakpoints {
   @media (min-width: $bp-value) {
     .#{$bp-name}:flex {
       display: flex;
     }
-    
+
     .#{$bp-name}:grid {
       display: grid;
     }
-    
+
     .#{$bp-name}:hidden {
       display: none;
     }
-    
+
     .#{$bp-name}:block {
       display: block;
     }
   }
 }
 
-// Scrollable container
 .scrollable {
-  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
 }
 
 .scrollable-x {
-  overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
 }
 
-// Dashboard layout components
 .dashboard-widget {
   background: var(--md-sys-color-surface);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 0.75em;
   box-shadow: var(--md-sys-elevation-level1);
-  
+  padding: 1em;
+
   .widget-header {
+    align-items: center;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 1em;
 
     h3 {
-      margin: 0;
       color: var(--md-sys-color-on-surface);
+      margin: 0;
     }
   }
 
   &.metric {
     text-align: center;
-    
+
     .metric-value {
-      font-size: 36px;
-      font-weight: 500;
       color: var(--md-sys-color-primary);
+      font-size: 2.25em;
+      font-weight: 500;
     }
-    
+
     .metric-label {
       color: var(--md-sys-color-on-surface-variant);
-      font-size: 14px;
+      font-size: 0.875em;
     }
   }
 }
 
-// Position utilities
 .relative {
   position: relative;
 }
@@ -311,7 +301,6 @@ app-root {
   z-index: 50;
 }
 
-// Size utilities
 .w-full {
   width: 100%;
 }
@@ -324,17 +313,16 @@ app-root {
   min-height: 100vh;
 }
 
-// Background video styles
 #background-video {
-  position: fixed;
+  filter: grayscale(50%) blur(0.2em);
+  height: auto;
   inset: -2em -2em 0 -2em;
   min-height: 100%;
-  width: 100vw;
-  height: auto;
-  z-index: -1;
-  opacity: 0.4;
-  filter: grayscale(50%) blur(0.2em);
   object-fit: cover;
-  transform: scale(1.1);
+  opacity: 0.4;
   overflow: hidden;
+  position: fixed;
+  transform: scale(1.1);
+  width: 100vw;
+  z-index: -1;
 }

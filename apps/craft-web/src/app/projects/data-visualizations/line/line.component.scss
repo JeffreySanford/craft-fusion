@@ -1,147 +1,161 @@
+@use "../../../styles/md3-mapping" as md3;
+
 .line-chart-container {
-  width: 100%;
-  height: 100%; 
+  align-items: center;
+  background-color: md3.$md-background;
+  border: none;
   display: flex;
   flex-direction: column;
+  height: 100%;
   justify-content: center;
-  align-items: center;
+  margin: 0;
   overflow: hidden;
-  position: relative; /* To allow absolute positioning of status messages */
-  border: none; /* Remove border to use full space */
-  background-color: #000b1d; /* Dark blue background resembling night sky */
-  padding: 0; /* Remove padding to use full space */
-  margin: 0; /* Remove margin to use full space */
+  padding: 0;
+  position: relative;
+  width: 100%;
 }
 
 .line-chart {
-  width: 100%;
   height: 100%;
   position: relative;
-}
-
-/* Make chart div take all available space */
-.chart-fullsize {
-  width: 100% !important;
-  height: 100% !important;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-/* Hide any overflow that might cause scrollbars */
-:host ::ng-deep svg {
-  overflow: visible;
-  display: block;
-  width: 100% !important;
-  height: 100% !important;
-}
-
-/* Chart div should take up all available space */
-:host ::ng-deep div[id="chart"] {
   width: 100%;
+}
+
+.chart-fullsize {
+  bottom: 0;
+  height: 100% !important;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100% !important;
+}
+
+:host ::ng-deep svg {
+  display: block;
+  height: 100% !important;
+  overflow: visible;
+  width: 100% !important;
+}
+
+:host ::ng-deep div[id="chart"] {
   height: 100%;
+  width: 100%;
 }
 
 .status-message {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgb(0 0 0 / 80%);
+  border-radius: 0.25em;
   color: white;
-  padding: 1em;
-  border-radius: 4px;
-  font-size: 14px;
+  font-size: 0.875em;
+  left: 50%;
+  margin-bottom: 1rem;
   max-width: 80%;
+  padding: 1em;
+  pointer-events: none;
+  position: absolute;
   text-align: center;
+  top: 50%;
+  transform: translate(-50%, -50%);
   z-index: 10;
-  pointer-events: none; /* Allow clicking through the status message */
-  margin-bottom: 1rem; /* Reserve space above the chart for messages */
 }
 
-/* Tooltip enhancements */
 :host ::ng-deep .line-tooltip {
-  background-color: rgba(28, 40, 65, 0.9) !important; /* Darker blue for patriotic theme */
-  border: 1px solid #B22234; /* Red border from American flag */
-  border-radius: 4px;
-  padding: 10px;
-  font-family: 'Arial', sans-serif;
+  background-color: rgb(28 40 65 / 90%) !important;
+  border: 1px solid #b22234;
+  border-radius: 0.25em;
+  font-family: Arial, sans-serif;
+  letter-spacing: 0.0125em;
   line-height: 1.4;
-  letter-spacing: 0.2px;
-  max-width: 250px;
-  z-index: 100; /* Ensure tooltip appears above other elements */
+  max-width: 15.625em;
+  padding: 0.625em;
+  z-index: 100;
 }
 
-/* Improve axis styling with patriotic theme */
+:host ::ng-deep .line-tooltip .tooltip-title {
+  font-weight: bold;
+  margin-bottom: 0.3125em;
+}
+
+:host ::ng-deep .line-tooltip .series-0 {
+  color: #b22234;
+}
+
+:host ::ng-deep .line-tooltip .series-1 {
+  color: #fff;
+}
+
+:host ::ng-deep .line-tooltip .series-2 {
+  color: #3c3b6e;
+}
+
+:host ::ng-deep .line-tooltip {
+  pointer-events: none;
+  position: absolute;
+}
+
 :host ::ng-deep {
   .domain,
   .tick line {
-    stroke: rgba(255, 255, 255, 0.3);
-  }
-  
-  .tick text {
-    fill: rgba(255, 255, 255, 0.9); /* Brighter white for better readability */
-  }
-  
-  /* Enhanced line styling */
-  .line {
-    filter: drop-shadow(0px 2px 3px rgba(255, 255, 255, 0.2)); /* Light glow effect */
-  }
-  
-  /* Grid line improvements */
-  .grid line {
-    stroke: rgba(255, 255, 255, 0.1);
-    stroke-dasharray: 2, 2;
-  }
-  
-  /* Title and label improvements with patriotic theme */
-  .chart-title {
-    font-weight: bold;
-    font-family: 'Arial', sans-serif;
-    letter-spacing: 0.5px;
-  }
-  
-  .chart-subtitle {
-    font-style: italic;
-    font-family: 'Arial', sans-serif;
-  }
-  
-  .x-axis-label, .y-axis-label {
-    font-family: 'Arial', sans-serif;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-  }
-  
-  /* Legend styling */
-  .legend-container {
-    font-family: 'Arial', sans-serif;
-    pointer-events: all;
-  }
-  
-  .legend rect {
-    stroke-width: 1px;
-    stroke: rgba(255, 255, 255, 0.5);
-  }
-  
-  .legend text {
-    font-weight: 500;
-    fill: #FFFFFF; /* White text for better visibility */
+    stroke: rgb(255 255 255 / 30%);
   }
 
-  /* Add subtle stars in the background for patriotic theme */
+  .tick text {
+    fill: rgb(255 255 255 / 90%);
+  }
+
+  .line {
+    filter: drop-shadow(0 2px 3px rgb(255 255 255 / 20%));
+  }
+
+  .grid line {
+    stroke: rgb(255 255 255 / 10%);
+    stroke-dasharray: 2, 2;
+  }
+
+  .chart-title {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    letter-spacing: 0.0313em;
+  }
+
+  .chart-subtitle {
+    font-family: Arial, sans-serif;
+    font-style: italic;
+  }
+
+  .x-axis-label,
+  .y-axis-label {
+    font-family: Arial, sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.0188em;
+  }
+
+  .legend-container {
+    font-family: Arial, sans-serif;
+    pointer-events: all;
+  }
+
+  .legend rect {
+    stroke: rgb(255 255 255 / 50%);
+    stroke-width: 1px;
+  }
+
+  .legend text {
+    fill: #fff;
+    font-weight: 500;
+  }
+
   .star {
     fill: white;
     opacity: 0.3;
   }
 }
 
-/* Force the chart to be visible and use full tile space */
 :host {
-  display: block;
-  min-height: 300px;
-  height: 100%;
-  width: 100%;
   box-sizing: border-box;
+  display: block;
+  height: 100%;
+  min-height: 18.75em;
+  width: 100%;
 }

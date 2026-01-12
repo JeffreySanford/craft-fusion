@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { HeaderComponent } from './header.component';
-import { MatMenuModule } from '@angular/material/menu'; // Import MatMenuModule
-import { MatButtonModule } from '@angular/material/button'; // Import MatButtonModule
+import { MatMenuModule } from '@angular/material/menu';                        
+import { MatButtonModule } from '@angular/material/button';                          
 
 @NgModule({
   declarations: [HeaderComponent],
@@ -12,9 +12,9 @@ import { MatButtonModule } from '@angular/material/button'; // Import MatButtonM
     CommonModule,
     MatCardModule,
     MatIconModule,
-    MatMenuModule, // Add MatMenuModule here
-    MatButtonModule // Add MatButtonModule for mat-icon-button
+    MatMenuModule,                          
+    MatButtonModule,                                           
   ],
-  exports: [HeaderComponent]
+  exports: [HeaderComponent],
 })
 export class HeaderModule {}

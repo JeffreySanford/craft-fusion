@@ -4,7 +4,6 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, tap, map, shareReplay } from 'rxjs/operators';
 import { io, Socket } from 'socket.io-client';
 import { TimelineEvent } from '../models/timeline-event.model';
-import { AuthService } from '../../../common/services/auth/auth.service';
 import { LoggerService } from '../../../common/services/logger.service';
 import { environment } from '../../../../environments/environment';
 
@@ -20,9 +19,8 @@ export class TimelineService {
   public events$ = this.eventsSubject.asObservable().pipe(shareReplay(1));
 
   private socket?: Socket;
-  private messagesSubject = new BehaviorSubject<TimelineEvent[]>([]);
 
-  constructor(private http: HttpClient, private authService: AuthService, private logger: LoggerService) {}
+  constructor(private http: HttpClient, private logger: LoggerService) {}
 
   ngOnInit?(): void {
     console.log('[TimelineService] initialized', { apiUrl: this.API_URL, wsUrl: this.WS_URL });

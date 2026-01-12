@@ -1,0 +1,54 @@
+.mat-paginator,
+.mat-mdc-paginator {
+
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  background-color: var(--mat-paginator-container-background-color, var(--md-sys-color-primary));
+  border-top: 1px solid var(--md-sys-color-outline-variant, rgb(0 0 0 / 8%));
+  bottom: var(--paginator-offset, 2.5em);
+  box-shadow: 0 -0.25em 0.5em 0 rgb(0 0 0 / 12%);
+  color: var(--mat-paginator-container-text-color, var(--md-sys-color-on-primary));
+  font-size: 1em;
+  height: 3em;
+  left: 0;
+  padding: 0.15em;
+  position: sticky;
+  right: 0;
+  text-align: left;
+  width: 100%;
+  z-index: 1101;                                                
+}
+
+.mat-mdc-paginator .mat-mdc-paginator-container,
+.mat-paginator .mat-mdc-paginator-container {
+  background-color: transparent;
+  padding: 0.3em;
+}
+
+.mat-mdc-paginator .mat-mdc-paginator-range-label,
+.mat-mdc-paginator .mat-mdc-paginator-page-size-label,
+.mat-paginator .mat-mdc-paginator-range-label,
+.mat-paginator .mat-mdc-paginator-page-size-label {
+  color: var(--mat-paginator-container-text-color, var(--md-sys-color-on-primary));
+  font-size: 1em;
+  font-weight: 400;
+}
+
+.mat-mdc-paginator .mat-mdc-icon-button,
+.mat-mdc-paginator button.mat-icon-button,
+.mat-paginator .mat-mdc-icon-button,
+.mat-paginator button.mat-icon-button {
+  color: var(--mat-paginator-enabled-icon-color, var(--md-sys-color-on-primary));
+}
+
+.mat-mdc-paginator .mat-mdc-select-value,
+.mat-paginator .mat-mdc-select-value {
+  color: var(--mat-paginator-container-text-color, var(--md-sys-color-on-primary));
+}
+
+.mat-mdc-paginator .mat-mdc-select,
+.mat-paginator .mat-mdc-select {
+  background-color: transparent;
+  border-radius: 0.25em;
+  padding: 0 0.25em;
+}

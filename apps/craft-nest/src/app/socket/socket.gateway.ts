@@ -22,39 +22,39 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   
   private logger = new Logger('SocketGateway');
 
-  afterInit(server: Server) {
-    this.logger.log('Socket.IO initialized');
+  afterInit(_server: Server) {
+    this.logger.verbose('Socket.IO initialized');
   }
 
   handleConnection(client: Socket) {
-    this.logger.log(`Client connected: ${client.id}`);
+    this.logger.verbose(`Client connected: ${client.id}`);
   }
 
   handleDisconnect(client: Socket) {
-    this.logger.log(`Client disconnected: ${client.id}`);
+    this.logger.verbose(`Client disconnected: ${client.id}`);
   }
 
   @SubscribeMessage('registerGuest')
   handleRegisterGuest(client: Socket): void {
     const guestId = `guest-${Math.random().toString(36).substring(2, 10)}`;
     client.emit('guestRegistered', { guestId });
-    this.logger.log(`Guest registered with ID: ${guestId}`);
+    this.logger.verbose(`Guest registered with ID: ${guestId}`);
   }
 
   @SubscribeMessage('updateLoginTime')
-  handleUpdateLoginTime(client: Socket, payload: { dateTime: string }): void {
-    this.logger.log(`Login time updated: ${payload.dateTime}`);
+  handleUpdateLoginTime(_client: Socket, payload: { dateTime: string }): void {
+    this.logger.verbose(`Login time updated: ${payload.dateTime}`);
     // Store in database if needed
   }
 
   @SubscribeMessage('updateVisitLength')
-  handleUpdateVisitLength(client: Socket, payload: { length: number }): void {
+  handleUpdateVisitLength(_client: Socket, payload: { length: number }): void {
     this.logger.log(`Visit length updated: ${payload.length}`);
     // Store in database if needed
   }
 
   @SubscribeMessage('updateVisitedPage')
-  handleUpdateVisitedPage(client: Socket, payload: { page: string }): void {
+  handleUpdateVisitedPage(_client: Socket, payload: { page: string }): void {
     this.logger.log(`Visited page updated: ${payload.page}`);
     // Store in database if needed
   }

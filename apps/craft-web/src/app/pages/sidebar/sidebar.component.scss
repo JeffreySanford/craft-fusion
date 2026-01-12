@@ -1,199 +1,221 @@
 .sidebar-container {
-  background-color: rgba(0, 0, 255, 0.2);
-  padding: 1em;
-  height: 60vh;
-  width: 100%;
-  margin: 0 0 0 0.125em;
+  background: var(--sidebar-gradient, var(--md-sys-primary-container, #00152b));
+  border: 1px solid var(--md-sys-color-outline, #2f3f63);
   border-radius: 0.25em;
-  position: relative; // Ensure relative positioning for absolute children
+  box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+  color: var(--md-sys-color-on-primary, var(--md-sys-on-primary, #fff));
+  height: auto;
+  margin: 0;
+  max-width: 15.5em;
+  padding: 1em;
+  position: relative;                                                     
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
 
   &.collapsed {
     width: 7em;
   }
 
   .toggle {
-    position: absolute;
-    bottom: 1em; // Position at the bottom
-    left: 1em; // Position at the left
-    color: #00FFFF;
-    border: 1px solid #00FFFF;
-    font-size: 0.85em; // Increased font size
+    align-items: center;                     
+    background-color: rgba(0,0,0,0.25);
+    border: 1px solid var(--md-sys-color-tertiary, #ffcc01);
+    color: var(--md-sys-color-tertiary, #ffcc01);
     cursor: pointer;
-    transition: color 300ms ease;
-    padding: 0.35em; // Increased padding
-    min-width: unset; // Override default button styles
-    height: 2.25em; // Increased height
-    width: 2.25em; // Increased width
+    display: flex;                                  
+    font-size: 0.85em;                       
+    height: 2.25em;                    
+    justify-content: center;                       
     line-height: 1em;
-    display: flex; // Use flexbox to center the icon
-    align-items: center; // Vertically center
-    justify-content: center; // Horizontally center
+    min-width: unset;                                  
+    padding: 0.35em;
+    align-self: flex-start;
+    margin-top: 0.5em;
+    transition: color 300ms ease;
+    width: 2.25em;                   
 
-    .mat-icon {
-      margin: 0 0 0 -0.05em; // Remove any default margins on the icon and nudge left
-      font-size: 1.1em; // Reduced icon size
-      color: #00FF7F; // Blue-green color
-      display: flex;        // Use flexbox on the icon itself
-      align-items: center;  // Vertically center the icon content
-      justify-content: center; // Horizontally center the icon content
+      .mat-icon {
+      align-items: center;                                      
+      color: var(--md-sys-color-tertiary, #ffcc01);                
+      display: flex;                                  
+      font-size: 1.1em;                     
+      justify-content: center;                                        
+      margin: 0 0 0 -0.05em;                                                         
     }
 
     &:hover {
-      color: greenyellow;
+      background-color: rgba(255,255,255,0.12);
+      color: var(--md-sys-color-on-primary, #fff);
     }
   }
 }
 
-.menu-item {
-  display: flex;
+  .menu-item {
   align-items: center;
-  justify-content: space-between;
-  margin: 0 0.25em;
-  width: 13em;
-  height: 3em;
-  line-height: 1.25em;
-  text-align: right;
+  background-color: var(--md-sys-color-primary, var(--md-sys-primary, #0033a0)) !important;
+  border: 1px solid var(--md-sys-color-primary, var(--md-sys-primary, #0033a0));
   border-radius: 0.25em;
-  border: 1px solid darkblue;
-  outline: 0.1em solid rgba(4, 0, 252, 0.3);;
-  background-color: rgba(4, 0, 252, 0.7) !important;
-  color: white;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+  color: var(--md-sys-color-on-primary, var(--md-sys-on-primary, #fff));
+  display: flex;
+  height: 3em;
+  justify-content: space-between;
+  line-height: 1.25em;
+  margin: 0 0.25em;
+  outline: 0.1em solid var(--md-sys-color-primary, var(--md-sys-primary, #0033a0));
+  text-align: right;
+  width: 13em;
 
   &.collapsed {
-    width: 5em;
     margin: 0 auto;
+    width: 5em;
   }
 
-  &:hover {
+    &:hover {
+    box-shadow:
+      0 0.375em 1.25em rgba(0,0,0,0.2),
+      0 0 0.9375em rgba(255,204,1,0.25);
+    outline-color: var(--md-sys-color-tertiary, #ffcc01);
     transform: scale(1.1);
-    outline-color: rgba(96, 33, 243, 0.8);
-    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(33, 150, 243, 0.3);
   }
 
-  &.active {
-    outline-color: rgba(33, 236, 243, 0.8);
-    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(33, 194, 243, 0.3);
-    color: #00FFFF; // Neon cyan
-    
-    .mat-icon, .menu-text {
-      color: #00FFFF;
+    &.active {
+    box-shadow:
+      0 0.375em 1.25em rgba(0,0,0,0.25),
+      0 0 0.9375em rgba(255,204,1,0.35);
+    border-color: var(--md-sys-color-tertiary, #ffcc01);
+    color: var(--md-sys-color-on-primary, var(--md-sys-on-primary, #fff));
+    outline-color: var(--md-sys-color-tertiary, #ffcc01);
+
+    .mat-icon,
+    .menu-text {
+      color: var(--md-sys-color-tertiary, #ffcc01);
     }
   }
 
-  .mat-icon {
-    color: white;
+    .mat-icon {
+    color: var(--md-sys-color-on-primary, var(--md-sys-on-primary, #fff));
     font-size: 2.25em;
     height: 1em;
-    width: 2em;
-    margin: 0.25em 0.25em 0.25em 0em;
+    margin: 0.25em 0.25em 0.25em 0;
     text-align: left;
     transition: transform 0.3s ease;
+    width: 2em;
   }
 
-  .menu-text {
-    color: white;
+    .menu-text {
+    color: var(--md-sys-color-on-primary, var(--md-sys-on-primary, #fff));
     flex-grow: 1;
-    text-align: right;
     opacity: 1;
+    text-align: right;
     transform: translateX(-1.25em);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   &[routerLink="/admin"] {
-    background-color: rgba(252, 4, 0, 0.7) !important;
-    border: 1px solid darkred;
-    outline: 0.1em solid rgba(252, 0, 0, 0.3);
-    color: white;
+    background-color: var(--md-sys-color-error, #b3261e) !important;
+    border: 1px solid var(--md-sys-color-error, #b3261e);
+    color: var(--md-sys-color-on-error, #fff);
+    outline: 0.1em solid rgba(var(--md-sys-error-rgb, 252,4,0), 0.3);
 
     &:hover {
+      box-shadow:
+        0 0.375em 1.25em rgba(0,0,0,0.15),
+        0 0 0.9375em rgba(243,33,33,0.30);
+      outline-color: rgba(243,33,33,0.8);
       transform: scale(1.1);
-      outline-color: rgba(243, 33, 33, 0.8);
-      box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(243, 33, 33, 0.3);
     }
 
     &.active {
-      outline-color: rgba(33, 236, 243, 0.8);
-      box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(33, 194, 243, 0.3);
-      background-color: rgba(252, 4, 0, 0.7) !important;
-      color: #00FFFF; // Neon cyan
+      background-color: var(--md-sys-color-error, #b3261e) !important;
+      box-shadow:
+        0 0.375em 1.25em rgba(0,0,0,0.2),
+        0 0 0.9375em rgba(255,204,1,0.35);
+      color: var(--md-sys-color-on-error, #fff);
+      outline-color: var(--md-sys-color-tertiary, #ffcc01);
 
       .mat-icon,
       .menu-text {
-        color: #00FFFF;
+        color: var(--md-sys-color-on-error, #fff);
       }
     }
   }
 }
 
-.admin-link {
-  background-color: rgba(252, 4, 0, 0.7) !important;
-  border: 1px solid darkred;
-  outline: 0.1em solid rgba(252, 0, 0, 0.3);
-  color: white;
+  .admin-link {
+  background-color: var(--md-sys-color-error, #b3261e) !important;
+  border: 1px solid var(--md-sys-color-error, #b3261e);
+  color: var(--md-sys-color-on-error, #fff);
+  outline: 0.1em solid rgba(var(--md-sys-error-rgb,252,0,0), 0.3);
 
   &:hover {
+    box-shadow:
+      0 0.375em 1.25em rgba(0,0,0,0.15),
+      0 0 0.9375em rgba(243,33,33,0.30);
+    outline-color: rgba(243,33,33,0.8);
     transform: scale(1.1);
-    outline-color: rgba(243, 33, 33, 0.8);
-    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(243, 33, 33, 0.3);
   }
 
   &.active {
-    outline-color: rgba(33, 236, 243, 0.8);
-    box-shadow: 0 0.375em 1.25em rgba(0, 0, 0, 0.15), 0 0 0.9375em rgba(33, 194, 243, 0.3);
-    background-color: rgba(252, 4, 0, 0.7) !important;
-    color: #00FFFF; // Neon cyan
+    background-color: var(--md-sys-color-error, #b3261e) !important;
+    box-shadow:
+      0 0.375em 1.25em rgba(0,0,0,0.2),
+      0 0 0.9375em rgba(255,204,1,0.35);
+    color: var(--md-sys-color-on-error, #fff);
+    outline-color: var(--md-sys-color-tertiary, #ffcc01);
 
     .mat-icon,
     .menu-text {
-      color: #00FFFF;
+      color: var(--md-sys-color-on-error, #fff);
     }
   }
 }
 
-.sidebar {
-  color: white;
-  width: 250px;
-  background-color: #f8f9fa;
-  padding: 15px;
-  border-right: 1px solid #dee2e6;
+  .sidebar {
+  background-color: var(--md-sys-surface);
+  border-right: 1px solid var(--md-sys-surface-variant);
+  color: var(--md-sys-on-surface);
+  padding: 0.9375em;
+  width: 15.625em;
 
   .sidebar-header {
-    font-size: 18px;
+    font-size: 1.125em;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 0.625em;
   }
 
   .sidebar-content {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0.625em;
 
     .sidebar-item {
-      padding: 10px;
+      padding: 0.625em;
       transition: background-color 0.3s;
 
       &:hover {
-        background-color: #e9ecef;
+        background-color: var(--md-sys-surface-variant);
       }
 
       &.collapsed {
+        border: 1px solid #0ff;
         width: 7em;
-        border: 1px solid #00FFFF;
       }
     }
   }
 
-  .sidebar-footer {
+    .sidebar-footer {
+    color: var(--md-sys-on-surface-variant, #6c757d);
+    font-size: 0.875em;
     margin-top: auto;
-    font-size: 14px;
-    color: #6c757d;
   }
 }
 
-// Add collapsed class styles
 :host ::ng-deep .collapsed {
   .menu-item.mdc-button {
-    padding: 0 0 0 1.25em;
     max-width: 7em;
+    padding: 0 0 0 1.25em;
   }
 }

@@ -7,6 +7,9 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Injectable } from '@nestjs/common';
+import { OscalProfile, RealtimeCheck, Sbom } from '../security/security.service';
+
+export type ScanResult = OscalProfile | RealtimeCheck | Sbom;
 
 export interface ScanProgress {
   scanId: string;
@@ -15,7 +18,7 @@ export interface ScanProgress {
   progress: number; // 0-100
   eta?: string;
   message?: string;
-  data?: any;
+  data?: ScanResult;
 }
 
 @Injectable()
@@ -71,12 +74,14 @@ export class SecurityScanGateway {
   /**
    * Mark scan as completed and emit final results
    */
-  completeScan(scanId: string, data?: any): void {
+  completeScan(scanId: string, data?: ScanResult): void {
     const scan = this.activeScans.get(scanId);
     if (scan) {
       scan.status = 'completed';
       scan.progress = 100;
-      scan.data = data;
+      if (data !== undefined) {
+        scan.data = data;
+      }
       this.emitProgress(scan);
       
       // Clean up after 5 minutes

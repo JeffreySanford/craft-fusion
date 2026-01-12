@@ -26,7 +26,7 @@ export class WsJwtGuard implements CanActivate {
   }
   
   private extractTokenFromHeader(handshake: Record<string, any>): string | undefined {
-    const authorization = handshake?.headers?.authorization;
+    const authorization = handshake?.['headers']?.['authorization'];
     if (!authorization) return undefined;
     
     const [type, token] = authorization.split(' ');

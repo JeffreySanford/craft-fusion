@@ -1,0 +1,196 @@
+@use "../../../../styles/md3-mapping" as md3;
+
+.line-chart-container {
+  align-items: center;
+  background: linear-gradient(135deg, #03040f 0%, #0b1222 65%, #121b37 100%);
+  border: none;
+  border-radius: 1rem;
+  box-shadow: inset 0 2px 18px rgba(255, 255, 255, 0.08), 0 20px 40px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  width: 100%;
+}
+
+.line-chart {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+.chart-fullsize {
+  bottom: 0;
+  height: 100% !important;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100% !important;
+}
+
+:host ::ng-deep svg {
+  display: block;
+  height: 100% !important;
+  overflow: visible;
+  width: 100% !important;
+}
+
+:host ::ng-deep div[id="chart"] {
+  height: 100%;
+  width: 100%;
+}
+
+.status-message {
+  background-color: rgb(0 0 0 / 80%);
+  border-radius: 0.25em;
+  color: white;
+  font-size: 0.875em;
+  left: 50%;
+  margin-bottom: 1rem;
+  max-width: 80%;
+  padding: 1em;
+  pointer-events: none;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+:host ::ng-deep .line-tooltip {
+  background-color: rgb(28 40 65 / 90%) !important;
+  border: 1px solid #b22234;
+  border-radius: 0.25em;
+  font-family: Arial, sans-serif;
+  letter-spacing: 0.0125em;
+  line-height: 1.4;
+  max-width: 15.625em;
+  padding: 0.625em;
+  z-index: 100;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+:host ::ng-deep .line-tooltip .tooltip-title {
+  font-weight: bold;
+  margin-bottom: 0.3125em;
+}
+
+:host ::ng-deep .line-tooltip .series-0 {
+  color: #b22234;
+}
+
+:host ::ng-deep .line-tooltip .series-1 {
+  color: #fff;
+}
+
+:host ::ng-deep .line-tooltip .series-2 {
+  color: #3c3b6e;
+}
+
+:host ::ng-deep .line-tooltip {
+  pointer-events: none;
+  position: absolute;
+}
+
+:host ::ng-deep {
+  .domain,
+  .tick line {
+    stroke: rgba(255, 255, 255, 0.45);
+  }
+
+  .tick text {
+    fill: rgba(255, 255, 255, 0.78);
+  }
+
+  .line {
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.35));
+  }
+
+  .grid line {
+    stroke: rgba(255, 255, 255, 0.12);
+    stroke-dasharray: 2, 2;
+  }
+
+  .chart-title {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    letter-spacing: 0.0313em;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+  }
+
+  .chart-subtitle {
+    font-family: Arial, sans-serif;
+    font-style: italic;
+    fill: rgba(255, 255, 255, 0.75);
+  }
+
+  .x-axis-label,
+  .y-axis-label {
+    font-family: Arial, sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.0188em;
+    fill: rgba(255, 255, 255, 0.8);
+  }
+
+  .legend-card {
+    pointer-events: all;
+  }
+
+  .legend-card-bg {
+    fill: rgba(7, 11, 24, 0.85);
+    stroke: rgba(255, 255, 255, 0.12);
+    stroke-width: 1px;
+    filter: drop-shadow(0 14px 30px rgba(0, 0, 0, 0.55));
+  }
+
+  .legend-title {
+    font-family: Arial, sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    fill: rgba(255, 255, 255, 0.65);
+  }
+
+  .legend-row {
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+
+  .legend-row:hover {
+    transform: translateX(2px);
+  }
+
+  .legend-label {
+    font-family: Arial, sans-serif;
+    font-size: 0.95rem;
+    fill: rgba(255, 255, 255, 0.85);
+  }
+
+  .legend-row:hover .legend-label {
+    fill: var(--md-sys-color-primary, #B22234);
+  }
+
+  .legend-swatch {
+    stroke: rgba(255, 255, 255, 0.35);
+    stroke-width: 0.5px;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.65));
+  }
+
+  .star {
+    fill: white;
+    opacity: 0.3;
+  }
+}
+
+:host {
+  box-sizing: border-box;
+  display: block;
+  height: 100%;
+  min-height: 18.75em;
+  width: 100%;
+}

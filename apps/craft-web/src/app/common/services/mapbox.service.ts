@@ -1,26 +1,30 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment'; // Corrected relative path
+import { environment } from '../../../environments/environment';                           
 import * as mapboxgl from 'mapbox-gl';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MapboxService {
   private map: mapboxgl.Map | undefined;
+  private markers: mapboxgl.Marker[] = [];
+  private flightMarkers: mapboxgl.Marker[] = [];
 
   constructor() {
-    // Set your Mapbox token here
-    (mapboxgl as any).accessToken = (environment as any).mapboxToken;
+
+    const token = (environment as any)?.mapboxToken ?? '';
+    Object.assign(mapboxgl, { accessToken: token });
   }
 
   initializeMap(container: string, center: [number, number], zoom: number): mapboxgl.Map {
+    if (this.map) {
+      this.destroyMap();
+    }
     this.map = new mapboxgl.Map({
       container,
       style: 'mapbox://styles/mapbox/streets-v11',
       center,
-      zoom
+      zoom,
     });
     return this.map;
   }
@@ -30,14 +34,53 @@ export class MapboxService {
       console.error('Map is not initialized. Call initializeMap() first.');
       return;
     }
-    
-    new mapboxgl.Marker()
+
+    const marker = new mapboxgl.Marker()
       .setLngLat(coordinates)
       .setPopup(new mapboxgl.Popup().setHTML(`<h3>${message}</h3>`))
       .addTo(this.map);
+    this.markers.push(marker);
   }
 
-  // Add resizeMap method (was missing from this service)
+  addFlightMarker(coordinates: [number, number], message: string): void {
+    if (!this.map) {
+      return;
+    }
+    const marker = new mapboxgl.Marker({ color: '#1d3557' })
+      .setLngLat(coordinates)
+      .setPopup(new mapboxgl.Popup().setHTML(`<strong>${message}</strong>`))
+      .addTo(this.map);
+    this.flightMarkers.push(marker);
+  }
+
+  clearMarkers(): void {
+    this.markers.forEach(marker => marker.remove());
+    this.markers = [];
+  }
+
+  clearFlightMarkers(): void {
+    this.flightMarkers.forEach(marker => marker.remove());
+    this.flightMarkers = [];
+  }
+
+  fitBounds(bounds: [number, number, number, number], padding: number = 40): void {
+    if (this.map) {
+      this.map.fitBounds(
+        [
+          [bounds[0], bounds[1]],
+          [bounds[2], bounds[3]],
+        ],
+        { padding }
+      );
+    }
+  }
+
+  flyTo(center: [number, number], zoom: number = 10): void {
+    if (this.map) {
+      this.map.flyTo({ center, zoom });
+    }
+  }
+
   resizeMap(): void {
     if (this.map) {
       this.map.resize();
@@ -52,11 +95,10 @@ export class MapboxService {
       return;
     }
 
-    // Check if layer already exists, remove it first to prevent duplicates
     if (this.map.getLayer('route')) {
       this.map.removeLayer('route');
     }
-    
+
     if (this.map.getSource('route')) {
       this.map.removeSource('route');
     }
@@ -88,8 +130,10 @@ export class MapboxService {
 
   destroyMap(): void {
     if (this.map) {
+      this.clearMarkers();
+      this.clearFlightMarkers();
       this.map.remove();
-      this.map = undefined; // Clear reference after removing
+      this.map = undefined;                                  
     }
   }
 }

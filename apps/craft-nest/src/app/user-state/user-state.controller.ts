@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Req, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, Param, Logger } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { UserStateService } from './user-state.service';
 
@@ -11,11 +11,13 @@ interface RequestWithUser {
 
 @Controller('user')
 export class UserStateController {
+  private readonly logger = new Logger('UserStateController');
+
   constructor(private readonly userStateService: UserStateService) {}
 
   @Post('saveLoginDateTime')
   saveLoginDateTime(@Body() body: { dateTime: string }, @Req() request: RequestWithUser): Observable<void> {
-    console.log(`STATE: Saving login date/time`);
+    this.logger.verbose(`STATE: Saving login date/time`);
     const userId = request.user?.id || 'guest';
     const isGuest = !request.user;
     return this.userStateService.setLoginDateTime(new Date(body.dateTime), userId, isGuest);
@@ -23,7 +25,7 @@ export class UserStateController {
 
   @Get('getLoginDateTime')
   getLoginDateTime(@Req() request: RequestWithUser): Observable<Date | null> {
-    console.log(`STATE: Fetching login date/time`);
+    this.logger.verbose(`STATE: Fetching login date/time`);
     const userId = request.user?.id || 'guest';
     const isGuest = !request.user;
     return this.userStateService.getLoginDateTime(userId, isGuest);
@@ -31,7 +33,7 @@ export class UserStateController {
 
   @Post('saveVisitLength')
   saveVisitLength(@Body() body: { length: number }, @Req() request: RequestWithUser): Observable<void> {
-    console.log(`STATE: Saving visit length`);
+    this.logger.verbose(`STATE: Saving visit length`);
     const userId = request.user?.id || 'guest';
     const isGuest = !request.user;
     return this.userStateService.setVisitLength(body.length, userId, isGuest);
@@ -39,7 +41,7 @@ export class UserStateController {
 
   @Get('getVisitLength')
   getVisitLength(@Req() request: RequestWithUser): Observable<number | null> {
-    console.log(`STATE: Fetching visit length`);
+    this.logger.verbose(`STATE: Fetching visit length`);
     const userId = request.user?.id || 'guest';
     const isGuest = !request.user;
     return this.userStateService.getVisitLength(userId, isGuest);
@@ -47,7 +49,7 @@ export class UserStateController {
 
   @Post('saveVisitedPage/:page')
   saveVisitedPage(@Param('page') page: string, @Req() request: RequestWithUser): Observable<void> {
-    console.log(`STATE: Saving visited page ${page}`);
+    this.logger.verbose(`STATE: Saving visited page ${page}`);
     const userId = request.user?.id || 'guest';
     const isGuest = !request.user;
     return this.userStateService.addVisitedPage(page, userId, isGuest);
@@ -55,7 +57,7 @@ export class UserStateController {
 
   @Get('getVisitedPages')
   getVisitedPages(@Req() request: RequestWithUser): Observable<string[]> {
-    console.log(`STATE: Fetching visited pages`);
+    this.logger.verbose(`STATE: Fetching visited pages`);
     const userId = request.user?.id || 'guest';
     const isGuest = !request.user;
     return this.userStateService.getVisitedPages(userId, isGuest);

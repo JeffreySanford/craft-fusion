@@ -1,7 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Observable, throwError, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { HttpService } from '@nestjs/axios';
+import { Observable, of } from 'rxjs';
 
 // Add export to the interface declarations
 export interface StockDataPoint {
@@ -22,7 +20,7 @@ export interface StockData {
 export class YahooService {
   private readonly logger = new Logger(YahooService.name);
   
-  constructor(private readonly httpService: HttpService) {}
+  constructor() {}
 
   /**
    * Get historical stock data from Yahoo Finance
@@ -59,16 +57,7 @@ export class YahooService {
       this.logger.error(`Failed to fetch historical data: ${this.getErrorMessage(error)}`);
       
       // Create empty result and return as Observable
-      const emptyResult: StockData[] = [];
-      symbols.forEach(symbol => {
-        const stockData: StockData = {
-          symbol,
-          data: []
-        };
-        emptyResult.push(stockData);
-      });
-      
-      return of(emptyResult);
+      return of(this.createEmptyResult(symbols));
     }
   }
 
@@ -82,12 +71,44 @@ export class YahooService {
 
   // Helper method to generate mock data for testing
   private generateMockData(symbol: string, count: number): StockDataPoint[] {
-    // Instead of generating mock data, return empty array
-    return [];
+    const points = Math.max(1, Math.min(count, 10));
+    const basePrice = this.getBasePrice(symbol);
+    const data: StockDataPoint[] = [];
+
+    for (let i = 0; i < points; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const price = basePrice + (i * 0.25) + Math.sin(i / 2);
+      data.push({
+        date: date.toISOString(),
+        open: price,
+        high: price + 1.5,
+        low: Math.max(price - 1.5, 0),
+        close: price + 0.5,
+        volume: 1000 + i * 50,
+      });
+    }
+
+    return data;
+  }
+
+  private createEmptyResult(symbols: string[]): StockData[] {
+    const emptyResult: StockData[] = [];
+    symbols.forEach(symbol => {
+      emptyResult.push({
+        symbol,
+        data: []
+      });
+    });
+    return emptyResult;
   }
 
   private getBasePrice(symbol: string): number {
-    // Since we're not generating mock data, this can be simplified
-    return 0;
+    if (!symbol) {
+      return 42;
+    }
+    const normalized = symbol.toUpperCase();
+    const sum = normalized.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return 100 + (sum % 50);
   }
 }

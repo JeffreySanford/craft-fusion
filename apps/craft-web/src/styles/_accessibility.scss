@@ -1,16 +1,11 @@
-// Accessibility enhancements for the application
-// This file contains accessibility-related styles and overrides
-
-// Replace deprecated -ms-high-contrast with standard forced-colors
 @media (forced-colors: active) {
-  // Enhanced focus indicators for better visibility
+
   *:focus {
-    outline: 2px solid CanvasText;
-    outline-offset: 2px;
+    outline: 2px solid canvastext;
+    outline-offset: 0.125em;
   }
 
-  // Ensure proper contrast for interactive elements
-  button, 
+  button,
   a[role="button"],
   .mat-button,
   .mat-raised-button,
@@ -18,45 +13,43 @@
   .mat-stroked-button,
   .mat-fab,
   .mat-mini-fab {
-    forced-color-adjust: none;
-    border: 1px solid CanvasText;
-    color: ButtonText;
     background-color: ButtonFace;
-    
-    &:hover, &:focus {
+    border: 1px solid canvastext;
+    color: ButtonText;
+    forced-color-adjust: none;
+
+    &:hover,
+    &:focus {
       outline: 2px solid Highlight;
     }
   }
 
-  // Ensure proper contrast for tables
-  table, th, td {
-    border-color: CanvasText;
+  table,
+  th,
+  td {
+    border-color: canvastext;
   }
-  
-  // Make sure cards have visible borders
+
   .mat-card {
-    border: 1px solid CanvasText;
+    border: 1px solid canvastext;
   }
-  
-  // Ensure icons are visible
+
   mat-icon {
-    color: CanvasText;
+    color: canvastext;
   }
-  
-  // Ensure spinner is visible
+
   mat-progress-spinner::ng-deep circle {
-    stroke: CanvasText !important;
+    stroke: canvastext !important;
   }
 }
 
-// Respect user's preference for reduced motion
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
   }
 }

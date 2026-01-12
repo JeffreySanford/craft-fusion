@@ -1,27 +1,28 @@
-@use 'sass:map';
+@use "sass:map";
 
-$md3-primary: #6750a4;
-$md3-secondary: #625b71;
-$md3-surface: #f5f5fa;
-$md3-background: #f5f5fa;
-$md3-outline: #cac4d0;
-$md3-on-primary: #fff;
-$md3-on-surface: #1c1b1f;
-$md3-expressive: #ffb300;
-$md3-shadow: rgba(103, 80, 164, 0.08);
+$md3-primary: var(--md-sys-color-primary, #6750a4);
+$md3-secondary: var(--md-sys-color-secondary, #625b71);
+$md3-surface: var(--md-sys-color-surface, #f5f5fa);
+$md3-background: var(--md-sys-color-background, #f5f5fa);
+$md3-outline: var(--md-sys-color-outline, #cac4d0);
+$md3-on-primary: var(--md-sys-color-on-primary, #fff);
+$md3-on-surface: var(--md-sys-color-on-surface, #1c1b1f);
+$md3-expressive: var(--md-sys-color-expressive, #ffb300);
+$md3-shadow: var(--md-sys-shadow, rgb(103 80 164 / 8%));
 
 .detail-container {
+  align-items: flex-start;
+  background: $md3-background;
+  border-radius: 1.75em;
+  box-shadow: 0 4px 32px $md3-shadow;
   display: flex;
   flex-direction: row;
   gap: 2.5rem;
-  background: $md3-background;
-  border-radius: 28px;
-  box-shadow: 0 4px 32px $md3-shadow;
-  padding: 2.5rem 2rem;
   margin: 2rem auto;
-  max-width: 1100px;
-  min-height: 480px;
-  align-items: flex-start;
+  max-width: 68.75em;
+  min-height: 30em;
+  padding: 2.5rem 2rem;
+
   @media (max-width: 900px) {
     flex-direction: column;
     gap: 1.5rem;
@@ -29,47 +30,49 @@ $md3-shadow: rgba(103, 80, 164, 0.08);
   }
 }
 
-.left-column, .right-column {
+.left-column,
+.right-column {
   flex: 1 1 0;
-  min-width: 320px;
+  min-width: 20em;
 }
 
-mat-card.address-card, mat-card.company-card {
-  border-radius: 24px;
+mat-card.address-card,
+mat-card.company-card {
   background: $md3-surface;
-  box-shadow: 0 2px 12px $md3-shadow;
-  padding: 1.5rem 1.25rem 1.25rem 1.25rem;
   border: 1.5px solid $md3-outline;
+  border-radius: 1.5em;
+  box-shadow: 0 2px 12px $md3-shadow;
   margin-bottom: 1.5rem;
+  padding: 1.5rem 1.25rem 1.25rem;
 }
 
 mat-card-header .header-content {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: 0.75rem;
 }
 
 .user-name {
+  color: $md3-primary;
   font-size: 2.1rem;
   font-weight: 700;
-  color: $md3-primary;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.0312em;
   margin: 0;
 }
 
 mat-card-title {
+  color: $md3-secondary;
   font-size: 1.2rem;
   font-weight: 600;
-  color: $md3-secondary;
   margin-bottom: 0.5rem;
 }
 
 .detail-item {
-  display: flex;
   align-items: center;
-  gap: 0.7rem;
-  font-size: 1.08rem;
   color: $md3-on-surface;
+  display: flex;
+  font-size: 1.08rem;
+  gap: 0.7rem;
   margin-bottom: 0.4rem;
 }
 
@@ -79,31 +82,32 @@ mat-card-title {
 }
 
 .wealth-indicator {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: 0.15rem;
-  margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .wealth-indicator mat-icon {
   color: $md3-expressive;
+  filter: drop-shadow(0 1px 2px rgb(255 179 0 / 12%));
   font-size: 2.1rem;
-  filter: drop-shadow(0 1px 2px rgba(255,179,0,0.12));
 }
 
 mat-table {
-  width: 100%;
   background: transparent;
-  border-radius: 18px;
-  overflow: hidden;
-  margin-top: 0.5rem;
+  border-radius: 1.125em;
   box-shadow: 0 1px 8px $md3-shadow;
+  margin-top: 0.5rem;
+  overflow: hidden;
+  width: 100%;
 }
 
-th.mat-header-cell, td.mat-cell {
-  font-size: 1.05rem;
+th.mat-header-cell,
+td.mat-cell {
   color: $md3-on-surface;
+  font-size: 1.05rem;
   padding: 0.7rem 0.5rem;
 }
 
@@ -120,50 +124,84 @@ td.mat-cell {
 
 tr.mat-footer-row td {
   background: $md3-background;
-  font-weight: 600;
+  border-top: 1.5px solid $md3-outline;
   color: $md3-primary;
   font-size: 1.1rem;
-  border-top: 1.5px solid $md3-outline;
+  font-weight: 600;
 }
 
 .loading-container {
+  align-items: center;
+  background: $md3-background;
+  border-radius: 1.125em;
+  box-shadow: 0 2px 12px $md3-shadow;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  min-height: 320px;
-  background: $md3-background;
-  border-radius: 18px;
-  box-shadow: 0 2px 12px $md3-shadow;
   margin: 2rem auto;
-  max-width: 600px;
+  max-width: 37.5em;
+  min-height: 20em;
 }
 
 mat-progress-spinner {
-  margin: 2.5rem auto 1.5rem auto;
+  margin: 2.5rem auto 1.5rem;
 }
 
-// Expressive highlight for important info
 .expressive {
+  background: linear-gradient(90deg, var(--md-sys-color-expressive-start, #ffe082) 0%, var(--md-sys-color-expressive-end, #ffd54f) 100%);
+  border-radius: 0.5em;
+  box-shadow: 0 1px 4px rgb(var(--md-sys-color-expressive-rgb, 255, 179, 0) / 8%);
   color: $md3-expressive;
   font-weight: 700;
   letter-spacing: 0.02em;
-  background: linear-gradient(90deg, #ffe082 0%, #ffd54f 100%);
-  border-radius: 8px;
   padding: 0.1em 0.5em;
-  box-shadow: 0 1px 4px rgba(255,179,0,0.08);
 }
 
-// Responsive tweaks
 @media (max-width: 600px) {
   .detail-container {
-    padding: 0.5rem 0.1rem;
     gap: 0.5rem;
+    padding: 0.5rem 0.1rem;
   }
-  .left-column, .right-column {
+
+  .left-column,
+  .right-column {
     min-width: 0;
   }
-  mat-card.address-card, mat-card.company-card {
-    padding: 0.7rem 0.3rem 0.7rem 0.3rem;
+
+  mat-card.address-card,
+  mat-card.company-card {
+    padding: 0.7rem 0.3rem;
   }
+}
+
+.debug-warning {
+  color: var(--md-sys-color-error, #ef4444);
+  font-weight: bold;
+  margin-top: 1em;
+}
+
+.inline-center {
+  align-items: center;
+  display: flex;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.icon-spaced {
+  margin-right: 0.5em;
+}
+
+.icon-green {
+  color: var(--md-sys-color-tertiary, #10b981);
+}
+
+.icon-bank {
+  color: var(--md-sys-color-primary, #002868);
+  font-size: 1.5em;
+}
+
+.star-icon {
+  color: var(--md-sys-color-secondary, #ffd700);
 }

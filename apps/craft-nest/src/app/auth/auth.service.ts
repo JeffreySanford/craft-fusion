@@ -76,26 +76,6 @@ export class AuthService {
       });
       
       return of(user);
-    } else if (username === 'test' && password === 'test') {
-      // Add special test user for development
-      const user: User = {
-        id: 3,
-        username: 'test',
-        firstName: 'Test',
-        lastName: 'User',
-        role: 'admin',
-        permissions: ['read:all', 'write:all', 'delete:all'] // Define permissions explicitly here
-      };
-      
-      this.addActiveUser(user);
-      this.logger.log(`Test user authenticated`, {
-        username,
-        role: user.role,
-        permissions: user.permissions?.join(',') || 'none',
-        loginAttemptResult: 'success'
-      });
-      
-      return of(user);
     }
     
     this.logger.warn(`Authentication failed - invalid credentials`, { 

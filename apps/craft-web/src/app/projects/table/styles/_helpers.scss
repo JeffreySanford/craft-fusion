@@ -1,0 +1,48 @@
+@use "sass:map";
+@use "./variables" as vars;
+
+.right-aligned-header {
+  border-bottom-color: transparent !important;
+  justify-content: flex-end;
+  padding-right: 1em !important;
+  text-align: right !important;
+
+  &::after {
+    display: none !important;
+  }
+}
+
+.right-aligned-cell {
+  justify-content: flex-end !important;
+  text-align: right !important;
+}
+
+.selectors {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.95rem;
+  gap: 0.5em;
+  justify-content: space-evenly;
+
+  padding: 0 0.5em 0 1rem;
+
+  mat-form-field {
+    height: auto;
+    margin: 0;
+  }
+
+  .mat-form-field-infix,
+  .mat-form-field-wrapper {
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+
+  .selector,
+  input.mat-input-element,
+  .mat-select-trigger {
+    line-height: 1.2;
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+}

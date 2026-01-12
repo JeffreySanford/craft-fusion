@@ -23,7 +23,7 @@ import { Subscription } from 'rxjs';
 export class HealthGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server!: Server;
   private clientsCount = 0;
-  private metricsSubscription?: Subscription;
+  private metricsSubscription: Subscription | null = null;
   private readonly logger = new Logger(HealthGateway.name);
 
   constructor(private healthService: HealthService) {}
@@ -58,7 +58,7 @@ export class HealthGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   }
 
   @SubscribeMessage('health:request')
-  handleHealthRequest(client: Socket) {
+  handleHealthRequest() {
     return this.healthService.getHealthStatus();
   }
 
@@ -66,7 +66,7 @@ export class HealthGateway implements OnGatewayInit, OnGatewayConnection, OnGate
     if (this.metricsSubscription) return;
     
     // Subscribe to the health metrics observable and emit to all clients
-    this.metricsSubscription = this.healthService.getHealthStatus().subscribe({
+      this.metricsSubscription = this.healthService.getHealthStatus().subscribe({
       next: status => {
         if (this.clientsCount > 0) {
           this.server.emit('health:metrics', status);
@@ -79,9 +79,9 @@ export class HealthGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   }
 
   private stopMetricsEmission() {
-    if (this.metricsSubscription) {
-      this.metricsSubscription.unsubscribe();
-      this.metricsSubscription = undefined;
+      if (this.metricsSubscription) {
+        this.metricsSubscription.unsubscribe();
+        this.metricsSubscription = null;
       this.logger.log('Stopped health metrics emission due to no connected clients');
     }
   }

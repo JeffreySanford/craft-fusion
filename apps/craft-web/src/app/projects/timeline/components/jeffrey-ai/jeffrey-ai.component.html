@@ -13,12 +13,12 @@
       <mat-card *ngFor="let ev of events" class="jeffrey-card">
         <mat-card-header>
           <mat-card-title>{{ ev.title }}</mat-card-title>
-          <mat-card-subtitle>{{ ev.date | date:'longDate' }}</mat-card-subtitle>
+          <mat-card-subtitle>{{ ev.date | date: 'longDate' }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <p>{{ ev.description }}</p>
           <hr />
-          <p class="ai-narrative">{{ narratives.get(ev.id || (ev.title + '-' + ev.date)) }}</p>
+          <p class="ai-narrative">{{ narratives.get(ev.id || ev.title + '-' + ev.date) }}</p>
           <div class="jeffrey-action-row">
             <button mat-stroked-button color="accent" (click)="generateAiForEvent(ev)">Generate AI Narrative</button>
           </div>

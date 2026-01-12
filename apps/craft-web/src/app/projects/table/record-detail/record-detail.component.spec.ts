@@ -1,41 +1,28 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RecordDetailComponent } from './record-detail.component';
-import { RouterModule } from '@angular/router';
-import { appRoutes } from '../../../app.routes';
-import { FormsModule } from '@angular/forms';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RecordListComponent } from '../record-list.component';
-import { RecordService } from '../record.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { NotificationService } from '../../../common/services/notification.service';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ActivatedRoute } from '@angular/router';
+import { RecordService } from '../services/record.service';
+import { MockRecordService, mockActivatedRoute } from '../../../testing/test-mocks';
 
 describe('RecordDetailComponent', () => {
-    let component: RecordDetailComponent;
-    let fixture: ComponentFixture<RecordDetailComponent>;
-    let mockNotificationService: Partial<NotificationService>;
-  
-    beforeEach(async () => {
-      mockNotificationService = {
-        clear: jest.fn(),
-        showSuccess: jest.fn(),
-        showError: jest.fn(),
-        showHTMLMessage: jest.fn()
-      };
-  
-      await TestBed.configureTestingModule({
-        imports: [
-          RouterModule.forRoot(appRoutes),
-          FormsModule,
-          BrowserAnimationsModule,
-          HttpClientTestingModule
-        ],
-        declarations: [RecordListComponent, RecordDetailComponent],
-        providers: [
-          RecordService,
-          { provide: NotificationService, useValue: mockNotificationService }
-        ],
-      }).compileComponents();
-    
+  let component: RecordDetailComponent;
+  let fixture: ComponentFixture<RecordDetailComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [NoopAnimationsModule, MatCardModule, MatIconModule, MatTableModule, MatProgressSpinnerModule],
+      declarations: [RecordDetailComponent],
+      providers: [
+        { provide: RecordService, useClass: MockRecordService },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+      ],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(RecordDetailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

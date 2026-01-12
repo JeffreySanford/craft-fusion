@@ -1,39 +1,53 @@
-// MD3 Design tokens based on https://m3.material.io/
-// This file should contain all foundational design tokens
-
-// Color tokens
 $md-sys-color: (
-  // Core colors (light theme)
   primary: #002868,
-  on-primary: #ffffff,
+  on-primary: #fff,
   primary-container: #d6e2ff,
   on-primary-container: #001849,
-  // ...other colors
-
-  // Surface tokens
   surface: #fdfbff,
   on-surface: #1b1b1f,
   surface-variant: #e1e2ec,
   on-surface-variant: #44474f,
-  // ...other surface variants
-  
-  // State layers
   state-layers: (
     hover-opacity: 0.08,
     focus-opacity: 0.12,
     pressed-opacity: 0.12,
-    dragged-opacity: 0.16
+    dragged-opacity: 0.16,
   ),
-  
-  // Typography tokens
   typography: (
     display-large: (
       font-family: "Roboto Flex, sans-serif",
-      font-size: 57px,
-      line-height: 64px,
+      font-size: 3.5625em,
+      line-height: 4em,
       font-weight: 400,
-      letter-spacing: -0.25px
+      letter-spacing: -0.0156em,
     ),
-    // ...other type styles
   )
 );
+
+@use "sass:map";
+@use "sass:meta";
+
+@mixin emit-css-vars($map, $prefix: "") {
+  @each $k, $v in $map {
+    $name: null;
+    @if $prefix == "" {
+      $name: $k;
+    } @else {
+      $name: #{$prefix}-#{$k};
+    }
+
+    @if meta.type-of($v) == "map" {
+      @include emit-css-vars($v, $name);
+    } @else {
+      #{"--md-sys-#{$name}"}: #{$v};
+    }
+  }
+}
+
+:root {
+  @include emit-css-vars($md-sys-color);
+}
+
+body.dark-theme {
+
+}

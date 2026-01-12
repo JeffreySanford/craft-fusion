@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SecurityController } from './security.controller';
 import { SecurityService } from './security.service';
 import { PdfGenerationService } from '../common/pdf-generation.service';
+import { of } from 'rxjs';
 import { SecurityScanGateway } from '../security-scan/security-scan.gateway';
 
 // Mock uuid module
@@ -20,7 +21,7 @@ describe('SecurityController', () => {
         {
           provide: PdfGenerationService,
           useValue: {
-            generateSecurityReport: jest.fn(),
+            generateSecurityReport: jest.fn().mockReturnValue(of(Buffer.from(''))),
           },
         },
         {

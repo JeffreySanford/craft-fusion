@@ -1,9 +1,8 @@
-@use 'variables' as vars;
-@use 'sass:map';
-@use 'sass:math';
-@use 'sass:color';
+@use "variables" as vars;
+@use "sass:map";
+@use "sass:math";
+@use "sass:color";
 
-// Responsive mixins
 @mixin mobile {
   @media (max-width: 576px) {
     @content;
@@ -22,116 +21,73 @@
   }
 }
 
-// Flexbox mixins
-@mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
-  display: flex;
-  flex-direction: $direction;
-  justify-content: $justify;
-  align-items: $align;
-  flex-wrap: $wrap;
-}
-
 @mixin flex-center {
+  align-items: center;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 
-// Animation mixins
 @mixin fade-in($duration: 0.3s) {
   animation: fadeIn $duration ease-in-out;
-  
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-}
 
-@mixin slide-in($direction: 'left', $distance: 20px, $duration: 0.3s) {
-  $start-x: 0;
-  $start-y: 0;
-  
-  @if $direction == 'left' {
-    $start-x: -$distance;
-  } @else if $direction == 'right' {
-    $start-x: $distance;
-  } @else if $direction == 'up' {
-    $start-y: $distance;
-  } @else if $direction == 'down' {
-    $start-y: -$distance;
-  }
-  
-  animation: slideIn $duration ease-out;
-  
-  @keyframes slideIn {
+  @keyframes fadeIn {
     from {
-      transform: translate($start-x, $start-y);
       opacity: 0;
     }
+
     to {
-      transform: translate(0, 0);
       opacity: 1;
     }
   }
 }
 
-// Layout and positioning mixins
+@mixin slide-in($direction: "left", $distance: 20px, $duration: 0.3s) {
+  $start-x: if($direction == "left", -$distance, if($direction == "right", $distance, 0));
+  $start-y: if($direction == "up", $distance, if($direction == "down", -$distance, 0));
+
+  animation: slideIn $duration ease-out;
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translate($start-x, $start-y);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+  }
+}
+
 @mixin page-layer {
   position: relative;
   z-index: 1;
 }
 
 @mixin animation-background {
+  height: 100%;
+  left: 0;
+  pointer-events: none;                                              
   position: absolute;
   top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
   z-index: 0;
-  pointer-events: none; // Allows clicking through to elements behind
 }
 
 @mixin stacked-layout {
-  position: relative;
-  overflow: hidden;
   min-height: 100vh;
+  overflow: hidden;
+  position: relative;
 }
 
-// Card mixin
-@mixin card {
-  background-color: var(--md-sys-color-surface);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
-}
-
-// Patriotic theme mixins
-@mixin patriotic-border {
-  border-left: 4px solid transparent;
-  border-image: linear-gradient(
-    to bottom,
-    var(--md-sys-color-primary),
-    var(--md-sys-color-primary) 33%,
-    var(--md-sys-color-secondary) 33%,
-    var(--md-sys-color-secondary) 67%,
-    var(--md-sys-color-tertiary) 67%,
-    var(--md-sys-color-tertiary) 100%
-  );
-  border-image-slice: 1;
-}
-
-// Core mixins for the application
-
-// Display mixins
 @mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
-  display: flex;
-  flex-direction: $direction;
-  justify-content: $justify;
   align-items: $align;
-  flex-wrap: $wrap;
+  display: flex;
+  flex-flow: #{$direction} #{$wrap};
+  justify-content: $justify;
 }
 
-// Spacing mixins
 @mixin padding($space) {
   padding: map.get(vars.$spacing, $space);
 }
@@ -142,8 +98,8 @@
 }
 
 @mixin padding-y($space) {
-  padding-top: map.get(vars.$spacing, $space);
   padding-bottom: map.get(vars.$spacing, $space);
+  padding-top: map.get(vars.$spacing, $space);
 }
 
 @mixin margin($space) {
@@ -156,14 +112,13 @@
 }
 
 @mixin margin-y($space) {
-  margin-top: map.get(vars.$spacing, $space);
   margin-bottom: map.get(vars.$spacing, $space);
+  margin-top: map.get(vars.$spacing, $space);
 }
 
-// Responsive mixins
 @mixin respond-to($breakpoint) {
   $value: map.get(vars.$breakpoints, $breakpoint);
-  
+
   @if $value {
     @media (min-width: $value) {
       @content;
@@ -173,46 +128,39 @@
   }
 }
 
-// Typography mixins
 @mixin font-size($size) {
   font-size: map.get(vars.$font-sizes, $size);
 }
 
 @mixin text-style($style) {
-  @if $style == 'h1' {
-    font-family: map.get(vars.$font-families, 'playfair');
-    font-size: map.get(vars.$font-sizes, '4xl');
+  @if $style == "h1" {
+    font-family: map.get(vars.$font-families, "playfair");
+    font-size: map.get(vars.$font-sizes, "4xl");
     font-weight: 700;
     line-height: 1.2;
-  } @else if $style == 'h2' {
-    font-family: map.get(vars.$font-families, 'merriweather');
-    font-size: map.get(vars.$font-sizes, '3xl');
+  } @else if $style == "h2" {
+    font-family: map.get(vars.$font-families, "merriweather");
+    font-size: map.get(vars.$font-sizes, "3xl");
     font-weight: 700;
     line-height: 1.2;
-  } @else if $style == 'body' {
-    font-family: map.get(vars.$font-families, 'roboto-flex');
-    font-size: map.get(vars.$font-sizes, 'base');
+  } @else if $style == "body" {
+    font-family: map.get(vars.$font-families, "roboto-flex");
+    font-size: map.get(vars.$font-sizes, "base");
     font-weight: 400;
     line-height: 1.5;
   }
-  // Add more styles as needed
+
 }
 
-// Card mixins
-@mixin card($elevation: 1, $radius: 'md') {
+@mixin card($elevation: 1, $radius: "md") {
   background-color: var(--md-sys-color-surface);
   border-radius: map.get(vars.$border-radius, $radius);
   box-shadow: var(--md-sys-elevation-level#{$elevation});
   overflow: hidden;
 }
 
-// Patriotic styling mixins
 @mixin patriotic-gradient($angle: 135deg) {
-  background: linear-gradient(
-    $angle,
-    var(--md-sys-color-primary) 0%,
-    var(--md-sys-color-secondary) 100%
-  );
+  background: linear-gradient($angle, var(--md-sys-color-primary) 0%, var(--md-sys-color-secondary) 100%);
   color: var(--md-sys-color-on-primary);
 }
 
@@ -220,40 +168,39 @@
   border-left: $width solid var(--md-sys-color-primary);
   border-right: $width solid var(--md-sys-color-secondary);
   position: relative;
-  
+
   &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: $width;
     background-color: var(--md-sys-color-tertiary);
+    content: "";
+    height: $width;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
   }
 }
 
-// Animation mixins
 @mixin animate($property, $duration: 0.3s, $timing: ease) {
   transition: $property $duration $timing;
 }
 
-@mixin hover-effect($scale: 1.05, $shadow-level: 2) {
-  @include animate(transform box-shadow);
-  
+@mixin hover-effect($scale: 1.05, $shadow-level: 2, $duration: 0.3s, $timing: ease) {
+
+  transition: transform $duration $timing, box-shadow $duration $timing;
+
   &:hover {
-    transform: scale($scale);
     box-shadow: var(--md-sys-elevation-level#{$shadow-level});
+    transform: scale($scale);
   }
 }
 
-// Layout mixins
-@mixin container($max-width: 'xl') {
-  width: 100%;
+@mixin container($max-width: "xl") {
   margin-left: auto;
   margin-right: auto;
   padding-left: map.get(vars.$spacing, 4);
   padding-right: map.get(vars.$spacing, 4);
-  
+  width: 100%;
+
   @if map.has-key(vars.$container-max-widths, $max-width) {
     max-width: map.get(vars.$container-max-widths, $max-width);
   } @else {
@@ -263,43 +210,42 @@
 
 @mixin grid($columns: 12, $gap: 4) {
   display: grid;
-  grid-template-columns: repeat($columns, 1fr);
   gap: map.get(vars.$spacing, $gap);
+  grid-template-columns: repeat($columns, 1fr);
 }
 
-// Truncate text with ellipsis
 @mixin truncate($lines: 1) {
   @if $lines == 1 {
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   } @else {
+
+    -webkit-box-orient: vertical;
+
     display: -webkit-box;
     -webkit-line-clamp: $lines;
-    -webkit-box-orient: vertical;
     overflow: hidden;
   }
 }
 
-// Accessibility mixins
 @mixin visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
   border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 0.0625em;
+  margin: -0.0625em;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 0.0625em;
 }
 
-@mixin focus-outline($color: 'primary', $width: 2px, $offset: 2px) {
+@mixin focus-outline($color: "primary", $width: 2px, $offset: 2px) {
   outline: $width solid var(--md-sys-color-#{$color});
   outline-offset: $offset;
 }
 
-// Create focus styles that only appear for keyboard navigation
 @mixin focus-visible {
   &:focus-visible {
     @content;

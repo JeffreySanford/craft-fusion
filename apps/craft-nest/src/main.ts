@@ -428,19 +428,10 @@ async function bootstrap() {
       Logger.warn(`Failed to seed admin credentials: ${isError(e) ? e.message : String(e)}`);
     }
 
-    // Seed authentication artifacts (users + tokens) from env and seed file.
+    // Seed authentication artifacts (users + tokens) directly from environment variables.
     // This runs on every startup; it writes to `users` and `api_tokens` so
     // both in-memory and real Mongo backends can validate JWTs consistently.
     try {
-      const authSeedCandidates = [
-        path.join(process.cwd(), 'apps', 'craft-nest', 'src', 'app', 'seed', 'auth-seed.json'),
-        path.resolve(__dirname, 'seed', 'auth-seed.json'),
-        path.resolve(__dirname, '..', '..', 'apps', 'craft-nest', 'src', 'app', 'seed', 'auth-seed.json'),
-        // Legacy fallback
-        path.join(process.cwd(), 'apps', 'craft-nest', 'src', 'app', 'auth', 'auth-seed.json'),
-      ];
-
-      const seedPath = authSeedCandidates.find(candidate => fs.existsSync(candidate));
       const usersColl = connection.collection('users');
       const tokensColl = connection.collection('api_tokens');
 
@@ -502,60 +493,48 @@ async function bootstrap() {
         }
       }
 
-      // 3) If an auth-seed.json file exists, seed its users and tokens
-      if (seedPath && fs.existsSync(seedPath)) {
-        try {
-          const raw = fs.readFileSync(seedPath, 'utf8');
-          const seed = JSON.parse(raw) as any;
-          if (Array.isArray(seed.users)) {
-            for (const u of seed.users) {
-              try {
-                if (!u.username) continue;
-                const exist = await usersColl.findOne({ username: u.username });
-                if (!exist) {
-                  const hash = u.password ? await bcrypt.hash(String(u.password), 10) : undefined;
-                  const now = new Date();
-                  const doc: any = { username: u.username, roles: u.roles || ['user'], createdAt: now, updatedAt: now };
-                  if (hash) doc.passwordHash = hash;
-                  await usersColl.insertOne(doc);
-                  Logger.log(`Seeded user from auth-seed.json: ${u.username}`);
-                  console.log(`[seeder] Seeded user from auth-seed.json: ${u.username}`);
-                  seededCollections.add('users');
-                } else {
-                  Logger.log(`Skipping existing auth user from auth-seed.json: ${u.username}`);
-                  console.log(`[seeder] Skipping existing auth user from auth-seed.json: ${u.username}`);
-                }
-              } catch (e) {
-                Logger.warn(`Failed to seed user ${u.username}: ${String(e)}`);
-                console.log(`[seeder] Failed to seed user ${u.username}: ${String(e)}`);
-              }
-            }
-          }
+      // 3) Seed valued-member token directly from environment variables.
+      const valuedToken = process.env['VALUED_MEMBER_TOKEN'];
+      const valuedUsername = process.env['VALUED_MEMBER_USERNAME']?.trim() || 'valued-member';
+      const valuedRawRoles = process.env['VALUED_MEMBER_ROLES'];
+      const valuedRoles = valuedRawRoles
+        ? valuedRawRoles
+            .split(',')
+            .map(role => role.trim())
+            .filter(role => role)
+        : ['user'];
 
-          if (Array.isArray(seed.tokens)) {
-            for (const t of seed.tokens) {
-              try {
-                if (!t.username || !t.token) continue;
-                const exist = await tokensColl.findOne({ username: t.username, type: t.type || 'env' });
-                if (!exist) {
-                  const doc: any = { username: t.username, token: t.token, type: t.type || 'env', roles: t.roles || ['user'], createdAt: new Date() };
-                  await tokensColl.insertOne(doc);
-                  Logger.log(`Seeded token for ${t.username} from auth-seed.json`);
-                  console.log(`[seeder] Seeded token for ${t.username} from auth-seed.json`);
-                  seededCollections.add('api_tokens');
-                } else {
-                  Logger.log(`Skipping existing token for ${t.username} from auth-seed.json`);
-                  console.log(`[seeder] Skipping existing token for ${t.username} from auth-seed.json`);
-                }
-              } catch (e) {
-                Logger.warn(`Failed to seed token for ${t.username}: ${String(e)}`);
-                console.log(`[seeder] Failed to seed token for ${t.username}: ${String(e)}`);
-              }
-            }
-          }
+      if (valuedToken) {
+        try {
+          const now = new Date();
+          const filter = { username: valuedUsername, type: 'env' };
+          const updateDoc: any = {
+            token: valuedToken,
+            roles: valuedRoles.length ? valuedRoles : ['user'],
+            updatedAt: now,
+          };
+          const updateResult = await tokensColl.updateOne(
+            filter,
+            {
+              $set: updateDoc,
+              $setOnInsert: { createdAt: now },
+            },
+            { upsert: true },
+          );
+          const action = updateResult.upsertedCount
+            ? 'Seeded'
+            : updateResult.modifiedCount
+              ? 'Updated'
+              : 'Retained';
+          Logger.log(`${action} valued-member token from environment`);
+          console.log(`[seeder] ${action} valued-member token from environment`);
+          seededCollections.add('api_tokens');
         } catch (e) {
-          Logger.warn(`Failed to read auth-seed.json: ${String(e)}`);
+          Logger.warn(`Failed to seed valued-member token from env: ${String(e)}`);
+          console.log(`[seeder] Failed to seed valued-member token from env: ${String(e)}`);
         }
+      } else {
+        Logger.warn('VALUED_MEMBER_TOKEN is not set, valued-member login will be unavailable');
       }
     } catch (e) {
       Logger.warn(`Auth seeding error: ${isError(e) ? e.message : String(e)}`);

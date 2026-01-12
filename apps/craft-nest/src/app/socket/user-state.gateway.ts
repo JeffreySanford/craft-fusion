@@ -1,4 +1,5 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody, ConnectedSocket } from '@nestjs/websockets';
+import { Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { UserStateService } from '../user/user-state.service';
 
@@ -14,6 +15,8 @@ export class UserStateGateway {
   @WebSocketServer()
   server!: Server;
 
+  private readonly logger = new Logger('UserStateGateway');
+
   constructor(private readonly userStateService: UserStateService) {}
 
   @SubscribeMessage('registerGuest')
@@ -28,7 +31,7 @@ export class UserStateGateway {
     // Send back the guest ID to the client
     client.emit('guestRegistered', { guestId });
     
-    console.log(`Socket: Guest registered with ID ${guestId}`);
+    this.logger.verbose(`Socket: Guest registered with ID ${guestId}`);
   }
   
   @SubscribeMessage('updateLoginTime')
@@ -42,7 +45,7 @@ export class UserStateGateway {
     const dateTime = new Date(data.dateTime);
     this.userStateService.setLoginDateTime(dateTime, userId, isGuest).subscribe();
     
-    console.log(`Socket: Updated login time for ${isGuest ? 'guest' : 'user'} ${userId}: ${dateTime}`);
+    this.logger.verbose(`Socket: Updated login time for ${isGuest ? 'guest' : 'user'} ${userId}: ${dateTime}`);
   }
   
   @SubscribeMessage('updateVisitLength')
@@ -55,7 +58,7 @@ export class UserStateGateway {
     
     this.userStateService.setVisitLength(data.length, userId, isGuest).subscribe();
     
-    console.log(`Socket: Updated visit length for ${isGuest ? 'guest' : 'user'} ${userId}: ${data.length}`);
+    this.logger.verbose(`Socket: Updated visit length for ${isGuest ? 'guest' : 'user'} ${userId}: ${data.length}`);
   }
   
   @SubscribeMessage('updateVisitedPage')
@@ -68,6 +71,6 @@ export class UserStateGateway {
     
     this.userStateService.setVisitedPage(data.page, userId, isGuest).subscribe();
     
-    console.log(`Socket: Updated visited page for ${isGuest ? 'guest' : 'user'} ${userId}: ${data.page}`);
+    this.logger.verbose(`Socket: Updated visited page for ${isGuest ? 'guest' : 'user'} ${userId}: ${data.page}`);
   }
 }

@@ -4,7 +4,7 @@
  */
 export interface User {
   /** Unique identifier for the user */
-  id: number; // Changed from 'number | string' to just 'number' for SessionService compatibility
+  id: string | number;
 
   /** Username for login (unique) */
   username: string;
@@ -127,6 +127,9 @@ export interface AuthResponse {
   expiresIn?: number;
   refreshExpiresIn?: number;
   message?: string;
+  token?: string;
+  accessToken?: string;
+  refreshToken?: string;
 }
 
 /**
@@ -134,6 +137,7 @@ export interface AuthResponse {
  */
 export interface LoginRequest {
   username: string;
-  password: string;
+  password?: string;
   rememberMe?: boolean;
+  roles?: string[];
 }

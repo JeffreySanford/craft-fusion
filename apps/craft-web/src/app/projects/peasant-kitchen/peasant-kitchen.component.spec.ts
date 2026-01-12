@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { PeasantKitchenComponent } from './peasant-kitchen.component';
 
 describe('PeasantKitchenComponent', () => {
@@ -8,6 +9,7 @@ describe('PeasantKitchenComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [PeasantKitchenComponent],
+      imports: [RouterTestingModule.withRoutes([])],
     }).compileComponents();
   });
 

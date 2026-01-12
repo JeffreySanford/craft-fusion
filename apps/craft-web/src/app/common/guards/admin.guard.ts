@@ -15,7 +15,7 @@ export class AdminGuard implements CanActivate {
     private logger: LoggerService,
   ) {}
 
-  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+  canActivate(_next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return this.authService.ensureAuthInitialized().pipe(
       switchMap(() => this.authService.isAdmin$.pipe(take(1))),
       map(isAdmin => {

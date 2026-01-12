@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Observable } from 'rxjs';
 import PDFDocument from 'pdfkit';
 
 export interface PdfReportOptions {
@@ -14,8 +15,8 @@ export class PdfGenerationService {
   /**
    * Generate a FedRAMP/NIST-compliant security report PDF
    */
-  async generateSecurityReport(options: PdfReportOptions): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
+  generateSecurityReport(options: PdfReportOptions): Observable<Buffer> {
+    return new Observable<Buffer>((observer) => {
       const doc = new PDFDocument({
         size: 'LETTER',
         margins: { top: 50, bottom: 50, left: 50, right: 50 },
@@ -29,8 +30,16 @@ export class PdfGenerationService {
 
       const chunks: Buffer[] = [];
       doc.on('data', (chunk: Buffer) => chunks.push(chunk));
-      doc.on('end', () => resolve(Buffer.concat(chunks)));
-      doc.on('error', reject);
+      let hasEnded = false;
+      doc.on('end', () => {
+        hasEnded = true;
+        observer.next(Buffer.concat(chunks));
+        observer.complete();
+      });
+      doc.on('error', (error) => {
+        hasEnded = true;
+        observer.error(error);
+      });
 
       // Header
       this.addHeader(doc, options);
@@ -66,6 +75,13 @@ export class PdfGenerationService {
       this.addFooter(doc);
 
       doc.end();
+
+      return () => {
+        if (!hasEnded) {
+          doc.end();
+          hasEnded = true;
+        }
+      };
     });
   }
 

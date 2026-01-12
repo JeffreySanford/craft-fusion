@@ -1,14 +1,26 @@
 import { Page } from '@playwright/test';
 
-const DEFAULT_USERNAME = 'test';
-
 function adminCredentials() {
   const adminSecret = process.env['ADMIN_SECRET'];
-  const adminUsername = process.env['ADMIN_USERNAME'];
-  const adminPassword = process.env['ADMIN_PASSWORD'];
-  const useAdminCredentials = Boolean(adminSecret) || Boolean(adminUsername && adminPassword);
-  const username = useAdminCredentials ? adminUsername || 'admin' : DEFAULT_USERNAME;
-  const password = adminSecret ? undefined : useAdminCredentials ? adminPassword : undefined;
+  const adminUsernameRaw = process.env['ADMIN_USERNAME'];
+  const adminPasswordRaw = process.env['ADMIN_PASSWORD'];
+
+  if (!adminUsernameRaw) {
+    throw new Error(
+      'Playwright admin login requires ADMIN_USERNAME to be set in .env (and ADMIN_PASSWORD unless ADMIN_SECRET is provided).',
+    );
+  }
+
+  const username = adminUsernameRaw.trim();
+  if (!username) {
+    throw new Error('ADMIN_USERNAME cannot be empty.');
+  }
+
+  if (!adminSecret && !adminPasswordRaw) {
+    throw new Error('ADMIN_PASSWORD must be set in .env when ADMIN_SECRET is not provided.');
+  }
+
+  const password = adminSecret ? undefined : adminPasswordRaw?.trim();
   return { username, password };
 }
 

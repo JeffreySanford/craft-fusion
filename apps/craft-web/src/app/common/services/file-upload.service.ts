@@ -3,7 +3,7 @@ import { ApiService } from './api.service';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FileUploadService {
   constructor(private api: ApiService) {}

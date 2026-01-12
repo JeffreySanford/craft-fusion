@@ -8,6 +8,8 @@ interface AuthStatusPayload {
   user: AuthenticatedUser;
   expiresIn: number;
   refreshExpiresIn: number;
+  token?: string;
+  refreshToken?: string;
 }
 
 @Controller('auth')
@@ -16,8 +18,11 @@ export class AuthenticationController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() body: { username: string; password?: string }, @Res({ passthrough: true }) res: Response) {
-    const authResponse = await this.authService.login(body.username, body.password);
+  async login(
+    @Body() body: { username: string; password?: string; roles?: string[] },
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const authResponse = await this.authService.login(body.username, body.password, body.roles);
     this.setAuthCookies(res, authResponse);
     return this.mapToPayload(authResponse);
   }
@@ -83,6 +88,8 @@ export class AuthenticationController {
       user: response.user,
       expiresIn: response.expiresIn,
       refreshExpiresIn: response.refreshExpiresIn,
+      token: response.accessToken,
+      refreshToken: response.refreshToken,
     };
   }
 

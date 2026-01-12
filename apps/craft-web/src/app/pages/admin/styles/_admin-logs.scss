@@ -1,0 +1,44 @@
+@use "variables" as vars;
+
+.logger-display {
+  background: rgb(30 41 59 / 50%);
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 0.625em;
+  box-shadow: 0 0.5em 1em rgb(0 0 0 / 20%);
+  margin-top: 1em;
+  overflow: hidden;
+  padding: 1em;
+
+  h2 {
+    color: vars.$patriot-white;
+    margin-bottom: 0.75em;
+    margin-top: 0;
+  }
+
+  .log-entries {
+    max-height: 18.75em;
+    overflow-y: auto;
+    padding: 0.5em;
+  }
+
+  .log-entry {
+    color: silver;
+    font-size: 0.85em;
+    margin-bottom: 0.5em;
+  }
+}
+
+.logger-tab {
+  .logger-controls {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.clear-logs-container {
+  background: linear-gradient(135deg, rgb(30 41 59 / 80%), rgb(17 24 39 / 90%));
+  border-radius: 0.5em;
+  padding: 0.25em 0.75em;
+}

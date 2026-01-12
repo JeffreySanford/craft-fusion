@@ -1,37 +1,65 @@
 <div class="performance-dashboard">
-  <div class="metrics-summary">
-    <div class="metric-card memory">
-      <div class="metric-icon"><mat-icon>memory</mat-icon></div>
-      <div class="metric-info">
-        <span class="metric-label">Memory</span>
-        <span class="metric-value">{{performanceMetrics.memoryUsage}}</span>
-      </div>
+  <header class="section-header">
+    <div>
+      <p class="eyebrow">Live telemetry</p>
+      <h3>Performance pulse</h3>
+      <p class="subtitle">Realtime latency, throughput, and headroom across services.</p>
     </div>
-    <div class="metric-card cpu">
-      <div class="metric-icon"><mat-icon>speed</mat-icon></div>
-      <div class="metric-info">
-        <span class="metric-label">CPU</span>
-        <span class="metric-value">{{performanceMetrics.cpuLoad}}</span>
+    <span class="pill live">Streaming</span>
+  </header>
+
+  <div class="metric-grid">
+    <article class="metric-card memory">
+      <div class="metric-top">
+        <p class="eyebrow">Memory</p>
+        <mat-icon>memory</mat-icon>
       </div>
-    </div>
-    <div class="metric-card uptime">
-      <div class="metric-icon"><mat-icon>schedule</mat-icon></div>
-      <div class="metric-info">
-        <span class="metric-label">Uptime</span>
-        <span class="metric-value">{{performanceMetrics.appUptime}}</span>
+      <div class="metric-value">{{ performanceMetrics.memoryUsage }}</div>
+      <p class="metric-sub">In use across services</p>
+    </article>
+
+    <article class="metric-card cpu">
+      <div class="metric-top">
+        <p class="eyebrow">CPU</p>
+        <mat-icon>speed</mat-icon>
       </div>
-    </div>
-    <div class="metric-card network">
-      <div class="metric-icon"><mat-icon>network_check</mat-icon></div>
-      <div class="metric-info">
-        <span class="metric-label">Network</span>
-        <span class="metric-value">{{performanceMetrics.networkLatency}}</span>
+      <div class="metric-value">{{ performanceMetrics.cpuLoad }}</div>
+      <p class="metric-sub">Weighted by load average</p>
+    </article>
+
+    <article class="metric-card uptime">
+      <div class="metric-top">
+        <p class="eyebrow">Uptime</p>
+        <mat-icon>schedule</mat-icon>
       </div>
-    </div>
+      <div class="metric-value">{{ performanceMetrics.appUptime }}</div>
+      <p class="metric-sub">Process lifetime</p>
+    </article>
+
+    <article class="metric-card network">
+      <div class="metric-top">
+        <p class="eyebrow">Network</p>
+        <mat-icon>network_check</mat-icon>
+      </div>
+      <div class="metric-value">{{ performanceMetrics.networkLatency }}</div>
+      <p class="metric-sub">Average response latency</p>
+    </article>
   </div>
 
-  <div class="chart-area">
-    <canvas #systemCanvas></canvas>
+  <div class="chart-panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Latency distribution</p>
+        <h4>Service response times</h4>
+      </div>
+      <div class="legend">
+        <span class="chip good">Stable</span>
+        <span class="chip watch">Watch</span>
+      </div>
+    </div>
+    <div class="chart-shell">
+      <canvas #systemCanvas></canvas>
+    </div>
   </div>
 
   <div class="services-panel">

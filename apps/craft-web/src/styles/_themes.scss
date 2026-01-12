@@ -1,80 +1,74 @@
-// _themes.scss
+@use "sass:map";
 
-// Light Theme
 $light-theme: (
-    primary: #ffffff,
-    secondary: #f0f0f0,
-    accent: #007bff,
-    text: #000000,
-    background: #ffffff
+  primary: #fff,
+  secondary: #f0f0f0,
+  accent: #007bff,
+  text: #000,
+  background: #fff,
 );
 
-// Dark Theme
 $dark-theme: (
-    primary: #000000,
-    secondary: #333333,
-    accent: #ff4081,
-    text: #ffffff,
-    background: #000000
+  primary: #000,
+  secondary: #333,
+  accent: #ff4081,
+  text: #fff,
+  background: #000,
 );
 
-// Patriotic Theme
 $patriotic-theme: (
-    primary: #ffffff,
-    secondary: #ff0000,
-    accent: #0000ff,
-    text: #000000,
-    background: #ffffff
+  primary: #fff,
+  secondary: #f00,
+  accent: #00f,
+  text: #000,
+  background: #fff,
 );
 
-// Hoorah Levels Theme
 $hoorah-theme: (
-    primary: #ffcc00,
-    secondary: #ff6600,
-    accent: #cc0000,
-    text: #000000,
-    background: #ffffff
+  primary: #fc0,
+  secondary: #f60,
+  accent: #c00,
+  text: #000,
+  background: #fff,
 );
 
-// Mixin to apply theme
 @mixin apply-theme($theme) {
-    $primary: map-get($theme, primary);
-    $secondary: map-get($theme, secondary);
-    $accent: map-get($theme, accent);
-    $text: map-get($theme, text);
-    $background: map-get($theme, background);
+  $primary: map.get($theme, primary);
+  $secondary: map.get($theme, secondary);
+  $accent: map.get($theme, accent);
+  $text: map.get($theme, text);
+  $background: map.get($theme, background);
 
-    body {
-        color: $text;
-        background-color: $background;
-    }
+  body {
+    background-color: $background;
+    color: $text;
+  }
 
-    .primary {
-        color: $primary;
-    }
+  .primary {
+    color: $primary;
+  }
 
-    .secondary {
-        color: $secondary;
-    }
+  .secondary {
+    color: $secondary;
+  }
 
-    .accent {
-        color: $accent;
-    }
+  .accent {
+    color: $accent;
+  }
 }
 
-// Usage example
 body.light-theme {
-    @include apply-theme($light-theme);
+  @include apply-theme($light-theme);
 }
 
 body.dark-theme {
-    @include apply-theme($dark-theme);
+  @include apply-theme($dark-theme);
 }
 
 body.patriotic-theme {
-    @include apply-theme($patriotic-theme);
+  @include apply-theme($patriotic-theme);
 }
 
 body.hoorah-theme {
-    @include apply-theme($hoorah-theme);
+  @include apply-theme($hoorah-theme);
 }

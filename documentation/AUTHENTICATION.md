@@ -34,11 +34,11 @@ This document describes the current auth architecture, the integration points be
 
 ## Backend (NestJS)
 
-### AuthService and controller
+### Authentication Service and controller
 
-- `apps/craft-nest/src/app/auth/auth.service.ts` keeps a hard-coded map of demo users (`admin`, `user`, `test`) and returns a JWT signed by `JwtService`.
-- `AuthController.login()` injects the requested username/password into `validateUser`, logs the timing, and adapts the returned `User` so the response always includes `roles: [user.role]` for the frontend.
-- The JWT payload contains `sub`, `username`, `role`, and `permissions`. The payload is reused by guards and clients.
+- `apps/craft-nest/src/app/auth/authentication/authentication.service.ts` now derives every session from the credentials defined in `.env` (`ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_SECRET`, and the optional `AUTH_EMAIL_DOMAIN`). Admin elevation only occurs when those secrets match (or via the legacy `test/test` shortcut), so be careful with those values in local/dev environments.
+  - `AuthenticationController` wires login/refresh/logout/user requests to the service, sets HttpOnly `AccessToken`/`RefreshToken` cookies, and exposes the decoded payload so the guards and clients can consume the `sub`, `username`, and `roles` claims.
+  - The Postgre/Mongo seeding pipeline now reads `VALUED_MEMBER_TOKEN` (and optional `VALUED_MEMBER_USERNAME`/`VALUED_MEMBER_ROLES`) directly from `.env` to populate `api_tokens`. The auto-login flow consumes that token, verifies it with `JWT_SECRET`, and returns the `valued-member` profile, so rotating the secret still invalidates the stored session until the environment variable is updated.
 
 ### AuthGuard
 
@@ -52,7 +52,7 @@ This document describes the current auth architecture, the integration points be
 
 ## Known limitations and risks
 
-- Auth is still backed by a demo user map; there is no real database or password hashing in place.
+- Auth is still backed by the handful of `.env`-seeded credentials and the in-memory Mongo seeding process; there is no fully-featured user directory yet, so guard the admin secrets when running in trusted environments.
 - The frontend relies entirely on the HttpOnly cookies issued by the backend; refresh/rotation logic now persists refresh tokens via `RefreshTokenService` into the Mongo `refresh_tokens` collection so they survive restarts, with TTL indexing keeping expiry clean.
 - `SessionService.validateToken` is a placeholder and the backend now tracks refresh token revocations through the same Mongo collection, so the next step is hooking alerts/metrics around that collection.
 

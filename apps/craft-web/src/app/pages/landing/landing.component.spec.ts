@@ -1,25 +1,33 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCardModule } from '@angular/material/card';
+import { LoggerService } from '../../common/services/logger.service';
+import { ComponentsModule } from '../../common/components/components.module';
 import { LandingComponent } from './landing.component';
 
 describe('LandingComponent', () => {
   let component: LandingComponent;
   let fixture: ComponentFixture<LandingComponent>;
+  const loggerServiceMock = {
+    info: jest.fn(),
+  };
 
   beforeEach(() => {
-    // Mock SpeechRecognition API
     const mockSpeechRecognition = jest.fn().mockImplementation(() => ({
       start: jest.fn(),
       onresult: jest.fn(),
-      lang: ''
+      lang: '',
     }));
-    (window as any).SpeechRecognition = (window as any).SpeechRecognition || mockSpeechRecognition;
+    Object.defineProperty(window, 'SpeechRecognition', {
+      writable: true,
+      value: mockSpeechRecognition,
+    });
 
     TestBed.configureTestingModule({
       declarations: [LandingComponent],
-      imports: [],
-      providers: []
+      imports: [MatCardModule, ComponentsModule],
+      providers: [{ provide: LoggerService, useValue: loggerServiceMock }],
     }).compileComponents();
-  
+
     fixture = TestBed.createComponent(LandingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

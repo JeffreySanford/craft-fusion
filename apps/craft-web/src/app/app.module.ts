@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Router, NavigationStart, NavigationCancel, NavigationEnd, NavigationError } from '@angular/router';
+import { filter, take } from 'rxjs/operators';
 import { AppComponent } from './app.component';
 import { appRoutes } from './app.routes';
 import { MaterialModule } from './material.module';
@@ -15,15 +16,16 @@ import { FooterModule } from './pages/footer/footer.module';
 import { LoggerService } from './common/services/logger.service';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { SocketClientService } from './common/services/socket-client.service';
+import { AuthModule } from './common/services/auth/auth.module';
+import { CommonServicesModule } from './common/services/common-services.module';
+import { DirectivesModule } from './common/directives/directives.module';
+import { httpInterceptorProviders } from './common/interceptors';
 
-// Import shared types from craft-library
 import { HealthData } from '@craft-fusion/craft-library';
 
 export function socketClientFactory(socketClient: SocketClientService): () => void {
   return () => {
-    // Initialize the socket client and emit health metric
     socketClient.connect();
-    console.info('[AppModule] SocketClientService initialized and connected');
     const healthMetric: HealthData = {
       status: 'healthy',
       services: { api: true },
@@ -34,17 +36,21 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
         memory: { total: 0, free: 0, used: 0, usage: 0 },
         cpu: { loadAvg: [0, 0, 0], usage: 0 },
         process: { pid: 0, memoryUsage: {}, uptime: 0 },
-        timestamp: Date.now()
-      }
+        timestamp: Date.now(),
+      },
     };
-    socketClient.emit('health', healthMetric);
+
+    socketClient.isConnected$
+      .pipe(filter(Boolean), take(1))
+      .subscribe(() => {
+        console.info('[AppModule] SocketClientService connected');
+        socketClient.emit('health', healthMetric);
+      });
   };
 }
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -52,28 +58,29 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
     FormsModule,
     HttpClientModule,
     RouterModule.forRoot(appRoutes, {
-      scrollPositionRestoration: 'enabled', // Restore scroll position on navigation
-      anchorScrolling: 'enabled', // Enable anchor scrolling
-      onSameUrlNavigation: 'reload' // Reload the component on same URL navigation
+      scrollPositionRestoration: 'enabled',                                         
+      anchorScrolling: 'enabled',                           
+      onSameUrlNavigation: 'reload',                                               
     }),
     MaterialModule,
-    ComponentsModule, // Import ComponentsModule which exports ServerStatusComponent
+    ComponentsModule,                                                               
     HeaderModule,
     SidebarModule,
     FooterModule,
-    NgxSpinnerModule // Add NgxSpinnerModule
+    NgxSpinnerModule,
+    AuthModule,
+    CommonServicesModule,
+    DirectivesModule
   ],
   providers: [
+    httpInterceptorProviders,
     provideAppInitializer(() => {
       const router = inject(Router);
       router.events.subscribe(event => {
         console.log('Router event:', event);
       });
       const logger = inject(LoggerService);
-      
-      // Register the Router with the logger, return a hot observable that emits the router instance
-      // This is a workaround to ensure the logger has access to the router instance
-      // and can log navigation events
+
       router.events.subscribe(event => {
         if (event instanceof NavigationStart) {
           logger.info('Navigation started', event);
@@ -93,8 +100,8 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
     provideAppInitializer(() => {
       const socketClient = inject(SocketClientService);
       socketClientFactory(socketClient)();
-    })
+    }),
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

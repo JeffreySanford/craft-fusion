@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { Observable, of, concat, throwError } from 'rxjs';
+import { map, delay, tap, finalize, concatWith } from 'rxjs/operators';
 import * as securityControlsData from './security-controls.json';
 
 export interface SecurityFinding {
@@ -84,6 +86,13 @@ export interface OscalUpdateStatus {
     value: number;
     message: string;
   };
+}
+
+export interface SecurityScanProgress {
+  progress: number;
+  eta?: string;
+  message: string;
+  result?: OscalProfile | RealtimeCheck | Sbom;
 }
 
 export interface ScaCheckResult {
@@ -599,195 +608,214 @@ export class SecurityService {
   /**
    * Execute OSCAL scan with simulated progress
    */
-  async executeOscalScan(
-    profileId: string,
-    progressCallback?: (progress: number, eta: string, message: string) => void,
-  ): Promise<OscalProfile> {
+  executeOscalScan(profileId: string): Observable<SecurityScanProgress> {
     const profile = this.oscalProfiles.find((p) => p.id === profileId);
     if (!profile) {
       throw new Error(`OSCAL profile ${profileId} not found`);
     }
 
-    // Simulate scan execution with progress updates
     const totalSteps = 10;
-    for (let step = 0; step <= totalSteps; step++) {
-      await this.delay(1000 + Math.random() * 1000); // 1-2 seconds per step
-      
-      const progress = (step / totalSteps) * 100;
-      const eta = this.calculateEta(totalSteps - step, 1.5);
-      const message = this.getOscalStepMessage(step);
-      
-      if (progressCallback) {
-        progressCallback(progress, eta, message);
-      }
-    }
-
-    // Generate detailed control results
-    const controlResults: OscalControlResult[] = [];
-    const controlIds = this.getControlIdsForProfile(profileId);
     
-    let passCount = 0;
-    let failCount = 0;
-    let notApplicableCount = 0;
-    
-    for (const controlId of controlIds) {
-      const random = Math.random();
-      let status: 'pass' | 'fail' | 'notapplicable';
-      
-      if (random < 0.1) {
-        status = 'notapplicable';
-        notApplicableCount++;
-      } else if (random < 0.25) {
-        status = 'fail';
-        failCount++;
-      } else {
-        status = 'pass';
-        passCount++;
-      }
-      
-      // Get full control details from database
-      const control = this.getControl(controlId);
-      
-      const controlResult: OscalControlResult = {
-        id: controlId,
-        title: this.getControlTitle(controlId),
-        status,
-        timestamp: new Date().toISOString(),
-        severity: control?.severity || this.getRandomSeverity(),
-        description: this.getControlDescription(controlId),
-        recommendation: this.getControlRemediation(controlId),
-        evidence: this.getControlEvidence(controlId)
-      };
-      
-      // Add references if available from database
-      if (control?.references && control.references.length > 0) {
-        controlResult.reference = control.references.join(', ');
-      }
-      
-      // Add category/framework info if available
-      if (control?.category) {
-        controlResult.category = control.category;
-      }
-      
-      controlResults.push(controlResult);
-    }
+    // Create an observable for each step
+    const steps$ = Array.from({ length: totalSteps + 1 }, (_, step) => {
+      return of(step).pipe(
+        delay(1000 + Math.random() * 1000),
+        map((s) => {
+          const progress = (s / totalSteps) * 100;
+          const eta = this.calculateEta(totalSteps - s, 1.5);
+          const message = this.getOscalStepMessage(s);
+          return { progress, eta, message };
+        })
+      );
+    });
 
-    // Update profile with new results
-    profile.lastRun = new Date().toISOString();
-    profile.pass = passCount;
-    profile.fail = failCount;
-    profile.notapplicable = notApplicableCount;
-    profile.total = controlIds.length;
-    profile.status = failCount === 0 ? 'pass' : failCount > 3 ? 'fail' : 'warn';
-    profile.duration = `${(totalSteps * 1.5).toFixed(1)}s`;
-    profile.controlResults = controlResults;
+    return concat(...steps$).pipe(
+      finalize(() => {
+        // Final generation logic (moved from the end of executeOscalScan)
+        const controlResults: OscalControlResult[] = [];
+        const controlIds = this.getControlIdsForProfile(profileId);
+        
+        let passCount = 0;
+        let failCount = 0;
+        let notApplicableCount = 0;
+        
+        for (const controlId of controlIds) {
+          const random = Math.random();
+          let status: 'pass' | 'fail' | 'notapplicable';
+          
+          if (random < 0.1) {
+            status = 'notapplicable';
+            notApplicableCount++;
+          } else if (random < 0.25) {
+            status = 'fail';
+            failCount++;
+          } else {
+            status = 'pass';
+            passCount++;
+          }
+          
+          const control = this.getControl(controlId);
+          
+          const controlResult: OscalControlResult = {
+            id: controlId,
+            title: this.getControlTitle(controlId),
+            status,
+            timestamp: new Date().toISOString(),
+            severity: control?.severity || this.getRandomSeverity(),
+            description: this.getControlDescription(controlId),
+            recommendation: this.getControlRemediation(controlId),
+            evidence: this.getControlEvidence(controlId)
+          };
+          
+          if (control?.references && control.references.length > 0) {
+            controlResult.reference = control.references.join(', ');
+          }
+          
+          if (control?.category) {
+            controlResult.category = control.category;
+          }
+          
+          controlResults.push(controlResult);
+        }
 
-    return profile;
+        profile.lastRun = new Date().toISOString();
+        profile.pass = passCount;
+        profile.fail = failCount;
+        profile.notapplicable = notApplicableCount;
+        profile.total = controlIds.length;
+        profile.status = failCount === 0 ? 'pass' : failCount > 3 ? 'fail' : 'warn';
+        profile.duration = `${(totalSteps * 1.5).toFixed(1)}s`;
+        profile.controlResults = controlResults;
+      }),
+      // We need to emit the final result as well
+      concatWith(of(null).pipe(
+        map(() => ({
+          progress: 100,
+          message: 'Scan complete',
+          result: profile
+        }))
+      ))
+    );
   }
 
-  async refreshOscalUpdates(): Promise<OscalUpdateStatus> {
+  refreshOscalUpdates(): Observable<OscalUpdateStatus> {
     const status = this.oscalUpdateStatus;
     const now = new Date().toISOString();
-    status.progress = {
-      status: 'in-progress',
-      value: 20,
-      message: 'Checking official OSCAL catalogs for updates...'
-    };
-    status.sources.fedramp.status = 'pending';
-    status.sources.nist.status = 'pending';
-    await this.delay(250);
-    status.progress = {
-      status: 'in-progress',
-      value: 60,
-      message: 'Comparing FedRAMP and NIST baselines...'
-    };
-    await this.delay(250);
-    status.sources.fedramp.lastChecked = now;
-    status.sources.nist.lastChecked = now;
-    status.sources.fedramp.status = 'synced';
-    status.sources.nist.status = 'synced';
-    status.lastUpdated = now;
-    status.progress = {
-      status: 'idle',
-      value: 100,
-      message: 'Catalogs aligned with latest Rev 5 baselines.'
-    };
-    return status;
+    
+    return of(status).pipe(
+      tap((s) => {
+        s.progress = {
+          status: 'in-progress',
+          value: 20,
+          message: 'Checking official OSCAL catalogs for updates...'
+        };
+        s.sources.fedramp.status = 'pending';
+        s.sources.nist.status = 'pending';
+      }),
+      delay(250),
+      tap((s) => {
+        s.progress = {
+          status: 'in-progress',
+          value: 60,
+          message: 'Comparing FedRAMP and NIST baselines...'
+        };
+      }),
+      delay(250),
+      map((s) => {
+        s.sources.fedramp.lastChecked = now;
+        s.sources.nist.lastChecked = now;
+        s.sources.fedramp.status = 'synced';
+        s.sources.nist.status = 'synced';
+        s.lastUpdated = now;
+        s.progress = {
+          status: 'idle',
+          value: 100,
+          message: 'Catalogs aligned with latest Rev 5 baselines.'
+        };
+        return s;
+      })
+    );
   }
 
   /**
    * Execute real-time security check
    */
-  async executeRealtimeCheck(
-    checkId: string,
-    progressCallback?: (progress: number, message: string) => void,
-  ): Promise<RealtimeCheck> {
+  executeRealtimeCheck(checkId: string): Observable<SecurityScanProgress> {
     const check = this.realtimeChecks.find((c) => c.id === checkId);
     if (!check) {
-      throw new Error(`Real-time check ${checkId} not found`);
+      return throwError(() => new Error(`Real-time check ${checkId} not found`));
     }
 
-    // Simulate check execution
     const steps = ['Connecting...', 'Authenticating...', 'Running test...', 'Validating...', 'Complete'];
-    for (let i = 0; i < steps.length; i++) {
-      await this.delay(300 + Math.random() * 700);
-      const progress = ((i + 1) / steps.length) * 100;
-      
-      if (progressCallback) {
-        progressCallback(progress, steps[i] || '');
-      }
-    }
-
-    // Generate detailed test results
-    const testResults: RealtimeCheckResult[] = [];
-    const testNames = this.getRealtimeTestsForCheck(checkId);
     
-    let passCount = 0;
-    let failCount = 0;
-    let warningCount = 0;
-    
-    for (const testName of testNames) {
-      const random = Math.random();
-      let status: 'pass' | 'fail' | 'warning';
-      
-      if (random < 0.15) {
-        status = 'fail';
-        failCount++;
-      } else if (random < 0.25) {
-        status = 'warning';
-        warningCount++;
-      } else {
-        status = 'pass';
-        passCount++;
-      }
-      
-      const testResult: RealtimeCheckResult = {
-        id: `${checkId}-${testName}`,
-        testName,
-        status,
-        responseTime: Math.floor(Math.random() * 500) + 50,
-        statusCode: status === 'fail' ? (Math.random() > 0.5 ? 500 : 403) : 200,
-        message: this.getRealtimeTestMessage(testName, status),
-        timestamp: new Date().toISOString(),
-        severity: this.getRandomSeverity(),
-        recommendation: this.getRealtimeTestRemediation(testName),
-        details: this.getRealtimeTestDetails(testName)
-      };
-      
-      testResults.push(testResult);
-    }
+    const steps$ = steps.map((stepMessage, i) => {
+      return of(i).pipe(
+        delay(300 + Math.random() * 700),
+        map(() => {
+          const progress = ((i + 1) / steps.length) * 100;
+          return { progress, message: stepMessage };
+        })
+      );
+    });
 
-    // Update check results
-    check.lastRun = new Date().toISOString();
-    check.pass = passCount;
-    check.fail = failCount;
-    check.warning = warningCount;
-    check.total = testNames.length;
-    check.status = failCount > 0 ? 'fail' : warningCount > 0 ? 'warn' : 'pass';
-    check.duration = `${(steps.length * 0.5).toFixed(1)}s`;
-    check.testResults = testResults;
+    return concat(...steps$).pipe(
+      finalize(() => {
+        // Generate detailed test results
+        const testResults: RealtimeCheckResult[] = [];
+        const testNames = this.getRealtimeTestsForCheck(checkId);
+        
+        let passCount = 0;
+        let failCount = 0;
+        let warningCount = 0;
+        
+        for (const testName of testNames) {
+          const random = Math.random();
+          let status: 'pass' | 'fail' | 'warning';
+          
+          if (random < 0.15) {
+            status = 'fail';
+            failCount++;
+          } else if (random < 0.25) {
+            status = 'warning';
+            warningCount++;
+          } else {
+            status = 'pass';
+            passCount++;
+          }
+          
+          const testResult: RealtimeCheckResult = {
+            id: `${checkId}-${testName}`,
+            testName,
+            status,
+            responseTime: Math.floor(Math.random() * 500) + 50,
+            statusCode: status === 'fail' ? (Math.random() > 0.5 ? 500 : 403) : 200,
+            message: this.getRealtimeTestMessage(testName, status),
+            timestamp: new Date().toISOString(),
+            severity: this.getRandomSeverity(),
+            recommendation: this.getRealtimeTestRemediation(testName),
+            details: this.getRealtimeTestDetails(testName)
+          };
+          
+          testResults.push(testResult);
+        }
 
-    return check;
+        check.lastRun = new Date().toISOString();
+        check.pass = passCount;
+        check.fail = failCount;
+        check.warning = warningCount;
+        check.total = testNames.length;
+        check.status = failCount > 0 ? 'fail' : warningCount > 0 ? 'warn' : 'pass';
+        check.duration = `${(steps.length * 0.5).toFixed(1)}s`;
+        check.testResults = testResults;
+      }),
+      concatWith(of(null).pipe(
+        map(() => ({
+          progress: 100,
+          message: 'Check complete',
+          result: check
+        }))
+      ))
+    );
   }
 
   /**

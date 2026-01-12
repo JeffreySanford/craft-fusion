@@ -1,6 +1,6 @@
 import { Controller, Post, Body, HttpException, HttpStatus, Logger, HttpCode } from '@nestjs/common';
 import { AuthService, User } from './auth.service';
-import { Observable, catchError, map, of, throwError } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
 
 interface LoginRequest {
   username: string;

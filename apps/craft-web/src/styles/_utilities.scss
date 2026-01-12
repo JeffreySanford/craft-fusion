@@ -1,7 +1,6 @@
-@use 'variables' as vars;
-@use 'sass:map';
+@use "variables" as vars;
+@use "sass:map";
 
-// Text utilities
 .text-center {
   text-align: center;
 }
@@ -26,7 +25,6 @@
   text-transform: capitalize;
 }
 
-// Text colors
 .text-primary {
   color: var(--md-sys-color-primary);
 }
@@ -51,23 +49,16 @@
   color: var(--md-sys-color-error);
 }
 
-// Text styles
 .text-glow {
-  text-shadow: 0 0 10px rgba(0, 40, 104, 0.3);
+  text-shadow: 0 0 10px rgb(0 40 104 / 30%);
 }
 
 .text-patriotic {
-  background: linear-gradient(
-    90deg,
-    var(--md-sys-color-primary),
-    var(--md-sys-color-secondary)
-  );
-  -webkit-background-clip: text;
-  background-clip: text; // Added standard property
+  background: linear-gradient(90deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
+  background-clip: text;                           
   color: transparent;
 }
 
-// Background colors
 .bg-primary {
   background-color: var(--md-sys-color-primary);
 }
@@ -92,16 +83,10 @@
   background-color: var(--md-sys-color-error);
 }
 
-// Background styles
 .bg-patriotic-gradient {
-  background: linear-gradient(
-    135deg,
-    var(--md-sys-color-primary),
-    var(--md-sys-color-secondary)
-  );
+  background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
 }
 
-// Border utilities
 .border {
   border: 1px solid var(--md-sys-color-outline-variant);
 }
@@ -119,26 +104,25 @@
 }
 
 .rounded-sm {
-  border-radius: 4px;
+  border-radius: 0.25em;
 }
 
 .rounded {
-  border-radius: 8px;
+  border-radius: 0.5em;
 }
 
 .rounded-md {
-  border-radius: 12px;
+  border-radius: 0.75em;
 }
 
 .rounded-lg {
-  border-radius: 16px;
+  border-radius: 1em;
 }
 
 .rounded-full {
-  border-radius: 9999px;
+  border-radius: 624.9375em;
 }
 
-// Shadow utilities
 .shadow-sm {
   box-shadow: var(--md-sys-elevation-level1);
 }
@@ -159,7 +143,6 @@
   box-shadow: var(--md-sys-elevation-level5);
 }
 
-// Display utilities
 .block {
   display: block;
 }
@@ -176,7 +159,6 @@
   display: none;
 }
 
-// Visibility utilities
 .visible {
   visibility: visible;
 }
@@ -185,7 +167,6 @@
   visibility: hidden;
 }
 
-// Opacity utilities
 .opacity-0 {
   opacity: 0;
 }
@@ -206,7 +187,6 @@
   opacity: 1;
 }
 
-// Overflow utilities
 .overflow-auto {
   overflow: auto;
 }
@@ -229,7 +209,6 @@
   white-space: nowrap;
 }
 
-// Cursor utilities
 .cursor-pointer {
   cursor: pointer;
 }
@@ -242,67 +221,68 @@
   cursor: not-allowed;
 }
 
-// Loading states
 .loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  align-items: center;
+  background: rgb(255 255 255 / 80%);
   bottom: 0;
-  background: rgba(255, 255, 255, 0.8);
   display: flex;
   justify-content: center;
-  align-items: center;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
   z-index: 1000;
 }
 
 .patriotic-loading {
-  width: 100%;
-  height: 4px;
   background: var(--md-sys-color-surface-variant);
+  height: 0.25em;
   overflow: hidden;
-  
+  width: 100%;
+
   &::after {
-    content: '';
-    display: block;
-    width: 40%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      var(--md-sys-color-primary),
-      var(--md-sys-color-on-primary),
-      var(--md-sys-color-secondary)
-    );
     animation: loading 1.5s infinite;
+    background: linear-gradient(90deg, var(--md-sys-color-primary), var(--md-sys-color-on-primary), var(--md-sys-color-secondary));
+    content: "";
+    display: block;
+    height: 100%;
+    width: 40%;
   }
 }
 
-// Special patriotic styles
 .patriotic-button {
-  position: relative;
-  overflow: hidden;
   background: var(--md-sys-color-primary);
-  color: var(--md-sys-color-on-primary);
   border: none;
-  border-radius: 4px;
-  padding: 12px 24px;
+  border-radius: 0.25em;
+  color: var(--md-sys-color-on-primary);
+  overflow: hidden;
+  padding: 0.75em 1.5em;
+  position: relative;
   transition: all 0.3s ease;
-  
+
   &:hover {
-    background: color-mix(in srgb, var(--md-sys-color-primary) 90%, white);
-    transform: translateY(-2px);
+
+    background: var(--md-sys-color-primary);
     box-shadow: var(--md-sys-elevation-level2);
+    transform: translateY(-2px);
+    @supports (background: color-mix(in srgb, var(--md-sys-color-primary) 90%, white)) {
+      background: color-mix(in srgb, var(--md-sys-color-primary) 90%, white);
+    }
   }
-  
+
   &:active {
     transform: translateY(0);
   }
-  
+
   &.accent {
     background: var(--md-sys-color-secondary);
-    
+
     &:hover {
-      background: color-mix(in srgb, var(--md-sys-color-secondary) 90%, white);
+
+      background: var(--md-sys-color-secondary);
+      @supports (background: color-mix(in srgb, var(--md-sys-color-secondary) 90%, white)) {
+        background: color-mix(in srgb, var(--md-sys-color-secondary) 90%, white);
+      }
     }
   }
 }
@@ -311,66 +291,64 @@
   &.flag-style {
     border-left: 4px solid var(--md-sys-color-primary);
     border-right: 4px solid var(--md-sys-color-secondary);
-    
+
     &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
       background: var(--md-sys-color-on-primary);
+      content: "";
+      height: 0.25em;
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
     }
   }
-  
+
   &.eagle-style {
-    position: relative;
     overflow: hidden;
-    
+    position: relative;
+
     &::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -50%;
-      width: 100%;
-      height: 100%;
-      border: 1px solid var(--md-sys-color-tertiary);
-      background: linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.1) 50%, transparent 55%);
-      transform: rotate(45deg);
       animation: eagleShine 3s infinite;
+      background: linear-gradient(45deg, transparent 45%, rgb(255 255 255 / 10%) 50%, transparent 55%);
+      border: 1px solid var(--md-sys-color-tertiary);
+      content: "";
+      height: 100%;
+      position: absolute;
+      right: -50%;
+      top: -50%;
+      transform: rotate(45deg);
+      width: 100%;
     }
   }
 }
 
-// Print styles
 @media print {
   .patriotic-gradient,
   .text-glow,
   .patriotic-loading {
     display: none;
   }
-  
+
   body {
     color: var(--md-sys-color-on-surface);
   }
-  
+
   .mat-mdc-card {
-    box-shadow: none;
     border: 1px solid var(--md-sys-color-outline-variant);
+    box-shadow: none;
   }
 }
 
-// Toast notification styles
 .toast-container {
   .ngx-toastr {
     background-color: var(--md-sys-color-surface);
-    color: var(--md-sys-color-on-surface);
+    border-radius: 0.5em;
     box-shadow: var(--md-sys-elevation-level3);
-    border-radius: 8px;
-    padding: 16px;
+    color: var(--md-sys-color-on-surface);
+    padding: 1em;
 
     &.toast-success {
-      border-left: 4px solid #10B981;
+      border-left: 4px solid #10b981;
     }
 
     &.toast-error {
@@ -378,45 +356,47 @@
     }
 
     &.toast-info {
-      border-left: 4px solid #3B82F6;
+      border-left: 4px solid #3b82f6;
     }
 
     &.toast-warning {
-      border-left: 4px solid #F59E0B;
+      border-left: 4px solid #f59e0b;
     }
   }
 }
 
 @mixin performance-chart($chartHeight: 5em, $borderRadius: 4px) {
   .performance-card {
-    height: $chartHeight;
-    width: 100%; // Make it full width
+    background-color: rgb(0 0 0 / 40%);
+    border: none !important;                     
     border-radius: $borderRadius;
+    height: $chartHeight;
     margin-top: 1em;
-    transition: all 0.3s ease;
     position: relative;
-    background-color: rgba(0, 0, 0, 0.4);
-    border: none !important; // Remove red border
-    
+    transition: all 0.3s ease;
+    width: 100%;                      
+
     canvas {
-      width: 100% !important;
       height: 100% !important;
-      // smoother line rendering, etc.
+      width: 100% !important;
+
     }
-    // ...other optional shared styling...
+
   }
 }
 
 @mixin footer-expansion-panel($panelBg, $headerBg, $indicatorColor, $contentBg: null, $radius: 0.25em) {
   $panelContentBg: if($contentBg != null, $contentBg, $headerBg);
   .mat-expansion-panel {
-    width: 100%;
-    color: $indicatorColor;
-    border-radius: $radius;
     background: $panelBg;
+    border-radius: $radius;
+    color: $indicatorColor;
+    width: 100%;
+
     .mat-expansion-panel-header {
       background-color: $headerBg;
     }
+
     .mat-expansion-panel-content {
       background-color: $panelContentBg;
     }
@@ -424,6 +404,7 @@
     .mat-expansion-panel-body {
       background-color: $panelContentBg;
     }
+
     .mat-expansion-panel-indicator {
       color: $indicatorColor;
     }
@@ -437,25 +418,26 @@
     gap: 1em;
     margin-bottom: 1em;
     width: 100%;
-    
-    .dev-logos, .agency-logos {
-      display: flex;
+
+    .dev-logos,
+    .agency-logos {
       align-items: center;
+      background: rgb(0 0 0 / 20%);
+      border-radius: 0.5em;
+      display: flex;
+      flex-wrap: wrap;
       gap: 1.5em;
       padding: 0.5em;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 8px;
-      flex-wrap: wrap;
-      
+
       img {
+        flex: 0 0 auto;
         height: 3.5em;
-        width: auto;
         max-height: 3.5em;
         object-fit: contain;
-        flex: 0 0 auto;
+        width: auto;
       }
     }
-    
+
     .agency-logos {
       margin-left: auto;
     }
@@ -464,71 +446,72 @@
 
 @mixin metric-pill($base-color: gold) {
   .metric-pill {
-    display: flex;
     align-items: center;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    color: $base-color;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgb(0 0 0 / 40%);
     border: 1px solid rgba($base-color, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
+    border-radius: 0.75em;
+    color: $base-color;
+    display: flex;
+    font-size: 0.85rem;
     overflow: hidden;
-    
+    padding: 0.125em 0.5em;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
     mat-icon {
-      font-size: 14px;
-      height: 14px;
-      width: 14px;
-      margin-right: 4px;
       color: inherit;
+      font-size: 0.875em;
+      height: 0.875em;
+      margin-right: 0.25em;
+      width: 0.875em;
     }
-    
+
     &.green-text {
+      border-color: rgb(16 185 129 / 30%);
       color: #10b981;
-      border-color: rgba(16, 185, 129, 0.3);
     }
-    
+
     &.yellow-text {
+      border-color: rgb(245 158 11 / 30%);
       color: #f59e0b;
-      border-color: rgba(245, 158, 11, 0.3);
     }
-    
+
     &.red-text {
+      border-color: rgb(239 68 68 / 30%);
       color: #ef4444;
-      border-color: rgba(239, 68, 68, 0.3);
     }
   }
 }
 
 @mixin header-nav($bg-color: transparent, $text-color: white) {
   .header-nav {
-    display: flex;
     align-items: center;
     background-color: $bg-color;
-    
+    display: flex;
+
     .nav-item {
-      padding: 8px 16px;
       color: $text-color;
-      text-decoration: none;
+      padding: 0.5em 1em;
       position: relative;
+      text-decoration: none;
       transition: color 0.2s ease;
-      
+
       &::after {
-        content: '';
-        position: absolute;
+        background-color: currentcolor;
         bottom: 0;
+        content: "";
+        height: 0.125em;
         left: 0;
-        width: 100%;
-        height: 2px;
-        background-color: currentColor;
+        position: absolute;
         transform: scaleX(0);
         transition: transform 0.3s ease;
+        width: 100%;
       }
-      
-      &:hover, &.active {
+
+      &:hover,
+      &.active {
         color: var(--md-sys-color-primary);
-        
+
         &::after {
           transform: scaleX(1);
         }
@@ -538,91 +521,85 @@
 }
 
 @mixin data-overlay($bg-opacity: 0.6) {
-  position: absolute;
-  padding: 5px;
   background-color: rgba(0, 0, 0, $bg-opacity);
-  border-radius: 4px;
+  border-radius: 0.25em;
+  padding: 0.3125em;
+  position: absolute;
   z-index: 10;
-  
+
   &.top-left {
-    top: 5px;
-    left: 5px;
+    left: 0.3125em;
+    top: 0.3125em;
   }
-  
+
   &.top-right {
-    top: 5px;
-    right: 5px;
+    right: 0.3125em;
+    top: 0.3125em;
   }
-  
+
   &.bottom-left {
-    bottom: 5px;
-    left: 5px;
+    bottom: 0.3125em;
+    left: 0.3125em;
   }
-  
+
   &.bottom-right {
-    bottom: 5px;
-    right: 5px;
+    bottom: 0.3125em;
+    right: 0.3125em;
   }
 }
 
 @mixin header-container($height: 4em, $bottom-margin: 0.5em) {
   .header-card {
-    position: fixed;
-    top: 0.5em;
-    left: 0.5em;
-    right: 0.5em;
-    height: $height;
-    margin-bottom: $bottom-margin;
-    width: calc(100% - 1em);
-    background: linear-gradient(
-      to right,
-      #002868 0%, /* Darker navy blue */
-      #2c4f9e 40%, /* Medium blue */
-      #BF0A30 80%, /* Brighter red */
-      #8c0624 100% /* Darker red */
-    );
-    display: flex;
     align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(to right, #002868 0%,                        #2c4f9e 40%,                   #bf0a30 80%,                    #8c0624 100%                 );
     border-radius: 0.25em;
-    z-index: 1000;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 40%);
+    display: flex;
+    height: $height;
+    justify-content: space-between;
+    left: 0.5em;
+    margin-bottom: $bottom-margin;
     overflow: hidden;
+    position: fixed;
+    right: 0.5em;
+    top: 0.5em;
+    width: calc(100% - 1em);
+    z-index: 1000;
   }
 
   .header-content {
-    height: calc($height - 0.5em);
-    display: flex;
     align-items: center;
-    width: 100%;
-    justify-content: space-between;
-    position: relative;
-    padding: 0 1em;
     border-radius: 0;
+    display: flex;
+    height: calc($height - 0.5em);
+    justify-content: space-between;
+    padding: 0 1em;
+    position: relative;
+    width: 100%;
   }
 }
 
 @mixin profile-icon($primary-color: #ff00ff, $secondary-color: #00f7ff, $logged-in-color: #00ff00) {
   .profile-icon {
-    color: $primary-color;
-    border: 2px solid $secondary-color;
-    padding: 0.15em;
-    border-radius: 50%;
-    transition: all 0.3s ease-in-out;
     animation: neonPulse 2s infinite;
+    border: 2px solid $secondary-color;
+    border-radius: 50%;
+    color: $primary-color;
+    padding: 0.15em;
     text-shadow: 0 0 10px $primary-color;
-    
+    transition: all 0.3s ease-in-out;
+
     &:hover {
-      transform: scale(1.1) rotate(15deg);
-      box-shadow: 
+      box-shadow:
         0 0 15px rgba($secondary-color, 0.6),
         0 0 30px rgba($primary-color, 0.4);
+      transform: scale(1.1) rotate(15deg);
     }
 
     &.logged-in {
-      color: $logged-in-color;
-      border: 2px solid $logged-in-color;
       animation: neonRotate 1s ease-out;
+      border: 2px solid $logged-in-color;
+      color: $logged-in-color;
       text-shadow: 0 0 10px $logged-in-color;
     }
   }
@@ -630,69 +607,56 @@
 
 @mixin patriotic-menu($border-radius: 14px) {
   .patriotic-menu {
-    transform-origin: top right;
     animation: slideIn 0.2s ease-out;
+    transform-origin: top right;
 
-    // Enforce styling on menu panel
     &.mat-mdc-menu-panel,
     .mat-mdc-menu-panel {
-      background: linear-gradient(135deg, 
-        rgba(0, 0, 102, 0.95) 0%,
-        rgba(139, 0, 0, 0.95) 50%,
-        rgba(0, 0, 102, 0.95) 100%
-      ) !important;
-      border: 2px solid #FFD700 !important;
-      box-shadow: 
-        0 0 25px rgba(255, 255, 255, 0.4),
-        inset 0 0 20px rgba(0, 0, 255, 0.3) !important;
+      background: linear-gradient(135deg, rgb(0 0 102 / 95%) 0%, rgb(139 0 0 / 95%) 50%, rgb(0 0 102 / 95%) 100%) !important;
+      border: 2px solid #ffd700 !important;
       border-radius: $border-radius !important;
+      box-shadow:
+        0 0 25px rgb(255 255 255 / 40%),
+        inset 0 0 20px rgb(0 0 255 / 30%) !important;
       overflow: hidden;
     }
 
     .mat-mdc-menu-content {
-      padding: 6px !important;
       background: transparent !important;
-      border-radius: calc($border-radius - 2px);
-      box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.1);
+      border-radius: calc($border-radius - 0.125em);
+      box-shadow: inset 0 0 20px rgb(255 0 255 / 10%);
+      padding: 0.375em !important;
     }
 
     .mat-mdc-menu-item {
-      height: 40px !important;
-      line-height: 40px !important;
-      margin: 4px !important;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(0, 0, 153, 0.3) !important;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s ease;
+      background: rgb(0 0 153 / 30%) !important;
+      border: 1px solid rgb(255 255 255 / 20%);
+      border-radius: 0.5em;
       color: white !important;
+      height: 2.5em !important;
+      line-height: 2.5em !important;
+      margin: 0.25em !important;
+      overflow: hidden;
+      position: relative;
+      transition: all 0.3s ease;
 
       &::before {
-        content: '';
+        background: linear-gradient(90deg, transparent, rgb(255 255 255 / 40%), transparent);
+        content: "";
+        height: 100%;
+        left: -100%;
         position: absolute;
         top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.4),
-          transparent
-        );
         transition: 0.5s;
+        width: 100%;
       }
 
       &:hover {
-        background: linear-gradient(45deg,
-          rgba(255, 0, 0, 0.4) 0%,
-          rgba(0, 0, 255, 0.4) 100%
-        ) !important;
+        background: linear-gradient(45deg, rgb(255 0 0 / 40%) 0%, rgb(0 0 255 / 40%) 100%) !important;
+        box-shadow:
+          0 0 15px rgb(255 255 255 / 30%),
+          inset 0 0 10px rgb(255 0 0 / 30%);
         transform: translateX(4px);
-        box-shadow: 
-          0 0 15px rgba(255, 255, 255, 0.3),
-          inset 0 0 10px rgba(255, 0, 0, 0.3);
 
         &::before {
           left: 100%;
@@ -700,20 +664,19 @@
       }
 
       .mat-icon {
-        color: #FFD700 !important;
-        margin-right: 12px;
+        color: #ffd700 !important;
+        margin-right: 0.75em;
+        text-shadow: 0 0 10px rgb(255 0 0 / 80%);
         transition: all 0.3s ease;
-        text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
       }
 
       span {
+        background: linear-gradient(90deg, white, gold);
+        background-clip: text;                           
         color: white !important;
         font-weight: 500;
-        letter-spacing: 1px;
-        text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
-        background: linear-gradient(90deg, white, gold);
-        -webkit-background-clip: text;
-        background-clip: text; // Added standard property
+        letter-spacing: 0.0625em;
+        text-shadow: 0 0 8px rgb(255 0 0 / 60%);
       }
     }
   }
@@ -721,236 +684,217 @@
 
 @mixin patriotic-header($height: 4em) {
   .patriotic-header {
-    position: fixed;
-    top: 0.5em;
-    left: 0.5em;
-    right: 0.5em;
-    height: $height;
-    width: auto !important; 
-    max-width: none !important; 
-    margin: 0 !important;
-    @include patriotic-gradient-background();
-    display: flex;
     align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     border-radius: 0.5em;
-    z-index: 100;
+    box-shadow: 0 4px 15px rgb(0 0 0 / 40%);
+    display: flex;
+    height: $height;
+    justify-content: space-between;
+    left: 0.5em;
+    margin: 0 !important;
+    max-width: none !important;
     overflow: visible;
-    
+    position: fixed;
+    right: 0.5em;
+    top: 0.5em;
+    width: auto !important;
+    z-index: 100;
+
+    @include patriotic-gradient-background;
+
     .header-content {
+      align-items: center;
+      display: flex;
       height: calc($height - 0.5em);
-      display: flex;
-      align-items: center;
-      width: 100%;
-      justify-content: space-between; // Important: Space between left and right content
-      position: relative;
+      justify-content: space-between;                                                   
       padding: 0 1.5em;
+      position: relative;
+      width: 100%;
     }
-    
-    .header-left, .header-right {
-      display: flex;
-      align-items: center;
-    }
-    
+
+    .header-left,
     .header-right {
-      margin-left: auto; // Push to the right side
+      align-items: center;
+      display: flex;
     }
-    
+
+    .header-right {
+      margin-left: auto;                          
+    }
+
     .app-title {
+      background: linear-gradient(90deg, #fff, #ffd700);
+      background-clip: text;
+      color: transparent;
       font-size: 1.6em;
       font-weight: bold;
-      background: linear-gradient(90deg, #FFFFFF, #FFD700);
-      -webkit-background-clip: text;
-      color: transparent;
       letter-spacing: 0.05em;
-      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-      margin-left: 3em; // Space for star field
+      margin-left: 3em;                        
+      text-shadow: 0 0 10px rgb(255 215 0 / 50%);
     }
-    
+
     .header-controls {
-      display: flex;
       align-items: center;
+      display: flex;
       gap: 0.75em;
     }
-    
+
     .admin-button {
-      background-color: rgba(191, 10, 48, 0.8);
-      color: white;
-      border-radius: 0.25em;
-      padding: 0.5em 1em;
-      font-size: 0.9em;
-      display: flex;
       align-items: center;
+      background-color: rgb(191 10 48 / 80%);
+      border-radius: 0.25em;
+      color: white;
+      display: flex;
+      font-size: 0.9em;
       gap: 0.5em;
+      padding: 0.5em 1em;
       transition: all 0.2s ease;
-      
+
       &:hover {
-        background-color: rgba(191, 10, 48, 1);
+        background-color: rgb(191 10 48 / 100%);
+        box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       }
-      
+
       mat-icon {
         font-size: 1.2em;
         height: 1.2em;
         width: 1.2em;
       }
     }
-    
+
     .flag-stripe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
+      background: repeating-linear-gradient(90deg, #bf0a30 0%, #bf0a30 10%, white 10%, white 20%);
       height: 0.3em;
-      background: repeating-linear-gradient(
-        90deg,
-        #BF0A30 0%, #BF0A30 10%,
-        white 10%, white 20%
-      );
+      left: 0;
       opacity: 0.7;
+      position: absolute;
+      right: 0;
+      top: 0;
     }
-    
+
     .star-field {
+      background-color: #002868;
+      border-radius: 0.25em;
+      box-shadow: 0 0 10px rgb(0 40 104 / 50%);
+      height: 2em;
+      left: 0.75em;
+      overflow: hidden;
       position: absolute;
       top: 0.5em;
-      left: 0.75em;
       width: 2em;
-      height: 2em;
-      background-color: #002868;
-      border-radius: 4px;
-      overflow: hidden;
-      box-shadow: 0 0 10px rgba(0, 40, 104, 0.5);
-      
+
       &::before {
-        content: '★';
         color: white;
+        content: "★";
+        font-size: 1.2em;
+        left: 50%;
         position: absolute;
         top: 50%;
-        left: 50%;
         transform: translate(-50%, -50%);
-        font-size: 1.2em;
       }
     }
   }
 }
 
 @mixin patriotic-gradient-background($angle: 135deg) {
-  background: linear-gradient(
-    $angle,
-    #001f54 0%,
-    #033277 30%,
-    #792433 70%,
-    #a01c33 100%
-  );
+  background: linear-gradient($angle, #001f54 0%, #033277 30%, #792433 70%, #a01c33 100%);
 }
 
 @mixin wave-animation-container() {
-  position: relative;
   overflow: hidden;
-  
+  position: relative;
+
   .wave-animation {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 40%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.03) 50%,
-      transparent 100%
-    );
     animation: flagWave 15s ease-in-out infinite;
+    background: linear-gradient(90deg, transparent 0%, rgb(255 255 255 / 3%) 50%, transparent 100%);
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
     transform-origin: right center;
+    width: 40%;
   }
 }
 
-@mixin user-profile-button($icon-color: #FFD700, $border-color: #FFFFFF, $icon-size: 1.2em) {
+@mixin user-profile-button($icon-color: #ffd700, $border-color: #ffffff, $icon-size: 1.2em) {
   .user-profile-button {
-    position: relative;
-    overflow: visible;
-    display: flex;
     align-items: center;
-    justify-content: center;
-    width: 2.25em;
+    display: flex;
     height: 2.25em;
+    justify-content: center;
+    overflow: visible;
     padding: 0;
-    
+    position: relative;
+    width: 2.25em;
+
     .profile-icon {
-      color: $icon-color;
-      border: 1.5px solid $border-color;
-      padding: 0.12em;
-      border-radius: 50%;
-      transition: all 0.3s ease-in-out;
-      font-size: $icon-size;
-      display: flex;
       align-items: center;
+      border: 1.5px solid $border-color;
+      border-radius: 50%;
+      color: $icon-color;
+      display: flex;
+      font-size: $icon-size;
       justify-content: center;
-      
+      padding: 0.12em;
+      transition: all 0.3s ease-in-out;
+
       &:hover {
+        box-shadow: 0 0 15px rgb(255 255 255 / 50%);
         transform: scale(1.1) rotate(10deg);
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
       }
-      
+
       &.logged-in {
-        color: #10b981;
         border-color: #10b981;
+        color: #10b981;
       }
-      
-      // Fix for mat-icon centering within circular border
+
       ::ng-deep .mat-icon {
+        align-items: center;
+        display: flex;
         font-size: $icon-size;
         height: $icon-size;
-        width: $icon-size;
-        line-height: $icon-size;
-        display: flex;
-        align-items: center;
         justify-content: center;
+        line-height: $icon-size;
+        width: $icon-size;
       }
     }
-    
+
     .notification-badge {
-      position: absolute;
-      top: -3px;
-      right: -3px;
-      background-color: #BF0A30;
-      color: white;
-      border-radius: 50%;
-      min-width: 16px;
-      height: 16px;
-      font-size: 0.65em;
-      display: flex;
       align-items: center;
+      background-color: #bf0a30;
+      border-radius: 50%;
+      box-shadow: 0 0 5px rgb(0 0 0 / 50%);
+      color: white;
+      display: flex;
+      font-size: 0.65em;
+      height: 1em;
       justify-content: center;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      min-width: 1em;
+      position: absolute;
+      right: -0.1875em;
+      top: -0.1875em;
     }
   }
 }
 
 @mixin patriotic-banner($height: 0.3em, $animation-duration: 20s) {
   .patriotic-banner {
-    position: fixed;
-    left: 0;
-    right: 0;
+    animation: patrioticShimmer $animation-duration linear infinite;
+    background: repeating-linear-gradient(90deg, #bf0a30 0%, #bf0a30 10%,           #fff 10%, #fff 20%,             #002868 20%, #002868 30%           );
+    background-size: 300% 100%;
+    box-shadow: 0 0 10px rgb(0 0 0 / 30%);
     height: $height;
+    left: 0;
+    position: fixed;
+    right: 0;
     width: 100%;
     z-index: 2000;
-    background: repeating-linear-gradient(
-      90deg,
-      #BF0A30 0%, #BF0A30 10%, /* Red */
-      #FFFFFF 10%, #FFFFFF 20%, /* White */
-      #002868 20%, #002868 30% /* Blue */
-    );
-    background-size: 300% 100%;
-    animation: patrioticShimmer $animation-duration linear infinite;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    
+
     &.top {
       top: 0;
     }
-    
+
     &.bottom {
       bottom: 0;
     }

@@ -1,0 +1,524 @@
+import { Injectable, NgZone } from '@angular/core';
+import Chart from 'chart.js/auto';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { ApiEndpointLog } from '../admin-types';
+import { ServiceCallMetric } from '../../../common/services/logger.service';
+import { ServiceMetricsBridgeService } from './service-metrics-bridge.service';
+
+export interface ServiceMetricsSummary {
+  avgResponseTime: number;
+  callCount: number;
+  successRate: number;
+  lastUpdate?: number;
+}
+
+@Injectable({ providedIn: 'root' })
+export class ServicesDashboardService {
+  private serviceMetricsMap = new Map<string, any>();
+  private metricsByService = new Map<string, ServiceCallMetric[]>();
+  private serviceStatistics = new Map<string, ServiceMetricsSummary>();
+  private endpointLogs = new Map<string, ApiEndpointLog>();
+  private serviceIconMap = new Map<string, string>([
+    ['ApiService', 'cloud'],
+    ['AuthenticationService', 'lock'],
+    ['UserStateService', 'person'],
+    ['SessionService', 'timer'],
+    ['BusyService', 'hourglass_top'],
+    ['NotificationService', 'notifications'],
+    ['LoggerService', 'list'],
+    ['SettingsService', 'settings'],
+    ['AdminStateService', 'admin_panel_settings'],
+  ]);
+
+  private metricsSubject = new BehaviorSubject<ServiceCallMetric[]>([]);
+  public metrics$ = this.metricsSubject.asObservable();
+  private pollingIntervalId: number | undefined;
+  private simulationIntervalId: number | undefined;
+  private metricsBridgeSubscription: Subscription | undefined;
+  private processedMetricIds = new Map<string, number>();
+
+  private readonly DEFAULT_SERVICES = [
+    { name: 'ApiService', description: 'Core API communication', active: true },
+    { name: 'AuthenticationService', description: 'User authentication', active: true },
+    { name: 'UserStateService', description: 'User state management', active: true },
+    { name: 'SessionService', description: 'Session management', active: true },
+    { name: 'BusyService', description: 'Loading state management', active: false },
+    { name: 'NotificationService', description: 'User notifications', active: true },
+    { name: 'LoggerService', description: 'Application logging', active: true },
+    { name: 'SettingsService', description: 'Application settings', active: true },
+    { name: 'AdminStateService', description: 'Admin state management', active: true },
+  ];
+
+  private serviceColors = new Map<string, string>([
+    ['ApiService', '#FF6B6B'],
+    ['AuthenticationService', '#4ECDC4'],
+    ['UserStateService', '#45B7D1'],
+    ['SessionService', '#96CEB4'],
+    ['BusyService', '#FFEEAD'],
+    ['NotificationService', '#D4A5A5'],
+    ['LoggerService', '#9B59B6'],
+    ['SettingsService', '#FF9F4A'],
+    ['AdminStateService', '#2ECC71'],
+  ]);
+
+  private readonly SIMULATION_USER_COUNT = 20;
+  private readonly SIMULATION_INTERVAL_BASE = 1400;
+  private readonly SIMULATION_INTERVAL_VARIANCE = 600;
+
+  constructor(private metricsBridge: ServiceMetricsBridgeService, private ngZone: NgZone) {}
+
+  getRegisteredServices() {
+    return this.DEFAULT_SERVICES;
+  }
+
+  setServiceMetrics(metrics: ServiceCallMetric[]): ServiceCallMetric[] {
+    const added: ServiceCallMetric[] = [];
+    metrics.forEach(m => {
+      if (!this.registerMetric(m)) {
+        return;
+      }
+
+      const arr = this.metricsByService.get(m.serviceName) || [];
+      arr.push(m);
+      this.metricsByService.set(m.serviceName, arr.slice(-200));
+      this.serviceMetricsMap.set(m.serviceName, m);
+      added.push(m);
+    });
+
+    if (added.length > 0) {
+      this.emitFlattenedMetrics();
+    }
+
+    return added;
+  }
+
+  private emitFlattenedMetrics() {
+    const all: ServiceCallMetric[] = [];
+    Array.from(this.metricsByService.values()).forEach(arr => all.push(...arr));
+    all.sort((a, b) => (a.timestamp as any).getTime() - (b.timestamp as any).getTime());
+    this.publishMetrics(all.slice(-200));
+  }
+
+  getEndpointLogs() {
+    return this.endpointLogs;
+  }
+
+  getServiceIcon(serviceName: string) {
+    return this.serviceIconMap.get(serviceName) || 'device_hub';
+  }
+
+  private processMetricsForLogs(metrics: ServiceCallMetric[]): void {
+    if (!metrics || metrics.length === 0) {
+      return;
+    }
+    for (const metric of metrics) {
+      if (!metric) {
+        continue;
+      }
+
+      const timestamp =
+        metric.timestamp instanceof Date ? metric.timestamp : new Date(metric.timestamp ?? Date.now());
+
+      if (!this.endpointLogs.has(metric.serviceName)) {
+        this.endpointLogs.set(metric.serviceName, {
+          path: metric.url,
+          method: metric.method,
+          lastContacted: null,
+          lastPing: null,
+          status: 'active',
+          hitCount: 0,
+          successCount: 0,
+          errorCount: 0,
+          avgResponseTime: 0,
+          firstSeen: new Date(),
+          timelineData: [],
+        });
+      }
+
+      const info = this.endpointLogs.get(metric.serviceName);
+      if (!info) {
+        continue;
+      }
+
+      info.lastContacted = timestamp;
+      info.lastPing = new Date();
+      info.hitCount++;
+
+      const statusCode = metric.status ?? 0;
+
+      if (statusCode >= 200 && statusCode < 400) {
+        info.successCount++;
+      } else if (statusCode >= 400) {
+        info.errorCount++;
+      }
+
+      if (statusCode >= 500) {
+        info.status = 'error';
+      } else if (statusCode === 0) {
+        info.status = 'inactive';
+      } else {
+        info.status = 'active';
+      }
+
+      info.avgResponseTime =
+        (info.avgResponseTime * (info.hitCount - 1) + (metric.duration || 0)) / info.hitCount;
+
+      info.timelineData.push({
+        timestamp,
+        responseTime: metric.duration || 0,
+        status: statusCode,
+      });
+
+      if (info.timelineData.length > 50) {
+        info.timelineData = info.timelineData.slice(-50);
+      }
+    }
+  }
+
+  private registerMetric(metric: ServiceCallMetric): boolean {
+    const timestamp =
+      metric.timestamp instanceof Date ? metric.timestamp.getTime() : new Date(metric.timestamp ?? Date.now()).getTime();
+    const metricId = metric.id || `${metric.serviceName}_${timestamp}_${metric.method}`;
+    if (this.processedMetricIds.has(metricId)) {
+      return false;
+    }
+    this.processedMetricIds.set(metricId, Date.now());
+    if (this.processedMetricIds.size > 500) {
+      const oldestId = this.processedMetricIds.keys().next().value;
+      if (oldestId) {
+        this.processedMetricIds.delete(oldestId);
+      }
+    }
+    return true;
+  }
+
+  startMonitoring(): void {
+    this.stopMonitoring();
+    this.metricsBridge.startMonitoring();
+    this.ngZone.runOutsideAngular(() => {
+      this.metricsBridgeSubscription = this.metricsBridge.metrics$.subscribe(metrics => {
+        if (!metrics || metrics.length === 0) {
+          return;
+        }
+        const newMetrics = this.setServiceMetrics(metrics);
+        if (!newMetrics.length) {
+          return;
+        }
+        this.processMetricsForLogs(newMetrics);
+        this.updateLiteStats();
+      });
+    });
+  }
+
+  stopMonitoring(): void {
+    if (this.metricsBridgeSubscription) {
+      this.metricsBridgeSubscription.unsubscribe();
+      this.metricsBridgeSubscription = undefined;
+    }
+    this.metricsBridge.stopMonitoring();
+    this.processedMetricIds.clear();
+  }
+
+  getLatestServiceMetrics(limit = 50): ServiceCallMetric[] {
+    const all = this.metricsSubject.getValue();
+    return all.slice(-limit).reverse();
+  }
+
+  updateLiteStats(limitServices = 5, lookbackMs = 30000) {
+    const now = Date.now();
+    const active = this.getRegisteredServices()
+      .filter(s => s.active)
+      .slice(0, limitServices);
+    active.forEach(service => {
+      const arr = (this.metricsByService.get(service.name) || []).filter(m => now - (m.timestamp as any).getTime() < lookbackMs).slice(-10);
+      if (arr.length > 0) {
+        const avgTime = arr.reduce((sum, m) => sum + (m.duration || 0), 0) / arr.length;
+        const successCount = arr.filter(m => (m.status ?? 0) < 400).length;
+        const successRate = arr.length ? (successCount / arr.length) * 100 : 100;
+        this.updateServiceStats(service.name, { avgResponseTime: avgTime, callCount: arr.length, successRate, lastUpdate: now });
+      } else {
+
+      }
+    });
+    this.emitFlattenedMetrics();
+  }
+
+  startStatisticsPolling(intervalMs = 15000) {
+    this.stopStatisticsPolling();
+    this.pollingIntervalId = window.setInterval(() => {
+      try {
+        const now = Date.now();
+        const active = this.getRegisteredServices();
+        active.forEach(s => {
+          const metrics = (this.metricsByService.get(s.name) || []).slice(-50);
+          if (metrics.length > 0) {
+            const avgTime = metrics.reduce((sum, m) => sum + (m.duration || 0), 0) / metrics.length;
+            const successCount = metrics.filter(m => (m.status ?? 0) >= 200 && (m.status ?? 0) < 400).length;
+            const successRate = metrics.length ? (successCount / metrics.length) * 100 : 100;
+            this.updateServiceStats(s.name, { avgResponseTime: avgTime, callCount: metrics.length, successRate, lastUpdate: now });
+          }
+        });
+      } catch {
+        console.error('ServicesDashboardService polling error');
+      }
+    }, intervalMs);
+  }
+
+  stopStatisticsPolling() {
+    if (this.pollingIntervalId !== undefined) {
+      clearInterval(this.pollingIntervalId);
+      this.pollingIntervalId = undefined;
+    }
+  }
+
+  startSimulation() {
+    this.stopSimulation();
+    this.simulationIntervalId = window.setInterval(() => {
+      const batch = this.createSimulationBatch();
+      if (batch.length === 0) {
+        return;
+      }
+
+      const added = this.setServiceMetrics(batch);
+      if (added.length) {
+        this.processMetricsForLogs(added);
+        this.updateLiteStats();
+      }
+    }, this.SIMULATION_INTERVAL_BASE + Math.random() * this.SIMULATION_INTERVAL_VARIANCE);
+  }
+
+  stopSimulation() {
+    if (this.simulationIntervalId !== undefined) {
+      clearInterval(this.simulationIntervalId);
+      this.simulationIntervalId = undefined;
+    }
+  }
+
+  private createSimulationBatch(): ServiceCallMetric[] {
+    const activeServices = this.getRegisteredServices().filter(s => s.active);
+    if (!activeServices.length) {
+      return [];
+    }
+
+    const batch: ServiceCallMetric[] = [];
+    for (let userIndex = 0; userIndex < this.SIMULATION_USER_COUNT; userIndex++) {
+      const hits = 1 + Math.floor(Math.random() * 2);
+      for (let hitIndex = 0; hitIndex < hits; hitIndex++) {
+        const targetIndex = Math.floor(Math.random() * activeServices.length);
+        // eslint-disable-next-line security/detect-object-injection
+        const target = activeServices[targetIndex];
+        if (!target) {
+          continue;
+        }
+        batch.push(this.buildSimulatedMetric(target.name, userIndex, hitIndex));
+      }
+    }
+    return batch;
+  }
+
+  private buildSimulatedMetric(serviceName: string, userIndex: number, hitIndex: number): ServiceCallMetric {
+    const timestamp = new Date(Date.now() - Math.random() * 1500);
+    const duration = 200 + Math.random() * 400;
+    const status = Math.random() < 0.9 ? 200 : 503;
+    const method = Math.random() < 0.6 ? 'POST' : 'GET';
+    return {
+      id: `sim-${serviceName}-${userIndex}-${hitIndex}-${timestamp.getTime()}-${Math.random().toString(36).slice(2, 6)}`,
+      timestamp,
+      serviceName,
+      method,
+      url: this.buildServiceUrl(serviceName),
+      status,
+      duration,
+      activeUsers: this.SIMULATION_USER_COUNT,
+      averageLatency: duration,
+    };
+  }
+
+  private buildServiceUrl(serviceName: string): string {
+    return `/api/${serviceName
+      .replace(/([A-Z])/g, '-$1')
+      .replace(/^-/, '')
+      .toLowerCase()}`;
+  }
+
+  getServiceStatistics(serviceName: string) {
+    return this.serviceStatistics.get(serviceName);
+  }
+
+  clearAllMetrics() {
+    this.metricsByService.clear();
+    this.serviceMetricsMap.clear();
+    this.serviceStatistics.clear();
+    this.endpointLogs.clear();
+    this.metricsBridge.clear();
+    this.publishMetrics([]);
+    this.processedMetricIds.clear();
+  }
+
+  clearLogs() {
+    this.endpointLogs.clear();
+    this.processedMetricIds.clear();
+  }
+
+  updateServiceStats(serviceName: string, stats: Partial<ServiceMetricsSummary> & { lastUpdate?: number }) {
+    const prev = this.serviceStatistics.get(serviceName) || ({} as ServiceMetricsSummary);
+    this.serviceStatistics.set(serviceName, {
+      avgResponseTime: stats.avgResponseTime ?? prev.avgResponseTime ?? 0,
+      callCount: stats.callCount ?? prev.callCount ?? 0,
+      successRate: stats.successRate ?? prev.successRate ?? 100,
+      lastUpdate: stats.lastUpdate ?? Date.now(),
+    });
+  }
+
+  getServiceColor(serviceName: string): string {
+    return this.serviceColors.get(serviceName) || '#808080';
+  }
+
+  toggleServiceActive(serviceName: string): void {
+    const svc = this.DEFAULT_SERVICES.find(s => s.name === serviceName);
+    if (svc) {
+      svc.active = !svc.active;
+    }
+  }
+
+  private publishMetrics(metrics: ServiceCallMetric[]): void {
+    this.ngZone.run(() => {
+      this.metricsSubject.next(metrics);
+    });
+  }
+
+  getAxesConfig(metrics: string[]): { y: any; y1: any; datasetAxisIds: string[] } {
+
+    const y = { display: false, title: { text: '', color: '#e5e7eb' }, ticks: { color: '#e5e7eb' } };
+    const y1 = { display: false, title: { text: '', color: '#e5e7eb' }, ticks: { color: '#e5e7eb' } };
+    const datasetAxisIds: string[] = [];
+
+    if (!metrics || metrics.length === 0) {
+      y.display = true;
+      y.title.text = 'No metrics selected';
+      return { y, y1, datasetAxisIds };
+    }
+
+    if (metrics.length === 1) {
+      const metric = metrics[0];
+      const color = metric === 'memory' ? '#3b82f6' : metric === 'cpu' ? '#10b981' : '#ef4444';
+      y.display = true;
+      y.title.text = metric === 'network' ? 'Physical Response Time (ms)' : metric === 'memory' ? 'Memory Usage (%)' : 'CPU Load (%)';
+      y.title.color = color;
+      y.ticks.color = color;
+
+      datasetAxisIds.push('y', 'y', 'y');
+      return { y, y1, datasetAxisIds };
+    }
+
+    if (metrics.length === 2) {
+      const hasMemory = metrics.includes('memory');
+      const hasCpu = metrics.includes('cpu');
+      const hasNetwork = metrics.includes('network');
+      y.display = true;
+      y1.display = true;
+      if (hasMemory && hasCpu) {
+        y.title.text = 'CPU Load (%)';
+        y1.title.text = 'Memory Usage (%)';
+        y.title.color = '#10b981';
+        y1.title.color = '#3b82f6';
+        datasetAxisIds.push('y1', 'y', 'y1');
+      } else if (hasMemory && hasNetwork) {
+        y.title.text = 'Memory Usage (%)';
+        y1.title.text = 'Physical Response Time (ms)';
+        y.title.color = '#3b82f6';
+        y1.title.color = '#ef4444';
+        datasetAxisIds.push('y', 'y', 'y1');
+      } else if (hasCpu && hasNetwork) {
+        y.title.text = 'CPU Load (%)';
+        y1.title.text = 'Physical Response Time (ms)';
+        y.title.color = '#10b981';
+        y1.title.color = '#ef4444';
+        datasetAxisIds.push('y', 'y', 'y1');
+      }
+      return { y, y1, datasetAxisIds };
+    }
+
+    y.display = true;
+    y1.display = true;
+    y.title.text = 'CPU & Memory Usage (%)';
+    y1.title.text = 'Response Time (ms)';
+    y.title.color = '#ffffff';
+    y.ticks = { color: '#e5e7eb' };
+    y1.title.color = '#ef4444';
+    y1.ticks = { color: '#ef4444' };
+    datasetAxisIds.push('y', 'y', 'y1');
+    return { y, y1, datasetAxisIds };
+  }
+
+  buildChartDataForServices(limit = 6) {
+    const active = this.getRegisteredServices().slice(0, limit);
+    const stats = this.serviceStatistics;
+    return {
+      labels: active.map(s => s.name),
+      datasets: [
+        {
+          label: 'Response Time (ms)',
+          data: active.map(s => stats.get(s.name)?.avgResponseTime || 0),
+          backgroundColor: active.map(s => this.getServiceColor(s.name)),
+          borderWidth: 1,
+          yAxisID: 'y',
+        },
+      ],
+    } as any;
+  }
+
+  createServiceMetricsChart(ctx: CanvasRenderingContext2D) {
+    const chartData = this.buildChartDataForServices();
+    return new Chart(ctx, {
+      type: 'bar',
+      data: chartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { grid: { display: false } },
+          y: { beginAtZero: true, title: { display: true, text: 'Avg Response Time (ms)' } },
+        },
+        plugins: {
+          legend: { display: false },
+        },
+      },
+    });
+  }
+
+  toggleMetric(selectedMetrics: string[], metric: string): string[] {
+    const idx = selectedMetrics.indexOf(metric);
+    if (idx > -1 && selectedMetrics.length > 1) {
+      selectedMetrics.splice(idx, 1);
+    } else if (idx === -1) {
+      selectedMetrics.push(metric);
+    }
+    return selectedMetrics;
+  }
+
+  applyAxesToChart(systemChart: any, selectedMetrics: string[]): void {
+    if (!systemChart) return;
+    const axes = this.getAxesConfig(selectedMetrics);
+    (systemChart.options.scales as any)['y'] = axes.y;
+    (systemChart.options.scales as any)['y1'] = axes.y1;
+
+    const mapping = axes.datasetAxisIds || [];
+    (systemChart.data.datasets as any[]).forEach((dataset: any, index: number) => {
+
+      const metricForIndex = selectedMetrics.at(index) || '';
+      const axisForIndex = mapping.at(index);
+      const shouldFilter = mapping.length === 0 || Boolean(axisForIndex);
+      dataset.hidden = !(shouldFilter ? selectedMetrics.includes(metricForIndex) : true);
+      if (axisForIndex) {
+        dataset.yAxisID = axisForIndex;
+      }
+    });
+
+    try {
+      systemChart.update();
+    } catch {
+
+    }
+  }
+}

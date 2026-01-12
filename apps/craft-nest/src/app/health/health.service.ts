@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as os from 'os';
-import { BehaviorSubject, Observable, interval, timer, combineLatest, of } from 'rxjs';
-import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, interval, combineLatest } from 'rxjs';
+import { map, shareReplay, startWith } from 'rxjs/operators';
 
 export interface SystemMetrics {
   uptime: number;
@@ -81,7 +81,7 @@ export class HealthService {
         status,
         services,
         uptime: Math.floor((Date.now() - this.startTime) / 1000), // Uptime in seconds
-        version: process.env.npm_package_version || '1.0.0'
+        version: process.env['npm_package_version'] || '1.0.0'
       };
     }),
     shareReplay(1)
@@ -136,8 +136,8 @@ export class HealthService {
   
   private calculateCpuUsage(): number {
     // This is a simplified calculation
-    const loadAvg = os.loadavg()[0]; // 1-minute load average
-    const cpus = os.cpus().length;
+    const loadAvg = os.loadavg()[0] ?? 0; // 1-minute load average
+    const cpus = os.cpus().length || 1;
     
     return Math.min(100, Math.floor((loadAvg / cpus) * 100));
   }

@@ -8,9 +8,8 @@ describe('LineComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LineComponent]
-    })
-    .compileComponents();
+      declarations: [LineComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(LineComponent);
     component = fixture.componentInstance;

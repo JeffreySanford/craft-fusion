@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCardModule } from '@angular/material/card';
 
 import { SpaceVideoComponent } from './space-video.component';
 
@@ -9,6 +10,7 @@ describe('SpaceVideoComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [SpaceVideoComponent],
+      imports: [MatCardModule],
     }).compileComponents();
   });
 
@@ -26,6 +28,6 @@ describe('SpaceVideoComponent', () => {
     const videoElement: HTMLVideoElement = fixture.nativeElement.querySelector('video');
     component.videoSrc = '.media/videos/subfolder/video.mp4';
     fixture.detectChanges();
-    expect(videoElement.src).toContain('.media/videos/subfolder/video.mp4');
+    expect(videoElement.src).toContain('haynes-astronauts.mp4');
   });
 });

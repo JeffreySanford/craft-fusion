@@ -74,14 +74,15 @@ export class PerformanceHelperService {
   updateChartData(chart: any, labels: string[], data: number[], colors?: string[]) {
     if (!chart) return;
     chart.data.labels = labels;
-    if (chart.data.datasets && chart.data.datasets[0]) {
-      chart.data.datasets[0].data = data;
-      if (colors) chart.data.datasets[0].backgroundColor = colors;
+    const dataset = Array.isArray(chart.data.datasets) ? chart.data.datasets.find((_: unknown, idx: number) => idx === 0) : undefined;
+    if (dataset) {
+      dataset.data = data;
+      if (colors) dataset.backgroundColor = colors;
     }
     try {
       chart.update();
-    } catch (e) {
-      // no-op in case chart isn't ready
+    } catch {
+
     }
   }
 
@@ -89,8 +90,8 @@ export class PerformanceHelperService {
     const width = 250;
     const height = 80;
     return `
-      <svg width="${width}" height="${height}" class="sparkline-detailed empty" xmlns="http://www.w3.org/2000/svg">
-        <text x="${width / 2}" y="${height / 2}" text-anchor="middle" fill="#9CA3AF" font-size="12">No data available</text>
+      <svg width="${width}" height="${height}" class="sparkline-detailed empty" xmlns="http:                       
+        <text x="${width / 2}" y="${height / 2}" text-anchor="middle" fill="var(--md-sys-color-on-surface, #9CA3AF)" font-size="12">No data available</text>
       </svg>
     `;
   }
@@ -119,10 +120,11 @@ export class PerformanceHelperService {
       <svg width="${width}" height="${height}" class="sparkline">
         <polyline fill="none" stroke="url(#sparklineGradient)" stroke-width="1.5" points="${points}" />
         <defs>
-            <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.8" />
-            <stop offset="50%" style="stop-color:#10b981;stop-opacity:0.8" />
-            <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0.8" />
-          </linearGradient>
+            <linearGradient id="sparklineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" class="spark-stop-a" />
+              <stop offset="50%" class="spark-stop-b" />
+              <stop offset="100%" class="spark-stop-c" />
+            </linearGradient>
         </defs>
       </svg>
     `;
@@ -154,11 +156,11 @@ export class PerformanceHelperService {
     timelineData.forEach((d, index) => {
       const x = padding + (innerWidth * (d.timestamp.getTime() - minTime)) / (maxTime - minTime);
       const y = height - padding - (innerHeight * (d.responseTime - minResponse)) / (maxResponse - minResponse);
-      const status = statuses[index];
+      const status = statuses.at(index);
       const statusNum = typeof status === 'number' ? status : Number(status);
-      let dotColor = '#10B981';
-      if (statusNum >= 400) dotColor = '#EF4444';
-      else if (statusNum >= 300) dotColor = '#F59E0B';
+      let dotColor = 'var(--craft-live-color, #10B981)';
+      if (statusNum >= 400) dotColor = 'var(--md-sys-color-error, #EF4444)';
+      else if (statusNum >= 300) dotColor = 'var(--md-sys-color-warning, #F59E0B)';
       dotsHtml += `<circle cx="${x}" cy="${y}" r="3" fill="${dotColor}" stroke="rgba(255,255,255,0.3)" stroke-width="1"></circle>`;
     });
     const areaData = pathData + ` L ${padding + innerWidth},${height - padding} L ${padding},${height - padding} Z`;
@@ -171,7 +173,7 @@ export class PerformanceHelperService {
           </linearGradient>
         </defs>
         <path d="${areaData}" fill="url(#areaGradient)" />
-        <path d="${pathData}" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="${pathData}" fill="none" stroke="var(--md-sys-color-primary, #3B82F6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
         ${dotsHtml}
       </svg>
     `;

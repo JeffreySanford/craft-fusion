@@ -1,0 +1,83 @@
+@use "variables" as vars;
+
+.metrics-summary {
+  display: flex;
+  gap: 2%;
+  justify-content: space-between;
+  min-height: 7.5em;
+  width: 100%;
+
+  .metric-card {
+    align-items: center;
+    animation: slide-in-left 0.5s ease-out forwards;
+    animation-delay: calc(var(--i, 0) * 0.1s);
+    background: rgb(255 255 255 / 10%);
+    border-left: 5px solid;
+    border-radius: 0.625em;
+    display: flex;
+    flex: 1;
+    max-width: calc(25% - 2%);
+    min-width: 12.5em;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 5px 15px rgb(0 0 0 / 20%);
+      transform: translateY(-5px);
+    }
+
+    &.memory {
+      border-color: vars.$usa-blue;
+
+      --i: 1;
+    }
+
+    &.cpu {
+      border-color: vars.$usa-gold;
+
+      --i: 2;
+    }
+
+    &.uptime {
+      border-color: limegreen;
+
+      --i: 3;
+    }
+
+    &.network {
+      border-color: vars.$usa-red;
+
+      --i: 4;
+    }
+
+    .metric-icon {
+      align-items: center;
+      border-radius: 50%;
+      display: flex;
+      flex: 0 0 50px;
+      height: 3.125em;
+      justify-content: center;
+      margin-right: 1rem;
+      width: 3.125em;
+    }
+
+    .metric-info {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .metrics-summary {
+    flex-wrap: wrap;
+    gap: 1.25em 2%;
+    row-gap: 1.875em;
+
+    .metric-card {
+      flex: 1 1 calc(50% - 2%);
+      max-width: calc(50% - 2%);
+      min-height: 6.25em;
+    }
+  }
+}

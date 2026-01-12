@@ -1,0 +1,15 @@
+$md-primary: var(--md-sys-color-primary, #6750a4);
+$md-on-primary: var(--md-sys-color-on-primary, #fff);
+$md-surface: var(--md-sys-color-surface, #fff);
+$md-background: var(--md-sys-color-background, #f5f5fa);
+
+$md-live: var(--craft-live-color, var(--md-sys-color-primary, #4caf50));
+$md-sim: var(--craft-sim-color, orange);
+$md-warning: var(--md-sys-color-warning, #f59e0b);
+$md-error: var(--md-sys-color-error, #ef4444);
+
+$md-text-on-surface: var(--md-sys-color-on-surface, #1c1b1f);
+
+@mixin md3-border($color, $width: 2px) {
+  border: $width solid $color;
+}

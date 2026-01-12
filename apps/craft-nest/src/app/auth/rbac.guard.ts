@@ -25,7 +25,7 @@ export class RbacGuard implements CanActivate {
       
       // Get user role from socket handshake/client data
       // In a real application, you'd retrieve this from JWT or session
-      const userRole = client.handshake.auth?.role || 'guest';
+      const userRole = client.handshake.auth?.['role'] || 'guest';
       
       return roles.includes(userRole);
     } else {

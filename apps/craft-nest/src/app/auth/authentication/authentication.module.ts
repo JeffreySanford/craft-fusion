@@ -1,19 +1,36 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigService, ConfigModule } from '@nestjs/config';
 import { AuthenticationService } from './authentication.service';
 import { AuthenticationController } from './authentication.controller';
 import { RefreshTokenService } from './refresh-token.service';
 import { RefreshToken, RefreshTokenSchema } from './schemas/refresh-token.schema';
 
-const jwtSecret = process.env['JWT_SECRET'] || 'dev_jwt_secret';
-const jwtExpiry = process.env['JWT_EXPIRATION'] || '3600s';
+function normalizeExpiry(raw: string | undefined): string {
+  const value = raw?.trim();
+  if (!value) {
+    return '3600s';
+  }
+  if (/^\d+$/.test(value)) {
+    return `${value}s`;
+  }
+  return value;
+}
 
 @Module({
   imports: [
-    JwtModule.register({
-      secret: jwtSecret,
-      signOptions: { expiresIn: jwtExpiry },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (config: ConfigService) => {
+        const secret = config.get<string>('JWT_SECRET') || 'dev_jwt_secret';
+        const expiry = normalizeExpiry(config.get<string>('JWT_EXPIRATION'));
+        return {
+          secret,
+          signOptions: { expiresIn: expiry },
+        };
+      },
+      inject: [ConfigService],
     }),
     MongooseModule.forFeature([{ name: RefreshToken.name, schema: RefreshTokenSchema }]),
   ],

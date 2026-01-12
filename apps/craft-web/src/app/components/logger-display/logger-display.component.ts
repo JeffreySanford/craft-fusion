@@ -132,9 +132,11 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
   
   private isHighlightedLog(log: LogEntry): boolean {
     // Check for highlight markers in message
-    return log.message.includes('⭐') || 
-           log.message.includes('IMPORTANT') ||
-           (log.details && log.details.highlight === true);
+    const hasStar = log.message?.includes('⭐');
+    const hasImportant = log.message?.includes('IMPORTANT');
+    const hasHighlightDetail = log.details && (log.details as any).highlight === true;
+    
+    return !!(hasStar || hasImportant || hasHighlightDetail);
   }
   
   private isSecurityLog(log: LogEntry): boolean {
@@ -251,7 +253,7 @@ export class LoggerDisplayComponent implements OnInit, AfterViewInit, OnDestroy 
   }
   
   // Updated: Fix trackBy function to generate unique identifiers directly
-  getLogId(index: number, log: LogEntry): string {
+  getLogId(_index: number, log: LogEntry): string {
     return `${log.timestamp.getTime()}_${log.level}_${log.component || 'unknown'}_${log.message.substring(0, 20)}`;
   }
   

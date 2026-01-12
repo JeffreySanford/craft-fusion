@@ -22,6 +22,14 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatRadioModule } from '@angular/material/radio';
 
 @NgModule({
   exports: [
@@ -47,7 +55,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatSnackBarModule,
     MatSlideToggleModule,
     MatTooltipModule,
-    MatFormFieldModule
-  ]
+    MatFormFieldModule,
+    MatDialogModule,
+    MatAutocompleteModule,
+    MatChipsModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatDividerModule,
+    MatStepperModule,
+    MatRadioModule,
+  ],
 })
-export class MaterialModule { }
+export class MaterialModule {}

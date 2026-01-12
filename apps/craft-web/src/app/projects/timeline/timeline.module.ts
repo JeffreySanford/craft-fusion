@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 import { MaterialModule } from '../../material.module';
-import { AnimatedDirectivesModule } from '../../animated-directives.module';
+import { DirectivesModule } from '../../common/directives/directives.module';
 
 import { TimelinePageComponent } from './components/timeline-page/timeline-page.component';
 import { TimelineListComponent } from './components/timeline-list/timeline-list.component';
@@ -23,7 +23,7 @@ import { JeffreyAiComponent } from './components/jeffrey-ai/jeffrey-ai.component
     CommonModule,
     RouterModule,
     MaterialModule,
-    AnimatedDirectivesModule,
+    DirectivesModule,
     RouterModule.forChild([
       { path: '', component: TimelinePageComponent },
       { path: 'memorial-timeline', component: MemorialTimelineComponent },

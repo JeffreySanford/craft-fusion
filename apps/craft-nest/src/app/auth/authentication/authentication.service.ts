@@ -17,6 +17,10 @@ export interface LoginResponse {
 @Injectable()
 export class AuthenticationService {
   private readonly logger = new Logger(AuthenticationService.name);
+  private readonly adminUsernameLower = process.env['ADMIN_USERNAME']?.trim().toLowerCase();
+  private readonly adminFirstName = process.env['ADMIN_FIRST_NAME']?.trim() || 'Admin';
+  private readonly adminLastName = process.env['ADMIN_LAST_NAME']?.trim() || 'User';
+  private readonly authEmailDomain = process.env['AUTH_EMAIL_DOMAIN']?.trim().toLowerCase() || 'example.com';
 
   constructor(
     private readonly jwtService: JwtService,
@@ -24,13 +28,26 @@ export class AuthenticationService {
     @InjectConnection() private readonly connection: Connection,
   ) {}
 
-  async login(username: string, password?: string): Promise<LoginResponse> {
-    console.log('[AuthenticationService] login called', { username });
+  async login(username: string, password?: string, requestedRoles?: string[]): Promise<LoginResponse> {
+    const normalized = (username || '').trim();
+    if (!normalized) {
+      throw new UnauthorizedException('Username is required');
+    }
+
+    const normalizedLower = normalized.toLowerCase();
+
+    if (normalizedLower === 'valued-member') {
+      const user = await this.resolveTokenUser(normalized, requestedRoles);
+      return this.buildAuthResponse(user);
+    }
 
     const isAdminLogin = await this.evaluateAdminLogin(username, password);
-    const user = this.buildUserProfile(username, isAdminLogin);
+    if (!isAdminLogin) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
-    return this.buildAuthResponse(user);
+    const adminUser = this.buildAdminProfile(normalized, normalizedLower === this.adminUsernameLower);
+    return this.buildAuthResponse(adminUser);
   }
 
   async refreshTokens(existingRefreshToken: string | undefined): Promise<LoginResponse> {
@@ -58,15 +75,27 @@ export class AuthenticationService {
     try {
       const payload: any = this.jwtService.verify(parsedToken);
       const username = payload.username || 'authenticated-user';
-      const roles = Array.isArray(payload.roles) && payload.roles.length ? payload.roles : ['user'];
+      const usernameLower = username.toLowerCase();
+      const roles = this.normalizeRoles(Array.isArray(payload.roles) ? payload.roles : [], undefined);
+      const isGuest = usernameLower === 'guest';
+      const matchesEnvAdmin = this.adminUsernameLower ? usernameLower === this.adminUsernameLower : false;
+
+      const profileFirstName = isGuest
+        ? 'Guest'
+        : matchesEnvAdmin
+          ? this.adminFirstName
+          : 'Authenticated';
+      const profileLastName = matchesEnvAdmin ? this.adminLastName : 'User';
+      const email = `${username}@${this.authEmailDomain}`;
+
       return {
-        id: payload.sub ? String(payload.sub) : '1',
+        id: payload.sub ? String(payload.sub) : username,
         username,
-        firstName: username === 'admin' ? 'Admin' : 'Authenticated',
-        lastName: 'User',
-        email: `${username}@example.com`,
+        firstName: profileFirstName,
+        lastName: profileLastName,
+        email,
         roles,
-        role: roles[0],
+        role: roles[0] || 'user',
       };
     } catch (err) {
       this.logger.warn('Failed to verify JWT when resolving user', String(err));
@@ -80,8 +109,11 @@ export class AuthenticationService {
 
   private async evaluateAdminLogin(username: string, password?: string): Promise<boolean> {
     const adminSecret = process.env['ADMIN_SECRET'];
-    const envAdmin = process.env['ADMIN_USERNAME'];
+    const envAdmin = process.env['ADMIN_USERNAME']?.trim();
     const envPass = process.env['ADMIN_PASSWORD'];
+    const normalizedUsername = (username || '').trim();
+    const normalizedLower = normalizedUsername.toLowerCase();
+    const matchesEnvAdmin = this.adminUsernameLower ? normalizedLower === this.adminUsernameLower : false;
 
     if (adminSecret) {
       this.logger.debug('Admin secret detected, elevating all sessions');
@@ -92,12 +124,11 @@ export class AuthenticationService {
       return false;
     }
 
-    if (username === 'test') {
-      this.logger.debug('Test user login treated as admin');
-      return true;
+    if (!matchesEnvAdmin) {
+      return false;
     }
 
-    if (username !== envAdmin) {
+    if (normalizedUsername !== envAdmin) {
       return false;
     }
 
@@ -134,22 +165,54 @@ export class AuthenticationService {
     }
   }
 
-  private buildUserProfile(username: string, isAdminLogin: boolean): AuthenticatedUser {
-    const fallbackRole = username === 'guest' ? 'guest' : 'user';
-    const roles = [fallbackRole];
-    if (isAdminLogin && !roles.includes('admin')) {
-      roles.push('admin');
+  private async resolveTokenUser(username: string, requestedRoles?: string[]): Promise<AuthenticatedUser> {
+    const expectedUsername = process.env['VALUED_MEMBER_USERNAME']?.trim().toLowerCase() ?? 'valued-member';
+
+    if ((username || '').trim().toLowerCase() !== expectedUsername) {
+      this.logger.warn('Valued-member login attempted with unexpected username', { username });
+      throw new UnauthorizedException('Invalid credentials');
     }
 
+    const roles = this.normalizeRoles(requestedRoles, process.env['VALUED_MEMBER_ROLES']);
+    const primaryRole = roles[0] || 'user';
+
     return {
-      id: username === 'guest' ? '1' : username === 'test' ? '2' : '3',
+      id: username,
       username,
-      firstName: username === 'guest' ? 'Guest' : username === 'test' ? 'Test' : 'Admin',
-      lastName: 'User',
-      email: `${username}@example.com`,
-      role: isAdminLogin ? 'admin' : fallbackRole,
+      firstName: 'Valued',
+      lastName: 'Member',
+      email: `${username}@${this.authEmailDomain}`,
+      role: primaryRole,
+      roles: [...roles],
+    };
+  }
+
+  private buildAdminProfile(username: string, matchesEnvAdmin: boolean): AuthenticatedUser {
+    const profileFirstName = matchesEnvAdmin ? this.adminFirstName : 'Admin';
+    const profileLastName = matchesEnvAdmin ? this.adminLastName : 'User';
+    const email = `${username}@${this.authEmailDomain}`;
+    const roles: string[] = ['test', 'admin'];
+    const primaryRole: string = roles[0] ?? 'test';
+
+    return {
+      id: username,
+      username,
+      firstName: profileFirstName,
+      lastName: profileLastName,
+      email,
+      role: primaryRole,
       roles,
     };
+  }
+
+  private normalizeRoles(requestedRoles?: string[], configuredRoles?: string): string[] {
+    const envRoles = (configuredRoles || '').split(',').map(r => r.trim().toLowerCase()).filter(r => !!r);
+    const baseRoles = envRoles.length ? envRoles : ['user'];
+    const incoming = Array.isArray(requestedRoles)
+      ? requestedRoles.map(role => role.trim().toLowerCase()).filter(role => !!role)
+      : [];
+    const roles = incoming.length ? incoming : baseRoles;
+    return [...roles];
   }
 
   private async buildAuthResponse(user: AuthenticatedUser): Promise<LoginResponse> {

@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DeepseekLocalService } from './deepseek-local.service';
+import { DeepSeekService } from './deepseek-local.service';
 
 describe('DeepseekLocalService', () => {
-  let service: DeepseekLocalService;
+  let service: DeepSeekService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(DeepseekLocalService);
+    service = TestBed.inject(DeepSeekService);
   });
 
   it('should be created', () => {

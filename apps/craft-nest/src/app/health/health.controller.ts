@@ -31,7 +31,7 @@ export class HealthController {
         });
         
         // For errors, create a properly formatted HealthIndicatorResult
-        const errorResult: HealthIndicatorResult | undefined = 
+        const errorResult: HealthIndicatorResult = 
           health.status !== 'healthy' 
             ? {
                 system: {
@@ -39,7 +39,7 @@ export class HealthController {
                   message: `Some services are ${health.status}`
                 }
               } 
-            : undefined;
+            : {};
         
         // Return the properly typed result
         const result: HealthCheckResult = {

@@ -1,65 +1,66 @@
-// Vibrant Patriotic Colors Overrides
+$vibrant-navy: #001e3a;                                               
+$vibrant-red: #e40032;                            
+$vibrant-gold: #ffcc01;                     
+$pure-white: #fff;                                   
 
-// Enhanced vibrant color variables
-$vibrant-navy: #0033a0; // More saturated navy blue
-$vibrant-red: #e40032; // Brighter, more vivid red
-$vibrant-gold: #ffcc01; // More vibrant gold
-$pure-white: #ffffff; // Pure white for maximum contrast
-
-// Brighten specific colors for dark theme
-$dark-navy-glow: #3a78ff; // Glowing blue for dark mode
-$dark-red-glow: #ff3b5c; // Glowing red for dark mode
-$dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
+$dark-navy-glow: #3a78ff;                              
+$dark-red-glow: #ff3b5c;                             
+$dark-gold-glow: #ffdc4e;                              
 
 @mixin apply-patriotic-colors() {
-  // Core elements with vibrant patriotic styling
+
   .header-card,
   .enhanced-panel,
   .sidebar,
   .main-stage {
-    color: $pure-white;
     border: none;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 15px rgb(0 0 0 / 40%);
+    color: $pure-white;
   }
 
-  // Enhanced gradients with more vibrant colors
   :root,
   .light-theme,
-  [data-theme='light'] {
-    // Vibrant light mode gradients
+  [data-theme="light"] {
+
     --vibrant-header-gradient: linear-gradient(135deg, $vibrant-navy 0%, #0046cc 30%, #c80028 70%, $vibrant-red 100%);
+    --vibrant-menu-gradient: linear-gradient(135deg, rgb(0 51 160 / 97%) 0%, rgb(228 0 50 / 97%) 50%, rgb(0 51 160 / 97%) 100%);
 
-    --vibrant-menu-gradient: linear-gradient(135deg, rgba(0, 51, 160, 0.97) 0%, rgba(228, 0, 50, 0.97) 50%, rgba(0, 51, 160, 0.97) 100%);
-
-    // Override primary colors with more vibrant versions
     --md-sys-color-primary: #{$vibrant-navy};
     --md-sys-color-secondary: #{$vibrant-red};
     --md-sys-color-tertiary: #{$vibrant-gold};
+    --md-sys-color-on-primary: #fff;
 
-    // Shared background gradients for core components
-    --sidebar-gradient: var(--vibrant-header-gradient);
-    --dashboard-gradient: linear-gradient(135deg, rgba(0, 51, 160, 0.15) 0%, rgba(228, 0, 50, 0.15) 100%);
+    --sidebar-gradient: linear-gradient(160deg, #001327 0%, #003a7a 55%, #002456 100%);
+    --dashboard-gradient: linear-gradient(135deg, rgb(0 51 160 / 15%) 0%, rgb(228 0 50 / 15%) 100%);
   }
 
-  // Dark theme gets even more vibrant with glow effects
   .dark-theme,
-  [data-theme='dark'] {
-    // Vibrant dark mode gradients with glow effect
+  [data-theme="dark"] {
+
     --vibrant-header-gradient: linear-gradient(135deg, #001e60 0%, $dark-navy-glow 30%, $dark-red-glow 70%, #b3002a 100%);
+    --vibrant-menu-gradient: linear-gradient(135deg, rgb(30 65 190 / 97%) 0%, rgb(255 59 92 / 97%) 50%, rgb(30 65 190 / 97%) 100%);
 
-    --vibrant-menu-gradient: linear-gradient(135deg, rgba(30, 65, 190, 0.97) 0%, rgba(255, 59, 92, 0.97) 50%, rgba(30, 65, 190, 0.97) 100%);
-
-    // Override primary colors with glowing versions for dark theme
     --md-sys-color-primary: #{$dark-navy-glow};
     --md-sys-color-secondary: #{$dark-red-glow};
     --md-sys-color-tertiary: #{$dark-gold-glow};
+    --md-sys-color-on-primary: #001022;
 
-    // Shared background gradients for core components
-    --sidebar-gradient: var(--vibrant-header-gradient);
-    --dashboard-gradient: linear-gradient(135deg, rgba(30, 65, 190, 0.2) 0%, rgba(255, 59, 92, 0.2) 100%);
+    --sidebar-gradient: linear-gradient(160deg, #071021 0%, #0a2a5b 55%, #061a3b 100%);
+    --dashboard-gradient: linear-gradient(135deg, rgb(30 65 190 / 20%) 0%, rgb(255 59 92 / 20%) 100%);
   }
 
-  // Apply vibrant gradients to specific components
+  .vibrant-theme,
+  [data-theme="vibrant"] {
+    --vibrant-header-gradient: linear-gradient(135deg, #001e60 0%, #0046cc 30%, #c80028 70%, #b3002a 100%);
+    --vibrant-menu-gradient: linear-gradient(135deg, rgb(4 0 252 / 70%) 0%, rgb(228 0 50 / 70%) 50%, rgb(4 0 252 / 70%) 100%);
+    --md-sys-color-primary: #{$vibrant-navy};
+    --md-sys-color-secondary: #{$vibrant-red};
+    --md-sys-color-tertiary: #{$vibrant-gold};
+    --md-sys-color-on-primary: #fff;
+    --sidebar-gradient: linear-gradient(160deg, #001327 0%, #003a7a 55%, #002456 100%);
+    --dashboard-gradient: linear-gradient(135deg, rgb(0 51 160 / 15%) 0%, rgb(228 0 50 / 15%) 100%);
+  }
+
   .header-card,
   .enhanced-panel {
     background: var(--vibrant-header-gradient) !important;
@@ -67,23 +68,68 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
 
   .sidebar {
     background: var(--sidebar-gradient) !important;
+
+    padding: 0.875em 0.75em;
+    width: 17.5em;
+    border-radius: 0.625em;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    color: var(--md-sys-color-on-primary, #fff) !important;
+
+    .mat-mdc-nav-list {
+      padding-top: 0.375em;
+
+      .mat-mdc-list-item {
+        padding: 0.625em 0.75em;
+        border-radius: 0.5em;
+        margin: 0.375em 0.125em;
+        color: var(--md-sys-color-on-primary, #fff) !important;
+
+        .mat-icon {
+
+          color: var(--md-sys-color-secondary) !important;
+          filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
+        }
+
+        .mat-mdc-icon-placeholder {
+          color: var(--md-sys-color-tertiary) !important;
+        }
+
+        &:hover {
+          background: rgba(255,255,255,0.06);
+          transform: translateX(4px);
+        }
+
+        &.active {
+          background: rgba(255,255,255,0.12);
+          box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+          color: var(--md-sys-color-on-primary, #fff) !important;
+        }
+      }
+    }
   }
 
   .main-stage {
     background: var(--dashboard-gradient) !important;
     color: var(--md-sys-color-on-surface) !important;
 
-    // Ensure main-stage has flex layout for its content
     display: flex;
     flex-direction: column;
   }
 
-  // Ensure the router content wrapper inside main-stage is visible
+  .layout-container.sidebar-collapsed .main-stage {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+
   .main-stage .router-content-wrapper {
     display: block !important;
-    width: 100%;
     flex: 1;
     overflow-y: auto;
+    width: 100%;
   }
 
   ::ng-deep .patriotic-menu.mat-mdc-menu-panel {
@@ -91,31 +137,59 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
     border: 2px solid $vibrant-gold !important;
   }
 
-  // Add subtle gold accents to interactive elements
   .mat-mdc-button.mat-primary {
+    background-color: var(--md-sys-color-primary) !important;
     border-bottom: 2px solid $vibrant-gold;
+    color: var(--md-sys-color-on-primary) !important;
   }
 
-  // Star field gets more vibrant
+  .menu-item.mdc-button--raised,
+  .menu-item.mat-mdc-raised-button {
+    background-color: var(--md-sys-color-primary) !important;
+    border-bottom: 2px solid $vibrant-gold;
+    color: var(--md-sys-color-on-primary) !important;
+  }
+
+  .menu-item {
+    color: var(--md-sys-color-on-primary) !important;
+  }
+
+  .menu-item,
+  .menu-item * {
+    color: var(--md-sys-color-on-primary) !important;
+  }
+
+  .vibrant-theme .menu-item.mdc-button--raised,
+  .vibrant-theme .menu-item.mat-mdc-raised-button,
+  .vibrant-theme .menu-item {
+    background-color: var(--md-sys-color-primary) !important;
+    border-bottom: 2px solid $vibrant-gold;
+    color: var(--md-sys-color-on-primary) !important;
+  }
+
+  .menu-item.mat-mdc-raised-button.mat-unthemed.mat-mdc-button-base,
+  .menu-item.mat-mdc-button-base.mat-unthemed {
+    background-color: var(--md-sys-color-primary) !important;
+    border-bottom: 2px solid $vibrant-gold;
+    color: var(--md-sys-color-on-primary) !important;
+  }
+
   .star-field {
     background-color: $vibrant-navy;
 
     &::before {
       color: $vibrant-gold;
-      text-shadow: 0 0 10px rgba(255, 204, 1, 0.8);
+      text-shadow: 0 0 10px rgb(255 204 1 / 80%);
     }
   }
 
-  // Vibrant app title with enhanced shimmer
   .app-title {
     background: linear-gradient(90deg, $pure-white, $vibrant-gold);
-    -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    text-shadow: 0 0 20px rgba(255, 204, 1, 0.6);
+    text-shadow: 0 0 20px rgb(255 204 1 / 60%);
   }
 
-  // Text utility classes get more vibrant
   .text-primary {
     color: var(--md-sys-color-primary);
     font-weight: 500;
@@ -126,10 +200,8 @@ $dark-gold-glow: #ffdc4e; // Glowing gold for dark mode
     font-weight: 500;
   }
 
-  // Make patriotic text more vibrant
   .text-patriotic {
     background: linear-gradient(90deg, $vibrant-navy, $vibrant-red);
-    -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     font-weight: bold;

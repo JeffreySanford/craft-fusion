@@ -1,7 +1,7 @@
-import { Controller, Get, Param, Post, Body, HttpException, HttpStatus, Header, Res } from '@nestjs/common';
-import { FileService } from './file.service';
+import { Controller, Get, Param, Post, Body, HttpException, HttpStatus, Res } from '@nestjs/common';
+import { FileService, DocumentUpload } from './file.service';
 import { Observable } from 'rxjs';
-import { Express, Response } from 'express';
+import { Response } from 'express';
 import * as path from 'path';
 
 @Controller('files')
@@ -52,7 +52,7 @@ export class FileController {
   }
 
   @Post('upload')
-  uploadFile(@Body() file: Express.Multer.File): Observable<void> {
+  uploadFile(@Body() file: DocumentUpload): Observable<void> {
     console.log('STATE: Uploading file:', file.originalname);
     if (!file || !file.originalname || !file.buffer) {
       throw new HttpException('Invalid file data', HttpStatus.BAD_REQUEST);

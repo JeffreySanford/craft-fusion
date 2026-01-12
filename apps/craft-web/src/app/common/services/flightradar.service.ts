@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
@@ -57,10 +57,9 @@ export class FlightRadarService {
      */
     getFlightsByBoundingBox(lat1: number, lon1: number, lat2: number, lon2: number): Observable<Array<Flight>> {
         console.log('STEP 2: Fetching flights by bounding box', { lat1, lon1, lat2, lon2 });
-        const coordinates: [number, number] = [lon1, lat1];
         const url = `${this.baseUrl}/live/flight-positions/full?bounds=${lat1},${lat2},${lon1},${lon2}`;
         const headers = this.getHeaders();
-        console.log("Firing flightradar24 with url: ", url);
+        console.log("Firing FlightRadar24 with url: ", url, headers);
         
         // return this.http.get(url, { headers }).pipe(
         //     catchError((error: HttpErrorResponse) => {
@@ -115,28 +114,14 @@ export class FlightRadarService {
         });
 
         // Return a properly structured response with flights property
-        return new Observable(observer => {
-            observer.next(mockFlights);
-            observer.complete();
-        });
+        return of(mockFlights);
     }
 
     getFlightById(flightId: string): Observable<any> {
         console.log('STEP 4: Fetching flight by ID', flightId);
         const url = `${this.baseUrl}/flight-tracks?flight_id=${flightId}`;
-
         const headers = this.getHeaders();
-
-        // return this.http.get(url, { headers }).pipe(
-        //     catchError((error: HttpErrorResponse) => {
-        //         if (error.status === 404) {
-        //             console.warn('Error fetching flight by ID: Flight not found', flightId);
-        //         } else {
-        //             console.error('Error fetching flight by ID', error);
-        //         }
-        //         return throwError(() => new Error('Failed to fetch flight.'));
-        //     })
-        // );
+        console.log('FlightRadar fetch by ID', { url, headers });
 
         // Mock data for a single flight
         const mockFlight = {
@@ -152,14 +137,12 @@ export class FlightRadarService {
             altitude: 10000 + Math.random() * 10000,
             speed: 200 + Math.random() * 200,
             tracks: Array.from({ length: 10 }, (_, index) => ({
+            trackId: `${flightId}-${index + 1}`,
             lat: 40 + Math.random() * 10,
             lon: -80 + Math.random() * 10
             }))
         };
-        return new Observable(observer => {
-            observer.next({ flight: mockFlight });
-            observer.complete();
-        });
+        return of({ flight: mockFlight });
         
     }
 

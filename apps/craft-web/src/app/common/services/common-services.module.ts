@@ -11,34 +11,27 @@ import { ThemeService } from './theme.service';
 import { ApiDiagnosticsService } from './api-diagnostics.service';
 import { SocketClientService } from './socket-client.service';
 import { UserActivityService } from './user-activity.service';
+import { DataSimulationService } from './data-simulation.service';
 
-/**
- * Module for common services used throughout the application.
- * Uses the singleton pattern to ensure services are only provided once.
- */
 @NgModule({
-  imports: [
-    HttpClientModule
-  ],
+  imports: [HttpClientModule],
   providers: [
     ServiceRegistryService,
     LoggerService,
     ApiService,
     NotificationService,
     BusyService,
-    SessionService, 
+    SessionService,
     UserStateService,
     ThemeService,
     ApiDiagnosticsService,
     SocketClientService,
-    UserActivityService
-  ]
+    UserActivityService,
+    DataSimulationService,
+  ],
 })
 export class CommonServicesModule {
-  /**
-   * Ensures CommonServicesModule is only imported in the AppModule
-   * Prevents multiple instances of services
-   */
+
   constructor(@Optional() @SkipSelf() parentModule?: CommonServicesModule) {
     if (parentModule) {
       throw new Error('CommonServicesModule is already loaded. Import it only in AppModule');

@@ -1,8 +1,9 @@
 import { Controller, Get, Post, Param, Res, Query } from '@nestjs/common';
 import { Response } from 'express';
+import { Observable } from 'rxjs';
 import { SecurityService, SecurityEvidence, SecurityFinding, Sbom, OscalProfile, OscalUpdateStatus, ScaItem, RealtimeCheck } from './security.service';
 import { PdfGenerationService } from '../common/pdf-generation.service';
-import { SecurityScanGateway } from '../security-scan/security-scan.gateway';
+import { SecurityScanGateway, ScanProgress } from '../security-scan/security-scan.gateway';
 import { v4 as uuidv4 } from 'uuid';
 
 @Controller('security')
@@ -68,22 +69,20 @@ export class SecurityController {
    * Start an OSCAL scan
    */
   @Post('oscal-profiles/:id/scan')
-  async startOscalScan(@Param('id') profileId: string): Promise<{ scanId: string }> {
+  startOscalScan(@Param('id') profileId: string): { scanId: string } {
     const scanId = uuidv4();
     
     // Create scan tracker
     this.scanGateway.createScan(scanId, 'oscal');
     
     // Execute scan asynchronously
-    this.executeOscalScanWithProgress(scanId, profileId).catch((error) => {
-      this.scanGateway.failScan(scanId, error.message);
-    });
+    this.executeOscalScanWithProgress(scanId, profileId);
     
     return { scanId };
   }
 
   @Post('oscal-updates/refresh')
-  refreshOscalUpdates(): Promise<OscalUpdateStatus> {
+  refreshOscalUpdates(): Observable<OscalUpdateStatus> {
     return this.securityService.refreshOscalUpdates();
   }
 
@@ -91,16 +90,14 @@ export class SecurityController {
    * Execute real-time check
    */
   @Post('realtime-checks/:id/run')
-  async runRealtimeCheck(@Param('id') checkId: string): Promise<{ scanId: string }> {
+  runRealtimeCheck(@Param('id') checkId: string): { scanId: string } {
     const scanId = uuidv4();
     
     // Create scan tracker
     this.scanGateway.createScan(scanId, 'realtime');
     
     // Execute check asynchronously
-    this.executeRealtimeCheckWithProgress(scanId, checkId).catch((error) => {
-      this.scanGateway.failScan(scanId, error.message);
-    });
+    this.executeRealtimeCheckWithProgress(scanId, checkId);
     
     return { scanId };
   }
@@ -109,24 +106,29 @@ export class SecurityController {
    * Download OSCAL report
    */
   @Get('oscal-profiles/:id/report')
-  async downloadOscalReport(
+  downloadOscalReport(
     @Param('id') profileId: string,
     @Query('format') format: 'pdf' | 'json' | 'xml',
     @Res() res: Response,
-  ): Promise<void> {
+  ): void {
     const data = this.securityService.getOscalReport(profileId);
     
     if (format === 'pdf') {
-      const pdfBuffer = await this.pdfService.generateSecurityReport({
+       this.pdfService.generateSecurityReport({
         title: `OSCAL Compliance Report - ${data.name}`,
         reportType: 'oscal',
         data,
         classification: 'UNCLASSIFIED',
+      }).subscribe({
+        next: (pdfBuffer) => {
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', `attachment; filename="oscal-${profileId}-${Date.now()}.pdf"`);
+          res.send(pdfBuffer);
+        },
+        error: (err) => {
+          res.status(500).send({ error: 'PDF Generation failed', details: err.message });
+        }
       });
-      
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="oscal-${profileId}-${Date.now()}.pdf"`);
-      res.send(pdfBuffer);
     } else if (format === 'json') {
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Content-Disposition', `attachment; filename="oscal-${profileId}-${Date.now()}.json"`);
@@ -143,23 +145,28 @@ export class SecurityController {
    * Download SBOM report
    */
   @Get('sboms/:id/report')
-  async downloadSbomReport(
+  downloadSbomReport(
     @Param('id') sbomId: string,
     @Query('format') format: 'pdf' | 'json' | 'xml',
     @Res() res: Response,
-  ): Promise<void> {
+  ): void {
     const data = this.securityService.getSbomReport(sbomId);
     
     if (format === 'pdf') {
-      const pdfBuffer = await this.pdfService.generateSecurityReport({
+       this.pdfService.generateSecurityReport({
         title: `Software Bill of Materials - ${data.name}`,
         reportType: 'sbom',
         data,
+      }).subscribe({
+        next: (pdfBuffer) => {
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', `attachment; filename="sbom-${sbomId}-${Date.now()}.pdf"`);
+          res.send(pdfBuffer);
+        },
+        error: (err) => {
+          res.status(500).send({ error: 'PDF Generation failed', details: err.message });
+        }
       });
-      
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="sbom-${sbomId}-${Date.now()}.pdf"`);
-      res.send(pdfBuffer);
     } else if (format === 'json') {
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Content-Disposition', `attachment; filename="sbom-${sbomId}-${Date.now()}.json"`);
@@ -176,23 +183,28 @@ export class SecurityController {
    * Download real-time check report
    */
   @Get('realtime-checks/:id/report')
-  async downloadRealtimeReport(
+  downloadRealtimeReport(
     @Param('id') checkId: string,
     @Query('format') format: 'pdf' | 'json' | 'xml',
     @Res() res: Response,
-  ): Promise<void> {
+  ): void {
     const data = this.securityService.getRealtimeReport(checkId);
     
     if (format === 'pdf') {
-      const pdfBuffer = await this.pdfService.generateSecurityReport({
+       this.pdfService.generateSecurityReport({
         title: `Real-Time Security Check - ${data.name}`,
         reportType: 'realtime',
         data,
+      }).subscribe({
+        next: (pdfBuffer) => {
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', `attachment; filename="realtime-${checkId}-${Date.now()}.pdf"`);
+          res.send(pdfBuffer);
+        },
+        error: (err) => {
+          res.status(500).send({ error: 'PDF Generation failed', details: err.message });
+        }
       });
-      
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="realtime-${checkId}-${Date.now()}.pdf"`);
-      res.send(pdfBuffer);
     } else if (format === 'json') {
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Content-Disposition', `attachment; filename="realtime-${checkId}-${Date.now()}.json"`);
@@ -209,23 +221,28 @@ export class SecurityController {
    * Export all findings
    */
   @Get('findings/export')
-  async exportFindings(
+  exportFindings(
     @Query('format') format: 'pdf' | 'json' | 'xml',
     @Res() res: Response,
-  ): Promise<void> {
+  ): void {
     const data = this.securityService.getFindingsReport();
     
     if (format === 'pdf') {
-      const pdfBuffer = await this.pdfService.generateSecurityReport({
+      this.pdfService.generateSecurityReport({
         title: 'Security Findings Report',
         reportType: 'findings',
         data,
         classification: 'UNCLASSIFIED',
+      }).subscribe({
+        next: (pdfBuffer) => {
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', `attachment; filename="findings-${Date.now()}.pdf"`);
+          res.send(pdfBuffer);
+        },
+        error: (err) => {
+          res.status(500).send({ error: 'PDF Generation failed', details: err.message });
+        }
       });
-      
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="findings-${Date.now()}.pdf"`);
-      res.send(pdfBuffer);
     } else if (format === 'json') {
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Content-Disposition', `attachment; filename="findings-${Date.now()}.json"`);
@@ -242,7 +259,7 @@ export class SecurityController {
    * Download evidence bundle (ZIP)
    */
   @Get('evidence/bundle')
-  async downloadEvidenceBundle(@Res() res: Response): Promise<void> {
+  downloadEvidenceBundle(@Res() res: Response): void {
     // For now, return JSON of all evidence
     // TODO: Create actual ZIP bundle with files
     const data = this.securityService.getEvidenceBundle();
@@ -256,22 +273,27 @@ export class SecurityController {
    * Export SCA report
    */
   @Get('sca-items/export')
-  async exportScaReport(
+  exportScaReport(
     @Query('format') format: 'pdf' | 'json' | 'xml',
     @Res() res: Response,
-  ): Promise<void> {
+  ): void {
     const data = this.securityService.getScaReport();
     
     if (format === 'pdf') {
-      const pdfBuffer = await this.pdfService.generateSecurityReport({
+       this.pdfService.generateSecurityReport({
         title: 'Security Checklist Assessment',
         reportType: 'sca',
         data,
+      }).subscribe({
+        next: (pdfBuffer) => {
+          res.setHeader('Content-Type', 'application/pdf');
+          res.setHeader('Content-Disposition', `attachment; filename="sca-${Date.now()}.pdf"`);
+          res.send(pdfBuffer);
+        },
+        error: (err) => {
+          res.status(500).send({ error: 'PDF Generation failed', details: err.message });
+        }
       });
-      
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="sca-${Date.now()}.pdf"`);
-      res.send(pdfBuffer);
     } else if (format === 'json') {
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Content-Disposition', `attachment; filename="sca-${Date.now()}.json"`);
@@ -284,56 +306,77 @@ export class SecurityController {
     }
   }
 
-  private async executeOscalScanWithProgress(scanId: string, profileId: string): Promise<void> {
-    const result = await this.securityService.executeOscalScan(
-      profileId,
-      (progress, eta, message) => {
-        this.scanGateway.emitProgress({
-          scanId,
-          type: 'oscal',
-          status: 'in-progress',
-          progress,
-          eta,
-          message,
-        });
+  private executeOscalScanWithProgress(scanId: string, profileId: string): void {
+    this.securityService.executeOscalScan(profileId).subscribe({
+      next: (progress) => {
+        if (progress.result) {
+          this.scanGateway.completeScan(scanId, progress.result);
+        } else {
+          const progressPayload: ScanProgress = {
+            scanId,
+            type: 'oscal',
+            status: 'in-progress',
+            progress: progress.progress,
+            message: progress.message,
+          };
+          if (progress.eta !== undefined) {
+            progressPayload.eta = progress.eta;
+          }
+          this.scanGateway.emitProgress(progressPayload);
+        }
+      },
+      error: (error) => {
+        this.scanGateway.failScan(scanId, error.message);
       }
-    );
-    
-    this.scanGateway.completeScan(scanId, result);
+    });
   }
 
-  private async executeRealtimeCheckWithProgress(scanId: string, checkId: string): Promise<void> {
-    const result = await this.securityService.executeRealtimeCheck(
-      checkId,
-      (progress, message) => {
-        this.scanGateway.emitProgress({
-          scanId,
-          type: 'realtime',
-          status: 'in-progress',
-          progress,
-          message,
-        });
+  private executeRealtimeCheckWithProgress(scanId: string, checkId: string): void {
+    this.securityService.executeRealtimeCheck(checkId).subscribe({
+      next: (progress) => {
+        if (progress.result) {
+          this.scanGateway.completeScan(scanId, progress.result);
+        } else {
+          this.scanGateway.emitProgress({
+            scanId,
+            type: 'realtime',
+            status: 'in-progress',
+            progress: progress.progress,
+            message: progress.message,
+          });
+        }
+      },
+      error: (error) => {
+        this.scanGateway.failScan(scanId, error.message);
       }
-    );
-    
-    this.scanGateway.completeScan(scanId, result);
+    });
   }
 
-  private convertToXml(rootElement: string, data: any): string {
+  private convertToXml(rootElement: string, data: unknown): string {
     // Simple XML conversion
     const xmlParts = [`<?xml version="1.0" encoding="UTF-8"?>`, `<${rootElement}>`];
     
-    const convertObject = (obj: any, indent = 1): void => {
+    const convertObject = (obj: Record<string, unknown> | unknown[], indent = 1): void => {
       const spaces = '  '.repeat(indent);
+      
+      if (Array.isArray(obj)) {
+        obj.forEach((item) => {
+          if (typeof item === 'object' && item !== null) {
+            convertObject(item as Record<string, unknown>, indent);
+          }
+        });
+        return;
+      }
+
       for (const [key, value] of Object.entries(obj)) {
         if (value === null || value === undefined) continue;
         
         if (Array.isArray(value)) {
           xmlParts.push(`${spaces}<${key}s>`);
-          value.forEach((item) => {
+          value.forEach((item: unknown) => {
             xmlParts.push(`${spaces}  <${key}>`);
-            if (typeof item === 'object') {
-              convertObject(item, indent + 2);
+            if (typeof item === 'object' && item !== null) {
+              convertObject(item as Record<string, unknown>, indent + 2);
             } else {
               xmlParts.push(`${spaces}    ${this.escapeXml(String(item))}`);
             }
@@ -342,7 +385,7 @@ export class SecurityController {
           xmlParts.push(`${spaces}</${key}s>`);
         } else if (typeof value === 'object') {
           xmlParts.push(`${spaces}<${key}>`);
-          convertObject(value, indent + 1);
+          convertObject(value as Record<string, unknown>, indent + 1);
           xmlParts.push(`${spaces}</${key}>`);
         } else {
           xmlParts.push(`${spaces}<${key}>${this.escapeXml(String(value))}</${key}>`);
@@ -350,7 +393,16 @@ export class SecurityController {
       }
     };
     
-    convertObject(data);
+    if (typeof data === 'object' && data !== null) {
+      if (Array.isArray(data)) {
+        data.forEach(item => {
+           convertObject(item as Record<string, unknown>);
+        });
+      } else {
+        convertObject(data as Record<string, unknown>);
+      }
+    }
+    
     xmlParts.push(`</${rootElement}>`);
     
     return xmlParts.join('\n');

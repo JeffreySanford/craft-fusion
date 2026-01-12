@@ -1,24 +1,15 @@
 <div class="footer-container" [class.expanded]="expanded">
-  <mat-expansion-panel class="enhanced-panel" 
-                      (opened)="onPanelToggled(true)" 
-                      (closed)="onPanelToggled(false)">
+  <mat-expansion-panel class="enhanced-panel" (opened)="onPanelToggled(true)" (closed)="onPanelToggled(false)">
     <mat-expansion-panel-header class="panel-header">
       <mat-panel-title>
         <div class="title-content">
           <mat-icon>star</mat-icon>
           <p>Jeffrey Sanford</p>
-          
-          <!-- Quick metrics display -->
+
           <div class="quick-metrics">
-            <span class="metric-pill" [ngClass]="getCpuLoadClass()">
-              <mat-icon>speed</mat-icon> {{performanceMetrics.cpuLoad}}
-            </span>
-            <span class="metric-pill" [ngClass]="getMemoryUsageClass()">
-              <mat-icon>memory</mat-icon> {{performanceMetrics.memoryUsage}}
-            </span>
-            <span class="metric-pill" [ngClass]="getNetworkLatencyClass()">
-              <mat-icon>network_check</mat-icon> {{performanceMetrics.networkLatency}}
-            </span>
+            <span class="metric-pill" [ngClass]="getCpuLoadClass()"> <mat-icon>speed</mat-icon> {{ performanceMetrics.cpuLoad }} </span>
+            <span class="metric-pill" [ngClass]="getMemoryUsageClass()"> <mat-icon>memory</mat-icon> {{ performanceMetrics.memoryUsage }} </span>
+            <span class="metric-pill" [ngClass]="getNetworkLatencyClass()"> <mat-icon>network_check</mat-icon> {{ performanceMetrics.networkLatency }} </span>
           </div>
         </div>
       </mat-panel-title>
@@ -41,26 +32,21 @@
       <div class="logo-performance-block">
         <div class="logo-container">
           <div class="dev-logos">
-            <img *ngFor="let logo of logoLinks.slice(0, 3)" [src]="logo.src" [alt]="logo.alt" [class]="logo.class" />
+            <img *ngFor="let logo of logoLinks.slice(0, 3)" [src]="logo.src" alt="{{ logo.alt || 'logo' }}" title="{{ logo.alt || 'logo' }}" [class]="logo.class" />
           </div>
           <div class="agency-logos">
-            <img *ngFor="let logo of logoLinks.slice(3)" [src]="logo.src" [alt]="logo.alt" [class]="logo.class" />
+            <img *ngFor="let logo of logoLinks.slice(3)" [src]="logo.src" alt="{{ logo.alt || 'logo' }}" title="{{ logo.alt || 'logo' }}" [class]="logo.class" />
           </div>
         </div>
-        
-        <mat-card class="performance-card" [ngStyle]="{'border': '2px solid ' + chartBorderColor}">
+
+        <mat-card class="performance-card" [ngClass]="{ 'sim-border': isSimulatingData, 'live-border': !isSimulatingData }">
           <div class="performance-metrics">
-            <div class="data-mode-toggle">
-              <mat-slide-toggle [checked]="isSimulatingData" (change)="toggleDataSimulation()">
-                {{isSimulatingData ? 'SIMULATED DATA' : 'LIVE DATA'}}
-              </mat-slide-toggle>
-            </div>
             <canvas #performanceChart height="400"></canvas>
             <div *ngIf="!isSimulatingData && serviceMetrics.length > 0" class="service-metrics-overlay">
               <div *ngFor="let metric of serviceMetrics.slice(-3)" class="service-metric">
-                <mat-icon>{{serviceIconMap[metric.serviceName] || 'api'}}</mat-icon>
-                <span class="service-name">{{metric.serviceName}}</span>
-                <span class="service-time">{{metric.duration?.toFixed(1)}}ms</span>
+                <mat-icon>{{ serviceIconMap[metric.serviceName] || 'api' }}</mat-icon>
+                <span class="service-name">{{ metric.serviceName }}</span>
+                <span class="service-time">{{ metric.duration?.toFixed(1) }}ms</span>
               </div>
             </div>
           </div>

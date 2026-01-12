@@ -21,7 +21,7 @@ export interface Recipe {
     carbohydrates?: number;
     fiber?: number;
     sugar?: number;
-    sodium?: number;        
+    sodium?: number;
     cholesterol?: number;
     vitamins?: string[];
     servingSize?: string;
@@ -57,7 +57,7 @@ export interface Recipe {
     comment?: string;
     reviewer?: string;
     date?: string;
-  }[];  
+  }[];
 
   difficulty?: string;
 }

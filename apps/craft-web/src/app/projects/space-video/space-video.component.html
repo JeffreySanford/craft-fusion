@@ -1,14 +1,14 @@
 <div class="page-container">
   <mat-card class="video-container">
     <video #videoPlayer class="player" controls autoplay>
-      <source [src]="videoSrc" type="video/mp4">
-      <source [src]="videoSrc" type="video/ogg">
-      <source [src]="videoSrc" type="video/webm">
+      <source [src]="videoSrc" type="video/mp4" />
+      <source [src]="videoSrc" type="video/ogg" />
+      <source [src]="videoSrc" type="video/webm" />
       Your browser does not support the video tag. Please try using a modern browser.
     </video>
     <audio #audioPlayer class="player" controls>
-      <source [attr.src]="audioSrc" type="audio/mp3">
-      <source [attr.src]="audioSrc" type="audio/ogg">
+      <source [attr.src]="audioSrc" type="audio/mp3" />
+      <source [attr.src]="audioSrc" type="audio/ogg" />
       Your browser does not support the audio tag. Please try using a modern browser.
     </audio>
   </mat-card>

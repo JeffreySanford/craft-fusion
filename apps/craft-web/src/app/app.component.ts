@@ -1,8 +1,6 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, SimpleChanges } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Subscription, Subject, interval, take, takeUntil, timer } from 'rxjs';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Subscription, Subject, take, takeUntil, timer } from 'rxjs';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
-import { FormBuilder, FormGroup } from '@angular/forms';
 import { UserStateService } from './common/services/user-state.service';
 import { User } from './common/services/user.interface';
 import { UserActivityService } from './common/services/user-activity.service';
@@ -10,7 +8,6 @@ import { LoggerService } from './common/services/logger.service';
 import { AdminStateService } from './common/services/admin-state.service';
 import { FooterStateService } from './common/services/footer-state.service';
 import { SidebarStateService } from './common/services/sidebar-state.service';
-import { UserTrackingService } from './common/services/user-tracking.service';
 import { AuthService } from './common/services/auth/auth.service';
 
 @Component({
@@ -30,7 +27,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   menuItems = [{ label: 'Home', icon: 'home', routerLink: '/home', active: false }];
   polling = true;
-  editorForm: FormGroup = new FormGroup({});
 
   userDisplayName = '🔒 Guest';
   isLoggedIn = false;
@@ -43,7 +39,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private breakpointObserver: BreakpointObserver,
-    private userTrackingService: UserTrackingService,
     private adminStateService: AdminStateService,
     private userActivityService: UserActivityService,
     private logger: LoggerService,
@@ -54,7 +49,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {
 
     this.logger.info('App component initialized', { appVersion: '1.0.0' });
-    console.log('debug-router: AppComponent instantiated');
     
     // Skip auto-logout in e2e test environment
     const isE2E = (window as any)['__E2E_TEST_MODE__'] === true;
@@ -67,30 +61,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-
-    if (changes['user']) {
-
-      this.logger.debug('Application started', { timestamp: new Date().toISOString() });
-
-      this.userTrackingService.getCurrentUser().subscribe(
-        user => {
-          if (user?.username) {
-            this.isLoggedIn = true;
-            this.userDisplayName = '🔒 ' + user.username;
-          } else {
-            this.isLoggedIn = false;
-          }
-        },
-        error => {
-          this.logger.error('Error fetching users:', error);
-        },
-      );
-    }
-  }
-
   ngOnInit(): void {
-    console.log('debug-router: AppComponent ngOnInit');
     this.sidebarStateService.isCollapsed$
       .pipe(takeUntil(this.destroy$))
       .subscribe(collapsed => {
@@ -109,7 +80,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.footerStateSubscription = this.footerStateService.expanded$.subscribe(expanded => {
       this.isFooterExpanded = expanded;
-      console.log('Footer expanded state changed:', expanded);
 
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'));
@@ -126,7 +96,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     document.addEventListener('click', () => {
       const now = Date.now();
       if (now - lastInteractionLog > 10000) {
-        console.log('User interaction detected');
         lastInteractionLog = now;
       }
     });
@@ -144,7 +113,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    console.log('debug-router: AppComponent ngAfterViewInit');
     this.logger.info('App component view initialized');
 
     setTimeout(() => {
@@ -247,20 +215,17 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private addUserInteractionListener() {
-    console.log('Adding user interaction listeners');
     document.addEventListener('click', this.handleUserInteraction);
     document.addEventListener('keydown', this.handleUserInteraction);
   }
 
   private removeUserInteractionListener() {
-    console.log('Removing user interaction listeners');
     document.removeEventListener('click', this.handleUserInteraction);
     document.removeEventListener('keydown', this.handleUserInteraction);
   }
 
   private handleUserInteraction = () => {
     if (this.polling) {
-      console.log('User interaction detected');
       this.ensureVideoIsPlaying();
     }
   };
@@ -288,19 +253,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private loadInitialData(): void {
-
-    this.logger.info('App component initialized');
-  }
-
   onRouterActivate(event: unknown) {
-    console.log('debug-router: router-outlet activated', event);
     const fallback = document.getElementById('debug-router-fallback');
     if (fallback) fallback.style.display = 'none';
   }
 
   onRouterDeactivate(event: unknown) {
-    console.log('debug-router: router-outlet deactivated', event);
     setTimeout(() => {
       const fallback = document.getElementById('debug-router-fallback');
       if (fallback) fallback.style.display = 'block';

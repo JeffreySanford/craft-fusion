@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { LoggerService } from './logger.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AdminStateService {
   private isAdminSubject = new BehaviorSubject<boolean>(false);

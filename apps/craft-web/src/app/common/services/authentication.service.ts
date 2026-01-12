@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, throwError, Subject } from 'rxjs';
 import { catchError, map, tap, timeout, delay, concatMap, shareReplay, finalize, filter, take } from 'rxjs/operators';
 import { AdminStateService } from './admin-state.service';
@@ -29,9 +28,8 @@ export interface AuthState {
 @Injectable()
 export class AuthenticationService {
 
-  private readonly AUTH_TIMEOUT = 15000;                                        
-  private readonly TOKEN_REFRESH_THRESHOLD = 300;                                         
-  private readonly MAX_RETRIES = 3;                                                    
+  private readonly AUTH_TIMEOUT = 15000;
+  private readonly TOKEN_REFRESH_THRESHOLD = 300;
 
   private socket: Socket | null = null;
   private socketDestroy$ = new Subject<void>();
@@ -72,7 +70,6 @@ export class AuthenticationService {
   public readonly authInitialized$ = this.authInitialized.asObservable().pipe(shareReplay(1));
 
   private _isOfflineMode = false;
-  private connectionRetryCount = 0;
   private tokenRefreshInProgress = false;
 
   private refreshTokenTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -93,7 +90,6 @@ export class AuthenticationService {
 
   constructor(
     private apiService: ApiService,
-    private http: HttpClient,
     private router: Router,
     private sessionService: SessionService,
     private logger: LoggerService,
@@ -608,7 +604,6 @@ export class AuthenticationService {
         map(() => {
           const wasOffline = this._isOfflineMode;
           this._isOfflineMode = false;
-          this.connectionRetryCount = 0;
 
           this.logger.info('Network connectivity check succeeded', {
             wasOffline,

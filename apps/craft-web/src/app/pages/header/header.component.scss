@@ -1,99 +1,99 @@
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 
 .header-card {
-  width: 100%;
-  height: 4em;
-  margin-bottom: 0.5em;
-  background: linear-gradient(
-    to right,
-    rgba(255, 0, 0, 0.7) 0%,
-    rgba(255, 255, 255, 0.7) 20%,
-    rgba(0, 0, 255, 0.7) 30%,
-    rgba(0, 128, 128, 0.7) 100%
-  );
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  box-shadow: none;
+  background: linear-gradient(to right, rgb(255 0 0 / 70%) 0%, rgb(255 255 255 / 70%) 20%, rgb(0 0 255 / 70%) 30%, rgb(0 128 128 / 70%) 100%);
   border-radius: 0.25em;
+  box-shadow: none;
+  display: flex;
+  height: 4em;
+  justify-content: space-between;
+  margin-bottom: 0.5em;
+  width: 100%;
 }
 
 .header-content {
-  height: 3.5em;
-  display: flex;
   align-items: center;
-  width: 100%;
-  justify-content: space-between;
-  position: relative;
-  padding: 0 1em;
   border-radius: 0;
+  display: flex;
+  height: 3.5em;
+  justify-content: space-between;
+  padding: 0 1em;
+  position: relative;
+  width: 100%;
 }
 
 button.user-profile-button {
-  position: relative;
-  right: 0.5em;
-  top: -0.1em;
-  margin-left: auto;
-  display: inline-flex;
   align-items: center;
+  display: inline-flex;
+  height: 3.5em;
   justify-content: center;
-  width: 40px; // Match MD3 icon button touch target
-  height: 40px;
+  margin-left: auto;
   padding: 0;
+  position: relative;
+  right: -0.5em;                                                                           
+  top: 0.25em;                       
+  align-self: center;
+  width: 4.5em;                                                       
 }
 
 .profile-icon {
-  color: #ff00ff;
-  border: 2px solid #00f7ff;
-  // Use a square to keep circle perfect and center content
-  width: 28px;
-  height: 28px;
-  line-height: 28px; // Helps vertically center glyph in MD3
-  padding: 0; // eliminate extra offset
-  border-radius: 50%;
-  transition: all 0.3s ease-in-out;
-  animation: neonPulse 2s infinite;
-  text-shadow: 0 0 10px #ff00ff;
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  animation: neonPulse 2s infinite;
+  border: 2px solid #00f7ff;
+  border-radius: 50%;
   box-sizing: border-box;
-  
+  color: #f0f;
+  display: inline-flex;
+  height: 1.9em;                                           
+  justify-content: center;
+  line-height: 1.9em;                                 
+  padding: 0;                          
+  text-shadow: 0 0 12px #f0f;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+
+  width: 1.9em;
+
   &:hover {
-    transform: scale(1.1) rotate(15deg);
-    box-shadow: 
-      0 0 15px rgba(0, 247, 255, 0.6),
-      0 0 30px rgba(255, 0, 255, 0.4);
+    box-shadow:
+      0 8px 24px rgba(0,247,255,0.18),
+      0 0 36px rgba(255,0,255,0.12);
+    transform: scale(1.06) rotate(6deg);
   }
 
   &.logged-in {
-    color: #00ff00;
-    border: 2px solid #00ff00;
     animation: neonRotate 1s ease-out;
-    text-shadow: 0 0 10px #00ff00;
+    border: 2px solid #0f0;
+    color: #0f0;
+    text-shadow: 0 0 12px #0f0;
   }
 }
 
-// Ensure the Material icon glyph itself is centered inside our circular wrapper
 .profile-icon.mat-icon {
-  font-size: 20px; // MD3 default icon size inside 40px button
+  font-size: 1.1em;                                         
+  padding: 0;
+  line-height: 1;
+  height: 1.9em;
+  width: 1.9em;
 }
 
 @keyframes neonPulse {
-  0% { 
-    box-shadow: 
+  0% {
+    box-shadow:
       0 0 5px #00f7ff,
       0 0 10px #00f7ff,
       0 0 20px #00f7ff;
   }
-  50% { 
-    box-shadow: 
-      0 0 10px #ff00ff,
-      0 0 20px #ff00ff,
-      0 0 40px #ff00ff;
+
+  50% {
+    box-shadow:
+      0 0 10px #f0f,
+      0 0 20px #f0f,
+      0 0 40px #f0f;
   }
-  100% { 
-    box-shadow: 
+
+  100% {
+    box-shadow:
       0 0 5px #00f7ff,
       0 0 10px #00f7ff,
       0 0 20px #00f7ff;
@@ -101,77 +101,67 @@ button.user-profile-button {
 }
 
 @keyframes neonRotate {
-  from { 
-    transform: rotate(0deg); 
-    box-shadow: 0 0 20px #00ff00;
+  from {
+    box-shadow: 0 0 20px #0f0;
+    transform: rotate(0deg);
   }
-  to { 
+
+  to {
+    box-shadow: 0 0 40px #0f0;
     transform: rotate(360deg);
-    box-shadow: 0 0 40px #00ff00;
   }
 }
 
 ::ng-deep .user-menu {
-  transform-origin: top right;
   animation: slideIn 0.2s ease-out;
+  transform-origin: top right;
 
   .mat-mdc-menu-panel {
-    background: linear-gradient(135deg, 
-      rgba(0, 0, 102, 0.95) 0%,
-      rgba(139, 0, 0, 0.95) 50%,
-      rgba(0, 0, 102, 0.95) 100%
-    ) !important;
-    border: 2px solid #ff0000;
-    box-shadow: 
-      0 0 25px rgba(255, 255, 255, 0.4),
-      inset 0 0 20px rgba(0, 0, 255, 0.3);
-    border-radius: 14px !important;
+    background: linear-gradient(135deg, rgb(0 0 102 / 95%) 0%, rgb(139 0 0 / 95%) 50%, rgb(0 0 102 / 95%) 100%) !important;
+    border: 2px solid #f00;
+    border-radius: 0.875em !important;
+    box-shadow:
+      0 0 25px rgb(255 255 255 / 40%),
+      inset 0 0 20px rgb(0 0 255 / 30%);
     overflow: hidden;
   }
 
   .mat-mdc-menu-content {
-    padding: 6px !important;
     background: transparent !important;
-    border-radius: 12px;
-    box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.1);
+    border-radius: 0.75em;
+    box-shadow: inset 0 0 20px rgb(255 0 255 / 10%);
+    padding: 0.375em !important;
   }
 
   .mat-mdc-menu-item {
-    height: 40px !important;
-    line-height: 40px !important;
-    margin: 4px !important;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(0, 0, 153, 0.3);
-    position: relative;
+    background: rgb(0 0 153 / 30%);
+    border: 1px solid rgb(255 255 255 / 20%);
+    border-radius: 0.5em;
+    height: 2.5em !important;
+    line-height: 2.5em !important;
+    margin: 0.25em !important;
     overflow: hidden;
+    padding: 0 0.5em !important;
+    position: relative;
     transition: all 0.3s ease;
 
     &::before {
-      content: '';
+      background: linear-gradient(90deg, transparent, rgb(255 255 255 / 40%), transparent);
+      content: "";
+      height: 100%;
+      left: -100%;
       position: absolute;
       top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.4),
-        transparent
-      );
       transition: 0.5s;
+      width: 100%;
     }
 
     &:hover {
-      background: linear-gradient(45deg,
-        rgba(255, 0, 0, 0.4) 0%,
-        rgba(0, 0, 255, 0.4) 100%
-      );
+      background: linear-gradient(45deg, rgb(255 0 0 / 40%) 0%, rgb(0 0 255 / 40%) 100%);
+      box-shadow:
+        0 0 15px rgb(255 255 255 / 30%),
+        inset 0 0 10px rgb(255 0 0 / 30%);
       transform: translateX(4px);
-      box-shadow: 
-        0 0 15px rgba(255, 255, 255, 0.3),
-        inset 0 0 10px rgba(255, 0, 0, 0.3);
 
       &::before {
         left: 100%;
@@ -179,35 +169,33 @@ button.user-profile-button {
     }
 
     .mat-icon {
-      color: #ffffff;
-      margin-right: 12px;
+      color: #fff;
+      margin-right: 0.75em;
+      text-shadow: 0 0 10px rgb(255 0 0 / 80%);
       transition: all 0.3s ease;
-      text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
 
       &:hover {
+        color: #f00;
+        text-shadow: 0 0 10px rgb(255 255 255 / 80%);
         transform: scale(1.2) rotate(10deg);
-        color: #ff0000;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
       }
     }
 
     span {
-      color: #ffffff;
+      color: #fff;
       font-weight: 500;
-      letter-spacing: 1px;
-      text-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+      letter-spacing: 0.0625em;
+      text-shadow: 0 0 8px rgb(255 0 0 / 60%);
     }
   }
 }
 
-// Override Material's default styles
 ::ng-deep .mat-mdc-menu-content,
 ::ng-deep .mat-mdc-menu-panel {
   background: transparent !important;
   color: white !important;
 }
 
-// Add custom positioning for the overlay
 ::ng-deep .cdk-overlay-connected-position-bounding-box {
   top: 4em !important;
 }
@@ -217,6 +205,7 @@ button.user-profile-button {
     opacity: 0;
     transform: translateY(-20px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);

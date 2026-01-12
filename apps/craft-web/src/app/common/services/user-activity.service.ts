@@ -7,101 +7,101 @@ export interface UserActivity {
   timestamp: number;
   type: 'pageview' | 'click' | 'scroll' | 'input' | 'hover' | 'other';
   target?: string;
-  value?: any;
+  value?: unknown;
   page?: string;
   position?: number;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserActivityService {
   private userActivities: UserActivity[] = [];
   private sessionStartTime = Date.now();
   private lastActivityTime = Date.now();
-  private pageViewDurations: {[page: string]: number} = {};
+  private pageViewDurations: { [page: string]: number } = {};
   private currentPage = '';
 
   constructor(
-    private router: Router, 
-    private logger: LoggerService
+    private router: Router,
+    private logger: LoggerService,
   ) {
     this.initRouterTracking();
     this.initUserInteractionTracking();
-    this.startTrackingNavigation(); // Start tracking immediately
-    
+    this.startTrackingNavigation();                              
+
     this.logger.info('User activity tracking initialized');
   }
 
   private initRouterTracking(): void {
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe((event: any) => {
+    const events = (this.router as any)?.events;
+    if (!events || typeof events.pipe !== 'function') {
+      this.logger.debug('Router events not available; skipping router tracking in tests.');
+      return;
+    }
+
+    events.pipe(filter((event: unknown) => event instanceof NavigationEnd)).subscribe((evt: unknown) => {
+      const event = evt as NavigationEnd;
       const now = Date.now();
-      
-      // Calculate duration for previous page
+
       if (this.currentPage) {
-        this.pageViewDurations[this.currentPage] = 
-          (this.pageViewDurations[this.currentPage] || 0) + (now - this.lastActivityTime);
+        this.pageViewDurations[this.currentPage] = (this.pageViewDurations[this.currentPage] || 0) + (now - this.lastActivityTime);
       }
-      
+
       this.lastActivityTime = now;
       this.currentPage = event.urlAfterRedirects;
-      
+
       this.trackActivity('pageview', {
-        page: event.urlAfterRedirects
+        page: event.urlAfterRedirects,
       });
-      
+
       this.logger.info(`User navigated to ${event.urlAfterRedirects}`);
     });
   }
-  
+
   private initUserInteractionTracking(): void {
-    // Track clicks
-    document.addEventListener('click', (event) => {
+
+    document.addEventListener('click', event => {
       const target = event.target as HTMLElement;
       this.trackActivity('click', {
         target: this.getElementDescription(target),
-        page: this.currentPage
+        page: this.currentPage,
       });
     });
-    
-    // Track scrolls (debounced)
-    let scrollTimeout: any;
+
+    let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
     document.addEventListener('scroll', () => {
       if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
+        clearTimeout(scrollTimeout as unknown as number);
       }
-      
+
       scrollTimeout = setTimeout(() => {
         this.trackActivity('scroll', {
           position: window.scrollY,
-          page: this.currentPage
+          page: this.currentPage,
         });
       }, 300);
     });
-    
-    // Track form inputs (debounced)
-    let inputTimeout: any;
-    document.addEventListener('input', (event) => {
+
+    let inputTimeout: ReturnType<typeof setTimeout> | null = null;
+    document.addEventListener('input', event => {
       if (inputTimeout) {
-        clearTimeout(inputTimeout);
+        clearTimeout(inputTimeout as unknown as number);
       }
-      
+
       inputTimeout = setTimeout(() => {
-        const target = event.target as HTMLInputElement;
+        const target = event.target as HTMLInputElement | null;
         this.trackActivity('input', {
           target: this.getElementDescription(target),
-          page: this.currentPage
+          page: this.currentPage,
         });
       }, 500);
     });
   }
-  
-  private getElementDescription(element: HTMLElement): string {
+
+  private getElementDescription(element: HTMLElement | null): string {
     if (!element) return 'unknown';
-    
-    // Try to get a useful description of the element
+
     if (element.id) {
       return `#${element.id}`;
     } else if (element.classList && element.classList.length) {
@@ -110,57 +110,55 @@ export class UserActivityService {
       return element.tagName.toLowerCase();
     }
   }
-  
+
   trackActivity(type: UserActivity['type'], details: Partial<UserActivity>): void {
     const activity: UserActivity = {
       timestamp: Date.now(),
       type,
-      ...details
+      ...details,
     };
-    
+
     this.userActivities.push(activity);
     this.lastActivityTime = activity.timestamp;
-    
-    // Limit the array size to prevent memory issues
+
     if (this.userActivities.length > 100) {
       this.userActivities.shift();
     }
   }
-  
+
   getSessionDuration(): number {
     return Date.now() - this.sessionStartTime;
   }
-  
-  getPageViewDurations(): {[page: string]: number} {
-    // Update the current page duration
+
+  getPageViewDurations(): { [page: string]: number } {
+
     if (this.currentPage) {
-      this.pageViewDurations[this.currentPage] = 
-        (this.pageViewDurations[this.currentPage] || 0) + (Date.now() - this.lastActivityTime);
+      this.pageViewDurations[this.currentPage] = (this.pageViewDurations[this.currentPage] || 0) + (Date.now() - this.lastActivityTime);
       this.lastActivityTime = Date.now();
     }
-    
+
     return this.pageViewDurations;
   }
-  
+
   getActivities(): UserActivity[] {
     return this.userActivities;
   }
-  
-  getActivitySummary(): any {
+
+  getActivitySummary(): unknown {
     const clickCount = this.userActivities.filter(a => a.type === 'click').length;
     const pageViewCount = this.userActivities.filter(a => a.type === 'pageview').length;
     const inputCount = this.userActivities.filter(a => a.type === 'input').length;
-    
+
     return {
       sessionDuration: this.getSessionDuration(),
       pageViews: pageViewCount,
       clicks: clickCount,
       inputs: inputCount,
-      pageViewDurations: this.getPageViewDurations()
+      pageViewDurations: this.getPageViewDurations(),
     };
   }
 
   private startTrackingNavigation(): void {
-    // Remove any checks that require the user to be logged in
+
   }
 }

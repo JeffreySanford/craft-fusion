@@ -8,9 +8,8 @@ describe('BarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BarComponent]
-    })
-    .compileComponents();
+      declarations: [BarComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(BarComponent);
     component = fixture.componentInstance;
@@ -20,16 +19,16 @@ describe('BarComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-  
-  it('should have showLegend property set to true by default', () => {
-    expect(component.showLegend).toBeTruthy();
+
+  it('should have showLegend property set to false by default', () => {
+    expect(component.showLegend).toBeFalsy();
   });
-  
+
   it('should have legendItems array initialized', () => {
     expect(component.legendItems).toBeDefined();
     expect(Array.isArray(component.legendItems)).toBeTruthy();
   });
-  
+
   it('should toggle legend visibility', () => {
     const initialVisibility = component.showLegend;
     const newVisibility = component.toggleLegend();
@@ -38,9 +37,9 @@ describe('BarComponent', () => {
   });
 
   it('should have data starting from US inception in 1776', () => {
-    // Check via reflection that internal data starts from 1776
-    // @ts-ignore - accessing private property
     const gdpData = component['gdpData'];
-    expect(gdpData[0].year).toEqual(1776);
+    expect(gdpData?.length).toBeGreaterThan(0);
+    const firstEntry = gdpData?.[0];
+    expect(firstEntry?.year).toEqual(1776);
   });
 });

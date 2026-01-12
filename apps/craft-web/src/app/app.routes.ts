@@ -4,7 +4,6 @@ import { MaterialButtonsComponent } from './pages/landing/material-buttons/mater
 import { ResumeComponent } from './pages/resume/resume.component';
 import { AdminGuard } from './common/guards/admin.guard';
 import { AuthGuard } from './common/guards/auth.guard';
-import { RoleGuard } from './common/guards/role.guard';
 
 export const appRoutes: Routes = [
   { path: 'home', loadChildren: () => import('./pages/landing/landing.module').then(m => m.LandingModule) },
@@ -14,13 +13,9 @@ export const appRoutes: Routes = [
     loadChildren: () => import('./projects/data-visualizations/data-visualizations.module').then(m => m.DataVisualizationsModule),
   },
   {
-    path: 'book',
-    loadChildren: () => import('./projects/book/book.module').then(m => m.BookModule) },
-
-  {
-    path: 'family',
-    loadChildren: () => import('./projects/family/memorial-timeline/memorial-timeline.module').then(m => m.MemorialTimelineModule),
-
+    path: 'timeline',
+    loadChildren: () => import('./projects/timeline/timeline.module').then(m => m.TimelineModule),
+    canActivate: [AuthGuard, AdminGuard],
   },
   {
     path: 'peasant-kitchen',
@@ -35,11 +30,15 @@ export const appRoutes: Routes = [
   },
   {
     path: 'admin',
-    loadChildren: () => import('./pages/admin/admin.module').then(m => m.AdminModule),
+    loadChildren: () =>
+      import(/* webpackChunkName: "admin-module" */ './pages/admin/admin.module').then(
+        m => m.AdminModule,
+      ),
+    canActivate: [AuthGuard, AdminGuard],
   },
   {
-    path: 'chat',
-    loadChildren: () => import('./projects/chat/chat.module').then(m => m.ChatModule),
+    path: 'auth',
+    loadChildren: () => import('./pages/auth/auth.module').then(m => m.AuthModule),
   },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/404' },

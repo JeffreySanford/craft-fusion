@@ -107,6 +107,7 @@ apps/craft-nest/src/cert/* # Explicitly ignore certs in source
 # Log files
 *.log
 logs/
+!apps/craft-web/src/app/pages/admin/logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
