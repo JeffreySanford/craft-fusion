@@ -158,46 +158,30 @@ else
   ok "Go already installed: $(go version)"
 fi
 
-# ---------- Package manager detection (pnpm/corepack optional) ----------
-USE_PNPM=false
-if [[ -f "pnpm-lock.yaml" ]] || [[ -f ".use-pnpm" ]] || [[ "${CF_USE_PNPM:-}" == "true" ]]; then
-  USE_PNPM=true
+# ---------- Package manager detection (pnpm/corepack) ----------
+info "Ensuring pnpm is available..."
+if ! command -v pnpm >/dev/null 2>&1; then
+  # Try corepack first (built into modern Node)
+  if command -v corepack >/dev/null 2>&1; then
+    info "Enabling pnpm via corepack..."
+    $SUDO corepack enable || npm install -g pnpm || warn "Failed to enable corepack or install pnpm"
+  else
+    info "Installing pnpm via npm..."
+    $SUDO npm install -g pnpm || warn "Failed to install pnpm via npm"
+  fi
 fi
 
-if [[ "$USE_PNPM" == "true" ]]; then
-  # Prefer pnpm when workspace indicates it
-  if ! command -v corepack >/dev/null 2>&1; then
-    warn "corepack not found; attempting install via npm (may require sudo)."
-    if [[ -n "$SUDO" ]]; then
-      $SUDO npm i -g corepack || warn "Failed to install corepack globally. You can install manually if needed."
-    else
-      warn "No sudo available; skipping corepack install."
-    fi
-  fi
-  info "Enabling pnpm via corepack..."
-  corepack enable || warn "corepack enable failed (continuing)."
-  corepack prepare pnpm@latest --activate || warn "corepack prepare failed (continuing)."
-  if command -v pnpm >/dev/null 2>&1; then
-    ok "pnpm: $(pnpm -v)"
-    # Optional global CLIs when pnpm is present
-    GLOBAL_PKGS=(nx @angular/cli @nestjs/cli pm2)
-    info "Installing/updating global CLIs with pnpm: ${GLOBAL_PKGS[*]} ..."
-    pnpm add -g "${GLOBAL_PKGS[@]}" || warn "Global CLI install via pnpm failed (optional)."
-    ok "nx: $(nx --version 2>/dev/null || echo installed), ng: $(ng version 2>/dev/null | head -n1 || echo installed), nest: $(nest --version 2>/dev/null || echo installed), pm2: $(pm2 -v 2>/dev/null || echo not installed)"
-  else
-    warn "pnpm not available; continuing with npm workflow."
-  fi
+if command -v pnpm >/dev/null 2>&1; then
+  ok "pnpm available: $(pnpm -v)"
+  # Optional global CLIs when pnpm is present
+  GLOBAL_PKGS=(nx @angular/cli @nestjs/cli pm2)
+  info "Ensuring global CLIs are present: ${GLOBAL_PKGS[*]} ..."
+  # We use pnpm to install these as they are more efficient
+  $SUDO pnpm add -g "${GLOBAL_PKGS[@]}" || warn "Global CLI install via pnpm failed (optional)."
+  ok "CLIs verified (nx, ng, nest, pm2)"
 else
-  info "Detected npm workflow (no pnpm-lock.yaml). Skipping pnpm/corepack setup."
-  # Ensure PM2 is available for later steps (optional)
-  if ! command -v pm2 >/dev/null 2>&1; then
-    info "Installing PM2 globally with npm (optional)..."
-    if [[ -n "$SUDO" ]]; then
-      $SUDO npm i -g pm2 || warn "Failed to install pm2 globally (optional)."
-    else
-      warn "No sudo available; skipping pm2 global install."
-    fi
-  else
+  warn "pnpm not available; falling back to npm workflow."
+fi
     ok "pm2 already installed."
   fi
 fi

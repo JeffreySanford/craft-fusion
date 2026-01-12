@@ -73,7 +73,11 @@ if command -v pm2 &> /dev/null; then
     fi
 else
     echo -e "${YELLOW}⚠ PM2 not found, installing...${NC}"
+    if command -v pnpm >/dev/null 2>&1; then
+    maybe_sudo pnpm install -g pm2
+else
     maybe_sudo npm install -g pm2
+fi
 fi
 
 echo -e "${BLUE}2. Creating application directory...${NC}"
@@ -90,11 +94,11 @@ USER_GROUP=$(id -gn "$USER_NAME")
 maybe_sudo chown -R "$USER_NAME:$USER_GROUP" dist/ 2>/dev/null || true
 maybe_sudo chmod -R u+rwX dist/ 2>/dev/null || true
 # Clean only backend dist directories, preserve frontend and node_modules
-rm -rf dist/apps/craft-nest/
-rm -rf dist/apps/craft-go/
+sudo rm -rf dist/apps/craft-nest/
+sudo rm -rf dist/apps/craft-go/
 if [ "$do_full_clean" = true ]; then
     echo -e "${YELLOW}Full clean requested -- removing node_modules and Nx caches...${NC}"
-    rm -rf node_modules .nx/cache node_modules/.cache/nx 2>/dev/null || true
+    sudo rm -rf node_modules .nx/cache node_modules/.cache/nx 2>/dev/null || true
 fi
 echo -e "${GREEN}✓ Backend build directories cleaned${NC}"
 
@@ -103,13 +107,13 @@ echo -e "${BLUE}4. Checking dependencies...${NC}"
 if [ "$do_full_clean" = false ] && [ -d "node_modules" ] && [ -f "node_modules/.bin/nx" ]; then
     echo -e "${GREEN}✓ Dependencies already installed${NC}"
 else
-    echo -e "${YELLOW}Installing dependencies...${NC}"
-    npm install --omit=optional --no-audit --prefer-offline --progress=false
+    echo -e "${YELLOW}Installing dependencies with pnpm...${NC}"
+    pnpm install --no-frozen-lockfile
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}✓ Dependencies installed${NC}"
     else
-        echo -e "${YELLOW}⚠ First npm install failed, trying with reduced concurrency...${NC}"
-        npm install --maxsockets 1 --omit=optional --no-audit --prefer-offline --progress=false
+        echo -e "${YELLOW}⚠ First pnpm install failed, trying again...${NC}"
+        pnpm install --no-frozen-lockfile
         if [ $? -eq 0 ]; then
             echo -e "${GREEN}✓ Dependencies installed (retry)${NC}"
         else

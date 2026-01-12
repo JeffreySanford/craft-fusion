@@ -170,7 +170,7 @@ show_usage() {
     echo
     echo -e "${BOLD}${YELLOW}TROUBLESHOOTING:${NC}"
     echo -e "  ${RED}Go server not starting?${NC} Use --full-clean to rebuild the binary"
-    echo -e "  ${RED}NPM/build errors?${NC} Use --full-clean to clear all caches"
+    echo -e "  ${RED}Dependency/build errors?${NC} Use --full-clean to clear all caches"
     echo -e "  ${RED}Memory issues?${NC} Use --power for optimized memory allocation"
     echo -e "  ${RED}Backend APIs 503/404?${NC} Check PM2 status after deployment"
     echo
@@ -284,10 +284,10 @@ if [ "$do_full_clean" = true ]; then
   print_progress "Full Clean" "$CLEAN_ESTIMATE_SECONDS" "$phase_start_time" &
   progress_pid=$!
 
-  rm -rf node_modules/.cache/nx 2>/dev/null || true
-  rm -rf .nx/cache/
-  rm -rf /tmp/nx-cache/ 2>/dev/null || true
-  rm -rf node_modules
+  sudo rm -rf node_modules/.cache/nx 2>/dev/null || true
+  sudo rm -rf .nx/cache/
+  sudo rm -rf /tmp/nx-cache/ 2>/dev/null || true
+  sudo rm -rf node_modules
   ./scripts/clean-build.sh --full-clean
   CLEAN_STATUS=$?
   if [ $CLEAN_STATUS -ne 0 ]; then
@@ -404,13 +404,22 @@ handle_nx_post_install() {
 }
 
 # --- Dependency Management ---
-# Detect package manager
-PKG_MANAGER="npm"
-if [ -f "pnpm-lock.yaml" ]; then
-    PKG_MANAGER="pnpm"
-elif [ -f "yarn.lock" ]; then
+# Detect package manager (defaulting to pnpm as requested)
+PKG_MANAGER="pnpm"
+if [ ! -f "pnpm-lock.yaml" ] && [ -f "yarn.lock" ]; then
     PKG_MANAGER="yarn"
+elif [ ! -f "pnpm-lock.yaml" ] && [ ! -f "package-lock.json" ] && [ ! -f "yarn.lock" ]; then
+    # Completely new project or missing lockfiles, prefer pnpm
+    PKG_MANAGER="pnpm"
+elif [ ! -f "pnpm-lock.yaml" ] && [ -f "package-lock.json" ]; then
+    # If npm lock exists but user wants pnpm, we'll still prefer pnpm if installed
+    if command -v pnpm >/dev/null 2>&1; then
+        PKG_MANAGER="pnpm"
+    else
+        PKG_MANAGER="npm"
+    fi
 fi
+echo -e "${BLUE}Using package manager: $PKG_MANAGER${NC}"
 
 # Determine if we need to install dependencies
 needs_install=false
@@ -774,7 +783,7 @@ if command -v wscat &> /dev/null; then
         echo -e "${YELLOW}⚠ WS connection failed${NC}"
     fi
 else
-    echo -e "${YELLOW}⚠ wscat not installed - install with: sudo npm install -g wscat${NC}"
+    echo -e "${YELLOW}⚠ wscat not installed - install with: sudo pnpm install -g wscat${NC}"
 fi
 
 kill "$progress_pid" &>/dev/null || true

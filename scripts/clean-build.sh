@@ -14,14 +14,14 @@ for arg in "$@"; do
 done
 
 echo "[clean] Removing build outputs..."
-rm -rf dist/ 2>/dev/null || true
-rm -rf .angular/ 2>/dev/null || true
+sudo rm -rf dist/ 2>/dev/null || true
+sudo rm -rf .angular/ 2>/dev/null || true
 
 if [[ "$FULL" == "true" ]]; then
   echo "[clean] Full clean requested: removing node_modules and Nx caches..."
-  rm -rf node_modules 2>/dev/null || true
-  rm -rf .nx/cache 2>/dev/null || true
-  rm -rf node_modules/.cache/nx 2>/dev/null || true
+  sudo rm -rf node_modules 2>/dev/null || true
+  sudo rm -rf .nx/cache 2>/dev/null || true
+  sudo rm -rf node_modules/.cache/nx 2>/dev/null || true
 fi
 
 echo "[clean] Done."

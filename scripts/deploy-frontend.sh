@@ -94,16 +94,16 @@ if [ "$skip_build" = false ]; then
     cd "$PROJECT_ROOT"
     
     # Clean individual app dist directories for more targeted cleanup
-    rm -rf dist/apps/craft-web/
+    sudo rm -rf dist/apps/craft-web/
     # Also clean root dist if it exists
-    rm -rf dist/
+    sudo rm -rf dist/
     
     if [ "$do_full_clean" = true ]; then
         echo -e "${YELLOW}Full clean requested -- removing node_modules and Nx caches...${NC}"
-        rm -rf node_modules .nx/cache node_modules/.cache/nx 2>/dev/null || true
+        sudo rm -rf node_modules .nx/cache node_modules/.cache/nx 2>/dev/null || true
         # If server build and no node_modules, ensure clean install
         if [ "$server_build" = true ] && [ ! -d "node_modules" ]; then
-            echo -e "${BLUE}Ensuring clean npm install for server build...${NC}"
+            echo -e "${BLUE}Ensuring clean pnpm install for server build...${NC}"
         fi
     fi
     echo -e "${GREEN}✓ Build directories cleaned${NC}"
@@ -122,9 +122,8 @@ if [ "$skip_build" = false ]; then
         fi
 
         # Check for consistent package manager
-        if [ -f "pnpm-lock.yaml" ] && ! command -v pnpm &> /dev/null; then
-            echo -e "${RED}✗ pnpm lockfile found but pnpm not installed. Removing pnpm lockfile to use npm.${NC}"
-            rm -f pnpm-lock.yaml
+        if [ ! -f "pnpm-lock.yaml" ] && command -v pnpm &> /dev/null; then
+            echo -e "${BLUE}pnpm available, preferring pnpm...${NC}"
         fi
 
         # Set memory constraints for server build
@@ -141,16 +140,19 @@ if [ "$skip_build" = false ]; then
         # Ensure dependencies are installed
         if [ ! -d "node_modules" ] || [ "$do_full_clean" = true ]; then
             echo -e "${BLUE}Installing dependencies...${NC}"
-            # Use limited concurrency to avoid OOM
-            npm ci --progress=false --no-audit --maxsockets=3
+            if command -v pnpm &> /dev/null; then
+                pnpm install --no-frozen-lockfile
+            else
+                npm ci --progress=false --no-audit --maxsockets=3
+            fi
             dependency_status=$?
             if [ $dependency_status -ne 0 ]; then
-                echo -e "${RED}✗ npm ci failed (exit code $dependency_status)${NC}"
+                echo -e "${RED}✗ Dependency installation failed (exit code $dependency_status)${NC}"
                 echo -e "${YELLOW}This could be due to memory constraints or lockfile issues.${NC}"
                 echo -e "${YELLOW}Recommended fixes:${NC}"
                 echo -e "${YELLOW}  1. Ensure adequate memory/swap available${NC}"
-                echo -e "${YELLOW}  2. Remove any conflicting lockfiles (pnpm-lock.yaml)${NC}"
-                echo -e "${YELLOW}  3. Clear npm cache: npm cache clean --force${NC}"
+                echo -e "${YELLOW}  2. Clear lockfiles: rm -f package-lock.json pnpm-lock.yaml${NC}"
+                echo -e "${YELLOW}  3. Clear cache: pnpm store prune or npm cache clean --force${NC}"
                 echo -e "${YELLOW}  4. Reset Nx: npx nx reset${NC}"
                 exit 1
             fi
