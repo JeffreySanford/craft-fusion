@@ -173,6 +173,19 @@ fi
 
 if command -v pnpm >/dev/null 2>&1; then
   ok "pnpm available: $(pnpm -v)"
+  
+  # Ensure pnpm global bin is configured
+  if [[ -z "$(pnpm config get global-bin-dir)" || "$(pnpm config get global-bin-dir)" == "undefined" ]]; then
+    info "Configuring pnpm global bin directory..."
+    mkdir -p "${HOME}/.local/share/pnpm"
+    pnpm config set global-bin-dir "${HOME}/.local/bin" 2>/dev/null || true
+    # Also add to PATH if not present
+    if [[ ":$PATH:" != *":${HOME}/.local/bin:"* ]]; then
+       export PATH="$PATH:${HOME}/.local/bin"
+       echo 'export PATH="$PATH:$HOME/.local/bin"' >> "${HOME}/.bashrc"
+    fi
+  fi
+
   # Optional global CLIs when pnpm is present
   GLOBAL_PKGS=(nx @angular/cli @nestjs/cli pm2)
   info "Ensuring global CLIs are present: ${GLOBAL_PKGS[*]} ..."
@@ -182,20 +195,21 @@ if command -v pnpm >/dev/null 2>&1; then
 else
   warn "pnpm not available; falling back to npm workflow."
 fi
-    ok "pm2 already installed."
+
+# ---------- Package security check and updates ----------
+info "Checking and updating global packages for security..."
+
+# Check current global packages using pnpm if available, else npm
+if command -v pnpm >/dev/null 2>&1; then
+  info "Checking global pnpm packages..."
+  # We already handled installation above, now just a verification/update
+  info "Updating global pnpm packages..."
+  if [[ -n "$SUDO" ]]; then
+    $SUDO pnpm update -g || warn "Global pnpm update failed (optional)"
   fi
-fi
-
-# ---------- NPM Global Package Security Check ----------
-info "Checking and updating global npm packages for security..."
-
-# Check current global packages
-if command -v npm >/dev/null 2>&1; then
-  info "Current global packages:"
-  npm list -g --depth=0 2>/dev/null || warn "Could not list global packages"
-  
-  # Update global packages for security
-  info "Updating global npm packages..."
+  ok "Global pnpm packages checked and updated"
+elif command -v npm >/dev/null 2>&1; then
+  info "Checking global npm packages..."
   if [[ -n "$SUDO" ]]; then
     $SUDO npm update -g || warn "Global npm update failed (optional)"
     
@@ -215,10 +229,9 @@ if command -v npm >/dev/null 2>&1; then
   else
     warn "No sudo available; skipping global npm updates"
   fi
-  
   ok "Global npm packages checked and updated"
 else
-  warn "npm not available; skipping global package security check"
+  warn "No package manager available for security check"
 fi
 
 # ---------- Workspace scaffold (non-destructive) ----------
