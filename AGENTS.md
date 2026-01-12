@@ -56,11 +56,13 @@ The Angular dev server uses `apps/craft-web/src/proxy.config.json` to route `/ap
 - If you need assumptions or missing info, ask briefly and proceed with a safe default.
 - Summarize changes and list tests executed in your final response.
 
-## Current Status (2026-01-08)
+## Current Status (2026-01-12)
 
-- **Authentication:** HttpOnly cookie-based JWT with logout-on-refresh implemented
-- **Build:** Angular 19.2.13 compiling successfully
-- **Tests:** Lint and unit tests passing; Firefox e2e has rendering issues
+- **Authentication:** HttpOnly cookie-based JWT with logout-on-refresh remains stable.
+- **Build:** Angular 19.2.13 and NestJS compiling successfully.
+- **Tests:** All unit tests (Go, Nest, Angular) are 100% green.
+- **E2E:** Playwright suite stabilized (90%+ pass rate); baseURL and auth configuration fixed.
+- **Mocking:** Standardized mocks implemented in `test-mocks.ts` to satisfy Angular 19 test requirements.
 - **Priority:** File upload pipeline, pagination, XSS sanitization
 
 <!-- nx configuration start-->

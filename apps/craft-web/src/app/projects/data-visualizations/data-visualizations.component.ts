@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { BarChartData, LineChartData, ChartData } from './data-visualizations.interfaces';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -16,7 +16,7 @@ import { LoggerService } from '../../common/services/logger.service';
   styleUrls: ['./data-visualizations.component.scss'],
   standalone: false,
 })
-export class DataVisualizationsComponent implements OnInit, OnDestroy {
+export class DataVisualizationsComponent implements OnInit, OnDestroy, AfterViewInit {
   isMobile = false;
   isSidebarCollapsed = false;
   availableChartsView: 'list' | 'tiles' = 'list';

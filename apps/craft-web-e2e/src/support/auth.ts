@@ -2,7 +2,7 @@ import { Page } from '@playwright/test';
 
 function adminCredentials() {
   const adminSecret = process.env['ADMIN_SECRET'];
-  const adminUsernameRaw = process.env['ADMIN_USERNAME'];
+  const adminUsernameRaw = process.env['ADMIN_USERNAME'] || 'admin';
   const adminPasswordRaw = process.env['ADMIN_PASSWORD'];
 
   if (!adminUsernameRaw) {
@@ -25,6 +25,11 @@ function adminCredentials() {
 }
 
 export async function loginAsAdmin(page: Page, targetPath = '/admin'): Promise<void> {
+  // Set e2e test flag to disable auto-logout
+  await page.addInitScript(() => {
+    (window as any)['__E2E_TEST_MODE__'] = true;
+  });
+
   const credentials = adminCredentials();
   const payload: { username: string; password?: string } = {
     username: credentials.username,

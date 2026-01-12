@@ -6,6 +6,7 @@ onlyBuiltDependencies:
   - esbuild
   - less
   - lmdb
+  - mongodb-memory-server
   - msgpackr-extract
   - nx
   - puppeteer

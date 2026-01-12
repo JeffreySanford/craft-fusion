@@ -66,7 +66,7 @@ export class AuthenticationService {
 
   getUserFromToken(token: string): AuthenticatedUser {
     if (!token) {
-      this.logger.warn('Missing authentication token when resolving user');
+      this.logger.debug('No authentication token provided when resolving user');
       throw new UnauthorizedException('Authentication token is required');
     }
 

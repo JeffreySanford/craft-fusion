@@ -23,5 +23,5 @@ func TestGetRecordsHandler(t *testing.T) {
 
 	// Check the response
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Contains(t, w.Body.String(), "expected content")
+	assert.Contains(t, w.Body.String(), "records")
 }

@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { LoggerService } from '../../common/services/logger.service';
 import { ComponentsModule } from '../../common/components/components.module';
+import { DirectivesModule } from '../../common/directives/directives.module';
 import { LandingComponent } from './landing.component';
 
 describe('LandingComponent', () => {
@@ -24,7 +25,7 @@ describe('LandingComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [LandingComponent],
-      imports: [MatCardModule, ComponentsModule],
+      imports: [MatCardModule, ComponentsModule, DirectivesModule],
       providers: [{ provide: LoggerService, useValue: loggerServiceMock }],
     }).compileComponents();
 

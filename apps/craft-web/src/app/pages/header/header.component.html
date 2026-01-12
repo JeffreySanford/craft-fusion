@@ -23,7 +23,7 @@
         </button>
       </ng-container>
 
-      <mat-menu #appearanceMenu="matMenu" class="appearance-menu">
+      <mat-menu #appearanceMenu="matMenu" class="appearance-menu user-menu" panelClass="user-menu">
         <button mat-menu-item *ngFor="let opt of themeOptions" (click)="setThemeByName(opt.name)">
           <span>{{ opt.label }}</span>
         </button>

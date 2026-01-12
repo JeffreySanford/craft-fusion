@@ -2,20 +2,24 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { AppComponent } from './app.component';
-import { SidebarComponent } from './pages/sidebar/sidebar.component';
 import { HttpClientModule } from '@angular/common/http';
-import { MaterialIconsComponent } from './pages/landing/material-icons/material-icons.component';
+import { AuthService } from './common/services/auth/auth.service';
+import { DeepSeekService } from './common/services/deepseek-local.service';
+import { RecordService } from './projects/table/services/record.service';
+import { AuthenticationService } from './common/services/authentication.service';
+import { MockAuthService, MockDeepSeekService, MockRecordService, MockAuthenticationService, MockBreakpointObserver } from './testing/test-mocks';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
   let mockRouter: jest.Mocked<Router>;
   let mockActivatedRoute: jest.Mocked<ActivatedRoute>;
-  let mockBreakpointObserver: jest.Mocked<BreakpointObserver>;
 
   beforeEach(async () => {
     mockRouter = {
-      navigate: jest.fn()
+      navigate: jest.fn(),
+      events: { subscribe: jest.fn() }
     } as unknown as jest.Mocked<Router>;
 
     mockActivatedRoute = {
@@ -26,20 +30,19 @@ describe('AppComponent', () => {
       }
     } as unknown as jest.Mocked<ActivatedRoute>;
 
-    mockBreakpointObserver = {
-      observe: jest.fn().mockReturnValue({
-        subscribe: jest.fn()
-      })
-    } as unknown as jest.Mocked<BreakpointObserver>;
-
     await TestBed.configureTestingModule({
-      declarations: [AppComponent, SidebarComponent, MaterialIconsComponent],
+      declarations: [AppComponent],
       imports: [HttpClientModule],
       providers: [
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: BreakpointObserver, useValue: mockBreakpointObserver }
-      ]
+        { provide: BreakpointObserver, useClass: MockBreakpointObserver },
+        { provide: AuthService, useClass: MockAuthService },
+        { provide: DeepSeekService, useClass: MockDeepSeekService },
+        { provide: RecordService, useClass: MockRecordService },
+        { provide: AuthenticationService, useClass: MockAuthenticationService }
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   });
 

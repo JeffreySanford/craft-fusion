@@ -7,7 +7,7 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "go build -o ../../dist/apps/craft-go/main ./main.go",
+        "command": "go build -o ../../dist/apps/craft-go/main.exe ./main.go",
         "cwd": "apps/craft-go"
       },
       "configurations": {

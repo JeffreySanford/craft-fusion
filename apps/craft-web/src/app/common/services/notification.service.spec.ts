@@ -6,7 +6,6 @@ import { LoggerService } from './logger.service';
 
 describe('NotificationService', () => {
   let service: NotificationService;
-  let logger: LoggerService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -14,7 +13,6 @@ describe('NotificationService', () => {
       providers: [NotificationService, LoggerService]
     });
     service = TestBed.inject(NotificationService);
-    logger = TestBed.inject(LoggerService);
   });
 
   it('should be created', () => {

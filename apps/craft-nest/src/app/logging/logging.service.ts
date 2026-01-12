@@ -39,6 +39,14 @@ export class LoggingService {
     this.addLog('debug', message, metadata);
   }
 
+  verbose(message: string, metadata?: any): void {
+    this.addLog('verbose', message, metadata);
+  }
+
+  log(message: string, metadata?: any): void {
+    this.addLog('log', message, metadata);
+  }
+
   info(message: string, metadata?: any): void {
     this.addLog('info', message, metadata);
   }

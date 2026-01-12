@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TimelineService } from '../../services/timeline.service';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./memorial-timeline.component.scss'],
   standalone: false,
 })
-export class MemorialTimelineComponent implements OnInit {
+export class MemorialTimelineComponent implements OnInit, OnDestroy {
   timelineEvents$: Observable<TimelineEvent[]>;
   filteredEvents$: Observable<TimelineEvent[]>;
   private filter$ = new BehaviorSubject<'all' | 'jeffrey-ai' | TimelineEventType>('all');

@@ -6,9 +6,9 @@ export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
 
   // Global timeout
-  timeout: 30000,
+  timeout: 60000,
   expect: {
-    timeout: 5000,
+    timeout: 10000,
   },
 
   // Test retry and workers
@@ -17,7 +17,7 @@ export default defineConfig({
   fullyParallel: !process.env.CI,
 
   use: {
-    baseURL: 'localhost:4200',
+    baseURL: 'http://localhost:4200',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',

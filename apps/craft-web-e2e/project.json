@@ -18,13 +18,6 @@
           "devServerTarget": "craft-web:serve:development"
         }
       }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "options": {
-        "tsConfig": "apps/craft-web-e2e/tsconfig.spec.json",
-        "jestConfig": "apps/craft-web-e2e/jest.config.ts"
-      }
     }
   }
 }

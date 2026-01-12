@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DataVisualizationsComponent } from './data-visualizations.component';
 import { ChartLayoutService } from './services/chart-layout.service';
 import { DataVisualizationsModule } from './data-visualizations.module';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('DataVisualizationsComponent', () => {
   let component: DataVisualizationsComponent;
@@ -10,7 +12,11 @@ describe('DataVisualizationsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [DataVisualizationsModule],
-      providers: [ChartLayoutService],
+      providers: [
+        ChartLayoutService,
+        provideHttpClient(),
+        provideHttpClientTesting()
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DataVisualizationsComponent);

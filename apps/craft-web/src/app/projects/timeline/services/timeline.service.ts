@@ -22,10 +22,6 @@ export class TimelineService {
 
   constructor(private http: HttpClient, private logger: LoggerService) {}
 
-  ngOnInit?(): void {
-    console.log('[TimelineService] initialized', { apiUrl: this.API_URL, wsUrl: this.WS_URL });
-  }
-
   connect(): void {
     if (!this.socket || !this.socket.connected) {
       console.log('[TimelineService] connect() called — creating WebSocket');

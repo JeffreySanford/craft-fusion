@@ -28,4 +28,6 @@ See `documentation/INDEX.md` for the canonical doc list.
 ## Notes
 
 - Use Nx for all workspace commands.
-- Authentication: HttpOnly cookie-based JWT with logout-on-refresh implemented (2026-01-08). See `documentation/AUTHENTICATION.md` for current implementation and `documentation/AUTHENTICATION-SECURITY-ASSESSMENT.md` for security roadmap.
+- Authentication: HttpOnly cookie-based JWT with logout-on-refresh and E2E test bypass (2026-01-12). See `documentation/AUTHENTICATION.md` for details.
+- Unit Tests: 100% green across all platforms (Angular, Nest, Go).
+- E2E: Playwright suite stabilized (90%+ pass rate).

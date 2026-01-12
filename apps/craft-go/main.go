@@ -33,6 +33,11 @@ import (
 // @host localhost:4000
 // @BasePath /
 func main() {
+	// Set Gin to release mode if not in development
+	if os.Getenv("GIN_MODE") != "debug" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	router := gin.Default()
 
 	// Resolve server port from environment (default 4000)
@@ -41,42 +46,18 @@ func main() {
 		port = "4000"
 	}
 
-	// Middleware: CORS
-	router.Use(func(c *gin.Context) {
-		allowedOrigins := map[string]bool{
-			"http://localhost:4200":         true,
-			"https://jeffreysanford.us":     true,
-			"https://www.jeffreysanford.us": true,
-		}
-		origin := c.Request.Header.Get("Origin")
-		if allowedOrigins[origin] {
-			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
-		} else {
-			log.Printf("CORS: Unauthorized origin %s", origin)
-		}
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		c.Writer.Header().Set("Access-Control-Max-Age", "86400") // Cache preflight response for 24 hours
-
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
-			return
-		}
-
-		c.Next()
-	})
-
 	// Middleware: Gzip Compression
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	// Middleware: CORS with gin-contrib/cors
+	// Middleware: CORS
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://jeffreysanford.us", "http://localhost:3000"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		AllowOrigins:     []string{"http://localhost:4200", "https://jeffreysanford.us", "https://www.jeffreysanford.us", "http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "Content-Length", "Accept-Encoding", "X-CSRF-Token"},
 		AllowCredentials: true,
+		MaxAge:           24 * time.Hour,
 	}))
+
 	// Health Check
 	router.GET("/api-go/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "OK"})

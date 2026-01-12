@@ -4,7 +4,6 @@ import { MapboxService } from '../../../common/services/mapbox.service';
 import { OpenSkiesService } from '../../../common/services/openskies.service';
 import { NasaFirmsService } from '../../../common/services/nasa-firms.service';
 import { of } from 'rxjs';
-import mapboxgl from 'mapbox-gl';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';

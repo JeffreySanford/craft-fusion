@@ -70,3 +70,5 @@ pnpm install --force
 
 - All workspace commands should be run through Nx.
 - Avoid creating new `package.json` files inside apps or libs.
+
+Last updated: 2026-01-12

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, Input, HostBinding, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, Input, HostBinding, SimpleChanges, OnChanges } from '@angular/core';
 import { MapboxService } from '../../../common/services/mapbox.service';
 import { OpenSkiesService, OpenSkyFlight } from '../../../common/services/openskies.service';
 import { NasaFirmsService, NasaFirmsAlert } from '../../../common/services/nasa-firms.service';
@@ -44,7 +44,7 @@ interface FlightInfo {
     class: 'grid-tile large-tile',                             
   },
 })
-export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit {
+export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
   @Input() alerts: FireAlert[] = [];
   @Input() width: number = 0;
   @Input() height: number = 0;

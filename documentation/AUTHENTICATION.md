@@ -10,11 +10,12 @@ This document describes the current auth architecture, the integration points be
 - Calls `ApiService.authRequest('POST', 'auth/login', …)` for credentials, reschedules refreshes, and validates the session via `/api/auth/user`. All authentication state is derived from the HttpOnly cookies the backend sets; no tokens are persisted in `sessionStorage` or `localStorage`.
 - Offline/guest/Playwright overrides have been removed so every session must go through the backend authentication endpoints.
 
-### Logout on refresh behavior (2026-01-08)
+### Logout on refresh behavior (2026-01-12)
 
 - **App initialization clears authentication:** When the Angular app loads (including on page refresh), `AppComponent.constructor()` immediately calls `this.authService.logout()` to ensure all authentication state is cleared.
 - **Backend logout endpoint called:** The `logout()` method now makes a POST request to `/api/auth/logout` to clear the httpOnly cookies on the server before clearing local state. This ensures that subsequent authentication checks via `/api/auth/user` will return 401.
 - **User must re-authenticate after refresh:** Every page refresh or fresh browser session requires the user to log in again. There is no persistent session across refreshes.
+- **E2E Test Bypass:** For automated Playwright tests, an injection script sets `window['__E2E_TEST_MODE__'] = true`. If this flag is detected, `AppComponent` skips the automatic logout, allowing E2E sessions to persist across navigations and refreshes.
 - **Expected 401 errors:** During app initialization, the frontend calls `/api/auth/user` to check for an existing session. Since cookies are cleared on load, this request returns 401 (logged at debug level, not as an error).
 - **Rationale:** This design prevents session hijacking and ensures clean authentication state on every app load. Future iterations may introduce opt-in persistent sessions with explicit user consent and additional security measures.
 
@@ -58,5 +59,8 @@ This document describes the current auth architecture, the integration points be
 
 ## Next steps
 
-- Harden the refresh-token rotation by monitoring the Mongo `refresh_tokens` collection (seeded via `mongodb-memory-server` for portfolio) and ensure the Angular `AuthenticationService` never stores cookies locally while it relies on the server-set HttpOnly tokens.
+- Monitor the Mongo `refresh_tokens` collection (seeded via `mongodb-memory-server` for portfolio) and ensure the Angular `AuthenticationService` never stores cookies locally while it relies on the server-set HttpOnly tokens.
 - Consolidate the AuthorizationService implementations and ensure the single facade remains the canonical access policy surface.
+- Ensure the `__E2E_TEST_MODE__` flag remains strictly scoped to testing environments and cannot be accidentally triggered in production.
+
+Last updated: 2026-01-12

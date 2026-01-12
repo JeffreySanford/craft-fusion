@@ -36,7 +36,7 @@ export class TimelineController {
     this.logger.log(`Creating new timeline event: ${createTimelineEventDto.title}`);
 
     return this.timelineService.create(createTimelineEventDto).pipe(
-      tap(event => this.logger.log(`Timeline event created with ID: ${event.id}`)),
+      tap(event => this.logger.log(`Timeline event created with ID: ${(event as any).id || (event as any)._id}`)),
       map(event => {
         const entityEvent = this.mapToEntity(event);
         this.timelineGateway.notifyNewEvent(entityEvent);

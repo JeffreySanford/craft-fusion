@@ -68,12 +68,32 @@ This guide addresses common development environment issues you might encounter w
    npm install
    ```
 
-### "Too many open files" Error
+### "Invalid URL: localhost:4200" in Playwright
 
 **Symptoms:**
-```
-Error: EMFILE: too many open files, open '/repos/craft-fusion/dist/apps/craft-web/assets/documents/file.txt'
-```
+- Playwright tests fail during `page.goto()` or `beforeEach` navigation.
+- Error message: `page.goto: Invalid URL`.
+
+**Cause:**
+- The `baseURL` in `playwright.config.ts` or passed as an argument is missing the protocol (`http://` or `https://`).
+
+**Solution:**
+- Ensure `baseURL` is defined with the protocol: `baseURL: 'http://localhost:4200'`.
+
+### "Logout or redirect during E2E navigation"
+
+**Symptoms:**
+- Tests fail because the user is redirected to `/login` despite a successful `storageState` or login helper.
+- Console logs show 401 errors for `/api/auth/user`.
+
+**Cause:**
+- The Angular `AppComponent` may be performing a "forced logout on refresh" for security.
+
+**Solution:**
+- Use the `__E2E_TEST_MODE__` flag by injecting it via `page.addInitScript`.
+- See `documentation/AUTHENTICATION.md` for details on how this flag bypasses the automatic logout.
+
+Last updated: 2026-01-12
 
 **Causes:**
 - System limit for maximum open files is too low

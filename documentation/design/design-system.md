@@ -8,6 +8,8 @@ This document defines the Angular Material Design 3 (MD3) based design system wi
 - Consistent components: reuse cards, tiles, and typography styles.
 - Accessible by default: color contrast and focus states are mandatory.
 
+Last updated: 2026-01-12
+
 ## Color system
 
 ### Core palette

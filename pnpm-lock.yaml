@@ -69,8 +69,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)
       '@nestjs/mongoose':
-        specifier: ^10.0.0
-        version: 10.1.0(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@10.4.20)(mongoose@7.8.8(@aws-sdk/credential-providers@3.958.0))(rxjs@7.8.2)
+        specifier: ^11.0.4
+        version: 11.0.4(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@10.4.20)(mongoose@9.1.3(@aws-sdk/credential-providers@3.958.0)(socks@2.8.7))(rxjs@7.8.2)
       '@nestjs/passport':
         specifier: ^10.0.0
         version: 10.0.3(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(passport@0.6.0)
@@ -85,7 +85,7 @@ importers:
         version: 8.1.1(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@10.4.20)(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)
       '@nestjs/terminus':
         specifier: ^10.0.0
-        version: 10.3.0(d5478e2fd9adae80de718f6f898f96b8)
+        version: 10.3.0(9e8b2c6cdac09dca5c031af8709f555e)
       '@nestjs/typeorm':
         specifier: ^10.0.0
         version: 10.0.2(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@10.4.20)(reflect-metadata@0.1.14)(rxjs@7.8.2)(typeorm@0.3.28(babel-plugin-macros@3.1.0)(mongodb@5.9.2(@aws-sdk/credential-providers@3.958.0))(ts-node@10.9.1(@swc/core@1.5.29(@swc/helpers@0.5.18))(@types/node@18.19.130)(typescript@5.8.3)))
@@ -119,6 +119,9 @@ importers:
       axios:
         specifier: ^1.7.9
         version: 1.13.2
+      bcryptjs:
+        specifier: ^3.0.3
+        version: 3.0.3
       chalk:
         specifier: ^5.4.1
         version: 5.6.2
@@ -219,8 +222,8 @@ importers:
         specifier: ^0.5.47
         version: 0.5.48
       mongoose:
-        specifier: ^7.3.0
-        version: 7.8.8(@aws-sdk/credential-providers@3.958.0)
+        specifier: ^9.1.3
+        version: 9.1.3(@aws-sdk/credential-providers@3.958.0)(socks@2.8.7)
       multer:
         specifier: ^2.0.0
         version: 2.0.2
@@ -378,6 +381,9 @@ importers:
       '@swc/helpers':
         specifier: ~0.5.11
         version: 0.5.18
+      '@types/bcryptjs':
+        specifier: ^3.0.0
+        version: 3.0.0
       '@types/d3':
         specifier: ^7.4.3
         version: 7.4.3
@@ -447,6 +453,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^8.33.0
         version: 8.50.1(eslint@8.57.1)(typescript@5.8.3)
+      angular-eslint:
+        specifier: 19.0.2
+        version: 19.0.2(chokidar@4.0.3)(eslint@8.57.1)(typescript-eslint@8.50.1(eslint@8.57.1)(typescript@5.8.3))(typescript@5.8.3)
       blessed:
         specifier: ^0.1.81
         version: 0.1.81
@@ -487,8 +496,8 @@ importers:
         specifier: ^14.5.5
         version: 14.6.2(@angular/compiler-cli@19.2.13(@angular/compiler@19.2.13)(typescript@5.8.3))(@angular/core@19.2.13(rxjs@7.8.2)(zone.js@0.15.0))(@angular/platform-browser-dynamic@19.2.13(@angular/common@19.2.13(@angular/core@19.2.13(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/compiler@19.2.13)(@angular/core@19.2.13(rxjs@7.8.2)(zone.js@0.15.0))(@angular/platform-browser@19.2.13(@angular/animations@19.2.13(@angular/common@19.2.13(@angular/core@19.2.13(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.13(rxjs@7.8.2)(zone.js@0.15.0)))(@angular/common@19.2.13(@angular/core@19.2.13(rxjs@7.8.2)(zone.js@0.15.0))(rxjs@7.8.2))(@angular/core@19.2.13(rxjs@7.8.2)(zone.js@0.15.0))))(@babel/core@7.28.5)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.28.5))(jest@29.7.0(@types/node@18.19.130)(babel-plugin-macros@3.1.0)(ts-node@10.9.1(@swc/core@1.5.29(@swc/helpers@0.5.18))(@types/node@18.19.130)(typescript@5.8.3)))(jsdom@26.1.0)(typescript@5.8.3)
       mongodb-memory-server:
-        specifier: ^8.12.0
-        version: 8.16.1
+        specifier: ^11.0.1
+        version: 11.0.1(@aws-sdk/credential-providers@3.958.0)(socks@2.8.7)
       npmlog:
         specifier: ^7.0.1
         version: 7.0.1
@@ -531,9 +540,6 @@ importers:
       stylelint-scss:
         specifier: ^4.7.0
         version: 4.7.0(stylelint@14.16.1)
-      supertest:
-        specifier: ^6.3.3
-        version: 6.3.4
       systeminformation:
         specifier: ^5.27.1
         version: 5.28.3
@@ -692,14 +698,38 @@ packages:
     resolution: {integrity: sha512-iTJsG0MSQuqHxgbqJPEB2acqHpZaCvadIDwKsReUYTQRSQ8/+n8msjU7to+wunDmi7auKlF3y3TiJG4NZGGzQQ==}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
 
+  '@angular-eslint/builder@19.0.2':
+    resolution: {integrity: sha512-BdmMSndQt2fSBiTVniskUcUpQaeweUapbsL0IDfQ7a13vL0NVXpc3K89YXuVE/xsb08uHtqphuwxPAAj6kX3OA==}
+    peerDependencies:
+      eslint: ^8.57.0 || ^9.0.0
+      typescript: '*'
+
+  '@angular-eslint/bundled-angular-compiler@19.0.2':
+    resolution: {integrity: sha512-HPmp92r70SNO/0NdIaIhxrgVSpomqryuUk7jszvNRtu+OzYCJGcbLhQD38T3dbBWT/AV0QXzyzExn6/2ai9fEw==}
+
   '@angular-eslint/bundled-angular-compiler@19.8.1':
     resolution: {integrity: sha512-WXi1YbSs7SIQo48u+fCcc5Nt14/T4QzYQPLZUnjtsUXPgQG7ZoahhcGf7PPQ+n0V3pSopHOlSHwqK+tSsYK87A==}
+
+  '@angular-eslint/eslint-plugin-template@19.0.2':
+    resolution: {integrity: sha512-f/OCF9ThnxQ8m0eNYPwnCrySQPhYfCOF6STL7F9LnS8Bs3ZeW3/oT1yLaMIZ1Eg0ogIkgxksMAJZjrJPUPBD1Q==}
+    peerDependencies:
+      '@typescript-eslint/types': ^7.11.0 || ^8.0.0
+      '@typescript-eslint/utils': ^7.11.0 || ^8.0.0
+      eslint: ^8.57.0 || ^9.0.0
+      typescript: '*'
 
   '@angular-eslint/eslint-plugin-template@19.8.1':
     resolution: {integrity: sha512-0ZVQldndLrDfB0tzFe/uIwvkUcakw8qGxvkEU0l7kSbv/ngNQ/qrkRi7P64otB15inIDUNZI2jtmVat52dqSfQ==}
     peerDependencies:
       '@angular-eslint/template-parser': 19.8.1
       '@typescript-eslint/types': ^7.11.0 || ^8.0.0
+      '@typescript-eslint/utils': ^7.11.0 || ^8.0.0
+      eslint: ^8.57.0 || ^9.0.0
+      typescript: '*'
+
+  '@angular-eslint/eslint-plugin@19.0.2':
+    resolution: {integrity: sha512-DLuNVVGGFicSThOcMSJyNje+FZSPdG0B3lCBRiqcgKH/16kfM4pV8MobPM7RGK2NhaOmmZ4zzJNwpwWPSgi+Lw==}
+    peerDependencies:
       '@typescript-eslint/utils': ^7.11.0 || ^8.0.0
       eslint: ^8.57.0 || ^9.0.0
       typescript: '*'
@@ -711,9 +741,25 @@ packages:
       eslint: ^8.57.0 || ^9.0.0
       typescript: '*'
 
+  '@angular-eslint/schematics@19.0.2':
+    resolution: {integrity: sha512-wI4SyiAnUCrpigtK6PHRlVWMC9vWljqmlLhbsJV5O5yDajlmRdvgXvSHDefhJm0hSfvZYRXuiAARYv2+QVfnGA==}
+
+  '@angular-eslint/template-parser@19.0.2':
+    resolution: {integrity: sha512-z3rZd2sBfuYcFf9rGDsB2zz2fbGX8kkF+0ftg9eocyQmzWrlZHFmuw9ha7oP/Mz8gpblyCS/aa1U/Srs6gz0UQ==}
+    peerDependencies:
+      eslint: ^8.57.0 || ^9.0.0
+      typescript: '*'
+
   '@angular-eslint/template-parser@19.8.1':
     resolution: {integrity: sha512-pQiOg+se1AU/ncMlnJ9V6xYnMQ84qI1BGWuJpbU6A99VTXJg90scg0+T7DWmKssR1YjP5qmmBtrZfKsHEcLW/A==}
     peerDependencies:
+      eslint: ^8.57.0 || ^9.0.0
+      typescript: '*'
+
+  '@angular-eslint/utils@19.0.2':
+    resolution: {integrity: sha512-HotBT8OKr7zCaX1S9k27JuhRiTVIbbYVl6whlb3uwdMIPIWY8iOcEh1tjI4qDPUafpLfR72Dhwi5bO1E17F3/Q==}
+    peerDependencies:
+      '@typescript-eslint/utils': ^7.11.0 || ^8.0.0
       eslint: ^8.57.0 || ^9.0.0
       typescript: '*'
 
@@ -3386,12 +3432,12 @@ packages:
       class-validator:
         optional: true
 
-  '@nestjs/mongoose@10.1.0':
-    resolution: {integrity: sha512-1ExAnZUfh2QffEaGjqYGgVPy/sYBQCVLCLqVgkcClKx/BCd0QNgND8MB70lwyobp3nm/+nbGQqBpu9F3/hgOCw==}
+  '@nestjs/mongoose@11.0.4':
+    resolution: {integrity: sha512-LUOlUeSOfbjdIu22QwOmczv2CzJQr9LUBo2mOfbXrGCu2svpr5Hiu71zBFrb/9UC+H8BjGMKbBOq1nEbMF6ZJA==}
     peerDependencies:
-      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
-      '@nestjs/core': ^8.0.0 || ^9.0.0 || ^10.0.0
-      mongoose: ^6.0.2 || ^7.0.0 || ^8.0.0
+      '@nestjs/common': ^10.0.0 || ^11.0.0
+      '@nestjs/core': ^10.0.0 || ^11.0.0
+      mongoose: ^7.0.0 || ^8.0.0 || ^9.0.0
       rxjs: ^7.0.0
 
   '@nestjs/passport@10.0.3':
@@ -3540,10 +3586,6 @@ packages:
 
   '@ngx-env/builder@19.1.0':
     resolution: {integrity: sha512-dAEFb2Ns63sR2XT71cJkmE3GAl3sCYKADMZrWxGNDRxQSosw25qW+U6yrgSrAxw8ls1TMaiU6rXeFLsk92cpdQ==}
-
-  '@noble/hashes@1.8.0':
-    resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
-    engines: {node: ^14.21.3 || >=16}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -3848,9 +3890,6 @@ packages:
 
   '@nx/workspace@20.4.4':
     resolution: {integrity: sha512-4iIN9GWLHCycCUTAaVeR7TAk2t9wSgxQN/znvSmG5eWSS2ri9XjeN6/8kpoTDBpmQ1/4gAKSMGo9BNMlbvqD2g==}
-
-  '@paralleldrive/cuid2@2.3.1':
-    resolution: {integrity: sha512-XO7cAxhnTZl0Yggq6jOgjiOHhbgcO4NqFqwSmQpjK3b6TEE6Uj/jfSk6wzYyemh3+I0sHirKSetjQwn5cZktFw==}
 
   '@parcel/watcher-android-arm64@2.5.1':
     resolution: {integrity: sha512-KF8+j9nNbUN8vzOFDpRMsaKBHZ/mcjEjMToVMJOhTozkDonQFFrRcfdLWn6yWKCmJKmdVxSgHiYvTCef4/qcBA==}
@@ -4625,6 +4664,10 @@ packages:
   '@types/bcryptjs@2.4.6':
     resolution: {integrity: sha512-9xlo6R2qDs5uixm0bcIqCeMCE6HiQsIyel9KQySStiyqNl2tnj2mP3DX1Nf56MD6KMenNNlBBsy3LJ7gUEQPXQ==}
 
+  '@types/bcryptjs@3.0.0':
+    resolution: {integrity: sha512-WRZOuCuaz8UcZZE4R5HXTco2goQSI2XxjGY3hbM/xDvwmqFWd4ivooImsMx65OKM6CtNKbnZ5YL+YwAwK7c1dg==}
+    deprecated: This is a stub types definition. bcryptjs provides its own type definitions, so you do not need this installed.
+
   '@types/body-parser@1.19.6':
     resolution: {integrity: sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g==}
 
@@ -4962,6 +5005,9 @@ packages:
   '@types/webidl-conversions@7.0.3':
     resolution: {integrity: sha512-CiJJvcRtIgzadHCYXw7dqEnMNRjhGZlYK05Mj9OyktqV8uVT8fD2BFOB7S1uwBE3Kj2Z+4UyPmFw/Ixgw/LAlA==}
 
+  '@types/whatwg-url@13.0.0':
+    resolution: {integrity: sha512-N8WXpbE6Wgri7KUSvrmQcqrMllKZ9uxkYWMt+mCSGwNc0Hsw9VQTW7ApqI4XNrx6/SaM2QQJCzMPDEXE058s+Q==}
+
   '@types/whatwg-url@8.2.2':
     resolution: {integrity: sha512-FtQu10RWgn3D9U4aazdwIE2yzphmTJREDqNdODHrbrZmmMqI0vMheC/6NE/J1Yveaj8H+ela+YwWTjq5PGmuhA==}
 
@@ -5282,6 +5328,13 @@ packages:
   ajv@8.9.0:
     resolution: {integrity: sha512-qOKJyNj/h+OWx7s5DePL6Zu1KeM9jPZhwBqs+7DzP6bGOvqzVCSf0xueYmVuaC/oQ/VtS2zLMLHdQFbkka+XDQ==}
 
+  angular-eslint@19.0.2:
+    resolution: {integrity: sha512-d8P/Y5+QXOOko1x5W3Pp/p4cr7arXKGHdMAv6jtrqHjsIrlBqZSZY18apKRdTysFjYuKa5G9M3hejtzwXXHNhg==}
+    peerDependencies:
+      eslint: ^8.57.0 || ^9.0.0
+      typescript: '*'
+      typescript-eslint: ^8.0.0
+
   ansi-align@3.0.1:
     resolution: {integrity: sha512-IOfwwBF5iczOjp/WeY4YxyjqAFMQoZufdQWDd19SEExbVLNXqvpzSJ/M7Za4/sCPmQ0+GRquoA7bGcINcxew6w==}
 
@@ -5433,9 +5486,6 @@ packages:
     resolution: {integrity: sha512-3CYzex9M9FGQjCGMGyi6/31c8GJbgb0qGyrx5HWxPd0aCwh4cB2YjMb2Xf9UuoogrMrlO9cTqnB5rI5GHZTcUA==}
     engines: {node: '>=0.10.0'}
 
-  asap@2.0.6:
-    resolution: {integrity: sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==}
-
   assertion-error@2.0.1:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
     engines: {node: '>=12'}
@@ -5452,8 +5502,8 @@ packages:
     resolution: {integrity: sha512-hsU18Ae8CDTR6Kgu9DYf0EbCr/a5iGL0rytQDobUcdpYOKokk8LEjVphnXkDkgpi0wYVsqrXuP0bZxJaTqdgoA==}
     engines: {node: '>= 0.4'}
 
-  async-mutex@0.3.2:
-    resolution: {integrity: sha512-HuTK7E7MT7jZEh1P9GtRW9+aTWiDWWi9InbZ5hjxrnRa39KS4BW04+xLBhYNS2aXhHUIKZSw3gj4Pn1pj+qGAA==}
+  async-mutex@0.5.0:
+    resolution: {integrity: sha512-1A94B18jkJ3DYq284ohPxoXbfTA5HsQ7/Mf4DEhcyLx3Bz27Rh59iScbB6EPiP+B+joue6YCxcMXSbFC1tZKwA==}
 
   async@3.2.6:
     resolution: {integrity: sha512-htCUDlxyyCLMgaM3xXg0C0LW2xqfuQ6p05pCEIsXuyQ+a1koYKTuBMzRNwmybfLgvJDMd0r1LTn4+E0Ti6C2AA==}
@@ -5644,6 +5694,10 @@ packages:
   bcryptjs@2.4.3:
     resolution: {integrity: sha512-V/Hy/X9Vt7f3BbPJEi8BdVFMByHi+jNXrYkW3huaybV/kQ0KJg0Y6PkEMbn+zeT+i+SiKZ/HMqJGIIt4LZDqNQ==}
 
+  bcryptjs@3.0.3:
+    resolution: {integrity: sha512-GlF5wPWnSa/X5LKM1o0wz0suXIINz1iHRLvTS+sLyi7XPbe5ycmYI3DlZqVGZZtDgl4DmasFg7gOB3JYbphV5g==}
+    hasBin: true
+
   beasties@0.3.2:
     resolution: {integrity: sha512-p4AF8uYzm9Fwu8m/hSVTCPXrRBPmB34hQpHsec2KOaR9CZmgoU8IOv4Cvwq4hgz2p4hLMNbsdNl5XeA6XbAQwA==}
     engines: {node: '>=14.0.0'}
@@ -5727,13 +5781,13 @@ packages:
   bser@2.1.1:
     resolution: {integrity: sha512-gQxTNE/GAfIIrmHLUE3oJyp5FO6HRBfhjnw4/wMmA63ZGDJnWBmgY/lyQBpnDUkGmAhbSe39tx2d/iTOAfglwQ==}
 
-  bson@4.7.2:
-    resolution: {integrity: sha512-Ry9wCtIZ5kGqkJoi6aD8KjxFZEx78guTQDnpXWiNthsxzrxAK/i8E6pCHAIZTbaEFWcOCvbecMukfK7XUvyLpQ==}
-    engines: {node: '>=6.9.0'}
-
   bson@5.5.1:
     resolution: {integrity: sha512-ix0EwukN2EpC0SRWIj/7B5+A6uQMQy6KMREI9qQqvgpkV2frH63T0UDVd1SYedL6dNCmDBYB3QtXi4ISk9YT+g==}
     engines: {node: '>=14.20.1'}
+
+  bson@7.0.0:
+    resolution: {integrity: sha512-Kwc6Wh4lQ5OmkqqKhYGKIuELXl+EPYSCObVE6bWsp1T/cGkOCBN0I8wF/T44BiuhHyNi1mmKVPXk60d41xZ7kw==}
+    engines: {node: '>=20.19.0'}
 
   btoa@1.2.1:
     resolution: {integrity: sha512-SB4/MIGlsiVkMcHmT+pSmIPoNDoHg+7cMzmt3Uxt628MTz2487DKSqK/fuhFBrkuqrYv5UCEnACpF4dTFNKc/g==}
@@ -6069,9 +6123,6 @@ packages:
   commondir@1.0.1:
     resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
 
-  component-emitter@1.3.1:
-    resolution: {integrity: sha512-T0+barUSQRTUQASh8bx02dl+DhF54GtIDY13Y3m9oWTklKbb3Wv974meRpeZ3lp1JpLVECWWNHC4vaG2XHXouQ==}
-
   compress-commons@6.0.2:
     resolution: {integrity: sha512-6FqVXeETqWPoGcfzrXb37E50NP0LXT8kAMu5ooZayhWWdgEY4lBEEcbQNXtkuKQsGduxiIcI4gOTsxTmuq/bSg==}
     engines: {node: '>= 14'}
@@ -6136,9 +6187,6 @@ packages:
   cookie@0.7.2:
     resolution: {integrity: sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==}
     engines: {node: '>= 0.6'}
-
-  cookiejar@2.1.4:
-    resolution: {integrity: sha512-LDx6oHrK+PhzLKJU9j5S7/Y3jM/mUHvD/DeI1WQmJn652iPC5Y4TBzC9l+5OMOXlyTTA+SmVUPm0HQUwpD5Jqw==}
 
   cookies@0.8.0:
     resolution: {integrity: sha512-8aPsApQfebXnuI+537McwYsDtjVxGm8gTIzQI3FDW6t5t/DAhERxtnbEPN/8RX+uZthoz4eCOgloXaE5cYyNow==}
@@ -6659,9 +6707,6 @@ packages:
 
   devtools-protocol@0.0.1534754:
     resolution: {integrity: sha512-26T91cV5dbOYnXdJi5qQHoTtUoNEqwkHcAyu/IKtjIAxiEqPMrDiRkDOPWVsGfNZGmlQVHQbZRSjD8sxagWVsQ==}
-
-  dezalgo@1.0.4:
-    resolution: {integrity: sha512-rXSP0bf+5n0Qonsb+SVVfNfIsimO4HEtmnIpPHY8Q1UCzKlQrDMfdobr8nJOOsRgWCyMRqeSBQzmWUMq7zvVig==}
 
   dfa@1.2.0:
     resolution: {integrity: sha512-ED3jP8saaweFTjeGX8HQPjeC1YYyZs98jGNZx6IiBvxW7JG5v492kamAQB3m2wop07CvU/RQmzcKr6bgcC5D/Q==}
@@ -7298,9 +7343,6 @@ packages:
     resolution: {integrity: sha512-8RipRLol37bNs2bhoV67fiTEvdTrbMUYcFTiy3+wuuOnUog2QBHCZWXDRijWQfAkhBj2Uf5UnVaiWwA5vdd82w==}
     engines: {node: '>= 6'}
 
-  formidable@2.1.5:
-    resolution: {integrity: sha512-Oz5Hwvwak/DCaXVVUtPn4oLMLLy1CdclLKO1LFgU7XzDpVMUU5UjlSLpGMocyQNNk8F6IJW9M/YdooSn2MRI+Q==}
-
   forwarded@0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
     engines: {node: '>= 0.6'}
@@ -7405,10 +7447,6 @@ packages:
   get-package-type@0.1.0:
     resolution: {integrity: sha512-pjzuKtY64GYfWizNAJ0fr9VqttZkNiK2iS430LtIHzjBEr6bX8Am2zm4sW4Ro5wjWW5cAlRL1qAMTcXbjNAO2Q==}
     engines: {node: '>=8.0.0'}
-
-  get-port@5.1.1:
-    resolution: {integrity: sha512-g/Q1aTSDOxFpchXC4i8ZWvxA1lnPqx/JHqcpIw0/LX9T8x/GBbi6YnlN5nhaKIFkT8oFsscUKgDJYxfwfS6QsQ==}
-    engines: {node: '>=8'}
 
   get-proto@1.0.1:
     resolution: {integrity: sha512-sTSfBjoXBp89JvIKIefqw7U2CCebsc74kiY6awiGogKtoSGbgjYE/G/+l9sF3MWFPNc9IcoOC4ODfKHfxFmp0g==}
@@ -7746,6 +7784,10 @@ packages:
 
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
+    engines: {node: '>= 4'}
+
+  ignore@6.0.2:
+    resolution: {integrity: sha512-InwqeHHN2XpumIkMvpl/DCJVrAHgCsG5+cn1XlnLWGwtZBm8QJfSusItfrwx81CTp5agNZqpKU2J/ccC5nGT4A==}
     engines: {node: '>= 4'}
 
   ignore@7.0.5:
@@ -8393,9 +8435,9 @@ packages:
   jws@4.0.1:
     resolution: {integrity: sha512-EKI/M/yqPncGUUh44xz0PxSidXFr/+r0pA70+gIYhjv+et7yxM+s29Y+VGDkovRofQem0fs7Uvf4+YmAdyRduA==}
 
-  kareem@2.5.1:
-    resolution: {integrity: sha512-7jFxRVm+jD+rkq3kY0iZDJfsO2/t4BBPeEb2qKn2lR/9KhuksYk5hxzfRYWMPV8P/x2d0kHD306YyWLzjjH+uA==}
-    engines: {node: '>=12.0.0'}
+  kareem@3.0.0:
+    resolution: {integrity: sha512-RKhaOBSPN8L7y4yAgNhDT2602G5FD6QbOIISbjN9D6mjHPeqeg7K+EB5IGSU5o81/X2Gzm3ICnAvQW3x3OP8HA==}
+    engines: {node: '>=18.0.0'}
 
   karma-source-map-support@1.4.0:
     resolution: {integrity: sha512-RsBECncGO17KAoJCYXjv+ckIz+Ii9NCi+9enk+rq6XC81ezYkb4/RHE6CTXdA7IOJqoF3wcaLfVG0CPmE5ca6A==}
@@ -8784,11 +8826,6 @@ packages:
   mathml-tag-names@2.1.3:
     resolution: {integrity: sha512-APMBEanjybaPzUrfqU0IMU5I0AswKMH7k8OTLs0vvV4KZpExkTkY87nR/zpbuTPj+gARop7aGUbl11pnDfW6xg==}
 
-  md5-file@5.0.0:
-    resolution: {integrity: sha512-xbEFXCYVWrSx/gEKS1VPlg84h/4L20znVIulKw6kMfmBUAZNAnF00eczz9ICMl+/hjQGo5KSXRxbL/47X3rmMw==}
-    engines: {node: '>=10.13.0'}
-    hasBin: true
-
   mdn-data@2.0.28:
     resolution: {integrity: sha512-aylIc7Z9y4yzHYAJNuESG3hfhC+0Ibp/MAMiaOZgNv4pmEdFyfZhhhny4MNiAfWdBQ1RQ2mfDWmM1x8SvGyp8g==}
 
@@ -8864,11 +8901,6 @@ packages:
   mime@1.6.0:
     resolution: {integrity: sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==}
     engines: {node: '>=4'}
-    hasBin: true
-
-  mime@2.6.0:
-    resolution: {integrity: sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==}
-    engines: {node: '>=4.0.0'}
     hasBin: true
 
   mimic-fn@2.1.0:
@@ -8981,17 +9013,17 @@ packages:
   mongodb-connection-string-url@2.6.0:
     resolution: {integrity: sha512-WvTZlI9ab0QYtTYnuMLgobULWhokRjtC7db9LtcVfJ+Hsnyr5eo6ZtNAt3Ly24XZScGMelOcGtm7lSn0332tPQ==}
 
-  mongodb-memory-server-core@8.16.1:
-    resolution: {integrity: sha512-skRGr7vzVIyefKm/YTn73sWI/7ghIb+gBxYNt42kGO7zeOfy+3S2Xg3kHYLkBz1IrOmTyV2HpFVzbZ1HF8grsQ==}
-    engines: {node: '>=12.22.0'}
+  mongodb-connection-string-url@7.0.0:
+    resolution: {integrity: sha512-irhhjRVLE20hbkRl4zpAYLnDMM+zIZnp0IDB9akAFFUZp/3XdOfwwddc7y6cNvF2WCEtfTYRwYbIfYa2kVY0og==}
+    engines: {node: '>=20.19.0'}
 
-  mongodb-memory-server@8.16.1:
-    resolution: {integrity: sha512-Zje3i+xKN+nxALkOOraDfIvc9X8mNy979IvJdjUghvf5PbwvX5ZPr5gUtCcmzz2VRj97WsZbdUSkxny+GXZTIA==}
-    engines: {node: '>=12.22.0'}
+  mongodb-memory-server-core@11.0.1:
+    resolution: {integrity: sha512-IcIb2S9Xf7Lmz43Z1ZujMqNg7PU5Q7yn+4wOnu7l6pfeGPkEmlqzV1hIbroVx8s4vXhPB1oMGC1u8clW7aj3Xw==}
+    engines: {node: '>=20.19.0'}
 
-  mongodb@4.17.2:
-    resolution: {integrity: sha512-mLV7SEiov2LHleRJPMPrK2PMyhXFZt2UQLC4VD4pnth3jMjYKHhtqfwwkkvS/NXuo/Fp3vbhaNcXrIDaLRb9Tg==}
-    engines: {node: '>=12.9.0'}
+  mongodb-memory-server@11.0.1:
+    resolution: {integrity: sha512-nUlKovSJZBh7q5hPsewFRam9H66D08Ne18nyknkNalfXMPtK1Og3kOcuqQhcX88x/pghSZPIJHrLbxNFW3OWiw==}
+    engines: {node: '>=20.19.0'}
 
   mongodb@5.9.2:
     resolution: {integrity: sha512-H60HecKO4Bc+7dhOv4sJlgvenK4fQNqqUIlXxZYQNbfEWSALGAwGoyJd/0Qwk4TttFXUOHJ2ZJQe/52ScaUwtQ==}
@@ -9014,17 +9046,44 @@ packages:
       snappy:
         optional: true
 
-  mongoose@7.8.8:
-    resolution: {integrity: sha512-0ntQOglVjlx3d+1sLK45oO5f6GuTgV/zbao0zkpE5S5W40qefpyYQ3Mq9e9nRzR58pp57WkVU+PgM64sVVcxNg==}
-    engines: {node: '>=14.20.1'}
+  mongodb@7.0.0:
+    resolution: {integrity: sha512-vG/A5cQrvGGvZm2mTnCSz1LUcbOPl83hfB6bxULKQ8oFZauyox/2xbZOoGNl+64m8VBrETkdGCDBdOsCr3F3jg==}
+    engines: {node: '>=20.19.0'}
+    peerDependencies:
+      '@aws-sdk/credential-providers': ^3.806.0
+      '@mongodb-js/zstd': ^7.0.0
+      gcp-metadata: ^7.0.1
+      kerberos: ^7.0.0
+      mongodb-client-encryption: '>=7.0.0 <7.1.0'
+      snappy: ^7.3.2
+      socks: ^2.8.6
+    peerDependenciesMeta:
+      '@aws-sdk/credential-providers':
+        optional: true
+      '@mongodb-js/zstd':
+        optional: true
+      gcp-metadata:
+        optional: true
+      kerberos:
+        optional: true
+      mongodb-client-encryption:
+        optional: true
+      snappy:
+        optional: true
+      socks:
+        optional: true
+
+  mongoose@9.1.3:
+    resolution: {integrity: sha512-vIKt/qjdgXt0C/75g8/ROLY+o5rrVsjqwmo1C9qpGYIpJQI9KLZjuBXJTyL+8RXH2cGFumADCd7PIE3mry3ibw==}
+    engines: {node: '>=20.19.0'}
 
   mpath@0.9.0:
     resolution: {integrity: sha512-ikJRQTk8hw5DEoFVxHG1Gn9T/xcjtdnOKIU1JTmGjZZlg9LST2mBLmcX3/ICIbgJydT2GOc15RnNy5mHmzfSew==}
     engines: {node: '>=4.0.0'}
 
-  mquery@5.0.0:
-    resolution: {integrity: sha512-iQMncpmEK8R8ncT8HJGsGc9Dsp8xcgYMVSbs5jgnm1lFHTZqMJTUWTDx1LBO8+mK3tPNZWFLBghQEIOULSTHZg==}
-    engines: {node: '>=14.0.0'}
+  mquery@6.0.0:
+    resolution: {integrity: sha512-b2KQNsmgtkscfeDgkYMcWGn9vZI9YoXh802VDEwE6qc50zxBFQ0Oo8ROkawbPAsXCY1/Z1yp0MagqsZStPWJjw==}
+    engines: {node: '>=20.19.0'}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -10490,8 +10549,8 @@ packages:
     resolution: {integrity: sha512-ZX99e6tRweoUXqR+VBrslhda51Nh5MTQwou5tnUDgbtyM0dBgmhEDtWGP/xbKn6hqfPRHujUNwz5fy/wbbhnpw==}
     engines: {node: '>= 0.4'}
 
-  sift@16.0.1:
-    resolution: {integrity: sha512-Wv6BjQ5zbhW7VFefWusVP33T/EM0vYikCaQ2qR8yULbsilAT8/wQaXvuQ3ptGLpoKx+lihJE3y2UTgKDyyNHZQ==}
+  sift@17.1.3:
+    resolution: {integrity: sha512-Rtlj66/b0ICeFzYTuNvX/EF1igRbbnGSvEyT79McoZa/DeGhMyC5pWKOEsZKnpkqtSeovd5FL/bjHWC3CIIvCQ==}
 
   siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
@@ -10842,18 +10901,8 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  superagent@8.1.2:
-    resolution: {integrity: sha512-6WTxW1EB6yCxV5VFOIPQruWGHqc3yI7hEmZK6h+pyk69Lk/Ut7rLUY6W/ONF2MjBuGjvmMiIpsrVJ2vjrHlslA==}
-    engines: {node: '>=6.4.0 <13 || >=14'}
-    deprecated: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
-
   supercluster@8.0.1:
     resolution: {integrity: sha512-IiOea5kJ9iqzD2t7QJq/cREyLHTtSmUT6gQsweojg9WH2sYJqZK9SswTu6jrscO6D1G5v5vYZ9ru/eq85lXeZQ==}
-
-  supertest@6.3.4:
-    resolution: {integrity: sha512-erY3HFDG0dPnhw4U+udPfrzXa4xhSG+n4rxfRuZWCUvjFWwKl+OxWf/7zk50s84/fAAs7vf5QAb9uRa0cCykxw==}
-    engines: {node: '>=6.4.0'}
-    deprecated: Please upgrade to supertest v7.1.3+, see release notes at https://github.com/forwardemail/supertest/releases/tag/v7.1.3 - maintenance is supported by Forward Email @ https://forwardemail.net
 
   supports-color@2.0.0:
     resolution: {integrity: sha512-KKNVtd6pCYgPIKU4cp2733HWYCpplQhddZLBUryaAHou723x+FRzQ5Df824Fj+IyyuiQTRoub4SnIFfIcrp70g==}
@@ -11953,6 +12002,10 @@ packages:
   yauzl@2.10.0:
     resolution: {integrity: sha512-p4a9I6X6nu6IhoGmBqAcbJy1mlC4j27vEPZX9F4L4/vZT3Lyq1VkFHw/V/PUcB9Buo+DG3iHkT0x3Qya58zc3g==}
 
+  yauzl@3.2.0:
+    resolution: {integrity: sha512-Ow9nuGZE+qp1u4JIPvg+uCiUr7xGQWdff7JQSk5VGYTAZMDe2q8lxJ10ygv10qmSj031Ty/6FNJpLO4o1Sgc+w==}
+    engines: {node: '>=12'}
+
   ylru@1.4.0:
     resolution: {integrity: sha512-2OQsPNEmBCvXuFlIni/a+Rn+R2pHW9INm0BxXJ4hVDA8TirqMj+J/Rp9ItLatT/5pZqWwefVrTQcHpixsxnVlA==}
     engines: {node: '>= 4.0.0'}
@@ -12256,7 +12309,29 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
+  '@angular-eslint/builder@19.0.2(chokidar@4.0.3)(eslint@8.57.1)(typescript@5.8.3)':
+    dependencies:
+      '@angular-devkit/architect': 0.1902.19(chokidar@4.0.3)
+      '@angular-devkit/core': 19.2.19(chokidar@4.0.3)
+      eslint: 8.57.1
+      typescript: 5.8.3
+    transitivePeerDependencies:
+      - chokidar
+
+  '@angular-eslint/bundled-angular-compiler@19.0.2': {}
+
   '@angular-eslint/bundled-angular-compiler@19.8.1': {}
+
+  '@angular-eslint/eslint-plugin-template@19.0.2(@typescript-eslint/types@8.50.1)(@typescript-eslint/utils@8.50.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)':
+    dependencies:
+      '@angular-eslint/bundled-angular-compiler': 19.0.2
+      '@angular-eslint/utils': 19.0.2(@typescript-eslint/utils@8.50.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
+      '@typescript-eslint/types': 8.50.1
+      '@typescript-eslint/utils': 8.50.1(eslint@8.57.1)(typescript@5.8.3)
+      aria-query: 5.3.2
+      axobject-query: 4.1.0
+      eslint: 8.57.1
+      typescript: 5.8.3
 
   '@angular-eslint/eslint-plugin-template@19.8.1(@angular-eslint/template-parser@19.8.1(eslint@8.57.1)(typescript@5.8.3))(@typescript-eslint/types@8.50.1)(@typescript-eslint/utils@8.50.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)':
     dependencies:
@@ -12270,6 +12345,14 @@ snapshots:
       eslint: 8.57.1
       typescript: 5.8.3
 
+  '@angular-eslint/eslint-plugin@19.0.2(@typescript-eslint/utils@8.50.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)':
+    dependencies:
+      '@angular-eslint/bundled-angular-compiler': 19.0.2
+      '@angular-eslint/utils': 19.0.2(@typescript-eslint/utils@8.50.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
+      '@typescript-eslint/utils': 8.50.1(eslint@8.57.1)(typescript@5.8.3)
+      eslint: 8.57.1
+      typescript: 5.8.3
+
   '@angular-eslint/eslint-plugin@19.8.1(@typescript-eslint/utils@8.50.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)':
     dependencies:
       '@angular-eslint/bundled-angular-compiler': 19.8.1
@@ -12278,11 +12361,41 @@ snapshots:
       eslint: 8.57.1
       typescript: 5.8.3
 
+  '@angular-eslint/schematics@19.0.2(@typescript-eslint/types@8.50.1)(@typescript-eslint/utils@8.50.1(eslint@8.57.1)(typescript@5.8.3))(chokidar@4.0.3)(eslint@8.57.1)(typescript@5.8.3)':
+    dependencies:
+      '@angular-devkit/core': 19.2.19(chokidar@4.0.3)
+      '@angular-devkit/schematics': 19.1.9(chokidar@4.0.3)
+      '@angular-eslint/eslint-plugin': 19.0.2(@typescript-eslint/utils@8.50.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
+      '@angular-eslint/eslint-plugin-template': 19.0.2(@typescript-eslint/types@8.50.1)(@typescript-eslint/utils@8.50.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
+      ignore: 6.0.2
+      semver: 7.6.3
+      strip-json-comments: 3.1.1
+    transitivePeerDependencies:
+      - '@typescript-eslint/types'
+      - '@typescript-eslint/utils'
+      - chokidar
+      - eslint
+      - typescript
+
+  '@angular-eslint/template-parser@19.0.2(eslint@8.57.1)(typescript@5.8.3)':
+    dependencies:
+      '@angular-eslint/bundled-angular-compiler': 19.0.2
+      eslint: 8.57.1
+      eslint-scope: 8.4.0
+      typescript: 5.8.3
+
   '@angular-eslint/template-parser@19.8.1(eslint@8.57.1)(typescript@5.8.3)':
     dependencies:
       '@angular-eslint/bundled-angular-compiler': 19.8.1
       eslint: 8.57.1
       eslint-scope: 8.4.0
+      typescript: 5.8.3
+
+  '@angular-eslint/utils@19.0.2(@typescript-eslint/utils@8.50.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)':
+    dependencies:
+      '@angular-eslint/bundled-angular-compiler': 19.0.2
+      '@typescript-eslint/utils': 8.50.1(eslint@8.57.1)(typescript@5.8.3)
+      eslint: 8.57.1
       typescript: 5.8.3
 
   '@angular-eslint/utils@19.8.1(@typescript-eslint/utils@8.50.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)':
@@ -16093,7 +16206,6 @@ snapshots:
   '@mongodb-js/saslprep@1.4.4':
     dependencies:
       sparse-bitfield: 3.0.3
-    optional: true
 
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3':
     optional: true
@@ -16313,11 +16425,11 @@ snapshots:
       class-transformer: 0.5.1
       class-validator: 0.14.3
 
-  '@nestjs/mongoose@10.1.0(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@10.4.20)(mongoose@7.8.8(@aws-sdk/credential-providers@3.958.0))(rxjs@7.8.2)':
+  '@nestjs/mongoose@11.0.4(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@10.4.20)(mongoose@9.1.3(@aws-sdk/credential-providers@3.958.0)(socks@2.8.7))(rxjs@7.8.2)':
     dependencies:
       '@nestjs/common': 10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2)
       '@nestjs/core': 10.4.20(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/platform-express@10.4.20)(@nestjs/websockets@10.4.20)(encoding@0.1.13)(reflect-metadata@0.1.14)(rxjs@7.8.2)
-      mongoose: 7.8.8(@aws-sdk/credential-providers@3.958.0)
+      mongoose: 9.1.3(@aws-sdk/credential-providers@3.958.0)(socks@2.8.7)
       rxjs: 7.8.2
 
   '@nestjs/passport@10.0.3(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(passport@0.6.0)':
@@ -16385,7 +16497,7 @@ snapshots:
       class-transformer: 0.5.1
       class-validator: 0.14.3
 
-  '@nestjs/terminus@10.3.0(d5478e2fd9adae80de718f6f898f96b8)':
+  '@nestjs/terminus@10.3.0(9e8b2c6cdac09dca5c031af8709f555e)':
     dependencies:
       '@nestjs/common': 10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2)
       '@nestjs/core': 10.4.20(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/platform-express@10.4.20)(@nestjs/websockets@10.4.20)(encoding@0.1.13)(reflect-metadata@0.1.14)(rxjs@7.8.2)
@@ -16395,9 +16507,9 @@ snapshots:
       rxjs: 7.8.2
     optionalDependencies:
       '@nestjs/axios': 3.1.3(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(axios@1.13.2)(rxjs@7.8.2)
-      '@nestjs/mongoose': 10.1.0(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@10.4.20)(mongoose@7.8.8(@aws-sdk/credential-providers@3.958.0))(rxjs@7.8.2)
+      '@nestjs/mongoose': 11.0.4(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@10.4.20)(mongoose@9.1.3(@aws-sdk/credential-providers@3.958.0)(socks@2.8.7))(rxjs@7.8.2)
       '@nestjs/typeorm': 10.0.2(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@10.4.20)(reflect-metadata@0.1.14)(rxjs@7.8.2)(typeorm@0.3.28(babel-plugin-macros@3.1.0)(mongodb@5.9.2(@aws-sdk/credential-providers@3.958.0))(ts-node@10.9.1(@swc/core@1.5.29(@swc/helpers@0.5.18))(@types/node@18.19.130)(typescript@5.8.3)))
-      mongoose: 7.8.8(@aws-sdk/credential-providers@3.958.0)
+      mongoose: 9.1.3(@aws-sdk/credential-providers@3.958.0)(socks@2.8.7)
       typeorm: 0.3.28(babel-plugin-macros@3.1.0)(mongodb@5.9.2(@aws-sdk/credential-providers@3.958.0))(ts-node@10.9.1(@swc/core@1.5.29(@swc/helpers@0.5.18))(@types/node@18.19.130)(typescript@5.8.3))
 
   '@nestjs/testing@10.4.20(@nestjs/common@10.4.20(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.1.14)(rxjs@7.8.2))(@nestjs/core@10.4.20)(@nestjs/platform-express@10.4.20)':
@@ -16450,8 +16562,6 @@ snapshots:
       glob: 10.5.0
     transitivePeerDependencies:
       - webpack
-
-  '@noble/hashes@1.8.0': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -17343,10 +17453,6 @@ snapshots:
       - '@swc/core'
       - debug
 
-  '@paralleldrive/cuid2@2.3.1':
-    dependencies:
-      '@noble/hashes': 1.8.0
-
   '@parcel/watcher-android-arm64@2.5.1':
     optional: true
 
@@ -18172,6 +18278,10 @@ snapshots:
 
   '@types/bcryptjs@2.4.6': {}
 
+  '@types/bcryptjs@3.0.0':
+    dependencies:
+      bcryptjs: 3.0.3
+
   '@types/body-parser@1.19.6':
     dependencies:
       '@types/connect': 3.4.38
@@ -18571,10 +18681,15 @@ snapshots:
 
   '@types/webidl-conversions@7.0.3': {}
 
+  '@types/whatwg-url@13.0.0':
+    dependencies:
+      '@types/webidl-conversions': 7.0.3
+
   '@types/whatwg-url@8.2.2':
     dependencies:
       '@types/node': 18.19.130
       '@types/webidl-conversions': 7.0.3
+    optional: true
 
   '@types/ws@8.18.1':
     dependencies:
@@ -19001,6 +19116,24 @@ snapshots:
       require-from-string: 2.0.2
       uri-js: 4.4.1
 
+  angular-eslint@19.0.2(chokidar@4.0.3)(eslint@8.57.1)(typescript-eslint@8.50.1(eslint@8.57.1)(typescript@5.8.3))(typescript@5.8.3):
+    dependencies:
+      '@angular-devkit/core': 19.2.19(chokidar@4.0.3)
+      '@angular-devkit/schematics': 19.1.9(chokidar@4.0.3)
+      '@angular-eslint/builder': 19.0.2(chokidar@4.0.3)(eslint@8.57.1)(typescript@5.8.3)
+      '@angular-eslint/eslint-plugin': 19.0.2(@typescript-eslint/utils@8.50.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
+      '@angular-eslint/eslint-plugin-template': 19.0.2(@typescript-eslint/types@8.50.1)(@typescript-eslint/utils@8.50.1(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
+      '@angular-eslint/schematics': 19.0.2(@typescript-eslint/types@8.50.1)(@typescript-eslint/utils@8.50.1(eslint@8.57.1)(typescript@5.8.3))(chokidar@4.0.3)(eslint@8.57.1)(typescript@5.8.3)
+      '@angular-eslint/template-parser': 19.0.2(eslint@8.57.1)(typescript@5.8.3)
+      '@typescript-eslint/types': 8.50.1
+      '@typescript-eslint/utils': 8.50.1(eslint@8.57.1)(typescript@5.8.3)
+      eslint: 8.57.1
+      typescript: 5.8.3
+      typescript-eslint: 8.50.1(eslint@8.57.1)(typescript@5.8.3)
+    transitivePeerDependencies:
+      - chokidar
+      - supports-color
+
   ansi-align@3.0.1:
     dependencies:
       string-width: 4.2.3
@@ -19155,8 +19288,6 @@ snapshots:
 
   arrify@1.0.1: {}
 
-  asap@2.0.6: {}
-
   assertion-error@2.0.1: {}
 
   ast-types@0.13.4:
@@ -19167,7 +19298,7 @@ snapshots:
 
   async-function@1.0.0: {}
 
-  async-mutex@0.3.2:
+  async-mutex@0.5.0:
     dependencies:
       tslib: 2.8.1
 
@@ -19416,6 +19547,8 @@ snapshots:
 
   bcryptjs@2.4.3: {}
 
+  bcryptjs@3.0.3: {}
+
   beasties@0.3.2:
     dependencies:
       css-select: 5.2.2
@@ -19562,11 +19695,10 @@ snapshots:
     dependencies:
       node-int64: 0.4.0
 
-  bson@4.7.2:
-    dependencies:
-      buffer: 5.7.1
+  bson@5.5.1:
+    optional: true
 
-  bson@5.5.1: {}
+  bson@7.0.0: {}
 
   btoa@1.2.1: {}
 
@@ -19957,8 +20089,6 @@ snapshots:
 
   commondir@1.0.1: {}
 
-  component-emitter@1.3.1: {}
-
   compress-commons@6.0.2:
     dependencies:
       crc-32: 1.2.2
@@ -20026,8 +20156,6 @@ snapshots:
   cookie@0.7.1: {}
 
   cookie@0.7.2: {}
-
-  cookiejar@2.1.4: {}
 
   cookies@0.8.0:
     dependencies:
@@ -20567,11 +20695,6 @@ snapshots:
   devtools-protocol@0.0.1312386: {}
 
   devtools-protocol@0.0.1534754: {}
-
-  dezalgo@1.0.4:
-    dependencies:
-      asap: 2.0.6
-      wrappy: 1.0.2
 
   dfa@1.2.0: {}
 
@@ -21481,13 +21604,6 @@ snapshots:
       hasown: 2.0.2
       mime-types: 2.1.35
 
-  formidable@2.1.5:
-    dependencies:
-      '@paralleldrive/cuid2': 2.3.1
-      dezalgo: 1.0.4
-      once: 1.4.0
-      qs: 6.14.0
-
   forwarded@0.2.0: {}
 
   fraction.js@4.3.7: {}
@@ -21595,8 +21711,6 @@ snapshots:
       math-intrinsics: 1.1.0
 
   get-package-type@0.1.0: {}
-
-  get-port@5.1.1: {}
 
   get-proto@1.0.1:
     dependencies:
@@ -21999,6 +22113,8 @@ snapshots:
       minimatch: 9.0.5
 
   ignore@5.3.2: {}
+
+  ignore@6.0.2: {}
 
   ignore@7.0.5: {}
 
@@ -22865,7 +22981,7 @@ snapshots:
       jwa: 2.0.1
       safe-buffer: 5.2.1
 
-  kareem@2.5.1: {}
+  kareem@3.0.0: {}
 
   karma-source-map-support@1.4.0:
     dependencies:
@@ -23398,8 +23514,6 @@ snapshots:
 
   mathml-tag-names@2.1.3: {}
 
-  md5-file@5.0.0: {}
-
   mdn-data@2.0.28: {}
 
   mdn-data@2.0.30: {}
@@ -23423,8 +23537,7 @@ snapshots:
       tree-dump: 1.1.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  memory-pager@1.5.0:
-    optional: true
+  memory-pager@1.5.0: {}
 
   memory-streams@0.1.3:
     dependencies:
@@ -23473,8 +23586,6 @@ snapshots:
       mime-db: 1.54.0
 
   mime@1.6.0: {}
-
-  mime@2.6.0: {}
 
   mimic-fn@2.1.0: {}
 
@@ -23578,46 +23689,54 @@ snapshots:
     dependencies:
       '@types/whatwg-url': 8.2.2
       whatwg-url: 11.0.0
+    optional: true
 
-  mongodb-memory-server-core@8.16.1:
+  mongodb-connection-string-url@7.0.0:
     dependencies:
-      async-mutex: 0.3.2
+      '@types/whatwg-url': 13.0.0
+      whatwg-url: 14.2.0
+
+  mongodb-memory-server-core@11.0.1(@aws-sdk/credential-providers@3.958.0)(socks@2.8.7):
+    dependencies:
+      async-mutex: 0.5.0
       camelcase: 6.3.0
       debug: 4.4.3
       find-cache-dir: 3.3.2
       follow-redirects: 1.15.11(debug@4.4.3)
-      get-port: 5.1.1
-      https-proxy-agent: 5.0.1
-      md5-file: 5.0.0
-      mongodb: 4.17.2
+      https-proxy-agent: 7.0.6
+      mongodb: 7.0.0(@aws-sdk/credential-providers@3.958.0)(socks@2.8.7)
       new-find-package-json: 2.0.0
       semver: 7.7.3
-      tar-stream: 2.2.0
+      tar-stream: 3.1.7
       tslib: 2.8.1
-      uuid: 9.0.1
-      yauzl: 2.10.0
+      yauzl: 3.2.0
     transitivePeerDependencies:
-      - aws-crt
+      - '@aws-sdk/credential-providers'
+      - '@mongodb-js/zstd'
+      - bare-abort-controller
+      - gcp-metadata
+      - kerberos
+      - mongodb-client-encryption
+      - react-native-b4a
+      - snappy
+      - socks
       - supports-color
 
-  mongodb-memory-server@8.16.1:
+  mongodb-memory-server@11.0.1(@aws-sdk/credential-providers@3.958.0)(socks@2.8.7):
     dependencies:
-      mongodb-memory-server-core: 8.16.1
+      mongodb-memory-server-core: 11.0.1(@aws-sdk/credential-providers@3.958.0)(socks@2.8.7)
       tslib: 2.8.1
     transitivePeerDependencies:
-      - aws-crt
+      - '@aws-sdk/credential-providers'
+      - '@mongodb-js/zstd'
+      - bare-abort-controller
+      - gcp-metadata
+      - kerberos
+      - mongodb-client-encryption
+      - react-native-b4a
+      - snappy
+      - socks
       - supports-color
-
-  mongodb@4.17.2:
-    dependencies:
-      bson: 4.7.2
-      mongodb-connection-string-url: 2.6.0
-      socks: 2.8.7
-    optionalDependencies:
-      '@aws-sdk/credential-providers': 3.958.0
-      '@mongodb-js/saslprep': 1.4.4
-    transitivePeerDependencies:
-      - aws-crt
 
   mongodb@5.9.2(@aws-sdk/credential-providers@3.958.0):
     dependencies:
@@ -23627,31 +23746,37 @@ snapshots:
     optionalDependencies:
       '@aws-sdk/credential-providers': 3.958.0
       '@mongodb-js/saslprep': 1.4.4
+    optional: true
 
-  mongoose@7.8.8(@aws-sdk/credential-providers@3.958.0):
+  mongodb@7.0.0(@aws-sdk/credential-providers@3.958.0)(socks@2.8.7):
     dependencies:
-      bson: 5.5.1
-      kareem: 2.5.1
-      mongodb: 5.9.2(@aws-sdk/credential-providers@3.958.0)
+      '@mongodb-js/saslprep': 1.4.4
+      bson: 7.0.0
+      mongodb-connection-string-url: 7.0.0
+    optionalDependencies:
+      '@aws-sdk/credential-providers': 3.958.0
+      socks: 2.8.7
+
+  mongoose@9.1.3(@aws-sdk/credential-providers@3.958.0)(socks@2.8.7):
+    dependencies:
+      kareem: 3.0.0
+      mongodb: 7.0.0(@aws-sdk/credential-providers@3.958.0)(socks@2.8.7)
       mpath: 0.9.0
-      mquery: 5.0.0
+      mquery: 6.0.0
       ms: 2.1.3
-      sift: 16.0.1
+      sift: 17.1.3
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
+      - gcp-metadata
       - kerberos
       - mongodb-client-encryption
       - snappy
-      - supports-color
+      - socks
 
   mpath@0.9.0: {}
 
-  mquery@5.0.0:
-    dependencies:
-      debug: 4.4.3
-    transitivePeerDependencies:
-      - supports-color
+  mquery@6.0.0: {}
 
   mrmime@2.0.1: {}
 
@@ -25362,7 +25487,7 @@ snapshots:
       side-channel-map: 1.0.1
       side-channel-weakmap: 1.0.2
 
-  sift@16.0.1: {}
+  sift@17.1.3: {}
 
   siginfo@2.0.0: {}
 
@@ -25530,7 +25655,6 @@ snapshots:
   sparse-bitfield@3.0.3:
     dependencies:
       memory-pager: 1.5.0
-    optional: true
 
   spdx-correct@3.2.0:
     dependencies:
@@ -25828,31 +25952,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  superagent@8.1.2:
-    dependencies:
-      component-emitter: 1.3.1
-      cookiejar: 2.1.4
-      debug: 4.4.3
-      fast-safe-stringify: 2.1.1
-      form-data: 4.0.5
-      formidable: 2.1.5
-      methods: 1.1.2
-      mime: 2.6.0
-      qs: 6.14.0
-      semver: 7.7.3
-    transitivePeerDependencies:
-      - supports-color
-
   supercluster@8.0.1:
     dependencies:
       kdbush: 4.0.2
-
-  supertest@6.3.4:
-    dependencies:
-      methods: 1.1.2
-      superagent: 8.1.2
-    transitivePeerDependencies:
-      - supports-color
 
   supports-color@2.0.0: {}
 
@@ -27023,6 +27125,11 @@ snapshots:
     dependencies:
       buffer-crc32: 0.2.13
       fd-slicer: 1.1.0
+
+  yauzl@3.2.0:
+    dependencies:
+      buffer-crc32: 0.2.13
+      pend: 1.2.0
 
   ylru@1.4.0: {}
 

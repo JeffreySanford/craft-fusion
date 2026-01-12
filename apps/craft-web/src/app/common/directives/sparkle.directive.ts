@@ -5,7 +5,7 @@ import { Directive, ElementRef, OnInit, Renderer2, OnDestroy, Input } from '@ang
   standalone: false,                              
 })
 export class SparkleDirective implements OnInit, OnDestroy {
-  @Input('appSparkle') set appSparkle(value: any) {
+  @Input() set appSparkle(value: any) {
     if (value) {
       this.startSparkling();
     } else {
