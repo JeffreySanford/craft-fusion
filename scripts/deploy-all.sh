@@ -93,16 +93,27 @@ print_progress() {
         [ "$remaining_seconds" -lt 0 ] && remaining_seconds=0
 
         local percent_done=0
-        [ "$estimated_total_seconds" -gt 0 ] && percent_done=$((elapsed_seconds * 100 / estimated_total_seconds))
+        if [ "$estimated_total_seconds" -gt 0 ]; then
+            percent_done=$((elapsed_seconds * 100 / estimated_total_seconds))
+        fi
         [ "$percent_done" -gt 100 ] && percent_done=100
 
         local filled_width=$((percent_done * progress_bar_width / 100))
         local empty_width=$((progress_bar_width - filled_width))
-        printf "\r${BOLD}${WHITE}%-22s${NC} [" "$title:"
-        for i in $(seq 1 $filled_width); do printf "#"; done
-        for i in $(seq 1 $empty_width); do printf "."; done
-        printf "] ${GREEN}%3d%%${NC} (${CYAN}%ds remaining${NC})" "$percent_done" "$remaining_seconds"
-        [ "$percent_done" -ge 100 ] && break
+        
+        local bar=""
+        for ((i=0; i<filled_width; i++)); do bar+="█"; done
+        for ((i=0; i<empty_width; i++)); do bar+="░"; done
+
+        local rem_min=$((remaining_seconds / 60))
+        local rem_sec=$((remaining_seconds % 60))
+        local time_left_str=$(printf "%02d:%02d" "$rem_min" "$rem_sec")
+
+        printf "\r${BOLD}${MAGENTA}%-22s ${WHITE}[%s] ${GREEN}%3d%%${NC} ${YELLOW}(%s remaining)${NC}\033[K" "$title:" "$bar" "$percent_done" "$time_left_str"
+
+        if [ "$percent_done" -ge 100 ] || ([ "$remaining_seconds" -eq 0 ] && [ "$elapsed_seconds" -ge "$estimated_total_seconds" ]); then 
+            break 
+        fi
         sleep 5
     done
 }
@@ -119,23 +130,6 @@ WEB_SERVER_TEST="sudo nginx -t"
 WEB_ROOT="/var/www/jeffreysanford.us"
 
 # --- Main Script ---
-
-        local bar=""
-        for ((i=0; i<filled_width; i++)); do bar+="█"; done
-        for ((i=0; i<empty_width; i++)); do bar+="░"; done
-
-        local rem_min=$((remaining_seconds / 60))
-        local rem_sec=$((remaining_seconds % 60))
-        local time_left_str=$(printf "%02d:%02d" "$rem_min" "$rem_sec")
-
-        printf "\r${BOLD}${MAGENTA}%-25s ${WHITE}[%s] ${GREEN}%3d%%${NC} ${YELLOW}(%s remaining)${NC}\033[K" "$title:" "$bar" "$percent_done" "$time_left_str"
-
-        if [ "$remaining_seconds" -eq 0 ] && [ "$elapsed_seconds" -ge "$estimated_total_seconds" ]; then break; fi
-        command sleep 5 # Shorter update interval for better responsiveness
-    done
-}
-
-cleanup_progress_line() { [ -t 1 ] && printf "\r\033[K"; }
 
 # Parse arguments
 # Configuration flags
