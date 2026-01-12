@@ -74,7 +74,8 @@ if command -v pm2 &> /dev/null; then
 else
     echo -e "${YELLOW}⚠ PM2 not found, installing...${NC}"
     if command -v pnpm >/dev/null 2>&1; then
-    maybe_sudo pnpm install -g pm2
+    # Use pnpm to install pm2 locally to the user
+    pnpm add -g pm2 || maybe_sudo pnpm add -g pm2
 else
     maybe_sudo npm install -g pm2
 fi

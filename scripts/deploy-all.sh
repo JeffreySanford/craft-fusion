@@ -444,7 +444,13 @@ if [ "$needs_install" = true ]; then
   progress_pid=$!
 
   if [ "$PKG_MANAGER" = "pnpm" ]; then
-      COREPACK_HOME="${HOME}/.corepack" mkdir -p "$COREPACK_HOME"
+      export COREPACK_HOME="${HOME}/.corepack"
+      mkdir -p "$COREPACK_HOME"
+      # Clear pnpm cache/store partially if needed to recover state
+      if [ "$do_full_clean" = true ]; then
+          echo -e "${BLUE}Pruning pnpm store for full clean...${NC}"
+          pnpm store prune 2>/dev/null || true
+      fi
       pnpm install --no-frozen-lockfile --loglevel error
       install_status=$?
   elif [ "$PKG_MANAGER" = "yarn" ]; then

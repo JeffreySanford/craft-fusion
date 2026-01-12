@@ -182,15 +182,25 @@ if command -v pnpm >/dev/null 2>&1; then
   info "Configuring pnpm directories..."
   mkdir -p "$GLOBAL_BIN_DIR" "$PNPM_HOME"
   
+  # Ensure these are exported for the current script's environment
+  export PNPM_HOME="$PNPM_HOME"
+  export PATH="$GLOBAL_BIN_DIR:$PATH"
+
   pnpm config set global-bin-dir "$GLOBAL_BIN_DIR"
   pnpm config set store-dir "${PNPM_HOME}/store"
   
   # Run setup to wire up shell profiles
-  pnpm setup --quiet 2>/dev/null || true
-  
-  # Update current session PATH
-  export PATH="$GLOBAL_BIN_DIR:$PATH"
-  export PNPM_HOME="$PNPM_HOME"
+  pnpm setup 2>/dev/null || true
+
+  # Ensure PATH is updated in .bashrc for future sessions
+  if ! grep -q ".local/bin" "${HOME}/.bashrc"; then
+    echo 'export PATH="$PATH:$HOME/.local/bin"' >> "${HOME}/.bashrc"
+    info "Added ~/.local/bin to .bashrc"
+  fi
+  if ! grep -q "PNPM_HOME" "${HOME}/.bashrc"; then
+    echo "export PNPM_HOME=\"$PNPM_HOME\"" >> "${HOME}/.bashrc"
+    info "Added PNPM_HOME to .bashrc"
+  fi
 
   # Optional global CLIs when pnpm is present
   GLOBAL_PKGS=(nx @angular/cli @nestjs/cli pm2)
