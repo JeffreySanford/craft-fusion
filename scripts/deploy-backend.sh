@@ -104,9 +104,19 @@ echo -e "${GREEN}✓ Backend build directories cleaned${NC}"
 
 echo -e "${BLUE}4. Checking dependencies...${NC}"
 # Check if node_modules exists and has the key packages we need
-if [ "$do_full_clean" = false ] && [ -d "node_modules" ] && [ -f "node_modules/.bin/nx" ]; then
+# Also ensure .modules.yaml exists if using pnpm
+force_reinstall=false
+if [ ! -f "node_modules/.modules.yaml" ] && [ -d "node_modules" ]; then
+    echo -e "${YELLOW}node_modules found but missing pnpm metadata. Forcing reinstall...${NC}"
+    force_reinstall=true
+fi
+
+if [ "$do_full_clean" = false ] && [ -d "node_modules" ] && [ -f "node_modules/.bin/nx" ] && [ "$force_reinstall" = false ]; then
     echo -e "${GREEN}✓ Dependencies already installed${NC}"
 else
+    if [ "$force_reinstall" = true ]; then
+        sudo rm -rf node_modules
+    fi
     echo -e "${YELLOW}Installing dependencies with pnpm...${NC}"
     pnpm install --no-frozen-lockfile
     if [ $? -eq 0 ]; then

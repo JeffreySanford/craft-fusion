@@ -174,16 +174,20 @@ fi
 if command -v pnpm >/dev/null 2>&1; then
   ok "pnpm available: $(pnpm -v)"
   
-  # Ensure pnpm global bin is configured
-  if [[ -z "$(pnpm config get global-bin-dir)" || "$(pnpm config get global-bin-dir)" == "undefined" ]]; then
-    info "Configuring pnpm global bin directory..."
-    mkdir -p "${HOME}/.local/share/pnpm"
+  # Ensure pnpm is properly set up (handles global bin dir, PATH etc.)
+  if ! pnpm config get global-bin-dir >/dev/null 2>&1 || [[ "$(pnpm config get global-bin-dir)" == "undefined" ]]; then
+    info "Running pnpm setup to configure global environment..."
+    mkdir -p "${HOME}/.local/bin"
+    export PNPM_HOME="${HOME}/.local/share/pnpm"
+    mkdir -p "$PNPM_HOME"
     pnpm config set global-bin-dir "${HOME}/.local/bin" 2>/dev/null || true
-    # Also add to PATH if not present
-    if [[ ":$PATH:" != *":${HOME}/.local/bin:"* ]]; then
-       export PATH="$PATH:${HOME}/.local/bin"
-       echo 'export PATH="$PATH:$HOME/.local/bin"' >> "${HOME}/.bashrc"
-    fi
+    pnpm setup 2>/dev/null || true
+    export PATH="$PATH:${HOME}/.local/bin"
+  fi
+  
+  # For the current session, ensure PATH is updated even if pnpm setup failed
+  if [[ ":$PATH:" != *":${HOME}/.local/bin:"* ]]; then
+      export PATH="$PATH:${HOME}/.local/bin"
   fi
 
   # Optional global CLIs when pnpm is present

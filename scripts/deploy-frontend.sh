@@ -138,8 +138,17 @@ if [ "$skip_build" = false ]; then
         fi
 
         # Ensure dependencies are installed
-        if [ ! -d "node_modules" ] || [ "$do_full_clean" = true ]; then
+        forced_pnpm_install=false
+        if [ ! -f "node_modules/.modules.yaml" ] && [ -d "node_modules" ]; then
+            forced_pnpm_install=true
+        fi
+
+        if [ ! -d "node_modules" ] || [ "$do_full_clean" = true ] || [ "$forced_pnpm_install" = true ]; then
             echo -e "${BLUE}Installing dependencies...${NC}"
+            if [ "$forced_pnpm_install" = true ]; then
+                echo -e "${YELLOW}node_modules missing pnpm metadata. Cleaning for fresh pnpm install...${NC}"
+                sudo rm -rf node_modules
+            fi
             if command -v pnpm &> /dev/null; then
                 pnpm install --no-frozen-lockfile
             else

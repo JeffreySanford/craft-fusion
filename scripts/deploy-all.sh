@@ -246,6 +246,8 @@ nx_post_install_final_status=-1 # -1: not run/pending, 0: success/skipped, 1: fa
 CLEAN_STATUS=-1               # -1: pending, 0: success, 1: failure
 backend_status=-1
 frontend_status=-1
+unit_test_status=-1
+e2e_test_status=-1
 ssl_setup_attempted=false
 ssl_setup_succeeded=false     # True if attempted and script doesn't exit due to set -e
 
@@ -424,6 +426,11 @@ echo -e "${BLUE}Using package manager: $PKG_MANAGER${NC}"
 # Determine if we need to install dependencies
 needs_install=false
 if [ ! -d "node_modules" ] || [ "$do_full_clean" = true ]; then
+    needs_install=true
+elif [ "$PKG_MANAGER" = "pnpm" ] && [ ! -f "node_modules/.modules.yaml" ]; then
+    echo -e "${YELLOW}node_modules found but missing pnpm metadata (.modules.yaml).${NC}"
+    echo -e "${YELLOW}Cleaning existing node_modules to ensure a clean pnpm installation...${NC}"
+    sudo rm -rf node_modules
     needs_install=true
 fi
 
@@ -740,7 +747,53 @@ else
         echo -e "${YELLOW}Skipping SSL/WSS setup${NC}"
 fi
 
-step_header "Phase D: Final System Tests"
+step_header "Phase D: Quality Assurance (Unit & E2E Tests)"
+echo -e "${CYAN}Running unit tests...${NC}"
+TEST_ESTIMATE_SECONDS=180
+phase_start_time=$(date +%s)
+print_progress "Unit Tests" "$TEST_ESTIMATE_SECONDS" "$phase_start_time" &
+progress_pid_tests=$!
+
+if [ "$PKG_MANAGER" = "pnpm" ]; then
+    pnpm exec nx run-many -t test --parallel=2 --maxParallel=2
+else
+    npx nx run-many -t test --parallel=2 --maxParallel=2
+fi
+unit_test_status=$?
+kill "$progress_pid_tests" &>/dev/null || true
+wait "$progress_pid_tests" &>/dev/null || true
+cleanup_progress_line
+
+if [ $unit_test_status -eq 0 ]; then
+    echo -e "${GREEN}✓ All unit tests passed${NC}"
+else
+    echo -e "${RED}✗ Some unit tests failed. Check logs for details.${NC}"
+fi
+
+echo -e "${CYAN}Running E2E tests...${NC}"
+E2E_ESTIMATE_SECONDS=300
+phase_start_time=$(date +%s)
+print_progress "E2E Tests" "$E2E_ESTIMATE_SECONDS" "$phase_start_time" &
+progress_pid_e2e=$!
+
+if [ "$PKG_MANAGER" = "pnpm" ]; then
+    pnpm exec nx run-many -t e2e --parallel=1
+else
+    npx nx run-many -t e2e --parallel=1
+fi
+e2e_test_status=$?
+
+kill "$progress_pid_e2e" &>/dev/null || true
+wait "$progress_pid_e2e" &>/dev/null || true
+cleanup_progress_line
+
+if [ $e2e_test_status -eq 0 ]; then
+    echo -e "${GREEN}✓ All E2E tests passed${NC}"
+else
+    echo -e "${RED}✗ E2E tests failed or timed out.${NC}"
+fi
+
+step_header "Phase E: Endpoint Verification"
 # Test all endpoints
 SYSTEM_TEST_ESTIMATE_SECONDS=30
 phase_start_time=$(date +%s)
@@ -791,7 +844,7 @@ wait "$progress_pid" &>/dev/null || true
 cleanup_progress_line
 echo -e "${GREEN}✓ System tests completed.${NC}"
 
-step_header "Phase E: System Status & Deployment Summary"
+step_header "Phase F: System Status & Deployment Summary"
 
 # PM2 status
 echo -e "${CYAN}PM2 Services:${NC}"
@@ -1128,6 +1181,19 @@ if [ "${frontend_status:-1}" -eq 0 ] && [ "${backend_status:-1}" -eq 0 ]; then
     echo -e "  ${GREEN}✓ Frontend files copied to /var/www/jeffreysanford.us${NC}"
     echo -e "  ${GREEN}✓ Nginx configuration tested and reloaded${NC}"
     echo -e "  ${GREEN}✓ File permissions set correctly${NC}"
+    
+    # Add Test Results to Summary
+    if [ "$unit_test_status" -eq 0 ]; then
+        echo -e "  ${GREEN}✓ Unit Tests: Passed${NC}"
+    elif [ "$unit_test_status" -ne -1 ]; then
+        echo -e "  ${RED}✗ Unit Tests: Failed${NC}"
+    fi
+
+    if [ "$e2e_test_status" -eq 0 ]; then
+        echo -e "  ${GREEN}✓ E2E Tests: Passed${NC}"
+    elif [ "$e2e_test_status" -ne -1 ]; then
+        echo -e "  ${RED}✗ E2E Tests: Failed${NC}"
+    fi
     
     echo
     echo -e "${BOLD}${CYAN}🔗 Live Production URLs:${NC}"
