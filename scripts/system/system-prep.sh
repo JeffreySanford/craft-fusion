@@ -175,26 +175,31 @@ if command -v pnpm >/dev/null 2>&1; then
   ok "pnpm available: $(pnpm -v)"
   
   # Ensure pnpm is properly set up (handles global bin dir, PATH etc.)
-  if ! pnpm config get global-bin-dir >/dev/null 2>&1 || [[ "$(pnpm config get global-bin-dir)" == "undefined" ]]; then
-    info "Running pnpm setup to configure global environment..."
-    mkdir -p "${HOME}/.local/bin"
-    export PNPM_HOME="${HOME}/.local/share/pnpm"
-    mkdir -p "$PNPM_HOME"
-    pnpm config set global-bin-dir "${HOME}/.local/bin" 2>/dev/null || true
-    pnpm setup 2>/dev/null || true
-    export PATH="$PATH:${HOME}/.local/bin"
-  fi
+  # We specify a standard location for Fedora/Linux
+  GLOBAL_BIN_DIR="${HOME}/.local/bin"
+  PNPM_HOME="${HOME}/.local/share/pnpm"
   
-  # For the current session, ensure PATH is updated even if pnpm setup failed
-  if [[ ":$PATH:" != *":${HOME}/.local/bin:"* ]]; then
-      export PATH="$PATH:${HOME}/.local/bin"
-  fi
+  info "Configuring pnpm directories..."
+  mkdir -p "$GLOBAL_BIN_DIR" "$PNPM_HOME"
+  
+  pnpm config set global-bin-dir "$GLOBAL_BIN_DIR"
+  pnpm config set store-dir "${PNPM_HOME}/store"
+  
+  # Run setup to wire up shell profiles
+  pnpm setup --quiet 2>/dev/null || true
+  
+  # Update current session PATH
+  export PATH="$GLOBAL_BIN_DIR:$PATH"
+  export PNPM_HOME="$PNPM_HOME"
 
   # Optional global CLIs when pnpm is present
   GLOBAL_PKGS=(nx @angular/cli @nestjs/cli pm2)
   info "Ensuring global CLIs are present: ${GLOBAL_PKGS[*]} ..."
-  # We use pnpm to install these as they are more efficient
-  $SUDO pnpm add -g "${GLOBAL_PKGS[@]}" || warn "Global CLI install via pnpm failed (optional)."
+  # We DO NOT use sudo here so it installs to the user's GLOBAL_BIN_DIR we just set
+  pnpm add -g "${GLOBAL_PKGS[@]}" || {
+      warn "Local pnpm add -g failed, trying with explicit bin dir..."
+      pnpm add -g "${GLOBAL_PKGS[@]}" --global-bin-dir "$GLOBAL_BIN_DIR"
+  }
   ok "CLIs verified (nx, ng, nest, pm2)"
 else
   warn "pnpm not available; falling back to npm workflow."
@@ -208,9 +213,7 @@ if command -v pnpm >/dev/null 2>&1; then
   info "Checking global pnpm packages..."
   # We already handled installation above, now just a verification/update
   info "Updating global pnpm packages..."
-  if [[ -n "$SUDO" ]]; then
-    $SUDO pnpm update -g || warn "Global pnpm update failed (optional)"
-  fi
+  pnpm update -g || warn "Global pnpm update failed (optional)"
   ok "Global pnpm packages checked and updated"
 elif command -v npm >/dev/null 2>&1; then
   info "Checking global npm packages..."
