@@ -119,8 +119,14 @@ else
     fi
 fi
 
+# Nx helper command
+NX_CMD="npx nx"
+if command -v pnpm >/dev/null 2>&1 && [ -f "pnpm-lock.yaml" ]; then
+    NX_CMD="pnpm exec nx"
+fi
+
 echo -e "${BLUE}5. Building NestJS application (production)...${NC}"
-npx nx run craft-nest:build --configuration=production
+$NX_CMD run craft-nest:build --configuration=production
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ NestJS build successful${NC}"
 else
@@ -130,7 +136,7 @@ fi
 
 echo -e "${BLUE}6. Building Go application (production)...${NC}"
 # Use production configuration which sets GOOS=linux GOARCH=amd64
-npx nx run craft-go:build --configuration=production
+$NX_CMD run craft-go:build --configuration=production
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✓ Go build successful${NC}"
 else
@@ -151,7 +157,7 @@ fi
 # Check Go build
 if [ ! -f "dist/apps/craft-go/main" ]; then
     echo -e "${YELLOW}Go build output not found after build, forcing rebuild...${NC}"
-    npx nx run craft-go:build --configuration=production --skip-nx-cache
+    $NX_CMD run craft-go:build --configuration=production --skip-nx-cache
     if [ ! -f "dist/apps/craft-go/main" ]; then
         echo -e "${RED}✗ Go build output still not found after rebuild${NC}"
         exit 1

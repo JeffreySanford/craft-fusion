@@ -160,6 +160,12 @@ if [ "$skip_build" = false ]; then
         fi
     fi
 
+    # Nx helper command
+    NX_CMD="npx nx"
+    if command -v pnpm >/dev/null 2>&1 && [ -f "pnpm-lock.yaml" ]; then
+        NX_CMD="pnpm exec nx"
+    fi
+
     echo -e "${BLUE}4. Building Angular application...${NC}"
     
     if [ "$server_build" = true ]; then
@@ -172,7 +178,7 @@ if [ "$skip_build" = false ]; then
         progress_pid=$!
 
         # Use verbose build with proper error handling
-        npm run build:prod -- --verbose --skip-nx-cache
+        $NX_CMD run craft-web:build --configuration=production --verbose --skip-nx-cache
         angular_build_status=$?
     else
         # Local build
@@ -182,7 +188,7 @@ if [ "$skip_build" = false ]; then
         progress_pid=$!
 
         cd "$PROJECT_ROOT"
-        npx nx run craft-web:build --configuration=production
+        $NX_CMD run craft-web:build --configuration=production
         angular_build_status=$?
     fi
 

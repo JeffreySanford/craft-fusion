@@ -403,41 +403,74 @@ handle_nx_post_install() {
   done
 }
 
-# Only install dependencies if node_modules is missing or package-lock.json changed
-if [ "$do_full_clean" = true ]; then
-  echo -e "${CYAN}Installing dependencies (npm install --no-progress)...${NC}"
-  echo -e "${BLUE}NPM install in progress...${NC}"
-  echo -e "${BLUE}The progress bar is an overall estimate for this NPM installation phase.${NC}"
-  echo -e "${BLUE}Please be patient while NPM completes all its tasks.${NC}"
-  NPM_INSTALL_ESTIMATE_SECONDS=240 # 4 minutes (adjusted based on typical performance)
+# --- Dependency Management ---
+# Detect package manager
+PKG_MANAGER="npm"
+if [ -f "pnpm-lock.yaml" ]; then
+    PKG_MANAGER="pnpm"
+elif [ -f "yarn.lock" ]; then
+    PKG_MANAGER="yarn"
+fi
+
+# Determine if we need to install dependencies
+needs_install=false
+if [ ! -d "node_modules" ] || [ "$do_full_clean" = true ]; then
+    needs_install=true
+fi
+
+if [ "$needs_install" = true ]; then
+  echo -e "${CYAN}Installing dependencies ($PKG_MANAGER install)...${NC}"
+  echo -e "${BLUE}$PKG_MANAGER install in progress...${NC}"
+  
+  INSTALL_ESTIMATE_SECONDS=240
   phase_start_time=$(date +%s)
-  print_progress "NPM Install (npm install)" "$NPM_INSTALL_ESTIMATE_SECONDS" "$phase_start_time" &
+  print_progress "$PKG_MANAGER Install" "$INSTALL_ESTIMATE_SECONDS" "$phase_start_time" &
   progress_pid=$!
 
-  npm install --no-progress --loglevel error --omit=optional --no-audit --prefer-offline
-  npm_install_status=$?
+  if [ "$PKG_MANAGER" = "pnpm" ]; then
+      COREPACK_HOME="${HOME}/.corepack" mkdir -p "$COREPACK_HOME"
+      pnpm install --no-frozen-lockfile --loglevel error
+      install_status=$?
+  elif [ "$PKG_MANAGER" = "yarn" ]; then
+      yarn install --silent
+      install_status=$?
+  else
+      npm install --no-progress --loglevel error --omit=optional --no-audit --prefer-offline
+      install_status=$?
+  fi
 
   kill "$progress_pid" &>/dev/null || true
   wait "$progress_pid" &>/dev/null || true
   cleanup_progress_line
 
-  if [ $npm_install_status -eq 0 ]; then
-    echo -e "${GREEN}✓ Dependencies installed successfully via npm install${NC}"
-    [ -d node_modules/nx ] && { handle_nx_post_install; nx_post_install_final_status=$?; } || nx_post_install_final_status=0
+  if [ $install_status -eq 0 ]; then
+    echo -e "${GREEN}✓ Dependencies installed successfully via $PKG_MANAGER${NC}"
+    if [ -d node_modules/nx ]; then
+        handle_nx_post_install
+        nx_post_install_final_status=$?
+    else
+        nx_post_install_final_status=0
+    fi
   else
-    echo -e "${RED}✗ Dependencies installation failed (exit code $npm_install_status)${NC}"
+    echo -e "${RED}✗ Dependencies installation failed (exit code $install_status)${NC}"
     exit 1
   fi
 else
-  echo -e "${GREEN}✓ node_modules up-to-date, skipping npm install${NC}"
-  npm_install_status=0 # Mark as success for summary if skipped
-  [ -d node_modules/nx ] && { handle_nx_post_install; nx_post_install_final_status=$?; } || nx_post_install_final_status=0
+  echo -e "${GREEN}✓ node_modules exists, skipping re-install${NC}"
+  # Check if Nx is reachable even if we skip install
+  if [ -d node_modules/nx ]; then
+      echo -e "${BLUE}Running Nx post-install to ensures consistent state...${NC}"
+      handle_nx_post_install
+      nx_post_install_final_status=$?
+  else
+      nx_post_install_final_status=0
+  fi
 fi
 
-# --- Nx Pre-check (after npm install) ---
-if [ ! -d node_modules/@nrwl ] && [ ! -d node_modules/nx ]; then
-  echo -e "${RED}✗ Nx modules not found in node_modules. Nx-based scripts will fail.${NC}"
-  echo -e "${YELLOW}Please run: ${BOLD}npm install${NC}${YELLOW} in your workspace root before deploying.${NC}"
+# --- Nx Pre-check ---
+if [ ! -d node_modules/nx ]; then
+  echo -e "${RED}✗ Nx modules not found. Nx-based scripts will fail.${NC}"
+  echo -e "${YELLOW}Please run: ${BOLD}$PKG_MANAGER install${NC}${YELLOW} in your workspace root.${NC}"
   exit 1
 fi
 
@@ -448,29 +481,37 @@ step_header "Phase B: Backend & Frontend Deployment (Sequential)"
 
 # --- Ensure all PM2 processes are stopped for all relevant users ---
 echo -e "${CYAN}Stopping all PM2 processes for current user...${NC}"
+# Sync PM2 in-memory version with installed version if needed
+pm2 update 2>/dev/null || true
 pm2 stop all || true
 pm2 delete all || true
 pm2 kill || true
 
+# Only attempt PM2 cleanup for craft-fusion user if they have a valid home and PM2 is accessible
 if id "craft-fusion" &>/dev/null; then
-    echo -e "${CYAN}Stopping all PM2 processes for craft-fusion user...${NC}"
-    sudo -u craft-fusion pm2 stop all || true
-    sudo -u craft-fusion pm2 delete all || true
-    sudo -u craft-fusion pm2 kill || true
-    # Show PM2 accessibility for craft-fusion; fallback to current user
-    sudo -n -u craft-fusion pm2 list 2>/dev/null || pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
-else
-    pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
+    CF_HOME=$(getent passwd craft-fusion | cut -d: -f6)
+    if [ -d "$CF_HOME" ] && [ -w "$CF_HOME" ]; then
+        echo -e "${CYAN}Stopping all PM2 processes for craft-fusion user...${NC}"
+        sudo -u craft-fusion pm2 stop all 2>/dev/null || true
+        sudo -u craft-fusion pm2 delete all 2>/dev/null || true
+        sudo -u craft-fusion pm2 kill 2>/dev/null || true
+    fi
 fi
+pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
 
 # --- Wait for Go binary to be released before copying ---
 GO_BINARY_PATH="/var/www/craft-fusion/dist/apps/craft-go/main"
 if [ -f "$GO_BINARY_PATH" ]; then
   echo -e "${CYAN}Waiting for Go binary to be released...${NC}"
-  while sudo lsof | grep -q "$GO_BINARY_PATH"; do
-    echo -e "${YELLOW}Go binary still in use, waiting...${NC}"
-    sleep 1
-  done
+  # Check if lsof exists before using it
+  if command -v lsof >/dev/null 2>&1; then
+    while sudo lsof | grep -q "$GO_BINARY_PATH"; do
+      echo -e "${YELLOW}Go binary still in use, waiting...${NC}"
+      sleep 1
+    done
+  else
+    echo -e "${YELLOW}⚠ lsof not found. Skipping Go binary lock check.${NC}"
+  fi
   echo -e "${GREEN}Go binary is free to update.${NC}"
 fi
 
