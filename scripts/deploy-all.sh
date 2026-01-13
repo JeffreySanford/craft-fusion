@@ -236,7 +236,7 @@ if [ "$POWER_MODE" = true ]; then
   echo -e "${YELLOW}NODE_OPTIONS set to: $NODE_OPTIONS${NC}"
 else
   export POWER_NICE=""
-  export NODE_OPTIONS="--max-old-space-size=512"
+  export NODE_OPTIONS="--max-old-space-size=1024"
   export NX_CACHE_DIRECTORY="/tmp/nx-cache"
 fi
 
