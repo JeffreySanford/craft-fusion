@@ -62,9 +62,17 @@ maybe_sudo() {
 echo -e "${BLUE}1. Stopping existing services...${NC}"
 # Stop PM2 processes if they exist
 if command -v pm2 &> /dev/null; then
-    maybe_sudo pm2 stop ecosystem.config.js || true
-    maybe_sudo pm2 delete all || true
-    echo -e "${GREEN}✓ PM2 processes stopped${NC}"
+    # Try stopping for user jeffrey first as they often own the production processes
+    if id "jeffrey" &>/dev/null; then
+        sudo -u jeffrey pm2 stop all 2>/dev/null || true
+        sudo -u jeffrey pm2 delete all 2>/dev/null || true
+        echo -e "${GREEN}✓ PM2 processes stopped for jeffrey${NC}"
+    else
+        maybe_sudo pm2 stop ecosystem.config.js || true
+        maybe_sudo pm2 delete all || true
+        echo -e "${GREEN}✓ PM2 processes stopped${NC}"
+    fi
+
     # Kill any lingering Go process (if still running)
     if maybe_sudo pgrep -f "dist/apps/craft-go/main" > /dev/null; then
         echo -e "${YELLOW}Killing lingering Go process...${NC}"
@@ -74,11 +82,11 @@ if command -v pm2 &> /dev/null; then
 else
     echo -e "${YELLOW}⚠ PM2 not found, installing...${NC}"
     if command -v pnpm >/dev/null 2>&1; then
-    # Use pnpm to install pm2 locally to the user
-    pnpm add -g pm2 || maybe_sudo pnpm add -g pm2
-else
-    maybe_sudo npm install -g pm2
-fi
+        # Use pnpm to install pm2 locally to the user
+        pnpm add -g pm2 || maybe_sudo pnpm add -g pm2
+    else
+        maybe_sudo npm install -g pm2
+    fi
 fi
 
 echo -e "${BLUE}2. Creating application directory...${NC}"
@@ -246,8 +254,8 @@ cd "$APP_DIR"
 # Start applications
 pm2 start ecosystem.config.js
 pm2 save
-if id "craft-fusion" &>/dev/null; then
-    sudo pm2 startup systemd -u craft-fusion --hp /home/craft-fusion
+if id "jeffrey" &>/dev/null; then
+    sudo pm2 startup systemd -u jeffrey --hp /home/jeffrey
 else
     sudo pm2 startup systemd -u "$(whoami)" --hp "$HOME"
 fi
@@ -258,8 +266,8 @@ echo -e "${BLUE}11. Verifying services...${NC}"
 sleep 5  # Give services time to start
 
 # Check PM2 status
-if id "craft-fusion" &>/dev/null; then
-    PM2_STATUS=$(sudo -n -u craft-fusion pm2 list 2>/dev/null || pm2 list)
+if id "jeffrey" &>/dev/null; then
+    PM2_STATUS=$(sudo -n -u jeffrey pm2 list 2>/dev/null || pm2 list)
 else
     PM2_STATUS=$(pm2 list)
 fi
@@ -291,8 +299,8 @@ fi
 echo -e "${GREEN}=== Backend Deployment Complete ===${NC}"
 echo
 # Show PM2 process list after deployment
-if id "craft-fusion" &>/dev/null; then
-    sudo -n -u craft-fusion pm2 list || pm2 list
+if id "jeffrey" &>/dev/null; then
+    sudo -n -u jeffrey pm2 list || pm2 list
 else
     pm2 list
 fi
@@ -306,6 +314,6 @@ echo -e "${BLUE}Useful commands:${NC}"
 echo -e "  Check PM2 status: ${YELLOW}pm2 list${NC}"
 echo -e "  View NestJS logs: ${YELLOW}maybe_sudo tail -f $LOG_DIR/craft-nest/out.log${NC}"
 echo -e "  View Go logs:     ${YELLOW}maybe_sudo tail -f $LOG_DIR/craft-go/out.log${NC}"
-echo -e "  Restart services: ${YELLOW}maybe_sudo -u craft-fusion pm2 restart all${NC}"
-echo -e "  Stop services:    ${YELLOW}maybe_sudo -u craft-fusion pm2 stop all${NC}"
+echo -e "  Restart services: ${YELLOW}maybe_sudo -u jeffrey pm2 restart all${NC}"
+echo -e "  Stop services:    ${YELLOW}maybe_sudo -u jeffrey pm2 stop all${NC}"
 

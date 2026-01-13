@@ -545,14 +545,14 @@ pm2 stop all || true
 pm2 delete all || true
 pm2 kill || true
 
-# Only attempt PM2 cleanup for craft-fusion user if they have a valid home and PM2 is accessible
-if id "craft-fusion" &>/dev/null; then
-    CF_HOME=$(getent passwd craft-fusion | cut -d: -f6)
-    if [ -d "$CF_HOME" ] && [ -w "$CF_HOME" ]; then
-        echo -e "${CYAN}Stopping all PM2 processes for craft-fusion user...${NC}"
-        sudo -u craft-fusion pm2 stop all 2>/dev/null || true
-        sudo -u craft-fusion pm2 delete all 2>/dev/null || true
-        sudo -u craft-fusion pm2 kill 2>/dev/null || true
+# Only attempt PM2 cleanup for jeffrey user if they have a valid home and PM2 is accessible
+if id "jeffrey" &>/dev/null; then
+    JEFF_HOME=$(getent passwd jeffrey | cut -d: -f6)
+    if [ -d "$JEFF_HOME" ] && [ -w "$JEFF_HOME" ]; then
+        echo -e "${CYAN}Stopping all PM2 processes for jeffrey user...${NC}"
+        sudo -u jeffrey pm2 stop all 2>/dev/null || true
+        sudo -u jeffrey pm2 delete all 2>/dev/null || true
+        sudo -u jeffrey pm2 kill 2>/dev/null || true
     fi
 fi
 pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
@@ -887,8 +887,8 @@ step_header "Phase F: System Status & Deployment Summary"
 
 # PM2 status
 echo -e "${CYAN}PM2 Services:${NC}"
-if id "craft-fusion" &>/dev/null; then
-    sudo -n -u craft-fusion pm2 list 2>/dev/null || pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
+if id "jeffrey" &>/dev/null; then
+    sudo -n -u jeffrey pm2 list 2>/dev/null || pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
 else
     pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
 fi
@@ -1040,8 +1040,8 @@ echo -e "  🚀 Go API: ${GREEN}/api-go/*${NC}"
 
 echo -e "${BLUE}Management Commands:${NC}"
 echo -e "  View all logs: ${YELLOW}sudo tail -f /var/log/$WEB_SERVER_TYPE/access.log /var/log/craft-fusion/*/out.log${NC}"
-echo -e "  PM2 dashboard: ${YELLOW}sudo -u craft-fusion pm2 monit${NC}"
-echo -e "  Restart all: ${YELLOW}sudo -u craft-fusion pm2 restart all && $WEB_SERVER_RELOAD${NC}"
+echo -e "  PM2 dashboard: ${YELLOW}sudo -u jeffrey pm2 monit${NC}"
+echo -e "  Restart all: ${YELLOW}sudo -u jeffrey pm2 restart all && $WEB_SERVER_RELOAD${NC}"
 
 # After your system tests and before the summary, add the OSCAL Compliance Report phase:
 step_header "Phase F: OSCAL Compliance Report"
