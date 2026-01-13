@@ -165,6 +165,7 @@ POWER_MODE=false
 do_full_clean=false
 yes_ssl=false
 skip_ssl=false
+skip_tests=false
 
 # Usage function
 show_usage() {
@@ -178,6 +179,7 @@ show_usage() {
     echo -e "  ${YELLOW}--power${NC}          Enable power mode (use 90% RAM, disable Nx daemon)"
     echo -e "  ${YELLOW}--yes-ssl${NC}        Automatically set up SSL/HTTPS (skip prompt)"
     echo -e "  ${YELLOW}--skip-ssl${NC}       Skip SSL setup (use HTTP only)"
+    echo -e "  ${YELLOW}--skip-tests${NC}     Skip unit and E2E tests"
     echo -e "  ${YELLOW}--help${NC}           Show this help message"
     echo
     echo -e "${BOLD}NOTE:${NC}"
@@ -211,6 +213,7 @@ for arg in "$@"; do
         --power) POWER_MODE=true ;;
         --yes-ssl) yes_ssl=true ;;
         --skip-ssl) skip_ssl=true ;;
+        --skip-tests) skip_tests=true ;;
         --help|-h) show_usage; exit 0 ;;
         *) echo -e "${RED}Unknown option: $arg${NC}"; show_usage; exit 1 ;;
     esac
@@ -775,49 +778,58 @@ else
 fi
 
 step_header "Phase D: Quality Assurance (Unit & E2E Tests)"
-echo -e "${CYAN}Running unit tests...${NC}"
-TEST_ESTIMATE_SECONDS=180
-phase_start_time=$(date +%s)
-print_progress "Unit Tests" "$TEST_ESTIMATE_SECONDS" "$phase_start_time" &
-progress_pid_tests=$!
-
-if [ "$PKG_MANAGER" = "pnpm" ]; then
-    pnpm exec nx run-many -t test --parallel=2 --maxParallel=2
+if [ "$skip_tests" = true ]; then
+    echo -e "${YELLOW}Skipping Phase D: Tests requested to be skipped.${NC}"
+    unit_test_status=-1
+    e2e_test_status=-1
 else
-    npx nx run-many -t test --parallel=2 --maxParallel=2
-fi
-unit_test_status=$?
-[ -n "${progress_pid_tests:-}" ] && kill "$progress_pid_tests" &>/dev/null || true
-[ -n "${progress_pid_tests:-}" ] && wait "$progress_pid_tests" &>/dev/null || true
-cleanup_progress_line
+    echo -e "${CYAN}Running unit tests...${NC}"
+    TEST_ESTIMATE_SECONDS=180
+    phase_start_time=$(date +%s)
+    print_progress "Unit Tests" "$TEST_ESTIMATE_SECONDS" "$phase_start_time" &
+    progress_pid_tests=$!
 
-if [ $unit_test_status -eq 0 ]; then
-    echo -e "${GREEN}✓ All unit tests passed${NC}"
-else
-    echo -e "${RED}✗ Some unit tests failed. Check logs for details.${NC}"
-fi
+    # Ensure we don't exit script on test failure so we can show summary
+    unit_test_status=0
+    if [ "$PKG_MANAGER" = "pnpm" ]; then
+        pnpm exec nx run-many -t test --parallel=2 --maxParallel=2 || unit_test_status=$?
+    else
+        npx nx run-many -t test --parallel=2 --maxParallel=2 || unit_test_status=$?
+    fi
 
-echo -e "${CYAN}Running E2E tests...${NC}"
-E2E_ESTIMATE_SECONDS=300
-phase_start_time=$(date +%s)
-print_progress "E2E Tests" "$E2E_ESTIMATE_SECONDS" "$phase_start_time" &
-progress_pid_e2e=$!
+    [ -n "${progress_pid_tests:-}" ] && kill "$progress_pid_tests" &>/dev/null || true
+    [ -n "${progress_pid_tests:-}" ] && wait "$progress_pid_tests" &>/dev/null || true
+    cleanup_progress_line
 
-if [ "$PKG_MANAGER" = "pnpm" ]; then
-    pnpm exec nx run-many -t e2e --parallel=1
-else
-    npx nx run-many -t e2e --parallel=1
-fi
-e2e_test_status=$?
+    if [ $unit_test_status -eq 0 ]; then
+        echo -e "${GREEN}✓ All unit tests passed${NC}"
+    else
+        echo -e "${RED}✗ Some unit tests failed. Check logs for details.${NC}"
+    fi
 
-[ -n "${progress_pid_e2e:-}" ] && kill "$progress_pid_e2e" &>/dev/null || true
-[ -n "${progress_pid_e2e:-}" ] && wait "$progress_pid_e2e" &>/dev/null || true
-cleanup_progress_line
+    echo -e "${CYAN}Running E2E tests...${NC}"
+    E2E_ESTIMATE_SECONDS=300
+    phase_start_time=$(date +%s)
+    print_progress "E2E Tests" "$E2E_ESTIMATE_SECONDS" "$phase_start_time" &
+    progress_pid_e2e=$!
 
-if [ $e2e_test_status -eq 0 ]; then
-    echo -e "${GREEN}✓ All E2E tests passed${NC}"
-else
-    echo -e "${RED}✗ E2E tests failed or timed out.${NC}"
+    # Ensure we don't exit script on test failure so we can show summary
+    e2e_test_status=0
+    if [ "$PKG_MANAGER" = "pnpm" ]; then
+        pnpm exec nx run-many -t e2e --parallel=1 || e2e_test_status=$?
+    else
+        npx nx run-many -t e2e --parallel=1 || e2e_test_status=$?
+    fi
+
+    [ -n "${progress_pid_e2e:-}" ] && kill "$progress_pid_e2e" &>/dev/null || true
+    [ -n "${progress_pid_e2e:-}" ] && wait "$progress_pid_e2e" &>/dev/null || true
+    cleanup_progress_line
+
+    if [ $e2e_test_status -eq 0 ]; then
+        echo -e "${GREEN}✓ All E2E tests passed${NC}"
+    else
+        echo -e "${RED}✗ E2E tests failed or timed out.${NC}"
+    fi
 fi
 
 step_header "Phase E: Endpoint Verification"
@@ -1212,13 +1224,17 @@ if [ "${frontend_status:-1}" -eq 0 ] && [ "${backend_status:-1}" -eq 0 ]; then
     # Add Test Results to Summary
     if [ "$unit_test_status" -eq 0 ]; then
         echo -e "  ${GREEN}✓ Unit Tests: Passed${NC}"
-    elif [ "$unit_test_status" -ne -1 ]; then
+    elif [ "$unit_test_status" -eq -1 ]; then
+        echo -e "  ${YELLOW}□ Unit Tests: Skipped${NC}"
+    else
         echo -e "  ${RED}✗ Unit Tests: Failed${NC}"
     fi
 
     if [ "$e2e_test_status" -eq 0 ]; then
         echo -e "  ${GREEN}✓ E2E Tests: Passed${NC}"
-    elif [ "$e2e_test_status" -ne -1 ]; then
+    elif [ "$e2e_test_status" -eq -1 ]; then
+        echo -e "  ${YELLOW}□ E2E Tests: Skipped${NC}"
+    else
         echo -e "  ${RED}✗ E2E Tests: Failed${NC}"
     fi
     
@@ -1227,14 +1243,25 @@ if [ "${frontend_status:-1}" -eq 0 ] && [ "${backend_status:-1}" -eq 0 ]; then
     echo -e "${BOLD}${CYAN}📊 Quality Assurance Summary:${NC}"
     if [ "${unit_test_status:-1}" -eq 0 ]; then
         echo -e "  • ${WHITE}Unit Tests:${NC}  ${GREEN}PASS${NC}"
+    elif [ "${unit_test_status:-1}" -eq -1 ]; then
+        echo -e "  • ${WHITE}Unit Tests:${NC}  ${YELLOW}SKIPPED${NC}"
     else
-        echo -e "  • ${WHITE}Unit Tests:${NC}  ${RED}FAIL/SKIPPED${NC}"
+        echo -e "  • ${WHITE}Unit Tests:${NC}  ${RED}FAIL${NC}"
     fi
 
     if [ "${e2e_test_status:-1}" -eq 0 ]; then
         echo -e "  • ${WHITE}E2E Tests:${NC}   ${GREEN}PASS${NC}"
+    elif [ "${e2e_test_status:-1}" -eq -1 ]; then
+        echo -e "  • ${WHITE}E2E Tests:${NC}   ${YELLOW}SKIPPED${NC}"
     else
-        echo -e "  • ${WHITE}E2E Tests:${NC}   ${RED}FAIL/SKIPPED${NC}"
+        echo -e "  • ${WHITE}E2E Tests:${NC}   ${RED}FAIL${NC}"
+    fi
+    echo
+    
+    # --- Live Smoke Test ---
+    if [ "$skip_tests" = false ]; then
+        echo -e "${BOLD}${CYAN}🔍 Executing Remote Smoke Test...${NC}"
+        bash "$(dirname "$0")/test-backends-remote.sh" || echo -e "${YELLOW}⚠ Smoke test failed but deployment is live.${NC}"
     fi
     echo
     
