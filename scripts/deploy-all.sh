@@ -294,6 +294,12 @@ step_header "Phase A: System Checks & Preparation"
 echo -e "${CYAN}Current Memory Status:${NC}"
 free -h | grep -E "(Mem|Swap)" || echo "Memory info not available"
 
+# Fix ownership before starting any work to avoid Nx daemon EPERM/EACCES
+echo -e "${CYAN}Ensuring correct workspace ownership for user 'jeffrey'...${NC}"
+maybe_sudo chown -R jeffrey:jeffrey "$PROJECT_ROOT_DEPLOY_ALL" 2>/dev/null || true
+# Kill any existing Nx daemons that might be running as root
+maybe_sudo pkill -f "nx-daemon" 2>/dev/null || true
+
 # Check available memory and warn if low
 AVAILABLE_MEM=$(free -m 2>/dev/null | awk 'NR==2{print $7}' || echo "2000")
 if [ "$AVAILABLE_MEM" -lt 1000 ]; then
@@ -537,59 +543,66 @@ fi
 # =====================
 step_header "Phase B: Backend & Frontend Deployment (Sequential)"
 
-# --- Ensure all PM2 processes are stopped for all relevant users ---
-echo -e "${CYAN}Stopping all PM2 processes for current user...${NC}"
-# Sync PM2 in-memory version with installed version if needed
-pm2 update 2>/dev/null || true
-pm2 stop all || true
-pm2 delete all || true
-pm2 kill || true
-
-# Only attempt PM2 cleanup for jeffrey user if they have a valid home and PM2 is accessible
+# --- Ensure PM2 is cleaned up for the 'jeffrey' user ---
+# We use 'jeffrey' context for all production services to match Remote-SSH needs
 if id "jeffrey" &>/dev/null; then
-    JEFF_HOME=$(getent passwd jeffrey | cut -d: -f6)
-    if [ -d "$JEFF_HOME" ] && [ -w "$JEFF_HOME" ]; then
-        echo -e "${CYAN}Stopping all PM2 processes for jeffrey user...${NC}"
-        sudo -u jeffrey pm2 stop all 2>/dev/null || true
-        sudo -u jeffrey pm2 delete all 2>/dev/null || true
-        sudo -u jeffrey pm2 kill 2>/dev/null || true
-    fi
+    echo -e "${CYAN}Stopping PM2 processes for user 'jeffrey'...${NC}"
+    # Stop and delete as jeffrey to clean up their specific environment
+    sudo -u jeffrey pm2 stop all 2>/dev/null || true
+    sudo -u jeffrey pm2 delete all 2>/dev/null || true
+    sudo -u jeffrey pm2 kill 2>/dev/null || true
+    # Ensure current daemon is the latest version
+    sudo -u jeffrey pm2 update 2>/dev/null || true
+    # Restart daemon in the background before continuing
+    sudo -u jeffrey pm2 list 2>/dev/null || true
+else
+    echo -e "${CYAN}Stopping PM2 processes for current user ($(whoami))...${NC}"
+    pm2 stop all 2>/dev/null || true
+    pm2 delete all 2>/dev/null || true
+    pm2 kill 2>/dev/null || true
+    pm2 list 2>/dev/null || true
 fi
-pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
 
 # --- Wait for Go binary to be released before copying ---
-GO_BINARY_PATH="/var/www/craft-fusion/dist/apps/craft-go/main"
-if [ -f "$GO_BINARY_PATH" ]; then
-  echo -e "${CYAN}Checking if Go binary is in use...${NC}"
-  # Check if lsof exists before using it
-  if command -v lsof >/dev/null 2>&1; then
-    MAX_WAIT=15
-    WAIT_COUNT=0
-    while sudo lsof | grep -q "$GO_BINARY_PATH"; do
-      if [ $WAIT_COUNT -eq 0 ]; then
-          echo -e "${YELLOW}Go binary is held by another process. Waiting for it to release...${NC}"
-      fi
-      
-      if [ $WAIT_COUNT -ge $MAX_WAIT ]; then
-          echo -e "${RED}⚠ Go binary still locked after ${MAX_WAIT}s. Forcing release...${NC}"
-          sudo fuser -k "$GO_BINARY_PATH" 2>/dev/null || true
-          sudo pkill -9 -f "craft-go" 2>/dev/null || true
-          break
-      fi
-      
-      sleep 1
-      ((WAIT_COUNT++))
-      if [ $((WAIT_COUNT % 5)) -eq 0 ]; then
-          echo -e "${YELLOW}  ...still waiting ($WAIT_COUNT/$MAX_WAIT)...${NC}"
-          # Try one more graceful kill via pkill during the wait
-          sudo pkill -f "$GO_BINARY_PATH" 2>/dev/null || true
-      fi
-    done
-  else
-    echo -e "${YELLOW}⚠ lsof not found. Skipping Go binary lock check.${NC}"
+# Check both possible locations (legacy and correct project-relative path)
+GO_BINARY_LEGACY="/var/www/craft-fusion/dist/apps/craft-go/main"
+GO_BINARY_CURRENT="$PROJECT_ROOT_DEPLOY_ALL/dist/apps/craft-go/main"
+
+for GO_BINARY_PATH in "$GO_BINARY_LEGACY" "$GO_BINARY_CURRENT"; do
+  if [ -f "$GO_BINARY_PATH" ]; then
+    echo -e "${CYAN}Checking if Go binary at $GO_BINARY_PATH is in use...${NC}"
+    # Check if lsof exists before using it
+    if command -v lsof >/dev/null 2>&1; then
+      MAX_WAIT=10
+      WAIT_COUNT=0
+      # Use targetted lsof to avoid full system scan and potential hangs/OOM
+      while sudo lsof "$GO_BINARY_PATH" &>/dev/null; do
+        if [ $WAIT_COUNT -eq 0 ]; then
+            echo -e "${YELLOW}Go binary is held by another process. Waiting for it to release...${NC}"
+        fi
+        
+        if [ $WAIT_COUNT -ge $MAX_WAIT ]; then
+            echo -e "${RED}⚠ Go binary still locked after ${MAX_WAIT}s. Forcing release...${NC}"
+            sudo fuser -k "$GO_BINARY_PATH" 2>/dev/null || true
+            sudo pkill -9 -f "craft-go" 2>/dev/null || true
+            break
+        fi
+        
+        sleep 1
+        # Use shell arithmetic which is safer with set -e than ((++))
+        WAIT_COUNT=$((WAIT_COUNT + 1))
+        if [ $((WAIT_COUNT % 5)) -eq 0 ]; then
+            echo -e "${YELLOW}  ...still waiting ($WAIT_COUNT/$MAX_WAIT)...${NC}"
+            # Try one more graceful kill via pkill during the wait
+            sudo pkill -f "$GO_BINARY_PATH" 2>/dev/null || true
+        fi
+      done
+    else
+      echo -e "${YELLOW}⚠ lsof not found. Skipping Go binary lock check.${NC}"
+    fi
+    echo -e "${GREEN}✓ Go binary at $GO_BINARY_PATH is free.${NC}"
   fi
-  echo -e "${GREEN}✓ Go binary is free to update.${NC}"
-fi
+done
 
 # --- Deploy backend first ---
 BACKEND_DEPLOY_ESTIMATE_SECONDS=180
