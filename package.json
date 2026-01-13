@@ -10,7 +10,7 @@
     "serve:go": "cd dist/apps/craft-go && (main.exe || main)",
     "build": "nx build craft-web",
     "build:prod": "nx build craft-web --configuration=production",
-    "build:vps": "NODE_OPTIONS='--max-old-space-size=1536' NX_DAEMON=false nx build craft-web --configuration=production --parallel=1 --no-cloud",
+    "build:vps": "node apps/craft-web/generate-env.js && NODE_OPTIONS='--max-old-space-size=1536' NX_DAEMON=false nx build craft-web --configuration=production --parallel=1 --no-cloud",
     "build:backend": "nx build craft-nest && nx build craft-go",
     "build:backend:vps": "NODE_OPTIONS='--max-old-space-size=1024' NX_DAEMON=false nx build craft-nest --no-cloud",
     "lint": "nx lint craft-web",
