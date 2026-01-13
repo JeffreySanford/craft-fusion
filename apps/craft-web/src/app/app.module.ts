@@ -7,6 +7,7 @@ import { HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
 import { RouterModule, Router, NavigationStart, NavigationCancel, NavigationEnd, NavigationError } from '@angular/router';
 import { filter, take } from 'rxjs/operators';
 import { AppComponent } from './app.component';
+import { ResumeComponent } from './pages/resume/resume.component';
 import { appRoutes } from './app.routes';
 import { MaterialModule } from './material.module';
 import { ComponentsModule } from './common/components/components.module';
@@ -50,7 +51,7 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
 }
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, ResumeComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
