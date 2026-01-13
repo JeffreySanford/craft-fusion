@@ -51,10 +51,10 @@ app-header {
 }
 
 .sidebar.collapsed {
-  flex-basis: 0 !important;
-  width: 0 !important;
-  min-width: 0 !important;
-  max-width: 0 !important;
+  flex-basis: 7em !important;
+  width: 7em !important;
+  min-width: 7em !important;
+  max-width: 7em !important;
   overflow: hidden;
   padding: 0 !important;
   margin: 0 !important;
@@ -75,9 +75,7 @@ app-header {
 }
 
 .main-stage.sidebar-collapsed {
-  flex: 1 1 100%;
-  width: 100% !important;
-  max-width: 100% !important;
+  flex: 1 1 auto;
 }
 
 .router-content-wrapper {

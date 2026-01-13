@@ -1,8 +1,7 @@
-import { Component, HostListener, EventEmitter, Output, Input, OnInit, ViewChild, ChangeDetectorRef, Renderer2, ElementRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnInit, ChangeDetectorRef, Renderer2, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer } from '@angular/material/sidenav';
 import { MenuItem, MenuGroup } from './sidebar.types';
 import { NavigationEnd, Router } from '@angular/router';
 import { SidebarStateService } from '../../common/services/sidebar-state.service';
@@ -32,7 +31,6 @@ export class SidebarComponent implements OnInit {
   @Output() sidebarToggle = new EventEmitter<boolean>();
   @Input() isSmallScreen = false;
   @Input() isCollapsed = false;
-  @ViewChild('drawer') drawer!: MatDrawer;
   isMobile = false;
   isAdmin = false;
 
@@ -110,16 +108,6 @@ export class SidebarComponent implements OnInit {
     this.updateActiveState();
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event: Event) {
-    const width = (event.target as Window).innerWidth;
-    this.isCollapsed = width < 900;
-    this.isSmallScreen = width < 900;
-
-    this.sidebarToggle.emit(!this.isCollapsed);
-    this.sidebarStateService.toggleSidebar(this.isCollapsed);
-  }
-
   toggleCollapse() {
     this.isCollapsed = !this.isCollapsed;
     this.sidebarToggle.emit(!this.isCollapsed);
@@ -147,9 +135,6 @@ export class SidebarComponent implements OnInit {
   toggleMenu() {
     this.isCollapsed = !this.isCollapsed;
     this.sidebarStateService.toggleSidebar(this.isCollapsed);
-    if (this.isSmallScreen) {
-      this.drawer.toggle();
-    }
   }
 
   get toggleIcon(): string {

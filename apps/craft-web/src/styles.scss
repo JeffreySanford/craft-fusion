@@ -1,5 +1,10 @@
 // Main styles entry point for Craft Fusion
 
+// Import flag-icons via Sass to disable conflicting square icons (fixes esbuild duplicate filename error)
+@use 'flag-icons/sass/flag-icons' with (
+  $flag-icons-use-square: false
+);
+
 // Import global variables and settings
 @use 'variables';
 @use 'themes';
@@ -14,3 +19,14 @@
 @use 'layout';
 @use 'responsive';
 @use 'utilities';
+
+// Backward compatibility for legacy .flag-icon-xx classes
+.flag-icon {
+  @extend .fi;
+}
+
+@each $country in flag-icons.$flag-icons-included-countries {
+  .flag-icon-#{$country} {
+    @extend .fi-#{$country};
+  }
+}
