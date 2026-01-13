@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://jeffreysanford.us/api',
+  apiUrl: 'https://jeffreysanford.us',
   host: 'jeffreysanford.us',
   finnhubApiKey: 'cu8gbkpr01qt63vgue4gcu8gbkpr01qt63vgue50',
   finnHubAPI: 'https://finnhub.io/api/v1',

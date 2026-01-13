@@ -41,7 +41,7 @@ This file is the planning source of truth. It records decisions, risks, and the 
 
 - Lock down authentication: keep the backend guard/refresh loop solid, persist refresh-token state in the seeded Mongo store, document the opportunities to tie the admin secret to deployment flags, and validate the cleanup of any legacy auth artifacts.
 - Surface real data on the admin security tab and timeline: finish Findings/Evidence views, replace mocked arrays with API calls, handle loading/error states, and wire the CTA buttons so the UI can rely on the `security/*` endpoints rather than hand-wired data.
-- Harden delivery readiness: unblock file uploads/pagination, stabilize logging/monitoring, and keep the Nx tasks (lint/test/e2e) green so deployments stay predictable while the new admin/shipping surfaces land.
+- Harden delivery readiness: stabilize logging/monitoring, and keep the Nx tasks (lint/test/e2e) green so deployments stay predictable while the new admin/shipping surfaces land.
 
 ## Critical blockers (fix before production)
 
@@ -62,7 +62,6 @@ This file is the planning source of truth. It records decisions, risks, and the 
 
 ## Deferred (post-MVP)
 
-- [ ] Fix file upload pipeline end-to-end (FormData in UI, Multer/`@UploadedFile` in Nest, storage + serving)
 - [ ] XSS sanitization (SafeHtml pipes, innerHTML hardening)
 - [ ] Server-side token revocation storage (DB/Redis blacklist)
 - [ ] Use configured host/port when starting Nest (avoid hardcoded `app.listen(3000, ...)`)
@@ -102,8 +101,6 @@ This file is the planning source of truth. It records decisions, risks, and the 
 ### Previous run (2026-01-08)
 
 - All lint, unit tests, Playwright, and GitHub CI passing.
-
-### Latest run (2026-01-12)
 
 **Status:** ✅ All tests passing (local)
 

@@ -53,7 +53,7 @@ func main() {
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:4200", "https://jeffreysanford.us", "https://www.jeffreysanford.us", "http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "Content-Length", "Accept-Encoding", "X-CSRF-Token"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "X-XSRF-TOKEN"},
 		AllowCredentials: true,
 		MaxAge:           24 * time.Hour,
 	}))
