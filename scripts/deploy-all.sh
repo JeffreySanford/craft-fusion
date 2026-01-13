@@ -162,6 +162,7 @@ WEB_ROOT="/var/www/jeffreysanford.us"
 # Parse arguments
 # Configuration flags
 POWER_MODE=false
+server_build=false
 do_full_clean=false
 yes_ssl=false
 skip_ssl=false
@@ -176,6 +177,7 @@ show_usage() {
     echo
     echo -e "${BOLD}OPTIONS:${NC}"
     echo -e "  ${YELLOW}--full-clean${NC}     Clean node_modules, .nx cache, and rebuild everything"
+    echo -e "  ${YELLOW}--server-build${NC}   Perform build on the server (passed to sub-scripts)"
     echo -e "  ${YELLOW}--power${NC}          Enable power mode (use 90% RAM, disable Nx daemon)"
     echo -e "  ${YELLOW}--yes-ssl${NC}        Automatically set up SSL/HTTPS (skip prompt)"
     echo -e "  ${YELLOW}--skip-ssl${NC}       Skip SSL setup (use HTTP only)"
@@ -210,6 +212,7 @@ show_usage() {
 for arg in "$@"; do
     case "$arg" in
         --full-clean) do_full_clean=true ;;
+        --server-build) server_build=true ;;
         --power) POWER_MODE=true ;;
         --yes-ssl) yes_ssl=true ;;
         --skip-ssl) skip_ssl=true ;;
