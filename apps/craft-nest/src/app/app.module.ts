@@ -40,51 +40,46 @@ import { SecurityModule } from './security/security.module';
           } as any;
         }
 
-        if (NODE_ENV !== 'production') {
-          // Dynamically import to avoid requiring this package in production
-          // if it's not installed there.
-          try {
-              // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-call
-              console.log('[mongo] Attempting to start mongodb-memory-server');
-              const { MongoMemoryServer } = require('mongodb-memory-server');
-              // Create an instance and start it
+        // Allow mongodb-memory-server even in production if no MONGODB_URI is provided.
+        // This is useful for zero-config ephemeral deployments on restricted VPS environments.
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-call
+            console.log('[mongo] No MONGODB_URI provided. Attempting to start mongodb-memory-server...');
+            const { MongoMemoryServer } = require('mongodb-memory-server');
+            // Create an instance and start it
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            // Prefer a configured memory-server port to avoid colliding with system mongod.
+            const preferredPort = Number(process.env['MONGODB_MEMORY_PORT'] || 27018);
+            let mongoServer;
+            try {
+              // Try to create on the preferred port first
               // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-              // Prefer a configured memory-server port to avoid colliding with system mongod.
-              const preferredPort = Number(process.env['MONGODB_MEMORY_PORT'] || 27018);
-              let mongoServer;
-              try {
-                // Try to create on the preferred port first
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                mongoServer = await MongoMemoryServer.create({ instance: { port: preferredPort } });
-                console.log('[mongo] mongodb-memory-server created on preferred port', preferredPort);
-              } catch (createErr) {
-                // Fallback to auto-assigned port
-                // eslint-disable-next-line no-console
-                console.warn('[mongo] preferred port unavailable, falling back to auto-assigned port', createErr && (createErr as any).message ? (createErr as any).message : String(createErr));
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                mongoServer = await MongoMemoryServer.create();
-              }
-              const uri = mongoServer.getUri();
-              // Keep a reference for shutdown handling in main.ts
-              (global as any).__MONGO_MEMORY_SERVER__ = mongoServer;
-              // Log that the in-memory MongoDB started (helpful for dev tracing)
+              mongoServer = await MongoMemoryServer.create({ instance: { port: preferredPort } });
+              console.log('[mongo] mongodb-memory-server created on preferred port', preferredPort);
+            } catch (createErr) {
+              // Fallback to auto-assigned port
               // eslint-disable-next-line no-console
-              console.log('[mongo] mongodb-memory-server started', { uri });
-              return { uri } as any;
-          } catch (err) {
-              // If mongodb-memory-server isn't available, fall back to localhost
-              // and let the developer inspect the error. Log the error details.
-              // eslint-disable-next-line no-console
-              // Use a safe access for err.stack to satisfy TypeScript
-              // eslint-disable-next-line no-console
-              console.error('[mongo] Failed to start mongodb-memory-server:', (err as any)?.stack ?? String(err));
-              console.warn('mongodb-memory-server not available, falling back to mongodb://localhost:27017/craft-fusion');
-              return { uri: 'mongodb://localhost:27017/craft-fusion' } as any;
-          }
+              console.warn('[mongo] preferred port unavailable, falling back to auto-assigned port', createErr && (createErr as any).message ? (createErr as any).message : String(createErr));
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+              mongoServer = await MongoMemoryServer.create();
+            }
+            const uri = mongoServer.getUri();
+            // Keep a reference for shutdown handling in main.ts
+            (global as any).__MONGO_MEMORY_SERVER__ = mongoServer;
+            // Log that the in-memory MongoDB started (helpful for dev tracing)
+            // eslint-disable-next-line no-console
+            console.log('[mongo] mongodb-memory-server started', { uri });
+            return { uri } as any;
+        } catch (err) {
+            // If mongodb-memory-server isn't available, fall back to localhost
+            // and let the developer inspect the error. Log the error details.
+            // eslint-disable-next-line no-console
+            // Use a safe access for err.stack to satisfy TypeScript
+            // eslint-disable-next-line no-console
+            console.error('[mongo] Failed to start mongodb-memory-server:', (err as any)?.stack ?? String(err));
+            console.warn('mongodb-memory-server not available, falling back to mongodb://localhost:27017/craft-fusion');
+            return { uri: 'mongodb://localhost:27017/craft-fusion' } as any;
         }
-
-        // Production fallback (should be explicitly configured via env)
-        return { uri: 'mongodb://localhost:27017/craft-fusion' } as any;
       },
     }),
     UserModule,
