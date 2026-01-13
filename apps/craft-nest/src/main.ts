@@ -591,7 +591,7 @@ async function bootstrap() {
       console.log('[seeder] No collections were seeded or modified during startup');
     }
 
-    await app.listen(3000, '0.0.0.0');
+    await app.listen(PORT, '0.0.0.0');
     Logger.log(`Server running on ${protocol}://${HOST}:${PORT}`);
 
     // If we started an in-memory MongoDB instance earlier, ensure we stop it

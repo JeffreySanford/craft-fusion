@@ -56,11 +56,6 @@
         "assets": [
           "apps/craft-web/src/assets",
           {
-            "glob": "flag-icons.min.css",
-            "input": "node_modules/flag-icons/css",
-            "output": "assets/css/"
-          },
-          {
             "glob": "**/*",
             "input": "node_modules/flag-icons/flags",
             "output": "assets/flags/"
@@ -73,6 +68,7 @@
         ],
         "styles": [
           "apps/craft-web/src/styles.scss",
+          "node_modules/flag-icons/css/flag-icons.min.css",
           "node_modules/ngx-toastr/toastr.css",
           "node_modules/mapbox-gl/dist/mapbox-gl.css"
         ],
