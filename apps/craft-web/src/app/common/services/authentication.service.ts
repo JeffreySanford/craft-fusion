@@ -9,7 +9,6 @@ import { SessionService } from './session.service';
 import { LoggerService } from './logger.service';
 import { NotificationService } from './notification.service';
 import { User, AuthResponse } from '../interfaces/user.interface';
-import { environment } from '../../../environments/environment';
 
 export interface LoginRequest {
   username: string;
@@ -325,47 +324,6 @@ export class AuthenticationService {
     );
   }
 
-  private fetchUserDetails(): void {
-    this.logger.debug('Fetching user details from server');
-    this.apiService
-      .get<User>('auth/user')
-      .pipe(
-        timeout(this.AUTH_TIMEOUT),
-        catchError((error: any) => {
-          const status = error?.status;
-          const message = error?.message || 'Unknown error';
-
-          this.logger.error('Failed to fetch user details', {
-            error: message,
-            status,
-            timestamp: new Date().toISOString(),
-          });
-
-          if (status === 401 || status === 403) {
-            this.clearAuthState();
-          }
-
-          return throwError(() => error);
-        }),
-      )
-      .subscribe(user => {
-        this.logger.info('User details retrieved successfully', {
-          username: user.username,
-          isAdmin: this.hasAdminRole(user),
-        });
-
-        this.updateAuthState({
-          user,
-          isLoggedIn: true,
-          isAdmin: this.hasAdminRole(user),
-          isOffline: this._isOfflineMode,
-          lastSyncTime: new Date(),
-        });
-
-        this.sessionService.setUserSession(user);
-      });
-  }
-
   private updateAuthState(state: Partial<AuthState>): void {
     const oldAdminState = this.authState.value.isAdmin;
     const oldLoggedInState = this.authState.value.isLoggedIn;
@@ -557,7 +515,7 @@ export class AuthenticationService {
             this.notificationService.showSuccess('Connection to server restored. Full functionality available.', 'Back Online');
 
             if (this.isAuthenticated) {
-              this.initializeAuthSocket();
+              this.logger.debug('Auth context restored after reconnection');
             }
           }
 
