@@ -31,7 +31,6 @@ import { SecurityModule } from './security/security.module';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         const provided = configService.get<string>('MONGODB_URI');
-        const NODE_ENV = process.env['NODE_ENV'] || 'development';
         if (provided && provided.length > 0) {
           return {
             uri: provided,
