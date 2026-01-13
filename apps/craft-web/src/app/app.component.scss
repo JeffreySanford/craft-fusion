@@ -44,10 +44,12 @@ app-header {
   flex: 0 0 18em;
   display: flex;
   flex-direction: column;
-  height: 75% !important;
-  max-height: 75vh !important;
+  height: auto !important; /* Allow sidebar to grow with content */
+  max-height: 100% !important;
   box-sizing: border-box;
   transition: flex-basis 0.3s, width 0.3s;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebar.collapsed {
@@ -55,7 +57,6 @@ app-header {
   width: 7em !important;
   min-width: 7em !important;
   max-width: 7em !important;
-  overflow: hidden;
   padding: 0 !important;
   margin: 0 !important;
 }
