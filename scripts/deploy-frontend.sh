@@ -219,20 +219,27 @@ else
 fi
 
 echo -e "${BLUE}5. Checking build output...${NC}"
-if [ ! -d "dist/apps/craft-web" ]; then
-    echo -e "${RED}✗ Build output directory not found: dist/apps/craft-web${NC}"
+
+# Detect sourcing directory for Angular 17+ Application Builder
+BUILD_OUTPUT_DIR="dist/apps/craft-web"
+if [ -d "dist/apps/craft-web/browser" ]; then
+    BUILD_OUTPUT_DIR="dist/apps/craft-web/browser"
+fi
+
+if [ ! -d "$BUILD_OUTPUT_DIR" ]; then
+    echo -e "${RED}✗ Build output directory not found: $BUILD_OUTPUT_DIR${NC}"
     echo -e "${YELLOW}Ensure the build completed successfully and check for errors above.${NC}"
     exit 1
 fi
 
 # Verify critical files exist
-if [ ! -f "dist/apps/craft-web/index.html" ]; then
-    echo -e "${RED}✗ index.html not found in build output${NC}"
+if [ ! -f "$BUILD_OUTPUT_DIR/index.html" ]; then
+    echo -e "${RED}✗ index.html not found in build output at $BUILD_OUTPUT_DIR${NC}"
     exit 1
 fi
 
-BUILD_SIZE=$(du -sh dist/apps/craft-web | cut -f1)
-FILE_COUNT=$(find dist/apps/craft-web -type f | wc -l)
+BUILD_SIZE=$(du -sh "$BUILD_OUTPUT_DIR" | cut -f1)
+FILE_COUNT=$(find "$BUILD_OUTPUT_DIR" -type f | wc -l)
 echo -e "${GREEN}✓ Build size: $BUILD_SIZE ($FILE_COUNT files)${NC}"
 
 echo -e "${BLUE}6. Deploying to web server...${NC}"
@@ -246,7 +253,11 @@ sudo find "$WEB_ROOT" -mindepth 1 -delete
 
 # Use rsync for better file synchronization
 echo -e "${BLUE}6. Synchronizing files to production...${NC}"
-sudo rsync -avz --no-perms --no-owner --no-group dist/apps/craft-web/ "$WEB_ROOT"/
+
+# Re-confirm SOURCE_DIR for the rsync step
+SOURCE_DIR="$BUILD_OUTPUT_DIR"
+
+sudo rsync -avz --no-perms --no-owner --no-group "$SOURCE_DIR"/ "$WEB_ROOT"/
 deploy_status=$?
 if [ $deploy_status -ne 0 ]; then
     echo -e "${RED}✗ Failed to sync files to web root${NC}"
