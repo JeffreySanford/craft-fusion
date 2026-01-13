@@ -31,7 +31,7 @@ export const environment = {
   },
   alphaVantageApiKey: '${process.env.ALPHA_VANTAGE_API_KEY || envConfig.ALPHA_VANTAGE_API_KEY || ''}',
   yahooFinance: {
-    url: 'https://yfapi.net/',
+    url: '/api/yahoo',
     apiKey: '${process.env.YAHOO_FINANCE_API_KEY || envConfig.YAHOO_FINANCE_API_KEY || ''}'
   },
   socket: {
