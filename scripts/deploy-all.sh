@@ -139,6 +139,17 @@ cleanup_progress_line() {
     if [ -t 1 ]; then printf "\r\033[K"; fi
 }
 
+# --- Global Cleanup Tray ---
+global_cleanup() {
+    # Kill any active progress bar background processes
+    [ -n "${progress_pid:-}" ] && kill "$progress_pid" 2>/dev/null || true
+    [ -n "${progress_pid_nx:-}" ] && kill "$progress_pid_nx" 2>/dev/null || true
+    [ -n "${progress_pid_tests:-}" ] && kill "$progress_pid_tests" 2>/dev/null || true
+    [ -n "${progress_pid_e2e:-}" ] && kill "$progress_pid_e2e" 2>/dev/null || true
+    cleanup_progress_line
+}
+trap global_cleanup EXIT
+
 # --- Web Server Configuration (Nginx) ---
 WEB_SERVER_TYPE="nginx"
 WEB_SERVER_USER="nginx"
@@ -567,11 +578,7 @@ progress_pid=$!
 
 : "${POWER_NICE:=}"
 echo -e "${CYAN}Invoking backend deploy script...${NC}"
-if [ "$do_full_clean" = true ]; then
-    $POWER_NICE bash ./scripts/deploy-backend.sh --full-clean
-else
-    $POWER_NICE bash ./scripts/deploy-backend.sh
-fi
+$POWER_NICE bash ./scripts/deploy-backend.sh
 backend_status=$?
 
   [ -n "${progress_pid:-}" ] && kill "$progress_pid" &>/dev/null || true
@@ -643,11 +650,7 @@ if [ $backend_status -eq 0 ]; then
     progress_pid=$!
 
         echo -e "${CYAN}Invoking frontend deploy script...${NC}"
-        if [ "$do_full_clean" = true ]; then
-            $POWER_NICE bash ./scripts/deploy-frontend.sh --full-clean
-        else
-            $POWER_NICE bash ./scripts/deploy-frontend.sh
-        fi
+        $POWER_NICE bash ./scripts/deploy-frontend.sh
     frontend_status=$?
 
     [ -n "${progress_pid:-}" ] && kill "$progress_pid" &>/dev/null || true
