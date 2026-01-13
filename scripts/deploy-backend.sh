@@ -251,23 +251,27 @@ echo -e "${GREEN}✓ Permissions set${NC}"
 echo -e "${BLUE}10. Starting services with PM2...${NC}"
 cd "$APP_DIR"
 
-# Start applications
-pm2 start ecosystem.config.js
-pm2 save
+# Ensure we start as the correct user
 if id "jeffrey" &>/dev/null; then
-    sudo pm2 startup systemd -u jeffrey --hp /home/jeffrey
+    echo -e "${CYAN}Starting PM2 as user 'jeffrey'...${NC}"
+    sudo -u jeffrey pm2 start ecosystem.config.js
+    sudo -u jeffrey pm2 save
+    sudo pm2 startup systemd -u jeffrey --hp /home/jeffrey --force
 else
-    sudo pm2 startup systemd -u "$(whoami)" --hp "$HOME"
+    pm2 start ecosystem.config.js
+    pm2 save
+    sudo pm2 startup systemd -u "$(whoami)" --hp "$HOME" --force
 fi
 
 echo -e "${GREEN}✓ PM2 services started${NC}"
 
 echo -e "${BLUE}11. Verifying services...${NC}"
-sleep 5  # Give services time to start
+echo -e "${CYAN}Waiting for services to initialize...${NC}"
+sleep 10  # Increased wait for NestJS InstanceLoader
 
 # Check PM2 status
 if id "jeffrey" &>/dev/null; then
-    PM2_STATUS=$(sudo -n -u jeffrey pm2 list 2>/dev/null || pm2 list)
+    PM2_STATUS=$(sudo -u jeffrey pm2 list)
 else
     PM2_STATUS=$(pm2 list)
 fi

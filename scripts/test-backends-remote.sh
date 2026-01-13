@@ -85,15 +85,15 @@ echo ""
 nest_failures=0
 
 # Health check
-test_endpoint "${REMOTE_NEST_URL}/health" "200" "Health Check" || ((nest_failures++))
+test_endpoint "${REMOTE_NEST_URL}/health" "200" "Health Check" || nest_failures=$((nest_failures + 1))
 echo ""
 
 # Records endpoint
-test_endpoint "${REMOTE_NEST_URL}/records?limit=5" "200" "Get Records (limit 5)" || ((nest_failures++))
+test_endpoint "${REMOTE_NEST_URL}/records?limit=5" "200" "Get Records (limit 5)" || nest_failures=$((nest_failures + 1))
 echo ""
 
 # Generate records
-test_endpoint "${REMOTE_NEST_URL}/records/generate?count=10" "200" "Generate 10 Records" || ((nest_failures++))
+test_endpoint "${REMOTE_NEST_URL}/records/generate?count=10" "200" "Generate 10 Records" || nest_failures=$((nest_failures + 1))
 echo ""
 
 # Test Go API endpoints

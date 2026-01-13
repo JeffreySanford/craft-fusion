@@ -560,17 +560,35 @@ pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
 # --- Wait for Go binary to be released before copying ---
 GO_BINARY_PATH="/var/www/craft-fusion/dist/apps/craft-go/main"
 if [ -f "$GO_BINARY_PATH" ]; then
-  echo -e "${CYAN}Waiting for Go binary to be released...${NC}"
+  echo -e "${CYAN}Checking if Go binary is in use...${NC}"
   # Check if lsof exists before using it
   if command -v lsof >/dev/null 2>&1; then
+    MAX_WAIT=15
+    WAIT_COUNT=0
     while sudo lsof | grep -q "$GO_BINARY_PATH"; do
-      echo -e "${YELLOW}Go binary still in use, waiting...${NC}"
+      if [ $WAIT_COUNT -eq 0 ]; then
+          echo -e "${YELLOW}Go binary is held by another process. Waiting for it to release...${NC}"
+      fi
+      
+      if [ $WAIT_COUNT -ge $MAX_WAIT ]; then
+          echo -e "${RED}⚠ Go binary still locked after ${MAX_WAIT}s. Forcing release...${NC}"
+          sudo fuser -k "$GO_BINARY_PATH" 2>/dev/null || true
+          sudo pkill -9 -f "craft-go" 2>/dev/null || true
+          break
+      fi
+      
       sleep 1
+      ((WAIT_COUNT++))
+      if [ $((WAIT_COUNT % 5)) -eq 0 ]; then
+          echo -e "${YELLOW}  ...still waiting ($WAIT_COUNT/$MAX_WAIT)...${NC}"
+          # Try one more graceful kill via pkill during the wait
+          sudo pkill -f "$GO_BINARY_PATH" 2>/dev/null || true
+      fi
     done
   else
     echo -e "${YELLOW}⚠ lsof not found. Skipping Go binary lock check.${NC}"
   fi
-  echo -e "${GREEN}Go binary is free to update.${NC}"
+  echo -e "${GREEN}✓ Go binary is free to update.${NC}"
 fi
 
 # --- Deploy backend first ---
@@ -619,13 +637,18 @@ if [ $backend_status -eq 0 ]; then
     echo -e "${BLUE}Starting PM2 services...${NC}"
     sleep 2  # Give PM2 a moment to settle
     
-    # Start ecosystem and check both services
-    pm2 start ecosystem.config.js 2>/dev/null || true
-    sleep 3  # Allow services to start
-    
-    # Verify both services are running
-    PM2_NEST_STATUS=$(pm2 list | grep craft-nest-api | grep -c online || echo "0")
-    PM2_GO_STATUS=$(pm2 list | grep craft-go-api | grep -c online || echo "0")
+    # Start ecosystem and check both services using correct user
+    if id "jeffrey" &>/dev/null; then
+        sudo -u jeffrey pm2 start ecosystem.config.js 2>/dev/null || sudo -u jeffrey pm2 restart all 2>/dev/null || true
+        sleep 3
+        PM2_NEST_STATUS=$(sudo -u jeffrey pm2 list | grep craft-nest-api | grep -c online || echo "0")
+        PM2_GO_STATUS=$(sudo -u jeffrey pm2 list | grep craft-go-api | grep -c online || echo "0")
+    else
+        pm2 start ecosystem.config.js 2>/dev/null || pm2 restart all 2>/dev/null || true
+        sleep 3
+        PM2_NEST_STATUS=$(pm2 list | grep craft-nest-api | grep -c online || echo "0")
+        PM2_GO_STATUS=$(pm2 list | grep craft-go-api | grep -c online || echo "0")
+    fi
     
     if [ "$PM2_NEST_STATUS" = "1" ] && [ "$PM2_GO_STATUS" = "1" ]; then
         echo -e "${GREEN}✓ Both NestJS and Go servers are running${NC}"
@@ -638,12 +661,20 @@ if [ $backend_status -eq 0 ]; then
             echo -e "${RED}  ✗ Go server not running${NC}"
             # Try to restart Go service specifically
             echo -e "${YELLOW}  Attempting to restart Go service...${NC}"
-            pm2 restart craft-go-api 2>/dev/null || pm2 start ecosystem.config.js
+            if id "jeffrey" &>/dev/null; then
+                sudo -u jeffrey pm2 restart craft-go-api 2>/dev/null || sudo -u jeffrey pm2 start ecosystem.config.js
+            else
+                pm2 restart craft-go-api 2>/dev/null || pm2 start ecosystem.config.js
+            fi
         fi
     fi
     
     # Save PM2 configuration
-    pm2 save 2>/dev/null || true
+    if id "jeffrey" &>/dev/null; then
+        sudo -u jeffrey pm2 save 2>/dev/null || true
+    else
+        pm2 save 2>/dev/null || true
+    fi
     
     echo -e "${BLUE}Backend verification complete${NC}"
     # --- Deploy frontend only if backend succeeded ---
@@ -653,87 +684,17 @@ if [ $backend_status -eq 0 ]; then
     progress_pid=$!
 
         echo -e "${CYAN}Invoking frontend deploy script...${NC}"
-        $POWER_NICE bash ./scripts/deploy-frontend.sh
+        # Always use --server-build when running from deploy-all on the production server
+        $POWER_NICE bash ./scripts/deploy-frontend.sh --server-build
     frontend_status=$?
 
     [ -n "${progress_pid:-}" ] && kill "$progress_pid" &>/dev/null || true
     [ -n "${progress_pid:-}" ] && wait "$progress_pid" &>/dev/null || true
+    
     if [ $frontend_status -eq 0 ]; then
-        echo -e "${GREEN}✓ Frontend deployed successfully${NC}"
-        
-        # === PRODUCTION DEPLOYMENT STEPS ===
-        echo -e "${BOLD}${CYAN}🚀 Deploying to production...${NC}"
-        
-        # Step 1: Clean and copy frontend files to /var/www
-        echo -e "${CYAN}📁 Preparing /var/www/jeffreysanford.us...${NC}"
-        if [ -d "dist/apps/craft-web" ]; then
-            sudo mkdir -p /var/www/jeffreysanford.us
-            
-            # Remove all files from directory prior to putting new build file there
-            echo -e "${YELLOW}🗑  Emptying web root: /var/www/jeffreysanford.us...${NC}"
-            sudo find /var/www/jeffreysanford.us -mindepth 1 -delete
-            
-            echo -e "${CYAN}📥 Copying new frontend files...${NC}"
-            sudo rsync -avz dist/apps/craft-web/ /var/www/jeffreysanford.us/ || {
-                echo -e "${RED}✗ Failed to copy frontend files${NC}"
-                frontend_status=1
-            }
-            
-            # Set proper permissions using detected user
-            sudo chown -R $WEB_SERVER_USER:$WEB_SERVER_USER /var/www/jeffreysanford.us
-            sudo chmod -R 755 /var/www/jeffreysanford.us
-            echo -e "${GREEN}✓ Frontend files deployed successfully${NC}"
-        else
-            echo -e "${RED}✗ Frontend build directory not found: dist/apps/craft-web${NC}"
-            frontend_status=1
-        fi
-        
-        # Step 2: Test configuration
-        echo -e "${CYAN}🔧 Testing $WEB_SERVER_TYPE configuration...${NC}"
-        if $WEB_SERVER_TEST > /dev/null 2>&1; then
-            echo -e "${GREEN}✓ $WEB_SERVER_TYPE configuration is valid${NC}"
-            
-            # Step 3: Reload web server
-            echo -e "${CYAN}🔄 Reloading $WEB_SERVER_TYPE...${NC}"
-            if $WEB_SERVER_RELOAD; then
-                echo -e "${GREEN}✓ $WEB_SERVER_TYPE reloaded successfully${NC}"
-            else
-                echo -e "${YELLOW}⚠ $WEB_SERVER_TYPE reload failed, attempting restart...${NC}"
-                if sudo systemctl restart nginx; then
-                    echo -e "${GREEN}✓ $WEB_SERVER_TYPE restarted successfully${NC}"
-                else
-                    echo -e "${RED}✗ $WEB_SERVER_TYPE restart failed${NC}"
-                    frontend_status=1
-                fi
-            fi
-        else
-            echo -e "${RED}✗ $WEB_SERVER_TYPE configuration test failed${NC}"
-            $WEB_SERVER_TEST
-            frontend_status=1
-        fi
-        
-        # Step 4: Verify deployment
-        if [ $frontend_status -eq 0 ]; then
-            echo -e "${CYAN}🔍 Verifying production deployment...${NC}"
-            sleep 2
-            
-            # Test main site
-            if curl -s -I https://jeffreysanford.us > /dev/null 2>&1; then
-                echo -e "${GREEN}✓ Main site is accessible${NC}"
-            else
-                echo -e "${YELLOW}⚠ Main site check failed (might be normal during deployment)${NC}"
-            fi
-            
-            # Test local nginx
-            if curl -s -I http://localhost > /dev/null 2>&1; then
-                echo -e "${GREEN}✓ Local nginx is serving content${NC}"
-            else
-                echo -e "${YELLOW}⚠ Local nginx check failed${NC}"
-            fi
-        fi
-        
+        echo -e "${GREEN}✓ Frontend deployed successfully through sub-script${NC}"
     else
-        echo -e "${RED}✗ Frontend deployment failed (exit code $frontend_status)${NC}"
+        echo -e "${RED}✗ Frontend deployment sub-script failed (exit code $frontend_status)${NC}"
     fi
 else
     echo -e "${RED}✗ Backend deployment failed (exit code $backend_status). Skipping frontend deployment.${NC}"
@@ -1298,6 +1259,9 @@ if [ "${frontend_status:-1}" -eq 0 ] && [ "${backend_status:-1}" -eq 0 ]; then
     echo -e "  location /api-go/ { proxy_pass http://localhost:4000/; }"
     echo -e "  ${BLUE}------------------------------------------------------------${NC}"
     
+    # Explicit success exit
+    exit 0
+    
 else
     echo -e "${BOLD}${RED}═══════════════════════════════════════════════════════════════════════════${NC}"
     echo -e "${BOLD}${RED}           ❌ DEPLOYMENT FAILED - TROUBLESHOOTING REQUIRED              ${NC}"
@@ -1311,11 +1275,14 @@ else
     echo -e "  ${YELLOW}4.${NC} Check disk space: ${CYAN}df -h${NC}"
     echo -e "  ${YELLOW}5.${NC} Verify file permissions: ${CYAN}ls -la /var/www/jeffreysanford.us${NC}"
     echo -e "  ${YELLOW}6.${NC} Try components individually:"
-    echo -e "      ${CYAN}./scripts/deploy-backend.sh${NC}"
-    echo -e "      ${CYAN}./scripts/deploy-frontend.sh${NC}"
+    echo -e "      ${CYAN}sudo ./scripts/deploy-backend.sh --server-build${NC}"
+    echo -e "      ${CYAN}./scripts/deploy-frontend.sh --server-build${NC}"
     
     echo
     echo -e "${BOLD}${RED}Please resolve the issues above before considering the deployment complete.${NC}"
+    
+    # Explicit failure exit
+    exit 1
 fi
 
 echo

@@ -296,16 +296,6 @@ else
     $WEB_SERVER_TEST
     exit 1
 fi
-    else
-        echo -e "${RED}✗ Nginx reload failed${NC}"
-        echo -e "${YELLOW}Check nginx logs: sudo journalctl -u nginx -f${NC}"
-        exit 1
-    fi
-else
-    echo -e "${RED}✗ Nginx configuration error${NC}"
-    echo -e "${YELLOW}Check nginx logs: sudo tail -f /var/log/nginx/error.log${NC}"
-    exit 1
-fi
 
 echo -e "${BLUE}11. Testing deployment...${NC}"
 sleep 2  # Give nginx a moment to reload
