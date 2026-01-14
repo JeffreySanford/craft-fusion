@@ -7,15 +7,30 @@
   flex: 1 !important;
   min-height: 100% !important;
   width: 100% !important;
+  overflow: hidden !important; // Prevent host from bleeding out
 }
 
-.admin-container {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  width: 100%;
-  min-height: 0;
-  box-sizing: border-box;
+// Fix for large logo: allow it to overhang the header
+::ng-deep {
+  .usa-flag-container {
+    height: 4.5em !important; // Doubled from 2.25em-2.5em
+    width: 6.5em !important;  // Doubled from 3.25em-3.75em
+    flex: 0 0 6.5em !important;
+    overflow: visible !important; // Allow overhang
+    margin-top: -1em !important; // Pull it up to overhang the top
+    z-index: 101 !important;
+
+    .usa-eagle {
+      max-width: none !important;
+      max-height: none !important;
+      height: 5.5em !important; // Oversized to create the overhang effect
+      width: auto !important;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)) !important;
+      position: relative !important;
+      top: -0.5em !important;
+      transform: scale(1.2) !important;
+    }
+  }
 }
 
 // Hero KPI Bar
@@ -45,6 +60,13 @@
   @media (max-width: 480px) {
     grid-template-columns: 1fr;
   }
+}
+
+// Adjust Admin Header position
+.admin-header {
+  margin-top: 0.25em !important;
+  margin-left: 0.25em !important;
+  margin-right: 0.25em !important; // Symmetrical
 }
 
 @keyframes slide-down {
@@ -915,18 +937,6 @@ table thead tr {
         flex-direction: column;
       }
     }
-  }
-}
-    width: 0.5em;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: rgb(255 255 255 / 20%);
-    border-radius: 0.25em;
   }
 }
 
