@@ -10,9 +10,8 @@ html, body {
 .app-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 0.75em);
-  width: 100%;
-  /* Remove max-width and margin-right to prevent overflow */
+  height: 100vh;
+  width: 100%; // Reset to 100%
   overflow: hidden;
   position: relative;
   box-sizing: border-box;
@@ -29,11 +28,11 @@ app-header {
 .layout-container {
   display: flex;
   flex-direction: row;
-  flex: 1 1 0;
+  flex: 1 1 auto; // Changed from 1 1 0 to be more robust
   width: 100%;
   min-width: 0;
   min-height: 0;
-  max-height: 100%;
+  height: 100%; // Ensure it tries to fill column space
   align-items: stretch;
   box-sizing: border-box;
   column-gap: 0.25em; // Reduced gutter further to pull main-stage left
@@ -67,10 +66,9 @@ app-header {
 
 /* Main-stage: fills remaining space, full height of layout-container */
 .main-stage, .router-content-wrapper {
-  flex: 1 1 0;
+  flex: 1 1 auto; // Changed from 1 1 0
   min-width: 0;
   height: 100%;
-  max-height: 100%;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -81,20 +79,31 @@ app-header {
 
 .main-stage {
   margin-right: 1.5em; // Increased margin from 0.5em to prevent being lush with right edge
+  margin-bottom: 0.5em; // 0.5em space above the footer for the mainstage only
 
   &.sidebar-collapsed {
     margin-right: 0 !important; // Restore perfect collapsed alignment
+    margin-bottom: 0 !important; // Remove bottom gap in collapsed state to maintain previous "perfect" look
     flex: 1 1 auto;
   }
 }
 
 .router-content-wrapper {
-  flex: 1 1 0;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 100%; // Ensure it stretches to full height of main-stage
   box-sizing: border-box;
-  // Remove width/max-width to allow main-stage to fully expand
+
+  // Ensure components loaded into the router outlet take full height
+  ::ng-deep > *:not(router-outlet) {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100% !important;
+    height: 100% !important;
+  }
 }
 
 /* Footer always at the bottom, styled like header */

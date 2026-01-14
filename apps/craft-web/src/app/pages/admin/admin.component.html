@@ -27,8 +27,8 @@
     </div>
   </div>
 
-  <!-- Hero KPI Bar -->
-  <div class="admin-hero-bar" *ngIf="heroMetrics$ | async as metrics">
+  <!-- Hero KPI Bar (Only on Overview Tab) -->
+  <div class="admin-hero-bar" *ngIf="selectedTab === 0 && (heroMetrics$ | async) as metrics">
     <app-hero-tile
       [label]="'Active Services'"
       [value]="metrics.activeServices.current + '/' + metrics.activeServices.total"

@@ -1,7 +1,7 @@
 .hero-tile {
   position: relative;
-  padding: 0.75rem 1rem;
-  min-height: 85px;
+  padding: 0.35rem 0.5rem; // Reduced from 0.75rem 1rem
+  min-height: 42px; // Reduced from 85px
   display: flex;
   flex-direction: column;
   transition: all 300ms ease;
@@ -44,7 +44,7 @@
 }
 
 .hero-tile-label {
-  font-size: 0.875rem;
+  font-size: 0.65rem; // Reduced from 0.875rem
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -52,14 +52,14 @@
 }
 
 .hero-tile-icon {
-  font-size: 1.5rem;
-  width: 1.5rem;
-  height: 1.5rem;
+  font-size: 1rem; // Reduced from 1.5rem
+  width: 1rem;
+  height: 1rem;
   opacity: 0.7;
 }
 
 .hero-tile-value {
-  font-size: 2rem;
+  font-size: 1.15rem; // Reduced from 2rem
   font-weight: 700;
   line-height: 1.2;
   display: flex;
@@ -69,19 +69,19 @@
 }
 
 .hero-tile-delta {
-  font-size: 0.875rem;
+  font-size: 0.65rem; // Reduced from 0.875rem
   font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.125rem 0.5rem;
+  padding: 0.075rem 0.25rem;
   border-radius: 12px;
   animation: slide-in-right 300ms ease-out;
 
   .delta-icon {
-    font-size: 1rem;
-    width: 1rem;
-    height: 1rem;
+    font-size: 0.75rem;
+    width: 0.75rem;
+    height: 0.75rem;
   }
 
   &.delta-positive {
@@ -108,13 +108,13 @@
 }
 
 .hero-tile-detail {
-  font-size: 0.75rem;
+  font-size: 0.6rem; // Reduced from 0.75rem
   font-weight: 600;
   opacity: 0.8;
 }
 
 .hero-tile-sub {
-  font-size: 0.75rem;
+  font-size: 0.6rem; // Reduced from 0.75rem
   opacity: 0.7;
 }
 

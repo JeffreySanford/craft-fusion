@@ -5,8 +5,8 @@
 .admin-hero-bar {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 0.75rem;
-  padding: 0.75rem 1.5rem;
+  gap: 0.35rem; // Reduced from 0.75rem
+  padding: 0.35rem 1rem; // Reduced from 0.75rem 1.5rem
   background: linear-gradient(to bottom, rgba(0, 26, 58, 0.05), transparent);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   position: sticky;
@@ -838,7 +838,8 @@ table thead tr {
 }
 
 .tab-content {
-  height: calc(100vh - 17.5em);
+  flex: 1; // Stretch to fill available vertical space
+  min-height: 0;
   margin: 0;
   overflow-y: auto;
   padding: 1.25rem 1.5rem;
@@ -858,6 +859,47 @@ table thead tr {
   }
 
   &::-webkit-scrollbar {
+    width: 0.5em;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(255 255 255 / 20%);
+    border-radius: 0.25em;
+  }
+}
+
+// Ensure the tab group and its bodies take up full available height
+:host ::ng-deep {
+  .admin-tabs {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+
+    .mat-mdc-tab-body-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .mat-mdc-tab-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      .mat-mdc-tab-body-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+}
     width: 0.5em;
   }
 

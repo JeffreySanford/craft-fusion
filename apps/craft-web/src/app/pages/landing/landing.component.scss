@@ -7,7 +7,7 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  height: 71vh;
+  height: 100%; // Changed from 71vh to fill available space
   justify-content: center;
   overflow: visible;
   padding: 2em;
