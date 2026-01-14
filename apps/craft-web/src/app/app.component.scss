@@ -41,13 +41,13 @@ app-header {
   }
 }
 
-/* Sidebar: fixed width, full height of layout-container */
+/* Sidebar: fixed width, fits content height */
 .sidebar {
   flex: 0 0 16em;
   display: flex;
   flex-direction: column;
-  height: auto !important;
-  max-height: 100% !important;
+  height: auto !important; // Allow it to shrink to its buttons
+  align-self: flex-start; // Prevent it from stretching to full layout height
   box-sizing: border-box;
   transition: flex-basis 0.3s, width 0.3s;
   overflow-y: auto;

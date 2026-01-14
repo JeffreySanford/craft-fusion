@@ -17,8 +17,11 @@
     width: 6.5em !important;  // Doubled from 3.25em-3.75em
     flex: 0 0 6.5em !important;
     overflow: visible !important; // Allow overhang
-    margin-top: -1em !important; // Pull it up to overhang the top
+    margin-top: 1em !important; // Moved down 2em from -1em
     z-index: 101 !important;
+    border-radius: 0 !important; // Removed strange border radius around the logo
+    box-shadow: none !important; // Remove container shadow to let eagle shadow shine
+    background: transparent !important; // Ensure no square background is visible
 
     .usa-eagle {
       max-width: none !important;
@@ -29,6 +32,7 @@
       position: relative !important;
       top: -0.5em !important;
       transform: scale(1.2) !important;
+      border-radius: 0 !important; // Also ensure eagle itself doesn't have a radius
     }
   }
 }
