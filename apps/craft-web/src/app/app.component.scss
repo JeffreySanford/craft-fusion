@@ -36,12 +36,16 @@ app-header {
   max-height: 100%;
   align-items: stretch;
   box-sizing: border-box;
-  column-gap: 1em; // 1em gutter between sidebar and main-stage
+  column-gap: 0.25em; // Reduced gutter further to pull main-stage left
+
+  &.sidebar-collapsed {
+    column-gap: 1em; // Maintain 1em gutter when collapsed
+  }
 }
 
 /* Sidebar: fixed width, full height of layout-container */
 .sidebar {
-  flex: 0 0 18em;
+  flex: 0 0 16em; // Reduced from 18em to pull main-stage closer
   display: flex;
   flex-direction: column;
   height: auto !important; /* Allow sidebar to grow with content */
@@ -75,8 +79,13 @@ app-header {
   transition: flex-basis 0.3s, width 0.3s;
 }
 
-.main-stage.sidebar-collapsed {
-  flex: 1 1 auto;
+.main-stage {
+  margin-right: 1.5em; // Increased margin from 0.5em to prevent being lush with right edge
+
+  &.sidebar-collapsed {
+    margin-right: 0 !important; // Restore perfect collapsed alignment
+    flex: 1 1 auto;
+  }
 }
 
 .router-content-wrapper {
