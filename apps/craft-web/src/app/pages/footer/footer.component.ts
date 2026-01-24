@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Observable, Subscription, interval, of } from 'rxjs';
 import Chart from 'chart.js/auto';
 import { LoggerService, ServiceCallMetric } from '../../common/services/logger.service';
-import { ThemeService } from '../../common/services/theme.service';
 import { DataSimulationService } from '../../common/services/data-simulation.service';
 import { FooterStateService } from '../../common/services/footer-state.service';
 import { ServiceMetricsBridgeService } from '../admin/services-dashboard/service-metrics-bridge.service';
@@ -34,8 +33,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   frameRateUpdateInterval: number | null = null;
   isAdmin = false;
   expanded = false;
-  currentTheme: string | null = null;
-  private themeSub?: Subscription;
 
   logoLinks = [
     { src: 'assets/images/compressed/nodejs-new-pantone-white.png', alt: 'Node.js' },
@@ -82,7 +79,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     private logger: LoggerService,
     private dataSimulationService: DataSimulationService,
     private footerStateService: FooterStateService,
-    private themeService: ThemeService,
     private metricsBridge: ServiceMetricsBridgeService,
   ) {
     this.appStartTime = performance.now();
@@ -103,15 +99,7 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
       this.updateChartBorderColor();
     });
 
-    this.themeSub = this.themeService.theme$.subscribe((t: string) => {
-      this.currentTheme = t;
-    });
-
     this.logger.info('Footer component initialized', {}, 'FooterComponent');
-  }
-
-  cycleTheme(): void {
-    this.themeService.toggleTheme();
   }
 
   ngAfterViewInit() {
@@ -135,9 +123,6 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     if (this.chart) {
       this.chart.destroy();
-    }
-    if (this.themeSub) {
-      this.themeSub.unsubscribe();
     }
 
     this.logger.info('Footer component destroyed');

@@ -1,4 +1,4 @@
-<div class="admin-container usa-theme">
+<div class="admin-container usa-theme" [class.condensed-view]="selectedTab !== 0">
   <div class="admin-header">
     <div class="header-content">
       <div class="title-section">
@@ -7,7 +7,7 @@
         </div>
         <div class="title-and-subtitle">
           <h1>System Administration</h1>
-          <p class="subtitle">Performance Monitoring & Infrastructure Management</p>
+          <p class="subtitle" *ngIf="selectedTab === 0">Performance Monitoring & Infrastructure Management</p>
         </div>
       </div>
       <div class="actions-section">
@@ -17,11 +17,11 @@
               {{ isSimulatingData ? 'Simulated Data' : 'Live Data' }}
             </span>
           </mat-slide-toggle>
-          <span class="danger-zone">DANGER ZONE</span>
+          <span class="danger-zone" *ngIf="selectedTab === 0">DANGER ZONE</span>
         </div>
         <button mat-raised-button color="warn" (click)="clearMetrics()" class="action-button">
           <mat-icon>delete_sweep</mat-icon>
-          Clear Metrics
+          <span *ngIf="selectedTab === 0">Clear Metrics</span>
         </button>
       </div>
     </div>
@@ -146,8 +146,6 @@
 
   <div class="admin-footer">
     <div class="footer-text">
-      <p>Secured & Monitored by <strong>CraftFusion Admin</strong></p>
-      <p class="usa-motto">Liberty • Security • Innovation</p>
     </div>
   </div>
 </div>

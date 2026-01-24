@@ -227,8 +227,6 @@ export class AuthenticationService {
     const accessToken = this.jwtService.sign(payload, { expiresIn: `${expiresIn}s` });
     const refreshToken = await this.refreshTokenService.create(user, refreshExpiresIn * 1000);
 
-    this.logger.debug('JWT generated for user', { username: user.username, roles: user.roles });
-
     return {
       user,
       accessToken,

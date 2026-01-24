@@ -5,9 +5,70 @@
   display: flex !important;
   flex-direction: column !important;
   flex: 1 !important;
-  min-height: 100% !important;
+  min-height: calc(100vh - 120px) !important; // Adjust based on header/footer height
   width: 100% !important;
-  overflow: hidden !important; // Prevent host from bleeding out
+  overflow: hidden !important;
+}
+
+.admin-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 100%;
+  height: 100%;
+  padding: 0.25rem !important; // Overriding the 1.25em from styles/index
+
+  &.condensed-view {
+    .admin-header {
+      padding: 0.25rem 1rem;
+      min-height: auto;
+      margin-bottom: 0.25rem; // Reduced from 1.25em
+
+      .header-content {
+        gap: 0.5rem;
+        margin-bottom: 0; // Removed margin below header content
+      }
+
+      .title-and-subtitle h1 {
+        font-size: 1.25rem;
+        margin: 0;
+      }
+
+      .usa-flag-container {
+        height: 2.5em !important;
+        width: 3.5em !important;
+        margin-top: 0 !important;
+
+        .usa-eagle {
+          height: 3em !important;
+          top: 0 !important;
+        }
+      }
+
+      .action-button {
+        min-width: auto;
+        padding: 0 8px;
+        height: 32px;
+        line-height: 32px;
+      }
+    }
+  }
+}
+
+.admin-tabs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  ::ng-deep {
+    .mat-mdc-tab-body-wrapper {
+      flex: 1;
+    }
+    .mat-mdc-tab-body {
+      height: 100%;
+    }
+  }
 }
 
 // Fix for large logo: allow it to overhang the header
@@ -71,6 +132,11 @@
   margin-top: 0.25em !important;
   margin-left: 0.25em !important;
   margin-right: 0.25em !important; // Symmetrical
+  margin-bottom: 0.5rem !important;
+
+  .header-content {
+    margin-bottom: 0.25rem !important;
+  }
 }
 
 @keyframes slide-down {
@@ -892,9 +958,11 @@ table thead tr {
   border-radius: 1rem;
   box-shadow: 0 20px 40px rgba(2, 12, 28, 0.65);
   box-sizing: border-box;
-  display: flex;
+  display: flex !important;
   flex-direction: column;
   gap: 1.25rem;
+  height: auto; // Remove fixed height
+  max-height: none; // Remove fixed height
 
   @supports (scrollbar-color: auto) {
     scrollbar-color: rgb(255 255 255 / 20%) transparent;

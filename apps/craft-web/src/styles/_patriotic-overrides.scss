@@ -18,11 +18,8 @@ $dark-gold-glow: #ffdc4e;
     color: $pure-white;
   }
 
-  :root,
-  .light-theme,
-  [data-theme="light"] {
-
-    --vibrant-header-gradient: linear-gradient(135deg, $vibrant-navy 0%, #0046cc 30%, #c80028 70%, $vibrant-red 100%);
+  :root {
+    --vibrant-header-gradient: linear-gradient(135deg, #{$vibrant-navy} 0%, #0046cc 30%, #c80028 70%, #{$vibrant-red} 100%);
     --vibrant-menu-gradient: linear-gradient(135deg, rgb(0 51 160 / 97%) 0%, rgb(228 0 50 / 97%) 50%, rgb(0 51 160 / 97%) 100%);
 
     --md-sys-color-primary: #{$vibrant-navy};
@@ -30,33 +27,6 @@ $dark-gold-glow: #ffdc4e;
     --md-sys-color-tertiary: #{$vibrant-gold};
     --md-sys-color-on-primary: #fff;
 
-    --sidebar-gradient: linear-gradient(160deg, #001327 0%, #003a7a 55%, #002456 100%);
-    --dashboard-gradient: linear-gradient(135deg, rgb(0 51 160 / 15%) 0%, rgb(228 0 50 / 15%) 100%);
-  }
-
-  .dark-theme,
-  [data-theme="dark"] {
-
-    --vibrant-header-gradient: linear-gradient(135deg, #001e60 0%, $dark-navy-glow 30%, $dark-red-glow 70%, #b3002a 100%);
-    --vibrant-menu-gradient: linear-gradient(135deg, rgb(30 65 190 / 97%) 0%, rgb(255 59 92 / 97%) 50%, rgb(30 65 190 / 97%) 100%);
-
-    --md-sys-color-primary: #{$dark-navy-glow};
-    --md-sys-color-secondary: #{$dark-red-glow};
-    --md-sys-color-tertiary: #{$dark-gold-glow};
-    --md-sys-color-on-primary: #001022;
-
-    --sidebar-gradient: linear-gradient(160deg, #071021 0%, #0a2a5b 55%, #061a3b 100%);
-    --dashboard-gradient: linear-gradient(135deg, rgb(30 65 190 / 20%) 0%, rgb(255 59 92 / 20%) 100%);
-  }
-
-  .vibrant-theme,
-  [data-theme="vibrant"] {
-    --vibrant-header-gradient: linear-gradient(135deg, #001e60 0%, #0046cc 30%, #c80028 70%, #b3002a 100%);
-    --vibrant-menu-gradient: linear-gradient(135deg, rgb(4 0 252 / 70%) 0%, rgb(228 0 50 / 70%) 50%, rgb(4 0 252 / 70%) 100%);
-    --md-sys-color-primary: #{$vibrant-navy};
-    --md-sys-color-secondary: #{$vibrant-red};
-    --md-sys-color-tertiary: #{$vibrant-gold};
-    --md-sys-color-on-primary: #fff;
     --sidebar-gradient: linear-gradient(160deg, #001327 0%, #003a7a 55%, #002456 100%);
     --dashboard-gradient: linear-gradient(135deg, rgb(0 51 160 / 15%) 0%, rgb(228 0 50 / 15%) 100%);
   }
@@ -156,14 +126,6 @@ $dark-gold-glow: #ffdc4e;
 
   .menu-item,
   .menu-item * {
-    color: var(--md-sys-color-on-primary) !important;
-  }
-
-  .vibrant-theme .menu-item.mdc-button--raised,
-  .vibrant-theme .menu-item.mat-mdc-raised-button,
-  .vibrant-theme .menu-item {
-    background-color: var(--md-sys-color-primary) !important;
-    border-bottom: 2px solid $vibrant-gold;
     color: var(--md-sys-color-on-primary) !important;
   }
 

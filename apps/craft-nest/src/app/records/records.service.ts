@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Phone, Record, Address } from './entities/record.interface';
 import { faker } from '@faker-js/faker';
 import { Company } from './entities/company.interface';
 
 @Injectable()
 export class RecordsService {
+  private readonly logger = new Logger(RecordsService.name);
   private mockDatabase: Record[] = [];
   recordGenerationTime: number = 0;
   
@@ -90,7 +91,7 @@ export class RecordsService {
 
     this.recordGenerationTime = endTime - startTime;
 
-    console.log('Generated ' + count + ' records');
+    this.logger.log(`Generated ${count} records`);
 
     return this.mockDatabase;
   }

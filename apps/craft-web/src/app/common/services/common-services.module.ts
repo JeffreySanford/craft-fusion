@@ -7,7 +7,6 @@ import { NotificationService } from './notification.service';
 import { BusyService } from './busy.service';
 import { SessionService } from './session.service';
 import { UserStateService } from './user-state.service';
-import { ThemeService } from './theme.service';
 import { ApiDiagnosticsService } from './api-diagnostics.service';
 import { SocketClientService } from './socket-client.service';
 import { UserActivityService } from './user-activity.service';
@@ -23,7 +22,6 @@ import { DataSimulationService } from './data-simulation.service';
     BusyService,
     SessionService,
     UserStateService,
-    ThemeService,
     ApiDiagnosticsService,
     SocketClientService,
     UserActivityService,

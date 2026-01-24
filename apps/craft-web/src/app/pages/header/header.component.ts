@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthenticationService } from '../../common/services/auth/authentication.service';
 import { LoggerService } from '../../common/services/logger.service';
-import { ThemeService, ThemeName } from '../../common/services/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -23,18 +22,10 @@ export class HeaderComponent implements OnInit {
   userMenuItems: { label: string; icon: string; action: string; active?: boolean }[] = [];
   isLoggedIn$: Observable<boolean>;
   isAdmin$: Observable<boolean>;
-  isDarkTheme = false;
-
-  themeOptions: { name: ThemeName; label: string }[] = [
-    { name: 'vibrant', label: 'Vibrant' },
-    { name: 'light', label: 'Light' },
-    { name: 'dark', label: 'Dark' },
-  ];
 
   constructor(
     private authService: AuthenticationService,
     private logger: LoggerService,
-    private themeService: ThemeService,
   ) {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
     this.isAdmin$ = this.authService.isAdmin$;
@@ -48,11 +39,6 @@ export class HeaderComponent implements OnInit {
       this.logger.debug('Auth state changed', { isLoggedIn });
     });
 
-    this.themeService.theme$.subscribe(theme => {
-      this.isDarkTheme = theme === 'dark';
-      this.logger.debug('Theme changed in header', { theme });
-    });
-
     this.updateUserMenuItems();
   }
 
@@ -60,7 +46,6 @@ export class HeaderComponent implements OnInit {
     this.userMenuItems = [
       { label: 'Profile', icon: 'person', action: 'profile' },
       { label: 'Settings', icon: 'settings', action: 'settings' },
-      { label: 'Theme', icon: 'palette', action: 'theme' },
       { label: 'Reports', icon: 'bar_chart', action: 'reports' },
     ];
 
@@ -109,16 +94,6 @@ export class HeaderComponent implements OnInit {
       this.authService.logout();
       this.updateUserMenuItems();
       this.logger.info('User logged out');
-    } else if (action === 'theme') {
-      this.toggleTheme();
     }
-  }
-
-  toggleTheme() {
-    this.themeService.toggleTheme();
-  }
-
-  setThemeByName(name: ThemeName) {
-    this.themeService.setThemeByName(name);
   }
 }

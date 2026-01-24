@@ -96,7 +96,7 @@ async function bootstrap() {
   // Enable Nest's shutdown hooks so we can gracefully stop the in-memory DB
   // when the process exits.
   try {
-    console.log('[bootstrap] Starting seed process; waiting for mongoose connection...');
+    Logger.log('[bootstrap] Starting seed process; waiting for mongoose connection...');
     app.enableShutdownHooks();
   } catch (e) {
     // ignore if not available
@@ -331,8 +331,7 @@ async function bootstrap() {
         clearInterval(diagnosticTimer);
         if (pollTimer) clearInterval(pollTimer);
         clearTimeout(timeoutTimer);
-        // eslint-disable-next-line no-console
-        console.log('[bootstrap][diagnostic] mongoose emitted connected');
+        Logger.log('[bootstrap][diagnostic] mongoose emitted connected');
         resolve(true);
       };
 
@@ -341,8 +340,7 @@ async function bootstrap() {
         const ready = getReady();
         const connAny = connection as any;
         const clientUrl = connAny?.client?.s?.url ?? connAny?.client?.s?.cs?.url ?? '<unknown>';
-        // eslint-disable-next-line no-console
-        console.log(`[bootstrap][diagnostic] mongoose.readyState=${ready}, elapsed=${elapsed}ms, clientUrl=${clientUrl}`);
+        Logger.log(`[bootstrap][diagnostic] mongoose.readyState=${ready}, elapsed=${elapsed}ms, clientUrl=${clientUrl}`);
       }, diagInterval);
 
       const timeoutTimer = setTimeout(() => {
@@ -357,8 +355,7 @@ async function bootstrap() {
         } catch (e) {
           // ignore
         }
-        // eslint-disable-next-line no-console
-        console.log('[bootstrap][diagnostic] waitForMongooseConnected timed out');
+        Logger.log('[bootstrap][diagnostic] waitForMongooseConnected timed out');
         resolve(false);
       }, timeout);
 
@@ -371,8 +368,7 @@ async function bootstrap() {
         }
       } catch (e) {
         // If attaching listener fails, fallback to polling
-        // eslint-disable-next-line no-console
-        console.log('[bootstrap][diagnostic] failed to attach connected listener, will poll instead');
+        Logger.log('[bootstrap][diagnostic] failed to attach connected listener, will poll instead');
         pollTimer = setInterval(() => {
           try {
             if (getReady() === 1) {
@@ -401,12 +397,12 @@ async function bootstrap() {
       const ok = await waitForMongooseConnected(connection, 15000);
       if (!ok) {
         Logger.warn('Mongoose did not connect within timeout; continuing without seeding');
-        console.log('[bootstrap] Mongoose did not connect within timeout; skipping timeline seeding');
+        Logger.log('[bootstrap] Mongoose did not connect within timeout; skipping timeline seeding');
         // Log environment and memory-server presence for debugging
-        console.log('[bootstrap][diagnostic] process.env.MONGODB_URI=', process.env['MONGODB_URI'] || '<none>');
-        console.log('[bootstrap][diagnostic] global.__MONGO_MEMORY_SERVER__=', !!(global as any).__MONGO_MEMORY_SERVER__);
+        Logger.log(`[bootstrap][diagnostic] process.env.MONGODB_URI=${process.env['MONGODB_URI'] || '<none>'}`);
+        Logger.log(`[bootstrap][diagnostic] global.__MONGO_MEMORY_SERVER__=${!!(global as any).__MONGO_MEMORY_SERVER__}`);
       } else {
-        console.log('[bootstrap] Mongoose connected — proceeding with timeline seeding');
+        Logger.log('[bootstrap] Mongoose connected — proceeding with timeline seeding');
       }
 
       try {
@@ -425,7 +421,7 @@ async function bootstrap() {
 
         if (!seedPath) {
           Logger.warn('No timeline seed file found in expected locations; skipping timeline seeding');
-          console.log('[seeder] No timeline seed file found; checked:', seedCandidates);
+          Logger.log(`[seeder] No timeline seed file found; checked: ${seedCandidates.join(', ')}`);
         } else {
           const raw = fs.readFileSync(seedPath, 'utf8');
           const seeds = JSON.parse(raw) as Array<Record<string, unknown>>;
@@ -439,19 +435,19 @@ async function bootstrap() {
                 const already = Array.isArray(existing) && existing.some(ev => ev.title === title && new Date(ev.date).toISOString() === new Date(dateStr).toISOString());
                 if (!already) {
                   await firstValueFrom(timelineService.create(s as any));
-                  console.log(`[seeder] ✓ ${title}`);
+                  Logger.log(`[seeder] ✓ ${title}`);
                   seededCollections.add('timeline');
                 }
               } catch (e: unknown) {
                 const title = String((s as any)['title'] || '');
-                console.log(`[seeder] ✗ ${title}: ${String(e)}`);
+                Logger.log(`[seeder] ✗ ${title}: ${String(e)}`);
               }
             }
           }
         }
       } catch (e: unknown) {
         Logger.warn(`Seed loader error: ${isError(e) ? e.message : String(e)}`);
-        console.log('[seeder] Seed loader error:', isError(e) ? e.message : String(e));
+        Logger.log(`[seeder] Seed loader error: ${isError(e) ? e.message : String(e)}`);
       }
     }
 

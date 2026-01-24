@@ -7,27 +7,12 @@
     <mat-menu #userMenu="matMenu" class="user-menu" [overlapTrigger]="false" panelClass="user-menu" [yPosition]="'below'" [hasBackdrop]="true">
       <ng-container *ngFor="let item of userMenuItems">
         <button
-          *ngIf="item.action !== 'theme'"
           mat-menu-item
           (click)="handleUserMenuAction(item.action)">
           <mat-icon>{{ item.icon }}</mat-icon>
           <span>{{ item.label }}</span>
         </button>
-
-        <button
-          *ngIf="item.action === 'theme'"
-          mat-menu-item
-          [matMenuTriggerFor]="appearanceMenu">
-          <mat-icon>{{ item.icon }}</mat-icon>
-          <span>{{ item.label }}</span>
-        </button>
       </ng-container>
-
-      <mat-menu #appearanceMenu="matMenu" class="appearance-menu user-menu" panelClass="user-menu">
-        <button mat-menu-item *ngFor="let opt of themeOptions" (click)="setThemeByName(opt.name)">
-          <span>{{ opt.label }}</span>
-        </button>
-      </mat-menu>
     </mat-menu>
   </div>
 </mat-card>
