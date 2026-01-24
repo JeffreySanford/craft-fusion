@@ -120,6 +120,12 @@ export class ApiDiagnosticsService {
 
   readonly hasAnyWorkingSocket$ = this.workingSocketsCount$.pipe(map(count => count > 0));
 
+  private healthMetricsSubject = new BehaviorSubject<any>(null);
+  /**
+   * Hot observable emitting detailed backend health metrics
+   */
+  readonly health$ = this.healthMetricsSubject.asObservable().pipe(shareReplay(1));
+
   constructor(
     private http: HttpClient,
     private logger: LoggerService,
@@ -127,6 +133,25 @@ export class ApiDiagnosticsService {
     this.logger.registerService('ApiDiagnosticsService');
     this.logger.info('API Diagnostics Service initialized');
     this.startHealthCheck();
+    this.startDetailedHealthPolling();
+  }
+
+  private startDetailedHealthPolling(): void {
+    // Start detailed health polling for metrics
+    timer(0, this.checkInterval)
+      .pipe(
+        switchMap(() => this.http.get<any>('/api/health').pipe(
+          catchError(err => {
+            this.logger.debug('Detailed health check failed', err);
+            return of(null);
+          })
+        ))
+      )
+      .subscribe(health => {
+        if (health) {
+          this.healthMetricsSubject.next(health);
+        }
+      });
   }
 
   checkConnectionNow(): Observable<ConnectionDiagnostics> {

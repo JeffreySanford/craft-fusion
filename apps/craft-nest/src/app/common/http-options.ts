@@ -21,23 +21,23 @@ export function getHttpsOptions() {
 
   // Check for the presence of the .env file
   if (existsSync(envPath)) {
-    console.log('.env file is present');
+     // console.log('.env file is present');
   } else {
-    console.log('.env file is not present');
+     // console.log('.env file is not present');
   }
 
   // Check for the presence of the key.pem file
   if (existsSync(keyPath)) {
-    console.log('key.pem file is present');
+     // console.log('key.pem file is present');
   } else {
-    console.log('key.pem file is not present');
+     // console.log('key.pem file is not present');
   }
 
   // Check for the presence of the cert.pem file
   if (existsSync(certPath)) {
-    console.log('cert.pem file is present');
+     // console.log('cert.pem file is present');
   } else {
-    console.log('cert.pem file is not present');
+     // console.log('cert.pem file is not present');
   }
 
   return {

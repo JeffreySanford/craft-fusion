@@ -27,8 +27,8 @@
     </div>
   </div>
 
-  <!-- Hero KPI Bar (Only on Overview Tab) -->
-  <div class="admin-hero-bar" *ngIf="selectedTab === 0 && (heroMetrics$ | async) as metrics">
+  <!-- Hero KPI Bar (Across All Tabs) -->
+  <div class="admin-hero-bar" *ngIf="(heroMetrics$ | async) as metrics">
     <app-hero-tile
       [label]="'Active Services'"
       [value]="metrics.activeServices.current + '/' + metrics.activeServices.total"
@@ -56,7 +56,7 @@
       [status]="metrics.errors.count > 0 ? 'critical' : metrics.errors.warnings > 0 ? 'warning' : 'ok'"
       [showPulse]="metrics.errors.count > 0"
       [clickable]="true"
-      (tileClick)="navigateToTab(5)">
+      (tileClick)="navigateToTab(3)">
     </app-hero-tile>
 
     <app-hero-tile
@@ -114,32 +114,7 @@
         Logs
       </ng-template>
       <div class="tab-content logger-tab">
-        <div class="logger-controls">
-          <mat-button-toggle-group [(ngModel)]="selectedLogLevel">
-            <mat-button-toggle value="all">All Logs</mat-button-toggle>
-            <mat-button-toggle value="error">Errors</mat-button-toggle>
-            <mat-button-toggle value="warn">Warnings</mat-button-toggle>
-            <mat-button-toggle value="info">Info</mat-button-toggle>
-          </mat-button-toggle-group>
-
-          <div class="logger-actions">
-            <div class="clear-logs-container">
-              <button class="clear-logs-btn" (click)="clearLogs()">
-                <mat-icon>delete_sweep</mat-icon>
-                Clear Logs
-              </button>
-              <span class="danger-text">CLEAR ALL</span>
-            </div>
-            <div class="autoscroll-toggle" [class.active]="autoScroll">
-              <mat-slide-toggle [(ngModel)]="autoScroll" color="primary">
-                <span class="toggle-label">Auto-scroll</span>
-              </mat-slide-toggle>
-            </div>
-          </div>
-        </div>
-
         <app-logs-dashboard></app-logs-dashboard>
-
       </div>
     </mat-tab>
   </mat-tab-group>

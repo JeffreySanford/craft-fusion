@@ -182,13 +182,6 @@ export class ApiService {
             timestamp: new Date().toISOString(),
             errorObject: JSON.stringify(error),
           });
-
-          console.error(`API Error Details:`, {
-            url,
-            status,
-            message: error.message,
-            error,
-          });
         }
 
         if (error.status === 504 || error.status === 0) {
@@ -295,7 +288,6 @@ export class ApiService {
 
   setRecordSize(size: number): void {
     this.recordSize = size;
-    console.log(`API Service: Record size set to ${this.recordSize}`);
   }
 
   setServerType(serverName: string): void {
@@ -303,14 +295,13 @@ export class ApiService {
     if (server) {
       this.currentServer = server;
       this.setApiUrl(serverName);
-      console.log(`API Service: Server switched to ${server.name}`);
     } else {
-      console.error('API Service: Server not found');
+      this.logger.error('API Service: Server not found');
     }
   }
 
   getPerformanceDetails(): void {
-    console.log(`API Service: Performance details for ${this.recordSize} records on ${this.currentServer.name} server`);
+    this.logger.info(`Performance details for ${this.recordSize} records on ${this.currentServer.name} server`);
   }
 
   generatePerformanceReport(selectedServer: { language: string }, totalRecords: number, generationTimeLabel: string, roundtripLabel: string): string {
@@ -318,9 +309,6 @@ export class ApiService {
   }
 
   handleStringArray(data: string[]): unknown {
-
-    console.log('Handling string array:', data);
-
     return data.map(str => str.length);
   }
 
@@ -354,14 +342,11 @@ export class ApiService {
     options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any },
   ): Observable<T> {
 
-    console.log('🔍 Auth request details', {
+    this.logger.debug('Auth request details', {
       method,
       endpoint,
       fullUrl: this.getFullUrl(endpoint),
-      bodyKeys: body ? Object.keys(body as Record<string, unknown>) : 'none',
       timestamp: new Date().toISOString(),
-      options,
-      isProduction: this.isProduction,
     });
 
     const enhancedOptions: Record<string, unknown> = {
@@ -417,29 +402,10 @@ export class ApiService {
       isProduction: this.isProduction,
     });
 
-    if (endpoint.includes('auth')) {
-      console.log(`🌐 Network request details:`, {
-        url,
-        method: 'POST',
-        bodyType: typeof body,
-        hasCredentials: !!(body && typeof body === 'object' && 'username' in (body as any)),
-        timestamp: Date.now(),
-        options: Object.keys(httpOptions || {}),
-      });
-    }
-
     return this.http.post<R>(url, body, httpOptions).pipe(
-      tap(response => {
+      tap(() => {
         this.logger.endServiceCall(callId, 200);
         this.logger.debug(`POST ${endpoint} succeeded`);
-
-        if (endpoint.includes('auth')) {
-          console.log(`✅ Auth request succeeded`, {
-            endpoint,
-            responseReceived: true,
-            responseType: typeof response,
-          });
-        }
       }),
       catchError(error => {
         this.logger.endServiceCall(callId, error.status || 500);
@@ -450,13 +416,6 @@ export class ApiService {
         });
 
         if (endpoint.includes('auth')) {
-          console.error(`❌ Auth request failed: ${error.status}`, {
-            message: error.message || 'No message',
-            statusText: error.statusText,
-            url: url,
-            error: error,
-          });
-
           this.checkServerAvailability();
         }
 

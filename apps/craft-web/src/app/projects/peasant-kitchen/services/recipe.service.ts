@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Observable, catchError, tap, of, throwError, timer } from 'rxjs';
+import { Observable, catchError, tap, of, BehaviorSubject, timer, throwError } from 'rxjs';
 import { retry, timeout, map } from 'rxjs/operators';
 import { Recipe } from './recipe.interface';
 import { ApiService } from '../../../common/services/api.service';
 
 @Injectable()
 export class RecipeService {
-  private recipe!: Recipe;
   private readonly endpoint = 'recipes';
   private isOfflineMode = false;
   private readonly REQUEST_TIMEOUT = 5000;                     
@@ -32,6 +31,9 @@ export class RecipeService {
     directions: ['Mix all ingredients together', 'Cook until done', 'Enjoy!'],
     url: 'sample-recipe',
   };
+
+  private readonly recipeSubject = new BehaviorSubject<Recipe>(this.defaultRecipe);
+  public readonly currentRecipe$ = this.recipeSubject.asObservable();
 
   private readonly fallbackRecipes: Recipe[] = [
     {
@@ -82,20 +84,12 @@ export class RecipeService {
 
   setRecipe(recipe: Recipe): void {
     console.log('Setting current recipe:', recipe.id);
-    this.recipe = recipe;
+    this.recipeSubject.next(recipe);
   }
 
   getRecipe(): Observable<Recipe> {
-    if (!this.recipe) {
-      console.warn('No recipe currently selected - returning default recipe');
-      console.log('Returning default recipe:', this.defaultRecipe);
-      return of(this.defaultRecipe);
-    }
-    if (!this.recipe.countryCode) {
-      this.recipe.countryCode = 'Unknown';
-    }
-    console.log('Getting current recipe:', this.recipe.id);
-    return of(this.recipe);
+    console.log('Getting current recipe stream');
+    return this.currentRecipe$;
   }
 
   getRecipeByUrl(url: string): Observable<Recipe> {
@@ -152,7 +146,7 @@ export class RecipeService {
   }
 
   hasRecipe(): boolean {
-    return !!this.recipe;
+    return !!this.recipeSubject.value && this.recipeSubject.value.id !== 0;
   }
 
   addRecipe(recipe: Recipe): Observable<Recipe> {

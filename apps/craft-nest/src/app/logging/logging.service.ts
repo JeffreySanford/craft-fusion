@@ -21,18 +21,8 @@ export class LoggingService {
     lastResetTime: Date.now()
   };
 
-  // Save original console methods to avoid recursion
-  private readonly originalConsole = {
-    log: console.log,
-    info: console.info,
-    warn: console.warn,
-    error: console.error,
-    debug: console.debug,
-  };
-
   constructor() {
-    // Capture console methods
-    this.interceptConsole();
+    // Console interception disabled to reduce pollution
   }
 
   debug(message: string, metadata?: any): void {
@@ -152,72 +142,30 @@ export class LoggingService {
     return of(void 0);
   }
 
-  private interceptConsole(): void {
-    // Override console.log
-    console.log = (...args: any[]) => {
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-      ).join(' ');
-      this.addLog('log', message);
-      this.originalConsole.log.apply(console, args);
-    };
-
-    // Override console.info
-    console.info = (...args: any[]) => {
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-      ).join(' ');
-      this.addLog('info', message);
-      this.originalConsole.info.apply(console, args);
-    };
-
-    // Override console.warn
-    console.warn = (...args: any[]) => {
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-      ).join(' ');
-      this.addLog('warn', message);
-      this.originalConsole.warn.apply(console, args);
-    };
-
-    // Override console.error
-    console.error = (...args: any[]) => {
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-      ).join(' ');
-      this.addLog('error', message);
-      this.originalConsole.error.apply(console, args);
-    };
-
-    // Override console.debug
-    console.debug = (...args: any[]) => {
-      const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-      ).join(' ');
-      this.addLog('debug', message);
-      this.originalConsole.debug.apply(console, args);
-    };
-  }
-
   private outputToConsole(level: string, message: string, metadata?: any): void {
+    // Only output INFO and above to console to reduce noise
+    if (level === 'debug' || level === 'verbose') {
+      return;
+    }
+
     const timestamp = new Date().toISOString();
     const prefix = `[${timestamp}] [${level.toUpperCase()}]`;
-    // Use original console methods to avoid recursion
+    // Using standard console methods
     switch (level) {
       case 'debug':
-        this.originalConsole.debug(`${prefix} ${message}`, metadata || '');
+        console.debug(`${prefix} ${message}`, metadata || '');
         break;
       case 'info':
-        this.originalConsole.info(`${prefix} ${message}`, metadata || '');
+        console.info(`${prefix} ${message}`, metadata || '');
         break;
       case 'warn':
-        this.originalConsole.warn(`${prefix} ${message}`, metadata || '');
+        console.warn(`${prefix} ${message}`, metadata || '');
         break;
       case 'error':
-        this.originalConsole.error(`${prefix} ${message}`, metadata || '');
+        console.error(`${prefix} ${message}`, metadata || '');
         break;
       default:
-        this.originalConsole.log(`${prefix} ${message}`, metadata || '');
+         // console.log(`${prefix} ${message}`, metadata || '');
     }
   }
 

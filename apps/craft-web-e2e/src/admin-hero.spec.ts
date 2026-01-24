@@ -148,14 +148,17 @@ test.describe('Admin Hero Area', () => {
     
     if (isClickable) {
       await errorsTile.click({ force: true });
-      const logsTab = page.getByRole('tab', { name: 'Logs' });
-      await logsTab.scrollIntoViewIfNeeded();
-      const logsPanel = page
-        .locator('.logger-tab')
-        .locator("xpath=ancestor::*[contains(@class, 'mat-tab-body') or contains(@class, 'mat-mdc-tab-body')]")
-        .first();
+      
+      // Wait for tab animation to complete
+      await page.waitForTimeout(2000);
 
-      await expect(logsPanel).toBeVisible({ timeout: 10000 });
+      const logsTab = page.getByRole('tab', { name: /Logs/ });
+      await logsTab.scrollIntoViewIfNeeded();
+      await expect(logsTab).toHaveAttribute('aria-selected', 'true', { timeout: 10000 });
+
+      // Check for the logs dashboard component being visible
+      const logsPanel = page.locator('app-logs-dashboard');
+      await expect(logsPanel).toBeVisible({ timeout: 15000 });
     }
   });
 

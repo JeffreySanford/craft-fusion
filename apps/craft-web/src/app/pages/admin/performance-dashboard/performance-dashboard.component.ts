@@ -1,8 +1,9 @@
-import { Component, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, AfterViewInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Subscription, interval } from 'rxjs';
 import { PerformanceHelperService } from './performance-helper.service';
 import { ServicesDashboardService } from '../services-dashboard/services-dashboard.service';
 import { PerformanceMetricsBridgeService } from './performance-metrics-bridge.service';
+import { ApiDiagnosticsService } from '../../../common/services/api-diagnostics.service';
 import { ServiceCallMetric } from '../../../common/services/logger.service';
 
 @Component({
@@ -14,10 +15,12 @@ import { ServiceCallMetric } from '../../../common/services/logger.service';
 export class PerformanceDashboardComponent implements AfterViewInit, OnDestroy {
   @ViewChild('systemCanvas') systemCanvas!: ElementRef<HTMLCanvasElement>;
   private chart: any;
-  private metricsSubscription?: Subscription;
+  private metricsSubscription: Subscription | undefined;
+  private healthSubscription: Subscription | undefined;
+  private pollingSubscription: Subscription | undefined;
   private animationFrameId: number | undefined;
-  private pollingIntervalId: number | undefined;
   private latestMetrics: ServiceCallMetric[] = [];
+  private backendStartTime: number | undefined;
   private readonly startedAt = Date.now();
   private readonly POLLING_INTERVAL_MS = 1000; // Poll every 1 second
 
@@ -56,6 +59,8 @@ export class PerformanceDashboardComponent implements AfterViewInit, OnDestroy {
     private helper: PerformanceHelperService,
     private servicesDashboard: ServicesDashboardService,
     private metricsBridge: PerformanceMetricsBridgeService,
+    private diagnosticsService: ApiDiagnosticsService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngAfterViewInit(): void {
@@ -75,6 +80,13 @@ export class PerformanceDashboardComponent implements AfterViewInit, OnDestroy {
       this.scheduleChartRefresh();
     });
     this.startPolling();
+    
+    // Subscribe to hot health observable from diagnostics service
+    this.healthSubscription = this.diagnosticsService.health$.subscribe(health => {
+      if (health) {
+        this.handleHealthUpdate(health);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -84,10 +96,25 @@ export class PerformanceDashboardComponent implements AfterViewInit, OnDestroy {
       this.animationFrameId = undefined;
     }
     this.metricsSubscription?.unsubscribe();
+    this.healthSubscription?.unsubscribe();
     this.metricsBridge.stopMonitoring();
     try {
       this.chart?.destroy();
     } catch {}
+  }
+
+  private handleHealthUpdate(health: any): void {
+    if (health && health.uptime) {
+      // backend reports uptime in seconds, calculate start time
+      this.backendStartTime = Date.now() - (health.uptime * 1000);
+      
+      // Also update base metrics if available from backend
+      if (health.metrics) {
+        this.performanceMetrics.memoryUsage = `${health.metrics.memory.usage}%`;
+        this.performanceMetrics.cpuLoad = `${health.metrics.cpu.usage}%`;
+      }
+      this.cdr.markForCheck();
+    }
   }
 
   private scheduleChartRefresh(): void {
@@ -120,15 +147,25 @@ export class PerformanceDashboardComponent implements AfterViewInit, OnDestroy {
 
   private updatePerformanceMetrics(stats: number[], metrics: ServiceCallMetric[]): void {
     const average = stats.length ? stats.reduce((sum, value) => sum + value, 0) / stats.length : 0;
-    this.performanceMetrics.memoryUsage = `${Math.min(100, Math.round(average))}%`;
-    this.performanceMetrics.cpuLoad = `${Math.min(100, Math.round(average * 0.9))}%`;
+    
+    // Only use local average if we haven't fetched real backend metrics yet
+    if (this.performanceMetrics.memoryUsage === '0%') {
+      this.performanceMetrics.memoryUsage = `${Math.min(100, Math.round(average))}%`;
+      this.performanceMetrics.cpuLoad = `${Math.min(100, Math.round(average * 0.9))}%`;
+    }
+
     const latency = metrics.length
       ? Math.round(metrics.reduce((sum, metric) => sum + (metric.duration || 0), 0) / metrics.length)
       : 0;
     this.performanceMetrics.networkLatency = `${latency}ms`;
-    const uptimeSeconds = Math.max(0, Math.floor((Date.now() - this.startedAt) / 1000));
+    
+    // Use backend start time if available, else fallback to frontend session start
+    const baseTime = this.backendStartTime || this.startedAt;
+    const uptimeSeconds = Math.max(0, Math.floor((Date.now() - baseTime) / 1000));
     this.performanceMetrics.appUptime = this.formatDuration(uptimeSeconds);
     this.performanceMetrics.adminStatus = metrics.some(metric => (metric.status ?? 0) >= 400) ? 'attention' : 'stable';
+    
+    this.cdr.markForCheck();
   }
 
   private formatDuration(totalSeconds: number): string {
@@ -145,19 +182,16 @@ export class PerformanceDashboardComponent implements AfterViewInit, OnDestroy {
   }
 
   private startPolling(): void {
-    // Clear any existing interval
     this.stopPolling();
-    
-    // Start polling every second to update metrics
-    this.pollingIntervalId = window.setInterval(() => {
+    this.pollingSubscription = interval(this.POLLING_INTERVAL_MS).subscribe(() => {
       this.scheduleChartRefresh();
-    }, this.POLLING_INTERVAL_MS);
+    });
   }
 
   private stopPolling(): void {
-    if (this.pollingIntervalId !== undefined) {
-      clearInterval(this.pollingIntervalId);
-      this.pollingIntervalId = undefined;
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+      this.pollingSubscription = undefined;
     }
   }
 

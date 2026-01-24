@@ -44,7 +44,7 @@ export interface ServiceCallMetric {
 export class LoggerService {
   private logs: LogEntry[] = [];
   private logLimit = 1000;                                   
-  private loggerLevel = LogLevel.DEBUG;                     
+  private loggerLevel = LogLevel.INFO;                     
   private logSubject = new Subject<LogEntry>();
 
   private serviceMetrics: ServiceCallMetric[] = [];

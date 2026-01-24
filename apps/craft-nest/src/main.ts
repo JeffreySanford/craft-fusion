@@ -472,15 +472,15 @@ async function bootstrap() {
             };
             await usersColl.insertOne(doc);
             Logger.log(`Seeded admin user into users collection: ${adminUser}`);
-            console.log(`[seeder] Seeded admin user into users collection: ${adminUser}`);
+             // console.log(`[seeder] Seeded admin user into users collection: ${adminUser}`);
             seededCollections.add('users');
           } else {
             Logger.log(`Admin user already present in users collection: ${adminUser}`);
-            console.log(`[seeder] Admin user already present in users collection: ${adminUser}`);
+             // console.log(`[seeder] Admin user already present in users collection: ${adminUser}`);
           }
         } catch (e) {
           Logger.warn(`Failed to seed admin credentials: ${isError(e) ? e.message : String(e)}`);
-          console.log(`[seeder] Failed to seed admin credentials: ${isError(e) ? e.message : String(e)}`);
+           // console.log(`[seeder] Failed to seed admin credentials: ${isError(e) ? e.message : String(e)}`);
         }
       }
     } catch (e) {
@@ -511,15 +511,15 @@ async function bootstrap() {
               // We don't know expiry from env token — leave expiresAt undefined
             });
             Logger.log(`Stored ADMIN_TOKEN from env into api_tokens for ${adminUserEnv}`);
-            console.log(`[seeder] Stored ADMIN_TOKEN from env for ${adminUserEnv}`);
+             // console.log(`[seeder] Stored ADMIN_TOKEN from env for ${adminUserEnv}`);
             seededCollections.add('api_tokens');
           } else {
             Logger.log(`ADMIN_TOKEN already exists in api_tokens for ${adminUserEnv}`);
-            console.log(`[seeder] ADMIN_TOKEN already exists for ${adminUserEnv}`);
+             // console.log(`[seeder] ADMIN_TOKEN already exists for ${adminUserEnv}`);
           }
         } catch (e) {
           Logger.warn(`Failed to store ADMIN_TOKEN from env: ${String(e)}`);
-          console.log(`[seeder] Failed to store ADMIN_TOKEN from env: ${String(e)}`);
+           // console.log(`[seeder] Failed to store ADMIN_TOKEN from env: ${String(e)}`);
         }
       }
 
@@ -540,15 +540,15 @@ async function bootstrap() {
               updatedAt: now,
             });
             Logger.log(`Seeded admin user into users collection from env: ${adminUserEnv}`);
-            console.log(`[seeder] Seeded admin user from env: ${adminUserEnv}`);
+             // console.log(`[seeder] Seeded admin user from env: ${adminUserEnv}`);
             seededCollections.add('users');
           } else {
             Logger.log(`Admin user already present in users collection: ${adminUserEnv}`);
-            console.log(`[seeder] Admin user already present: ${adminUserEnv}`);
+             // console.log(`[seeder] Admin user already present: ${adminUserEnv}`);
           }
         } catch (e) {
           Logger.warn(`Failed to seed admin user from env: ${String(e)}`);
-          console.log(`[seeder] Failed to seed admin user from env: ${String(e)}`);
+           // console.log(`[seeder] Failed to seed admin user from env: ${String(e)}`);
         }
       }
 
@@ -586,11 +586,11 @@ async function bootstrap() {
               ? 'Updated'
               : 'Retained';
           Logger.log(`${action} valued-member token from environment`);
-          console.log(`[seeder] ${action} valued-member token from environment`);
+           // console.log(`[seeder] ${action} valued-member token from environment`);
           seededCollections.add('api_tokens');
         } catch (e) {
           Logger.warn(`Failed to seed valued-member token from env: ${String(e)}`);
-          console.log(`[seeder] Failed to seed valued-member token from env: ${String(e)}`);
+           // console.log(`[seeder] Failed to seed valued-member token from env: ${String(e)}`);
         }
       } else {
         Logger.warn('VALUED_MEMBER_TOKEN is not set, valued-member login will be unavailable');
@@ -601,10 +601,10 @@ async function bootstrap() {
 
     // After seeding, if any collections were modified, log them for visibility
     if (typeof seededCollections !== 'undefined' && seededCollections.size > 0) {
-      console.log('[seeder] Collections seeded or updated:', Array.from(seededCollections));
+       // console.log('[seeder] Collections seeded or updated:', Array.from(seededCollections));
       Logger.log(`Collections seeded or updated: ${Array.from(seededCollections).join(', ')}`);
     } else {
-      console.log('[seeder] No collections were seeded or modified during startup');
+       // console.log('[seeder] No collections were seeded or modified during startup');
     }
 
     await app.listen(PORT, '0.0.0.0');

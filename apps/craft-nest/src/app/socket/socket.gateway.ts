@@ -49,13 +49,13 @@ export class SocketGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 
   @SubscribeMessage('updateVisitLength')
   handleUpdateVisitLength(_client: Socket, payload: { length: number }): void {
-    this.logger.log(`Visit length updated: ${payload.length}`);
+    this.logger.debug(`Visit length updated: ${payload.length}`);
     // Store in database if needed
   }
 
   @SubscribeMessage('updateVisitedPage')
   handleUpdateVisitedPage(_client: Socket, payload: { page: string }): void {
-    this.logger.log(`Visited page updated: ${payload.page}`);
+    this.logger.debug(`Visited page updated: ${payload.page}`);
     // Store in database if needed
   }
 }

@@ -7,6 +7,6 @@ describe('GET /api', () => {
     const res = await axios.get(`${baseUrl}/api`);
 
     expect(res.status).toBe(200);
-    expect(res.data).toEqual('Welcome to Craft Fusion API!');
+    expect(res.data).toEqual({ message: 'Welcome to Craft Fusion API!' });
   });
 });

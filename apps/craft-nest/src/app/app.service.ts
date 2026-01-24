@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Welcome to Craft Fusion API!';
+  getHello() {
+    return { message: 'Welcome to Craft Fusion API!' };
   }
 }

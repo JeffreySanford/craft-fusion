@@ -81,9 +81,6 @@ export function socketClientFactory(socketClient: SocketClientService): () => vo
     httpInterceptorProviders,
     provideAppInitializer(() => {
       const router = inject(Router);
-      router.events.subscribe(event => {
-        console.log('Router event:', event);
-      });
       const logger = inject(LoggerService);
 
       router.events.subscribe(event => {

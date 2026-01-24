@@ -28,7 +28,7 @@ export class AuthService {
   
   constructor(private jwtService: JwtService) {
     this.logger.log('Auth service initialized with RBAC support');
-    console.log('Auth service ready for connections');
+     // console.log('Auth service ready for connections');
   }
 
   validateUser(username: string, password: string): Observable<User | null> {

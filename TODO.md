@@ -14,14 +14,16 @@ This file is the planning source of truth. It records decisions, risks, and the 
 
 - [x] **Nx Migration**: Execute `nx migrate latest` to reach Nx 21.1.0 (DONE).
 - [ ] **Angular 22 Evolution**:
-  - [ ] **Phase 1: Incremental path** (Currently on 19.2.18).
-  - [ ] **Observable Hardening**: Audit and enforce **Hot Observables** (multi-cast) for all shared state. Ensure use of `shareReplay` to prevent redundant side effects.
-  - [ ] **Reactive Consistency**: Replace legacy `async/await` data fetches with unified `Observable`-based streams.
+  - [x] **Phase 1: Incremental path** (Currently on 19.2.18).
+  - [x] **Observable Hardening**: Audit and enforce **Hot Observables** (multi-cast) for all shared state. Ensure use of `shareReplay` to prevent redundant side effects (DONE 2026-01-24).
+  - [x] **Reactive Consistency**: Replace legacy `async/await` data fetches with unified `Observable`-based streams (DONE 2026-01-24).
   - [ ] **Stable Change Detection**: Optimize `Zone.js` usage. Audit for `runOutsideAngular` where performance is critical, but keep the core Zone intact.
   - [ ] Audit all components for **NgModule** compliance (`standalone: false`).
 - [x] **NestJS v11+ / MongoDB 9.1**:
   - [x] Upgrade `@nestjs/core` and `@nestjs/common` to latest stable (v11.1.x) (DONE).
   - [x] Update `mongoose` to latest stable (9.1.3) (DONE).
+  - [x] Forced **In-Memory MongoDB Server** for zero-config development (DONE 2026-01-24).
+  - [x] Resolved **EBUSY** file lock issues with global `kill-ports.js` script (DONE 2026-01-24).
   - [ ] Enable **Strict Type Checking** across all backend modules.
 - [ ] **Security (Top Priority)**:
   - [x] **Audit Remediation**: Resolved high-priority vulnerabilities.
