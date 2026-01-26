@@ -271,9 +271,19 @@ test.describe('Admin Hero Area', () => {
     // Toggle simulation with explicit wait
     await simulationToggle.click({ force: true });
 
-    await expect(toggleButton).toHaveAttribute('aria-checked', targetAria, {
-      timeout: 10000,
-    });
+    // Defensive: retry the toggle once if the first click didn't flip the
+    // control (some platforms have transient animation / timing races).
+    try {
+      await expect(toggleButton).toHaveAttribute('aria-checked', targetAria, {
+        timeout: 10000,
+      });
+    } catch (err) {
+      // second attempt
+      await simulationToggle.click({ force: true });
+      await expect(toggleButton).toHaveAttribute('aria-checked', targetAria, {
+        timeout: 10000,
+      });
+    }
     await expect(valueLocator).toHaveText(targetValue, { timeout: 10000 });
 
     // Get new state

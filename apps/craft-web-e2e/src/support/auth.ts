@@ -38,25 +38,71 @@ export async function loginAsAdmin(page: Page, targetPath = '/admin'): Promise<v
     payload.password = credentials.password;
   }
 
-  await page.goto('/');
-  const responseStatus = await page.evaluate(
-    async ({ body }) => {
-      const result = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(body),
-      });
-      return result.status;
-    },
-    { body: payload },
-  );
+  // Use Playwright API request to perform a deterministic login and transfer
+  // the Set-Cookie values into the browser context. This is more reliable
+  // than doing a fetch() inside the page because it lets us assert the
+  // server-set cookies and explicitly add them to the page context.
+  const apiBase = process.env['API_URL'] || '';
+  const apiRequest = await (page.request || (await import('@playwright/test')).request).newContext({ baseURL: apiBase || undefined });
+  const loginResp = await apiRequest.post('/api/auth/login', { data: payload });
+  const status = loginResp.status();
+  const headers = loginResp.headersArray();
+  await apiRequest.dispose();
 
-  if (responseStatus >= 400) {
-    throw new Error(`Login failed with status ${responseStatus}`);
+  if (status >= 400) {
+    throw new Error(`Login failed with status ${status}`);
   }
 
-  await page.goto(targetPath);
+  // Extract Set-Cookie headers for the access & refresh cookies and add them
+  // to the browser context so the app sees an authenticated session.
+  const extractCookieValue = (setCookie: string, name: string): string | null => {
+    const [pair] = setCookie.split(';');
+    if (!pair) return null;
+    const [cookieName, ...rest] = pair.split('=');
+    if (cookieName !== name || rest.length === 0) return null;
+    return rest.join('=');
+  };
+
+  const findCookie = (headersArr: { name: string; value: string }[], name: string) => {
+    for (const h of headersArr) {
+      if (h.name.toLowerCase() !== 'set-cookie') continue;
+      const v = extractCookieValue(h.value, name);
+      if (v) return v;
+    }
+    return null;
+  };
+
+  const ACCESS_TOKEN_COOKIE = process.env['E2E_ACCESS_COOKIE'] || 'cf_access_token';
+  const REFRESH_TOKEN_COOKIE = process.env['E2E_REFRESH_COOKIE'] || 'cf_refresh_token';
+
+  const accessVal = findCookie(headers, ACCESS_TOKEN_COOKIE);
+  const refreshVal = findCookie(headers, REFRESH_TOKEN_COOKIE);
+
+  if (!accessVal || !refreshVal) {
+    throw new Error('Login did not return authentication cookies');
+  }
+
+  const url = new URL(process.env['E2E_BASE_URL'] || 'http://localhost:4200');
+  await page.context().addCookies([
+    {
+      name: ACCESS_TOKEN_COOKIE,
+      value: accessVal,
+      domain: url.hostname,
+      path: '/',
+      httpOnly: true,
+      sameSite: 'Lax',
+    },
+    {
+      name: REFRESH_TOKEN_COOKIE,
+      value: refreshVal,
+      domain: url.hostname,
+      path: '/',
+      httpOnly: true,
+      sameSite: 'Lax',
+    },
+  ]);
+
+  // Navigate to the admin route — cookies are present in context so the app
+  // should initialize authenticated state reliably.
+  await page.goto(targetPath, { waitUntil: 'domcontentloaded' });
 }
