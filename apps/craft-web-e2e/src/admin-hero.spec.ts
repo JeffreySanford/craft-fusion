@@ -152,7 +152,8 @@ test.describe('Admin Hero Area', () => {
       // Wait for tab animation to complete
       await page.waitForTimeout(2000);
 
-      const logsTab = page.getByRole('tab', { name: /Logs/ });
+      const mainTabs = page.locator('.admin-tabs').first();
+      const logsTab = mainTabs.getByRole('tab', { name: /Logs/ }).first();
       await logsTab.scrollIntoViewIfNeeded();
       await expect(logsTab).toHaveAttribute('aria-selected', 'true', { timeout: 10000 });
 
@@ -162,19 +163,46 @@ test.describe('Admin Hero Area', () => {
     }
   });
 
-  test('should remain visible when switching tabs', async ({ page }) => {
-    // Click on Performance tab
-    await page.getByRole('tab', { name: 'Performance' }).click({ force: true });
-    await page.waitForTimeout(500);
-    
-    // Hero bar should still be visible
+  test('should hide hero bar when switching tabs', async ({ page }) => {
+    // Hero bar starts visible on Overview tab
     await expect(page.locator('.admin-hero-bar')).toBeVisible();
+
+    // Helper to get main tabs specifically from the header to avoid nested tab confusion
+    const getMainTab = (name: string) => 
+      page.locator('#main-admin-tabs').locator('.mat-mdc-tab-header').getByRole('tab', { name }).first();
+
+    const switchTab = async (name: string) => {
+        const tab = getMainTab(name);
+        await tab.click({ force: true });
+        // Fallback for mobile/touch
+        if (await tab.getAttribute('aria-selected') !== 'true') {
+            try {
+                await tab.tap({ force: true });
+            } catch (e) {
+                // tap might not be available on all projects
+            }
+        }
+        // Final fallback: dispatch event
+        if (await tab.getAttribute('aria-selected') !== 'true') {
+            await tab.dispatchEvent('click');
+        }
+        await expect(tab).toHaveAttribute('aria-selected', 'true', { timeout: 10000 });
+    };
+
+    // Click on Performance tab
+    await switchTab('Performance');
+    
+    // Hero bar should now be hidden
+    await expect(page.locator('.admin-hero-bar')).toBeHidden({ timeout: 10000 });
     
     // Click on Security tab
-    await page.getByRole('tab', { name: 'Security & Access' }).click({ force: true });
-    await page.waitForTimeout(500);
+    await switchTab('Security & Access');
     
-    // Hero bar should still be visible
+    // Hero bar should still be hidden
+    await expect(page.locator('.admin-hero-bar')).toBeHidden();
+
+    // Switch back to Overview
+    await switchTab('Overview');
     await expect(page.locator('.admin-hero-bar')).toBeVisible();
   });
 

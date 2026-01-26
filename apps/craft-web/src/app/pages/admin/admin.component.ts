@@ -88,9 +88,8 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.selectedTab = tabIndex;
   }
 
-  onTabChange(_event: MatTabChangeEvent): void {
-    void _event;
-    // No tab-specific monitoring; tabs share the same shell now.
+  onTabChange(event: MatTabChangeEvent): void {
+    this.selectedTab = event.index;
   }
 
   ngOnDestroy(): void {

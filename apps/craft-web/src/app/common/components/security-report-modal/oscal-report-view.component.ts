@@ -184,29 +184,31 @@ import { MatExpansionModule } from '@angular/material/expansion';
   styles: [`
     .oscal-report {
       padding: 1rem;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .report-header {
       margin-bottom: 1.5rem;
       padding-bottom: 1rem;
-      border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+      border-bottom: 2px solid rgba(26, 35, 126, 0.2);
     }
 
     .report-header h3 {
       margin: 0 0 0.5rem 0;
-      color: #FFD700;
+      color: #1a237e;
       font-size: 1.5rem;
     }
 
     .report-description {
       margin: 0;
-      color: rgba(255, 255, 255, 0.7);
+      color: #555;
       font-size: 0.95rem;
     }
 
     .report-summary {
-      background: rgba(255, 215, 0, 0.05);
-      border: 1px solid rgba(255, 215, 0, 0.2);
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
       border-radius: 8px;
       padding: 1rem;
       margin-bottom: 1.5rem;
@@ -226,7 +228,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 
     .stat-label {
       font-size: 0.85rem;
-      color: rgba(255, 255, 255, 0.6);
+      color: #666;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -234,21 +236,21 @@ import { MatExpansionModule } from '@angular/material/expansion';
     .stat-value {
       font-size: 1.25rem;
       font-weight: 600;
-      color: #FFD700;
+      color: #1a237e;
     }
 
     .stat-item.pass .stat-value {
-      color: #4CAF50;
+      color: #2e7d32;
     }
 
     .stat-item.fail .stat-value {
-      color: #F44336;
+      color: #c62828;
     }
 
-    .status-pass { color: #4CAF50; }
-    .status-warn { color: #FF9800; }
-    .status-fail { color: #F44336; }
-    .status-pending { color: #9E9E9E; }
+    .status-pass { color: #2e7d32; }
+    .status-warn { color: #ef6c00; }
+    .status-fail { color: #c62828; }
+    .status-pending { color: #757575; }
 
     .controls-section {
       display: flex;
@@ -261,7 +263,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
       align-items: center;
       gap: 0.5rem;
       margin: 0 0 1rem 0;
-      color: #FFD700;
+      color: #1a237e;
       font-size: 1.2rem;
     }
 
@@ -269,11 +271,12 @@ import { MatExpansionModule } from '@angular/material/expansion';
       font-size: 1.5rem;
       width: 1.5rem;
       height: 1.5rem;
+      flex-shrink: 0;
     }
 
-    .group-icon.fail { color: #F44336; }
-    .group-icon.pass { color: #4CAF50; }
-    .group-icon.na { color: #9E9E9E; }
+    .group-icon.fail { color: #c62828; }
+    .group-icon.pass { color: #2e7d32; }
+    .group-icon.na { color: #757575; }
 
     .controls-accordion {
       display: flex;
@@ -282,18 +285,19 @@ import { MatExpansionModule } from '@angular/material/expansion';
     }
 
     ::ng-deep .control-panel {
-      background: rgba(20, 15, 10, 0.6) !important;
-      border: 1px solid rgba(255, 215, 0, 0.2);
+      background: #fff !important;
+      border: 1px solid #e0e0e0;
       border-radius: 8px !important;
       margin-bottom: 0.5rem !important;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
     }
 
     ::ng-deep .control-panel.fail {
-      border-left: 4px solid #F44336;
+      border-left: 4px solid #c62828;
     }
 
     ::ng-deep .control-panel .mat-expansion-panel-header {
-      padding: 0.75rem 1rem;
+      padding: 0.75rem 1.5rem;
     }
 
     ::ng-deep .control-panel .mat-expansion-panel-body {
@@ -309,20 +313,20 @@ import { MatExpansionModule } from '@angular/material/expansion';
     }
 
     .control-number {
-      color: rgba(255, 255, 255, 0.5);
+      color: #999;
       font-weight: 600;
       min-width: 2rem;
     }
 
     .control-id {
-      color: #FFD700;
+      color: #1a237e;
       font-weight: 600;
       font-family: 'Courier New', monospace;
     }
 
     .control-name {
       flex: 1;
-      color: rgba(255, 255, 255, 0.9);
+      color: #333;
     }
 
     .severity-badge {
@@ -334,28 +338,29 @@ import { MatExpansionModule } from '@angular/material/expansion';
     }
 
     .severity-critical {
-      background: #B71C1C;
+      background: #b71c1c;
       color: white;
     }
 
     .severity-high {
-      background: #F44336;
+      background: #c62828;
       color: white;
     }
 
     .severity-medium {
-      background: #FF9800;
+      background: #ef6c00;
       color: white;
     }
 
     .severity-low {
-      background: #FFC107;
+      background: #fbc02d;
       color: rgba(0, 0, 0, 0.87);
     }
 
     .control-details {
       padding: 1rem;
-      background: rgba(0, 0, 0, 0.2);
+      background: #fafafa;
+      border-top: 1px solid #eee;
     }
 
     .detail-section {
@@ -371,7 +376,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
       align-items: center;
       gap: 0.5rem;
       margin-bottom: 0.5rem;
-      color: #FFD700;
+      color: #1a237e;
     }
 
     .detail-icon {
@@ -383,16 +388,16 @@ import { MatExpansionModule } from '@angular/material/expansion';
     .detail-content {
       margin: 0;
       padding-left: 2rem;
-      color: rgba(255, 255, 255, 0.85);
+      color: #444;
       line-height: 1.6;
       white-space: pre-wrap;
     }
 
     .detail-section.recommendation {
-      background: rgba(33, 150, 243, 0.1);
+      background: rgba(33, 150, 243, 0.05);
       padding: 0.75rem;
       border-radius: 4px;
-      border-left: 3px solid #2196F3;
+      border-left: 3px solid #1976d2;
     }
 
     .detail-section.recommendation .detail-content {
@@ -400,14 +405,14 @@ import { MatExpansionModule } from '@angular/material/expansion';
     }
 
     .detail-section.evidence {
-      background: rgba(156, 39, 176, 0.1);
+      background: rgba(156, 39, 176, 0.05);
       padding: 0.75rem;
       border-radius: 4px;
-      border-left: 3px solid #9C27B0;
+      border-left: 3px solid #7b1fa2;
     }
 
     .detail-section.reference {
-      background: rgba(96, 125, 139, 0.1);
+      background: rgba(96, 125, 139, 0.05);
       padding: 0.75rem;
       border-radius: 4px;
       font-size: 0.9rem;
@@ -424,47 +429,48 @@ import { MatExpansionModule } from '@angular/material/expansion';
       align-items: center;
       gap: 0.75rem;
       padding: 0.5rem 0.75rem;
-      background: rgba(20, 15, 10, 0.4);
+      background: #fff;
+      border: 1px solid #eee;
       border-radius: 4px;
       border-left: 3px solid;
     }
 
     .control-item.pass {
-      border-left-color: #4CAF50;
+      border-left-color: #2e7d32;
     }
 
     .control-item.na {
-      border-left-color: #9E9E9E;
+      border-left-color: #757575;
     }
 
     .control-status-icon {
       font-size: 1.25rem;
       width: 1.25rem;
       height: 1.25rem;
-      color: #4CAF50;
+      color: #2e7d32;
     }
 
     .control-item.na .control-status-icon {
-      color: #9E9E9E;
+      color: #757575;
     }
 
     .control-category {
-      color: rgba(255, 255, 255, 0.5);
+      color: #777;
       font-size: 0.9rem;
     }
 
     .show-more {
       margin-top: 1rem;
       padding: 0.75rem;
-      background: rgba(255, 215, 0, 0.05);
-      border: 1px dashed rgba(255, 215, 0, 0.3);
+      background: rgba(26, 35, 126, 0.02);
+      border: 1px dashed #ced4da;
       border-radius: 4px;
       text-align: center;
     }
 
     .show-more-text {
       margin: 0;
-      color: rgba(255, 255, 255, 0.7);
+      color: #666;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -474,7 +480,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
     .no-results {
       padding: 3rem 1rem;
       text-align: center;
-      color: rgba(255, 255, 255, 0.5);
+      color: #999;
     }
 
     .no-results mat-icon {

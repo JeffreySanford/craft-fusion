@@ -122,6 +122,9 @@ import { MatExpansionModule } from '@angular/material/expansion';
       <div class="items-list" *ngIf="isItemsList">
         <div *ngFor="let item of items; let i = index" class="item-card">
           <div class="item-header">
+            <mat-icon class="item-icon" [class]="item.status">
+              {{ item.status === 'pass' ? 'check_circle' : item.status === 'warn' ? 'error_outline' : 'schedule' }}
+            </mat-icon>
             <span class="item-number">{{ i + 1 }}.</span>
             <span class="item-label">{{ item.label }}</span>
             <span class="status-badge" [class]="'status-' + item.status">
@@ -136,27 +139,30 @@ import { MatExpansionModule } from '@angular/material/expansion';
   styles: [`
     .sca-report {
       padding: 1rem;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .report-header {
       margin-bottom: 1.5rem;
       padding-bottom: 1rem;
-      border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+      border-bottom: 2px solid #1a237e;
     }
 
     .report-header h3 {
       margin: 0 0 0.5rem 0;
-      color: #FFD700;
+      color: #1a237e;
+      font-weight: 600;
     }
 
     .report-header p {
       margin: 0;
-      color: rgba(255, 255, 255, 0.7);
+      color: #666;
     }
 
     .report-summary {
-      background: rgba(255, 215, 0, 0.05);
-      border: 1px solid rgba(255, 215, 0, 0.2);
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
       border-radius: 8px;
       padding: 1rem;
       margin-bottom: 1.5rem;
@@ -176,24 +182,25 @@ import { MatExpansionModule } from '@angular/material/expansion';
 
     .stat-label {
       font-size: 0.85rem;
-      color: rgba(255, 255, 255, 0.6);
+      color: #666;
       text-transform: uppercase;
+      font-weight: 500;
     }
 
     .stat-value {
       font-size: 1.25rem;
       font-weight: 600;
-      color: #FFD700;
+      color: #1a237e;
     }
 
-    .stat-item.pass .stat-value { color: #4CAF50; }
-    .stat-item.fail .stat-value { color: #F44336; }
-    .stat-item.warn .stat-value { color: #FF9800; }
+    .stat-item.pass .stat-value { color: #2e7d32; }
+    .stat-item.fail .stat-value { color: #c62828; }
+    .stat-item.warn .stat-value { color: #ef6c00; }
 
-    .status-pass { color: #4CAF50; }
-    .status-warn { color: #FF9800; }
-    .status-fail { color: #F44336; }
-    .status-todo { color: #9E9E9E; }
+    .status-pass { color: #2e7d32; font-weight: 600; }
+    .status-warn { color: #ef6c00; font-weight: 600; }
+    .status-fail { color: #c62828; font-weight: 600; }
+    .status-todo { color: #757575; font-weight: 600; }
 
     .checks-section {
       display: flex;
@@ -206,25 +213,29 @@ import { MatExpansionModule } from '@angular/material/expansion';
       align-items: center;
       gap: 0.5rem;
       margin: 0 0 1rem 0;
-      color: #FFD700;
+      color: #1a237e;
+      font-weight: 600;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 0.5rem;
     }
 
     .group-icon {
       font-size: 1.5rem;
     }
 
-    .group-icon.fail { color: #F44336; }
-    .group-icon.pass { color: #4CAF50; }
+    .group-icon.fail { color: #c62828; }
+    .group-icon.pass { color: #2e7d32; }
 
     ::ng-deep .check-panel {
-      background: rgba(20, 15, 10, 0.6) !important;
-      border: 1px solid rgba(255, 215, 0, 0.2);
+      background: #fff !important;
+      border: 1px solid #e0e0e0 !important;
       border-radius: 8px !important;
       margin-bottom: 0.5rem !important;
+      box-shadow: none !important;
     }
 
     ::ng-deep .check-panel.fail {
-      border-left: 4px solid #F44336;
+      border-left: 4px solid #c62828 !important;
     }
 
     .check-title {
@@ -235,13 +246,14 @@ import { MatExpansionModule } from '@angular/material/expansion';
     }
 
     .check-number {
-      color: rgba(255, 255, 255, 0.5);
+      color: #888;
       font-weight: 600;
     }
 
     .check-name {
       flex: 1;
-      color: rgba(255, 255, 255, 0.9);
+      color: #333;
+      font-weight: 500;
     }
 
     .severity-badge {
@@ -249,16 +261,18 @@ import { MatExpansionModule } from '@angular/material/expansion';
       border-radius: 4px;
       font-size: 0.75rem;
       font-weight: 700;
+      text-transform: uppercase;
     }
 
-    .severity-critical { background: #B71C1C; color: white; }
-    .severity-high { background: #F44336; color: white; }
-    .severity-medium { background: #FF9800; color: white; }
-    .severity-low { background: #FFC107; color: black; }
+    .severity-critical { background: #b71c1c; color: white; }
+    .severity-high { background: #c62828; color: white; }
+    .severity-medium { background: #ef6c00; color: white; }
+    .severity-low { background: #f9a825; color: black; }
 
     .check-details {
       padding: 1rem;
-      background: rgba(0, 0, 0, 0.2);
+      background: #fafafa;
+      border-top: 1px solid #eee;
     }
 
     .detail-section {
@@ -274,61 +288,74 @@ import { MatExpansionModule } from '@angular/material/expansion';
       align-items: center;
       gap: 0.5rem;
       margin-bottom: 0.5rem;
-      color: #FFD700;
+      color: #1a237e;
     }
 
     .detail-section p {
       margin: 0;
       padding-left: 2rem;
-      color: rgba(255, 255, 255, 0.85);
+      color: #555;
       line-height: 1.6;
     }
 
     .detail-section.recommendation {
-      background: rgba(33, 150, 243, 0.1);
+      background: #e3f2fd;
       padding: 0.75rem;
       border-radius: 4px;
-      border-left: 3px solid #2196F3;
+      border-left: 3px solid #1976d2;
     }
 
     .detail-section.evidence {
-      background: rgba(156, 39, 176, 0.1);
+      background: #f3e5f5;
       padding: 0.75rem;
       border-radius: 4px;
-      border-left: 3px solid #9C27B0;
+      border-left: 3px solid #8e24aa;
     }
 
     .detail-section.reference {
-      background: rgba(96, 125, 139, 0.1);
+      background: #eceff1;
       padding: 0.75rem;
       border-radius: 4px;
       font-size: 0.9rem;
+      color: #455a64;
     }
 
     .check-list {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.6rem;
+      padding: 0.5rem 0;
     }
 
     .check-item {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.5rem 0.75rem;
-      background: rgba(20, 15, 10, 0.4);
-      border-radius: 4px;
-      border-left: 3px solid #4CAF50;
+      gap: 1rem;
+      padding: 0.8rem 1.5rem;
+      background: #fff;
+      border-radius: 6px;
+      border: 1px solid #e0e0e0;
+      border-left: 5px solid #2e7d32;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #fcfcfc;
+      }
     }
 
     .check-item mat-icon {
-      color: #4CAF50;
+      color: #2e7d32;
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      font-size: 20px;
     }
 
     .show-more {
       margin-top: 0.5rem;
       text-align: center;
-      color: rgba(255, 255, 255, 0.5);
+      color: #888;
+      font-size: 0.85rem;
     }
 
     .items-list {
@@ -338,28 +365,49 @@ import { MatExpansionModule } from '@angular/material/expansion';
     }
 
     .item-card {
-      background: rgba(20, 15, 10, 0.4);
-      border: 1px solid rgba(255, 215, 0, 0.2);
+      background: #fff;
+      border: 1px solid #e0e0e0;
       border-radius: 8px;
-      padding: 1rem;
+      padding: 1.25rem 1.75rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+      border-left: 5px solid #1a237e;
+      transition: transform 0.2s, box-shadow 0.2s;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      }
     }
 
     .item-header {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 0.5rem;
+      gap: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .item-icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      font-size: 24px;
+      
+      &.pass { color: #2e7d32; }
+      &.warn { color: #ef6c00; }
+      &.todo { color: #757575; }
     }
 
     .item-number {
-      color: rgba(255, 255, 255, 0.5);
+      color: #999;
       font-weight: 600;
+      font-size: 0.9rem;
     }
 
     .item-label {
       flex: 1;
-      color: #FFD700;
-      font-weight: 600;
+      color: #1a237e;
+      font-weight: 700;
+      font-size: 1.05rem;
     }
 
     .status-badge {
@@ -367,12 +415,13 @@ import { MatExpansionModule } from '@angular/material/expansion';
       border-radius: 4px;
       font-size: 0.75rem;
       font-weight: 700;
+      text-transform: uppercase;
     }
 
     .item-description {
       margin: 0;
       padding-left: 2rem;
-      color: rgba(255, 255, 255, 0.7);
+      color: #666;
       font-size: 0.9rem;
     }
   `],

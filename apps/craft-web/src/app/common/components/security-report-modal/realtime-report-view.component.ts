@@ -121,29 +121,32 @@ import { MatExpansionModule } from '@angular/material/expansion';
   styles: [`
     .realtime-report {
       padding: 1rem;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .report-header {
       margin-bottom: 1.5rem;
       padding-bottom: 1rem;
-      border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+      border-bottom: 2px solid #1a237e;
     }
 
     .report-header h3 {
       margin: 0 0 0.5rem 0;
-      color: #FFD700;
+      color: #1a237e;
+      font-weight: 600;
     }
 
     .endpoint {
       margin: 0;
-      color: rgba(255, 255, 255, 0.6);
+      color: #666;
       font-family: 'Courier New', monospace;
       font-size: 0.9rem;
     }
 
     .report-summary {
-      background: rgba(255, 215, 0, 0.05);
-      border: 1px solid rgba(255, 215, 0, 0.2);
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
       border-radius: 8px;
       padding: 1rem;
       margin-bottom: 1.5rem;
@@ -163,23 +166,24 @@ import { MatExpansionModule } from '@angular/material/expansion';
 
     .stat-label {
       font-size: 0.85rem;
-      color: rgba(255, 255, 255, 0.6);
+      color: #666;
       text-transform: uppercase;
+      font-weight: 500;
     }
 
     .stat-value {
       font-size: 1.25rem;
       font-weight: 600;
-      color: #FFD700;
+      color: #1a237e;
     }
 
-    .stat-item.pass .stat-value { color: #4CAF50; }
-    .stat-item.fail .stat-value { color: #F44336; }
-    .stat-item.warn .stat-value { color: #FF9800; }
+    .stat-item.pass .stat-value { color: #2e7d32; }
+    .stat-item.fail .stat-value { color: #c62828; }
+    .stat-item.warn .stat-value { color: #ef6c00; }
 
-    .status-pass { color: #4CAF50; }
-    .status-warn { color: #FF9800; }
-    .status-fail { color: #F44336; }
+    .status-pass { color: #2e7d32; font-weight: 600; }
+    .status-warn { color: #ef6c00; font-weight: 600; }
+    .status-fail { color: #c62828; font-weight: 600; }
 
     .tests-section {
       display: flex;
@@ -192,25 +196,29 @@ import { MatExpansionModule } from '@angular/material/expansion';
       align-items: center;
       gap: 0.5rem;
       margin: 0 0 1rem 0;
-      color: #FFD700;
+      color: #1a237e;
+      font-weight: 600;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 0.5rem;
     }
 
     .group-icon {
       font-size: 1.5rem;
     }
 
-    .group-icon.fail { color: #F44336; }
-    .group-icon.pass { color: #4CAF50; }
+    .group-icon.fail { color: #c62828; }
+    .group-icon.pass { color: #2e7d32; }
 
     ::ng-deep .test-panel {
-      background: rgba(20, 15, 10, 0.6) !important;
-      border: 1px solid rgba(255, 215, 0, 0.2);
+      background: #fff !important;
+      border: 1px solid #e0e0e0 !important;
       border-radius: 8px !important;
       margin-bottom: 0.5rem !important;
+      box-shadow: none !important;
     }
 
     ::ng-deep .test-panel.fail {
-      border-left: 4px solid #F44336;
+      border-left: 4px solid #c62828 !important;
     }
 
     .test-title {
@@ -221,13 +229,14 @@ import { MatExpansionModule } from '@angular/material/expansion';
     }
 
     .test-number {
-      color: rgba(255, 255, 255, 0.5);
+      color: #888;
       font-weight: 600;
     }
 
     .test-name {
       flex: 1;
-      color: rgba(255, 255, 255, 0.9);
+      color: #333;
+      font-weight: 500;
     }
 
     .severity-badge {
@@ -235,30 +244,32 @@ import { MatExpansionModule } from '@angular/material/expansion';
       border-radius: 4px;
       font-size: 0.75rem;
       font-weight: 700;
+      text-transform: uppercase;
     }
 
-    .severity-critical { background: #B71C1C; color: white; }
-    .severity-high { background: #F44336; color: white; }
-    .severity-medium { background: #FF9800; color: white; }
-    .severity-low { background: #FFC107; color: black; }
+    .severity-critical { background: #b71c1c; color: white; }
+    .severity-high { background: #c62828; color: white; }
+    .severity-medium { background: #ef6c00; color: white; }
+    .severity-low { background: #f9a825; color: black; }
 
     .response-time {
-      color: rgba(255, 255, 255, 0.5);
+      color: #888;
       font-size: 0.9rem;
     }
 
     .test-details {
       padding: 1rem;
-      background: rgba(0, 0, 0, 0.2);
+      background: #fafafa;
+      border-top: 1px solid #eee;
     }
 
     .detail-row {
       margin-bottom: 0.75rem;
-      color: rgba(255, 255, 255, 0.85);
+      color: #444;
     }
 
     .detail-row strong {
-      color: #FFD700;
+      color: #1a237e;
       margin-right: 0.5rem;
     }
 
@@ -271,47 +282,58 @@ import { MatExpansionModule } from '@angular/material/expansion';
       align-items: center;
       gap: 0.5rem;
       margin-bottom: 0.5rem;
-      color: #FFD700;
+      color: #1a237e;
     }
 
     .detail-section p {
       margin: 0;
       padding-left: 2rem;
-      color: rgba(255, 255, 255, 0.85);
+      color: #555;
       line-height: 1.6;
     }
 
     .detail-section.recommendation {
-      background: rgba(33, 150, 243, 0.1);
+      background: #e3f2fd;
       padding: 0.75rem;
       border-radius: 4px;
-      border-left: 3px solid #2196F3;
+      border-left: 3px solid #1976d2;
     }
 
     .test-list {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.6rem;
+      padding: 0.5rem 0;
     }
 
     .test-item {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.5rem 0.75rem;
-      background: rgba(20, 15, 10, 0.4);
-      border-radius: 4px;
-      border-left: 3px solid #4CAF50;
+      gap: 1rem;
+      padding: 0.8rem 1.5rem;
+      background: #fff;
+      border-radius: 6px;
+      border: 1px solid #e0e0e0;
+      border-left: 5px solid #2e7d32;
+
+      &:hover {
+        background-color: #fcfcfc;
+      }
     }
 
     .test-item mat-icon {
-      color: #4CAF50;
+      color: #2e7d32;
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      font-size: 20px;
     }
 
     .show-more {
       margin-top: 0.5rem;
       text-align: center;
-      color: rgba(255, 255, 255, 0.5);
+      color: #888;
+      font-size: 0.85rem;
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
