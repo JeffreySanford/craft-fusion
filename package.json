@@ -73,7 +73,7 @@
     "highlight.js": "^11.11.1",
     "intersection-observer": "^0.12.2",
     "jsdom": "^27.4.0",
-    "koa": "3.1.1",
+    "koa": "3.1.2",
     "mapbox-gl": "^3.9.2",
     "markdown-it": "^14.1.0",
     "markdown-it-abbr": "^2.0.0",
