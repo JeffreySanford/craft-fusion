@@ -6,6 +6,20 @@ export interface Stock {
   data: { date: Date; close: number }[];
 }
 
+// record used for animation/label helpers
+export interface StockRecord {
+  date: Date;
+  close: number;
+}
+
+// market phase definition used in renderMarketPhasesView
+export interface MarketPhase {
+  start: Date;
+  end: Date;
+  type: 'bull' | 'bear' | 'consolidation';
+  label: string;
+}
+
 interface Quarter {
   start: Date;
   end: Date;
@@ -156,8 +170,8 @@ export class FinanceComponent implements OnInit, OnChanges {
   onMarketPhasesChange(): void {
 
     if (this.chartContainer) {
-      const element = this.renderer.selectRootElement(this.chartContainer.nativeElement);
-      d3.select(element).selectAll('*').remove();
+      const host = this.chartContainer.nativeElement as HTMLElement;
+      host.querySelectorAll('*').forEach(el => this.renderer.removeChild(host, el));
     }
     this.renderChart(this.data);
   }
@@ -670,7 +684,7 @@ export class FinanceComponent implements OnInit, OnChanges {
         return path;
       };
 
-      const addStockLabels = (data: unknown[], stockSymbol: string) => {
+      const addStockLabels = (data: StockRecord[], stockSymbol: string) => {
         // guard against empty or malformed arrays (e.g. indices may return no points)
         if (!data || data.length === 0) {
           return; // nothing to label
@@ -894,7 +908,7 @@ export class FinanceComponent implements OnInit, OnChanges {
     return phases;
   }
 
-  formatMarketPhaseLabel(phase: unknown): string {
+  formatMarketPhaseLabel(phase: MarketPhase): string {
     if (!phase || typeof phase !== 'object') return 'Unknown Market';
     const p = phase as { type?: string };
     const type = typeof p.type === 'string' ? p.type : 'unknown';

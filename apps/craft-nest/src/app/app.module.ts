@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -16,6 +16,7 @@ import { FirmsModule } from './firms/firms.module';
 import { OpenSkyModule } from './openskies/opensky.module';
 import { HttpLoggingInterceptor } from './logging/http-logging.interceptor';
 import { SecurityModule } from './security/security.module';
+import { XssSanitizerMiddleware } from './common/middleware/xss-sanitizer.middleware';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 @Module({
@@ -93,4 +94,8 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(XssSanitizerMiddleware).forRoutes('*');
+  }
+}

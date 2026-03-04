@@ -16,6 +16,14 @@ import (
 var startTime int64
 
 // GenerateRecordsHandler handles the request to generate multiple records
+// @Summary Generate records
+// @Description Generates fake records in-memory and returns them immediately.
+// @Tags Records
+// @Produce json
+// @Param count query int false "Number of records to generate" default(10)
+// @Success 200 {array} models.UserRecord
+// @Failure 400 {object} ErrorResponse
+// @Router /api-go/records/generate [get]
 func GenerateRecordsHandler(c *gin.Context) {
 	// Set the start time
 	startTime = time.Now().Unix()
@@ -45,6 +53,13 @@ func GenerateRecordsHandler(c *gin.Context) {
 }
 
 // GetCreationTimeHandler handles the request to get the record generation time
+// @Summary Get generation time
+// @Description Returns the latest record generation time in milliseconds.
+// @Tags Records
+// @Produce json
+// @Success 200 {object} GenerationTimeResponse
+// @Router /api-go/records/time [get]
+// @Router /api/records/time [get]
 func GetCreationTimeHandler(c *gin.Context) {
 	var recordGenerationTime int64
 	elapsedTime := atomic.LoadInt64(&recordGenerationTime)
@@ -52,6 +67,12 @@ func GetCreationTimeHandler(c *gin.Context) {
 }
 
 // NotImplementedHandler returns a 501 Not Implemented for unimplemented endpoints
+// @Summary Compatibility placeholder
+// @Description Compatibility route for frontend calls that are not implemented in Go.
+// @Tags Compatibility
+// @Produce json
+// @Failure 501 {object} ErrorResponse
+// @Router /api/records/generate [get]
 func NotImplementedHandler(c *gin.Context) {
 	c.JSON(http.StatusNotImplemented, gin.H{"error": "This endpoint is not implemented in the Go backend. Use the NestJS backend for this route."})
 }

@@ -5,6 +5,8 @@ import { Observable, tap, catchError, throwError, timer, switchMap, finalize } f
 import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
 import { User } from './user.interface';                                            
+import { UserState } from '../interfaces/user-state.interface';
+import { ApiEndpointLog } from '../../pages/admin/admin-types';
 
 export interface Server {
   name: string;
@@ -51,7 +53,7 @@ export class ApiService {
       language: 'Go',
       api: 'api-go',
       port: 4000,
-      swagger: '/api-go/swagger',
+      swagger: '/api-go/swagger/index.html',
     },
   ];
 
@@ -260,19 +262,16 @@ export class ApiService {
     ) as Observable<T>;
   }
 
-  getUserState(): Observable<unknown> {
-
-    return this.http.get<unknown>(this.getFullUrl('users'), { headers: this.getHeaders() });
+  getUserState(): Observable<UserState> {
+    return this.http.get<UserState>(this.getFullUrl('users'), { headers: this.getHeaders() });
   }
 
-  updateUserState(userState: unknown): Observable<unknown> {
-
-    return this.http.put<unknown>(this.getFullUrl('users'), userState, { headers: this.getHeaders() });
+  updateUserState(userState: UserState): Observable<UserState> {
+    return this.http.put<UserState>(this.getFullUrl('users'), userState, { headers: this.getHeaders() });
   }
 
-  deleteUserState(): Observable<unknown> {
-
-    return this.http.delete<unknown>(this.getFullUrl('users'), { headers: this.getHeaders() });
+  deleteUserState(): Observable<void> {
+    return this.http.delete<void>(this.getFullUrl('users'), { headers: this.getHeaders() });
   }
 
   setApiUrl(resource: string): string {
@@ -316,17 +315,17 @@ export class ApiService {
     return `Using the backend server language, ${selectedServer.language}, Mock record set of ${totalRecords} records was generated in ${generationTimeLabel} and delivered in ${roundtripLabel}.`;
   }
 
-  handleStringArray(data: string[]): unknown {
+  handleStringArray(data: string[]): number[] {
     return data.map(str => str.length);
   }
 
-  getLogs(limit: number, level?: string): Observable<unknown> {
+  getLogs(limit: number, level?: string): Observable<ApiEndpointLog[]> {
     let params = new HttpParams().set('limit', limit.toString());
     if (level && level.trim()) {
       params = params.set('level', level);
     }
 
-    return this.http.get(this.getFullUrl('logs'), { params });
+    return this.http.get<ApiEndpointLog[]>(this.getFullUrl('logs'), { params });
   }
 
   getAllUsers(): Observable<User[]> {

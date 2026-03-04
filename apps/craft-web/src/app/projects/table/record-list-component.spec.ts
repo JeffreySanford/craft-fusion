@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Record } from '@craft-fusion/craft-library';
+import { AppRecord as Record } from '@craft-fusion/craft-library';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Router } from '@angular/router';

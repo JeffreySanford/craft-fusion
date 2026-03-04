@@ -20,6 +20,10 @@ export class SocketClientService implements OnDestroy {
   }
 
   initializeSocket(): void {
+    // Skip real socket connections in test environment (Vitest)
+    if (typeof process !== 'undefined' && (process.env['VITEST'] || process.env['NODE_ENV'] === 'test')) {
+      return;
+    }
     const socketUrl = environment.socket?.url || 'ws://localhost:3000';
     console.info('Initializing socket connection to', { socketUrl });
     this.closeSocket();

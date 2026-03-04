@@ -106,25 +106,37 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
   private createChart(): void {
     if (!this.chartContainer) return;
 
-    const element = this.chartContainer.nativeElement;
-    d3.select(element).select('svg').remove();
+    const element = this.chartContainer.nativeElement as HTMLElement;
+    const parentNode = element.parentNode as HTMLElement | null;
+
+    // remove existing svg & tooltips using Renderer2 rather than d3.select(...).remove()
+    const existingSvg = element.querySelector('svg');
+    if (existingSvg) {
+      this.renderer.removeChild(element, existingSvg);
+    }
+    element.querySelectorAll('.line-tooltip').forEach(el => this.renderer.removeChild(element, el));
 
     const isFullscreen = !!element.closest('.full-expanded');
     const isCompact = this.compact && !isFullscreen;
 
-    d3.select(element).selectAll('.line-tooltip').remove();
-
     // create a shared tooltip element instead of inlining styles
     this.tooltip = createTooltip(element, 'line-tooltip');
 
-    d3.select(element.parentNode).style('width', '100%').style('height', '100%');
+    if (parentNode) {
+      d3.select(parentNode).style('width', '100%').style('height', '100%');
+    }
 
     d3.select(element).style('width', '100%').style('height', '100%');
 
-    const svg = d3.select(element).append('svg').attr('width', '100%').attr('height', '100%').style('display', 'block').attr('preserveAspectRatio', 'xMinYMin meet');
+    const svg = d3.select(element)
+      .append('svg')
+      .attr('width', '100%')
+      .attr('height', '100%')
+      .style('display', 'block')
+      .attr('preserveAspectRatio', 'xMinYMin meet');
 
-    let containerWidth = element.offsetWidth || element.parentNode.offsetWidth;
-    let containerHeight = element.offsetHeight || element.parentNode.offsetHeight;
+    let containerWidth = element.offsetWidth || (parentNode?.offsetWidth ?? 0);
+    let containerHeight = element.offsetHeight || (parentNode?.offsetHeight ?? 0);
 
     if (!containerWidth || containerWidth < 100) containerWidth = 800;
     if (!containerHeight || containerHeight < 100) containerHeight = 400;

@@ -1,7 +1,41 @@
 <ng-template #noData>
-  <div class="no-data" *ngIf="!resolved">
-    <mat-progress-spinner mode="indeterminate" [diameter]="100" class="spinner-teal" *ngIf="!resolved"></mat-progress-spinner>
-    <div class="debug-warning">DEBUG: noData template is ACTIVE</div>
+  <div class="loading-overlay">
+    <div class="loading-card">
+      <div class="loading-glow"></div>
+      <mat-progress-spinner mode="indeterminate" [diameter]="72" [strokeWidth]="5" class="loading-spinner"></mat-progress-spinner>
+
+      <!-- Phase 1: waiting on server to generate -->
+      <ng-container *ngIf="!loadProgress">
+        <p class="loading-label">
+          Generating
+          <strong class="loading-count">{{ generatingCount | number }}</strong>
+          of <strong>{{ totalRecords | number }}</strong> records
+          <span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+        </p>
+        <mat-progress-bar mode="indeterminate" class="loading-bar"></mat-progress-bar>
+      </ng-container>
+
+      <!-- Phase 2: payload is streaming in -->
+      <ng-container *ngIf="loadProgress">
+        <p class="loading-label">
+          Received
+          <strong class="loading-count">{{ loadProgress.estimatedRecords | number }}</strong>
+          <span class="loading-of">of</span>
+          <strong>{{ totalRecords | number }}</strong>
+          records
+        </p>
+        <div class="loading-progress-wrap">
+          <mat-progress-bar
+            [mode]="loadProgress.total > 0 ? 'determinate' : 'indeterminate'"
+            [value]="loadProgress.total > 0 ? (loadProgress.loaded / loadProgress.total) * 100 : 0"
+            class="loading-bar">
+          </mat-progress-bar>
+          <span class="loading-pct" *ngIf="loadProgress.total > 0">
+            {{ (loadProgress.loaded / loadProgress.total * 100) | number:'1.0-0' }}%
+          </span>
+        </div>
+      </ng-container>
+    </div>
   </div>
 </ng-template>
 
@@ -24,8 +58,7 @@
           <p [hidden]="!resolved">
             Using the backend server language,
             <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ server.language }}</span>
-            <span [ngClass]="{ 'offline-text': isOffline }">({{ isOffline ? 'OFFLINE' : 'ONLINE' }})</span>
-            , a {{ isOffline ? 'mock' : '' }} record set of
+            , a record set of
             <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ totalRecords }}</span>
             records was generated in <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ generationTimeLabel }}</span> and delivered in
             <span [ngClass]="{ fadeToRed: fadeToRedClass }">{{ roundtripLabel }}</span> to the Angular frontend with a latency of
@@ -42,7 +75,7 @@
       <div class="selectors" [@fly-in]>
         <mat-form-field appearance="outline">
           <mat-label>Select dataset size</mat-label>
-          <mat-select class="selector" [(value)]="totalRecords" (selectionChange)="onDatasetChange($event.value)">
+          <mat-select class="selector" panelClass="record-select-panel" [(value)]="totalRecords" (selectionChange)="onDatasetChange($event.value)">
             <mat-option *ngFor="let size of dataSetSizes" [value]="size">
               {{ size }}
             </mat-option>
@@ -51,7 +84,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Select backend server</mat-label>
-          <mat-select class="selector" [value]="server.name" (selectionChange)="onSelectedServerChange($event.value)">
+          <mat-select class="selector" panelClass="record-select-panel" [value]="server.name" (selectionChange)="onSelectedServerChange($event.value)">
             <mat-option *ngFor="let server of servers" [value]="server.name">
               {{ server.name }}
             </mat-option>

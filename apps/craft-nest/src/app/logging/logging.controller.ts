@@ -1,5 +1,6 @@
 import { Controller, Get, Delete, Query, UseGuards } from '@nestjs/common';
-import { LoggingService, LogEntry } from './logging.service';
+import { LoggingService } from './logging.service';
+import { LogEntry } from './log-entry.interface';
 import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { AdminGuard } from '../guards/admin.guard';
 import { Observable } from 'rxjs';

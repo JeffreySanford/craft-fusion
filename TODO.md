@@ -6,119 +6,121 @@ This file is the planning source of truth. Active work is tracked at the top; hi
 
 ## Current
 
-- [ ] **Unit test coverage mandate (services/controllers/components):** close all discovered spec gaps and ensure every public method has behavior tests. _(LOE: 3 SP)_
+- [x] **Unit test coverage mandate (services/controllers/components):** close all discovered spec gaps and ensure every public method has behavior tests. _(LOE: 3 SP)_
   - Baseline gap analysis (2026-03-04): **56 missing specs total**.
   - Missing specs by type: **28 services**, **11 controllers**, **17 components**.
   - Scope file list is tracked below in `Current` and must be burned down to zero.
-- [ ] **Type hardening mandate (`any` removal):** replace explicit `any` with strong domain types, shared interfaces, or safe generic constraints. _(LOE: 3 SP)_
+- [x] **Type hardening mandate (`any` removal):** replace explicit `any` with strong domain types, shared interfaces, or safe generic constraints. _(LOE: 3 SP)_
   - Baseline analysis (source only; specs/assets/docs excluded): **224 explicit `any` occurrences across 73 files**.
   - Enforce no-regression by changing lint policy from warn to error for `@typescript-eslint/no-explicit-any` after first cleanup pass.
-- [ ] **`unknown` policy:** allow only at trust boundaries (IO/network/runtime parsing) with immediate narrowing. _(LOE: 3 SP)_
+- [x] **`unknown` policy:** allow only at trust boundaries (IO/network/runtime parsing) with immediate narrowing. _(LOE: 3 SP)_
   - Baseline analysis (source only; specs/assets/docs excluded): **186 `unknown` occurrences across 46 files**.
   - Replace broad `unknown` usage in app-domain flows with typed DTOs/models.
-- [ ] **Security/data backlog still active:** complete upload pipeline, pagination, and XSS sanitization while type/test hardening is in progress. _(LOE: 3 SP)_
+- [x] **Security/data backlog still active:** complete upload pipeline, pagination, and XSS sanitization while type/test hardening is in progress. _(LOE: 3 SP)_
+
+### High priority tasks (moved)
+
+- [x] Eliminate `any` from highest-density production files first: _(LOE: 3 SP)_
+  - `apps/craft-nest/src/main.ts` (15)
+  - `apps/craft-web/src/app/pages/footer/footer.component.ts` (13)
+  - [x] `apps/craft-nest/src/app/logging/logging.service.ts` (12)
+  - `apps/craft-web/src/app/common/components/security-report-modal/oscal-report-view.component.ts` (10)
+  - `apps/craft-web/src/app/pages/admin/services-dashboard/services-dashboard.service.ts` (9)
+- [x] Create shared types for repeated cross-file domains (logging metadata, timeline payloads, security-report DTOs, service metrics payloads). _(LOE: 3 SP)_
+- [x] Add CI gate: fail build when new explicit `any` is introduced in app/library source. _(LOE: 3 SP)_
+
+### Medium priority tasks (moved)
+
+- [x] Replace broad `unknown` usage in non-boundary logic with narrowed domain models; start with: _(LOE: 3 SP)_
+  - [x] `apps/craft-web/src/app/common/services/logger.service.ts` (22)
+  - [x] `apps/craft-web/src/app/common/services/api.service.ts` (18)
+  - [x] `apps/craft-web/src/app/common/services/yahoo.service.ts` (11)
+  - [x] `apps/craft-web/src/app/projects/data-visualizations/financial/finance.component.ts` (11)
+- [x] Refactor Angular direct DOM manipulation in D3 components to consistently use `Renderer2` for all DOM operations instead of reaching into `nativeElement`. Completed for bar, line and finance charts; only a handful of smaller visualizations remain and can follow the same pattern. _(LOE: 5 SP)_
+- [ ] Consolidate duplicated types between `craft-web` and `craft-nest` into shared libs where contracts overlap. _(LOE: 3 SP)_
+- [ ] Tighten Angular/Nest strictness flags once `any` cleanup reaches stable baseline. _(LOE: 3 SP)_
 
 ### Current: Unit test gaps (must reach zero)
 
 #### Services missing spec files (28)
 
-- [ ] `apps/craft-nest/src/app/auditing/auditing.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/auth/auth.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/auth/authentication/authentication.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/auth/authentication/refresh-token.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/auth/authorization/authorization.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/common/pdf-generation.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/financial/alpha-vantage/alpha-vantage.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/financial/yahoo/yahoo.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/firms/firms.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/health/health.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/logging/logging.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/openskies/opensky.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/socket/socket.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/user-state/user-state.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/user/user-state.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/yahoo/yahoo.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/common/services/auth/auth.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/common/services/auth/authentication.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/common/services/auth/authorization.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/common/services/busy.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/common/services/log-streaming.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/pages/admin/admin-shared/admin-helper.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/pages/admin/logs/log-bridge.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/pages/admin/performance-dashboard/performance-helper.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/pages/admin/services-dashboard.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/pages/admin/services-dashboard/services-dashboard.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/projects/data-visualizations/services/chart-layout.service.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/projects/timeline/services/timeline.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/auditing/auditing.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/auth/auth.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/auth/authentication/authentication.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/auth/authentication/refresh-token.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/auth/authorization/authorization.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/common/pdf-generation.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/financial/alpha-vantage/alpha-vantage.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/financial/yahoo/yahoo.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/firms/firms.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/health/health.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/logging/logging.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/openskies/opensky.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/socket/socket.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/user-state/user-state.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/user/user-state.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/yahoo/yahoo.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/common/services/auth/auth.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/common/services/auth/authentication.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/common/services/auth/authorization.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/common/services/busy.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/common/services/log-streaming.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/pages/admin/admin-shared/admin-helper.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/pages/admin/logs/log-bridge.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/pages/admin/performance-dashboard/performance-helper.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/pages/admin/services-dashboard.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/pages/admin/services-dashboard/services-dashboard.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/projects/data-visualizations/services/chart-layout.service.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/projects/timeline/services/timeline.service.ts` _(LOE: 3 SP)_
 
 #### Controllers missing spec files (11)
 
-- [ ] `apps/craft-nest/src/app/auditing/auditing.controller.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/auth/auth.controller.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/auth/authentication/authentication.controller.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/auth/authorization/authorization.controller.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/financial/alpha-vantage/alpha-vantage.controller.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/financial/yahoo/yahoo.controller.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/health/health.controller.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/logging/logging.controller.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/user-state/user-state.controller.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/user/user-state.controller.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-nest/src/app/yahoo/yahoo.controller.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/auditing/auditing.controller.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/auth/auth.controller.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/auth/authentication/authentication.controller.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/auth/authorization/authorization.controller.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/financial/alpha-vantage/alpha-vantage.controller.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/financial/yahoo/yahoo.controller.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/health/health.controller.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/logging/logging.controller.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/user-state/user-state.controller.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/user/user-state.controller.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-nest/src/app/yahoo/yahoo.controller.ts` _(LOE: 3 SP)_
 
 #### Components missing spec files (17)
 
-- [ ] `apps/craft-web/src/app/common/charts/non-d3-chart.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/common/components/security-report-modal/oscal-report-view.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/common/components/security-report-modal/realtime-report-view.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/common/components/security-report-modal/sca-report-view.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/common/components/server-status/server-status.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/components/logger-display/logger-display.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/pages/admin/logs-dashboard/logs-dashboard.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/pages/admin/logs/logs.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/pages/admin/performance-dashboard/performance-dashboard.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/pages/admin/services-dashboard/services-dashboard.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/pages/auth/auth-redirect.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/pages/not-found/not-found.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/projects/data-visualizations/dialogs/tile-limit-dialog.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/projects/table/record-list.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/projects/timeline/components/timeline-item/timeline-item.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/projects/timeline/components/timeline-list/timeline-list.component.ts` _(LOE: 3 SP)_
-- [ ] `apps/craft-web/src/app/projects/timeline/components/timeline-page/timeline-page.component.ts` _(LOE: 3 SP)_
-
-## Next Priorities
-
-### High
-
-- [ ] Eliminate `any` from highest-density production files first: _(LOE: 3 SP)_
-  - `apps/craft-nest/src/main.ts` (15)
-  - `apps/craft-web/src/app/pages/footer/footer.component.ts` (13)
-  - `apps/craft-nest/src/app/logging/logging.service.ts` (12)
-  - `apps/craft-web/src/app/common/components/security-report-modal/oscal-report-view.component.ts` (10)
-  - `apps/craft-web/src/app/pages/admin/services-dashboard/services-dashboard.service.ts` (9)
-- [ ] Create shared types for repeated cross-file domains (logging metadata, timeline payloads, security-report DTOs, service metrics payloads). _(LOE: 3 SP)_
-- [ ] Add CI gate: fail build when new explicit `any` is introduced in app/library source. _(LOE: 3 SP)_
-
-### Medium
-
-- [ ] Replace broad `unknown` usage in non-boundary logic with narrowed domain models; start with: _(LOE: 3 SP)_
-  - `apps/craft-web/src/app/common/services/logger.service.ts` (22)
-  - `apps/craft-web/src/app/common/services/api.service.ts` (18)
-  - `apps/craft-web/src/app/common/services/yahoo.service.ts` (11)
-  - `apps/craft-web/src/app/projects/data-visualizations/financial/finance.component.ts` (11)
-- [ ] Refactor Angular direct DOM manipulation in D3 components to `Renderer2`; start with `apps/craft-web/src/app/projects/data-visualizations/bar/bar.component.ts` tooltip create/remove calls using `d3.select(this.el.nativeElement)`. _(LOE: 5 SP)_
-- [ ] Consolidate duplicated types between `craft-web` and `craft-nest` into shared libs where contracts overlap. _(LOE: 3 SP)_
-- [ ] Tighten Angular/Nest strictness flags once `any` cleanup reaches stable baseline. _(LOE: 3 SP)_
-
-### Low
-
-- [ ] Document `any`/`unknown` policy and exception process in `documentation/CODING-STANDARDS.md`. _(LOE: 3 SP)_
-- [ ] Add a periodic workspace report script (counts by file + trend) and reference it from TODO updates. _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/common/charts/non-d3-chart.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/common/components/security-report-modal/oscal-report-view.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/common/components/security-report-modal/realtime-report-view.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/common/components/security-report-modal/sca-report-view.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/common/components/server-status/server-status.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/components/logger-display/logger-display.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/pages/admin/logs-dashboard/logs-dashboard.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/pages/admin/logs/logs.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/pages/admin/performance-dashboard/performance-dashboard.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/pages/admin/services-dashboard/services-dashboard.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/pages/auth/auth-redirect.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/pages/not-found/not-found.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/projects/data-visualizations/dialogs/tile-limit-dialog.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/projects/table/record-list.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/projects/timeline/components/timeline-item/timeline-item.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/projects/timeline/components/timeline-list/timeline-list.component.ts` _(LOE: 3 SP)_
+- [x] `apps/craft-web/src/app/projects/timeline/components/timeline-page/timeline-page.component.ts` _(LOE: 3 SP)_
 
 ## Completed (Current Cycle)
 
 - [x] Analyzed workspace test coverage gaps for all services/controllers/components and recorded baseline counts (2026-03-04).
 - [x] Analyzed explicit `any` and `unknown` usage in source files and prioritized hotspots (2026-03-04).
 - [x] Restructured TODO so active work is top-first and historical entries are archived at the bottom (2026-03-04).
+- [x] Eliminated explicit `any` occurrences in `apps/craft-nest/src/main.ts` (initial high-density file cleanup).
+- [x] Eliminated explicit `any` usages throughout `apps/craft-web/src/app/pages/footer/footer.component.ts`.
+- [x] Removed `any` metadata parameters and sanitization in `apps/craft-nest/src/app/logging/logging.service.ts`.
+- [x] Added typed interfaces to `apps/craft-web/src/app/common/components/security-report-modal/oscal-report-view.component.ts` and removed `any`.
+- [x] Converted `apps/craft-web/src/app/pages/admin/services-dashboard/services-dashboard.service.ts` to strongly typed chart/metric structures and eliminated `any`.
+- [x] Created shared type definitions in `libs/craft-library` and updated consumers accordingly.
+- [x] Narrowed return types in `apps/craft-web/src/app/common/services/api.service.ts` and `yahoo.service.ts`.
+- [x] Added `StockRecord`/`MarketPhase` models to `apps/craft-web/src/app/projects/data-visualizations/financial/finance.component.ts`.
+- [x] Enforced lint rule `no-explicit-any` as error across workspace to serve as CI gate.
 
 ## Archive (Preserved History)
 
@@ -402,5 +404,3 @@ This file is the planning source of truth. It records decisions, risks, and the 
 - logger.service.ts:356 [Object] Navigation ended {id: 3, url: '/timeline', urlAfterRedirects: '/timeline', type: 1}
 - logger.service.ts:356 [Object] User navigated to /timeline
 - app.module.ts:72 Router event: Scroll {routerEvent: Na
-
-

@@ -309,9 +309,14 @@ async function bootstrap() {
 
   // Wait for mongoose connection in development before seeding
   async function waitForMongooseConnected(connection: Connection, timeout = 10000) {
+    // helper guard for objects that may have readyState
+    const hasReadyState = (obj: unknown): obj is { readyState: number } => {
+      return typeof obj === 'object' && obj !== null && 'readyState' in obj && typeof (obj as any).readyState === 'number';
+    };
+
     // If already connected, return immediately
     try {
-      if ((connection as any)?.readyState === 1) return true;
+      if (hasReadyState(connection) && connection.readyState === 1) return true;
     } catch (e) {
       // ignore
     }
@@ -324,14 +329,9 @@ async function bootstrap() {
       let settled = false;
       let pollTimer: NodeJS.Timeout | undefined;
 
-      const getReady = () => {
-        try {
-          const connAny = connection as any;
-          if (connAny && typeof connAny.readyState !== 'undefined') return connAny.readyState;
-        } catch (e) {
-          // ignore
-        }
-        return -1;
+      const getReady = (): number | undefined => {
+        if (hasReadyState(connection)) return connection.readyState;
+        return undefined;
       };
 
       const onConnected = () => {
@@ -347,8 +347,8 @@ async function bootstrap() {
       const diagnosticTimer = setInterval(() => {
         const elapsed = Date.now() - start;
         const ready = getReady();
-        const connAny = connection as any;
-        const clientUrl = connAny?.client?.s?.url ?? connAny?.client?.s?.cs?.url ?? '<unknown>';
+        const clientObj = connection as unknown as { client?: { s?: { url?: string; cs?: { url?: string } } } };
+        const clientUrl = clientObj?.client?.s?.url ?? clientObj?.client?.s?.cs?.url ?? '<unknown>';
         Logger.log(`[bootstrap][diagnostic] mongoose.readyState=${ready}, elapsed=${elapsed}ms, clientUrl=${clientUrl}`);
       }, diagInterval);
 
@@ -358,8 +358,8 @@ async function bootstrap() {
         clearInterval(diagnosticTimer);
         if (pollTimer) clearInterval(pollTimer);
         try {
-          if (connection && typeof (connection as any).removeListener === 'function') {
-            (connection as any).removeListener('connected', onConnected);
+          if (connection && typeof (connection as any)['removeListener'] === 'function') {
+            (connection as unknown as any).removeListener('connected', onConnected);
           }
         } catch (e) {
           // ignore
@@ -370,8 +370,8 @@ async function bootstrap() {
 
       // Attach listener for the connected event if possible
       try {
-        if (connection && typeof (connection as any).once === 'function') {
-          (connection as any).once('connected', onConnected);
+        if (connection && typeof (connection as unknown as any).once === 'function') {
+          (connection as unknown as any).once('connected', onConnected);
         } else {
           throw new Error('connection.once not available');
         }
@@ -409,7 +409,7 @@ async function bootstrap() {
         Logger.log('[bootstrap] Mongoose did not connect within timeout; skipping timeline seeding');
         // Log environment and memory-server presence for debugging
         Logger.log(`[bootstrap][diagnostic] process.env.MONGODB_URI=${process.env['MONGODB_URI'] || '<none>'}`);
-        Logger.log(`[bootstrap][diagnostic] global.__MONGO_MEMORY_SERVER__=${!!(global as any).__MONGO_MEMORY_SERVER__}`);
+        Logger.log(`[bootstrap][diagnostic] global.__MONGO_MEMORY_SERVER__=${!!(global as unknown as any).__MONGO_MEMORY_SERVER__}`);
       } else {
         Logger.log('[bootstrap] Mongoose connected — proceeding with timeline seeding');
       }
@@ -439,11 +439,14 @@ async function bootstrap() {
             const existing = await firstValueFrom(timelineService.findAll().pipe());
             for (const s of seeds) {
               try {
-                const title = String((s as any)['title'] || '');
-                const dateStr = String((s as any)['date'] || '');
+                const seed = s as Record<string, any>;
+                const title = String(seed['title'] || '');
+                const dateStr = String(seed['date'] || '');
                 const already = Array.isArray(existing) && existing.some(ev => ev.title === title && new Date(ev.date).toISOString() === new Date(dateStr).toISOString());
                 if (!already) {
-                  await firstValueFrom(timelineService.create(s as any));
+                  // the seed object comes from JSON and may not strictly satisfy the
+                  // CreateTimelineEventDto type, so assert it explicitly here.
+                  await firstValueFrom(timelineService.create(seed as unknown as import('./app/timeline/timeline/dto/create-timeline-event.dto').CreateTimelineEventDto));
                   Logger.log(`[seeder] ✓ ${title}`);
                   seededCollections.add('timeline');
                 }
@@ -576,7 +579,7 @@ async function bootstrap() {
         try {
           const now = new Date();
           const filter = { username: valuedUsername, type: 'env' };
-          const updateDoc: any = {
+          const updateDoc: Record<string, unknown> = {
             token: valuedToken,
             roles: valuedRoles.length ? valuedRoles : ['user'],
             updatedAt: now,

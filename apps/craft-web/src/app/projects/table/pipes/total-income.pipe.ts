@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Record, Company } from '@craft-fusion/craft-library';
+import { AppRecord as Record, Company } from '@craft-fusion/craft-library';
 
 @Pipe({
   name: 'totalIncome',

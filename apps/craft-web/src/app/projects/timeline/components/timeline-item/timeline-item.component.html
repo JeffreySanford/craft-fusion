@@ -1,4 +1,4 @@
-<mat-card class="timeline-item-card" [ngClass]="[cardTypeClass, cardStateClass]">
+<mat-card class="timeline-item-card" [ngClass]="[cardTypeClass, cardStateClass]" [class.timeline-item-card--expanded]="expanded">
   <mat-card-header class="timeline-card-header">
     <div mat-card-avatar class="timeline-avatar">
       <mat-icon>{{ iconName }}</mat-icon>

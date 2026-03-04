@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RecordService } from './record.service';
 import { NotificationService } from '../../../common/services/notification.service';
 import { LoggerService } from '../../../common/services/logger.service';
@@ -16,6 +17,7 @@ describe('RecordServiceService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       providers: [
         RecordService,
         { provide: NotificationService, useClass: MockNotificationService },

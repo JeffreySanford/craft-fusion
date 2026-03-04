@@ -26,6 +26,10 @@ import { HealthData } from '@craft-fusion/craft-library';
 
 export function socketClientFactory(socketClient: SocketClientService): () => void {
   return () => {
+    // Skip socket init in test environment
+    if (typeof process !== 'undefined' && (process.env['VITEST'] || process.env['NODE_ENV'] === 'test')) {
+      return;
+    }
     socketClient.connect();
     const healthMetric: HealthData = {
       status: 'healthy',

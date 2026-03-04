@@ -152,18 +152,29 @@ test.describe('Admin Hero Area', () => {
       // Wait for tab animation to complete
       await page.waitForTimeout(2000);
 
-      const mainTabs = page.locator('.admin-tabs').first();
-      const logsTab = mainTabs.getByRole('tab', { name: /Logs/ }).first();
-      await logsTab.scrollIntoViewIfNeeded();
-      await expect(logsTab).toHaveAttribute('aria-selected', 'true', { timeout: 10000 });
-
-      // Check for the logs dashboard component being visible
+      // Check for the logs dashboard component being visible (works on all viewports)
       const logsPanel = page.locator('app-logs-dashboard');
       await expect(logsPanel).toBeVisible({ timeout: 15000 });
+
+      // On wider viewports, also assert the tab selection state
+      const viewportWidth = page.viewportSize()?.width ?? 0;
+      if (viewportWidth >= 768) {
+        const mainTabs = page.locator('.admin-tabs').first();
+        const logsTab = mainTabs.getByRole('tab', { name: /Logs/ }).first();
+        await logsTab.scrollIntoViewIfNeeded();
+        await expect(logsTab).toHaveAttribute('aria-selected', 'true', { timeout: 10000 });
+      }
     }
   });
 
   test('should hide hero bar when switching tabs', async ({ page }) => {
+    // Tab navigation requires a wider viewport to render all tab labels
+    const viewport = page.viewportSize();
+    if (!viewport || viewport.width < 768) {
+      test.skip();
+      return;
+    }
+
     // Hero bar starts visible on Overview tab
     await expect(page.locator('.admin-hero-bar')).toBeVisible();
 

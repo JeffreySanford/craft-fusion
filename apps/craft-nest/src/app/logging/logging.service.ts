@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
 
-export interface LogEntry {
-  timestamp: Date;
-  level: string;
-  message: string;
-  metadata?: any;
-}
+import { LogEntry } from './log-entry.interface';
 
 @Injectable()
 export class LoggingService {
@@ -25,23 +20,23 @@ export class LoggingService {
     // Console interception disabled to reduce pollution
   }
 
-  debug(message: string, metadata?: any): void {
+  debug(message: string, metadata?: Record<string, unknown>): void {
     this.addLog('debug', message, metadata);
   }
 
-  verbose(message: string, metadata?: any): void {
+  verbose(message: string, metadata?: Record<string, unknown>): void {
     this.addLog('verbose', message, metadata);
   }
 
-  info(message: string, metadata?: any): void {
+  info(message: string, metadata?: Record<string, unknown>): void {
     this.addLog('info', message, metadata);
   }
 
-  warn(message: string, metadata?: any): void {
+  warn(message: string, metadata?: Record<string, unknown>): void {
     this.addLog('warn', message, metadata);
   }
 
-  error(message: string, metadata?: any): void {
+  error(message: string, metadata?: Record<string, unknown>): void {
     // Check rate limiting for errors to prevent log flooding
     if (this.RATE_LIMIT.enabled) {
       const now = Date.now();
@@ -71,7 +66,7 @@ export class LoggingService {
   /**
    * Track operation time and log if it exceeds threshold
    */
-  trackOperation(operation: string, durationMs: number, metadata?: any): void {
+  trackOperation(operation: string, durationMs: number, metadata?: Record<string, unknown>): void {
     if (durationMs > this.SLOW_OPERATION_THRESHOLD) {
       this.warn(`Slow operation: ${operation}`, {
         ...metadata,
@@ -89,7 +84,7 @@ export class LoggingService {
   /**
    * Create an operation tracker that automatically logs completion time
    */
-  createOperationTracker(operation: string, metadata?: any): () => void {
+  createOperationTracker(operation: string, metadata?: Record<string, unknown>): () => void {
     const startTime = Date.now();
     return () => {
       const durationMs = Date.now() - startTime;
@@ -97,7 +92,7 @@ export class LoggingService {
     };
   }
 
-  private addLog(level: string, message: string, metadata?: any): void {
+  private addLog(level: string, message: string, metadata?: Record<string, unknown>): void {
     // Sanitize metadata to prevent sensitive data leakage
     const sanitizedMetadata = metadata ? this.sanitizeMetadata(metadata) : undefined;
     
@@ -169,31 +164,35 @@ export class LoggingService {
     }
   }
 
-  private sanitizeMetadata(metadata: any): any {
-    if (!metadata) return metadata;
+  private sanitizeMetadata(metadata: unknown): Record<string, unknown> | undefined {
+    // Only objects can be sanitized
+    if (!metadata || typeof metadata !== 'object') {
+      return undefined;
+    }
     
     const sensitiveFields = ['password', 'token', 'secret', 'authorization', 'key', 'apiKey'];
-    const sanitized = {...metadata};
+    const sanitized = { ...(metadata as Record<string, unknown>) } as Record<string, unknown>;
     
     try {
-      const sanitizeObject = (obj: any) => {
+      const sanitizeObject = (obj: Record<string, unknown>) => {
         if (!obj || typeof obj !== 'object') return;
         
         Object.keys(obj).forEach(key => {
+          const val = obj[key];
           if (sensitiveFields.some(field => key.toLowerCase().includes(field))) {
             obj[key] = '[REDACTED]';
-          } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-            sanitizeObject(obj[key]);
+          } else if (typeof val === 'object' && val !== null) {
+            sanitizeObject(val as Record<string, unknown>);
           }
         });
       };
       
       sanitizeObject(sanitized);
       
-      // Special handling for error objects
-      if (metadata.error) {
-        const err = metadata.error;
-        sanitized.error = {
+      // Special handling for error objects if present on sanitized copy
+      if ('error' in sanitized && typeof sanitized['error'] === 'object' && sanitized['error'] !== null) {
+        const err = sanitized['error'] as any;
+        sanitized['error'] = {
           message: err.message,
           name: err.name,
           stack: this.isProductionEnv() ? undefined : err.stack

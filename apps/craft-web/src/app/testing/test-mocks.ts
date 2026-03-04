@@ -2,7 +2,7 @@
 import { BreakpointState } from '@angular/cdk/layout';
 import { ChangeDetectorRef } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { Record as CraftRecord } from '@craft-fusion/craft-library';
+import { AppRecord as CraftRecord } from '@craft-fusion/craft-library';
 import { User } from '../common/interfaces/user.interface';
 
 export const mockRouter = {
@@ -96,6 +96,8 @@ export const MOCK_RECORD: CraftRecord = {
 
 export class MockRecordService {
   offlineStatus$ = of(false);
+  // Expose a loadProgress observable to match the real service API used by the component
+  loadProgress$ = of(null);
 
   setServerResource(): string {
     return '/api/mock';
@@ -103,6 +105,11 @@ export class MockRecordService {
 
   generateNewRecordSet(_count?: number): Observable<CraftRecord[]> {
     return of([MOCK_RECORD]);
+  }
+
+  // New method used by the component to stream generation progress; keep behavior simple for tests
+  generateWithProgress(_count?: number): Observable<CraftRecord[]> {
+    return of(this.getMockRecords());
   }
 
   getMockRecords(): CraftRecord[] {

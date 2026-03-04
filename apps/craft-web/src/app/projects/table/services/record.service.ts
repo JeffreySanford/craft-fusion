@@ -1,8 +1,15 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpEventType, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
-import { map, catchError, timeout, retry, tap } from 'rxjs/operators';
+import { map, catchError, filter, timeout, retry, tap } from 'rxjs/operators';
 import { ApiService } from '../../../common/services/api.service';
-import { Record } from '@craft-fusion/craft-library';
+
+export interface LoadProgress {
+  loaded: number;   // bytes received so far
+  total: number;    // total bytes (0 if Content-Length absent)
+  estimatedRecords: number;
+}
+import { AppRecord as Record } from '@craft-fusion/craft-library';
 import { NotificationService } from '../../../common/services/notification.service';
 import { LoggerService } from '../../../common/services/logger.service';
 
@@ -25,8 +32,12 @@ export class RecordService {
   private offlineStatusSubject = new BehaviorSubject<boolean>(false);
   public offlineStatus$ = this.offlineStatusSubject.asObservable();
 
+  private loadProgressSubject = new BehaviorSubject<LoadProgress | null>(null);
+  public readonly loadProgress$ = this.loadProgressSubject.asObservable();
+
   constructor(
     public apiService: ApiService,
+    private http: HttpClient,
     private notificationService: NotificationService,
     private logger: LoggerService,
   ) {
@@ -61,7 +72,7 @@ export class RecordService {
         catchError(error => {
           this.logger.error('Failed to get all records', { error });
 
-          if (error.status === 0 || error.status === 504) {
+          if (error.status === 0 || error.status === 404 || error.status === 502 || error.status === 504) {
             this.setOfflineMode(true);
             this.notificationService.showWarning('Cannot connect to server. Using mock data instead.', 'Connectivity Issue');
             this.logger.info('Switching to offline mode with mock data');
@@ -92,7 +103,7 @@ export class RecordService {
         timeout(this.REQUEST_TIMEOUT),
         retry({ count: this.RETRY_COUNT, delay: this.RETRY_DELAY }),
         catchError(error => {
-          if (error.status === 0 || error.status === 504) {
+          if (error.status === 0 || error.status === 404 || error.status === 502 || error.status === 504) {
             this.logger.warn('Network error while fetching record, using mock data', { UID });
             this.setOfflineMode(true);
             this.notificationService.showWarning('Cannot connect to server. Using mock data instead.', 'Connection Error');
@@ -134,7 +145,7 @@ export class RecordService {
         catchError(error => {
           this.logger.error('Failed to generate record set from API', { error, count });
 
-          if (error.status === 0 || error.status === 504) {
+          if (error.status === 0 || error.status === 404 || error.status === 502 || error.status === 504) {
             this.setOfflineMode(true);
             this.logger.warn('Connection error, switching to offline mode with mock data');
 
@@ -147,6 +158,61 @@ export class RecordService {
           return throwError(() => error);
         }),
       );
+  }
+
+  /**
+   * Like generateNewRecordSet but streams HttpDownloadProgress events so the UI
+   * can display a live received-records counter while the payload arrives.
+   */
+  generateWithProgress(count: number): Observable<Record[]> {
+    this.loadProgressSubject.next(null); // reset → show "generating" phase
+
+    if (this._isOfflineMode) {
+      this.logger.info('Using mock data generator in offline mode', { count });
+      this.notificationService.showInfo('Using locally generated mock data instead of server.', 'Offline Mode');
+      this.mockRecords = this.generateMockRecords(count);
+      return of(this.mockRecords);
+    }
+
+    const url = `${this.apiUrl}/${this.baseUrl}/generate?count=${count}`;
+    const req = new HttpRequest<Record[]>('GET', url, {
+      reportProgress: true,
+      withCredentials: true,
+    });
+
+    return this.http.request<Record[]>(req).pipe(
+      tap(event => {
+        if (event.type === HttpEventType.DownloadProgress) {
+          const loaded = event.loaded;
+          const total = event.total ?? 0;
+          // If Content-Length present → interpolate; otherwise estimate ~280 bytes/record
+          const estimatedRecords = total > 0
+            ? Math.min(Math.round((loaded / total) * count), count)
+            : Math.min(Math.floor(loaded / 280), count);
+          this.loadProgressSubject.next({ loaded, total, estimatedRecords });
+        }
+      }),
+      filter(event => event.type === HttpEventType.Response),
+      map(event => (event as HttpResponse<Record[]>).body ?? []),
+      tap(records => {
+        this.loadProgressSubject.next({ loaded: 1, total: 1, estimatedRecords: records.length });
+        this.setOfflineMode(false);
+        this.logger.debug(`generateWithProgress: received ${records.length} records`);
+      }),
+      catchError(error => {
+        this.logger.error('generateWithProgress failed', { error, count });
+        if (error.status === 0 || error.status === 404 || error.status === 502 || error.status === 504) {
+          this.setOfflineMode(true);
+          this.logger.warn('Connection error, switching to offline mode with mock data');
+          this.notificationService.showWarning('Server is unreachable. Using locally generated data instead.', 'Connection Error');
+          this.mockRecords = this.generateMockRecords(count);
+          this.loadProgressSubject.next(null);
+          return of(this.mockRecords);
+        }
+        this.loadProgressSubject.next(null);
+        return throwError(() => error);
+      }),
+    );
   }
 
   getCreationTime(): Observable<number> {

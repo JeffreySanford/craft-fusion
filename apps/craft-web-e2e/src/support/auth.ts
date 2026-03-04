@@ -42,8 +42,9 @@ export async function loginAsAdmin(page: Page, targetPath = '/admin'): Promise<v
   // the Set-Cookie values into the browser context. This is more reliable
   // than doing a fetch() inside the page because it lets us assert the
   // server-set cookies and explicitly add them to the page context.
-  const apiBase = process.env['API_URL'] || '';
-  const apiRequest = await (page.request || (await import('@playwright/test')).request).newContext({ baseURL: apiBase || undefined });
+  const apiBase = process.env['API_URL'] || process.env['E2E_BASE_URL'] || 'http://localhost:4200';
+  const { request: playwrightRequest } = await import('@playwright/test');
+  const apiRequest = await playwrightRequest.newContext({ baseURL: apiBase });
   const loginResp = await apiRequest.post('/api/auth/login', { data: payload });
   const status = loginResp.status();
   const headers = loginResp.headersArray();

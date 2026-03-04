@@ -59,14 +59,10 @@ func main() {
 	}))
 
 	// Health Check
-	router.GET("/api-go/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "OK"})
-	})
+	router.GET("/api-go/health", handlers.HealthHandler)
 
 	// Add /health endpoint for deployment health checks
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "OK"})
-	})
+	router.GET("/health", handlers.HealthHandler)
 
 	// User Records API
 	router.GET("/api-go/records", handlers.GetRecordsHandler)

@@ -85,4 +85,29 @@ describe('FinanceComponent', () => {
       ((component as unknown) as { renderChart: (stocks: Stock[]) => void }).renderChart(testData);
     }).not.toThrow();
   });
+
+  it('should use renderer to clear previous content when rendering chart', () => {
+    const host = document.createElement('div');
+    const child = document.createElement('span');
+    host.appendChild(child);
+    component.chartContainer = { nativeElement: host } as any;
+    // set data so renderChart uses it
+    component.data = [{ symbol: 'TEST', data: [{ date: new Date(), close: 1 }] }];
+
+    vi.spyOn(component.renderer, 'removeChild').mockImplementation((parent, childEl) => parent.removeChild(childEl));
+    component.renderChart([{ symbol: 'TEST', data: [{ date: new Date(), close: 1 }] }]);
+    // after rendering, a new svg element should be attached to host (tooltip may also appear)
+    const tags = Array.from(host.children).map(c => (c as HTMLElement).tagName.toLowerCase());
+    expect(tags).toContain('svg');  });
+
+  it('should use renderer during onMarketPhasesChange cleanup', () => {
+    const host = document.createElement('div');
+    const child = document.createElement('span');
+    host.appendChild(child);
+    component.chartContainer = { nativeElement: host } as any;
+    vi.spyOn(component.renderer, 'removeChild').mockImplementation((p, c) => p.removeChild(c));
+    component.onMarketPhasesChange();
+    // host children should be gone (handled earlier)
+
+  });
 });

@@ -25,6 +25,240 @@
   text-align: right !important;
 }
 
+// ─── Backend / Dataset Selector Panel ────────────────────────────────────────
+.selectors {
+  align-items: center;
+  background: linear-gradient(135deg, #1e1b3a 0%, #100d24 100%);
+  border: 1px solid rgba(245, 158, 11, 0.7);
+  border-radius: 0.5em;
+  box-shadow:
+    0 4px 20px rgb(0 0 0 / 55%),
+    inset 0 1px 0 rgb(255 255 255 / 10%);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75em 1.25em;
+  justify-content: center;
+  margin-bottom: 0.75em;
+  padding: 0.75em 1.25em;
+  position: relative;
+
+  // ── MDC CSS custom properties — the only reliable way to recolor M3 fields ──
+  // Outlined text field
+  --mdc-outlined-text-field-label-text-color: #fff;
+  --mdc-outlined-text-field-hover-label-text-color: #f59e0b;
+  --mdc-outlined-text-field-focus-label-text-color: #f59e0b;
+  --mdc-outlined-text-field-disabled-label-text-color: rgb(255 255 255 / 38%);
+  --mdc-outlined-text-field-input-text-color: #fff;
+  --mdc-outlined-text-field-disabled-input-text-color: rgb(255 255 255 / 38%);
+  --mdc-outlined-text-field-placeholder-text-color: rgb(255 255 255 / 55%);
+  --mdc-outlined-text-field-caret-color: #f59e0b;
+  --mdc-outlined-text-field-outline-color: rgba(245, 158, 11, 0.6);
+  --mdc-outlined-text-field-hover-outline-color: #f59e0b;
+  --mdc-outlined-text-field-focus-outline-color: #f59e0b;
+  --mdc-outlined-text-field-error-caret-color: #ef4444;
+  // Select trigger text & arrow
+  --mat-select-enabled-trigger-text-color: #fff;
+  --mat-select-disabled-trigger-text-color: rgb(255 255 255 / 38%);
+  --mat-select-placeholder-text-color: rgb(255 255 255 / 55%);
+  --mat-select-enabled-arrow-color: #f59e0b;
+  --mat-select-disabled-arrow-color: rgb(255 255 255 / 38%);
+  --mat-select-focused-arrow-color: #f59e0b;
+  --mat-select-invalid-arrow-color: #ef4444;
+
+  // Patriotic accent bar along the bottom edge
+  &::after {
+    background: linear-gradient(to right, #bf0a30, #f59e0b, #3c3b6e);
+    border-radius: 0 0 0.5em 0.5em;
+    bottom: 0;
+    content: "";
+    height: 3px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+  }
+
+  mat-form-field {
+    min-width: 11em;
+
+    // Translucent field background to define the control zone on the dark panel
+    .mat-mdc-text-field-wrapper {
+      background-color: rgb(255 255 255 / 12%) !important;
+    }
+  }
+}
+
+// ─── Loading overlay ─────────────────────────────────────────────────────────
+.loading-container {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 60vh;
+  width: 100%;
+}
+
+.loading-overlay {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding: 2em;
+  width: 100%;
+}
+
+.loading-card {
+  align-items: center;
+  background: linear-gradient(160deg, #1e1b3a 0%, #0e0c1e 100%);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 1em;
+  box-shadow:
+    0 0 0 1px rgba(245, 158, 11, 0.12),
+    0 12px 48px rgb(0 0 0 / 70%),
+    0 0 80px rgba(103, 80, 164, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25em;
+  max-width: 22em;
+  padding: 2.5em 3em;
+  position: relative;
+  width: 100%;
+
+  // Subtle shimmer sweep
+  overflow: hidden;
+
+  &::before {
+    animation: loading-shimmer 2.4s ease-in-out infinite;
+    background: linear-gradient(
+      105deg,
+      transparent 35%,
+      rgba(255, 255, 255, 0.04) 50%,
+      transparent 65%
+    );
+    content: "";
+    height: 100%;
+    left: -100%;
+    position: absolute;
+    top: 0;
+    width: 300%;
+  }
+}
+
+// Radial glow behind the spinner
+.loading-glow {
+  animation: loading-pulse 2s ease-in-out infinite;
+  background: radial-gradient(circle, rgba(103, 80, 164, 0.5) 0%, transparent 70%);
+  border-radius: 50%;
+  height: 9em;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 1.5em;
+  transform: translateX(-50%);
+  width: 9em;
+}
+
+// Recolor the Material spinner to gold
+.loading-spinner {
+  --mdc-circular-progress-active-indicator-color: #f59e0b;
+}
+
+.loading-label {
+  color: rgb(255 255 255 / 85%);
+  font-size: 0.95em;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin: 0;
+  text-align: center;
+
+  strong {
+    color: #f59e0b;
+    font-weight: 700;
+  }
+}
+
+// Live received-records counter
+.loading-count {
+  animation: loading-count-pulse 0.3s ease-out;
+  color: #f59e0b;
+  font-feature-settings: "tnum";
+  font-size: 1.35em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.7);
+}
+
+.loading-of {
+  color: rgb(255 255 255 / 45%);
+  font-size: 0.85em;
+  margin: 0 0.3em;
+}
+
+// Wrapper that stacks the bar and the percentage side-by-side
+.loading-progress-wrap {
+  align-items: center;
+  display: flex;
+  gap: 0.6em;
+  width: 100%;
+
+  .loading-bar {
+    flex: 1;
+  }
+}
+
+.loading-pct {
+  color: #f59e0b;
+  font-feature-settings: "tnum";
+  font-size: 0.85em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  min-width: 2.8em;
+  text-align: right;
+  white-space: nowrap;
+}
+
+@keyframes loading-count-pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+// Staggered bouncing dots
+.loading-dots {
+  display: inline-flex;
+  gap: 1px;
+
+  span {
+    animation: loading-dot-bounce 1.4s ease-in-out infinite both;
+    color: #f59e0b;
+    display: inline-block;
+
+    &:nth-child(1) { animation-delay: 0s; }
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.4s; }
+  }
+}
+
+// Recolor the indeterminate progress bar
+.loading-bar {
+  border-radius: 0.25em;
+  --mdc-linear-progress-active-indicator-color: #f59e0b;
+  --mdc-linear-progress-track-color: rgba(245, 158, 11, 0.18);
+}
+
+@keyframes loading-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes loading-pulse {
+  0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+  50%       { opacity: 1;   transform: translateX(-50%) scale(1.2); }
+}
+
+@keyframes loading-dot-bounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40%           { transform: translateY(-0.4em); }
+}
+
 .record-collection {
   background:
     linear-gradient(
@@ -1390,26 +1624,13 @@
         }
       }
 
-      :host ::ng-deep .mat-mdc-select-panel {
-        .mat-mdc-option {
-          &.mdc-list-item--selected {
-            background-color: var(--md-sys-color-surface-variant, #e3f2fd) !important;
-            color: var(--md-sys-color-primary, #002868) !important;
-
-            &:not(.mdc-list-item--disabled) {
-              background-color: var(--md-sys-color-surface-variant, #e3f2fd) !important;
-            }
-
-            &:hover {
-              background-color: var(--md-sys-color-surface, #bbdefb) !important;
-            }
-          }
-
-          &:hover:not(.mdc-list-item--selected) {
-            background-color: var(--md-sys-color-background, #f3f8ff) !important;
-          }
-        }
-      }
     }
   }
+}
+
+/* Apply the fade-to-red keyframes when the template toggles `fadeToRed` via [ngClass] */
+.fadeToRed {
+  animation: fade-to-red 1s ease-in-out both;
+  color: map.get($table-theme, patriotic-red) !important;
+  text-shadow: 0 0 6px rgba(map.get($table-theme, patriotic-red), 0.6) !important;
 }

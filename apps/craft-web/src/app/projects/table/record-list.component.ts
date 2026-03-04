@@ -6,8 +6,8 @@ import { Router } from '@angular/router';
 import { Subject, BehaviorSubject, of } from 'rxjs';
 import { catchError, switchMap, tap, takeUntil, finalize } from 'rxjs/operators';
 import { detailExpand, flyIn } from './animations';
-import { Record } from '@craft-fusion/craft-library';
-import { RecordService } from './services/record.service';
+import { AppRecord as Record } from '@craft-fusion/craft-library';
+import { RecordService, LoadProgress } from './services/record.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { NotificationService } from '../../common/services/notification.service';
 import { throwError } from 'rxjs';
@@ -89,6 +89,10 @@ export class RecordListComponent implements OnInit, OnDestroy {
   data$ = this.dataSubject.asObservable();
   private reportSubject = new BehaviorSubject<Report | null>(null);
   report$ = this.reportSubject.asObservable();
+
+  loadProgress: LoadProgress | null = null;
+  generatingCount = 0;
+  private genCountTimer: ReturnType<typeof setInterval> | null = null;
 
   private connectionAttempts = 0;
 
@@ -175,15 +179,48 @@ export class RecordListComponent implements OnInit, OnDestroy {
     });
 
     this.isOffline = this.recordService.isOfflineMode();
+
+    this.recordService.loadProgress$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(progress => {
+        this.loadProgress = progress;
+        // Phase 2 started — stop the generating ticker
+        if (progress !== null) this.stopGeneratingCounter();
+        this.changeDetectorRef.detectChanges();
+      });
   }
 
   ngOnDestroy(): void {
     console.log('Lifecycle: ngOnDestroy called');
+    this.stopGeneratingCounter();
     this.destroy$.next();
     this.destroy$.complete();
 
     if (this.retryTimeoutRef) {
       clearTimeout(this.retryTimeoutRef);
+    }
+  }
+
+  /** Starts animating the "Generating X records" counter in Phase 1. */
+  private startGeneratingCounter(target: number): void {
+    this.stopGeneratingCounter();
+    this.generatingCount = 0;
+    // For large datasets tick in 10 000-record jumps so the number feels like
+    // real server-side work; for smaller sets scale the step down proportionally.
+    const step     = target >= 10_000 ? 10_000 : Math.max(1, Math.ceil(target / 20));
+    const interval = target >= 100_000 ? 80 : 60;
+    this.genCountTimer = setInterval(() => {
+      this.generatingCount = Math.min(this.generatingCount + step, target - 1);
+      this.changeDetectorRef.detectChanges();
+      if (this.generatingCount >= target - 1) this.stopGeneratingCounter();
+    }, interval);
+  }
+
+  /** Stops and clears the generating counter. */
+  private stopGeneratingCounter(): void {
+    if (this.genCountTimer !== null) {
+      clearInterval(this.genCountTimer);
+      this.genCountTimer = null;
     }
   }
 
@@ -256,13 +293,15 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
   onDatasetChange(count: number): void {
     this.resolved = false;
-    this.totalRecords = 0;
+    // Set the expected total immediately so the Phase 1 UI shows the target count
+    this.totalRecords = count;
     this.clearDataSource();
+    this.startGeneratingCounter(count);
 
     console.log('Event: Dataset change requested with count:', count);
     this.startTime = new Date().getTime();
     this.recordService
-      .generateNewRecordSet(count)
+      .generateWithProgress(count)
       .pipe(
         takeUntil(this.destroy$),
         switchMap((dataset: Record[]) => {
@@ -271,7 +310,7 @@ export class RecordListComponent implements OnInit, OnDestroy {
             this.newData = true;
 
             this.paginator.pageIndex = 0;
-            this.paginator.pageSize = 5;
+            this.paginator.pageSize = 10;
             this.paginator.length = dataset.length;
 
             this.dataSource.filterPredicate = (data: Record, filter: string) => {
@@ -309,14 +348,17 @@ export class RecordListComponent implements OnInit, OnDestroy {
   }
 
   public fetchData(count: number): void {
-    this.resolved = false;                                            
+    this.resolved = false;
+    // Ensure the UI knows the expected total right away
+    this.totalRecords = count;
+    this.startGeneratingCounter(count);
 
     this.startTime = new Date().getTime();
     this.spinner.show();
     this.resolvedSubject.next(false);
 
     this.recordService
-      .generateNewRecordSet(count)
+      .generateWithProgress(count)
       .pipe(
         takeUntil(this.destroy$),
 
@@ -337,13 +379,13 @@ export class RecordListComponent implements OnInit, OnDestroy {
                   const endTime = new Date().getTime();
                   const roundtrip = endTime - this.startTime;
 
-                  const generationTimeLabel = typeof generationTime === 'number' ? `${generationTime.toFixed(2)} milliseconds` : '0.00 milliseconds';
+                  const generationTimeLabel = typeof generationTime === 'number' ? this.formatDuration(generationTime) : 'less than 1 ms';
 
-                  const roundtripLabel = `${roundtrip.toFixed(2)} milliseconds`;
+                  const roundtripLabel = this.formatDuration(roundtrip);
 
                   this.generationTimeLabel = generationTimeLabel;
                   this.roundtripLabel = roundtripLabel;
-                  this.networkPerformance = `${roundtrip.toFixed(2)} milliseconds`;
+                  this.networkPerformance = roundtripLabel;
                   this.diskTransferTime = generationTimeLabel;
 
                   this.logger.info('Timing computed', {
@@ -381,6 +423,21 @@ export class RecordListComponent implements OnInit, OnDestroy {
         }),
       )
       .subscribe();
+  }
+
+  /** Converts a millisecond value into a human-readable duration string. */
+  private formatDuration(ms: number): string {
+    if (!isFinite(ms) || ms < 0) return 'less than 1 ms';
+    if (ms < 1) return 'less than 1 ms';
+    if (ms < 1000) return `${Math.round(ms)} ms`;
+    const totalSeconds = ms / 1000;
+    if (totalSeconds < 60) {
+      return `${totalSeconds.toFixed(totalSeconds < 10 ? 2 : 1)} seconds`;
+    }
+    const minutes = Math.floor(totalSeconds / 60);
+    const remainingSeconds = totalSeconds % 60;
+    const secPart = remainingSeconds < 1 ? '' : ` ${remainingSeconds.toFixed(0)} sec`;
+    return `${minutes} min${secPart}`;
   }
 
   clearFilter(): void {
@@ -499,14 +556,14 @@ export class RecordListComponent implements OnInit, OnDestroy {
             const endTime = new Date().getTime();
             const roundtrip = endTime - this.startTime;
 
-            const generationTimeLabel = typeof generationTime === 'number' ? `${generationTime.toFixed(2)} milliseconds` : '0.00 milliseconds';
+            const generationTimeLabel = typeof generationTime === 'number' ? this.formatDuration(generationTime) : 'less than 1 ms';
 
-            const roundtripLabel = `${roundtrip.toFixed(2)} milliseconds`;
+            const roundtripLabel = this.formatDuration(roundtrip);
 
             const report = {
               roundtripLabel,
               generationTimeLabel,
-              networkPerformance: `${roundtrip.toFixed(2)} milliseconds`,
+              networkPerformance: roundtripLabel,
               diskTransferTime: generationTimeLabel,
             };
 
@@ -553,10 +610,15 @@ export class RecordListComponent implements OnInit, OnDestroy {
 
   private getSwaggerUrl(serverName: string): string {
     const isDevelopment = window.location.hostname === 'localhost';
-    const baseUrl = isDevelopment ? 'http://localhost' : 'https://jeffreysanford.us';
-    const port = serverName === 'Nest' ? '3000' : '4000';
-    const swaggerPath = serverName === 'Go' ? '/api-go/swagger' : '/api/api-docs';
-    return `${baseUrl}:${port}${swaggerPath}`;
+    const swaggerPath = serverName === 'Go' ? '/api-go/swagger/index.html' : '/api/api-docs';
+
+    if (isDevelopment) {
+      const port = serverName === 'Nest' ? '3000' : '4000';
+      return `http://localhost:${port}${swaggerPath}`;
+    }
+
+    // In production prefer same-origin routing (reverse proxy / ingress), no hard-coded domain or port.
+    return `${window.location.origin}${swaggerPath}`;
   }
 
   private triggerFadeToRed(): void {

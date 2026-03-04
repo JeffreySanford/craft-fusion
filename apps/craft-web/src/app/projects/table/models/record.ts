@@ -1,1 +1,1 @@
-export type { Record, Phone, Company } from '@craft-fusion/craft-library';
+export type { AppRecord as Record, Phone, Company } from '@craft-fusion/craft-library';

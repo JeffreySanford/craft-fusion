@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ElementRef, OnDestroy, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, OnDestroy, OnChanges, SimpleChanges, AfterViewInit, Renderer2 } from '@angular/core';
 import * as d3 from 'd3';
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
@@ -82,7 +82,7 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
     internet: '#3498db',                                  
   };
 
-  constructor(private el: ElementRef) {}
+  constructor(private el: ElementRef, private renderer: Renderer2) {}
 
   ngOnInit(): void {
 
@@ -144,9 +144,14 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
     const chartElement = this.el.nativeElement.querySelector('#barChart');
     if (!chartElement) return;
 
-    chartElement.innerHTML = '';
+    // clear chart contents with Renderer2 instead of innerHTML
+    Array.from(chartElement.children).forEach(child => {
+      this.renderer.removeChild(chartElement, child);
+    });
 
-    d3.select(this.el.nativeElement).selectAll('.bar-tooltip').remove();
+    // remove any existing tooltips using Renderer2 for Angular compatibility
+    const hostEl = this.el.nativeElement as HTMLElement;
+    hostEl.querySelectorAll('.bar-tooltip').forEach(el => this.renderer.removeChild(hostEl, el));
     this.tooltip = createTooltip(this.el.nativeElement, 'bar-tooltip');
 
     this.createChart();

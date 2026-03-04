@@ -12,7 +12,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "rootDir": "../../"
   },
   "angularCompilerOptions": {
     "strictTemplates": true,

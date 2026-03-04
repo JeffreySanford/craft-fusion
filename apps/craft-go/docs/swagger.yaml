@@ -1,4 +1,87 @@
 basePath: /
+definitions:
+  handlers.ErrorResponse:
+    properties:
+      error:
+        example: Invalid limit parameter
+        type: string
+    type: object
+  handlers.GenerationTimeResponse:
+    properties:
+      generationTime:
+        example: 42
+        type: integer
+    type: object
+  handlers.HealthResponse:
+    properties:
+      status:
+        example: OK
+        type: string
+    type: object
+  handlers.RecordsResponse:
+    properties:
+      records:
+        items:
+          $ref: '#/definitions/models.UserRecord'
+        type: array
+    type: object
+  models.Address:
+    properties:
+      city:
+        type: string
+      state:
+        type: string
+      street:
+        type: string
+      zipcode:
+        type: string
+    type: object
+  models.Phone:
+    properties:
+      UID:
+        type: string
+      areaCode:
+        type: string
+      countryCode:
+        type: string
+      extension:
+        type: string
+      hasExtension:
+        type: boolean
+      number:
+        type: string
+      type:
+        type: string
+    type: object
+  models.Salary:
+    properties:
+      amount:
+        type: number
+      currency:
+        type: string
+      year:
+        type: integer
+    type: object
+  models.UserRecord:
+    properties:
+      UID:
+        type: string
+      address:
+        $ref: '#/definitions/models.Address'
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phone:
+        $ref: '#/definitions/models.Phone'
+      salary:
+        description: Using the Salary from craftlibrary.go
+        items:
+          $ref: '#/definitions/models.Salary'
+        type: array
+      totalHouseholdIncome:
+        type: integer
+    type: object
 host: localhost:4000
 info:
   contact:
@@ -12,5 +95,190 @@ info:
   termsOfService: http://swagger.io/terms/
   title: Craft Fusion API
   version: "1.0"
-paths: {}
+paths:
+  /api-go/health:
+    get:
+      description: Returns the health status for the Go backend.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.HealthResponse'
+      summary: Health check
+      tags:
+      - Health
+  /api-go/records:
+    get:
+      description: Returns a generated list of records. Use the `limit` query parameter
+        to control count.
+      parameters:
+      - default: 1000
+        description: Maximum number of records to return (1-1000000)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.RecordsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: List records
+      tags:
+      - Records
+  /api-go/records/{UID}:
+    get:
+      description: Returns one record matching the provided UID.
+      parameters:
+      - description: Record UID
+        in: path
+        name: UID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserRecord'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get record by UID
+      tags:
+      - Records
+  /api-go/records/generate:
+    get:
+      description: Generates fake records in-memory and returns them immediately.
+      parameters:
+      - default: 10
+        description: Number of records to generate
+        in: query
+        name: count
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.UserRecord'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Generate records
+      tags:
+      - Records
+  /api-go/records/time:
+    get:
+      description: Returns the latest record generation time in milliseconds.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.GenerationTimeResponse'
+      summary: Get generation time
+      tags:
+      - Records
+  /api/records:
+    get:
+      description: Returns a generated list of records. Use the `limit` query parameter
+        to control count.
+      parameters:
+      - default: 1000
+        description: Maximum number of records to return (1-1000000)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.RecordsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: List records
+      tags:
+      - Records
+  /api/records/{UID}:
+    get:
+      description: Returns one record matching the provided UID.
+      parameters:
+      - description: Record UID
+        in: path
+        name: UID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UserRecord'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Get record by UID
+      tags:
+      - Records
+  /api/records/generate:
+    get:
+      description: Compatibility route for frontend calls that are not implemented
+        in Go.
+      produces:
+      - application/json
+      responses:
+        "501":
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/handlers.ErrorResponse'
+      summary: Compatibility placeholder
+      tags:
+      - Compatibility
+  /api/records/time:
+    get:
+      description: Returns the latest record generation time in milliseconds.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.GenerationTimeResponse'
+      summary: Get generation time
+      tags:
+      - Records
+  /health:
+    get:
+      description: Returns the health status for the Go backend.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.HealthResponse'
+      summary: Health check
+      tags:
+      - Health
 swagger: "2.0"

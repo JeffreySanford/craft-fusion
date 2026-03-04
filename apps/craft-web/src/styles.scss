@@ -25,6 +25,39 @@
   @extend .fi;
 }
 
+// ─── Table page: Select dropdown panel overlay ───────────────────────────────
+// CDK overlay portals render at <body> level — must be styled globally.
+// Panels opt-in via panelClass="record-select-panel" on mat-select.
+.mat-mdc-select-panel.record-select-panel {
+  background: #1e1b3a !important;
+  border: 1px solid rgba(245, 158, 11, 0.65) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 8px 32px rgb(0 0 0 / 70%) !important;
+
+  .mat-mdc-option {
+    color: #fff !important;
+
+    // Ensure the text inside the option is also white
+    .mdc-list-item__primary-text {
+      color: inherit !important;
+    }
+
+    &:hover:not(.mdc-list-item--disabled):not(.mdc-list-item--selected) {
+      background: rgb(255 255 255 / 12%) !important;
+    }
+
+    &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+      background: rgba(245, 158, 11, 0.22) !important;
+      color: #f59e0b !important;
+      font-weight: 600;
+
+      &:hover {
+        background: rgba(245, 158, 11, 0.32) !important;
+      }
+    }
+  }
+}
+
 @each $country in flag-icons.$flag-icons-included-countries {
   .flag-icon-#{$country} {
     @extend .fi-#{$country};

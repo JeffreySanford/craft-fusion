@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
-import { Record, Company } from '@craft-fusion/craft-library';
+import { AppRecord as Record, Company } from '@craft-fusion/craft-library';
 import { MatTableDataSource } from '@angular/material/table';
 import { trigger, transition, style, animate, query, stagger } from '@angular/animations';
 import { ActivatedRoute } from '@angular/router';

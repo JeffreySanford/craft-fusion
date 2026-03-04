@@ -42,4 +42,27 @@ describe('BarComponent', () => {
     const firstEntry = gdpData?.[0];
     expect(firstEntry?.year).toEqual(1776);
   });
+
+  it('uses renderer to remove previous svg and tooltips when initializing chart', () => {
+    const host = document.createElement('div');
+    const chart = document.createElement('div');
+    chart.id = 'barChart';
+    const svg = document.createElement('svg');
+    const tip = document.createElement('div');
+    tip.className = 'bar-tooltip';
+    chart.appendChild(svg);
+    chart.appendChild(tip);
+    host.appendChild(chart); // ensure querySelector finds #barChart
+    component.el = { nativeElement: host } as any;
+
+    const spy = vi.spyOn(component.renderer, 'removeChild').mockImplementation((p, c) => p.removeChild(c));
+    component['initChart']();
+    // the old tooltip should be cleared from host
+    expect(host.querySelectorAll('.bar-tooltip').length).toBe(1);
+    // chart container should now contain a freshly-created svg element
+    const chartChildren = host.querySelector('#barChart')?.children;
+    expect(chartChildren?.length).toBe(1);
+    expect(chartChildren?.[0].tagName.toLowerCase()).toBe('svg');
+    expect(spy).toHaveBeenCalled();
+  });
 });

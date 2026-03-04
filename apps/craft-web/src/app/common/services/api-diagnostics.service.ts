@@ -132,8 +132,11 @@ export class ApiDiagnosticsService {
   ) {
     this.logger.registerService('ApiDiagnosticsService');
     this.logger.info('API Diagnostics Service initialized');
-    this.startHealthCheck();
-    this.startDetailedHealthPolling();
+    // Skip background polling in test environment to prevent real network calls and timer leaks
+    if (!(typeof process !== 'undefined' && (process.env['VITEST'] || process.env['NODE_ENV'] === 'test'))) {
+      this.startHealthCheck();
+      this.startDetailedHealthPolling();
+    }
   }
 
   private startDetailedHealthPolling(): void {

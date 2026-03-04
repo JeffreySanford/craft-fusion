@@ -1,9 +1,34 @@
+// imports are consumed by Angular decorator metadata
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { CommonModule } from '@angular/common';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { MatIconModule } from '@angular/material/icon';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { MatButtonModule } from '@angular/material/button';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { MatTooltipModule } from '@angular/material/tooltip';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { MatExpansionModule } from '@angular/material/expansion';
+
+// helper interfaces moved before decorator so it applies to the class below
+interface ControlResult {
+  status: 'fail' | 'pass' | 'notapplicable' | string;
+  [key: string]: unknown;
+}
+
+interface ReportData {
+  controlResults?: ControlResult[];
+  name?: string;
+  description?: string;
+  status?: string;
+  total?: number;
+  pass?: number;
+  fail?: number;
+  notapplicable?: number;
+  duration?: string;
+  [key: string]: unknown;
+}
 
 @Component({
   selector: 'app-oscal-report-view',
@@ -18,42 +43,42 @@ import { MatExpansionModule } from '@angular/material/expansion';
   template: `
     <div class="oscal-report">
       <div class="report-header">
-        <h3>{{ reportData.name || 'OSCAL Compliance Scan' }}</h3>
-        <p class="report-description">{{ reportData.description }}</p>
+        <h3>{{ reportData?.name || 'OSCAL Compliance Scan' }}</h3>
+        <p class="report-description">{{ reportData?.description }}</p>
       </div>
 
       <div class="report-summary">
         <div class="summary-stats">
           <div class="stat-item">
             <span class="stat-label">Status:</span>
-            <span class="stat-value" [class]="'status-' + reportData.status">
-              {{ reportData.status?.toUpperCase() }}
+            <span class="stat-value" [class]="'status-' + (reportData?.status || '')">
+              {{ reportData?.status?.toUpperCase() }}
             </span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Total Controls:</span>
-            <span class="stat-value">{{ reportData.total || 0 }}</span>
+            <span class="stat-value">{{ reportData?.total || 0 }}</span>
           </div>
           <div class="stat-item pass">
             <span class="stat-label">Pass:</span>
-            <span class="stat-value">{{ reportData.pass || 0 }}</span>
+            <span class="stat-value">{{ reportData?.pass || 0 }}</span>
           </div>
           <div class="stat-item fail">
             <span class="stat-label">Fail:</span>
-            <span class="stat-value">{{ reportData.fail || 0 }}</span>
+            <span class="stat-value">{{ reportData?.fail || 0 }}</span>
           </div>
-          <div class="stat-item" *ngIf="reportData.notapplicable">
+          <div class="stat-item" *ngIf="reportData?.notapplicable">
             <span class="stat-label">N/A:</span>
-            <span class="stat-value">{{ reportData.notapplicable }}</span>
+            <span class="stat-value">{{ reportData?.notapplicable }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">Duration:</span>
-            <span class="stat-value">{{ reportData.duration }}</span>
+            <span class="stat-value">{{ reportData?.duration }}</span>
           </div>
         </div>
       </div>
 
-      <div class="controls-section" *ngIf="reportData.controlResults">
+      <div class="controls-section" *ngIf="reportData?.controlResults">
         <!-- Failed Controls -->
         <div class="controls-group failed" *ngIf="failedControls.length > 0">
           <h4>
@@ -175,7 +200,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
         </div>
       </div>
 
-      <div class="no-results" *ngIf="!reportData.controlResults || reportData.controlResults.length === 0">
+      <div class="no-results" *ngIf="!reportData?.controlResults || reportData?.controlResults?.length === 0">
         <mat-icon>info</mat-icon>
         <p>No control results available. Run a new scan to see detailed information.</p>
       </div>
@@ -497,21 +522,22 @@ import { MatExpansionModule } from '@angular/material/expansion';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
+
 export class OscalReportViewComponent {
-  @Input() reportData: any;
+  @Input() reportData: ReportData | null = null;
   @Input() viewMode: 'summary' | 'detailed' = 'summary';
   @Output() expandControl = new EventEmitter<string>();
 
-  get failedControls(): any[] {
-    return this.reportData?.controlResults?.filter((c: any) => c.status === 'fail') || [];
+  get failedControls(): ControlResult[] {
+    return this.reportData?.controlResults?.filter(c => c.status === 'fail') || [];
   }
 
-  get passedControls(): any[] {
-    return this.reportData?.controlResults?.filter((c: any) => c.status === 'pass') || [];
+  get passedControls(): ControlResult[] {
+    return this.reportData?.controlResults?.filter(c => c.status === 'pass') || [];
   }
 
-  get naControls(): any[] {
-    return this.reportData?.controlResults?.filter((c: any) => c.status === 'notapplicable') || [];
+  get naControls(): ControlResult[] {
+    return this.reportData?.controlResults?.filter(c => c.status === 'notapplicable') || [];
   }
 
   get displayedFailedControls(): any[] {
