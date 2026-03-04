@@ -48,7 +48,20 @@
 
               <app-bar-chart *ngSwitchCase="'app-bar-chart'" [data]="chart.data" [width]="tileWidth" [compact]="fullExpandedTileIndex !== i"> </app-bar-chart>
 
-              <app-finance-chart *ngSwitchCase="'app-finance-chart'" [data]="chart.data" [width]="tileWidth" [compact]="fullExpandedTileIndex !== i"> </app-finance-chart>
+              <div class="finance-chart-wrapper">
+                <div class="finance-range-buttons">
+                  <button
+                    mat-button
+                    *ngFor="let opt of financeRangeOptions"
+                    [class.active]="financeRange === opt"
+                    (click)="setFinanceRange(opt)"
+                    [attr.aria-pressed]="financeRange === opt"
+                  >
+                    {{ opt }}
+                  </button>
+                </div>
+                <app-finance-chart *ngSwitchCase="'app-finance-chart'" [data]="chart.data" [width]="tileWidth" [compact]="fullExpandedTileIndex !== i"> </app-finance-chart>
+              </div>
 
               <app-fire-alert *ngSwitchCase="'app-fire-alert'" [width]="tileWidth" [compact]="fullExpandedTileIndex !== i"> </app-fire-alert>
             </ng-container>

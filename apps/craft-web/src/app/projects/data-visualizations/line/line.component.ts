@@ -5,6 +5,8 @@ import { LineChartData } from '../data-visualizations.interfaces';
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 
+import { Tooltip, createTooltip } from '../tooltip';
+
 type LineSeriesKey = Exclude<keyof LineChartData, 'date'>;
 
 interface LegendEntry {
@@ -40,7 +42,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
 
   colors = ['var(--md-sys-color-primary, #B22234)', 'var(--md-sys-color-on-primary, #FFFFFF)', 'var(--md-sys-color-secondary, #3C3B6E)'];
 
-  private tooltip: any;
+  private tooltip: Tooltip | null = null;
 
   private resizeObserver: ResizeObserver | null = null;
   private destroy$ = new Subject<void>();
@@ -112,11 +114,8 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
 
     d3.select(element).selectAll('.line-tooltip').remove();
 
-    this.tooltip = d3
-      .select('body')                                                            
-      .append('div')
-      .attr('class', 'line-tooltip')
-      .style('opacity', 0);
+    // create a shared tooltip element instead of inlining styles
+    this.tooltip = createTooltip(element, 'line-tooltip');
 
     d3.select(element.parentNode).style('width', '100%').style('height', '100%');
 
@@ -378,7 +377,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
         .data(data as LineChartData[])
         .enter()
         .append('circle')
-        .attr('class', `dot-series${seriesIndex + 1}`)
+        .attr('class', `dot-series${seriesIndex + 1}`) // keep type inference
         .attr('cx', (d: LineChartData) => x(d.date))
         .attr('cy', (d: LineChartData) => y(accessor(d)))
         .attr('r', 0)
@@ -387,19 +386,22 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
         .attr('stroke-width', 1)
         .attr('opacity', 0.7);
 
-      circles.each(function (this: any, d: LineChartData) {
+      // augment each point with extra metadata
+      circles.each(function (this: SVGCircleElement, d: LineChartData) {
         const circle = d3.select(this);
-        circle.datum({
-          ...(d as any),
-          seriesKey: seriesKey,
-          seriesName: seriesName,
-          color: color,
-        });
+        const extended = {
+          ...d,
+          seriesKey,
+          seriesName,
+          color,
+        } as LineChartData & { seriesKey: string; seriesName: string; color: string };
+        circle.datum(extended);
       });
+
 
       circles
         .transition()
-        .delay((_, i) => animDuration * 0.5 + i * (animDuration / data.length))
+        .delay((_: unknown, i: number) => animDuration * 0.5 + i * (animDuration / data.length))
         .duration(300)
         .attr('r', pointSize);
 
@@ -413,27 +415,34 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
       circles
         .on('mouseover', (event: MouseEvent) => {
           const target = event.target as SVGCircleElement;
-          const data = d3.select(target).datum() as any;
+          const data = d3
+            .select(target)
+            .datum() as LineChartData & { seriesKey: string; seriesName: string; color: string };
 
           const date = (data.date as Date).toLocaleDateString('en-US', {
             month: 'long',
             year: 'numeric',
           });
 
-          const value = this.formatSeriesValue(data.seriesKey as string, data[data.seriesKey as string]);
+          const value = this.formatSeriesValue(
+            data.seriesKey as string,
+            (data as any)[data.seriesKey as string]
+          );
 
-          this.tooltip.transition().duration(200).style('opacity', 0.9);
+          this.tooltip?.transition().duration(200).style('opacity', 0.9);
 
-          this.tooltip
-            .html(
-              `
-          <div class="tooltip-title series-${seriesIndex}">${data.seriesName}</div>
-          <div>Date: <strong>${date}</strong></div>
-          <div>Value: <strong>${value}</strong></div>
-        `,
-            )
-            .style('left', event.pageX + 10 + 'px')
-            .style('top', event.pageY - 28 + 'px');
+          if (this.tooltip) {
+            this.tooltip
+              .html(
+                `
+            <div class="tooltip-title series-${seriesIndex}">${data.seriesName}</div>
+            <div>Date: <strong>${date}</strong></div>
+            <div>Value: <strong>${value}</strong></div>
+          `,
+              )
+              .style('left', event.pageX + 10 + 'px')
+              .style('top', event.pageY - 28 + 'px');
+          }
 
           this.renderer.setStyle(target, 'r', pointSize * 1.5 + 'px');
           this.renderer.setStyle(target, 'opacity', '1');
@@ -441,7 +450,7 @@ export class LineComponent implements OnInit, AfterViewInit, OnChanges, OnDestro
           highlightLines(data.seriesName);
         })
         .on('mouseout', (event: MouseEvent) => {
-          this.tooltip.transition().duration(500).style('opacity', 0);
+          this.tooltip?.transition().duration(500).style('opacity', 0);
 
           const target = event.target as SVGCircleElement;
           this.renderer.setStyle(target, 'r', pointSize + 'px');

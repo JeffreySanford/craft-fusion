@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ElementRef, OnDestroy, OnChanges, SimpleChang
 import * as d3 from 'd3';
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
+import { Tooltip, createTooltip } from '../tooltip';
 
 interface MetricData {
   year: number;
@@ -38,7 +39,7 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
 
   private destroy$ = new Subject<void>();
   private resizeObserver: ResizeObserver | null = null;
-  private tooltip: any;
+  private tooltip: Tooltip | null = null;
 
   private gdpData: MetricData[] = [
     { year: 1776, value: 0.0004 },
@@ -146,14 +147,7 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
     chartElement.innerHTML = '';
 
     d3.select(this.el.nativeElement).selectAll('.bar-tooltip').remove();
-    this.tooltip = d3
-      .select(this.el.nativeElement)
-      .append('div')
-      .attr('class', 'bar-tooltip')
-      .style('opacity', 0)
-      .style('position', 'absolute')
-      .style('pointer-events', 'none')
-      .style('z-index', '10');
+    this.tooltip = createTooltip(this.el.nativeElement, 'bar-tooltip');
 
     this.createChart();
   }
@@ -265,8 +259,7 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
             tooltipContent = `<strong>${data.year}</strong><br>Internet Users: ${data.value} Million`;
           }
 
-          this.tooltip
-            .html(tooltipContent)
+          this.tooltip?.html(tooltipContent)
             .style('opacity', 0.9)
             .style('left', `${event.pageX + 10}px`)
             .style('top', `${event.pageY - 28}px`);
@@ -274,7 +267,7 @@ export class BarComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges
         .on('mouseout', event => {
           d3.select(event.currentTarget).transition().duration(200).attr('fill', barColor).style('filter', 'drop-shadow(0 2px 3px rgba(0,0,0,0.3))');
 
-          this.tooltip.style('opacity', 0);
+          this.tooltip?.style('opacity', 0);
         });
     }, 1100);                                          
 

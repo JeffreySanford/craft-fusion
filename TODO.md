@@ -1,5 +1,131 @@
 # Project TODOs (master list)
 
+This file is the planning source of truth. Active work is tracked at the top; historical content is preserved in the archive.
+
+**Last aligned:** 2026-03-04
+
+## Current
+
+- [ ] **Unit test coverage mandate (services/controllers/components):** close all discovered spec gaps and ensure every public method has behavior tests. _(LOE: 3 SP)_
+  - Baseline gap analysis (2026-03-04): **56 missing specs total**.
+  - Missing specs by type: **28 services**, **11 controllers**, **17 components**.
+  - Scope file list is tracked below in `Current` and must be burned down to zero.
+- [ ] **Type hardening mandate (`any` removal):** replace explicit `any` with strong domain types, shared interfaces, or safe generic constraints. _(LOE: 3 SP)_
+  - Baseline analysis (source only; specs/assets/docs excluded): **224 explicit `any` occurrences across 73 files**.
+  - Enforce no-regression by changing lint policy from warn to error for `@typescript-eslint/no-explicit-any` after first cleanup pass.
+- [ ] **`unknown` policy:** allow only at trust boundaries (IO/network/runtime parsing) with immediate narrowing. _(LOE: 3 SP)_
+  - Baseline analysis (source only; specs/assets/docs excluded): **186 `unknown` occurrences across 46 files**.
+  - Replace broad `unknown` usage in app-domain flows with typed DTOs/models.
+- [ ] **Security/data backlog still active:** complete upload pipeline, pagination, and XSS sanitization while type/test hardening is in progress. _(LOE: 3 SP)_
+
+### Current: Unit test gaps (must reach zero)
+
+#### Services missing spec files (28)
+
+- [ ] `apps/craft-nest/src/app/auditing/auditing.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/auth/auth.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/auth/authentication/authentication.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/auth/authentication/refresh-token.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/auth/authorization/authorization.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/common/pdf-generation.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/financial/alpha-vantage/alpha-vantage.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/financial/yahoo/yahoo.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/firms/firms.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/health/health.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/logging/logging.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/openskies/opensky.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/socket/socket.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/user-state/user-state.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/user/user-state.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/yahoo/yahoo.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/common/services/auth/auth.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/common/services/auth/authentication.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/common/services/auth/authorization.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/common/services/busy.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/common/services/log-streaming.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/pages/admin/admin-shared/admin-helper.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/pages/admin/logs/log-bridge.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/pages/admin/performance-dashboard/performance-helper.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/pages/admin/services-dashboard.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/pages/admin/services-dashboard/services-dashboard.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/projects/data-visualizations/services/chart-layout.service.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/projects/timeline/services/timeline.service.ts` _(LOE: 3 SP)_
+
+#### Controllers missing spec files (11)
+
+- [ ] `apps/craft-nest/src/app/auditing/auditing.controller.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/auth/auth.controller.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/auth/authentication/authentication.controller.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/auth/authorization/authorization.controller.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/financial/alpha-vantage/alpha-vantage.controller.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/financial/yahoo/yahoo.controller.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/health/health.controller.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/logging/logging.controller.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/user-state/user-state.controller.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/user/user-state.controller.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-nest/src/app/yahoo/yahoo.controller.ts` _(LOE: 3 SP)_
+
+#### Components missing spec files (17)
+
+- [ ] `apps/craft-web/src/app/common/charts/non-d3-chart.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/common/components/security-report-modal/oscal-report-view.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/common/components/security-report-modal/realtime-report-view.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/common/components/security-report-modal/sca-report-view.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/common/components/server-status/server-status.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/components/logger-display/logger-display.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/pages/admin/logs-dashboard/logs-dashboard.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/pages/admin/logs/logs.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/pages/admin/performance-dashboard/performance-dashboard.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/pages/admin/services-dashboard/services-dashboard.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/pages/auth/auth-redirect.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/pages/not-found/not-found.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/projects/data-visualizations/dialogs/tile-limit-dialog.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/projects/table/record-list.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/projects/timeline/components/timeline-item/timeline-item.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/projects/timeline/components/timeline-list/timeline-list.component.ts` _(LOE: 3 SP)_
+- [ ] `apps/craft-web/src/app/projects/timeline/components/timeline-page/timeline-page.component.ts` _(LOE: 3 SP)_
+
+## Next Priorities
+
+### High
+
+- [ ] Eliminate `any` from highest-density production files first: _(LOE: 3 SP)_
+  - `apps/craft-nest/src/main.ts` (15)
+  - `apps/craft-web/src/app/pages/footer/footer.component.ts` (13)
+  - `apps/craft-nest/src/app/logging/logging.service.ts` (12)
+  - `apps/craft-web/src/app/common/components/security-report-modal/oscal-report-view.component.ts` (10)
+  - `apps/craft-web/src/app/pages/admin/services-dashboard/services-dashboard.service.ts` (9)
+- [ ] Create shared types for repeated cross-file domains (logging metadata, timeline payloads, security-report DTOs, service metrics payloads). _(LOE: 3 SP)_
+- [ ] Add CI gate: fail build when new explicit `any` is introduced in app/library source. _(LOE: 3 SP)_
+
+### Medium
+
+- [ ] Replace broad `unknown` usage in non-boundary logic with narrowed domain models; start with: _(LOE: 3 SP)_
+  - `apps/craft-web/src/app/common/services/logger.service.ts` (22)
+  - `apps/craft-web/src/app/common/services/api.service.ts` (18)
+  - `apps/craft-web/src/app/common/services/yahoo.service.ts` (11)
+  - `apps/craft-web/src/app/projects/data-visualizations/financial/finance.component.ts` (11)
+- [ ] Refactor Angular direct DOM manipulation in D3 components to `Renderer2`; start with `apps/craft-web/src/app/projects/data-visualizations/bar/bar.component.ts` tooltip create/remove calls using `d3.select(this.el.nativeElement)`. _(LOE: 5 SP)_
+- [ ] Consolidate duplicated types between `craft-web` and `craft-nest` into shared libs where contracts overlap. _(LOE: 3 SP)_
+- [ ] Tighten Angular/Nest strictness flags once `any` cleanup reaches stable baseline. _(LOE: 3 SP)_
+
+### Low
+
+- [ ] Document `any`/`unknown` policy and exception process in `documentation/CODING-STANDARDS.md`. _(LOE: 3 SP)_
+- [ ] Add a periodic workspace report script (counts by file + trend) and reference it from TODO updates. _(LOE: 3 SP)_
+
+## Completed (Current Cycle)
+
+- [x] Analyzed workspace test coverage gaps for all services/controllers/components and recorded baseline counts (2026-03-04).
+- [x] Analyzed explicit `any` and `unknown` usage in source files and prioritized hotspots (2026-03-04).
+- [x] Restructured TODO so active work is top-first and historical entries are archived at the bottom (2026-03-04).
+
+## Archive (Preserved History)
+
+The following section is preserved from the previous TODO structure as requested. No historical items were deleted.
+
+## Project TODOs (master list)
+
 This file is the planning source of truth. It records decisions, risks, and the next sequence of work for a solo maintainer.
 
 ## Operating context
@@ -13,19 +139,19 @@ This file is the planning source of truth. It records decisions, risks, and the 
 ### Next Gen Architecture & Security
 
 - [x] **Nx Migration**: Execute `nx migrate latest` to reach Nx 21.1.0 (DONE).
-- [ ] **Angular 22 Evolution**:
+- [ ] **Angular 22 Evolution**: _(LOE: 3 SP)_
   - [x] **Phase 1: Incremental path** (Currently on 19.2.18).
   - [x] **Observable Hardening**: Audit and enforce **Hot Observables** (multi-cast) for all shared state. Ensure use of `shareReplay` to prevent redundant side effects (DONE 2026-01-24).
   - [x] **Reactive Consistency**: Replace legacy `async/await` data fetches with unified `Observable`-based streams (DONE 2026-01-24).
-  - [ ] **Stable Change Detection**: Optimize `Zone.js` usage. Audit for `runOutsideAngular` where performance is critical, but keep the core Zone intact.
-  - [ ] Audit all components for **NgModule** compliance (`standalone: false`).
+  - [ ] **Stable Change Detection**: Optimize `Zone.js` usage. Audit for `runOutsideAngular` where performance is critical, but keep the core Zone intact. _(LOE: 3 SP)_
+  - [ ] Audit all components for **NgModule** compliance (`standalone: false`). _(LOE: 3 SP)_
 - [x] **NestJS v11+ / MongoDB 9.1**:
   - [x] Upgrade `@nestjs/core` and `@nestjs/common` to latest stable (v11.1.x) (DONE).
   - [x] Update `mongoose` to latest stable (9.1.3) (DONE).
   - [x] Forced **In-Memory MongoDB Server** for zero-config development (DONE 2026-01-24).
   - [x] Resolved **EBUSY** file lock issues with global `kill-ports.js` script (DONE 2026-01-24).
-  - [ ] Enable **Strict Type Checking** across all backend modules.
-- [ ] **Security (Top Priority)**:
+  - [ ] Enable **Strict Type Checking** across all backend modules. _(LOE: 3 SP)_
+- [ ] **Security (Top Priority)**: _(LOE: 3 SP)_
   - [x] **Audit Remediation**: Resolved high-priority vulnerabilities.
     - [x] Update `@angular/*` to `19.2.18` (DONE).
     - [x] Update `esbuild` to `0.25.0` (DONE).
@@ -34,7 +160,7 @@ This file is the planning source of truth. It records decisions, risks, and the 
   - [x] **Sass Migration**: Converted legacy `@import` to `@use` in global styles (DONE).
   - [x] **CSRF Protection**: Implemented double-submit cookie pattern with `HttpClientXsrfModule` (DONE).
   - [x] **CSP Hardening**: Configured `content-security-policy` in NestJS via Helmet (DONE).
-  - [ ] **XSS Sanitization**: Implement global input sanitization middleware and SafeHtml review.
+  - [ ] **XSS Sanitization**: Implement global input sanitization middleware and SafeHtml review. _(LOE: 3 SP)_
   - [x] **SCA Top 10 Focus**: Verified and enforced SCA Top 10 tracking in `SecurityService` (DONE).
   - [x] **OSCAL Compliance**: Verified OSCAL endpoints and profiles in `SecurityService` (DONE).
   - [x] **AI Cleanup**: Removed Chat and Book experimental modules and services (DONE).
@@ -57,19 +183,19 @@ This file is the planning source of truth. It records decisions, risks, and the 
 
 ## High priority (current sprint)
 
-- [ ] Wire security tab to real API data (replace mocked oscalProfiles, scaTop10, sboms, realtimeChecks)
-- [ ] Complete timeline detail view (modal component with full event display)
-- [ ] Implement pagination in records endpoints (Nest + Go)
-- [ ] Reduce backend debug logging and replace with structured logs
+- [ ] Wire security tab to real API data (replace mocked oscalProfiles, scaTop10, sboms, realtimeChecks) _(LOE: 3 SP)_
+- [ ] Complete timeline detail view (modal component with full event display) _(LOE: 3 SP)_
+- [ ] Implement pagination in records endpoints (Nest + Go) _(LOE: 3 SP)_
+- [ ] Reduce backend debug logging and replace with structured logs _(LOE: 3 SP)_
 
 ## Deferred (post-MVP)
 
-- [ ] XSS sanitization (SafeHtml pipes, innerHTML hardening)
-- [ ] Server-side token revocation storage (DB/Redis blacklist)
-- [ ] Use configured host/port when starting Nest (avoid hardcoded `app.listen(3000, ...)`)
-- [ ] Fix Go record generation time (currently always 0 due to local variable scope)
-- [ ] Normalize socket event names to `domain:entity:action` (timeline gateway)
-- [ ] Tighten timeline gateway CORS in production (remove wildcard origin)
+- [ ] XSS sanitization (SafeHtml pipes, innerHTML hardening) _(LOE: 3 SP)_
+- [ ] Server-side token revocation storage (DB/Redis blacklist) _(LOE: 3 SP)_
+- [ ] Use configured host/port when starting Nest (avoid hardcoded `app.listen(3000, ...)`) _(LOE: 3 SP)_
+- [ ] Fix Go record generation time (currently always 0 due to local variable scope) _(LOE: 3 SP)_
+- [ ] Normalize socket event names to `domain:entity:action` (timeline gateway) _(LOE: 3 SP)_
+- [ ] Tighten timeline gateway CORS in production (remove wildcard origin) _(LOE: 3 SP)_
 
 ## Test strategy (Vitest + Jest)
 
@@ -131,9 +257,9 @@ This file is the planning source of truth. It records decisions, risks, and the 
 - [x] Define admin card system (sizes, padding, elevation, gradients, borders) (2026-01-07) – security tab cards now share the elevated patriotic gradients and hover treatment introduced in `security-dashboard.component.scss`.
 - [x] Make every tab in the security section share the overview-style cards and gradients (2026-01-08) – `feature-card` now extends the `%security-card-base`, so OSCAL / SCA / SBOM / Real-Time tiles match the Overview vibe.
 - [x] Stabilize E2E navigation and auth persistence for admin tabs (2026-01-12) – Added `__E2E_TEST_MODE__` and fixed `baseURL` protocol.
-- [ ] Create real-time tile components (status, trend, delta, timestamp)
-- [ ] Replace flat tables with card/tile groupings where appropriate
-- [ ] Add animated KPI counters and chart reveals
+- [ ] Create real-time tile components (status, trend, delta, timestamp) _(LOE: 3 SP)_
+- [ ] Replace flat tables with card/tile groupings where appropriate _(LOE: 3 SP)_
+- [ ] Add animated KPI counters and chart reveals _(LOE: 3 SP)_
 - [x] Build persistent admin hero area (see `documentation/design/admin-dashboard.md` for detailed spec) (2026-01-12):
   - [x] Create `AdminHeroService` to consolidate metrics from `ServicesDashboardService`, `LoggerService`, and `SecurityService`
   - [x] Move hero tiles from `admin-landing` to `admin.component.ts` (parent level, persistent across tabs)
@@ -143,7 +269,7 @@ This file is the planning source of truth. It records decisions, risks, and the 
   - [x] Add alert pulse animations for new errors/warnings
   - [x] Add click actions to jump to relevant tabs (alerts → security, errors → logs)
   - [x] Ensure WCAG AA compliance and reduced-motion fallbacks
-- [ ] Align typography with the real font stack in `apps/craft-web/src/styles/_typography.scss`
+- [ ] Align typography with the real font stack in `apps/craft-web/src/styles/_typography.scss` _(LOE: 3 SP)_
 
 ## Security tab spec (draft)
 
@@ -155,7 +281,7 @@ This file is the planning source of truth. It records decisions, risks, and the 
 - [x] Findings and Evidence views are implemented with API-driven panels, loading/empty states, and badge styling (2026-01-08); they now depend on `/api/security/findings` and `/api/security/evidence` returning real data.
 - [x] The UI still relies on mocked arrays (oscalProfiles, scaTop10, sboms, realtimeChecks) for everything except the API log stream, so only the endpoint cards reflect real data.
 - [x] Backend wiring for `/api/security/*` endpoints (findings + evidence stubs) is now in place; added server-side stubs/tests so the UI can hit `/api/security/findings` and `/api/security/evidence` without falling back to mocked data.
-- [ ] Evidence metadata (hash, retention, createdBy) is not captured anywhere in the UI yet.
+- [ ] Evidence metadata (hash, retention, createdBy) is not captured anywhere in the UI yet. _(LOE: 3 SP)_
 
 ### Top nav views (horizontal)
 
@@ -192,18 +318,18 @@ This file is the planning source of truth. It records decisions, risks, and the 
 - [x] Wire `TimelineService.events$` to the timeline page and keep loading state (`apps/craft-web/src/app/projects/timeline/components/timeline-page/timeline-page.component.ts`)
 - [x] Add type filters and consistent options (`apps/craft-web/src/app/projects/timeline/components/timeline-page/timeline-page.component.html`)
 - [x] Add type icon + badge and read-more toggle (`apps/craft-web/src/app/projects/timeline/components/timeline-item/*`)
-- [ ] Investigate missing rendered events in Timeline UI (API/stream appears reachable)
-- [ ] Add empty-state copy that guides filter changes and access requests
-- [ ] Add unit tests for filtering and read-more behavior
+- [ ] Investigate missing rendered events in Timeline UI (API/stream appears reachable) _(LOE: 3 SP)_
+- [ ] Add empty-state copy that guides filter changes and access requests _(LOE: 3 SP)_
+- [ ] Add unit tests for filtering and read-more behavior _(LOE: 3 SP)_
 
 ### Phase 1: Detail view (modal or route)
 
-- [ ] Add `TimelineDetail` component (dialog or routed page)
-- [ ] Define detail view layout (header, metadata, body, media, provenance, actions)
-- [ ] Wire "Read more" / card click to open the detail view
-- [ ] Add loading, error, and not-found states for detail fetch
-- [ ] Ensure keyboard focus trap and escape-to-close for modal
-- [ ] Add unit tests for detail open/close and data rendering
+- [ ] Add `TimelineDetail` component (dialog or routed page) _(LOE: 3 SP)_
+- [ ] Define detail view layout (header, metadata, body, media, provenance, actions) _(LOE: 3 SP)_
+- [ ] Wire "Read more" / card click to open the detail view _(LOE: 3 SP)_
+- [ ] Add loading, error, and not-found states for detail fetch _(LOE: 3 SP)_
+- [ ] Ensure keyboard focus trap and escape-to-close for modal _(LOE: 3 SP)_
+- [ ] Add unit tests for detail open/close and data rendering _(LOE: 3 SP)_
 
 ## Documentation consolidation
 
@@ -236,10 +362,10 @@ This file is the planning source of truth. It records decisions, risks, and the 
 
 - [x] Phase 0: Stabilize CI (Nx targets, lint/test, Playwright auth)
 - [x] Phase 1a: Core auth security (JWT verification, httpOnly cookies, logout on refresh, client-side key removal)
-- [ ] Phase 1b: Advanced auth (XSS sanitization, token revocation storage, CSRF protection) - see Critical blockers
-- [ ] Phase 2: Data and IO (file upload pipeline, pagination, Go time fix) - see High priority
-- [ ] Phase 3: Security tab and admin UI (real API data, animated tiles, patriotic cards) - in progress
-- [ ] Phase 4: Production hardening (logging cleanup, CORS tightening, configured ports)
+- [ ] Phase 1b: Advanced auth (XSS sanitization, token revocation storage, CSRF protection) - see Critical blockers _(LOE: 3 SP)_
+- [ ] Phase 2: Data and IO (file upload pipeline, pagination, Go time fix) - see High priority _(LOE: 3 SP)_
+- [ ] Phase 3: Security tab and admin UI (real API data, animated tiles, patriotic cards) - in progress _(LOE: 3 SP)_
+- [ ] Phase 4: Production hardening (logging cleanup, CORS tightening, configured ports) _(LOE: 3 SP)_
 
 ## Completed (recent)
 
@@ -276,3 +402,5 @@ This file is the planning source of truth. It records decisions, risks, and the 
 - logger.service.ts:356 [Object] Navigation ended {id: 3, url: '/timeline', urlAfterRedirects: '/timeline', type: 1}
 - logger.service.ts:356 [Object] User navigated to /timeline
 - app.module.ts:72 Router event: Scroll {routerEvent: Na
+
+

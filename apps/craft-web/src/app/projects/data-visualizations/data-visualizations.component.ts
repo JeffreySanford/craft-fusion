@@ -77,6 +77,10 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy, AfterView
   public fintechChartData: HistoricalData[] = [];
   financeData: unknown;
 
+  // range selector for finance chart (maps to Yahoo API ranges)
+  public financeRange: string = '1y';
+  public readonly financeRangeOptions: string[] = ['1d','5d','2wk','1mo','6mo','1y','all'];
+
   tileWidth: number = 0;
   tileHeight: number = 0;
   resizeObserver: ResizeObserver | null = null;
@@ -96,32 +100,45 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy, AfterView
 
     this.availableCharts = [...this.allCharts];
 
-    this.loadFintechChartData()
-      .pipe()
-      .subscribe((data: HistoricalData[]) => {
-        this.fintechChartData = data;
+    // initial load uses default range
+    this.loadDataForFinance();
 
-        const financeChartIndex = this.availableCharts.findIndex(c => c.component === 'app-finance-chart');
-        if (financeChartIndex !== -1) {
-          const chart = this.availableCharts.at(financeChartIndex);
-          if (chart) chart.data = this.fintechChartData as any[];
-        }
-
-        const displayedFinanceIndex = this.displayedCharts.findIndex(c => c.component === 'app-finance-chart');
-        if (displayedFinanceIndex !== -1) {
-          const chart = this.displayedCharts.at(displayedFinanceIndex);
-          if (chart) chart.data = this.fintechChartData as any[];
-        }
-
-        setTimeout(() => this.cdr.detectChanges());
-      });
-
-    this.socketClient.on<any>('yahoo:data').subscribe((data: any) => {
-
-      this.fintechChartData = Array.isArray(data) ? (data as HistoricalData[]) : [];
+    // listen for pushed updates; data is array of HistoricalData
+    this.socketClient.on<HistoricalData[]>('yahoo:data').subscribe((data) => {
+      this.fintechChartData = Array.isArray(data) ? data : [];
       setTimeout(() => this.cdr.detectChanges());
     });
+  }
 
+  /**
+   * reloads finance data using current range and updates charts
+   */
+  public loadDataForFinance(): void {
+    this.loadFintechChartData().subscribe((data: HistoricalData[]) => {
+      this.fintechChartData = data;
+      const financeChartIndex = this.availableCharts.findIndex(c => c.component === 'app-finance-chart');
+      if (financeChartIndex !== -1) {
+        const chart = this.availableCharts.at(financeChartIndex);
+        if (chart) chart.data = this.fintechChartData;
+      }
+
+      const displayedFinanceIndex = this.displayedCharts.findIndex(c => c.component === 'app-finance-chart');
+      if (displayedFinanceIndex !== -1) {
+        const chart = this.displayedCharts.at(displayedFinanceIndex);
+        if (chart) chart.data = this.fintechChartData;
+      }
+      setTimeout(() => this.cdr.detectChanges());
+    });
+  }
+
+  /**
+   * change the range and reload data
+   */
+  public setFinanceRange(range: string): void {
+    if (this.financeRange !== range) {
+      this.financeRange = range;
+      this.loadDataForFinance();
+    }
   }
 
   ngOnInit() {
@@ -429,9 +446,12 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy, AfterView
   }
 
   private loadFintechChartData(): Observable<HistoricalData[]> {
-    const stockSymbols = ['AAPL', 'GOOGL', 'MSFT'];                                    
+    // include the major index symbols for Dow and NASDAQ along with the
+    // popular tech stocks.  Yahoo uses ^DJI for the Dow Jones Industrial
+    // Average and ^IXIC for the NASDAQ composite.
+    const stockSymbols = ['AAPL', 'GOOGL', 'MSFT', '^DJI', '^IXIC'];
 
-    return this.yahooService.getHistoricalData(stockSymbols, '1d', '1y').pipe(
+    return this.yahooService.getHistoricalData(stockSymbols, '1d', this.financeRange).pipe(
       catchError(error => {
         console.error(`Error loading data for ${stockSymbols}:`, error);
         return of([] as HistoricalData[]);

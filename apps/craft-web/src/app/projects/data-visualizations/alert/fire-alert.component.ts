@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, Input, HostBinding, SimpleChanges, OnChanges } from '@angular/core';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { MapboxService } from '../../../common/services/mapbox.service';
 import { OpenSkiesService, OpenSkyFlight } from '../../../common/services/openskies.service';
 import { NasaFirmsService, NasaFirmsAlert } from '../../../common/services/nasa-firms.service';
@@ -212,7 +213,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     }
   }
 
-  onTabChange(event: any): void {
+  onTabChange(event: MatTabChangeEvent): void {
     const city = this.cities[event.index];
     if (!city) return;
 
@@ -338,8 +339,8 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit, OnC
             console.error('MapboxService resizeMap method not available', this.mapboxService);
 
             const mapElement = document.querySelector('.mapboxgl-map');
-            if (mapElement && (mapElement as any)._map) {
-              (mapElement as any)._map.resize();
+            if (mapElement && (mapElement as unknown as { _map?: { resize: () => void } })._map) {
+              (mapElement as unknown as { _map: { resize: () => void } })._map.resize();
               console.log('Map resized using fallback method');
             }
           }

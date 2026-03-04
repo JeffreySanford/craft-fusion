@@ -1,3 +1,5 @@
+// vitest globals (describe/it/expect/vi) permit type checking and runtime
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FinanceComponent, Stock } from './finance.component';
 import { FinanceModule } from './finance.module';
@@ -27,7 +29,8 @@ describe('FinanceComponent', () => {
       { symbol: 'GOOGL', data: [{ date: new Date(2020, 0, 2), close: 250 }] },
     ];
     component.data = testData;
-    (component as any).renderChart = jest.fn();
+    // treat renderChart as a jest spy without losing type information
+    ((component as unknown) as { renderChart: ReturnType<typeof vi.fn> }).renderChart = vi.fn();
     component.ngOnChanges({
       data: {
         currentValue: testData,
@@ -36,7 +39,7 @@ describe('FinanceComponent', () => {
         isFirstChange: () => true,
       },
     });
-    expect((component as any).renderChart).toHaveBeenCalled();
+    expect(((component as unknown) as { renderChart: ReturnType<typeof vi.fn> }).renderChart).toHaveBeenCalled();
   });
 
   it('should render legend with correct stock symbols', () => {
@@ -60,5 +63,26 @@ describe('FinanceComponent', () => {
     expect(legendItems[0].textContent.trim()).toContain('MSFT');
     expect(legendItems[1].textContent.trim()).toContain('GOOGL');
     expect(legendItems[2].textContent.trim()).toContain('AAPL');
+  });
+
+  it('does not throw when rendering stocks with no data or invalid date', () => {
+    const testData: Stock[] = [
+      { symbol: 'EMPTY', data: [] },
+      { symbol: 'BAD', data: [{ date: (undefined as unknown) as Date, close: 0 }] },
+    ];
+    component.data = testData;
+    expect(() => {
+      component.ngOnChanges({
+        data: {
+          currentValue: testData,
+          previousValue: undefined,
+          firstChange: true,
+          isFirstChange: () => true,
+        },
+      });
+      fixture.detectChanges();
+      // directly call renderChart as an extra guard
+      ((component as unknown) as { renderChart: (stocks: Stock[]) => void }).renderChart(testData);
+    }).not.toThrow();
   });
 });

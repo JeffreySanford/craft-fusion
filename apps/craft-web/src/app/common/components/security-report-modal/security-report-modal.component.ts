@@ -20,6 +20,42 @@ export interface SecurityReportData {
   eta?: string;
 }
 
+// result interfaces used throughout the component
+export interface ControlResult {
+  id?: string;
+  title?: string;
+  status?: 'pass' | 'fail' | 'notapplicable';
+  severity?: string;
+  category?: string;
+  description?: string;
+  recommendation?: string;
+  evidence?: string;
+  reference?: string;
+}
+
+export interface TestResult {
+  id?: string;
+  testName?: string;
+  status?: 'pass' | 'fail' | 'warning';
+  severity?: string;
+  statusCode?: number;
+  responseTime?: number;
+  message?: string;
+  recommendation?: string;
+  details?: string;
+}
+
+export interface CheckResult {
+  id?: string;
+  title?: string;
+  status?: 'pass' | 'fail' | 'warning';
+  severity?: string;
+  description?: string;
+  recommendation?: string;
+  evidence?: string;
+  reference?: string;
+} 
+
 @Component({
   selector: 'app-security-report-modal',
   standalone: true,
@@ -105,7 +141,7 @@ Results Summary:
 
     // Show failed controls if available
     if (d.controlResults && Array.isArray(d.controlResults)) {
-      const failedControls = d.controlResults.filter((c: any) => c.status === 'fail');
+      const failedControls = d.controlResults.filter((c: ControlResult) => c.status === 'fail');
       
       if (failedControls.length > 0) {
         preview += `
@@ -117,7 +153,7 @@ Results Summary:
         
         const displayCount = this.viewMode === 'detailed' ? failedControls.length : Math.min(10, failedControls.length);
         
-        failedControls.slice(0, displayCount).forEach((control: any, index: number) => {
+        failedControls.slice(0, displayCount).forEach((control: ControlResult, index: number) => {
           preview += `${index + 1}. Control ${control.id || 'UNKNOWN'}\n`;
           preview += `   ┌─────────────────────────────────────────\n`;
           preview += `   │ ID:        ${control.id || 'N/A'}\n`;
@@ -166,13 +202,13 @@ Results Summary:
       }
       
       // Show passed controls summary
-      const passedControls = d.controlResults.filter((c: any) => c.status === 'pass');
+      const passedControls = d.controlResults.filter((c: ControlResult) => c.status === 'pass');
       if (passedControls.length > 0) {
         preview += `\nPassed Controls (${passedControls.length}):\n`;
         
         const passDisplayCount = this.viewMode === 'detailed' ? Math.min(20, passedControls.length) : Math.min(5, passedControls.length);
         
-        passedControls.slice(0, passDisplayCount).forEach((control: any) => {
+        passedControls.slice(0, passDisplayCount).forEach((control: ControlResult) => {
           let line = `  ✓ ${control.title || control.id || 'Unknown'}`;
           if (this.viewMode === 'detailed' && control.category) {
             line += ` (${control.category})`;
@@ -187,10 +223,10 @@ Results Summary:
       
       // Show not applicable controls in detailed view
       if (this.viewMode === 'detailed') {
-        const naControls = d.controlResults.filter((c: any) => c.status === 'notapplicable');
+        const naControls = d.controlResults.filter((c: ControlResult) => c.status === 'notapplicable');
         if (naControls.length > 0) {
           preview += `\nNot Applicable Controls (${naControls.length}):\n`;
-          naControls.slice(0, 10).forEach((control: any) => {
+          naControls.slice(0, 10).forEach((control: ControlResult) => {
             preview += `  ⊘ ${control.title || control.id || 'Unknown'}\n`;
           });
           if (naControls.length > 10) {
@@ -293,12 +329,12 @@ Results Summary:
         preview += `  ⚠ Warning: ${d.warning}\n`;
       }
 
-      const failedTests = d.testResults.filter((t: any) => t.status === 'fail');
+      const failedTests = d.testResults.filter((t: TestResult) => t.status === 'fail');
       
       if (failedTests.length > 0) {
         preview += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nFailed Tests (${failedTests.length}):\n\n`;
         
-        failedTests.forEach((test: any, index: number) => {
+        failedTests.forEach((test: TestResult, index: number) => {
           preview += `${index + 1}. ${test.testName || test.id || 'Unknown'}\n`;
           preview += `   ┌─────────────────────────────────────────\n`;
           
@@ -325,10 +361,10 @@ Results Summary:
         });
       }
 
-      const passedTests = d.testResults.filter((t: any) => t.status === 'pass');
+      const passedTests = d.testResults.filter((t: TestResult) => t.status === 'pass');
       if (passedTests.length > 0) {
         preview += `\nPassed Tests (${passedTests.length}):\n`;
-        passedTests.slice(0, 5).forEach((test: any) => {
+        passedTests.slice(0, 5).forEach((test: TestResult) => {
           preview += `  ✓ ${test.testName || test.id || 'Unknown'} (${test.responseTime || 0}ms)\n`;
         });
         if (passedTests.length > 5) {
@@ -379,12 +415,12 @@ Check Results Summary:
         preview += `  ⚠ Warning: ${d.warning}\n`;
       }
 
-      const failedChecks = d.checkResults.filter((c: any) => c.status === 'fail');
+      const failedChecks = d.checkResults.filter((c: CheckResult) => c.status === 'fail');
       
       if (failedChecks.length > 0) {
         preview += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nFailed Checks (${failedChecks.length}):\n\n`;
         
-        failedChecks.forEach((check: any, index: number) => {
+        failedChecks.forEach((check: CheckResult, index: number) => {
           preview += `${index + 1}. ${check.title || check.id || 'Unknown'}\n`;
           preview += `   ┌─────────────────────────────────────────\n`;
           
@@ -408,10 +444,10 @@ Check Results Summary:
         });
       }
 
-      const passedChecks = d.checkResults.filter((c: any) => c.status === 'pass');
+      const passedChecks = d.checkResults.filter((c: CheckResult) => c.status === 'pass');
       if (passedChecks.length > 0) {
         preview += `\nPassed Checks (${passedChecks.length}):\n`;
-        passedChecks.slice(0, 10).forEach((check: any) => {
+        passedChecks.slice(0, 10).forEach((check: CheckResult) => {
           preview += `  ✓ ${check.title || check.id || 'Unknown'}\n`;
         });
         if (passedChecks.length > 10) {

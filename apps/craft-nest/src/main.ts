@@ -246,9 +246,13 @@ async function bootstrap() {
     next();
   });
 
-  // Custom route handler for Yahoo historical endpoint
+  // Custom route handler for legacy/unprefixed Yahoo historical path.  The
+  // frontend normally hits `/api/yahoo/historical` (controller is
+  // `@Controller('yahoo')` with global prefix `/api`).  Preserve support for
+  // `/yahoo/historical` just in case something still uses it or the proxy is
+  // misconfigured; rewrite to the correct API path.
   app.getHttpAdapter().get('/yahoo/historical', (req, res) => {
-    loggingService?.info('Yahoo API request', {
+    loggingService?.info('Yahoo API request (legacy route)', {
       method: req.method,
       url: req.originalUrl,
       suppressConsole: true,
@@ -258,7 +262,12 @@ async function bootstrap() {
       app
         .getHttpAdapter()
         .getInstance()
-        ._router.handle({ ...req, url: '/api/financial/yahoo/historical' + (req._parsedUrl.search || '') }, res, () => {
+        ._router.handle({
+          ...req,
+          url: '/api/yahoo/historical' + (req._parsedUrl.search || ''),
+        },
+        res,
+        () => {
           if (!res.headersSent) {
             res.status(404).json({
               message: 'Yahoo historical data endpoint not properly configured',

@@ -41,7 +41,8 @@ export class FinanceComponent implements OnInit, OnChanges {
   resolved: boolean = false;
   activeStock: string | null = null;
 
-  private stockPaths: Map<string, d3.Selection<SVGPathElement, any, null, undefined>> = new Map();
+  // map symbol → path selection; data type is unknown because d3 generics are rough
+  private stockPaths: Map<string, d3.Selection<SVGPathElement, unknown, null, undefined>> = new Map();
 
   private colorScheme = ['#d62828', '#003049', '#0077b6', '#588157', '#1d3557'];
 
@@ -84,8 +85,11 @@ export class FinanceComponent implements OnInit, OnChanges {
 
       const latestDataPoint = stock.data && stock.data.length > 0 ? stock.data.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] : undefined;
 
-      if (latestDataPoint && (!this.latestDataDate || new Date(latestDataPoint.date) > this.latestDataDate)) {
-        this.latestDataDate = new Date(latestDataPoint.date);
+      if (latestDataPoint) {
+        const candidate = new Date(latestDataPoint.date);
+        if (!isNaN(candidate.getTime()) && (!this.latestDataDate || candidate > this.latestDataDate)) {
+          this.latestDataDate = candidate;
+        }
       }
 
       return {
@@ -591,8 +595,9 @@ export class FinanceComponent implements OnInit, OnChanges {
 
     const y = d3.scaleLinear().domain(yDomain).range([height, 0]);
 
-    function makeGrid(scale: any, axis: string) {
-      return (axis === 'x' ? d3.axisBottom(scale) : d3.axisLeft(scale))
+    function makeGrid(scale: d3.AxisScale<any>, axis: string) {
+      // use any to avoid strict generic incompatibility with d3 AxisScale
+      return (axis === 'x' ? d3.axisBottom(scale as d3.AxisScale<any>) : d3.axisLeft(scale as d3.AxisScale<any>))
         .ticks(10)
         .tickSize(axis === 'x' ? -height : -width)
         .tickFormat(() => '');
@@ -639,13 +644,13 @@ export class FinanceComponent implements OnInit, OnChanges {
           .append('path')
           .datum(data)
           .attr('class', `line stock-${stockSymbol.toLowerCase()}`)
-          .attr('d', lineGen as any)
+          .attr('d', lineGen as unknown as string)
           .attr('stroke', color(stockSymbol))                                              
           .attr('stroke-width', 3)
           .attr('fill', 'none')
           .style('opacity', 0.85);
 
-        this.stockPaths.set(stockSymbol, path as any);
+        this.stockPaths.set(stockSymbol, path as unknown as d3.Selection<SVGPathElement, unknown, null, undefined>);
 
         const totalLength = (path.node() as SVGPathElement)?.getTotalLength?.() || 0;
         path
@@ -666,8 +671,15 @@ export class FinanceComponent implements OnInit, OnChanges {
       };
 
       const addStockLabels = (data: unknown[], stockSymbol: string) => {
-
-        const lastPoint = data[data.length - 1] as { date: Date; close: number };
+        // guard against empty or malformed arrays (e.g. indices may return no points)
+        if (!data || data.length === 0) {
+          return; // nothing to label
+        }
+        const maybeLast = data[data.length - 1] as { date?: Date; close?: number } | undefined;
+        if (!maybeLast || !(maybeLast.date instanceof Date)) {
+          return;
+        }
+        const lastPoint = maybeLast as { date: Date; close: number };
 
         const labelGroup = svg.append('g').attr('class', `stock-label-group stock-${stockSymbol.toLowerCase()}-label`);
 
@@ -757,14 +769,14 @@ export class FinanceComponent implements OnInit, OnChanges {
           });
         })
         .transition()
-        .delay((_: any, i: number) => 1500 + i * 100)
+        .delay((_: unknown, i: number) => 1500 + i * 100)
         .duration(500)
         .attr('r', 4)
         .style('opacity', 1);
 
       svg
         .selectAll(`.dot-${index}`)
-        .on('mouseover', (event: MouseEvent, d: any) => {
+        .on('mouseover', (event: any, d: any) => {
 
           const datum = d as { date: Date; close: number; stockSymbol: string };
           const target = event.target as SVGCircleElement;

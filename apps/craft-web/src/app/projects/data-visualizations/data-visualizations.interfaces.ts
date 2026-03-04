@@ -2,7 +2,7 @@ export interface ChartData {
   name: string;
   component: string;
   color: string;
-  data: any[];
+  data: any[];            // contents vary by chart, treated as opaque array
   size?: string;                                                               
   active?: boolean;                            
   displayMode?: 'tile' | 'fullscreen';

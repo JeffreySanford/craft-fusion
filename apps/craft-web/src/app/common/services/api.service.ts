@@ -14,6 +14,15 @@ export interface Server {
   swagger: string;
 }
 
+// generic options accepted by our http methods
+export interface ApiOptions {
+  headers?: HttpHeaders | Record<string, string | string[]>;
+  params?: HttpParams | Record<string, string | string[]>;
+  withCredentials?: boolean;
+  timeout?: number;      // milliseconds for request timeout
+  retries?: number;      // retry count
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -91,10 +100,10 @@ export class ApiService {
 
     try {
 
-      if (typeof (headers as any).forEach === 'function') {
-        const h = headers as Headers;
+      // if it's a Headers instance (DOM headers) convert to HttpHeaders
+      if (headers instanceof Headers) {
         const entries: [string, string][] = [];
-        h.forEach((value: string, key: string) => {
+        headers.forEach((value: string, key: string) => {
           entries.push([key, value]);
         });
         return new HttpHeaders(Object.fromEntries(entries));
@@ -103,17 +112,16 @@ export class ApiService {
 
     }
 
-    return headers as Record<string, string | string[]>;
+    return headers as Record<string, string | string[]> | undefined;
   }
 
-  private normalizeOptions(options?: any): {
-    headers?: HttpHeaders | Record<string, string | string[]>;
-    params?: HttpParams | Record<string, string | string[]>;
-    [k: string]: any;
-  } {
-    const opts: any = { ...(options || {}) };
+  private normalizeOptions(options?: ApiOptions): ApiOptions {
+    const opts: ApiOptions = { ...(options || {}) };
     if (opts.headers) {
-      opts.headers = this.normalizeHeaders(opts.headers);
+      const normalized = this.normalizeHeaders(opts.headers);
+      if (normalized !== undefined) {
+        opts.headers = normalized;
+      }
     }
     if (opts.withCredentials === undefined) {
       opts.withCredentials = true;
@@ -135,7 +143,7 @@ export class ApiService {
 
   get<T>(
     endpoint: string,
-    options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any },
+    options?: ApiOptions,
   ): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'GET', url);
@@ -202,7 +210,7 @@ export class ApiService {
   put<T>(
     endpoint: string,
     body: T,
-    options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any },
+    options?: ApiOptions,
   ): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'PUT', url);
@@ -228,7 +236,7 @@ export class ApiService {
 
   delete<T>(
     endpoint: string,
-    options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any },
+    options?: ApiOptions,
   ): Observable<T> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'DELETE', url);
@@ -339,7 +347,7 @@ export class ApiService {
     method: string,
     endpoint: string,
     body?: unknown,
-    options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any },
+    options?: ApiOptions,
   ): Observable<T> {
 
     this.logger.debug('Auth request details', {
@@ -349,11 +357,11 @@ export class ApiService {
       timestamp: new Date().toISOString(),
     });
 
-    const enhancedOptions: Record<string, unknown> = {
-      ...((options as Record<string, unknown>) || {}),
-      timeout: this.BASE_TIMEOUT * 2,                                    
-      retries: this.maxStartupRetries,
-    };
+// start with a shallow clone of provided options so we can add helpers
+    const enhancedOptions: ApiOptions = { ...(options || {}) };
+    // add non‑standard properties used by auth requests
+    enhancedOptions.timeout = this.BASE_TIMEOUT * 2;
+    enhancedOptions.retries = this.maxStartupRetries;
 
     const debugHeaders = {
       headers: {
@@ -362,7 +370,8 @@ export class ApiService {
       },
     };
 
-    const finalOptions = {
+    // merge debug headers back into enhanced options
+    const finalOptions: ApiOptions = {
       ...enhancedOptions,
       ...debugHeaders,
     };
@@ -387,7 +396,7 @@ export class ApiService {
   post<T = unknown, R = unknown>(
     endpoint: string,
     body: T,
-    options?: { headers?: HttpHeaders | Record<string, string | string[]>; params?: HttpParams | Record<string, string | string[]>; [k: string]: any },
+    options?: ApiOptions,
   ): Observable<R> {
     const url = this.getFullUrl(endpoint);
     const callId = this.logger.startServiceCall('ApiService', 'POST', url);
@@ -427,7 +436,13 @@ export class ApiService {
   private checkServerAvailability(): void {
     this.logger.debug('Checking server availability...');
 
-    fetch('/api/health', { method: 'HEAD', signal: (AbortSignal as any).timeout ? (AbortSignal as any).timeout(3000) : null })
+    // AbortSignal.timeout is nonstandard; guard with unknown cast
+    fetch('/api/health', {
+      method: 'HEAD',
+      signal: ((AbortSignal as unknown as { timeout?: (ms: number) => AbortSignal }).timeout
+        ? (AbortSignal as unknown as { timeout: (ms: number) => AbortSignal }).timeout(3000)
+        : null) as AbortSignal | null,
+    })
       .then(response => {
         this.logger.info('Server availability check: Server is responding', {
           status: response.status,
@@ -437,7 +452,12 @@ export class ApiService {
       })
       .catch(error => {
 
-        fetch('/assets/ping.txt', { method: 'HEAD', signal: (AbortSignal as any).timeout ? (AbortSignal as any).timeout(2000) : null })
+        fetch('/assets/ping.txt', {
+          method: 'HEAD',
+          signal: ((AbortSignal as unknown as { timeout?: (ms: number) => AbortSignal }).timeout
+            ? (AbortSignal as unknown as { timeout: (ms: number) => AbortSignal }).timeout(2000)
+            : null) as AbortSignal | null,
+        })
           .then(() => {
             this.logger.warn('Backend unavailable, but frontend assets are reachable');
           })
