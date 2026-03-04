@@ -7,8 +7,47 @@ export interface User {
   email: string;
 }
 
-// Record, Phone, and Company interfaces
-export interface Record {
+// Logging metadata shared across backend and frontend
+export interface LogEntry {
+  timestamp: Date;
+  level: string;
+  message: string;
+  // allow any metadata payload; using unknown avoids the index-signature
+  // requirement of Record<string, unknown> which was too strict for some
+  // event objects passed through the logger.
+  metadata?: unknown;
+}
+
+// Timeline event payloads
+export interface TimelineEvent {
+  title: string;
+  date: string | Date;
+  description?: string;
+  type?: string;
+  [key: string]: unknown;
+}
+
+// Security report DTOs
+export interface ControlResult {
+  status: 'fail' | 'pass' | 'notapplicable' | string;
+  [key: string]: unknown;
+}
+
+export interface OscalReport {
+  controlResults?: ControlResult[];
+  [key: string]: unknown;
+}
+
+// Service metrics payloads
+export interface ServiceMetric {
+  time: string;
+  memory: number;
+  cpu: number;
+  latency: number;
+}
+
+// AppRecord, Phone, and Company interfaces (renamed to avoid collision with the built-in Record<T,U>)
+export interface AppRecord {
   UID: string;
   name: string;
   avatar: any;

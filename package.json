@@ -17,6 +17,7 @@
     "lint": "nx lint craft-web",
     "lint:fix": "pnpm dlx nx lint craft-web --fix",
     "test": "pnpm dlx nx test craft-web",
+    "test:verbose": "pnpm dlx nx test craft-web -- --reporter verbose",
     "e2e": "pnpm dlx nx e2e craft-web-e2e"
   },
   "dependencies": {
