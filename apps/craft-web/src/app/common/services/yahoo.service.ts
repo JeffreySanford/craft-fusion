@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';                   
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
 
@@ -13,6 +13,8 @@ export interface HistoricalData {
   symbol: string;
   data: HistoricalPoint[];
 }
+type HistoricalApiPoint = { timestamp?: number[]; close?: number[] };
+type HistoricalApiResponse = Record<string, HistoricalApiPoint>;
 
 @Injectable({
   providedIn: 'root',
@@ -32,17 +34,14 @@ export class YahooService {
     this.logger.info('YahooService initialized');
   }
 
-  getStockQuote(symbol: string): Observable<unknown> {
+  getStockQuote(symbol: string): Observable<Record<string, unknown>> {
     const url = `${this.apiUrl}/quote/${symbol}`;
 
     this.logger.debug(`Fetching stock quote for ${symbol}`, { url });
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
 
-    return this.http.get(url).pipe(
-      map((response: unknown) => {
-        this.logger.endServiceCall(callId, 200);
-        return response;
-      }),
+    return this.http.get<Record<string, unknown>>(url).pipe(
+      tap(() => this.logger.endServiceCall(callId, 200)),
       catchError(error => {
         this.logger.error(`Error fetching stock quote for ${symbol}:`, {
           status: error.status,
@@ -50,7 +49,7 @@ export class YahooService {
           message: error.message,
         });
         this.logger.endServiceCall(callId, error.status || 500);
-        return of(null);                                
+        return of({});                                
       }),
     );
   }
@@ -62,11 +61,10 @@ export class YahooService {
     this.logger.debug(`Fetching historical data for ${symbols}`, { url });
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
 
-    return this.http.get(url, { params }).pipe(
-      map((response: unknown) => {
+    return this.http.get<HistoricalApiResponse>(url, { params }).pipe(
+      map(response => {
         this.logger.endServiceCall(callId, 200);
-        // convert unknown response into generic record for iteration
-        const responseMap = new Map(Object.entries((response as Record<string, unknown>) || {}));
+        const responseMap = new Map(Object.entries(response || {}));
         const parsedData: HistoricalData[] = symbols.map(symbol => {
           // Sanitize symbol to avoid untrusted object property access and potential injection
           const safeSymbol = String(symbol || '').trim();
@@ -75,7 +73,7 @@ export class YahooService {
           }
           // Accessing response object by dynamic key is controlled (symbol sanitized above)
           // eslint-disable-next-line security/detect-object-injection
-          const data = responseMap.get(safeSymbol) as { timestamp?: number[]; close?: number[] } | undefined;
+          const data = responseMap.get(safeSymbol) as HistoricalApiPoint | undefined;
           if (!data?.timestamp?.length || !data?.close?.length) {
             return {
               symbol,
@@ -106,17 +104,14 @@ export class YahooService {
     );
   }
 
-  getMarketSummary(): Observable<unknown> {
+  getMarketSummary(): Observable<Record<string, unknown>[]> {
     const url = `${this.apiUrl}/market-summary`;
 
     this.logger.debug(`Fetching market summary`, { url });
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
 
-    return this.http.get(url).pipe(
-      map((response: unknown) => {
-        this.logger.endServiceCall(callId, 200);
-        return response;
-      }),
+    return this.http.get<Record<string, unknown>[]>(url).pipe(
+      tap(() => this.logger.endServiceCall(callId, 200)),
       catchError(error => {
         this.logger.error(`Error fetching market summary:`, {
           status: error.status,
@@ -129,18 +124,15 @@ export class YahooService {
     );
   }
 
-  getTrendingSymbols(region: string): Observable<unknown> {
+  getTrendingSymbols(region: string): Observable<Record<string, unknown>[]> {
     const url = `${this.apiUrl}/trending`;
     const params = { region };
 
     this.logger.debug(`Fetching trending symbols for region ${region}`, { url });
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
 
-    return this.http.get(url, { params }).pipe(
-      map((response: unknown) => {
-        this.logger.endServiceCall(callId, 200);
-        return response;
-      }),
+    return this.http.get<Record<string, unknown>[]>(url, { params }).pipe(
+      tap(() => this.logger.endServiceCall(callId, 200)),
       catchError(error => {
         this.logger.error(`Error fetching trending symbols for region ${region}:`, {
           status: error.status,
@@ -153,17 +145,14 @@ export class YahooService {
     );
   }
 
-  getCompanyDetails(symbol: string): Observable<unknown> {
+  getCompanyDetails(symbol: string): Observable<Record<string, unknown> | null> {
     const url = `${this.apiUrl}/company/${symbol}`;
 
     this.logger.debug(`Fetching company details for ${symbol}`, { url });
     const callId = this.logger.startServiceCall('YahooService', 'GET', url);
 
-    return this.http.get(url).pipe(
-      map((response: unknown) => {
-        this.logger.endServiceCall(callId, 200);
-        return response;
-      }),
+    return this.http.get<Record<string, unknown>>(url).pipe(
+      tap(() => this.logger.endServiceCall(callId, 200)),
       catchError(error => {
         this.logger.error(`Error fetching company details for ${symbol}:`, {
           status: error.status,

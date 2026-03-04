@@ -162,11 +162,15 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private updatePerformanceMetrics() {
-    const perfAny = performance as any;
-    if (perfAny && perfAny.memory) {
-      const memory = perfAny.memory;
-      const totalJSHeapSize = memory.totalJSHeapSize;
-      const usedJSHeapSize = memory.usedJSHeapSize;
+    interface PerfWithMemory extends Performance {
+      memory?: {
+        totalJSHeapSize: number;
+        usedJSHeapSize: number;
+      };
+    }
+    const perf = performance as PerfWithMemory;
+    if (perf.memory) {
+      const { totalJSHeapSize, usedJSHeapSize } = perf.memory;
       const memoryUsagePercentage = (usedJSHeapSize / totalJSHeapSize) * 100;
       this.performanceMetrics.memoryUsage = `${memoryUsagePercentage.toFixed(2)}%`;
     } else {
@@ -496,15 +500,22 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
       this.logger.info('Chart initialized successfully');
 
       if (this.metricsBuffer.length > 0) {
-        const data = this.chart!.data as any;
+        const data = this.chart!.data as {
+          labels: string[];
+          datasets: Array<{ data: number[] }>;
+        };
         data.labels = data.labels || [];
         data.datasets = data.datasets || [{ data: [] }, { data: [] }, { data: [] }];
+        const [memoryDataset, cpuDataset, latencyDataset] = data.datasets;
+        if (!memoryDataset || !cpuDataset || !latencyDataset) {
+          return;
+        }
 
         this.metricsBuffer.forEach(metric => {
-          (data.labels as any[]).push(metric.time);
-          (data.datasets[0].data as any[]).push(metric.memory);
-          (data.datasets[1].data as any[]).push(metric.cpu);
-          (data.datasets[2].data as any[]).push(metric.latency);
+          data.labels.push(metric.time);
+          memoryDataset.data.push(metric.memory);
+          cpuDataset.data.push(metric.cpu);
+          latencyDataset.data.push(metric.latency);
         });
         this.chart!.update();
         this.metricsBuffer = [];
@@ -538,14 +549,21 @@ export class FooterComponent implements OnInit, OnDestroy, AfterViewInit {
 
     try {
 
-      (this.chart.data.labels as any).push(currentTime);
-      (this.chart.data.datasets as any)[0].data.push(memoryValue);
-      (this.chart.data.datasets as any)[1].data.push(cpuValue);
-      (this.chart.data.datasets as any)[2].data.push(latencyValue);
-
-      if ((this.chart.data.labels as any).length > 10) {
-        (this.chart.data.labels as any).shift();
-        (this.chart.data.datasets as any).forEach((dataset: any) => dataset.data.shift());
+      const chartData = this.chart.data as {
+        labels: string[];
+        datasets: Array<{ data: number[] }>;
+      };
+      const [memoryDataset, cpuDataset, latencyDataset] = chartData.datasets;
+      if (!memoryDataset || !cpuDataset || !latencyDataset) {
+        return;
+      }
+      chartData.labels.push(currentTime);
+      memoryDataset.data.push(memoryValue);
+      cpuDataset.data.push(cpuValue);
+      latencyDataset.data.push(latencyValue);
+      if (chartData.labels.length > 10) {
+        chartData.labels.shift();
+        chartData.datasets.forEach(dataset => dataset.data.shift());
       }
 
       this.chart.update();

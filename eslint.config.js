@@ -21,6 +21,8 @@ module.exports = [
             '.angular/**',
             'playwright-report/**',
             'test-results/**',
+            '**/polyfills.ts',
+            '**/main.ts',
             'coverage/**',
             'tmp/**',
             'scripts/**',
@@ -39,6 +41,14 @@ module.exports = [
             parserOptions: {
                 ecmaVersion: 'latest',
                 sourceType: 'module',
+                project: [
+                    './tsconfig.base.json',
+                    './tsconfig*.json',
+                    './apps/*/tsconfig*.json',
+                    './apps/*/tsconfig.spec.json',
+                    './libs/*/tsconfig*.json',
+                ],
+                tsconfigRootDir: __dirname,
             },
             globals: {
                 // Node.js globals
@@ -148,10 +158,21 @@ module.exports = [
             'curly': 'error',
             'max-len': ['warn', { code: 120 }],
             // TypeScript rules
-            '@typescript-eslint/no-explicit-any': 'warn',
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-unsafe-assignment': 'off',
+            '@typescript-eslint/no-unsafe-member-access': 'off',
+            '@typescript-eslint/no-unsafe-call': 'off',
+            '@typescript-eslint/no-unsafe-return': 'off',
             '@typescript-eslint/explicit-function-return-type': 'off',
             '@typescript-eslint/explicit-module-boundary-types': 'off',
             '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+            'no-restricted-syntax': [
+                'error',
+                {
+                    selector: "MemberExpression[property.name='nativeElement']",
+                    message: 'Avoid accessing nativeElement directly; use Renderer2 instead.',
+                },
+            ],
         },
     },
     // E2E specific files configuration

@@ -1,5 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import Chart from 'chart.js/auto';
+import type { ChartData } from 'chart.js';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { ApiEndpointLog } from '../admin-types';
 import { ServiceCallMetric } from '../../../common/services/logger.service';
@@ -12,9 +13,15 @@ export interface ServiceMetricsSummary {
   lastUpdate?: number;
 }
 
+interface AxisConfig {
+  display: boolean;
+  title: { text: string; color: string };
+  ticks: { color: string };
+}
+
 @Injectable({ providedIn: 'root' })
 export class ServicesDashboardService {
-  private serviceMetricsMap = new Map<string, any>();
+  private serviceMetricsMap = new Map<string, ServiceCallMetric>();
   private metricsByService = new Map<string, ServiceCallMetric[]>();
   private serviceStatistics = new Map<string, ServiceMetricsSummary>();
   private endpointLogs = new Map<string, ApiEndpointLog>();
@@ -95,7 +102,7 @@ export class ServicesDashboardService {
   private emitFlattenedMetrics() {
     const all: ServiceCallMetric[] = [];
     Array.from(this.metricsByService.values()).forEach(arr => all.push(...arr));
-    all.sort((a, b) => (a.timestamp as any).getTime() - (b.timestamp as any).getTime());
+    all.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
     this.publishMetrics(all.slice(-200));
   }
 
@@ -230,7 +237,7 @@ export class ServicesDashboardService {
       .filter(s => s.active)
       .slice(0, limitServices);
     active.forEach(service => {
-      const arr = (this.metricsByService.get(service.name) || []).filter(m => now - (m.timestamp as any).getTime() < lookbackMs).slice(-10);
+      const arr = (this.metricsByService.get(service.name) || []).filter(m => now - m.timestamp.getTime() < lookbackMs).slice(-10);
       if (arr.length > 0) {
         const avgTime = arr.reduce((sum, m) => sum + (m.duration || 0), 0) / arr.length;
         const successCount = arr.filter(m => (m.status ?? 0) < 400).length;
@@ -387,7 +394,7 @@ export class ServicesDashboardService {
     });
   }
 
-  getAxesConfig(metrics: string[]): { y: any; y1: any; datasetAxisIds: string[] } {
+  getAxesConfig(metrics: string[]): { y: AxisConfig; y1: AxisConfig; datasetAxisIds: string[] } {
 
     const y = { display: false, title: { text: '', color: '#e5e7eb' }, ticks: { color: '#e5e7eb' } };
     const y1 = { display: false, title: { text: '', color: '#e5e7eb' }, ticks: { color: '#e5e7eb' } };
@@ -451,7 +458,7 @@ export class ServicesDashboardService {
     return { y, y1, datasetAxisIds };
   }
 
-  buildChartDataForServices(limit = 6) {
+  buildChartDataForServices(limit = 6): ChartData<'bar', number[], string> {
     const active = this.getRegisteredServices().slice(0, limit);
     const stats = this.serviceStatistics;
     return {
@@ -465,7 +472,7 @@ export class ServicesDashboardService {
           yAxisID: 'y',
         },
       ],
-    } as any;
+    };
   }
 
   createServiceMetricsChart(ctx: CanvasRenderingContext2D) {
@@ -497,21 +504,22 @@ export class ServicesDashboardService {
     return selectedMetrics;
   }
 
-  applyAxesToChart(systemChart: any, selectedMetrics: string[]): void {
+  applyAxesToChart(systemChart: Chart, selectedMetrics: string[]): void {
     if (!systemChart) return;
     const axes = this.getAxesConfig(selectedMetrics);
-    (systemChart.options.scales as any)['y'] = axes.y;
-    (systemChart.options.scales as any)['y1'] = axes.y1;
+    const scales = (systemChart.options.scales ??= {});
+    (scales as Record<string, unknown>)['y'] = axes.y as unknown;
+    (scales as Record<string, unknown>)['y1'] = axes.y1 as unknown;
 
     const mapping = axes.datasetAxisIds || [];
-    (systemChart.data.datasets as any[]).forEach((dataset: any, index: number) => {
+    systemChart.data.datasets.forEach((dataset, index: number) => {
 
       const metricForIndex = selectedMetrics.at(index) || '';
       const axisForIndex = mapping.at(index);
       const shouldFilter = mapping.length === 0 || Boolean(axisForIndex);
       dataset.hidden = !(shouldFilter ? selectedMetrics.includes(metricForIndex) : true);
       if (axisForIndex) {
-        dataset.yAxisID = axisForIndex;
+        (dataset as { yAxisID?: string }).yAxisID = axisForIndex;
       }
     });
 

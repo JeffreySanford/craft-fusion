@@ -5,19 +5,32 @@ import { HttpContextToken } from '@angular/common/http';
 
 export const TIMEOUT = new HttpContextToken<number>(() => 30000);
 
-export enum LogLevel {
-  DEBUG = 0,
-  INFO = 1,
-  WARN = 2,
-  ERROR = 3,
-}
+import { LogEntry as SharedLogEntry } from '@craft-fusion/craft-library';
 
 export interface LogEntry {
   timestamp: Date;
   level: LogLevel;
   message: string;
   component?: string;
-  details?: unknown;
+  details?: Record<string, unknown>;
+  source?: string;
+  metadata?: unknown;
+}
+
+type LoggerLogEntry = LogEntry;
+
+export interface ChangelogEntry {
+  type: string;
+  scope?: string;
+  description: string;
+  timestamp: string;
+}
+
+export enum LogLevel {
+  DEBUG = 0,
+  INFO = 1,
+  WARN = 2,
+  ERROR = 3,
 }
 
 export interface ServiceCallMetric {
@@ -42,10 +55,10 @@ export interface ServiceCallMetric {
   providedIn: 'root',
 })
 export class LoggerService {
-  private logs: LogEntry[] = [];
+  private logs: LoggerLogEntry[] = [];
   private logLimit = 1000;                                   
   private loggerLevel = LogLevel.INFO;                     
-  private logSubject = new Subject<LogEntry>();
+  private logSubject = new Subject<LoggerLogEntry>();
 
   private serviceMetrics: ServiceCallMetric[] = [];
   private serviceMetricsLimit = 100;
@@ -60,9 +73,9 @@ export class LoggerService {
   serviceCalls$ = this.serviceCallsSubject.asObservable();
 
   private connectSubject = new Subject<unknown>();
-  private errorSubject = new Subject<unknown>();
-  private infoSubject = new Subject<unknown>();
-  private changelogSubject = new ReplaySubject<unknown>(100);
+  private errorSubject = new Subject<LoggerLogEntry>();
+  private infoSubject = new Subject<LoggerLogEntry>();
+  private changelogSubject = new ReplaySubject<ChangelogEntry>(100);
 
   connect$ = this.connectSubject.asObservable();
   error$ = this.errorSubject.asObservable();
@@ -126,7 +139,7 @@ export class LoggerService {
     return callId;
   }
 
-  endServiceCall(callId: string, status: number, error?: unknown): void {
+  endServiceCall(callId: string, status: number, error?: Record<string, unknown>): void {
     const startMetric = this.serviceCallsInProgress.get(callId);
 
     if (startMetric) {
@@ -170,7 +183,7 @@ export class LoggerService {
     this.info('Service metrics cleared');
   }
 
-  private log(level: LogLevel, message: string, details?: unknown, component?: string) {
+  private log(level: LogLevel, message: string, details?: unknown, component: string = '') {
 
     if (level >= this.loggerLevel) {
 
@@ -191,12 +204,12 @@ export class LoggerService {
 
       const sanitizedDetails = this.sanitizeLogDetails(detailsForSanitization);
 
-      const entry: LogEntry = {
+      const entry: LoggerLogEntry = {
         timestamp: new Date(),
         level,
         message,
         component,
-        details: sanitizedDetails,
+        ...(sanitizedDetails ? { details: sanitizedDetails } : {}),
       };
 
       this.logs.unshift(entry);
@@ -220,7 +233,7 @@ export class LoggerService {
     }
   }
 
-  private outputToConsole(level: LogLevel, message: string, details?: unknown, component: string = '', suppressConsole = false) {
+  private outputToConsole(level: LogLevel, message: string, details?: Record<string, unknown>, component: string = '', suppressConsole = false) {
     if (suppressConsole) return;
     const css = (name: string, fallback: string) => {
       try {
@@ -532,8 +545,8 @@ export class LoggerService {
     return 'Unknown';
   }
 
-  private sanitizeLogDetails(details: unknown): unknown {
-    if (!details) return details;
+  private sanitizeLogDetails(details?: Record<string, unknown>): Record<string, unknown> | undefined {
+    if (!details) return undefined;
 
     try {
 
@@ -643,13 +656,15 @@ export class LoggerService {
     }
   }
 
-  private processBackendLogs(logs: LogEntry[]): void {
+  private processBackendLogs(logs: SharedLogEntry[]): void {
 
     for (const log of logs) {
 
-      const backendLog = {
-        ...log,
+      const backendLog: LoggerLogEntry = {
+        message: log.message,
+        level: this.parseLogLevel(log.level),
         source: 'backend',
+        metadata: log.metadata,
 
         timestamp: log.timestamp instanceof Date ? log.timestamp : new Date(log.timestamp),
       };
@@ -662,7 +677,7 @@ export class LoggerService {
     }
   }
 
-  getLogs(): LogEntry[] {
+  getLogs(): LoggerLogEntry[] {
     return [...this.logs];
   }
 
@@ -677,9 +692,9 @@ export class LoggerService {
 
     this.info(`CHANGELOG: ${message}`, { changelog: true });
 
-    const entry = {
+    const entry: ChangelogEntry = {
       type,
-      scope,
+      ...(scope !== undefined ? { scope } : {}),
       description,
       timestamp: new Date().toISOString(),
     };
@@ -690,7 +705,7 @@ export class LoggerService {
     localStorage.setItem('changelog-entries', JSON.stringify(entries));
   }
 
-  getChangelogEntries(): Array<{ type: string; scope?: string; description: string; timestamp: string }> {
+  getChangelogEntries(): ChangelogEntry[] {
 
     const raw = localStorage.getItem('changelog-entries');
     return raw ? JSON.parse(raw) : [];
@@ -706,9 +721,17 @@ export class LoggerService {
     return of(true);                          
   }
 
-  private fetchBackendLogs(): Observable<LogEntry[]> {
+  private fetchBackendLogs(): Observable<SharedLogEntry[]> {
 
     return of([]);                   
+  }
+
+  private parseLogLevel(level: string): LogLevel {
+    const normalized = level.toUpperCase();
+    if (normalized === 'DEBUG') return LogLevel.DEBUG;
+    if (normalized === 'WARN' || normalized === 'WARNING') return LogLevel.WARN;
+    if (normalized === 'ERROR') return LogLevel.ERROR;
+    return LogLevel.INFO;
   }
 
   private isTestEnvironment(): boolean {
