@@ -792,10 +792,12 @@ else
 
     # Ensure we don't exit script on test failure so we can show summary
     e2e_test_status=0
+    # Exclude craft-web-e2e on server: Playwright requires GUI libraries (libgtk-4, libvulkan, etc.)
+    # that are not present on a headless VPS.  Only craft-nest-e2e runs cleanly server-side.
     if [ "$PKG_MANAGER" = "pnpm" ]; then
-        pnpm exec nx run-many -t e2e --parallel=1 || e2e_test_status=$?
+        pnpm exec nx run-many -t e2e --exclude=craft-web-e2e --parallel=1 || e2e_test_status=$?
     else
-        npx nx run-many -t e2e --parallel=1 || e2e_test_status=$?
+        npx nx run-many -t e2e --exclude=craft-web-e2e --parallel=1 || e2e_test_status=$?
     fi
 
     [ -n "${progress_pid_e2e:-}" ] && kill "$progress_pid_e2e" &>/dev/null || true

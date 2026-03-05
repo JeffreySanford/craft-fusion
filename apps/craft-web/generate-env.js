@@ -56,7 +56,14 @@ export const environment = {
   alphaVantageApiKey: '${process.env.ALPHA_VANTAGE_API_KEY || envConfig.ALPHA_VANTAGE_API_KEY || 'demo'}',
   yahooFinance: {
     url: '/api/yahoo',
-    apiKey: '${process.env.YAHOO_FINANCE_API_KEY || envConfig.YAHOO_FINANCE_API_KEY || ''}'
+    apiKey: '${process.env.YAHOO_FINANCE_API_KEY || envConfig.YAHOO_FINANCE_API_KEY || 'demo_key'}'
+  },
+  flightRadar24: {
+    endpoint: '/api/flight-radar',
+    apiKey: '${process.env.FLIGHTRADAR24_API_KEY || envConfig.FLIGHTRADAR24_API_KEY || 'demo_key'}'
+  },
+  mapbox: {
+    accessToken: '${process.env.MAPBOX_ACCESS_TOKEN || envConfig.MAPBOX_ACCESS_TOKEN || 'pk.demo.mapbox_token'}'
   },
   socket: {
     url: 'http://localhost:3000'
