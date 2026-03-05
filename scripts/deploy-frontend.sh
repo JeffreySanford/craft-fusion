@@ -171,6 +171,15 @@ if [ "$skip_build" = false ]; then
         NX_CMD="pnpm exec nx"
     fi
 
+    echo -e "${BLUE}3b. Generating production environment configuration...${NC}"
+    cd "$PROJECT_ROOT"
+    node apps/craft-web/generate-env.js
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}✗ Environment generation failed${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✓ environment.prod.ts generated from .env${NC}"
+
     echo -e "${BLUE}4. Building Angular application...${NC}"
     
     if [ "$server_build" = true ]; then
