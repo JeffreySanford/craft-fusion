@@ -79,7 +79,7 @@
     "jsdom": "^27.4.0",
     "koa": "3.1.1",
     "mapbox-gl": "^3.9.2",
-    "markdown-it": "^14.1.0",
+    "markdown-it": "^14.1.1",
     "markdown-it-abbr": "^2.0.0",
     "markdown-it-anchor": "^9.2.0",
     "markdown-it-container": "^4.0.0",
