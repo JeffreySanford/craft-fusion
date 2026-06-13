@@ -27,3 +27,4 @@ index af81338d92007ab22513e13290af306b495f4bfa..675fd01b9e537eee69cd7a4359ad270d
 +        this.client = client;
      }
  }
+ 
