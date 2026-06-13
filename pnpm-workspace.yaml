@@ -1,15 +1,15 @@
-onlyBuiltDependencies:
-  - '@nestjs/core'
-  - '@parcel/watcher'
-  - '@scarf/scarf'
-  - '@swc/core'
-  - esbuild
-  - less
-  - lmdb
-  - mongodb-memory-server
-  - msgpackr-extract
-  - nx
-  - puppeteer
-  - unrs-resolver
+allowBuilds:
+  '@nestjs/core': true
+  '@parcel/watcher': true
+  '@scarf/scarf': true
+  '@swc/core': true
+  esbuild: true
+  less: true
+  lmdb: true
+  mongodb-memory-server: true
+  msgpackr-extract: true
+  nx: true
+  puppeteer: true
+  unrs-resolver: true
 patchedDependencies:
   '@angular/common@19.2.18': patches/@angular__common@19.2.18.patch

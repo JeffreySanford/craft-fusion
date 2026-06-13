@@ -269,6 +269,14 @@ else
     echo -e "${YELLOW}⚠ System prep script not found at $SYS_PREP_SCRIPT — continuing without it.${NC}"
 fi
 
+# System preparation must leave the workspace package manager usable.
+if ! command -v pnpm >/dev/null 2>&1 || ! pnpm -v >/dev/null 2>&1; then
+    echo -e "${RED}✗ pnpm is unavailable or its launcher is broken after system preparation.${NC}"
+    echo -e "${YELLOW}Repair pnpm, then rerun deployment.${NC}"
+    exit 1
+fi
+echo -e "${GREEN}✓ pnpm verified after system preparation: $(pnpm -v)${NC}"
+
 # After running system-prep.sh, print a clear, modernized summary of available tools
 printf "${CYAN}Available Tools:${NC}\n  Check resources: ${YELLOW}scripts/tools/memory-monitor.sh${NC}\n  System prep: ${YELLOW}scripts/system/system-prep.sh${NC}\n  Manual memory cleanup: ${YELLOW}sudo sysctl vm.drop_caches=3${NC}\n"
 printf "${WHITE}For more info, see scripts/PRODUCTION-SCRIPTS.md${NC}\n"

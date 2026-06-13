@@ -171,84 +171,24 @@ if ! command -v pnpm >/dev/null 2>&1; then
   fi
 fi
 
-if command -v pnpm >/dev/null 2>&1; then
+if command -v pnpm >/dev/null 2>&1 && pnpm -v >/dev/null 2>&1; then
   ok "pnpm available: $(pnpm -v)"
-  
-  # Ensure pnpm is properly set up (handles global bin dir, PATH etc.)
-  # We specify a standard location for Fedora/Linux
-  GLOBAL_BIN_DIR="${HOME}/.local/bin"
-  PNPM_HOME="${HOME}/.local/share/pnpm"
-  
-  info "Configuring pnpm directories..."
-  mkdir -p "$GLOBAL_BIN_DIR" "$PNPM_HOME"
-  
-  # Ensure these are exported for the current script's environment
-  export PNPM_HOME="$PNPM_HOME"
-  export PATH="$GLOBAL_BIN_DIR:$PATH"
-
-  pnpm config set global-bin-dir "$GLOBAL_BIN_DIR"
-  pnpm config set store-dir "${PNPM_HOME}/store"
-  
-  # Run setup to wire up shell profiles
-  pnpm setup 2>/dev/null || true
-
-  # Ensure PATH is updated in .bashrc for future sessions
-  if ! grep -q ".local/bin" "${HOME}/.bashrc"; then
-    echo 'export PATH="$PATH:$HOME/.local/bin"' >> "${HOME}/.bashrc"
-    info "Added ~/.local/bin to .bashrc"
-  fi
-  if ! grep -q "PNPM_HOME" "${HOME}/.bashrc"; then
-    echo "export PNPM_HOME=\"$PNPM_HOME\"" >> "${HOME}/.bashrc"
-    info "Added PNPM_HOME to .bashrc"
-  fi
-
-  # Optional global CLIs when pnpm is present
-  GLOBAL_PKGS=(nx @angular/cli @nestjs/cli pm2)
-  info "Ensuring global CLIs are present: ${GLOBAL_PKGS[*]} ..."
-  # We DO NOT use sudo here so it installs to the user's GLOBAL_BIN_DIR we just set
-  pnpm add -g "${GLOBAL_PKGS[@]}" || {
-      warn "Local pnpm add -g failed, trying with explicit bin dir..."
-      pnpm add -g "${GLOBAL_PKGS[@]}" --global-bin-dir "$GLOBAL_BIN_DIR"
-  }
-  ok "CLIs verified (nx, ng, nest, pm2)"
 else
-  warn "pnpm not available; falling back to npm workflow."
+  err "pnpm is installed but not executable. Repair it before deploying."
+  exit 1
 fi
 
-# ---------- Package security check and updates ----------
-info "Checking and updating global packages for security..."
-
-# Check current global packages using pnpm if available, else npm
-if command -v pnpm >/dev/null 2>&1; then
-  info "Checking global pnpm packages..."
-  # We already handled installation above, now just a verification/update
-  info "Updating global pnpm packages..."
-  pnpm update -g || warn "Global pnpm update failed (optional)"
-  ok "Global pnpm packages checked and updated"
+# Deployment must not run pnpm setup or mutate globally installed build tools.
+# Nx, Angular CLI, and Nest CLI are provided by this workspace.
+if command -v pm2 >/dev/null 2>&1; then
+  ok "PM2 available: $(pm2 -v)"
 elif command -v npm >/dev/null 2>&1; then
-  info "Checking global npm packages..."
-  if [[ -n "$SUDO" ]]; then
-    $SUDO npm update -g || warn "Global npm update failed (optional)"
-    
-    # Check latest versions
-    info "Verifying package versions:"
-    for pkg in nx pm2 wscat corepack; do
-      if npm list -g "$pkg" >/dev/null 2>&1; then
-        CURRENT=$(npm list -g "$pkg" --depth=0 2>/dev/null | grep "$pkg@" | sed 's/.*@//' | sed 's/ .*//' || echo "unknown")
-        LATEST=$(npm view "$pkg" version 2>/dev/null || echo "unknown")
-        if [[ "$CURRENT" == "$LATEST" ]]; then
-          ok "$pkg: $CURRENT (latest)"
-        else
-          info "$pkg: $CURRENT → $LATEST available"
-        fi
-      fi
-    done
-  else
-    warn "No sudo available; skipping global npm updates"
-  fi
-  ok "Global npm packages checked and updated"
+  info "Installing missing PM2 runtime..."
+  npm install -g pm2
+  ok "PM2 installed: $(pm2 -v)"
 else
-  warn "No package manager available for security check"
+  err "PM2 is missing and npm is unavailable."
+  exit 1
 fi
 
 # ---------- Workspace scaffold (non-destructive) ----------
