@@ -729,6 +729,8 @@ if [ "$skip_ssl" = true ]; then
     echo -e "${YELLOW}Skipping SSL/WSS setup (--skip-ssl)${NC}"
 elif [ "$yes_ssl" = true ]; then
     do_ssl=true
+elif [ ! -t 0 ]; then
+    echo -e "${YELLOW}No interactive terminal detected; skipping optional SSL/WSS setup.${NC}"
 else
     read -p "Do you want to set up SSL/WSS? (y/N): " -n 1 -r
     echo
