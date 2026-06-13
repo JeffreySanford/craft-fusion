@@ -559,13 +559,11 @@ step_header "Phase B: Backend & Frontend Deployment (Sequential)"
 if id "jeffrey" &>/dev/null; then
     echo -e "${CYAN}Stopping PM2 processes for user 'jeffrey'...${NC}"
     # Stop and delete as jeffrey to clean up their specific environment
-    sudo -u jeffrey pm2 stop all 2>/dev/null || true
-    sudo -u jeffrey pm2 delete all 2>/dev/null || true
-    sudo -u jeffrey pm2 kill 2>/dev/null || true
-    # Ensure current daemon is the latest version
-    sudo -u jeffrey pm2 update 2>/dev/null || true
+    sudo -u jeffrey env PATH="$PATH" pm2 stop all 2>/dev/null || true
+    sudo -u jeffrey env PATH="$PATH" pm2 delete all 2>/dev/null || true
+    sudo -u jeffrey env PATH="$PATH" pm2 kill 2>/dev/null || true
     # Restart daemon in the background before continuing
-    sudo -u jeffrey pm2 list 2>/dev/null || true
+    sudo -u jeffrey env PATH="$PATH" pm2 list 2>/dev/null || true
 else
     echo -e "${CYAN}Stopping PM2 processes for current user ($(whoami))...${NC}"
     pm2 stop all 2>/dev/null || true
@@ -663,10 +661,10 @@ if [ $backend_status -eq 0 ]; then
     
     # Start ecosystem and check both services using correct user
     if id "jeffrey" &>/dev/null; then
-        sudo -u jeffrey pm2 start ecosystem.config.js 2>/dev/null || sudo -u jeffrey pm2 restart all 2>/dev/null || true
+        sudo -u jeffrey env PATH="$PATH" pm2 start ecosystem.config.js 2>/dev/null || sudo -u jeffrey env PATH="$PATH" pm2 restart all 2>/dev/null || true
         sleep 3
-        PM2_NEST_STATUS=$(sudo -u jeffrey pm2 list | grep craft-nest-api | grep -c online || echo "0")
-        PM2_GO_STATUS=$(sudo -u jeffrey pm2 list | grep craft-go-api | grep -c online || echo "0")
+        PM2_NEST_STATUS=$(sudo -u jeffrey env PATH="$PATH" pm2 list | grep craft-nest-api | grep -c online || echo "0")
+        PM2_GO_STATUS=$(sudo -u jeffrey env PATH="$PATH" pm2 list | grep craft-go-api | grep -c online || echo "0")
     else
         pm2 start ecosystem.config.js 2>/dev/null || pm2 restart all 2>/dev/null || true
         sleep 3
@@ -686,7 +684,7 @@ if [ $backend_status -eq 0 ]; then
             # Try to restart Go service specifically
             echo -e "${YELLOW}  Attempting to restart Go service...${NC}"
             if id "jeffrey" &>/dev/null; then
-                sudo -u jeffrey pm2 restart craft-go-api 2>/dev/null || sudo -u jeffrey pm2 start ecosystem.config.js
+                sudo -u jeffrey env PATH="$PATH" pm2 restart craft-go-api 2>/dev/null || sudo -u jeffrey env PATH="$PATH" pm2 start ecosystem.config.js
             else
                 pm2 restart craft-go-api 2>/dev/null || pm2 start ecosystem.config.js
             fi
@@ -695,7 +693,7 @@ if [ $backend_status -eq 0 ]; then
     
     # Save PM2 configuration
     if id "jeffrey" &>/dev/null; then
-        sudo -u jeffrey pm2 save 2>/dev/null || true
+        sudo -u jeffrey env PATH="$PATH" pm2 save 2>/dev/null || true
     else
         pm2 save 2>/dev/null || true
     fi
@@ -875,7 +873,7 @@ step_header "Phase F: System Status & Deployment Summary"
 # PM2 status
 echo -e "${CYAN}PM2 Services:${NC}"
 if id "jeffrey" &>/dev/null; then
-    sudo -n -u jeffrey pm2 list 2>/dev/null || pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
+    sudo -n -u jeffrey env PATH="$PATH" pm2 list 2>/dev/null || pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
 else
     pm2 list 2>/dev/null || echo -e "${YELLOW}PM2 not accessible${NC}"
 fi

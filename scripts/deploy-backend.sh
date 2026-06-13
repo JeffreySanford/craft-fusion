@@ -61,11 +61,11 @@ maybe_sudo() {
 
 echo -e "${BLUE}1. Stopping existing services...${NC}"
 # Stop PM2 processes if they exist
-if command -v pm2 &> /dev/null; then
+if command -v pm2 &> /dev/null && pm2 -v >/dev/null 2>&1; then
     # Try stopping for user jeffrey first as they often own the production processes
     if id "jeffrey" &>/dev/null; then
-        sudo -u jeffrey pm2 stop all 2>/dev/null || true
-        sudo -u jeffrey pm2 delete all 2>/dev/null || true
+        sudo -u jeffrey env PATH="$PATH" pm2 stop all 2>/dev/null || true
+        sudo -u jeffrey env PATH="$PATH" pm2 delete all 2>/dev/null || true
         echo -e "${GREEN}✓ PM2 processes stopped for jeffrey${NC}"
     else
         maybe_sudo pm2 stop ecosystem.config.js || true
@@ -254,9 +254,9 @@ cd "$APP_DIR"
 # Ensure we start as the correct user
 if id "jeffrey" &>/dev/null; then
     echo -e "${CYAN}Starting PM2 as user 'jeffrey'...${NC}"
-    sudo -u jeffrey pm2 start ecosystem.config.js
-    sudo -u jeffrey pm2 save
-    sudo pm2 startup systemd -u jeffrey --hp /home/jeffrey --force
+    sudo -u jeffrey env PATH="$PATH" pm2 start ecosystem.config.js
+    sudo -u jeffrey env PATH="$PATH" pm2 save
+    sudo env PATH="$PATH" pm2 startup systemd -u jeffrey --hp /home/jeffrey --force
 else
     pm2 start ecosystem.config.js
     pm2 save
@@ -271,7 +271,7 @@ sleep 10  # Increased wait for NestJS InstanceLoader
 
 # Check PM2 status
 if id "jeffrey" &>/dev/null; then
-    PM2_STATUS=$(sudo -u jeffrey pm2 list)
+    PM2_STATUS=$(sudo -u jeffrey env PATH="$PATH" pm2 list)
 else
     PM2_STATUS=$(pm2 list)
 fi
@@ -304,7 +304,7 @@ echo -e "${GREEN}=== Backend Deployment Complete ===${NC}"
 echo
 # Show PM2 process list after deployment
 if id "jeffrey" &>/dev/null; then
-    sudo -n -u jeffrey pm2 list || pm2 list
+    sudo -n -u jeffrey env PATH="$PATH" pm2 list || pm2 list
 else
     pm2 list
 fi

@@ -180,11 +180,22 @@ fi
 
 # Deployment must not run pnpm setup or mutate globally installed build tools.
 # Nx, Angular CLI, and Nest CLI are provided by this workspace.
-if command -v pm2 >/dev/null 2>&1; then
+if command -v pm2 >/dev/null 2>&1 && pm2 -v >/dev/null 2>&1; then
   ok "PM2 available: $(pm2 -v)"
 elif command -v npm >/dev/null 2>&1; then
-  info "Installing missing PM2 runtime..."
-  npm install -g pm2
+  info "Installing or repairing PM2 runtime..."
+  mkdir -p "${HOME}/.local/bin"
+  rm -f "${HOME}/.local/bin/pm2" \
+        "${HOME}/.local/bin/pm2-dev" \
+        "${HOME}/.local/bin/pm2-docker" \
+        "${HOME}/.local/bin/pm2-runtime"
+  npm install --global pm2@7.0.1 --prefix "${HOME}/.local"
+  export PATH="${HOME}/.local/bin:${PATH}"
+  hash -r
+  if ! pm2 -v >/dev/null 2>&1; then
+    err "PM2 installation completed but the launcher is not executable."
+    exit 1
+  fi
   ok "PM2 installed: $(pm2 -v)"
 else
   err "PM2 is missing and npm is unavailable."
