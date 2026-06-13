@@ -1100,7 +1100,7 @@ for profile in "${PROFILES_TO_REPORT[@]}"; do
         echo -e "  ${GREEN}Pass:${NC} $PASS  ${RED}Fail:${NC} $FAIL  ${YELLOW}N/A:${NC} $NOTAPPLICABLE  ${WHITE}Other:${NC} $OTHER  ${BOLD}Total:${NC} $TOTAL"
         echo -e "  ${CYAN}Individual Controls:${NC}"
 
-        rule_results_data=$(xmllint --xpath "//rule-result" "$result_file" 2>/dev/null)
+        rule_results_data=$(xmllint --xpath "//rule-result" "$result_file" 2>/dev/null || true)
         echo "$rule_results_data" | grep -oP '<rule-result idref="[^"]+">[\s\S]*?</rule-result>' | while IFS= read -r rule_block; do
             CONTROL_ID=$(echo "$rule_block" | grep -oP 'idref="\K[^"]+')
             RESULT=$(echo "$rule_block" | grep -oP '<result>\K[^<]+')
