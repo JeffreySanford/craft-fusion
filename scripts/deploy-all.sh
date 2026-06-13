@@ -282,7 +282,7 @@ printf "${CYAN}Available Tools:${NC}\n  Check resources: ${YELLOW}scripts/tools/
 printf "${WHITE}For more info, see scripts/PRODUCTION-SCRIPTS.md${NC}\n"
 
 # Initialize status variables for summary
-npm_ci_status=-1
+npm_ci_status=0
 npm_ci_retry_status=-1
 nx_post_install_final_status=-1 # -1: not run/pending, 0: success/skipped, 1: failed after prompt
 CLEAN_STATUS=-1               # -1: pending, 0: success, 1: failure
@@ -775,9 +775,9 @@ else
     # Ensure we don't exit script on test failure so we can show summary
     unit_test_status=0
     if [ "$PKG_MANAGER" = "pnpm" ]; then
-        pnpm exec nx run-many -t test --parallel=2 --maxParallel=2 || unit_test_status=$?
+        NODE_ENV=test pnpm exec nx run-many -t test --parallel=2 --maxParallel=2 || unit_test_status=$?
     else
-        npx nx run-many -t test --parallel=2 --maxParallel=2 || unit_test_status=$?
+        NODE_ENV=test npx nx run-many -t test --parallel=2 --maxParallel=2 || unit_test_status=$?
     fi
 
     [ -n "${progress_pid_tests:-}" ] && kill "$progress_pid_tests" &>/dev/null || true

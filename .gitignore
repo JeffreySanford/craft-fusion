@@ -148,3 +148,6 @@ apps/craft-nest/src/app/faa/*.txt
 apps/craft-nest/src/app/faa/*.pdf
 apps/craft-nest/src/app/faa/faa_registry.csv
 apps/craft-web/src/app/faa/
+
+# Downloaded Natural Earth shapefiles (legacy mapping assets)
+apps/craft-web/src/assets/shapefiles/
