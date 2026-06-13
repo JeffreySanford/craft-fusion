@@ -262,7 +262,6 @@ if id "jeffrey" &>/dev/null; then
     [ -x /usr/local/bin/pm2 ] && PM2_BIN="/usr/local/bin/pm2"
     sudo -u jeffrey env PATH="/usr/local/bin:/usr/bin:/bin" "$PM2_BIN" start ecosystem.config.js
     sudo -u jeffrey env PATH="/usr/local/bin:/usr/bin:/bin" "$PM2_BIN" save
-    sudo env PATH="/usr/local/bin:/usr/bin:/bin" "$PM2_BIN" startup systemd -u jeffrey --hp /home/jeffrey --force
 else
     pm2 start ecosystem.config.js
     pm2 save
