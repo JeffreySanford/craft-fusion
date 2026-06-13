@@ -239,8 +239,12 @@ maybe_sudo chmod +x "$APP_DIR/dist/apps/craft-go/main"
 echo -e "${GREEN}✓ Application files copied${NC}"
 
 echo -e "${BLUE}9. Setting ownership and permissions...${NC}"
-# Set ownership and permissions for all files to the current user and group
-USER_NAME=$(whoami)
+# PM2 runs as jeffrey on production, including when this script is invoked by root.
+if id "jeffrey" &>/dev/null; then
+    USER_NAME="jeffrey"
+else
+    USER_NAME=$(whoami)
+fi
 USER_GROUP=$(id -gn "$USER_NAME")
 maybe_sudo chown -R "$USER_NAME:$USER_GROUP" "$APP_DIR"
 maybe_sudo chown -R "$USER_NAME:$USER_GROUP" "$LOG_DIR"
