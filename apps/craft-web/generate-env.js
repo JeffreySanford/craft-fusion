@@ -1,9 +1,27 @@
+
 const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
 
-// Load .env file
-const envConfig = dotenv.config({ path: path.join(__dirname, '..', '..', '.env') }).parsed || {};
+// Helper to load env file if it exists
+function loadEnvFile(envPath) {
+  if (fs.existsSync(envPath)) {
+    return dotenv.config({ path: envPath }).parsed || {};
+  }
+  return {};
+}
+
+const envPath = path.join(__dirname, '..', '..', '.env');
+const envSamplePath = path.join(__dirname, '..', '..', '.env.sample');
+
+let envConfig = loadEnvFile(envPath);
+if (Object.keys(envConfig).length === 0) {
+  envConfig = loadEnvFile(envSamplePath);
+}
+// Fallback to empty object if neither file exists
+if (Object.keys(envConfig).length === 0) {
+  envConfig = {};
+}
 
 const targetPath = path.join(__dirname, 'src', 'environments', 'environment.prod.ts');
 const targetDevPath = path.join(__dirname, 'src', 'environments', 'environment.ts');
@@ -16,7 +34,7 @@ export const environment = {
   finnhubApiKey: '${process.env.FINNHUB_API_KEY || envConfig.FINNHUB_API_KEY || ''}',
   finnHubAPI: 'https://finnhub.io/api/v1',
   mapbox: {
-    accessToken: '${process.env.MAPBOX_ACCESS_TOKEN || envConfig.MAPBOX_ACCESS_TOKEN || ''}',
+    accessToken: '${process.env.MAPBOX_ACCESS_TOKEN || envConfig.MAPBOX_ACCESS_TOKEN || 'pk.demo.mapbox_token'}',
   },
   nasaFirms: {
     apiKey: '${process.env.NASA_FIRMS_API_KEY || envConfig.NASA_FIRMS_API_KEY || ''}',

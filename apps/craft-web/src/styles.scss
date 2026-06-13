@@ -1,30 +1,27 @@
 // Main styles entry point for Craft Fusion
-
-// Import flag-icons via Sass to disable conflicting square icons (fixes esbuild duplicate filename error)
 @use 'flag-icons/sass/flag-icons' with (
   $flag-icons-use-square: false
 );
-
-// Import global variables and settings
 @use 'variables';
 @use 'themes';
 @use 'typography';
 @use 'transition-variables';
-
-// Reset and base styles
 @use 'reset';
 @use 'scrollbar';
-
-// Layout and utility styles
 @use 'layout';
 @use 'responsive';
 @use 'utilities';
-
+@import "mapbox-gl/dist/mapbox-gl.css";
 // Backward compatibility for legacy .flag-icon-xx classes
 .flag-icon {
   @extend .fi;
 }
 
+// Ensure root containers always have height
+html, body, app-root {
+  height: 100vh !important;
+  min-height: 0 !important;
+}
 // ─── Table page: Select dropdown panel overlay ───────────────────────────────
 // CDK overlay portals render at <body> level — must be styled globally.
 // Panels opt-in via panelClass="record-select-panel" on mat-select.

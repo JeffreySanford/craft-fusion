@@ -1,9 +1,12 @@
+// ...existing imports...
+// ...existing imports...
 import { Component, OnInit, OnDestroy, AfterViewInit, Input, HostBinding, SimpleChanges, OnChanges } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { MapboxService } from '../../../common/services/mapbox.service';
-import { OpenSkiesService, OpenSkyFlight } from '../../../common/services/openskies.service';
+import { OpenSkyService } from './opensky.service';
 import { NasaFirmsService, NasaFirmsAlert } from '../../../common/services/nasa-firms.service';
 import { interval, Subscription } from 'rxjs';
+import { FaaService, FaaAircraft } from '../../../common/services/faa.service';
 import moment from 'moment-timezone';
 
 interface City {
@@ -46,17 +49,77 @@ interface FlightInfo {
   },
 })
 export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
+  // Collapse state for both lists
+  listsCollapsed: boolean = false;
+
+  // Toggle to show all flights (including commercial)
+  showAllFlights: boolean = false;
+
+  // Selected aircraft for highlighting
+  selectedAircraft: FlightInfo | null = null;
+
+  /**
+   * Select an aircraft from the list and optionally highlight on the map
+   */
+  selectAircraft(flight: FlightInfo): void {
+    this.selectedAircraft = flight;
+    // Optionally, highlight on map (if supported)
+    if (flight.latitude !== undefined && flight.longitude !== undefined) {
+      this.mapboxService.flyTo([flight.longitude, flight.latitude], 12);
+      // Only call highlightFlightMarker if it exists on the service
+      const svc = this.mapboxService as any;
+      if (typeof svc.highlightFlightMarker === 'function') {
+        svc.highlightFlightMarker(flight.id, '#b71c1c');
+      }
+    }
+  }
+
   @Input() alerts: FireAlert[] = [];
   @Input() width: number = 0;
   @Input() height: number = 0;
   @Input() compact: boolean = false;
+  // Always hide time range selector in fire alert tile
+  showTimeRangeSelector: boolean = false;
+
+  /**
+   * Returns FAA info for a flight, normalizing the N-number key.
+   * Returns null if not found or not a valid N-number.
+   */
+  getFaaInfoForFlight(flight: FlightInfo): FaaAircraft | null {
+    const n = (flight.callSign || flight.id || '').toUpperCase();
+    // Only US N-numbers
+    if (!/^N[0-9A-Z]+$/.test(n)) return null;
+    // Normalize: always starts with 'N', no regex in template
+    const nNumber = n.startsWith('N') ? n : `N${n}`;
+    return this.faaInfo[nNumber] ?? null;
+  }
 
   @HostBinding('class.full-height') fullHeight = true;
 
   flights: FlightInfo[] = [];
+  faaInfo: { [nNumber: string]: FaaAircraft | null } = {};
+  get filteredFlights(): FlightInfo[] {
+    if (this.showAllFlights) {
+      return this.flights;
+    }
+    // Filter out commercial flights, only show public safety/non-commercial
+    const commercialPrefixes = [
+      'AAL', 'UAL', 'DAL', 'SWA', 'JBU', 'FFT', 'SKW', 'ASA', 'WJA', 'AFR', 'TAP', 'DLH', 'ENY', 'ATN', 'ROU', 'SCX', 'JSX', 'VJA', 'GTI', 'CTF', 'PFT', 'TAI', 'INTEL', 'LOST', 'SPAR', 'EJA', 'EJM', 'LXJ', 'ENY', 'WJA', 'TOPCT', 'TWY', 'CAP', 'RANGR', 'ERU'
+    ];
+    const publicSafetyKeywords = ['POLICE', 'FIRE', 'RESCUE', 'MED', 'EMS', 'LIFE', 'SHERIFF', 'LAW', 'AMBULANCE'];
+    return this.flights.filter(flight => {
+      const cs = (flight.callSign || flight.id || '').toUpperCase();
+      // Show if public safety keyword
+      if (publicSafetyKeywords.some(kw => cs.includes(kw))) return true;
+      // Show if US government N-number (starts with N and is not a known commercial code)
+      if (/^N[0-9A-Z]+$/.test(cs) && !commercialPrefixes.some(p => cs.startsWith(p))) return true;
+      // Otherwise, filter out if commercial
+      return !commercialPrefixes.some(p => cs.startsWith(p));
+    });
+  }
   currentTime!: string;
   utcTime!: string;
-  timeSubscription?: Subscription;
+  timeSubscription?: Subscription | undefined;
 
   private lastWidth: number = 0;
   private lastHeight: number = 0;
@@ -99,8 +162,9 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit, OnC
 
   constructor(
     private mapboxService: MapboxService,
-    private openSkiesService: OpenSkiesService,
+    private openSkyService: OpenSkyService,
     private nasaFirmsService: NasaFirmsService,
+    private faaService: FaaService,
   ) {
     console.log('STEP 1: FireAlertComponent initialized');
   }
@@ -109,6 +173,31 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     console.log('STEP 2: ngOnInit called');
     this.selectedCity = this.cities[0] as City;
     this.startCurrentTimeStream(this.selectedCity);
+    // DEMO: Fetch flights for LA area using OpenSky public API
+    this.openSkyService.getNearbyFlights(33.5, -118.5, 34.5, -117.5).subscribe((data: any) => {
+      if (data && data.states) {
+        this.flights = data.states.map((s: any[]) => ({
+          callSign: s[1],
+          id: s[0],
+          altitude: s[7],
+          lat: s[6],
+          lon: s[5],
+        }));
+        this.lookupFaaInfoForFlights();
+      }
+    });
+
+  }
+
+  private lookupFaaInfoForFlights(): void {
+    for (const flight of this.flights) {
+      const nNumber = (flight.callSign || flight.id || '').toUpperCase().replace(/^N/, 'N');
+      if (/^N[0-9A-Z]+$/.test(nNumber) && !this.faaInfo[nNumber]) {
+        this.faaService.lookupNNumber(nNumber).subscribe(result => {
+          this.faaInfo[nNumber] = result.found ? result.aircraft || null : null;
+        });
+      }
+    }
   }
 
   ngAfterViewInit(): void {
@@ -215,7 +304,18 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit, OnC
 
   onTabChange(event: MatTabChangeEvent): void {
     const city = this.cities[event.index];
-    if (!city) return;
+    if (!city || city === this.selectedCity) return;
+
+    // Clean up previous intervals/subscriptions
+    if (this.timeSubscription) {
+      this.timeSubscription.unsubscribe();
+      this.timeSubscription = undefined;
+    }
+    if (this.flightUpdateInterval) {
+      this.flightUpdateInterval.unsubscribe();
+      this.flightUpdateInterval = undefined;
+    }
+    this.mapboxService.destroyMap();
 
     this.selectedCity = city;
 
@@ -231,47 +331,54 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     }, 350);
   }
 
+  private flightUpdateInterval?: Subscription | undefined;
+
   fetchFlightData(city: City): void {
     console.log('STEP 6: Fetching OpenSky flight data');
 
-    const radiusKm = city.radiusKm ?? 120;
-    const bounds = this.calculateBoundingBox(city.coords.lat, city.coords.lng, radiusKm);
-
-    this.openSkiesService.fetchFlightData().subscribe({
-      next: (data: OpenSkyFlight[]) => {
-        const filtered = this.filterFlightsInBounds(data, bounds);
-        this.flights = filtered.slice(0, 25).map(flight => {
-          const flightInfo: FlightInfo = {
-            id: flight.icao24 || flight.callsign || 'unknown',
-          };
-          const callSign = flight.callsign?.trim();
-          if (callSign) {
-            flightInfo.callSign = callSign;
-          }
-          if (typeof flight.baro_altitude === 'number' && Number.isFinite(flight.baro_altitude)) {
-            flightInfo.altitude = flight.baro_altitude;
-          }
-          if (typeof flight.latitude === 'number' && Number.isFinite(flight.latitude)) {
-            flightInfo.latitude = flight.latitude;
-          }
-          if (typeof flight.longitude === 'number' && Number.isFinite(flight.longitude)) {
-            flightInfo.longitude = flight.longitude;
-          }
-          return flightInfo;
-        });
-
-        this.mapboxService.clearFlightMarkers();
-        this.flights.forEach(flight => {
-          if (flight.latitude !== undefined && flight.longitude !== undefined) {
-            this.mapboxService.addFlightMarker([flight.longitude, flight.latitude], `Flight ${flight.callSign || flight.id}`);
-          }
-        });
-      },
-      error: (error: unknown) => {
+    const updateFlights = () => {
+      const radiusKm = city.radiusKm ?? 120;
+      const bounds = this.calculateBoundingBox(city.coords.lat, city.coords.lng, radiusKm);
+      this.openSkyService.getNearbyFlights(bounds[1], bounds[0], bounds[3], bounds[2]).subscribe((data: any) => {
+        if (data && data.states) {
+          this.flights = data.states.map((s: any[]) => ({
+            callSign: s[1],
+            id: s[0],
+            altitude: s[7],
+            latitude: s[6],
+            longitude: s[5],
+          }));
+          // Clear all flight markers before adding only filtered flights
+          this.mapboxService.clearFlightMarkers();
+          const flightsToShow = this.showAllFlights ? this.flights : this.filteredFlights;
+          flightsToShow.forEach(flight => {
+            if (flight.latitude !== undefined && flight.longitude !== undefined) {
+              this.mapboxService.upsertFlightMarker(
+                flight.id,
+                [flight.longitude, flight.latitude],
+                `Flight ${flight.callSign || flight.id}`
+              );
+            }
+          });
+        } else {
+          this.flights = [];
+          this.mapboxService.clearFlightMarkers();
+        }
+      }, error => {
         console.error('Error fetching OpenSky flights', error);
         this.flights = [];
-      },
-    });
+        this.mapboxService.clearFlightMarkers();
+      });
+    };
+
+    // Clear any previous interval
+    if (this.flightUpdateInterval) {
+      this.flightUpdateInterval.unsubscribe();
+    }
+    // Initial fetch
+    updateFlights();
+    // Poll every 30 seconds
+    this.flightUpdateInterval = interval(30000).subscribe(() => updateFlights());
   }
 
   startCurrentTimeStream(city: City): void {
@@ -355,6 +462,9 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     console.log('STEP 11: ngOnDestroy called');
     if (this.timeSubscription) {
       this.timeSubscription.unsubscribe();
+    }
+    if (this.flightUpdateInterval) {
+      this.flightUpdateInterval.unsubscribe();
     }
     this.mapboxService.destroyMap();
     window.removeEventListener('resize', this.resizeHandler);
@@ -461,15 +571,7 @@ export class FireAlertComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     return [west, south, east, north];
   }
 
-  private filterFlightsInBounds(flights: OpenSkyFlight[], bounds: [number, number, number, number]): OpenSkyFlight[] {
-    const [west, south, east, north] = bounds;
-    return flights.filter(flight => {
-      const lat = flight.latitude;
-      const lng = flight.longitude;
-      if (lat === undefined || lng === undefined) return false;
-      return lat >= south && lat <= north && lng >= west && lng <= east;
-    });
-  }
+
 
   private getAlertBounds(alerts: FireAlert[]): [number, number, number, number] | null {
     if (!alerts.length) return null;

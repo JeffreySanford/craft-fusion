@@ -10,12 +10,13 @@
     "target": "ES2022", // Updated target
     "sourceMap": true,
     "outDir": "../../dist/apps/craft-nest", // Keep this, but build executor overrides
-    "baseUrl": "./src", // Changed baseUrl to src
+    // "baseUrl": "./src", // Removed deprecated baseUrl
     "incremental": true,
     "skipLibCheck": true,
     "strict": true, // Enable strict mode
     "esModuleInterop": true, // Ensure ES Module interop
     "moduleResolution": "node", // Ensure Node module resolution
+    "ignoreDeprecations": "6.0",
     "resolveJsonModule": true, // Already present, ensures JSON modules can be imported
     "typeRoots": ["../../node_modules/@types", "node_modules/@types"], // Ensure local and root node_modules/@types are checked
     "types": ["node", "jest"], // Added jest types

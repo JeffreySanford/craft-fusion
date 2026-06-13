@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { throwError } from 'rxjs';
 import { AuthenticationService } from './authentication.service';
 import { ApiService } from './api.service';
 import { SessionService } from './session.service';
@@ -39,5 +41,16 @@ describe('AuthService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('should not navigate away from a public route when no session exists', () => {
+    const apiService = TestBed.inject(ApiService);
+    const router = TestBed.inject(Router);
+    jest.spyOn(apiService, 'authRequest').mockReturnValue(throwError(() => ({ status: 401 })));
+    const navigateSpy = jest.spyOn(router, 'navigate');
+
+    service.initializeAuthentication();
+
+    expect(navigateSpy).not.toHaveBeenCalled();
   });
 });

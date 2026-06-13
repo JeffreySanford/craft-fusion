@@ -1,21 +1,25 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FireAlertComponent } from './fire-alert.component';
 import { MapboxService } from '../../../common/services/mapbox.service';
-import { OpenSkiesService } from '../../../common/services/openskies.service';
+import { OpenSkyService } from './opensky.service';
 import { NasaFirmsService } from '../../../common/services/nasa-firms.service';
+import { FaaService } from '../../../common/services/faa.service';
 import { of } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 describe('FireAlertComponent', () => {
   let component: FireAlertComponent;
   let fixture: ComponentFixture<FireAlertComponent>;
   let mapboxService: jest.Mocked<MapboxService>;
-  let openSkiesService: jest.Mocked<OpenSkiesService>;
+  let openSkyService: jest.Mocked<OpenSkyService>;
   let nasaFirmsService: jest.Mocked<NasaFirmsService>;
+  let faaService: jest.Mocked<FaaService>;
 
   const mockMap = {
     on: jest.fn().mockImplementation((event, callback) => {
@@ -67,24 +71,26 @@ describe('FireAlertComponent', () => {
       flyTo: jest.fn(),
     } as unknown as jest.Mocked<MapboxService>;
 
-    openSkiesService = {
-      fetchFlightData: jest.fn().mockReturnValue(of([])),
-      fetchAirportData: jest.fn().mockReturnValue(of([])),
-      fetchFlightDataByAirline: jest.fn().mockReturnValue(of([])),
-      fetchFlightDataByAircraft: jest.fn().mockReturnValue(of([])),
-    } as unknown as jest.Mocked<OpenSkiesService>;
+    openSkyService = {
+      getNearbyFlights: jest.fn().mockReturnValue(of({ states: [] })),
+    } as unknown as jest.Mocked<OpenSkyService>;
 
     nasaFirmsService = {
       getActiveFires: jest.fn().mockReturnValue(of([])),
     } as unknown as jest.Mocked<NasaFirmsService>;
 
+    faaService = {
+      lookupNNumber: jest.fn().mockReturnValue(of({ found: false })),
+    } as unknown as jest.Mocked<FaaService>;
+
     await TestBed.configureTestingModule({
       declarations: [FireAlertComponent],
-      imports: [FormsModule, MatCardModule, MatTabsModule, MatButtonToggleModule, MatTooltipModule],
+      imports: [FormsModule, MatCardModule, MatTabsModule, MatButtonToggleModule, MatTooltipModule, MatIconModule, MatSlideToggleModule],
       providers: [
         { provide: MapboxService, useValue: mapboxService },
-        { provide: OpenSkiesService, useValue: openSkiesService },
+        { provide: OpenSkyService, useValue: openSkyService },
         { provide: NasaFirmsService, useValue: nasaFirmsService },
+        { provide: FaaService, useValue: faaService },
       ],
     }).compileComponents();
 
@@ -117,6 +123,16 @@ describe('FireAlertComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should hide nearby flights and active alerts when collapsed', () => {
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.header-status-lists')).toBeTruthy();
+
+    component.listsCollapsed = true;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.header-status-lists')).toBeNull();
   });
 
   // it('should initialize the map', fakeAsync(() => {

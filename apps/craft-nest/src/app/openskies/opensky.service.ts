@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LoggingService } from '../logging/logging.service';
@@ -31,15 +32,30 @@ export interface OpenSkyResponse {
 }
 
 @Injectable()
+
 export class OpenSkyService {
   private readonly API_URL = 'https://opensky-network.org/api/states/all';
+  private readonly username: string;
+  private readonly password: string;
 
-  constructor(private readonly httpService: HttpService, private readonly logger: LoggingService) {}
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly logger: LoggingService,
+    private readonly configService: ConfigService,
+  ) {
+    this.username = this.configService.get<string>('OPENSKY_USERNAME', 'demo');
+    this.password = this.configService.get<string>('OPENSKY_PASSWORD', 'demo');
+  }
 
   fetchFlightData(): Observable<Flight[]> {
     const payload = { endpoint: this.API_URL };
     const startTime = Date.now();
-    return this.httpService.get<OpenSkyResponse>(this.API_URL).pipe(
+    return this.httpService.get<OpenSkyResponse>(this.API_URL, {
+      auth: {
+        username: this.username,
+        password: this.password,
+      },
+    }).pipe(
       map(response => response.data.states || []),
       tap(data => {
         this.logSuccess('fetchFlightData', payload, data, startTime);
@@ -51,6 +67,26 @@ export class OpenSkyService {
     );
   }
 
+  fetchFlightsInBoundingBox(lamin: number, lomin: number, lamax: number, lomax: number): Observable<any> {
+    const endpoint = `${this.API_URL}?lamin=${lamin}&lomin=${lomin}&lamax=${lamax}&lomax=${lomax}`;
+    const payload = { endpoint, lamin, lomin, lamax, lomax };
+    const startTime = Date.now();
+    return this.httpService.get(endpoint, {
+      auth: {
+        username: this.username,
+        password: this.password,
+      },
+    }).pipe(
+      map(response => response.data),
+      tap(data => {
+        this.logSuccess('fetchFlightsInBoundingBox', payload, data, startTime);
+      }),
+      catchError(error => {
+        this.logError('fetchFlightsInBoundingBox', payload, error, startTime);
+        return throwError(() => error);
+      }),
+    );
+  }
   fetchAirportData(): Observable<any> {
     const endpoint = 'https://api.opensky-network.org/airports';
     const payload = { endpoint };

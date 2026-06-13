@@ -29,7 +29,7 @@ export class FirmsService {
     this.defaultSource = this.configService.get<string>('NASA_FIRMS_SOURCE') || 'VIIRS_SNPP_NRT';
   }
 
-  async getActiveFires(params: { lat: number; lng: number; radiusKm: number; days: number; source?: string; limit?: number }): Promise<FirmsAlert[]> {
+  async getActiveFires(params: { lat: number; lng: number; radiusKm: number; days: number; source?: string | undefined; limit?: number }): Promise<FirmsAlert[]> {
     if (!this.apiKey) {
       this.logger.warn('NASA FIRMS API key not configured', { service: 'nasa-firms' });
       return [];

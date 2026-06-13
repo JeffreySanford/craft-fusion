@@ -50,15 +50,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.logger.info('App component initialized', { appVersion: '1.0.0' });
     
-    // Skip auto-logout in e2e test environment
-    const isE2E = (window as any)['__E2E_TEST_MODE__'] === true;
-    if (isE2E) {
-      this.logger.info('E2E test mode detected - skipping auto-logout');
-    } else {
-      // Always clear authentication on app load/refresh in normal mode
-      this.logger.info('Clearing authentication on app initialization');
-      this.authService.logout();
-    }
   }
 
   ngOnInit(): void {

@@ -16,8 +16,11 @@ import { FirmsModule } from './firms/firms.module';
 import { OpenSkyModule } from './openskies/opensky.module';
 import { HttpLoggingInterceptor } from './logging/http-logging.interceptor';
 import { SecurityModule } from './security/security.module';
+import { HealthModule } from './health/health.module';
 import { XssSanitizerMiddleware } from './common/middleware/xss-sanitizer.middleware';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { FaaService } from './faa/faa.service';
+import { FaaController } from './faa/faa.controller';
 
 @Module({
   imports: [
@@ -84,14 +87,16 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
     FirmsModule,
     OpenSkyModule,
     SecurityModule,
+    HealthModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, FaaController],
   providers: [
     AppService,
     {
       provide: APP_INTERCEPTOR,
       useClass: HttpLoggingInterceptor,
     },
+    FaaService,
   ],
 })
 export class AppModule implements NestModule {

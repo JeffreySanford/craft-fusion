@@ -177,7 +177,6 @@ export class AuthenticationService {
         error: () => {
           this.logger.debug('initializeAuthentication: User fetch failed, clearing state');
           this.clearAuthState();
-          this.router.navigate(['/home']);
         },
       });
   }

@@ -15,7 +15,8 @@
     "e2e": {
       "executor": "@nx/playwright:playwright",
       "options": {
-        "config": "apps/craft-web-e2e/playwright.config.ts"
+        "config": "apps/craft-web-e2e/playwright.config.ts",
+        "skipInstall": true
       },
       "configurations": {
         "production": {

@@ -466,14 +466,6 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy, AfterView
   private registerIcons(): void {
 
     this.iconRegistry.setDefaultFontSetClass('material-icons');
-
-    const matIconsUrl = 'https://fonts.googleapis.com/icon?family=Material+Icons';
-
-    const linkEl = document.createElement('link');
-    linkEl.rel = 'stylesheet';
-    linkEl.href = matIconsUrl;
-    document.head.appendChild(linkEl);
-
     this.iconRegistry.registerFontClassAlias('material-icons');
   }
 
@@ -674,6 +666,7 @@ export class DataVisualizationsComponent implements OnInit, OnDestroy, AfterView
     if (chart.component === 'app-line-chart') classes.push('chart-type-line');
     if (chart.component === 'app-bar-chart') classes.push('chart-type-bar');
     if (chart.component === 'app-finance-chart') classes.push('chart-type-finance');
+    if (chart.component === 'app-fire-alert') classes.push('chart-type-map');
 
     if (this.expandedTileIndex === index) classes.push('expanded');
     if (this.fullExpandedTileIndex === index) classes.push('full-expanded');

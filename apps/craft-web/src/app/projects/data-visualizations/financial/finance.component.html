@@ -1,5 +1,16 @@
 <div class="fintech-chart-container" [class.in-overlay]="inOverlay">
-  <div class="legend-container" *ngIf="!compact && sortedStocks && sortedStocks.length > 0">
+  <div class="fintech-chart-main">
+    <div class="chart-controls" *ngIf="!compact && showMarketPhasesControl">
+      <mat-slide-toggle [(ngModel)]="showMarketPhases" (change)="onMarketPhasesChange()" color="primary" class="market-phases-toggle"> Market Phases </mat-slide-toggle>
+    </div>
+    <div class="fintech-chart" #chart></div>
+    <div class="stock-status-box" *ngIf="!compact" [class.visible]="showStatusBox">
+      <div class="stock-status-symbol">{{ statusStock }}</div>
+      <div class="stock-status-price">${{ statusPrice }}</div>
+      <div class="stock-status-date">{{ statusDate }}</div>
+    </div>
+  </div>
+  <div class="legend-container" *ngIf="sortedStocks && sortedStocks.length > 0">
     <div
       *ngFor="let stock of sortedStocks"
       class="legend-item"
@@ -10,20 +21,9 @@
       <span class="legend-color" [appBgColor]="stock.color"></span>
       <span class="legend-text">{{ stock.symbol }} ({{ stock.currentPrice | currency }})</span>
     </div>
-
     <div class="legend-footer" *ngIf="latestDataDate">
       <span class="legend-date">Last updated: {{ latestDataDate | date: 'mediumDate' }}</span>
       <span class="legend-source">Source: Alpha Vantage API</span>
     </div>
-  </div>
-  <div class="chart-controls" *ngIf="!compact && showMarketPhasesControl">
-    <mat-slide-toggle [(ngModel)]="showMarketPhases" (change)="onMarketPhasesChange()" color="primary" class="market-phases-toggle"> Market Phases </mat-slide-toggle>
-  </div>
-  <div class="fintech-chart" #chart></div>
-
-  <div class="stock-status-box" *ngIf="!compact" [class.visible]="showStatusBox">
-    <div class="stock-status-symbol">{{ statusStock }}</div>
-    <div class="stock-status-price">${{ statusPrice }}</div>
-    <div class="stock-status-date">{{ statusDate }}</div>
   </div>
 </div>

@@ -11,3 +11,5 @@ onlyBuiltDependencies:
   - nx
   - puppeteer
   - unrs-resolver
+patchedDependencies:
+  '@angular/common@19.2.18': patches/@angular__common@19.2.18.patch

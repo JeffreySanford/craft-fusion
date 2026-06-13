@@ -1,11 +1,26 @@
 <mat-card>
   <mat-card-header>
     <div class="mat-mdc-card-header-text">
-      <div class="mat-mdc-card-header-title">
+      <div class="mat-mdc-card-header-title fire-alert-header-row">
         <div class="header-content">
           <span class="location">{{ selectedCity.name }}, {{ selectedCity.state }} ({{ selectedCity.timezone }})</span>
           <span class="time"> {{ currentTime }} {{ selectedCity.timezone }} / {{ utcTime }} UTC </span>
         </div>
+        <button mat-icon-button class="filter-toggle-btn" (click)="listsCollapsed = !listsCollapsed" [attr.aria-label]="listsCollapsed ? 'Show filter options' : 'Hide filter options'">
+          <mat-icon>{{ listsCollapsed ? 'filter_alt_off' : 'filter_alt' }}</mat-icon>
+        </button>
+        <div *ngIf="!listsCollapsed">
+          <div *ngIf="showTimeRangeSelector" class="time-range-selector">
+            <mat-button-toggle-group>
+              <mat-button-toggle value="1d">1d</mat-button-toggle>
+              <mat-button-toggle value="5d">5d</mat-button-toggle>
+              <mat-button-toggle value="2wk">2wk</mat-button-toggle>
+              <mat-button-toggle value="1mo">1mo</mat-button-toggle>
+              <mat-button-toggle value="6mo">6mo</mat-button-toggle>
+              <mat-button-toggle value="1y">1y</mat-button-toggle>
+              <mat-button-toggle value="all">all</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
           <div class="alert-filter" *ngIf="!compact">
             <span class="filter-label" matTooltip="Filter alerts by priority level">Priority:</span>
             <mat-button-toggle-group [(ngModel)]="selectedPriorityLevel" class="priority-selector">
@@ -15,44 +30,70 @@
               <mat-button-toggle value="High Priority" matTooltip="Show high priority alerts">High</mat-button-toggle>
             </mat-button-toggle-group>
           </div>
+        </div>
+        <div class="header-status-lists" *ngIf="!compact && !listsCollapsed">
+          <div class="flights-list">
+            <div class="flights-header-row" style="display: flex; align-items: center; justify-content: space-between;">
+              <h3 style="margin: 0;">Nearby Flights</h3>
+            </div>
+            <div *ngIf="!listsCollapsed" style="display: flex; align-items: center; margin-bottom: 8px; gap: 8px;">
+              <label for="showAllFlightsToggle" [ngStyle]="{ fontWeight: 600, color: showAllFlights ? '#1a7f37' : '#222', letterSpacing: '0.01em', fontSize: '1.05em' }">Show all flights:</label>
+              <mat-slide-toggle id="showAllFlightsToggle" [(ngModel)]="showAllFlights" color="primary">
+                <span [ngStyle]="{ color: showAllFlights ? '#1a7f37' : '#222', background: '#fff', padding: '2px 6px', borderRadius: '4px', border: '1px solid #1a7f37', fontWeight: 500 }">Include commercial</span>
+              </mat-slide-toggle>
+            </div>
+            <div>
+              <div style="margin-bottom: 6px; font-size: 0.98em; color: #444;">
+                Total tracked aircraft: <b>{{ filteredFlights.length }}</b>
+              </div>
+              <ul>
+                <li *ngFor="let flight of filteredFlights" (click)="selectAircraft(flight)" [ngClass]="{ 'selected-aircraft': selectedAircraft && (flight.id === selectedAircraft.id) }" style="cursor: pointer;">
+                  <div>
+                    <span>
+                      <b>{{ flight.callSign || flight.id }}</b>
+                      <span *ngIf="flight.altitude !== undefined"> | Altitude: {{ flight.altitude | number:'1.0-0' }} ft</span>
+                      <span *ngIf="flight.latitude !== undefined && flight.longitude !== undefined"> | Lat: {{ flight.latitude | number:'1.5-5' }}, Lng: {{ flight.longitude | number:'1.5-5' }}</span>
+                    </span>
+                    <ng-container *ngIf="getFaaInfoForFlight(flight) as faa">
+                      <ng-container *ngIf="faa">
+                        <div class="faa-details">
+                          <span *ngIf="faa.manufacturer"> | <b>{{ faa.manufacturer }}</b></span>
+                          <span *ngIf="faa.model"> {{ faa.model }}</span>
+                          <span *ngIf="faa.acftType"> ({{ faa.acftType }})</span>
+                          <span *ngIf="faa.name"> | Owner: {{ faa.name }}</span>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngIf="faa === null">
+                        <span class="faa-details"> | FAA info not found</span>
+                      </ng-container>
+                    </ng-container>
+                  </div>
+                </li>
+                <li *ngIf="filteredFlights.length === 0">No flights currently in the area</li>
+              </ul>
+            </div>
+          </div>
+          <div class="alerts-list">
+            <h3>
+              Active Alerts <span class="alert-count">({{ filteredAlerts(selectedCity).length }})</span>
+            </h3>
+            <ul>
+              <li *ngFor="let alert of filteredAlerts(selectedCity)" (click)="focusAlert(alert)" [class]="getPriorityClass(alert.level)">{{ alert.name }} - {{ alert.time }}</li>
+              <li *ngIf="filteredAlerts(selectedCity).length === 0">No active alerts match the current filter</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </mat-card-header>
   <mat-card-content>
     <div class="fire-alert-container" [class.compact]="compact">
+      <!-- Financial row removed as requested -->
       <mat-tab-group (selectedTabChange)="onTabChange($event)" animationDuration="0ms">
         <mat-tab *ngFor="let city of cities" label="{{ city.name }}">
           <ng-template matTabContent>
-            <div class="tab-content-wrapper">
-
-            <div id="map-{{ city.mapId }}" class="map-container"></div>
-
-              <div class="status-container two-columns" *ngIf="!compact">
-
-                <div class="status-column">
-
-                  <div class="flights-list">
-                    <h3>Nearby Flights</h3>
-                    <ul>
-                      <li *ngFor="let flight of flights">{{ flight.callSign || flight.id }} - Altitude: {{ flight.altitude ?? 'N/A' }}</li>
-                      <li *ngIf="flights.length === 0">No flights currently in the area</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div class="status-column">
-
-                  <div class="alerts-list">
-                    <h3>
-                      Active Alerts <span class="alert-count">({{ filteredAlerts(city).length }})</span>
-                    </h3>
-                    <ul>
-                      <li *ngFor="let alert of filteredAlerts(city)" (click)="focusAlert(alert)" [class]="getPriorityClass(alert.level)">{{ alert.name }} - {{ alert.time }}</li>
-                      <li *ngIf="filteredAlerts(city).length === 0">No active alerts match the current filter</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+            <div class="tab-content-wrapper fill-height">
+              <div id="map-{{ city.mapId }}" class="map-container full-height full-width"></div>
             </div>
           </ng-template>
         </mat-tab>

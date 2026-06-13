@@ -32,12 +32,21 @@ export class HttpLoggingInterceptor implements NestInterceptor {
             return;
           }
           const duration = Date.now() - startTime;
-          this.logger.error(`HTTP Request Failed: ${method} ${url}`, {
+          const metadata = {
             method,
             url,
             duration,
             error: err.message || err,
-          });
+          };
+          const status = Number(err?.status ?? err?.statusCode);
+
+          if (status === 401 && method === 'GET' && url === '/api/auth/user') {
+            this.logger.verbose(`HTTP Unauthorized: ${method} ${url}`);
+          } else if (status >= 400 && status < 500) {
+            this.logger.warn(`HTTP Client Error: ${method} ${url}`, metadata);
+          } else {
+            this.logger.error(`HTTP Request Failed: ${method} ${url}`, metadata);
+          }
         },
       }),
     );

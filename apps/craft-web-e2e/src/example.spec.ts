@@ -7,3 +7,10 @@ test('has title', async ({ page }) => {
   const h1Text = await page.locator('h1').innerText();
   expect(h1Text.replace(/\s+/g, '')).toContain('JeffreySanford');
 });
+
+test('loads data visualizations directly without redirecting', async ({ page }) => {
+  await page.goto('/data-visualizations');
+
+  await expect(page).toHaveURL(/\/data-visualizations$/);
+  await expect(page.locator('app-data-visualizations')).toBeVisible();
+});

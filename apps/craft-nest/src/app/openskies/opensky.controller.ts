@@ -1,4 +1,5 @@
-import { Controller, Get, Param } from '@nestjs/common';
+// ...existing code...
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { OpenSkyService } from './opensky.service';
 import { Observable } from 'rxjs';
 import { Flight } from './opensky.service';
@@ -30,5 +31,14 @@ export class OpenSkyController {
   @Get('flights/aircraft/:aircraft')
   getFlightDataByAircraft(@Param('aircraft') aircraft: string): Observable<Flight[]> {
     return this.openSkyService.fetchFlightDataByAircraft(aircraft);
+  }
+  @Get('nearby')
+  getNearbyFlights(
+    @Query('lamin') lamin: number,
+    @Query('lomin') lomin: number,
+    @Query('lamax') lamax: number,
+    @Query('lomax') lomax: number,
+  ) {
+    return this.openSkyService.fetchFlightsInBoundingBox(Number(lamin), Number(lomin), Number(lamax), Number(lomax));
   }
 }

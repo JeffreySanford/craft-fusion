@@ -689,6 +689,7 @@ export class FinanceComponent implements OnInit, OnChanges {
         if (!data || data.length === 0) {
           return; // nothing to label
         }
+        // Always place label at the right edge, vertically aligned with last value
         const maybeLast = data[data.length - 1] as { date?: Date; close?: number } | undefined;
         if (!maybeLast || !(maybeLast.date instanceof Date)) {
           return;
@@ -698,17 +699,17 @@ export class FinanceComponent implements OnInit, OnChanges {
         const labelGroup = svg.append('g').attr('class', `stock-label-group stock-${stockSymbol.toLowerCase()}-label`);
 
         const labelText = stockSymbol;
-        const tempText = labelGroup.append('text').text(labelText).style('visibility', 'hidden');                                 
-
+        const tempText = labelGroup.append('text').text(labelText).style('visibility', 'hidden');
         const textNode = tempText.node() as SVGTextElement | null;
         const textBBox = textNode ? textNode.getBBox() : { width: 50, height: 14 };
-        tempText.remove();                             
+        tempText.remove();
 
         const padding = 6;
         const backgroundWidth = textBBox.width + padding * 2;
         const backgroundHeight = textBBox.height + padding * 1.5;
 
-        const xPos = x(lastPoint.date) + 25;
+        // Always place at right edge of chart
+        const xPos = width + 10; // 10px outside chart area
         const yPos = y(lastPoint.close);
 
         labelGroup
@@ -718,10 +719,10 @@ export class FinanceComponent implements OnInit, OnChanges {
           .attr('y', yPos - backgroundHeight / 2)
           .attr('width', backgroundWidth)
           .attr('height', backgroundHeight)
-          .attr('fill', 'rgba(255, 255, 255, 0.85)')                                     
-          .attr('stroke', color(stockSymbol))                                       
+          .attr('fill', 'rgba(255, 255, 255, 0.85)')
+          .attr('stroke', color(stockSymbol))
           .attr('stroke-width', 1.5)
-          .attr('rx', 4)                   
+          .attr('rx', 4)
           .attr('ry', 4);
 
         labelGroup
@@ -732,7 +733,7 @@ export class FinanceComponent implements OnInit, OnChanges {
           .attr('text-anchor', 'middle')
           .attr('dominant-baseline', 'middle')
           .text(labelText)
-          .attr('fill', color(stockSymbol))                                     
+          .attr('fill', color(stockSymbol))
           .style('opacity', 0)
           .transition()
           .duration(500)
@@ -740,11 +741,9 @@ export class FinanceComponent implements OnInit, OnChanges {
 
         labelGroup
           .on('mouseover', () => {
-
             d3.select(`.line.stock-${stockSymbol.toLowerCase()}`).classed('highlighted', true);
           })
           .on('mouseout', () => {
-
             d3.select(`.line.stock-${stockSymbol.toLowerCase()}`).classed('highlighted', false);
           });
       };

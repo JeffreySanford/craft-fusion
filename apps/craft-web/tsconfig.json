@@ -1,9 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
-    "types": [],
-    "esModuleInterop": true
+      "outDir": "../../dist/out-tsc",
+      "types": [],
+      "esModuleInterop": true,
   },
   "angularCompilerOptions": {
     "enableIvy": true,

@@ -138,3 +138,13 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
+
+.nx/polygraph
+.claude/worktrees
+.claude/settings.local.json
+
+# Downloaded FAA registry data (too large and refreshed outside Git)
+apps/craft-nest/src/app/faa/*.txt
+apps/craft-nest/src/app/faa/*.pdf
+apps/craft-nest/src/app/faa/faa_registry.csv
+apps/craft-web/src/app/faa/

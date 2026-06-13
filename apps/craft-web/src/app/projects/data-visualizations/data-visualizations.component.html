@@ -48,7 +48,7 @@
 
               <app-bar-chart *ngSwitchCase="'app-bar-chart'" [data]="chart.data" [width]="tileWidth" [compact]="fullExpandedTileIndex !== i"> </app-bar-chart>
 
-              <div class="finance-chart-wrapper">
+              <div class="finance-chart-wrapper" *ngSwitchCase="'app-finance-chart'">
                 <div class="finance-range-buttons">
                   <button
                     mat-button
@@ -60,7 +60,7 @@
                     {{ opt }}
                   </button>
                 </div>
-                <app-finance-chart *ngSwitchCase="'app-finance-chart'" [data]="chart.data" [width]="tileWidth" [compact]="fullExpandedTileIndex !== i"> </app-finance-chart>
+                <app-finance-chart [data]="chart.data" [width]="tileWidth" [compact]="fullExpandedTileIndex !== i"> </app-finance-chart>
               </div>
 
               <app-fire-alert *ngSwitchCase="'app-fire-alert'" [width]="tileWidth" [compact]="fullExpandedTileIndex !== i"> </app-fire-alert>

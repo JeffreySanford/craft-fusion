@@ -510,9 +510,14 @@
 .visualization-item.chart-type-map {
   min-height: 11rem;
 
+  &.size-large-single:not(.full-expanded) {
+    height: calc(100vh - 12rem);
+    min-height: 28rem;
+  }
+
   .chart-card {
     min-height: 11rem;
-    max-height: calc(100vh - 13rem);
+    max-height: none;
   }
 }
 
@@ -863,6 +868,32 @@
   max-height: none;                                                          
 }
 
+.visualization-item.chart-type-finance {
+  &.medium-tile-full:not(.full-expanded) {
+    height: calc(100vh - 12rem);
+    min-height: 28rem;
+  }
+
+  .finance-chart-wrapper {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .finance-range-buttons {
+    flex: 0 0 auto;
+  }
+
+  app-finance-chart {
+    display: block;
+    flex: 1 1 0;
+    height: 100%;
+    min-height: 0;
+  }
+}
+
 ::ng-deep .mat-card-content {
   display: block !important;
 }
@@ -942,6 +973,16 @@
   }
 
   .visualization-item {
+    min-height: 18.75em;
+  }
+
+  .visualization-item.chart-type-finance.medium-tile-full:not(.full-expanded) {
+    height: auto;
+    min-height: 18.75em;
+  }
+
+  .visualization-item.chart-type-map.size-large-single:not(.full-expanded) {
+    height: auto;
     min-height: 18.75em;
   }
 }

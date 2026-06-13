@@ -31,6 +31,7 @@ import { AuthenticationService } from './common/services/authentication.service'
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
+  let authService: AuthService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -51,6 +52,8 @@ describe('AppComponent', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
+    authService = TestBed.inject(AuthService);
+    jest.spyOn(authService, 'logout');
   });
 
   beforeEach(() => {
@@ -61,6 +64,10 @@ describe('AppComponent', () => {
 
   it('should create the app', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should preserve authentication when the app initializes', () => {
+    expect(authService.logout).not.toHaveBeenCalled();
   });
 
   it('should add user interaction listeners', () => {

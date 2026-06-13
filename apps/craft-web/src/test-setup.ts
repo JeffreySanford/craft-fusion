@@ -52,7 +52,6 @@ getTestBed().initTestEnvironment(
   platformBrowserDynamicTesting()
 );
 
-
 globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
   const url =
     typeof input === 'string'

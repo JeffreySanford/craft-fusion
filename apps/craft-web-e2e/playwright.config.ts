@@ -2,6 +2,10 @@ import { defineConfig, devices } from '@playwright/test';
 import { nxE2EPreset } from '@nx/playwright/preset';
 import { workspaceRoot } from '@nx/devkit';
 
+const runBundledBrowsers =
+  Boolean(process.env['CI']) ||
+  process.env['PLAYWRIGHT_FULL_BROWSERS'] === 'true';
+
 export default defineConfig({
   ...nxE2EPreset(__filename, { testDir: './src' }),
 
@@ -27,17 +31,28 @@ export default defineConfig({
     ignoreHTTPSErrors: true,
     actionTimeout: 10000,
 
-    // Authentication state
-    storageState: 'playwright/.auth/user.json',
   },
 
-  webServer: {
-    command: 'npx nx run craft-web:serve',
-    url: 'http://localhost:4200',
-    reuseExistingServer: !process.env['CI'],
-    timeout: 120000,
-    cwd: workspaceRoot,
-  },
+  webServer: [
+    {
+      command: 'pnpm nx run craft-nest:serve',
+      url: 'http://localhost:3000/api/health',
+      reuseExistingServer: !process.env['CI'],
+      timeout: 120000,
+      cwd: workspaceRoot,
+    },
+    {
+      command: 'pnpm nx run craft-web:serve --hmr=false',
+      url: 'http://localhost:4200',
+      reuseExistingServer: !process.env['CI'],
+      timeout: 120000,
+      cwd: workspaceRoot,
+      env: {
+        BROWSERSLIST_IGNORE_OLD_DATA: 'true',
+        NG_BUILD_CACHE: '0',
+      },
+    },
+  ],
 
   projects: [
     {
@@ -48,45 +63,52 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
+        channel: runBundledBrowsers ? undefined : 'chrome',
         viewport: { width: 1280, height: 720 },
       },
       dependencies: ['setup'],
     },
-    {
+    ...(runBundledBrowsers ? [{
       name: 'firefox',
       use: {
         ...devices['Desktop Firefox'],
         viewport: { width: 1280, height: 720 },
       },
       dependencies: ['setup'],
-    },
-    {
+    }, {
       name: 'webkit',
       use: {
         ...devices['Desktop Safari'],
         viewport: { width: 1280, height: 720 },
       },
       dependencies: ['setup'],
-    },
+    }] : []),
     {
       name: 'mobile-chrome',
       use: {
         ...devices['Pixel 5'],
+        channel: runBundledBrowsers ? undefined : 'chrome',
       },
       dependencies: ['setup'],
     },
-    {
+    ...(runBundledBrowsers ? [{
       name: 'mobile-safari',
       use: {
         ...devices['iPhone 12'],
       },
       dependencies: ['setup'],
-    },
+    }] : []),
     {
       name: 'tablet',
-      use: {
-        ...devices['iPad Pro 11'],
-      },
+      use: runBundledBrowsers
+        ? devices['iPad Pro 11']
+        : {
+            ...devices['Desktop Chrome'],
+            channel: 'chrome',
+            viewport: { width: 834, height: 1194 },
+            hasTouch: true,
+            isMobile: true,
+          },
       dependencies: ['setup'],
     },
   ],

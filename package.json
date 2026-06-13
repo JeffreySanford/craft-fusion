@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "nx serve craft-web",
-    "start:all": "pnpm run kill:ports && pnpm run build:backend && concurrently \"pnpm run serve:nest\" \"pnpm run serve:go\" \"nx serve craft-web\"",
+    "start:all": "bash scripts/clean-craft-web.sh && pnpm run kill:ports && pnpm run build:backend && concurrently \"pnpm run serve:nest\" \"pnpm run serve:go\" \"nx serve craft-web\"",
     "kill:ports": "node scripts/kill-ports.js",
     "serve:nest": "cd dist/apps/craft-nest && node src/main.js",
     "serve:go": "cd dist/apps/craft-go && (main.exe || main)",
@@ -20,6 +20,7 @@
     "lint": "nx lint craft-web",
     "lint:fix": "pnpm dlx nx lint craft-web --fix",
     "test": "pnpm dlx nx test craft-web",
+    "test:all": "pnpm nx run-many -t test e2e --parallel=1 --skipNxCache --no-cloud",
     "test:verbose": "pnpm dlx nx test craft-web -- --reporter verbose",
     "e2e": "pnpm dlx nx e2e craft-web-e2e"
   },
@@ -66,6 +67,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "cookie-parser": "^1.4.7",
+    "csv-parse": "^6.2.1",
     "d3": "^7.9.0",
     "d3-scale": "^4.0.2",
     "d3-selection": "^3.0.0",
