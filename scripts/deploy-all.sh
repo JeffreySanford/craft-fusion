@@ -1120,7 +1120,7 @@ for profile in "${PROFILES_TO_REPORT[@]}"; do
         NOTAPPLICABLE=$(jq -r '.scan_results.controls.not_applicable // 0' "$result_file")
         TOTAL=$(jq -r '.scan_results.controls.total // 0' "$result_file")
         echo -e "  ${GREEN}Pass:${NC} $PASS  ${RED}Fail:${NC} $FAIL  ${YELLOW}N/A:${NC} $NOTAPPLICABLE  ${BOLD}Total:${NC} $TOTAL (from JSON)"
-        jq -r '.control_results[] | "    \(if .status == "pass" then "\(.status|@text|gsub("pass";"✓"))" elif .status == "fail" then "\(.status|@text|gsub("fail";"✗"))" else "○" end) \(.control_id) : \(.status)"' "$result_file" | sed -e "s/✓/${GREEN}✓${NC}/g" -e "s/✗/${RED}✗${NC}/g" -e "s/○/${YELLOW}○${NC}"
+        jq -r '.control_results[] | "    \(if .status == "pass" then "✓" elif .status == "fail" then "✗" else "○" end) \(.control_id) : \(.status)"' "$result_file"
     else
         echo -e "  ${YELLOW}Cannot parse details. Install xmllint (for XML) or jq (for JSON).${NC}"
     fi
