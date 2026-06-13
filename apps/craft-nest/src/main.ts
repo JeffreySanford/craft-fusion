@@ -10,7 +10,6 @@ import { ConfigService } from '@nestjs/config';
 import { Request, Response, NextFunction } from 'express';
 import { environment } from './environments/environment';
 import * as path from 'path';
-import { firstValueFrom } from 'rxjs';
 import { TimelineService } from './app/timeline/timeline/timeline.service';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
@@ -400,8 +399,9 @@ async function bootstrap() {
   // Start server with error handling
   try {
     const seededCollections = new Set<string>();
-    // Seed the in-memory / development mongo server by default (skip in production)
-    if (!isProduction) {
+    const shouldSeedTimeline = !isProduction || process.env['ENABLE_TIMELINE_SEED'] === 'true';
+    // Seed the in-memory / development mongo server by default. Production deploys opt in explicitly.
+    if (shouldSeedTimeline) {
       // Ensure mongoose is connected (for MongooseModule.forRootAsync)
       const ok = await waitForMongooseConnected(connection, 15000);
       if (!ok) {
@@ -436,25 +436,15 @@ async function bootstrap() {
           const seeds = JSON.parse(raw) as Array<Record<string, unknown>>;
           if (Array.isArray(seeds) && seeds.length) {
             const timelineService = app.get(TimelineService);
-            const existing = await firstValueFrom(timelineService.findAll().pipe());
-            for (const s of seeds) {
-              try {
-                const seed = s as Record<string, any>;
-                const title = String(seed['title'] || '');
-                const dateStr = String(seed['date'] || '');
-                const already = Array.isArray(existing) && existing.some(ev => ev.title === title && new Date(ev.date).toISOString() === new Date(dateStr).toISOString());
-                if (!already) {
-                  // the seed object comes from JSON and may not strictly satisfy the
-                  // CreateTimelineEventDto type, so assert it explicitly here.
-                  await firstValueFrom(timelineService.create(seed as unknown as import('./app/timeline/timeline/dto/create-timeline-event.dto').CreateTimelineEventDto));
-                  Logger.log(`[seeder] ✓ ${title}`);
-                  seededCollections.add('timeline');
-                }
-              } catch (e: unknown) {
-                const title = String((s as any)['title'] || '');
-                Logger.log(`[seeder] ✗ ${title}: ${String(e)}`);
-              }
+            const result = await timelineService.seedEvents(seeds);
+
+            if (result.created || result.updated || result.unchanged) {
+              seededCollections.add('timeline');
             }
+
+            Logger.log(
+              `[seeder] Timeline seed summary: created=${result.created}, updated=${result.updated}, unchanged=${result.unchanged}, failed=${result.failed}`,
+            );
           }
         }
       } catch (e: unknown) {

@@ -121,6 +121,54 @@ describe('TimelineService', () => {
     });
   });
 
+  describe('seedEvents', () => {
+    it('should upsert seed events by title, person, and date', async () => {
+      const mockUpdateResult = {
+        upsertedCount: 1,
+        modifiedCount: 0,
+        matchedCount: 0,
+      };
+      const mockQuery = {
+        exec: jest.fn().mockResolvedValue(mockUpdateResult),
+      };
+      mockTimelineEventModel.updateOne = jest.fn().mockReturnValue(mockQuery);
+
+      const result = await service.seedEvents([
+        {
+          title: 'Seed Event',
+          description: 'Seed Description',
+          date: '2024-01-01T00:00:00.000Z',
+          type: TimelineEventType.PERSONAL,
+          person: 'jeffrey-sanford',
+        },
+      ]);
+
+      expect(mockTimelineEventModel.updateOne).toHaveBeenCalledWith(
+        {
+          title: 'Seed Event',
+          person: 'jeffrey-sanford',
+          date: new Date('2024-01-01T00:00:00.000Z'),
+        },
+        {
+          $set: {
+            title: 'Seed Event',
+            description: 'Seed Description',
+            date: new Date('2024-01-01T00:00:00.000Z'),
+            type: TimelineEventType.PERSONAL,
+            person: 'jeffrey-sanford',
+          },
+        },
+        { upsert: true },
+      );
+      expect(result).toEqual({
+        created: 1,
+        updated: 0,
+        unchanged: 0,
+        failed: 0,
+      });
+    });
+  });
+
   describe('findOne', () => {
     it('should return a timeline event by id', async () => {
       const mockQuery = {

@@ -8,6 +8,13 @@ import { LoggingService } from '../../logging/logging.service';
 import { Observable, from } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
+export interface TimelineSeedResult {
+  created: number;
+  updated: number;
+  unchanged: number;
+  failed: number;
+}
+
 @Injectable()
 export class TimelineService {
   constructor(@InjectModel(TimelineEvent.name) private timelineEventModel: Model<TimelineEvent>, private logger: LoggingService) {}
@@ -42,6 +49,63 @@ export class TimelineService {
     }
 
     return from(this.timelineEventModel.find(filter).exec()).pipe(tap(events => this.logger.debug(`Found ${events.length} timeline events`)));
+  }
+
+  async seedEvents(seeds: Array<Record<string, unknown>>): Promise<TimelineSeedResult> {
+    const result: TimelineSeedResult = {
+      created: 0,
+      updated: 0,
+      unchanged: 0,
+      failed: 0,
+    };
+
+    for (const seed of seeds) {
+      try {
+        const title = String(seed['title'] || '').trim();
+        const dateValue = seed['date'];
+        const person = String(seed['person'] || 'jeffrey-sanford').trim();
+
+        if (!title || !dateValue) {
+          result.failed += 1;
+          this.logger.warn('Skipping invalid timeline seed event', { title, person });
+          continue;
+        }
+
+        const seededEvent = {
+          ...seed,
+          title,
+          person,
+          date: new Date(String(dateValue)),
+        };
+
+        const writeResult = await this.timelineEventModel
+          .updateOne(
+            { title, person, date: seededEvent.date },
+            { $set: seededEvent },
+            { upsert: true },
+          )
+          .exec();
+
+        const upsertedCount = writeResult.upsertedCount ?? 0;
+        const modifiedCount = writeResult.modifiedCount ?? 0;
+        const matchedCount = writeResult.matchedCount ?? 0;
+
+        if (upsertedCount > 0) {
+          result.created += 1;
+          this.logger.debug(`Seeded timeline event: ${title}`);
+        } else if (modifiedCount > 0) {
+          result.updated += 1;
+          this.logger.debug(`Updated timeline seed event: ${title}`);
+        } else if (matchedCount > 0) {
+          result.unchanged += 1;
+        }
+      } catch (error: unknown) {
+        result.failed += 1;
+        this.logger.warn(`Failed to seed timeline event: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
+
+    return result;
   }
 
   private mapType(type?: string): string[] | undefined {

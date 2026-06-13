@@ -54,7 +54,7 @@
     "person": "raymond-sanford"
   },
   {
-    "title": "Jeffrey Sanford \u00e2\u20ac\u201d Developer Journal",
+    "title": "Jeffrey Sanford - Developer Journal",
     "description": "A developer/maintainer entry describing the project's gotcha-harness and validation hardening added to improve testability and safety.",
     "date": "2025-06-15T00:00:00.000Z",
     "imageUrl": "",
@@ -73,7 +73,7 @@
   },
   {
     "title": "Angular Full Stack Web Developer at Apex Systems",
-    "description": "Worked on a U.S. Army Corps of Engineers project to build Angular front-end applications integrated with a new SharePoint system, supporting business operations and reporting modernization. My role centered on UI development and integration support, contributing to federal data governance and analytics initiatives. \u00e2\u20ac\u00a2 Created modern, responsive user interfaces leveraging Angular Material 14+ and RxJS Observables for real-time interactivity. \u00e2\u20ac\u00a2 Supported development of Angular applications connected to the new SharePoint backend, ensuring smooth data access and usability in a complex federal environment. \u00e2\u20ac\u00a2 Assisted with modernization of reporting tools using Excel, CSV, and JSON sources. \u00e2\u20ac\u00a2 Collaborated in an Agile environment, contributing to data governance and analytics initiatives. \u00e2\u20ac\u00a2 Recognized for energy, adaptability, and problem-solving while working on SharePoint-based systems. CODE: Angular, Angular Material, RxJS, CSS/SCSS, SharePoint (REST API, JSON), Power Apps, Azure DevOps, Git, Agile/Scrum",
+    "description": "Worked on a U.S. Army Corps of Engineers project to build Angular front-end applications integrated with a new SharePoint system, supporting business operations and reporting modernization. My role centered on UI development and integration support, contributing to federal data governance and analytics initiatives. - Created modern, responsive user interfaces leveraging Angular Material 14+ and RxJS Observables for real-time interactivity. - Supported development of Angular applications connected to the new SharePoint backend, ensuring smooth data access and usability in a complex federal environment. - Assisted with modernization of reporting tools using Excel, CSV, and JSON sources. - Collaborated in an Agile environment, contributing to data governance and analytics initiatives. - Recognized for energy, adaptability, and problem-solving while working on SharePoint-based systems. CODE: Angular, Angular Material, RxJS, CSS/SCSS, SharePoint (REST API, JSON), Power Apps, Azure DevOps, Git, Agile/Scrum",
     "date": "2025-07-01T00:00:00.000Z",
     "imageUrl": "",
     "actionLink": "",
@@ -82,7 +82,7 @@
   },
   {
     "title": "Full Stack Web Developer - Lead at Booz Allen Hamilton",
-    "description": "Lead the development and implementation of secure, scalable web applications for the Department of Veterans Affairs. Spearheaded research and documentation initiatives and fostered strong cross-team collaborations to enhance data processing workflows with federal agencies. \u00e2\u20ac\u00a2 Research and Documentation: Researched and documented the use of federal tax information at the Department of Veterans Affairs, from remote end users at regional medical centers, through data centers, and their eventual use on mainframes to be processed with the Internal Revenue Service (IRS) and Social Security Administration (SSA). \u00e2\u20ac\u00a2 Cross-Team Collaboration: Developed and cultivated cross-team relationships, establishing communication channels between the Office of Information Technology (VA OIT) and the IRS/SSA. \u00e2\u20ac\u00a2 Prototyping and Security: Used traditional RESTful models, Apache Kafka, Kubernetes, and various security services to create several prototypes of data at rest and in-flight. CODE: Java Spring Boot, JPA, NestJS, Angular, Playwright, TDD/BDD, Material, D3JS, Apache Kafka, Oracle Database, IBM Control-M, Connect:Direct",
+    "description": "Lead the development and implementation of secure, scalable web applications for the Department of Veterans Affairs. Spearheaded research and documentation initiatives and fostered strong cross-team collaborations to enhance data processing workflows with federal agencies. - Research and Documentation: Researched and documented the use of federal tax information at the Department of Veterans Affairs, from remote end users at regional medical centers, through data centers, and their eventual use on mainframes to be processed with the Internal Revenue Service (IRS) and Social Security Administration (SSA). - Cross-Team Collaboration: Developed and cultivated cross-team relationships, establishing communication channels between the Office of Information Technology (VA OIT) and the IRS/SSA. - Prototyping and Security: Used traditional RESTful models, Apache Kafka, Kubernetes, and various security services to create several prototypes of data at rest and in-flight. CODE: Java Spring Boot, JPA, NestJS, Angular, Playwright, TDD/BDD, Material, D3JS, Apache Kafka, Oracle Database, IBM Control-M, Connect:Direct",
     "date": "2023-06-01T00:00:00.000Z",
     "imageUrl": "",
     "actionLink": "",
@@ -91,7 +91,7 @@
   },
   {
     "title": "Full Stack Web Developer - Lead at Business Integra Inc",
-    "description": "As the lead developer at the Defense Technical Information Center (DTIC), I played a pivotal role in modernizing the platform that records all government grants and research projects. \u00e2\u20ac\u00a2 NIST RMF Training and Compliance: Completed extensive training in the NIST Risk Management Framework (RMF) and ensured strict adherence to auditing, security, privacy, and testing controls. \u00e2\u20ac\u00a2 Modernization of Web Applications: Directed the front-end development (as a team of one) to create a modern Angular Material website for DTIC, streamlining the process of tracking publications through various stages. \u00e2\u20ac\u00a2 Library Creation: Built reusable libraries to support common table and form development, ensuring consistency and scalability for future projects. CODE: Angular 10, Material Design, Tables, Forms, Libraries, Java Spring Boot, Azure",
+    "description": "As the lead developer at the Defense Technical Information Center (DTIC), I played a pivotal role in modernizing the platform that records all government grants and research projects. - NIST RMF Training and Compliance: Completed extensive training in the NIST Risk Management Framework (RMF) and ensured strict adherence to auditing, security, privacy, and testing controls. - Modernization of Web Applications: Directed the front-end development (as a team of one) to create a modern Angular Material website for DTIC, streamlining the process of tracking publications through various stages. - Library Creation: Built reusable libraries to support common table and form development, ensuring consistency and scalability for future projects. CODE: Angular 10, Material Design, Tables, Forms, Libraries, Java Spring Boot, Azure",
     "date": "2023-01-01T00:00:00.000Z",
     "imageUrl": "",
     "actionLink": "",
@@ -100,7 +100,7 @@
   },
   {
     "title": "Full Stack Web Developer at Accenture",
-    "description": "Designed and developed a fully tested Angular web application using aggregated data in a mongo database to provide complex and beautiful data visualizations supporting Defense Logistics Agency mission of logistics support for the Department of Defense. \u00e2\u20ac\u00a2 Created user and group application entity authentication. \u00e2\u20ac\u00a2 Management of sprint team with 2-5 junior developers. \u00e2\u20ac\u00a2 Training Angular, D3 Data Visualization Concepts, RXJS and Typescript concepts. \u00e2\u20ac\u00a2 Created mock-ups, prototypes, developer and production environments (DEVOPS) and testing environments. CODE: Angular 1.7, 4, 8, 10, Angular Libraries, LESS/SCSS, Material Design and Theming, RXJS, Typescript, 100% tested (TDD)",
+    "description": "Designed and developed a fully tested Angular web application using aggregated data in a mongo database to provide complex and beautiful data visualizations supporting Defense Logistics Agency mission of logistics support for the Department of Defense. - Created user and group application entity authentication. - Management of sprint team with 2-5 junior developers. - Training Angular, D3 Data Visualization Concepts, RXJS and Typescript concepts. - Created mock-ups, prototypes, developer and production environments (DEVOPS) and testing environments. CODE: Angular 1.7, 4, 8, 10, Angular Libraries, LESS/SCSS, Material Design and Theming, RXJS, Typescript, 100% tested (TDD)",
     "date": "2018-10-01T00:00:00.000Z",
     "imageUrl": "",
     "actionLink": "",
@@ -109,7 +109,7 @@
   },
   {
     "title": "Web Developer at Digital Product Company",
-    "description": "\u00e2\u20ac\u00a2 Provided web development consulting services to a digital design agency. \u00e2\u20ac\u00a2 Created mockups of new designs, prototypes of web application and production code. \u00e2\u20ac\u00a2 Created applications in the Python for collection of statistics and presentation on a dashboard written in Node/TYPESCRIPT. \u00e2\u20ac\u00a2 Designed and developed a quote and purchase application using TDD that allows for conversion from client excel formulas to a modern web application. CODE: HTML5, CSS3, JavaScript ES6+, React, Typescript, NodeJS, Python, Grunt, Mocha",
+    "description": "- Provided web development consulting services to a digital design agency. - Created mockups of new designs, prototypes of web application and production code. - Created applications in the Python for collection of statistics and presentation on a dashboard written in Node/TYPESCRIPT. - Designed and developed a quote and purchase application using TDD that allows for conversion from client excel formulas to a modern web application. CODE: HTML5, CSS3, JavaScript ES6+, React, Typescript, NodeJS, Python, Grunt, Mocha",
     "date": "2017-01-01T00:00:00.000Z",
     "imageUrl": "",
     "actionLink": "",
@@ -118,7 +118,7 @@
   },
   {
     "title": "Front End Web Developer at Digital Product Company",
-    "description": "\u00e2\u20ac\u00a2 Styling and markup changes in Angular JS and WordPress for a large public web application. \u00e2\u20ac\u00a2 Wrote models and controllers for back-end in PHP5/CodeIgniter. CODE: HTML5, CSS3, WordPress, JavaScript, LESS, Ruby, AngularJS (1+)",
+    "description": "- Styling and markup changes in Angular JS and WordPress for a large public web application. - Wrote models and controllers for back-end in PHP5/CodeIgniter. CODE: HTML5, CSS3, WordPress, JavaScript, LESS, Ruby, AngularJS (1+)",
     "date": "2016-04-01T00:00:00.000Z",
     "imageUrl": "",
     "actionLink": "",
@@ -127,7 +127,7 @@
   },
   {
     "title": "JavaScript Developer at Web Application Company",
-    "description": "\u00e2\u20ac\u00a2 Produced a site-wide testing and activity application using JavaScript and PhantomJS. \u00e2\u20ac\u00a2 Styling and markup for global and page templates. CODE: HTML5, CSS3, JavaScript ES5+, NodeJS, Redis, ColdFusion",
+    "description": "- Produced a site-wide testing and activity application using JavaScript and PhantomJS. - Styling and markup for global and page templates. CODE: HTML5, CSS3, JavaScript ES5+, NodeJS, Redis, ColdFusion",
     "date": "2015-07-01T00:00:00.000Z",
     "imageUrl": "",
     "actionLink": "",

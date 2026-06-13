@@ -661,12 +661,12 @@ if [ $backend_status -eq 0 ]; then
     
     # Start ecosystem and check both services using correct user
     if id "jeffrey" &>/dev/null; then
-        sudo -u jeffrey env PATH="$PATH" pm2 start ecosystem.config.js 2>/dev/null || sudo -u jeffrey env PATH="$PATH" pm2 restart all 2>/dev/null || true
+        sudo -u jeffrey env PATH="$PATH" ENABLE_TIMELINE_SEED=true pm2 start ecosystem.config.js --update-env 2>/dev/null || sudo -u jeffrey env PATH="$PATH" ENABLE_TIMELINE_SEED=true pm2 restart all --update-env 2>/dev/null || true
         sleep 3
         PM2_NEST_STATUS=$(sudo -u jeffrey env PATH="$PATH" pm2 list | grep craft-nest-api | grep -c online || echo "0")
         PM2_GO_STATUS=$(sudo -u jeffrey env PATH="$PATH" pm2 list | grep craft-go-api | grep -c online || echo "0")
     else
-        pm2 start ecosystem.config.js 2>/dev/null || pm2 restart all 2>/dev/null || true
+        ENABLE_TIMELINE_SEED=true pm2 start ecosystem.config.js --update-env 2>/dev/null || ENABLE_TIMELINE_SEED=true pm2 restart all --update-env 2>/dev/null || true
         sleep 3
         PM2_NEST_STATUS=$(pm2 list | grep craft-nest-api | grep -c online || echo "0")
         PM2_GO_STATUS=$(pm2 list | grep craft-go-api | grep -c online || echo "0")
@@ -838,6 +838,7 @@ API_NEST_HTTP=$(curl -s -f -w "%{http_code}" -o /dev/null "http://jeffreysanford
 API_NEST_HTTPS=$(curl -s -f -w "%{http_code}" -o /dev/null "https://jeffreysanford.us/api/health" 2>/dev/null || echo "000")
 API_GO_HTTP=$(curl -s -f -w "%{http_code}" -o /dev/null "http://jeffreysanford.us/api-go/health" 2>/dev/null || echo "000")
 API_GO_HTTPS=$(curl -s -f -w "%{http_code}" -o /dev/null "https://jeffreysanford.us/api-go/health" 2>/dev/null || echo "000")
+TIMELINE_COUNT=$(curl -s -f "https://jeffreysanford.us/api/timeline" 2>/dev/null | node -e "let data=''; process.stdin.on('data', chunk => data += chunk); process.stdin.on('end', () => { try { const parsed = JSON.parse(data); console.log(Array.isArray(parsed) ? parsed.length : 0); } catch { console.log(0); } });" 2>/dev/null || echo "0")
 
 # Display results
 echo -e "${CYAN}Endpoint Test Results:${NC}"
@@ -847,6 +848,7 @@ echo -e "  NestJS API HTTP: $([ "$API_NEST_HTTP" -eq 200 ] && echo -e "${GREEN}�
 echo -e "  NestJS API HTTPS: $([ "$API_NEST_HTTPS" -eq 200 ] && echo -e "${GREEN}✓ $API_NEST_HTTPS${NC}" || echo -e "${YELLOW}⚠ $API_NEST_HTTPS${NC}")"
 echo -e "  Go API HTTP:     $([ "$API_GO_HTTP" -eq 200 ] && echo -e "${GREEN}✓ $API_GO_HTTP${NC}" || echo -e "${YELLOW}⚠ $API_GO_HTTP${NC}")"
 echo -e "  Go API HTTPS:    $([ "$API_GO_HTTPS" -eq 200 ] && echo -e "${GREEN}✓ $API_GO_HTTPS${NC}" || echo -e "${YELLOW}⚠ $API_GO_HTTPS${NC}")"
+echo -e "  Timeline Events: $([ "${TIMELINE_COUNT:-0}" -gt 0 ] && echo -e "${GREEN}✓ ${TIMELINE_COUNT}${NC}" || echo -e "${YELLOW}⚠ 0${NC}")"
 
 # Test WebSocket if available
 if command -v wscat &> /dev/null; then

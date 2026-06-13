@@ -260,10 +260,10 @@ if id "jeffrey" &>/dev/null; then
     echo -e "${CYAN}Starting PM2 as user 'jeffrey'...${NC}"
     PM2_BIN="$(command -v pm2)"
     [ -x /usr/local/bin/pm2 ] && PM2_BIN="/usr/local/bin/pm2"
-    sudo -u jeffrey env PATH="/usr/local/bin:/usr/bin:/bin" "$PM2_BIN" start ecosystem.config.js
+    sudo -u jeffrey env PATH="/usr/local/bin:/usr/bin:/bin" ENABLE_TIMELINE_SEED=true "$PM2_BIN" start ecosystem.config.js --update-env
     sudo -u jeffrey env PATH="/usr/local/bin:/usr/bin:/bin" "$PM2_BIN" save
 else
-    pm2 start ecosystem.config.js
+    ENABLE_TIMELINE_SEED=true pm2 start ecosystem.config.js --update-env
     pm2 save
     sudo pm2 startup systemd -u "$(whoami)" --hp "$HOME" --force
 fi
