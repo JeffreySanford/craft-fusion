@@ -12,6 +12,7 @@ jest.mock('uuid', () => ({
 
 describe('SecurityController', () => {
   let controller: SecurityController;
+  let securityService: SecurityService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -37,6 +38,7 @@ describe('SecurityController', () => {
     }).compile();
 
     controller = module.get<SecurityController>(SecurityController);
+    securityService = module.get<SecurityService>(SecurityService);
   });
 
   it('returns findings', () => {
@@ -53,5 +55,31 @@ describe('SecurityController', () => {
     expect(evidence.length).toBeGreaterThan(0);
     expect(evidence[0]).toHaveProperty('id');
     expect(evidence[0]).toHaveProperty('type');
+  });
+
+  it('exports OSCAL XML with a controlResults wrapper', () => {
+    const profile = securityService.getOscalProfiles().find(item => item.id === 'oscal-002');
+    if (profile) {
+      profile.controlResults = [
+        {
+          id: 'CTRL-4',
+          title: 'Security Logging and Monitoring',
+          status: 'notchecked',
+        },
+      ];
+    }
+
+    const res = {
+      setHeader: jest.fn(),
+      send: jest.fn(),
+      json: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+    };
+
+    controller.downloadOscalReport('oscal-002', 'xml', res as any);
+
+    const xml = res.send.mock.calls[0][0] as string;
+    expect(xml).toContain('<controlResults>');
+    expect(xml).not.toContain('<controlResultss>');
   });
 });

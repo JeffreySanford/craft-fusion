@@ -372,17 +372,18 @@ export class SecurityController {
         if (value === null || value === undefined) continue;
         
         if (Array.isArray(value)) {
-          xmlParts.push(`${spaces}<${key}s>`);
+          const itemElement = key.endsWith('s') ? key.slice(0, -1) : 'item';
+          xmlParts.push(`${spaces}<${key}>`);
           value.forEach((item: unknown) => {
-            xmlParts.push(`${spaces}  <${key}>`);
+            xmlParts.push(`${spaces}  <${itemElement}>`);
             if (typeof item === 'object' && item !== null) {
               convertObject(item as Record<string, unknown>, indent + 2);
             } else {
               xmlParts.push(`${spaces}    ${this.escapeXml(String(item))}`);
             }
-            xmlParts.push(`${spaces}  </${key}>`);
+            xmlParts.push(`${spaces}  </${itemElement}>`);
           });
-          xmlParts.push(`${spaces}</${key}s>`);
+          xmlParts.push(`${spaces}</${key}>`);
         } else if (typeof value === 'object') {
           xmlParts.push(`${spaces}<${key}>`);
           convertObject(value as Record<string, unknown>, indent + 1);

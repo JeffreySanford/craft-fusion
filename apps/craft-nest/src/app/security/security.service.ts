@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Observable, of, concat, throwError } from 'rxjs';
 import { map, delay, tap, finalize, concatWith } from 'rxjs/operators';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as securityControlsData from './security-controls.json';
 
 export interface SecurityFinding {
@@ -147,6 +149,27 @@ export interface RealtimeCheck {
   testResults?: RealtimeCheckResult[];
 }
 
+type DeterministicStatus = 'pass' | 'fail' | 'warning' | 'notchecked' | 'notapplicable';
+
+interface HostEvidenceCheck {
+  status: DeterministicStatus;
+  evidence: string;
+  checkedAt?: string;
+  details?: Record<string, unknown>;
+}
+
+interface HostEvidence {
+  generatedAt?: string;
+  checks?: Record<string, HostEvidenceCheck>;
+}
+
+interface EvaluationResult {
+  status: DeterministicStatus;
+  evidence: string;
+  recommendation?: string;
+  severity?: 'low' | 'medium' | 'high' | 'critical';
+}
+
 @Injectable()
 export class SecurityService {
   private readonly controlsDatabase = (securityControlsData as any).controls;
@@ -221,6 +244,46 @@ export class SecurityService {
 
   getRealtimeChecks(): RealtimeCheck[] {
     return this.realtimeChecks;
+  }
+
+  private loadHostEvidence(): HostEvidence {
+    const candidates = [
+      process.env['SECURITY_EVIDENCE_FILE'],
+      path.resolve(process.cwd(), 'security-evidence', 'host-security-evidence.json'),
+      path.resolve(process.cwd(), '..', 'security-evidence', 'host-security-evidence.json'),
+      path.resolve('/var/www/craft-fusion/security-evidence/host-security-evidence.json'),
+    ].filter((candidate): candidate is string => Boolean(candidate));
+
+    for (const candidate of candidates) {
+      try {
+        if (!fs.existsSync(candidate)) {
+          continue;
+        }
+
+        const parsed = JSON.parse(fs.readFileSync(candidate, 'utf8')) as HostEvidence;
+        if (parsed && typeof parsed === 'object') {
+          return parsed;
+        }
+      } catch {
+        return {
+          checks: {
+            evidence_artifact: {
+              status: 'fail',
+              evidence: `Host evidence artifact exists but could not be parsed: ${candidate}`,
+            },
+          },
+        };
+      }
+    }
+
+    return {
+      checks: {
+        evidence_artifact: {
+          status: 'notchecked',
+          evidence: 'No host evidence artifact found. Run scripts/security/collect-security-evidence.sh to populate security-evidence/host-security-evidence.json.',
+        },
+      },
+    };
   }
 
   private initializeFindings(): SecurityFinding[] {
@@ -606,7 +669,7 @@ export class SecurityService {
   }
 
   /**
-   * Execute OSCAL scan with simulated progress
+   * Execute OSCAL scan with deterministic control evaluation.
    */
   executeOscalScan(profileId: string): Observable<SecurityScanProgress> {
     const profile = this.oscalProfiles.find((p) => p.id === profileId);
@@ -616,13 +679,12 @@ export class SecurityService {
 
     const totalSteps = 10;
     
-    // Create an observable for each step
     const steps$ = Array.from({ length: totalSteps + 1 }, (_, step) => {
       return of(step).pipe(
-        delay(1000 + Math.random() * 1000),
+        delay(150),
         map((s) => {
           const progress = (s / totalSteps) * 100;
-          const eta = this.calculateEta(totalSteps - s, 1.5);
+          const eta = this.calculateEta(totalSteps - s, 0.15);
           const message = this.getOscalStepMessage(s);
           return { progress, eta, message };
         })
@@ -631,40 +693,33 @@ export class SecurityService {
 
     return concat(...steps$).pipe(
       finalize(() => {
-        // Final generation logic (moved from the end of executeOscalScan)
         const controlResults: OscalControlResult[] = [];
         const controlIds = this.getControlIdsForProfile(profileId);
+        const hostEvidence = this.loadHostEvidence();
         
         let passCount = 0;
         let failCount = 0;
         let notApplicableCount = 0;
+        let notCheckedCount = 0;
         
         for (const controlId of controlIds) {
-          const random = Math.random();
-          let status: 'pass' | 'fail' | 'notapplicable';
-          
-          if (random < 0.1) {
-            status = 'notapplicable';
-            notApplicableCount++;
-          } else if (random < 0.25) {
-            status = 'fail';
-            failCount++;
-          } else {
-            status = 'pass';
-            passCount++;
-          }
-          
           const control = this.getControl(controlId);
+          const evaluation = this.evaluateOscalControl(controlId, hostEvidence);
+
+          if (evaluation.status === 'fail') failCount++;
+          else if (evaluation.status === 'pass') passCount++;
+          else if (evaluation.status === 'notapplicable') notApplicableCount++;
+          else notCheckedCount++;
           
           const controlResult: OscalControlResult = {
             id: controlId,
             title: this.getControlTitle(controlId),
-            status,
+            status: evaluation.status === 'warning' ? 'notchecked' : evaluation.status,
             timestamp: new Date().toISOString(),
-            severity: control?.severity || this.getRandomSeverity(),
+            severity: evaluation.severity || control?.severity || 'medium',
             description: this.getControlDescription(controlId),
-            recommendation: this.getControlRemediation(controlId),
-            evidence: this.getControlEvidence(controlId)
+            recommendation: evaluation.recommendation || this.getControlRemediation(controlId),
+            evidence: evaluation.evidence,
           };
           
           if (control?.references && control.references.length > 0) {
@@ -683,11 +738,10 @@ export class SecurityService {
         profile.fail = failCount;
         profile.notapplicable = notApplicableCount;
         profile.total = controlIds.length;
-        profile.status = failCount === 0 ? 'pass' : failCount > 3 ? 'fail' : 'warn';
-        profile.duration = `${(totalSteps * 1.5).toFixed(1)}s`;
+        profile.status = failCount > 0 ? (failCount > 3 ? 'fail' : 'warn') : notCheckedCount > 0 ? 'warn' : 'pass';
+        profile.duration = `${(totalSteps * 0.15).toFixed(1)}s`;
         profile.controlResults = controlResults;
       }),
-      // We need to emit the final result as well
       concatWith(of(null).pipe(
         map(() => ({
           progress: 100,
@@ -750,7 +804,7 @@ export class SecurityService {
     
     const steps$ = steps.map((stepMessage, i) => {
       return of(i).pipe(
-        delay(300 + Math.random() * 700),
+        delay(100),
         map(() => {
           const progress = ((i + 1) / steps.length) * 100;
           return { progress, message: stepMessage };
@@ -760,40 +814,32 @@ export class SecurityService {
 
     return concat(...steps$).pipe(
       finalize(() => {
-        // Generate detailed test results
         const testResults: RealtimeCheckResult[] = [];
         const testNames = this.getRealtimeTestsForCheck(checkId);
+        const hostEvidence = this.loadHostEvidence();
         
         let passCount = 0;
         let failCount = 0;
         let warningCount = 0;
         
         for (const testName of testNames) {
-          const random = Math.random();
-          let status: 'pass' | 'fail' | 'warning';
-          
-          if (random < 0.15) {
-            status = 'fail';
-            failCount++;
-          } else if (random < 0.25) {
-            status = 'warning';
-            warningCount++;
-          } else {
-            status = 'pass';
-            passCount++;
-          }
+          const evaluation = this.evaluateRealtimeTest(testName, hostEvidence);
+          const status = evaluation.status === 'pass' ? 'pass' : evaluation.status === 'fail' ? 'fail' : 'warning';
+          if (status === 'fail') failCount++;
+          else if (status === 'warning') warningCount++;
+          else passCount++;
           
           const testResult: RealtimeCheckResult = {
             id: `${checkId}-${testName}`,
             testName,
             status,
-            responseTime: Math.floor(Math.random() * 500) + 50,
-            statusCode: status === 'fail' ? (Math.random() > 0.5 ? 500 : 403) : 200,
+            responseTime: this.getDeterministicResponseTime(testName),
+            statusCode: status === 'fail' ? 500 : 200,
             message: this.getRealtimeTestMessage(testName, status),
             timestamp: new Date().toISOString(),
-            severity: this.getRandomSeverity(),
-            recommendation: this.getRealtimeTestRemediation(testName),
-            details: this.getRealtimeTestDetails(testName)
+            severity: evaluation.severity || this.getDeterministicSeverity(testName),
+            recommendation: evaluation.recommendation || this.getRealtimeTestRemediation(testName),
+            details: evaluation.evidence || this.getRealtimeTestDetails(testName),
           };
           
           testResults.push(testResult);
@@ -805,7 +851,7 @@ export class SecurityService {
         check.warning = warningCount;
         check.total = testNames.length;
         check.status = failCount > 0 ? 'fail' : warningCount > 0 ? 'warn' : 'pass';
-        check.duration = `${(steps.length * 0.5).toFixed(1)}s`;
+        check.duration = `${(steps.length * 0.1).toFixed(1)}s`;
         check.testResults = testResults;
       }),
       concatWith(of(null).pipe(
@@ -830,10 +876,9 @@ export class SecurityService {
       throw new Error(`SCA item ${itemId} not found`);
     }
 
-    // Simulate check execution
     const steps = 5;
     for (let i = 0; i < steps; i++) {
-      await this.delay(400 + Math.random() * 600);
+      await this.delay(50);
       const progress = ((i + 1) / steps) * 100;
       
       if (progressCallback) {
@@ -841,39 +886,31 @@ export class SecurityService {
       }
     }
 
-    // Generate detailed check results
     const checkResults: ScaCheckResult[] = [];
     const checks = this.getScaChecksForItem(itemId);
+    const hostEvidence = this.loadHostEvidence();
     
     let passCount = 0;
     let failCount = 0;
     let warningCount = 0;
     
     for (const checkTitle of checks) {
-      const random = Math.random();
-      let status: 'pass' | 'fail' | 'warning';
-      
-      if (random < 0.2) {
-        status = 'fail';
-        failCount++;
-      } else if (random < 0.35) {
-        status = 'warning';
-        warningCount++;
-      } else {
-        status = 'pass';
-        passCount++;
-      }
+      const evaluation = this.evaluateScaCheck(checkTitle, hostEvidence);
+      const status = evaluation.status === 'pass' ? 'pass' : evaluation.status === 'fail' ? 'fail' : 'warning';
+      if (status === 'fail') failCount++;
+      else if (status === 'warning') warningCount++;
+      else passCount++;
       
       const checkResult: ScaCheckResult = {
         id: `${itemId}-${checkTitle.replace(/\s+/g, '-').toLowerCase()}`,
         title: checkTitle,
         status,
         timestamp: new Date().toISOString(),
-        severity: this.getRandomSeverity(),
+        severity: evaluation.severity || this.getDeterministicSeverity(checkTitle),
         description: this.getScaCheckDescription(checkTitle, status),
-        recommendation: this.getScaCheckRemediation(checkTitle),
+        recommendation: evaluation.recommendation || this.getScaCheckRemediation(checkTitle),
         reference: this.getScaCheckReference(checkTitle),
-        evidence: this.getScaCheckEvidence(checkTitle)
+        evidence: evaluation.evidence || this.getScaCheckEvidence(checkTitle),
       };
       
       checkResults.push(checkResult);
@@ -893,6 +930,16 @@ export class SecurityService {
 
   private getScaChecksForItem(itemId: string): string[] {
     const itemChecks: Record<string, string[]> = {
+      'sca-001': ['Deprecated Package Check', 'Package Deprecation Policy', 'Removed Legacy Package Verification'],
+      'sca-002': ['Known Vulnerable Components', 'Outdated Libraries', 'Unpatched Dependencies'],
+      'sca-003': ['License Policy', 'Restricted License Check', 'Dependency Attribution'],
+      'sca-004': ['Pinned Major Versions', 'Upgrade Risk Review', 'Framework Compatibility'],
+      'sca-005': ['Production Dependency Separation', 'Development Dependency Exclusion', 'Bundle Composition'],
+      'sca-006': ['SRI Hash Coverage', 'External Asset Integrity', 'Script Integrity Policy'],
+      'sca-007': ['Transitive Dependency Audit', 'Nested Package Review', 'Dependency Ownership'],
+      'sca-008': ['SBOM Generation', 'SBOM Format Validation', 'SBOM Retention'],
+      'sca-009': ['Supply-chain Alerts', 'Dependabot Integration', 'Alert Triage Workflow'],
+      'sca-010': ['Artifact Signing', 'Release Provenance', 'Signature Verification'],
       'sca-1': ['Broken Access Control - Elevation of Privilege', 'Missing Function Level Access Control', 'Insecure Direct Object References'],
       'sca-2': ['Weak Password Requirements', 'Improper Session Management', 'Missing MFA', 'Credential Storage'],
       'sca-3': ['SQL Injection Prevention', 'XSS Prevention', 'Command Injection Protection', 'Path Traversal Protection'],
@@ -993,6 +1040,10 @@ export class SecurityService {
 
   private getRealtimeTestsForCheck(checkId: string): string[] {
     const checkTests: Record<string, string[]> = {
+      'rt-001': ['CSP Header', 'X-Frame-Options', 'X-Content-Type-Options', 'Referrer-Policy'],
+      'rt-002': ['Rate Limiting', 'DDoS Protection', 'IP Blacklisting'],
+      'rt-003': ['Session Cookie Secure', 'HttpOnly Flag', 'SameSite Attribute', 'Session Timeout'],
+      'rt-004': ['TLS Version Check', 'Certificate Validation', 'Cipher Strength', 'HSTS Header'],
       'rt-1': ['TLS Version Check', 'Certificate Validation', 'Cipher Strength', 'HSTS Header'],
       'rt-2': ['Session Cookie Secure', 'HttpOnly Flag', 'SameSite Attribute', 'Session Timeout'],
       'rt-3': ['CSP Header', 'X-Frame-Options', 'X-Content-Type-Options', 'Referrer-Policy'],
@@ -1023,6 +1074,198 @@ export class SecurityService {
     };
     
     return remediations[testName] || `Review and update ${testName} configuration`;
+  }
+
+  private evaluateOscalControl(controlId: string, hostEvidence: HostEvidence): EvaluationResult {
+    const checkMap: Record<string, string> = {
+      'PCI-DSS-Req-1.1': 'firewall_configured',
+      'PCI-DSS-Req-1.2': 'network_exposure_restricted',
+      'PCI-DSS-Req-2.1': 'admin_access_reviewed',
+      'PCI-DSS-Req-2.2': 'system_hardened',
+      'PCI-DSS-Req-3.4': 'data_encryption_at_rest',
+      'PCI-DSS-Req-4.1': 'tls_enabled',
+      'PCI-DSS-Req-6.1': 'dependency_audit',
+      'PCI-DSS-Req-6.5': 'app_security_headers',
+      'PCI-DSS-Req-7.1': 'admin_access_reviewed',
+      'PCI-DSS-Req-8.1': 'admin_access_reviewed',
+      'PCI-DSS-Req-10.1': 'security_logging',
+      'PCI-DSS-Req-10.2': 'security_logging',
+      'PCI-DSS-Req-11.1': 'network_exposure_restricted',
+      'CTRL-1': 'admin_access_reviewed',
+      'CTRL-2': 'data_encryption_at_rest',
+      'CTRL-3': 'network_segmentation',
+      'CTRL-4': 'security_logging',
+      'CTRL-5': 'dependency_audit',
+      'FEDRAMP-AU-6': 'security_logging',
+      'FEDRAMP-SC-7': 'network_segmentation',
+      'FEDRAMP-SI-2': 'dependency_audit',
+      'FEDRAMP-SI-4': 'security_logging',
+      'RMF-CA-7': 'security_logging',
+      'RMF-RA-5': 'dependency_audit',
+      'RMF-SC-28': 'data_encryption_at_rest',
+    };
+
+    const evidenceKey = checkMap[controlId] || this.getBaselineEvidenceKey(controlId);
+    return this.evaluateEvidenceKey(evidenceKey, hostEvidence, controlId);
+  }
+
+  private evaluateRealtimeTest(testName: string, hostEvidence: HostEvidence): EvaluationResult {
+    const checkMap: Record<string, string> = {
+      'TLS Version Check': 'tls_enabled',
+      'Certificate Validation': 'tls_enabled',
+      'Cipher Strength': 'tls_enabled',
+      'HSTS Header': 'app_security_headers',
+      'Session Cookie Secure': 'cookie_security',
+      'HttpOnly Flag': 'cookie_security',
+      'SameSite Attribute': 'cookie_security',
+      'Session Timeout': 'auth_session_controls',
+      'CSP Header': 'app_security_headers',
+      'X-Frame-Options': 'app_security_headers',
+      'X-Content-Type-Options': 'app_security_headers',
+      'Referrer-Policy': 'app_security_headers',
+      'CORS Configuration': 'cors_restricted',
+      'Origin Validation': 'cors_restricted',
+      'Preflight Handling': 'cors_restricted',
+      'Rate Limiting': 'rate_limiting',
+      'DDoS Protection': 'network_exposure_restricted',
+      'IP Blacklisting': 'network_exposure_restricted',
+    };
+
+    return this.evaluateEvidenceKey(checkMap[testName] || 'evidence_artifact', hostEvidence, testName);
+  }
+
+  private evaluateScaCheck(checkTitle: string, hostEvidence: HostEvidence): EvaluationResult {
+    const checkMap: Record<string, string> = {
+      'Broken Access Control - Elevation of Privilege': 'admin_access_reviewed',
+      'Missing Function Level Access Control': 'admin_access_reviewed',
+      'Insecure Direct Object References': 'admin_access_reviewed',
+      'Weak Password Requirements': 'auth_session_controls',
+      'Improper Session Management': 'auth_session_controls',
+      'Missing MFA': 'admin_access_reviewed',
+      'Credential Storage': 'cookie_security',
+      'SQL Injection Prevention': 'input_validation',
+      'XSS Prevention': 'app_security_headers',
+      'Command Injection Protection': 'input_validation',
+      'Path Traversal Protection': 'input_validation',
+      'Secure Design Principles': 'evidence_artifact',
+      'Threat Modeling': 'evidence_artifact',
+      'Security Requirements': 'evidence_artifact',
+      'Default Credentials': 'admin_access_reviewed',
+      'Hardcoded Secrets': 'dependency_audit',
+      'Security Headers': 'app_security_headers',
+      'Error Handling': 'app_health',
+      'Known Vulnerable Components': 'dependency_audit',
+      'Outdated Libraries': 'dependency_audit',
+      'Unpatched Dependencies': 'dependency_audit',
+      'Authentication Strength': 'auth_session_controls',
+      'Password Complexity': 'auth_session_controls',
+      'Account Lockout': 'rate_limiting',
+      'Session Token Entropy': 'cookie_security',
+      'Data Integrity Checks': 'dependency_audit',
+      'Software Update Verification': 'dependency_audit',
+      'CI/CD Security': 'dependency_audit',
+      'Security Logging': 'security_logging',
+      'Monitoring Coverage': 'security_logging',
+      'Incident Response': 'security_logging',
+      'Audit Trail': 'security_logging',
+      'SSRF Protection': 'input_validation',
+      'Server-Side Validation': 'input_validation',
+      'Input Sanitization': 'input_validation',
+      'Deprecated Package Check': 'dependency_audit',
+      'Package Deprecation Policy': 'dependency_audit',
+      'Removed Legacy Package Verification': 'dependency_audit',
+      'License Policy': 'dependency_audit',
+      'Restricted License Check': 'dependency_audit',
+      'Dependency Attribution': 'dependency_audit',
+      'Pinned Major Versions': 'dependency_audit',
+      'Upgrade Risk Review': 'dependency_audit',
+      'Framework Compatibility': 'dependency_audit',
+      'Production Dependency Separation': 'dependency_audit',
+      'Development Dependency Exclusion': 'dependency_audit',
+      'Bundle Composition': 'dependency_audit',
+      'SRI Hash Coverage': 'app_security_headers',
+      'External Asset Integrity': 'app_security_headers',
+      'Script Integrity Policy': 'app_security_headers',
+      'Transitive Dependency Audit': 'dependency_audit',
+      'Nested Package Review': 'dependency_audit',
+      'Dependency Ownership': 'dependency_audit',
+      'SBOM Generation': 'dependency_audit',
+      'SBOM Format Validation': 'dependency_audit',
+      'SBOM Retention': 'dependency_audit',
+      'Supply-chain Alerts': 'dependency_audit',
+      'Dependabot Integration': 'dependency_audit',
+      'Alert Triage Workflow': 'dependency_audit',
+      'Artifact Signing': 'dependency_audit',
+      'Release Provenance': 'dependency_audit',
+      'Signature Verification': 'dependency_audit',
+    };
+
+    return this.evaluateEvidenceKey(checkMap[checkTitle] || 'evidence_artifact', hostEvidence, checkTitle);
+  }
+
+  private evaluateEvidenceKey(evidenceKey: string, hostEvidence: HostEvidence, label: string): EvaluationResult {
+    const check = hostEvidence.checks?.[evidenceKey];
+    if (!check) {
+      return {
+        status: 'notchecked',
+        evidence: `No evidence collected for ${label}. Missing evidence key: ${evidenceKey}.`,
+        recommendation: 'Run the host evidence collector and map this control to a concrete evidence source before treating it as compliant.',
+        severity: 'medium',
+      };
+    }
+
+    const status = check.status === 'warning' ? 'warning' : check.status;
+    return {
+      status,
+      evidence: check.checkedAt ? `${check.evidence} Checked at ${check.checkedAt}.` : check.evidence,
+      recommendation: status === 'pass' ? 'Continue monitoring this control with each deployment.' : this.getEvidenceRecommendation(evidenceKey),
+      severity: status === 'fail' ? 'high' : status === 'notchecked' ? 'medium' : 'low',
+    };
+  }
+
+  private getEvidenceRecommendation(evidenceKey: string): string {
+    const recommendations: Record<string, string> = {
+      admin_access_reviewed: 'Enforce least privilege for administrative users and document privileged account review evidence.',
+      app_health: 'Restore all required application health checks before marking the runtime secure.',
+      app_security_headers: 'Configure CSP, HSTS, X-Frame-Options, X-Content-Type-Options, and Referrer-Policy at the application or proxy layer.',
+      auth_session_controls: 'Verify session lifetime, refresh behavior, and authentication failure handling with automated tests.',
+      cookie_security: 'Set Secure, HttpOnly, and SameSite attributes for authentication cookies.',
+      cors_restricted: 'Restrict allowed origins to known production domains and verify preflight behavior.',
+      data_encryption_at_rest: 'Provide droplet, volume, or database encryption evidence. If unmanaged by the app, attach cloud-provider evidence.',
+      dependency_audit: 'Run dependency auditing and triage all high and critical vulnerabilities.',
+      evidence_artifact: 'Generate a current host evidence artifact before running this scan.',
+      firewall_configured: 'Enable and document host firewall rules that expose only required ports.',
+      input_validation: 'Verify DTO validation, sanitization middleware, and rejection tests for malformed input.',
+      network_exposure_restricted: 'Restrict public ingress to HTTP/HTTPS and approved SSH administration paths.',
+      network_segmentation: 'Attach DigitalOcean VPC/firewall evidence or mark segmentation not applicable for a single-droplet deployment.',
+      rate_limiting: 'Add and verify rate limiting for authentication and write endpoints.',
+      security_logging: 'Enable auditd/journald/nginx/PM2 log collection and document retention.',
+      system_hardened: 'Document baseline hardening and remove unnecessary services.',
+      tls_enabled: 'Use valid TLS certificates and disable insecure protocols at the proxy layer.',
+    };
+
+    return recommendations[evidenceKey] || 'Collect concrete evidence for this security control.';
+  }
+
+  private getBaselineEvidenceKey(controlId: string): string {
+    if (controlId.startsWith('BASELINE')) return 'app_health';
+    if (controlId.includes('AU')) return 'security_logging';
+    if (controlId.includes('SC')) return 'network_exposure_restricted';
+    if (controlId.includes('SI') || controlId.includes('RA')) return 'dependency_audit';
+    if (controlId.includes('AC') || controlId.includes('IA')) return 'admin_access_reviewed';
+    return 'evidence_artifact';
+  }
+
+  private getDeterministicResponseTime(testName: string): number {
+    return 50 + (Array.from(testName).reduce((sum, char) => sum + char.charCodeAt(0), 0) % 450);
+  }
+
+  private getDeterministicSeverity(input: string): 'low' | 'medium' | 'high' | 'critical' {
+    const lower = input.toLowerCase();
+    if (lower.includes('credential') || lower.includes('vulnerable') || lower.includes('admin')) return 'critical';
+    if (lower.includes('auth') || lower.includes('cors') || lower.includes('logging') || lower.includes('network')) return 'high';
+    if (lower.includes('header') || lower.includes('session')) return 'medium';
+    return 'low';
   }
 
   private getControlIdsForProfile(profileId: string): string[] {
@@ -1084,19 +1327,6 @@ export class SecurityService {
   private getControlRemediation(controlId: string): string {
     const control = this.controlsDatabase[controlId];
     return control?.remediation || `Review and update configuration for ${controlId} to meet compliance requirements. Implement compensating controls if direct remediation is not feasible. Document all remediation actions in change management system.`;
-  }
-
-  private getControlEvidence(controlId: string): string {
-    const control = this.controlsDatabase[controlId];
-    return control?.evidence || `System configuration analysis revealed non-compliant settings. Review logs at /var/log/security/${controlId.toLowerCase()}.log for details. Automated compliance scan timestamp: ${new Date().toISOString()}. Recommended next steps: Conduct manual verification, implement remediation plan, re-scan for validation.`;
-  }
-
-  private getRandomSeverity(): 'low' | 'medium' | 'high' | 'critical' {
-    const random = Math.random();
-    if (random < 0.1) return 'critical';
-    if (random < 0.3) return 'high';
-    if (random < 0.7) return 'medium';
-    return 'low';
   }
 
   private getOscalStepMessage(step: number): string {

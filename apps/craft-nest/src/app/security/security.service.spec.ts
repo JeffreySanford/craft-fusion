@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SecurityService, SecurityFinding, SecurityEvidence } from './security.service';
+import { SecurityService, SecurityFinding, SecurityEvidence, OscalProfile, RealtimeCheck } from './security.service';
+import { lastValueFrom } from 'rxjs';
 
 describe('SecurityService', () => {
   let service: SecurityService;
@@ -158,6 +159,50 @@ describe('SecurityService', () => {
       const evidence = service.getEvidence();
       const pendingEvidence = evidence.filter(e => e.status === 'pending');
       expect(pendingEvidence.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('deterministic scan execution', () => {
+    let randomSpy: jest.SpyInstance<number, []>;
+
+    beforeEach(() => {
+      process.env['SECURITY_EVIDENCE_FILE'] = 'missing-security-evidence-for-tests.json';
+      randomSpy = jest.spyOn(Math, 'random');
+    });
+
+    afterEach(() => {
+      randomSpy.mockRestore();
+      delete process.env['SECURITY_EVIDENCE_FILE'];
+    });
+
+    it('should execute OSCAL scans without random pass/fail generation', async () => {
+      const result = await lastValueFrom(service.executeOscalScan('oscal-002'));
+      const profile = result.result as OscalProfile;
+
+      expect(randomSpy).not.toHaveBeenCalled();
+      expect(profile.controlResults?.length).toBeGreaterThan(0);
+      expect(profile.fail).toBe(0);
+      expect(profile.status).toBe('warn');
+      expect(profile.controlResults?.every(control => control.status === 'notchecked')).toBe(true);
+    });
+
+    it('should execute realtime checks without random status generation', async () => {
+      const result = await lastValueFrom(service.executeRealtimeCheck('rt-001'));
+      const check = result.result as RealtimeCheck;
+
+      expect(randomSpy).not.toHaveBeenCalled();
+      expect(check.testResults?.length).toBeGreaterThan(0);
+      expect(check.status).toBe('warn');
+    });
+
+    it('should execute SCA checks without random status generation', async () => {
+      const progressUpdates: number[] = [];
+      const result = await service.executeScaCheck('sca-002', progress => progressUpdates.push(progress));
+
+      expect(randomSpy).not.toHaveBeenCalled();
+      expect(progressUpdates).toEqual([20, 40, 60, 80, 100]);
+      expect(result.checkResults?.length).toBeGreaterThan(0);
+      expect(result.status).toBe('warn');
     });
   });
 });

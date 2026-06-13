@@ -74,6 +74,7 @@ apps/craft-nest/src/cert/* # Explicitly ignore certs in source
 /out
 /build
 /artifacts
+/security-evidence
 **/dist/
 **/dist-*/
 **/.dist/
