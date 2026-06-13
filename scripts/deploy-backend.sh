@@ -258,9 +258,11 @@ cd "$APP_DIR"
 # Ensure we start as the correct user
 if id "jeffrey" &>/dev/null; then
     echo -e "${CYAN}Starting PM2 as user 'jeffrey'...${NC}"
-    sudo -u jeffrey env PATH="$PATH" pm2 start ecosystem.config.js
-    sudo -u jeffrey env PATH="$PATH" pm2 save
-    sudo env PATH="$PATH" pm2 startup systemd -u jeffrey --hp /home/jeffrey --force
+    PM2_BIN="$(command -v pm2)"
+    [ -x /usr/local/bin/pm2 ] && PM2_BIN="/usr/local/bin/pm2"
+    sudo -u jeffrey env PATH="/usr/local/bin:/usr/bin:/bin" "$PM2_BIN" start ecosystem.config.js
+    sudo -u jeffrey env PATH="/usr/local/bin:/usr/bin:/bin" "$PM2_BIN" save
+    sudo env PATH="/usr/local/bin:/usr/bin:/bin" "$PM2_BIN" startup systemd -u jeffrey --hp /home/jeffrey --force
 else
     pm2 start ecosystem.config.js
     pm2 save
