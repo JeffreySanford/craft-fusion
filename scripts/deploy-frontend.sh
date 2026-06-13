@@ -29,7 +29,10 @@ if ! typeset -f print_progress >/dev/null 2>&1; then
             sleep 5
         done
     }
-    cleanup_progress_line() { [ -t 1 ] && printf "\r\033[K"; }
+    cleanup_progress_line() {
+        [ -t 1 ] && printf "\r\033[K"
+        return 0
+    }
 fi
 
 # --- Cleanup Trap ---
